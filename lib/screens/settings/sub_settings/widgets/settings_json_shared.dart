@@ -171,7 +171,7 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    final mq = MediaQuery.of(context);
+    final mqPadding = MediaQuery.paddingOf(context);
 
     return DraggableScrollableSheet(
       initialChildSize: 0.6,
@@ -293,7 +293,7 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
                     : ListView.builder(
                         controller: scrollController,
                         padding: EdgeInsets.fromLTRB(
-                            16, 0, 16, mq.padding.bottom + 16),
+                            16, 0, 16, mqPadding.bottom + 16),
                         itemCount: _themes.length,
                         itemBuilder: (ctx, i) {
                           final theme = _themes[i];

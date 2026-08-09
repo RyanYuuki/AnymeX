@@ -40,7 +40,7 @@ class ReaderBottomControls extends StatelessWidget {
               child: Container(
                 width: getResponsiveSize(context,
                     mobileSize: double.infinity,
-                    desktopSize: MediaQuery.of(context).size.width * 0.4),
+                    desktopSize: MediaQuery.sizeOf(context).width * 0.4),
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: context.colors.surfaceContainer,

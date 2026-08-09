@@ -38,8 +38,8 @@ class _LogoAnimationPreviewDialogState extends State<LogoAnimationPreviewDialog>
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     final isLandscape = screenWidth > screenHeight;
     
     return Dialog(

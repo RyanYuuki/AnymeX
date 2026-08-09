@@ -61,7 +61,7 @@ class _MyLibraryState extends State<MyLibrary>
   Widget build(BuildContext context) {
     super.build(context);
     final controller = Get.put(LibraryController());
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
 
     return Scaffold(
@@ -154,7 +154,7 @@ class _LibraryContent extends StatelessWidget {
       sliver: SliverGrid(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: getResponsiveCrossAxisVal(
-            MediaQuery.of(context).size.width - 120,
+            MediaQuery.sizeOf(context).width - 120,
             itemWidth: 400,
           ),
           crossAxisSpacing: 10,
@@ -217,7 +217,7 @@ class _LibraryContent extends StatelessWidget {
       const horizontalPadding = 32.0;
       const crossAxisSpacing = 10.0;
       final availableWidth =
-          MediaQuery.of(context).size.width - horizontalPadding;
+          MediaQuery.sizeOf(context).width - horizontalPadding;
       final isDesktop = getPlatform(context);
       final itemWidth = isDesktop ? 170.0 : 140.0;
 

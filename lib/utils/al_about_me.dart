@@ -217,7 +217,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
       builder: (context, constraints) {
         final viewportWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
-            : MediaQuery.of(context).size.width;
+            : MediaQuery.sizeOf(context).width;
         final contentMaxWidth = viewportWidth >= 1200
             ? 760.0
             : viewportWidth >= 900
@@ -527,7 +527,7 @@ class _AnilistMediaCardState extends State<_AnilistMediaCard> {
         }
 
         final data = snapshot.data;
-        final isDesktop = MediaQuery.of(context).size.width > 600;
+        final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
         return GestureDetector(
           onTap: () {

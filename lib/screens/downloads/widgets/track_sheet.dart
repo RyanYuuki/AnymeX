@@ -167,7 +167,7 @@ class _TrackSheetState extends State<_TrackSheet> {
 
     return ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.85,
+          maxHeight: MediaQuery.sizeOf(context).height * 0.85,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,

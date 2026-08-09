@@ -144,7 +144,7 @@ class Header extends StatelessWidget {
               : null,
         );
       }
-      final isDesktop = MediaQuery.of(context).size.width > 600;
+      final isDesktop = MediaQuery.sizeOf(context).width > 600;
       final isLibrarySearchActive = type == PageType.library &&
           Get.isRegistered<LibraryController>() &&
           Get.find<LibraryController>().isSearchActive.value;
@@ -563,7 +563,7 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
 
   @override
   Widget build(BuildContext context) {
-    final maxH = MediaQuery.of(context).size.height * 0.7;
+    final maxH = MediaQuery.sizeOf(context).height * 0.7;
     final theme = Theme.of(context);
 
     return ConstrainedBox(
@@ -804,7 +804,7 @@ class _FloatingHeaderWrapper extends StatelessWidget {
     final theme = Theme.of(context);
     final settings = Get.find<Settings>();
     final RxBool translucent = settings.transculentBar.obs;
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
     final borderRadius = BorderRadius.circular(
       isDesktop ? 24.multiplyRadius() : 28.multiplyRadius(),

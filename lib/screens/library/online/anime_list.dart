@@ -713,7 +713,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
             }
 
             final crossAxisCount = getResponsiveCrossAxisVal(
-                MediaQuery.of(context).size.width,
+                MediaQuery.sizeOf(context).width,
                 itemWidth: 115);
 
             return GridView.builder(

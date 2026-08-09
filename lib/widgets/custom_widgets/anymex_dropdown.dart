@@ -93,7 +93,7 @@ class _AnymexDropdownState extends State<AnymexDropdown>
     final RenderBox renderBox = context.findRenderObject() as RenderBox;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
     final Size size = renderBox.size;
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
 
     final double dropdownHeight = _calculateDropdownHeight();
 

@@ -209,7 +209,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       ),
       child: Padding(
         padding:
-            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
         child: DraggableScrollableSheet(
           initialChildSize: 0.9,
           maxChildSize: 0.95,
@@ -300,7 +300,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                     left: 16,
                     right: 16,
                     top: 8,
-                    bottom: 12 + MediaQuery.of(context).padding.bottom,
+                    bottom: 12 + MediaQuery.paddingOf(context).bottom,
                   ),
                   decoration: BoxDecoration(
                     color: context.theme.colorScheme.surfaceContainer,

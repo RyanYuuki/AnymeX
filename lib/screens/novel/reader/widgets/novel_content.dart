@@ -337,7 +337,7 @@ class _DictionarySheetState extends State<_DictionarySheet> {
           color: colors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20))),
       padding: EdgeInsets.fromLTRB(
-          20, 16, 20, MediaQuery.of(context).viewInsets.bottom + 24),
+          20, 16, 20, MediaQuery.viewInsetsOf(context).bottom + 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,7 +363,7 @@ class _DictionarySheetState extends State<_DictionarySheet> {
           else
             ConstrainedBox(
               constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.45),
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.45),
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: _entries.length,

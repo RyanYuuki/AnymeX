@@ -7,7 +7,7 @@ double getResponsiveSize(context,
     {required double mobileSize,
     required double desktopSize,
     bool isStrict = false}) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   if (isStrict) {
     if (Platform.isAndroid || Platform.isIOS) {
       return mobileSize;
@@ -30,7 +30,7 @@ dynamic getResponsiveValueWithTablet(
   required dynamic desktopValue,
   bool strictMode = false,
 }) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   const double maxMobileWidth = 600;
   const double maxTabletWidth = 1024;
   final bool isMobilePlatform = Platform.isAndroid || Platform.isIOS;
@@ -56,7 +56,7 @@ dynamic getResponsiveValue(context,
     {required dynamic mobileValue,
     required dynamic desktopValue,
     bool strictMode = false}) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   final isMobile = Platform.isAndroid || Platform.isIOS;
   if (strictMode) {
     if (!isMobile) {
@@ -74,7 +74,7 @@ dynamic getResponsiveValue(context,
 }
 
 dynamic getPlatform(context, {bool strictMode = false}) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   final isMobile = Platform.isAndroid || Platform.isIOS;
   if (strictMode) {
     if (!isMobile) {
@@ -101,7 +101,7 @@ int getResponsiveCrossAxisCount(
   int tabletItemWidth = 200,
   int desktopItemWidth = 200,
 }) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   const mobileBreakpoint = 600;
   const tabletBreakpoint = 1200;
 

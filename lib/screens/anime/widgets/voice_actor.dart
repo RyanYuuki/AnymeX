@@ -18,7 +18,7 @@ class CharactersCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
     if (characters.isEmpty) {
       return const SizedBox.shrink();
@@ -288,7 +288,7 @@ class StaffCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (staff.isEmpty) return const SizedBox.shrink();
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -91,7 +91,7 @@ class _DictionaryPopupState extends State<DictionaryPopup>
           child: Container(
             width: 250,
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.4,
+              maxHeight: MediaQuery.sizeOf(context).height * 0.4,
             ),
             decoration: BoxDecoration(
               color: context.colors.surfaceContainer,

@@ -749,7 +749,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   margin: const EdgeInsets.only(right: 10),
                   height: 150,
                   width: getResponsiveSize(context,
-                      mobileSize: MediaQuery.of(context).size.width / 2,
+                      mobileSize: MediaQuery.sizeOf(context).width / 2,
                       desktopSize: 300),
                   clipBehavior: Clip.antiAlias,
                   padding: const EdgeInsets.all(10),
@@ -1296,7 +1296,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
               Container(
                 margin: const EdgeInsets.only(right: 10),
                 height: 120,
-                width: MediaQuery.of(context).size.width / 2,
+                width: MediaQuery.sizeOf(context).width / 2,
                 clipBehavior: Clip.antiAlias,
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(

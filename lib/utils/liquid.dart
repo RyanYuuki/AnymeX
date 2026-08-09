@@ -546,7 +546,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).padding.top + 10,
+            top: MediaQuery.paddingOf(context).top + 10,
             left: 16,
             child: IconButton(
               onPressed: () => Navigator.pop(context),
@@ -557,7 +557,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
             ),
           ),
           Positioned(
-            bottom: MediaQuery.of(context).padding.bottom + 24,
+            bottom: MediaQuery.paddingOf(context).bottom + 24,
             left: 16,
             right: 16,
             child: ClipRRect(

@@ -53,7 +53,7 @@ class CardStyleSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final desktop = MediaQuery.of(context).size.width > 600;
+    final desktop = MediaQuery.sizeOf(context).width > 600;
     registerBuiltInMediaCardStyles();
 
     return DynamicStyleSelector<CardStyle>(

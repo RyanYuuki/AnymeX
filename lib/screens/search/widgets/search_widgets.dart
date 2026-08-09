@@ -2115,7 +2115,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
       isScrollControlled: true,
       builder: (context) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.sizeOf(context).height * 0.5,
           decoration: BoxDecoration(
             color: colorScheme.surface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),

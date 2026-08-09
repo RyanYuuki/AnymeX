@@ -418,7 +418,7 @@ class SettingsSheet extends StatelessWidget {
         children: items.asMap().entries.map((entry) {
           final index = entry.key;
           final item = entry.value;
-          final isMobile = MediaQuery.of(context).size.width < 600;
+          final isMobile = MediaQuery.sizeOf(context).width < 600;
           final effectiveFirst = isMobile ? false : index == 0;
           final isLast = index == items.length - 1;
           return _buildMenuItem(

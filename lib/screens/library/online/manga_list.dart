@@ -692,7 +692,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
             }
 
             final crossAxisCount = getResponsiveCrossAxisVal(
-                MediaQuery.of(context).size.width,
+                MediaQuery.sizeOf(context).width,
                 itemWidth: 115);
 
             return GridView.builder(

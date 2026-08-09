@@ -52,7 +52,7 @@ class _InstalledExtensionsGridViewState
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     final crossAxisCount = _calculateCrossAxisCount(screenWidth);
 
     final filteredSources = widget.sources.where((s) {

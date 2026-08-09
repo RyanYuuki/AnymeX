@@ -259,7 +259,7 @@ class ColorProfileBottomSheet extends StatefulWidget {
           child: Material(
             color: Colors.transparent,
             child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.85,
+              width: MediaQuery.sizeOf(context).width * 0.85,
               height: double.infinity,
               child: ColorProfileBottomSheet(
                 activeSettings: controller.customSettings.value,

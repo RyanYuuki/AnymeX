@@ -203,7 +203,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
   void _dismissWithSwipe(double direction) {
     if (!mounted || _hasDismissed) return;
     _hasDismissed = true;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.sizeOf(context).width;
 
     setState(() {
       _dragOffset = direction >= 0 ? screenWidth * 1.5 : -screenWidth * 1.5;
@@ -228,16 +228,16 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
 
   double get _swipeFadeOpacity {
     if (_dragOffset == 0.0) return 1.0;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     final ratio = (_dragOffset.abs() / (screenWidth * 0.45)).clamp(0.0, 1.0);
     return 1.0 - ratio;
   }
 
   @override
   Widget build(BuildContext context) {
-    final topPad = MediaQuery.of(context).padding.top;
-    final bottomPad = MediaQuery.of(context).padding.bottom;
-    final w = MediaQuery.of(context).size.width;
+    final topPad = MediaQuery.paddingOf(context).top;
+    final bottomPad = MediaQuery.paddingOf(context).bottom;
+    final w = MediaQuery.sizeOf(context).width;
     final maxWidth =
         getResponsiveSize(context, mobileSize: w - 32.0, desktopSize: w * 0.38);
 

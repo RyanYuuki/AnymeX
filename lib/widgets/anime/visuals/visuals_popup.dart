@@ -334,7 +334,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
             child: currentList.isNotEmpty
                 ? GestureDetector(
                     onTapUp: (details) {
-                      final width = MediaQuery.of(context).size.width;
+                      final width = MediaQuery.sizeOf(context).width;
                       if (width > 0) {
                         if (details.localPosition.dx < width / 3) {
                           _prevImage();
@@ -388,7 +388,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
             right: 0,
             child: Container(
               padding: EdgeInsets.fromLTRB(
-                  10, MediaQuery.of(context).padding.top + 10, 10, 20),
+                  10, MediaQuery.paddingOf(context).top + 10, 10, 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.black.withOpacity(0.8), Colors.transparent],

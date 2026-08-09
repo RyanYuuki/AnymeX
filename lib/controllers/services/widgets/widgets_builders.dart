@@ -253,7 +253,7 @@ class _UnderratedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final cardWidth = isDesktop ? 160.0 : 118.0;
     final carouselData = item.toCarouselData(isManga: type == ItemType.manga);
     final tag = 'underrated-${carouselData.id}';

@@ -49,7 +49,7 @@ class AnymexDialog extends StatelessWidget {
         width: getResponsiveValue(context,
             mobileValue: double.infinity, desktopValue: 500.0),
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
+          maxHeight: MediaQuery.sizeOf(context).height * 0.8,
         ),
         padding: padding,
         child: Column(

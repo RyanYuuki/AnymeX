@@ -571,7 +571,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
       }
     }
 
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.sizeOf(context).height;
     final bannerHeight = (screenHeight * 0.36).clamp(250.0, 390.0);
 
     return SliverAppBar(

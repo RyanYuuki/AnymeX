@@ -68,10 +68,10 @@ void searchTypeSheet(BuildContext context) {
 
 ImageButton _buildSearchTile(
     BuildContext context, String buttonText, String imageUrl, bool isNovel) {
-  final isDesktop = MediaQuery.of(context).size.width > 600;
+  final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
   return ImageButton(
-    width: isDesktop ? 300 : MediaQuery.of(context).size.width / 2 - 40,
+    width: isDesktop ? 300 : MediaQuery.sizeOf(context).width / 2 - 40,
     height: !isDesktop ? 70 : 90,
     buttonText: buttonText,
     backgroundImage: imageUrl,

@@ -189,7 +189,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       showDragHandle: true,
       contentWidget: Container(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.5,
+          maxHeight: MediaQuery.sizeOf(context).height * 0.5,
         ),
         child: ListView.builder(
           physics: const BouncingScrollPhysics(),

@@ -59,7 +59,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
             ? donatorBadge
             : 'AniList Member';
 
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.sizeOf(context).height;
     final bannerHeight = (screenHeight * 0.36).clamp(250.0, 390.0);
 
     return SliverAppBar(
@@ -452,7 +452,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                     ConstrainedBox(
                                       constraints: BoxConstraints(
                                         maxWidth:
-                                            MediaQuery.of(context).size.width *
+                                            MediaQuery.sizeOf(context).width *
                                                 0.55,
                                       ),
                                       child: Text(

@@ -43,8 +43,7 @@ class _LiquidTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context);
-    final topInset = mq.padding.top;
+    final topInset = MediaQuery.paddingOf(context).top;
     final isDesktop =
         Platform.isWindows || Platform.isLinux || Platform.isMacOS;
     final extraTop = isDesktop ? 12.0 : 0.0;
@@ -237,7 +236,7 @@ class _LiquidBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final w = MediaQuery.of(context).size.width;
+      final w = MediaQuery.sizeOf(context).width;
       final pillW = w > 900 ? w * 0.5 : double.infinity;
       final show = controller.showControls.value;
 

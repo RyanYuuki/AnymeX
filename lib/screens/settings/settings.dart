@@ -92,6 +92,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return Glow(
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
             body: Column(children: [
       const NestedHeader(title: 'Settings'),
       Padding(

@@ -36,7 +36,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
-    final bottomSpace = MediaQuery.of(context).size.width > 900 ? 32.0 : 120.0;
+    final bottomSpace = MediaQuery.sizeOf(context).width > 900 ? 32.0 : 120.0;
     final anime = widget.user.stats?.animeStats;
     final manga = widget.user.stats?.mangaStats;
 

@@ -7,8 +7,8 @@ class MyAdaptiveWrapper extends StatelessWidget {
   const MyAdaptiveWrapper({super.key, required this.child});
 
   bool _isAndroidTV(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final dpi = MediaQuery.of(context).devicePixelRatio;
+    final size = MediaQuery.sizeOf(context);
+    final dpi = MediaQuery.devicePixelRatioOf(context);
     return Platform.isAndroid && size.width > 1000 && dpi < 2.0;
   }
 

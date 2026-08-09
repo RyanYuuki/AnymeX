@@ -393,7 +393,7 @@ class BottomControls extends StatelessWidget {
     final rightButtons = buildButtonList(rightButtonIds);
 
     final isPortrait =
-        MediaQuery.of(context).orientation == Orientation.portrait;
+        MediaQuery.orientationOf(context) == Orientation.portrait;
 
     if (isPortrait) {
       return Column(

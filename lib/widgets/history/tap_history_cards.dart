@@ -62,8 +62,8 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(left: 15),
         width: getResponsiveSize(context,
-          mobileSize: MediaQuery.of(context).size.width / 1.5,
-          desktopSize: MediaQuery.of(context).size.width / 3),
+          mobileSize: MediaQuery.sizeOf(context).width / 1.5,
+          desktopSize: MediaQuery.sizeOf(context).width / 3),
         child: AnymexCard(
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(

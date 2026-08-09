@@ -402,7 +402,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
         builder: (ctx, setSheetState) => SafeArea(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.6,
+              maxHeight: MediaQuery.sizeOf(context).height * 0.6,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -773,7 +773,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
             }
 
             final crossAxisCount = getResponsiveCrossAxisVal(
-                MediaQuery.of(context).size.width,
+                MediaQuery.sizeOf(context).width,
                 itemWidth: 115);
 
             return GridView.builder(

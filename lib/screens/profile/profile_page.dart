@@ -402,7 +402,7 @@ class _ProfilePageState extends State<ProfilePage>
           ),
           child: Padding(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
+              bottom: MediaQuery.viewInsetsOf(context).bottom,
               left: 16,
               right: 16,
               top: 20,

@@ -81,7 +81,7 @@ Future<void> snackString(
         backgroundColor: theme.surface,
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+          bottom: MediaQuery.viewInsetsOf(context).bottom + 32,
           left: 32,
           right: 32,
         ),

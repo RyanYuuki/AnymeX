@@ -32,7 +32,7 @@ class AnimatedAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
     final appBarHeight = height ?? kToolbarHeight;
     final appBarContentHeight = appBarHeight + topPadding + bottomPadding;
 

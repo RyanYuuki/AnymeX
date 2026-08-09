@@ -883,7 +883,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final theme = context.colors;
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.45,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.45,
       ),
       child: ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),

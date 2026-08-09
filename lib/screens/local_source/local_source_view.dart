@@ -406,7 +406,7 @@ class _WatchOfflineState extends State<WatchOffline> {
 
   Widget _buildSearchLoadingState(ThemeData theme) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.sizeOf(context).height * 0.6,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -430,7 +430,7 @@ class _WatchOfflineState extends State<WatchOffline> {
 
   Widget _buildMediaLoadingState(ThemeData theme) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.sizeOf(context).height * 0.6,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -454,7 +454,7 @@ class _WatchOfflineState extends State<WatchOffline> {
 
   Widget _buildNoSearchResultsState(ThemeData theme) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.sizeOf(context).height * 0.6,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

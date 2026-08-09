@@ -23,8 +23,7 @@ class ReaderTopControls extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final isDesktop = Platform.isWindows;
-      final mediaQuery = MediaQuery.of(context);
-      final statusBarHeight = mediaQuery.padding.top;
+      final statusBarHeight = MediaQuery.paddingOf(context).top;
       const topControlsHeight = 50.0;
       const gapBetweenControls = 8.0;
 
@@ -290,7 +289,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final maxH = MediaQuery.of(context).size.height * 0.8;
+    final maxH = MediaQuery.sizeOf(context).height * 0.8;
 
     return Container(
       constraints: BoxConstraints(maxHeight: maxH),

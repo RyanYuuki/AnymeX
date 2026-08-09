@@ -1571,7 +1571,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
             const SizedBox(height: 20),
             ConstrainedBox(
               constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.6,
+                maxHeight: MediaQuery.sizeOf(context).height * 0.6,
               ),
               child: ListView.builder(
                 shrinkWrap: true,

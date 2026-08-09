@@ -121,10 +121,10 @@ void showWelcomeDialogg(BuildContext context) {
           child: Center(
             child: Container(
               width: getResponsiveSize(context,
-                  mobileSize: MediaQuery.of(context).size.width - 24,
-                  desktopSize: MediaQuery.of(context).size.width * 0.42),
+                  mobileSize: MediaQuery.sizeOf(context).width - 24,
+                  desktopSize: MediaQuery.sizeOf(context).width * 0.42),
               constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.7,
+                maxHeight: MediaQuery.sizeOf(context).height * 0.7,
               ),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainer,

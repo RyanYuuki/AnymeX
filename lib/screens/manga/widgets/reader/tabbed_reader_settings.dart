@@ -82,7 +82,7 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
 
   @override
   Widget build(BuildContext context) {
-    final maxH = MediaQuery.of(context).size.height * 0.8;
+    final maxH = MediaQuery.sizeOf(context).height * 0.8;
 
     return Container(
       constraints: BoxConstraints(maxHeight: maxH),

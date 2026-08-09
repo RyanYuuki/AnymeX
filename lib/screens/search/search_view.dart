@@ -1301,7 +1301,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       return _buildInitialState();
     }
 
-    final bottomPadding = MediaQuery.of(context).padding.bottom + 32.0;
+    final bottomPadding = MediaQuery.paddingOf(context).bottom + 32.0;
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -1467,10 +1467,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     final crossAxisCount = getResponsiveValue(context,
         mobileValue: 3,
         desktopValue: getResponsiveCrossAxisVal(
-            MediaQuery.of(context).size.width,
+            MediaQuery.sizeOf(context).width,
             itemWidth: 115));
 
-    final bottomPadding = MediaQuery.of(context).padding.bottom + 32.0;
+    final bottomPadding = MediaQuery.paddingOf(context).bottom + 32.0;
 
     return GridView.builder(
       controller: _resultsScrollController,

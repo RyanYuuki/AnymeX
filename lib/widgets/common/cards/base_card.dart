@@ -16,7 +16,7 @@ abstract class CarouselCard extends StatelessWidget {
     required this.tag,
   });
 
-  bool isDesktop(BuildContext context) => MediaQuery.of(context).size.width > 600;
+  bool isDesktop(BuildContext context) => MediaQuery.sizeOf(context).width > 600;
 
   bool shouldShowTitle() {
     return itemData.title != null &&

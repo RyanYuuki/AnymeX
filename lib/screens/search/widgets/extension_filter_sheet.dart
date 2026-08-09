@@ -115,7 +115,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
     final theme = Theme.of(context);
     return Container(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.85,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.85,
       ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,

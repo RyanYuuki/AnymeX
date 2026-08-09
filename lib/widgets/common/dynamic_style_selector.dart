@@ -45,7 +45,7 @@ class _DynamicStyleSelectorState<T> extends State<DynamicStyleSelector<T>> {
 
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.75,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.75,
         maxWidth: 420,
       ),
       child: Column(

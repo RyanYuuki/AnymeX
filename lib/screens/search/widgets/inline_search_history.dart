@@ -46,7 +46,7 @@ class InlineSearchHistory extends StatelessWidget {
     }
 
     final displayedTerms = searchTerms.reversed.toList();
-    final bottomMargin = MediaQuery.of(context).padding.bottom + 32.0;
+    final bottomMargin = MediaQuery.paddingOf(context).bottom + 32.0;
 
     return Container(
       margin: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, bottomMargin),

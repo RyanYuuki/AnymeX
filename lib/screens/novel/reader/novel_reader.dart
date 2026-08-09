@@ -93,7 +93,7 @@ class _NovelReaderState extends State<NovelReader>
     return Obx(() {
       if (!controller.ttsEnabled.value) return const SizedBox.shrink();
 
-      final rightInset = MediaQuery.of(context).padding.right + 10;
+      final rightInset = MediaQuery.paddingOf(context).right + 10;
 
       return Positioned(
         top: 0,

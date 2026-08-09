@@ -372,7 +372,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final reasons = widget.item.reasons;
     final showVoteBar = CommunityService.votingEnabled &&
         widget.voteMediaType != null &&

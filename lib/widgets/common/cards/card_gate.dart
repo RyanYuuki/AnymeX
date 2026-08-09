@@ -16,7 +16,7 @@ double getCardHeight(CardStyle style, bool isDesktop) {
 }
 
 double getResponsiveGridCardAspectRatio(BuildContext context) {
-  final desktop = MediaQuery.of(context).size.width > 600;
+  final desktop = MediaQuery.sizeOf(context).width > 600;
   final style = CardStyle.values[settingsController.cardStyle];
   
   switch (style) {
@@ -39,7 +39,7 @@ double getGridCardAspectRatio({
   required double spacing,
   double padding = 20,
 }) {
-  final screenWidth = MediaQuery.of(context).size.width;
+  final screenWidth = MediaQuery.sizeOf(context).width;
   final desktop = screenWidth > 600;
   final style = CardStyle.values[settingsController.cardStyle];
   

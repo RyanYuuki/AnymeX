@@ -17,7 +17,7 @@ class NovelBottomControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
     return Obx(() => AnimatedPositioned(
           duration: const Duration(milliseconds: 300),

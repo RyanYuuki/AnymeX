@@ -45,10 +45,10 @@ class _MangaHomePageState extends State<MangaHomePage> {
   @override
   Widget build(BuildContext context) {
     final serviceHandler = Get.find<ServiceHandler>();
-    final isDesktop = MediaQuery.of(context).size.width > 600;
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
-    final double bottomNavBarHeight = MediaQuery.of(context).padding.bottom;
+    final double bottomNavBarHeight = MediaQuery.paddingOf(context).bottom;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,

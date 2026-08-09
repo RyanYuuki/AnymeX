@@ -300,9 +300,9 @@ class _ExtensionListState extends State<ExtensionList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final bottomScrollPadding =
-        isDesktop ? 20.0 : (MediaQuery.of(context).padding.bottom + 80.0);
+        isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 80.0);
 
     return RefreshIndicator(
       onRefresh: _refreshData,
@@ -370,9 +370,9 @@ class _ExtensionListState extends State<ExtensionList>
   }
 
   Widget _buildInstalledView(List<Source> installed, List<Source> updates) {
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final bottomScrollPadding =
-        isDesktop ? 20.0 : (MediaQuery.of(context).padding.bottom + 80.0);
+        isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 80.0);
     final hasUpdates = updates.isNotEmpty;
     final hasInstalled = installed.isNotEmpty;
 

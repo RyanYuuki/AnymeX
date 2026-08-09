@@ -18,8 +18,8 @@ class ReaderAutoScrollMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ReaderController>();
-    final mediaQuery = MediaQuery.of(context);
-    final rightInset = mediaQuery.padding.right + 10;
+    final mqPadding = MediaQuery.paddingOf(context);
+    final rightInset = mqPadding.right + 10;
     final isMaterial = theme == AutoScrollTheme.material;
 
     return Obx(() {

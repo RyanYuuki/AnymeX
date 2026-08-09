@@ -106,7 +106,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                 child: Container(
                   width: double.infinity,
                   constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.8,
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.8,
                   ),
                   decoration: BoxDecoration(
                     color: context.theme.colorScheme.surface,
@@ -189,7 +189,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                         child: widget.customContent ?? _buildItemsList(),
                       ),
                       SizedBox(
-                          height: MediaQuery.of(context).padding.bottom + 16),
+                          height: MediaQuery.paddingOf(context).bottom + 16),
                     ],
                   ),
                 ),
@@ -527,7 +527,7 @@ class PlayerBottomSheets {
         backgroundColor: Colors.transparent,
         builder: (context) => isExpanded
             ? SizedBox(
-                height: MediaQuery.of(context).size.height * expandedHeightFactor,
+                height: MediaQuery.sizeOf(context).height * expandedHeightFactor,
                 child: sheet)
             : sheet,
       ),

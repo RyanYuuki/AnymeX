@@ -81,7 +81,7 @@ class _MangaStatsState extends State<MangaStats> {
               ])
         .where((e) => e.cover != null && (e.cover?.isNotEmpty ?? false))
         .toList();
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
     return SingleChildScrollView(
       child: Column(

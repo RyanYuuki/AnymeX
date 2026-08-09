@@ -27,7 +27,7 @@ class GradientPoster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -142,7 +142,7 @@ class GradientPoster extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: MediaQuery.of(context).size.width / 2,
+                    width: MediaQuery.sizeOf(context).width / 2,
                     child: GestureDetector(
                       onLongPress: () {
                         final title = data?.title ?? 'Loading...';
@@ -172,7 +172,7 @@ class GradientPoster extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: MediaQuery.of(context).padding.top + 8,
+          top: MediaQuery.paddingOf(context).top + 8,
           left: 20,
           child: AnymexOnTap(
             onTap: () {
@@ -193,7 +193,7 @@ class GradientPoster extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: MediaQuery.of(context).padding.top + 8,
+          top: MediaQuery.paddingOf(context).top + 8,
           right: 20,
           child: AnymexOnTap(
             onTap: Get.back,

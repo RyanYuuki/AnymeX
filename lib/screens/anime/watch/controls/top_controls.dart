@@ -228,7 +228,7 @@ class TopControls extends StatelessWidget {
                     isScrollControlled: true,
                     backgroundColor: Colors.transparent,
                     builder: (context) => Container(
-                          height: MediaQuery.of(context).size.height,
+                          height: MediaQuery.sizeOf(context).height,
                           clipBehavior: Clip.antiAlias,
                           decoration: const BoxDecoration(
                             color: Colors.transparent,
@@ -399,7 +399,7 @@ class TopControls extends StatelessWidget {
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
                         builder: (context) => Container(
-                              height: MediaQuery.of(context).size.height,
+                              height: MediaQuery.sizeOf(context).height,
                               clipBehavior: Clip.antiAlias,
                               decoration: const BoxDecoration(
                                 color: Colors.transparent,
@@ -478,7 +478,7 @@ class TopControls extends StatelessWidget {
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
                       builder: (context) => Container(
-                        height: MediaQuery.of(context).size.height,
+                        height: MediaQuery.sizeOf(context).height,
                         clipBehavior: Clip.antiAlias,
                         decoration: const BoxDecoration(
                           color: Colors.transparent,

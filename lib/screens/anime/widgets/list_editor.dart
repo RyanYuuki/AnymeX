@@ -396,7 +396,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
         left: 20,
         right: 20,
         top: 16,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        bottom: MediaQuery.viewInsetsOf(context).bottom + 24,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

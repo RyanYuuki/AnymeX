@@ -250,10 +250,10 @@ class _HomePageState extends State<HomePage> {
     final serviceHandler = Get.find<ServiceHandler>();
     final settings = Get.find<Settings>();
     final sourceController = Get.find<SourceController>();
-    final isDesktop = MediaQuery.of(context).size.width > 600;
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
-    final double bottomNavBarHeight = MediaQuery.of(context).padding.bottom;
+    final double bottomNavBarHeight = MediaQuery.paddingOf(context).bottom;
 
     bool isMobile =
         getResponsiveValue(context, desktopValue: false, mobileValue: true);

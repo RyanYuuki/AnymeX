@@ -194,7 +194,7 @@ class NestedHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isWindows = Platform.isWindows;
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final canPop = !disablePrefix &&
         (ModalRoute.of(context)?.canPop == true) &&
         !(ModalRoute.of(context)?.isFirst ?? true);
@@ -261,8 +261,8 @@ class NestedHeader extends StatelessWidget {
 
     final topPadding = isWindows
         ? 42.0
-        : (MediaQuery.of(context).padding.top > 0
-            ? MediaQuery.of(context).padding.top + 8
+        : (MediaQuery.paddingOf(context).top > 0
+            ? MediaQuery.paddingOf(context).top + 8
             : 16.0);
 
     return Container(

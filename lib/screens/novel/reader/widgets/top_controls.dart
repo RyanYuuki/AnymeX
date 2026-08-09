@@ -17,8 +17,7 @@ class NovelTopControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final mediaQuery = MediaQuery.of(context);
-      final statusBarHeight = mediaQuery.padding.top;
+      final statusBarHeight = MediaQuery.paddingOf(context).top;
       const topControlsHeight = 50.0;
       const gapBetweenControls = 8.0;
 

@@ -309,7 +309,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     if (widget.controller.isLocked.value) return;
     if (!Get.find<Settings>().enableSlideToSeek) return;
 
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     const sensitivity = 0.80;
     final totalMs = widget.controller.episodeDuration.value.inMilliseconds;
     if (totalMs <= 0) return;
@@ -620,7 +620,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
         slideDistance: 5,
         key: Key(tapCount.toString()),
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.25,
+          width: MediaQuery.sizeOf(context).width * 0.25,
           height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -870,7 +870,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                     Positioned(
                       left: 0,
                       right: 0,
-                      top: MediaQuery.of(context).size.height * 0.05,
+                      top: MediaQuery.sizeOf(context).height * 0.05,
                       child: IgnorePointer(child: _buildSpeedIndicator()),
                     ),
                     Positioned(

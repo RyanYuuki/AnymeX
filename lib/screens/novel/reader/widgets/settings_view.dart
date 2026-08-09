@@ -16,7 +16,7 @@ class NovelSettingsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final animatedWidth = MediaQuery.of(context).size.width * 0.85;
+    final animatedWidth = MediaQuery.sizeOf(context).width * 0.85;
     return Obx(() {
       return Stack(
         children: [

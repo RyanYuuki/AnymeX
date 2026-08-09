@@ -129,9 +129,9 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
 
       return SizedBox(
         width: getResponsiveValue(context,
-            mobileValue: MediaQuery.of(context).size.width, desktopValue: null),
+            mobileValue: MediaQuery.sizeOf(context).width, desktopValue: null),
         height: getResponsiveValue(context,
-            mobileValue: MediaQuery.of(context).size.height * 0.8,
+            mobileValue: MediaQuery.sizeOf(context).height * 0.8,
             desktopValue: null),
         child: Glow(
           child: Column(
@@ -327,7 +327,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
     return Container(
       padding: const EdgeInsets.all(10),
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.6,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.6,
       ),
       child: SuperListView(
         children: [

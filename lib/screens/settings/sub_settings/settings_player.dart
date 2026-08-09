@@ -362,7 +362,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.7,
+                    height: MediaQuery.sizeOf(context).height * 0.7,
                     child: SuperListView.builder(
                       shrinkWrap: true,
                       itemCount: cursedSpeed.length,

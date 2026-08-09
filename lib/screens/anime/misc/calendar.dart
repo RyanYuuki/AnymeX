@@ -284,7 +284,7 @@ class _CalendarState extends State<Calendar>
                 itemCount: filteredList.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: getResponsiveCrossAxisVal(
-                        MediaQuery.of(context).size.width,
+                        MediaQuery.sizeOf(context).width,
                         itemWidth: isGrid ? 120 : 400),
                     mainAxisExtent: getResponsiveSize(context,
                         mobileSize: isGrid ? 280 : 150,

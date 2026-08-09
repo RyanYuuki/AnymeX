@@ -215,7 +215,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
+        width: MediaQuery.sizeOf(context).width * 0.8,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -255,7 +255,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
             Flexible(
               child: Container(
                 constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.4,
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.4,
                   minHeight: 100,
                 ),
                 margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),

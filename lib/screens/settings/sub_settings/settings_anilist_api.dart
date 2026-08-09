@@ -482,7 +482,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             top: false,
             child: Padding(
               padding: EdgeInsets.only(left: 16, right: 16, top: 10,
-                bottom: MediaQuery.of(context).viewInsets.bottom + 14),
+                bottom: MediaQuery.viewInsetsOf(context).bottom + 14),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
                 Container(width: 44, height: 4, margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(color: context.colors.outline.opaque(0.45), borderRadius: BorderRadius.circular(999))),
@@ -511,7 +511,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                 ]),
                 const SizedBox(height: 12),
                 ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.48),
+                  constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.48),
                   child: local.isEmpty
                       ? Container(width: double.infinity, padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(color: context.colors.surfaceContainer.opaque(0.6), borderRadius: BorderRadius.circular(14)),

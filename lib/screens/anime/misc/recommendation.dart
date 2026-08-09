@@ -240,7 +240,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             },
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: getResponsiveCrossAxisVal(
-                MediaQuery.of(context).size.width,
+                MediaQuery.sizeOf(context).width,
                 itemWidth: isGrid.value ? 115 : 400,
               ),
               crossAxisSpacing: 10,
@@ -249,7 +249,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   ? getGridCardAspectRatio(
                       context: context,
                       crossAxisCount: getResponsiveCrossAxisVal(
-                        MediaQuery.of(context).size.width,
+                        MediaQuery.sizeOf(context).width,
                         itemWidth: 115,
                       ),
                       spacing: 10,

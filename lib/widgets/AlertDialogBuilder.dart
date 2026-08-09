@@ -168,7 +168,7 @@ class AlertDialogBuilder {
   Widget _buildReorderableWithCheckBoxWidget(
           StateSetter setState, void Function(int, int) onReorder) =>
       SizedBox(
-        width: MediaQuery.of(context).size.width * 0.7,
+        width: MediaQuery.sizeOf(context).width * 0.7,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -202,7 +202,7 @@ class AlertDialogBuilder {
   Widget _buildReorderableWidget(
           StateSetter setState, void Function(int, int) onReorder) =>
       SizedBox(
-        width: MediaQuery.of(context).size.width * 0.7,
+        width: MediaQuery.sizeOf(context).width * 0.7,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -258,7 +258,7 @@ class AlertDialogBuilder {
   Widget _buildListContent(Widget Function(String) itemBuilder) =>
       ConstrainedBox(
         constraints:
-            BoxConstraints(minWidth: MediaQuery.of(context).size.width * 0.7),
+            BoxConstraints(minWidth: MediaQuery.sizeOf(context).width * 0.7),
         child: SingleChildScrollView(
           child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -268,7 +268,7 @@ class AlertDialogBuilder {
 
   Widget _buildDefaultContent() => ConstrainedBox(
         constraints:
-            BoxConstraints(minWidth: MediaQuery.of(context).size.width * 0.7),
+            BoxConstraints(minWidth: MediaQuery.sizeOf(context).width * 0.7),
         child: _customView ?? Text(_message ?? ''),
       );
 

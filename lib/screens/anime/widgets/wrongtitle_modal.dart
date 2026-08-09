@@ -84,8 +84,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.8,
+      width: MediaQuery.sizeOf(context).width,
+      height: MediaQuery.sizeOf(context).height * 0.8,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -208,14 +208,14 @@ Future<void> showWrongTitleModal(
       borderRadius: BorderRadius.circular(12.0),
     ),
     builder: (context) {
-      final isDesktop = MediaQuery.of(context).size.width > 600;
+      final isDesktop = MediaQuery.sizeOf(context).width > 600;
       return SizedBox(
         width: isDesktop
-            ? MediaQuery.of(context).size.width * 0.8
-            : MediaQuery.of(context).size.width,
+            ? MediaQuery.sizeOf(context).width * 0.8
+            : MediaQuery.sizeOf(context).width,
         child: Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+            bottom: MediaQuery.viewInsetsOf(context).bottom,
           ),
           child: WrongTitleModal(
               initialText: initialText,

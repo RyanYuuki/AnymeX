@@ -35,7 +35,7 @@ class _TrackingDialogState extends State<TrackingDialog> {
         borderRadius: BorderRadius.circular(28),
       ),
       child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
+        width: MediaQuery.sizeOf(context).width * 0.8,
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(

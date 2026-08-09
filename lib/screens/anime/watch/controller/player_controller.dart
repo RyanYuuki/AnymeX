@@ -1956,7 +1956,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (isLocked.value) return;
     if (!settings.enableSwipeControls) return;
 
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery.sizeOf(context);
     final position = e.localPosition;
     if (position.dy < size.height * 0.2 || position.dy > size.height * 0.8) {
       return;

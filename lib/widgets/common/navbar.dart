@@ -102,7 +102,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
           widget.isDesktop ? 24.multiplyRadius() : 28.multiplyRadius(),
         );
 
-    final bottomPadding = widget.isDesktop ? 0.0 : MediaQuery.of(context).padding.bottom;
+    final bottomPadding = widget.isDesktop ? 0.0 : MediaQuery.paddingOf(context).bottom;
     final finalMargin = widget.margin != null
         ? widget.margin!.copyWith(
             bottom: widget.margin!.bottom + bottomPadding,
@@ -611,7 +611,7 @@ class BlurredContainer extends StatelessWidget {
     final theme = Theme.of(context);
 
     return SizedBox(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery.sizeOf(context).width,
       height: height,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),

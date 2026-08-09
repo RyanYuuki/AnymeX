@@ -86,10 +86,10 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final showMobileAppBar = widget.isTabScreen && !isDesktop;
 
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
 
     final mainContent = Column(
@@ -351,7 +351,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
           child: Container(
             width: double.infinity,
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.75,
+              maxHeight: MediaQuery.sizeOf(context).height * 0.75,
               maxWidth: 400,
             ),
             decoration: BoxDecoration(

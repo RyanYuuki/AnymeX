@@ -560,7 +560,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
         const SizedBox(height: 10),
         ConstrainedBox(
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.38,
+            maxHeight: MediaQuery.sizeOf(context).height * 0.38,
           ),
           child: filtered.isEmpty
               ? Padding(
