@@ -10,6 +10,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart'
 import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -458,6 +459,12 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
         icon: Icons.screen_rotation_rounded,
         onPressed: controller.toggleOrientation,
         tooltip: 'Orientation',
+        compact: true,
+      ),
+      'cast': ControlButton(
+        icon: Icons.cast_rounded,
+        onPressed: () => CastDeviceDialog.show(context, controller),
+        tooltip: 'Cast to Device',
         compact: true,
       ),
     };

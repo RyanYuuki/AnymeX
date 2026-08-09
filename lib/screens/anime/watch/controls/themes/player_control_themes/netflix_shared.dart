@@ -1,6 +1,7 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -323,6 +324,14 @@ class NFMoreSheet extends StatelessWidget {
               onTap: () {
                 Get.back();
                 controller.openColorProfileBottomSheet(ctx);
+              },
+            ),
+            NFSheetTile(
+              icon: Icons.cast_rounded,
+              label: 'Cast to device',
+              onTap: () {
+                Get.back();
+                CastDeviceDialog.show(ctx, controller);
               },
             ),
             if (!controller.isOffline.value)

@@ -455,6 +455,37 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         },
       };
       PlayerUiKeys.bottomControlsSettings.set(json.encode(defaultConfig));
+    } else {
+      bool updated = false;
+      final rightIds =
+          (decodedConfig['rightButtonIds'] as List<dynamic>?)?.cast<String>() ??
+              [];
+      final hiddenIds =
+          (decodedConfig['hiddenButtonIds'] as List<dynamic>?)?.cast<String>() ??
+              [];
+      final leftIds =
+          (decodedConfig['leftButtonIds'] as List<dynamic>?)?.cast<String>() ??
+              [];
+
+      if (!rightIds.contains('cast') &&
+          !hiddenIds.contains('cast') &&
+          !leftIds.contains('cast')) {
+        rightIds.add('cast');
+        decodedConfig['rightButtonIds'] = rightIds;
+        updated = true;
+      }
+
+      final buttonConfigs =
+          (decodedConfig['buttonConfigs'] as Map<String, dynamic>?) ?? {};
+      if (!buttonConfigs.containsKey('cast')) {
+        buttonConfigs['cast'] = {'visible': true};
+        decodedConfig['buttonConfigs'] = buttonConfigs;
+        updated = true;
+      }
+
+      if (updated) {
+        PlayerUiKeys.bottomControlsSettings.set(json.encode(decodedConfig));
+      }
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
+import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -170,6 +171,12 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
                           size: 34,
                           onTap: () => controller.isEpisodePaneOpened.value =
                               !controller.isEpisodePaneOpened.value,
+                        ),
+                        const SizedBox(width: 20),
+                        NFDesktopButton(
+                          icon: Icons.cast_rounded,
+                          size: 32,
+                          onTap: () => CastDeviceDialog.show(context, controller),
                         ),
                         const SizedBox(width: 20),
                         NFDesktopButton(
