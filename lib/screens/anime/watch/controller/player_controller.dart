@@ -27,6 +27,7 @@ import 'package:anymex/utils/pip_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_media_session/flutter_media_session.dart';
 import 'package:flutter_media_session/flutter_media_session_platform_interface.dart';
 
@@ -404,6 +405,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             duration: 3000);
       });
     }
+    if (Platform.isAndroid) {
+      try {
+        FlutterDisplayMode.setPreferredMode(DisplayMode.auto);
+      } catch (e) {
+        Logger.e("Error setting auto display mode in player: $e");
+      }
+    }
     PipController.setAutoEnter(enabled: true);
     PipController.onPlay = () => play();
     PipController.onPause = () => pause();
@@ -549,6 +557,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     PipController.setAutoEnter(enabled: false);
     _accelerometerSub?.cancel();
+    if (Platform.isAndroid) {
+      try {
+        settingsController.applyDisplayRefreshMode();
+      } catch (e) {
+        Logger.e("Error restoring display mode from player: $e");
+      }
+    }
     delete();
     super.onClose();
   }

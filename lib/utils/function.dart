@@ -644,24 +644,7 @@ Future<void> navigate(dynamic page) async {
 }
 
 Future<void> navigateWithAnimation(dynamic page) async {
-  await Navigator.push(
-    Get.context!,
-    PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => page(),
-      transitionDuration: const Duration(milliseconds: 320),
-      reverseTransitionDuration: const Duration(milliseconds: 300),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        final fadeAnim = CurvedAnimation(
-          parent: animation,
-          curve: Curves.fastOutSlowIn,
-        );
-        return FadeTransition(
-          opacity: fadeAnim,
-          child: child,
-        );
-      },
-    ),
-  );
+  navigate(page);
 }
 
 Future<void> navigateWithSlide(dynamic page) async {

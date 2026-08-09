@@ -48,7 +48,7 @@ class _FpsMeterState extends State<FpsMeter> {
 
     return Positioned(
       top: 50,
-      left: 10,
+      right: 10,
       child: IgnorePointer(
         child: Material(
           type: MaterialType.transparency,
