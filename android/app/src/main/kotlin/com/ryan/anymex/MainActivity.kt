@@ -9,6 +9,7 @@ import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_UP
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
@@ -26,7 +27,7 @@ import java.io.FileOutputStream
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 
-class MainActivity : FlutterAppCompatActivity() {
+class MainActivity : FlutterFragmentActivity() {
     private val CHANNEL = "app/architecture"
     private val VOLUME_CHANNEL = "com.ryan.anymex/volume"
     private val VOLUME_EVENTS = "com.ryan.anymex/volume_events"
