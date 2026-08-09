@@ -49,20 +49,17 @@ class AnymexSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset + bottomPadding),
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
-        ),
-        padding: const EdgeInsets.fromLTRB(14, 16, 14, 10),
-        child: SafeArea(
-          top: false,
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+        child: Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: theme.colorScheme.outline.withOpacity(0.1)),
+          ),
+          padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:get/get.dart';
@@ -15,22 +14,26 @@ Future<void> fetchSimklCalendarData(RxList<Media> callbackData, {bool isMovies =
 
   if (response.statusCode == 200) {
     final List<dynamic> schedules = json.decode(response.body);
-    final isMAL = serviceHandler.serviceType.value == ServicesType.mal;
-    final Set<String> seenIds = {};
+    final Set<String> seenKeys = {};
     
     List<Media> newMediaList = schedules
         .map<Media?>((schedule) {
-          final id = schedule['ids']?['simkl_id']?.toString() ?? 
-                     schedule['ids']?['simkl']?.toString() ?? 
-                     schedule['url']?.toString();
-          if (id != null && seenIds.contains(id)) {
+          final baseId = schedule['ids']?['simkl_id']?.toString() ?? 
+                         schedule['ids']?['simkl']?.toString() ?? 
+                         schedule['url']?.toString() ?? '';
+          final ep = schedule['episode'];
+          final epKey = ep is Map ? '-S${ep['season']}E${ep['episode']}' : '';
+          final dateKey = schedule['date']?.toString() ?? '';
+          final uniqueKey = '$baseId$epKey-$dateKey';
+
+          if (uniqueKey.isNotEmpty && seenKeys.contains(uniqueKey)) {
             return null;
           }
-          if (id != null) {
-            seenIds.add(id);
+          if (uniqueKey.isNotEmpty) {
+            seenKeys.add(uniqueKey);
           }
           
-          final media = Media.fromSmallSimkl(schedule, !isMovies);
+          final media = Media.fromSmallSimkl(schedule, isMovies);
           return media;
         })
         .toList()
@@ -39,7 +42,7 @@ Future<void> fetchSimklCalendarData(RxList<Media> callbackData, {bool isMovies =
 
     callbackData.addAll(newMediaList);
 
-    Logger.i('Fetched ${callbackData.length} total Simkl calendar items (${seenIds.length} unique) so far.');
+    Logger.i('Fetched ${callbackData.length} total Simkl calendar items (${seenKeys.length} unique) so far.');
   } else {
     Logger.i('Error: ${response.body}');
     throw Exception('Failed to load Simkl calendar data: ${response.statusCode}');

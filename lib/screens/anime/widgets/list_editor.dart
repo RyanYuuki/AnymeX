@@ -5,8 +5,9 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:get/get.dart';
 
 class ListEditorModal extends StatefulWidget {
@@ -185,11 +186,32 @@ class _ListEditorModalState extends State<ListEditorModal> {
     _progressController = TextEditingController(text: _localProgress.toString());
     _seasonController = TextEditingController(text: _localSeason.toString());
 
-    final tracked = widget.currentAnime.value;
+    TrackedMedia? tracked = widget.currentAnime.value;
+    if (tracked == null || (tracked.id ?? '').isEmpty || (tracked.startedAt == null && tracked.completedAt == null)) {
+      final serviceHandler = Get.find<ServiceHandler>();
+      final list = widget.isManga
+          ? serviceHandler.onlineService.mangaList
+          : serviceHandler.onlineService.animeList;
+      final found = list.firstWhereOrNull((e) =>
+          e.id == widget.media.id ||
+          e.mediaListId == widget.media.id ||
+          (tracked?.id != null && e.id == tracked!.id));
+      if (found != null) {
+        tracked = found;
+      }
+    }
+
     if (tracked != null) {
-      _startedAt = tracked.startedAt;
-      _completedAt = tracked.completedAt;
+      _startedAt ??= tracked.startedAt;
+      _completedAt ??= tracked.completedAt;
       _isPrivate = tracked.isPrivate ?? false;
+    }
+
+    if (_localStatus == 'CURRENT' && _startedAt == null) {
+      _startedAt = DateTime.now();
+    } else if (_localStatus == 'COMPLETED') {
+      _completedAt ??= DateTime.now();
+      _startedAt ??= DateTime.now();
     }
 
     final activeService = Get.find<ServiceHandler>().serviceType;
@@ -364,9 +386,6 @@ class _ListEditorModalState extends State<ListEditorModal> {
     if (newStatus == 'COMPLETED') {
       _completedAt ??= DateTime.now();
       _startedAt ??= DateTime.now();
-    }
-    if (newStatus != 'COMPLETED') {
-      _completedAt = null;
     }
   }
 

@@ -425,6 +425,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'shaders',
           'source',
           'tracks',
+          'cast',
           'sync_subs',
           'speed',
           'orientation',
@@ -437,6 +438,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'shaders': {'visible': true},
           'source': {'visible': true},
           'tracks': {'visible': true},
+          'cast': {'visible': true},
           'sync_subs': {'visible': true},
           'speed': {'visible': true},
           'orientation': {'visible': true},
@@ -691,6 +693,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     SystemChrome.setPreferredOrientations([orientation]);
     currentOrientation.value = orientation;
     isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
+    Future.delayed(const Duration(milliseconds: 300), () {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    });
   }
 
   Duration overlayAnimationDuration(int milliseconds) {
@@ -1213,6 +1218,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) {
       if (_isReloadingPlayer.value) return;
+      if (kDebugMode && e.isEmpty && subtitleText.isNotEmpty) {
+        return;
+      }
       subtitleText.value = e;
       if (!playerSettings.autoTranslate) {
         if (translatedSubtitle.value.isNotEmpty) {

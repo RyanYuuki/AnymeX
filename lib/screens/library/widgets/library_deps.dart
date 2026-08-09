@@ -392,7 +392,7 @@ class LibrarySegmentedControl extends StatelessWidget {
     return Obx(() {
       final availableTypes =
           serviceHandler.serviceType.value == ServicesType.simkl
-              ? [ItemType.anime, ItemType.manga]
+              ? [ItemType.anime]
               : [ItemType.anime, ItemType.manga, ItemType.novel];
 
       final currentIndex = availableTypes.indexOf(controller.type.value);
@@ -400,7 +400,7 @@ class LibrarySegmentedControl extends StatelessWidget {
       return AnymeXTabBar(
         selectTabs:
             availableTypes.map((itemType) => _getTypeLabel(itemType)).toList(),
-        selectedIndex: currentIndex,
+        selectedIndex: currentIndex < 0 ? 0 : currentIndex,
         height: 52,
         icons:
             availableTypes.map((itemType) => _getTypeIcon(itemType)).toList(),
@@ -416,14 +416,7 @@ class LibrarySegmentedControl extends StatelessWidget {
 
   String _getTypeLabel(ItemType itemType) {
     if (serviceHandler.serviceType.value == ServicesType.simkl) {
-      switch (itemType) {
-        case ItemType.anime:
-          return 'Movies';
-        case ItemType.manga:
-          return 'Series';
-        case ItemType.novel:
-          return 'Books';
-      }
+      return 'Movies & Series';
     } else {
       switch (itemType) {
         case ItemType.anime:

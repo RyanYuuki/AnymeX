@@ -16,6 +16,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/utils/updater.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/common/glow.dart';
@@ -295,7 +296,7 @@ class _SettingsPageState extends State<SettingsPage> {
           isDebugOnly: true,
           addDividerAbove: true,
           customTap: () async {
-            showWelcomeDialogg(context);
+            UpdateManager().showTestUpdateSheet(context);
           },
         ),
     ];

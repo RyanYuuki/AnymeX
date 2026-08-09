@@ -64,7 +64,7 @@ class SearchPage extends StatefulWidget {
   const SearchPage({
     super.key,
     required this.searchTerm,
-    required this.isManga,
+    this.isManga = false,
     this.type,
     this.source,
     this.initialFilters,
@@ -109,6 +109,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   ItemType get effectiveType =>
       widget.type ?? (widget.isManga ? ItemType.manga : ItemType.anime);
 
+  bool get isManga => effectiveType == ItemType.manga;
+
   bool get isExtensionMode =>
       _serviceHandler.serviceType.value == ServicesType.extensions ||
       _selectedSource != null;
@@ -129,9 +131,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   void _initializeAnimations() {
-    _searchFocusNode.addListener(() {
-      if (mounted) setState(() {});
-    });
     _resultsScrollController.addListener(_onResultsScroll);
   }
 
@@ -144,7 +143,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
     if (!isExtensionMode) {
       prefetchFilterMeta(
-        mediaType: widget.isManga ? 'manga' : 'anime',
+        mediaType: isManga ? 'manga' : 'anime',
         config: _resolvedFilterConfig(),
       );
     }
@@ -163,9 +162,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   FilterConfig _resolvedFilterConfig() {
     if (_serviceHandler.serviceType.value == ServicesType.mal) {
-      return widget.isManga ? FilterConfig.malManga : FilterConfig.malAnime;
+      return isManga ? FilterConfig.malManga : FilterConfig.malAnime;
     }
-    return widget.isManga
+    return isManga
         ? FilterConfig.anilistManga
         : FilterConfig.anilistAnime;
   }
@@ -292,7 +291,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       final apiFilters = _buildApiFilters(searchQuery);
       final results = (await _serviceHandler.search(SearchParams(
             query: searchQuery,
-            isManga: widget.isManga,
+            isManga: isManga,
             filters: apiFilters.isNotEmpty ? apiFilters : null,
             args: isAdult,
             page: 1,
@@ -600,7 +599,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       } else {
         results = (await _serviceHandler.search(SearchParams(
               query: _lastSearchQuery,
-              isManga: widget.isManga,
+              isManga: isManga,
               filters: _lastApiFilters.isNotEmpty
                   ? Map<String, dynamic>.from(_lastApiFilters)
                   : null,
@@ -741,65 +740,67 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
     return SizedBox(
       height: 44,
-      child: TextField(
-        controller: _searchController,
-        focusNode: _searchFocusNode,
-        style: TextStyle(
-          fontSize: 14,
-          fontFamily: 'Poppins',
-          fontWeight: FontWeight.w500,
-          color: colors.onSurface,
-        ),
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: colors.surfaceContainerHighest.withOpacity(0.35),
-          hintText: hintText,
-          hintStyle: TextStyle(
-            fontSize: 13,
-            fontFamily: 'Poppins',
-            color: colors.onSurface.withOpacity(0.45),
-          ),
-          prefixIcon: Icon(
-            IconlyLight.search,
-            size: 18,
-            color: _searchFocusNode.hasFocus
-                ? colors.primary
-                : colors.onSurface.withOpacity(0.5),
-          ),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {
-                      _searchState = SearchState.initial;
-                      _searchResults = null;
-                      _currentPage = 1;
-                      _isLoadingMore = false;
-                      _hasMoreResults = false;
-                      _lastSearchQuery = '';
-                      _lastApiFilters = {};
-                      _extensionSearchItems.clear();
-                    });
-                  },
-                  icon: Icon(
-                    Icons.cancel_rounded,
-                    size: 18,
-                    color: colors.onSurface.withOpacity(0.5),
-                  ),
-                )
-              : (!isExtensionMode &&
-                      serviceHandler.serviceType.value == ServicesType.anilist)
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: _searchController,
+        builder: (context, value, child) {
+          final isNotEmpty = value.text.isNotEmpty;
+          return TextField(
+            controller: _searchController,
+            focusNode: _searchFocusNode,
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w500,
+              color: colors.onSurface,
+            ),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: colors.surfaceContainerHighest.withOpacity(0.35),
+              hintText: hintText,
+              hintStyle: TextStyle(
+                fontSize: 13,
+                fontFamily: 'Poppins',
+                color: colors.onSurface.withOpacity(0.45),
+              ),
+              prefixIcon: Icon(
+                IconlyLight.search,
+                size: 18,
+                color: colors.onSurface.withOpacity(0.5),
+              ),
+              suffixIcon: isNotEmpty
                   ? IconButton(
-                      onPressed: _showFilterBottomSheet,
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() {
+                          _searchState = SearchState.initial;
+                          _searchResults = null;
+                          _currentPage = 1;
+                          _isLoadingMore = false;
+                          _hasMoreResults = false;
+                          _lastSearchQuery = '';
+                          _lastApiFilters = {};
+                          _extensionSearchItems.clear();
+                        });
+                      },
                       icon: Icon(
-                        Icons.tune_rounded,
+                        Icons.cancel_rounded,
                         size: 18,
-                        color: _activeFilters.isNotEmpty
-                            ? colors.primary
-                            : colors.onSurface.withOpacity(0.5),
+                        color: colors.onSurface.withOpacity(0.5),
                       ),
                     )
-                  : null,
+                  : (!isExtensionMode &&
+                          serviceHandler.serviceType.value == ServicesType.anilist)
+                      ? IconButton(
+                          onPressed: _showFilterBottomSheet,
+                          icon: Icon(
+                            Icons.tune_rounded,
+                            size: 18,
+                            color: _activeFilters.isNotEmpty
+                                ? colors.primary
+                                : colors.onSurface.withOpacity(0.5),
+                          ),
+                        )
+                      : null,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           enabledBorder: OutlineInputBorder(
@@ -818,7 +819,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ),
         ),
         onSubmitted: (query) => _performSearch(query: query),
-        onChanged: (value) => setState(() {}),
+          );
+        },
       ),
     );
   }
@@ -887,7 +889,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 ),
                 const SizedBox(width: 12),
               ],
-              if (!widget.isManga &&
+              if (!isManga &&
                   serviceHandler.serviceType.value == ServicesType.anilist) ...[
                 const SizedBox(width: 12),
                 _buildActionButton(
@@ -1152,7 +1154,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   List<Widget> _buildFilterChips() {
     List<Widget> chips = [];
-    final isManga = widget.isManga;
 
     final Map<dynamic, String> currentServiceMap = {};
     if (isManga) {
@@ -1650,7 +1651,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       _performSearch(filters: filters);
     },
         currentFilters: _activeFilters,
-        mediaType: widget.isManga ? 'manga' : 'anime',
+        mediaType: isManga ? 'manga' : 'anime',
         config: _resolvedFilterConfig());
   }
 
@@ -1680,7 +1681,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   String _formatFilterValue(String key, dynamic value) {
     switch (key) {
       case 'onList':
-        if (widget.isManga) {
+        if (isManga) {
           return value == true ? "My Manga Only" : "Hide My Manga";
         }
         return value == true ? "My Anime Only" : "Hide My Anime";

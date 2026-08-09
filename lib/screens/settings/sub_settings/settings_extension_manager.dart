@@ -611,10 +611,10 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
               ),
             ],
             if (isActive && !isBusy) ...[
-              const SizedBox(height: 16),
-              const Divider(height: 1),
-              const SizedBox(height: 14),
               if (!_isLoadedFromStorage.value) ...[
+                const SizedBox(height: 16),
+                const Divider(height: 1),
+                const SizedBox(height: 14),
                 _buildMetaRow(colors, 'Version', _installedVersion),
                 const SizedBox(height: 8),
                 _buildMetaRow(
@@ -625,12 +625,16 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         : 'Unknown'),
                 const SizedBox(height: 8),
               ],
-              if (!Platform.isAndroid)
+              if (!Platform.isAndroid) ...[
+                const SizedBox(height: 16),
+                const Divider(height: 1),
+                const SizedBox(height: 14),
                 _buildMetaRow(
                   colors,
                   'Bridge Mode',
                   PluginKeys.bridgeMode.get<String>('sidecar'),
                 ),
+              ],
             ],
             if (isActive && !isBusy && _needsRestart) ...[
               const SizedBox(height: 14),

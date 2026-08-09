@@ -456,172 +456,166 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
           padding: const EdgeInsets.fromLTRB(4, 2, 4, 10),
           child: Row(
             children: [
-                  Icon(Icons.extension_rounded,
-                      size: 20, color: colors.primary),
-                  const SizedBox(width: 10),
-                  AnymexText(
-                    text: widget.label ??
-                        (widget.isManga
-                            ? 'Select Manga Source'
-                            : 'Select Anime Source'),
-                    size: 16,
-                    variant: TextVariant.bold,
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: colors.primaryContainer.withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '${widget.installedSources.length} installed',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w600,
-                        color: colors.primary,
-                      ),
-                    ),
-                  ),
-                ],
+              Icon(Icons.extension_rounded, size: 20, color: colors.primary),
+              const SizedBox(width: 10),
+              AnymexText(
+                text: widget.label ??
+                    (widget.isManga
+                        ? 'Select Manga Source'
+                        : 'Select Anime Source'),
+                size: 16,
+                variant: TextVariant.bold,
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TextField(
-                controller: _searchCtrl,
-                onChanged: (v) => setState(() => _query = v),
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colors.onSurface,
-                  fontFamily: 'Poppins',
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: colors.primaryContainer.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                decoration: InputDecoration(
-                  hintText: 'Search sources...',
-                  hintStyle: TextStyle(
-                    fontSize: 14,
+                child: Text(
+                  '${widget.installedSources.length} installed',
+                  style: TextStyle(
+                    fontSize: 11,
                     fontFamily: 'Poppins',
-                    color: colors.onSurfaceVariant.withOpacity(0.5),
+                    fontWeight: FontWeight.w600,
+                    color: colors.primary,
                   ),
-                  prefixIcon: Icon(
-                    Icons.search_rounded,
-                    size: 20,
-                    color: colors.onSurfaceVariant.withOpacity(0.5),
-                  ),
-                  suffixIcon: _query.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(
-                            Icons.clear_rounded,
-                            size: 18,
-                            color: colors.onSurfaceVariant,
-                          ),
-                          onPressed: () => setState(() {
-                            _query = '';
-                            _searchCtrl.clear();
-                          }),
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: colors.surfaceContainerHighest.withOpacity(0.4),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(
-                      color: colors.primary.withOpacity(0.4),
-                      width: 1.5,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (showTabs) ...[
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: AnymeXTabBar(
-                  selectTabs: tabs,
-                  selectedIndex: _tabIndex,
-                  height: 40,
-                  onTabSelected: (i) => setState(() {
-                    _tabIndex = i;
-                  }),
-                  minTabWidth: 80,
                 ),
               ),
             ],
-            const SizedBox(height: 10),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.38,
+          ),
+        ),
+        TextField(
+          controller: _searchCtrl,
+          onChanged: (v) => setState(() => _query = v),
+          style: TextStyle(
+            fontSize: 14,
+            color: colors.onSurface,
+            fontFamily: 'Poppins',
+          ),
+          decoration: InputDecoration(
+            hintText: 'Search sources...',
+            hintStyle: TextStyle(
+              fontSize: 14,
+              fontFamily: 'Poppins',
+              color: colors.onSurfaceVariant.withOpacity(0.5),
+            ),
+            prefixIcon: Icon(
+              Icons.search_rounded,
+              size: 20,
+              color: colors.onSurfaceVariant.withOpacity(0.5),
+            ),
+            suffixIcon: _query.isNotEmpty
+                ? IconButton(
+                    icon: Icon(
+                      Icons.clear_rounded,
+                      size: 18,
+                      color: colors.onSurfaceVariant,
+                    ),
+                    onPressed: () => setState(() {
+                      _query = '';
+                      _searchCtrl.clear();
+                    }),
+                  )
+                : null,
+            filled: true,
+            fillColor: colors.surfaceContainerHighest.withOpacity(0.4),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 10,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: colors.primary.withOpacity(0.4),
+                width: 1.5,
               ),
-              child: filtered.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 28),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.search_off_rounded,
-                            size: 38,
-                            color: colors.onSurfaceVariant.withOpacity(0.35),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'No sources found',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Poppins',
-                              color: colors.onSurfaceVariant.withOpacity(0.55),
-                            ),
-                          ),
-                        ],
+            ),
+          ),
+        ),
+        if (showTabs) ...[
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: AnymeXTabBar(
+              selectTabs: tabs,
+              selectedIndex: _tabIndex,
+              height: 40,
+              onTabSelected: (i) => setState(() {
+                _tabIndex = i;
+              }),
+              minTabWidth: 80,
+            ),
+          ),
+        ],
+        const SizedBox(height: 10),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.38,
+          ),
+          child: filtered.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 28),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.search_off_rounded,
+                        size: 38,
+                        color: colors.onSurfaceVariant.withOpacity(0.35),
                       ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      shrinkWrap: true,
-                      itemCount: filtered.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 4),
-                      itemBuilder: (ctx, i) {
-                        final s = filtered[i];
-                        final isSelected = s.id == widget.activeSource?.id &&
-                            s.runtimeType == widget.activeSource?.runtimeType;
-                        return _SourceTile(
-                          source: s,
-                          isSelected: isSelected,
-                          onTap: () => widget.onSourceSelected(s),
-                        );
-                      },
-                    ),
-            ),
-            if (_hasLangs && widget.onSubSourceSelected != null) ...[
-              Divider(
-                color: colors.outline.withOpacity(0.1),
-                height: 1,
-                indent: 16,
-                endIndent: 16,
-              ),
-              _LangSubPicker(
-                activeSource: widget.activeSource! as ASource,
-                onSubSelected: widget.onSubSourceSelected!,
-              ),
-            ],
-            const SizedBox(height: 12),
-          ],
-        );
+                      const SizedBox(height: 8),
+                      Text(
+                        'No sources found',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'Poppins',
+                          color: colors.onSurfaceVariant.withOpacity(0.55),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: filtered.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 4),
+                  itemBuilder: (ctx, i) {
+                    final s = filtered[i];
+                    final isSelected = s.id == widget.activeSource?.id &&
+                        s.runtimeType == widget.activeSource?.runtimeType;
+                    return _SourceTile(
+                      source: s,
+                      isSelected: isSelected,
+                      onTap: () => widget.onSourceSelected(s),
+                    );
+                  },
+                ),
+        ),
+        if (_hasLangs && widget.onSubSourceSelected != null) ...[
+          Divider(
+            color: colors.outline.withOpacity(0.1),
+            height: 1,
+            indent: 16,
+            endIndent: 16,
+          ),
+          _LangSubPicker(
+            activeSource: widget.activeSource! as ASource,
+            onSubSelected: widget.onSubSourceSelected!,
+          ),
+        ],
+        const SizedBox(height: 12),
+      ],
+    );
   }
 }
 
@@ -767,7 +761,7 @@ class _LangSubPicker extends StatelessWidget {
     final langs = activeSource.langs ?? [];
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      padding: const EdgeInsets.fromLTRB(0, 12, 0, 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

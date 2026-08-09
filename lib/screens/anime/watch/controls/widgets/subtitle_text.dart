@@ -5,6 +5,8 @@ import 'package:anymex/utils/subtitle_style_renderer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:flutter/foundation.dart';
+
 class SubtitleText extends StatelessWidget {
   final PlayerController controller;
   const SubtitleText({super.key, required this.controller});
@@ -18,14 +20,24 @@ class SubtitleText extends StatelessWidget {
       final switchDuration =
           subtitleAnimation ? const Duration(milliseconds: 250) : Duration.zero;
 
-      if (controller.subtitleText.isEmpty) return const SizedBox.shrink();
+      var rawSubLines = controller.subtitleText.toList();
+      if (kDebugMode &&
+          (rawSubLines.isEmpty || rawSubLines.every((l) => l.trim().isEmpty))) {
+        rawSubLines = [
+          'Sample Subtitle Line 1 (Subtitle Settings Check)',
+          'Sample Subtitle Line 2 (Margin & Style Preview)'
+        ];
+      }
+
+      if (rawSubLines.isEmpty) return const SizedBox.shrink();
 
       final htmlRx = RegExp(r'<[^>]*>');
       final assRx = RegExp(r'\{[^}]*\}');
       final newlineRx = RegExp(r'\\[nN]');
 
-      final bottomPosition = (controller.showControls.value ? 100 : 30) +
-          controller.playerSettings.subtitleBottomMargin;
+      final baseOffset = controller.showControls.value ? 60 : 0;
+      final bottomPosition =
+          baseOffset + controller.playerSettings.subtitleBottomMargin;
 
       final useTranslation = controller.playerSettings.autoTranslate &&
           controller.translatedSubtitle.value.isNotEmpty;
@@ -33,7 +45,7 @@ class SubtitleText extends StatelessWidget {
       final subtitle = useTranslation
           ? controller.translatedSubtitle.value
           : [
-              for (final line in controller.subtitleText)
+              for (final line in rawSubLines)
                 if (line.trim().isNotEmpty) line.trim(),
             ].join('\n');
 
@@ -72,9 +84,7 @@ class SubtitleText extends StatelessWidget {
       final subtitleBox = Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: controller.subtitleText[0].isEmpty
-              ? Colors.transparent
-              : colorOptions[controller.settings.subtitleBackgroundColor],
+          color: colorOptions[controller.settings.subtitleBackgroundColor],
           borderRadius: BorderRadius.circular(12.multiplyRadius()),
         ),
         child: subtitleAnimation
@@ -98,9 +108,7 @@ class SubtitleText extends StatelessWidget {
             : content,
       );
 
-      final baseOpacity = controller.subtitleText[0].isEmpty ? 0.0 : 1.0;
-      final finalOpacity =
-          baseOpacity * controller.playerSettings.subtitleOpacity;
+      final finalOpacity = controller.playerSettings.subtitleOpacity;
 
       return AnimatedPositioned(
         right: 0,
