@@ -1,20 +1,44 @@
 ### 🌟 Features
--  added quick option for webview and settings when using source in search page by @RyanYuuki
+-  toggle to enable disable unified library by @RyanYuuki
+-  Cast Support (Beta) by @RyanYuuki
+-  auto selected audio track on multi track source by @RyanYuuki
+-  subs and tracks indication on server in downloads by @RyanYuuki
+-  source side multi audio support by @RyanYuuki
 
 ### 🔧 Bug Fixes & Improvements
--  fixed toast placement on windows by @RyanYuuki
--  fixed a bug on search screen not using filters with empty query by @RyanYuuki
--  fixed bad logic of continue button by @RyanYuuki
--  fixed unformatted chapter number showing up on chapter tiles and ranges by @RyanYuuki
--  fixed infinite poster loading issue by @RyanYuuki
--  fixed lag on keyboard popup by @RyanYuuki
--  fixed grey screen on issue on home page by @RyanYuuki
+-  fixed cast not being visible for existing users by @RyanYuuki
+-  fixing refresh rate issue on player picking highest instead of video fps by @RyanYuuki
+-  fixed wrong placements of button on manga page by @RyanYuuki
+-  changed media session to a toggle based feature since its pretty glitchy by @RyanYuuki
+-  fixed subtitle margin to be accurate by @RyanYuuki
+-  fixed sub sync and playback speed not showing up on local player by @RyanYuuki
+-  fixed orientation change causing status bar to not go away by @RyanYuuki
+-  added missing buttons on ios theme by @RyanYuuki
+-  fixed movies and series tabs on simkl service by @RyanYuuki
+-  fixed simkl sorting by @RyanYuuki
+-  fixed list editor not showing started at and completed at date by @RyanYuuki
+-  fixed simkl calendar by @RyanYuuki
+-  fixed local server based sources by @RyanYuuki
+-  fixed more ui collisions on some pages by @RyanYuuki
+-  fixed novel not saving to library by @RyanYuuki
+-  fixed crash when downloading due to second rust spawn by @RyanYuuki
+-  fixed green screen on some downloads and fixed cancel not actually cancelling by @RyanYuuki
+-  fixed .ts segments showing up in gallery by @RyanYuuki
+-  fixed player crashes by @RyanYuuki
 
 ### 🎨 Style Changes
--  improved the ui of chapter ranges, scanlators by @RyanYuuki
+-  extension screen bg fix, wallpaper change by @RyanYuuki
+-  fixing minor ui fuckups by @RyanYuuki
+-  minor ui changes related to sheet by @RyanYuuki
+-  fixed ui collisions, improved updater ui, fixed bad margins on sheet by @RyanYuuki
+
+### 🚀 Performance Improvements
+-  reduced slight stutters, fixed color flashes on page transitions by @RyanYuuki
+-  major performance improvement on keyboard triggers by @RyanYuuki
+-  migrated to FlutterFragmentActivity for better performance by @RyanYuuki
 
 ### 🧹 Chores & Documentation
--  bump version to v3.1.3 (patch release) by @RyanYuuki
+-  bump version to v3.1.4 (patch release) by @RyanYuuki
 -  update sideloading source by @ghost
 
  
