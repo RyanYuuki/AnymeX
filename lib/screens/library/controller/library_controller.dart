@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -52,6 +53,7 @@ class LibraryController extends GetxController {
       _setupCustomListsSubscription();
     });
     ever(selectedListIndex, (_) => _updateSourceStream());
+    ever(serviceHandler.serviceType, (_) => _updateSourceStream());
     
     _setupCustomListsSubscription();
   }
@@ -101,9 +103,13 @@ class LibraryController extends GetxController {
       if (selectedListIndex.value == -1) {
         List<OfflineMedia> filtered;
         if (type.value.isAnime) {
-          filtered = items.where((e) => e.currentEpisode?.currentTrack != null).toList();
+          filtered = items
+              .where((e) => e.currentEpisode?.currentTrack != null)
+              .toList();
         } else {
-          filtered = items.where((e) => e.currentChapter?.link != null).toList();
+          filtered = items
+              .where((e) => e.currentChapter?.link != null)
+              .toList();
         }
         rawItems.value = filtered;
       } else {
@@ -289,15 +295,29 @@ class LibraryController extends GetxController {
         .toList();
   }
 
+  List<OfflineMedia> _filterByService(List<OfflineMedia> items) {
+    final isUnified = General.unifiedLibrary.get<bool>(true);
+    if (isUnified) return items;
+    final currentServiceIndex = serviceHandler.serviceType.value.index;
+    return items
+        .where((e) => e.serviceIndex == null || e.serviceIndex == currentServiceIndex)
+        .toList();
+  }
+
   Stream<List<OfflineMedia>> getLibraryStream() {
+    Stream<List<OfflineMedia>> rawStream;
     switch (type.value) {
       case ItemType.anime:
-        return offlineStorage.watchAnimeLibrary();
+        rawStream = offlineStorage.watchAnimeLibrary();
+        break;
       case ItemType.manga:
-        return offlineStorage.watchMangaLibrary();
+        rawStream = offlineStorage.watchMangaLibrary();
+        break;
       case ItemType.novel:
-        return offlineStorage.watchNovelLibrary();
+        rawStream = offlineStorage.watchNovelLibrary();
+        break;
     }
+    return rawStream.map((items) => _filterByService(items));
   }
 
   Stream<List<OfflineMedia>> getHistoryStream() {
@@ -324,7 +344,7 @@ class LibraryController extends GetxController {
       String listName, ItemType type) {
     return offlineStorage
         .watchCustomListData(listName, type)
-        .map((data) => data.listData);
+        .map((data) => _filterByService(data.listData));
   }
 
   Stream<List<OfflineMedia>> getProcessedCustomListStream(

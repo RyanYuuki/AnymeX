@@ -30,6 +30,7 @@ enum General {
   preferredDisplayMode,
   navigationTabOrder,
   useAlternateTitle,
+  unifiedLibrary,
 }
 
 enum ThemeKeys {

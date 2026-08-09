@@ -32,6 +32,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
       General.showCommunityRecommendations.get<bool>(true);
   bool get isMal => serviceHandler.serviceType.value.isMal;
   late Map<String, bool> homePageCards;
+  late bool unifiedLibrary = General.unifiedLibrary.get<bool>(true);
 
   @override
   void initState() {
@@ -94,6 +95,18 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                   setState(() {
                                     shouldAskForPermission = e;
                                     General.shouldAskForTrack.set(e);
+                                  });
+                                }),
+                            CustomSwitchTile(
+                                icon: Icons.collections_bookmark_rounded,
+                                title: 'Unified Library',
+                                description:
+                                    'If enabled, all library items will be shared across all tracking services.',
+                                switchValue: unifiedLibrary,
+                                onChanged: (e) {
+                                  setState(() {
+                                    unifiedLibrary = e;
+                                    General.unifiedLibrary.set(e);
                                   });
                                 }),
                             CustomSwitchTile(

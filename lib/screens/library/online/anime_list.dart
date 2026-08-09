@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:anymex/database/kv_helper.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 
 enum _SortMode { lastUpdated, score, title, releaseDate }

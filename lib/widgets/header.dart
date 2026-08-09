@@ -581,7 +581,7 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
           ),
           const SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 8.0),
             child: AnymeXTabBar(
               selectTabs: _tabs,
               selectedIndex: _selectedIndex,
@@ -599,7 +599,7 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
           const SizedBox(height: 10),
           Flexible(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
               child: AnimatedSize(
                 duration: const Duration(milliseconds: 200),
                 curve: Curves.easeInOut,

@@ -1,4 +1,5 @@
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -341,12 +342,18 @@ class ChipTabs extends StatelessWidget {
                         final list = customLists[index];
                         final listName = list.listName ?? '';
 
-                        return StreamBuilder<CustomListData>(
-                          stream: controller.offlineStorage.watchCustomListData(
+                        return StreamBuilder<List<OfflineMedia>>(
+                          stream: controller.getCustomListStream(
                               listName, controller.type.value),
                           builder: (context, listDataSnapshot) {
                             final itemCount =
-                                listDataSnapshot.data?.listData.length ?? 0;
+                                listDataSnapshot.data?.length ?? 0;
+
+                            if (!General.unifiedLibrary.get<bool>(true) &&
+                                itemCount == 0 &&
+                                controller.selectedListIndex.value != index) {
+                              return const SizedBox.shrink();
+                            }
 
                             return _buildCustomPill(
                               context: context,
