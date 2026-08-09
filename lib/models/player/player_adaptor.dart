@@ -37,6 +37,7 @@ class PlayerSettings {
   String audioOutput;
   bool enableHoldToSeek;
   bool enableSlideToSeek;
+  bool useMediaSession;
 
   PlayerSettings({
     this.speed = 1.0,
@@ -75,6 +76,7 @@ class PlayerSettings {
     this.audioOutput = 'auto',
     this.enableHoldToSeek = true,
     this.enableSlideToSeek = true,
+    this.useMediaSession = false,
   });
 
   factory PlayerSettings.fromDB() {
@@ -155,6 +157,8 @@ class PlayerSettings {
           .get<bool>(defaults.enableHoldToSeek),
       enableSlideToSeek: PlayerSettingsKeys.enableSlideToSeek
           .get<bool>(defaults.enableSlideToSeek),
+      useMediaSession: PlayerSettingsKeys.useMediaSession
+          .get<bool>(defaults.useMediaSession),
     );
   }
 }

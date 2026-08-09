@@ -2111,6 +2111,15 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                       settings.enableScreenshot = val),
                               CustomSwitchTile(
                                   padding: const EdgeInsets.all(10),
+                                  icon: Icons.bluetooth_audio_rounded,
+                                  title: "Media Session (Bluetooth Support)",
+                                  description:
+                                      "Enable background media controls for Bluetooth headsets and system media notifications. Note: Enabling this will increase battery usage.",
+                                  switchValue: settings.useMediaSession,
+                                  onChanged: (val) =>
+                                      settings.useMediaSession = val),
+                              CustomSwitchTile(
+                                  padding: const EdgeInsets.all(10),
                                   icon: Icons.animation_rounded,
                                   title: "Animate Control Overlay",
                                   description:

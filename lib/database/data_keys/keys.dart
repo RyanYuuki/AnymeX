@@ -256,6 +256,7 @@ enum PlayerSettingsKeys {
   audioOutput,
   enableHoldToSeek,
   enableSlideToSeek,
+  useMediaSession,
 }
 
 enum UISettingsKeys {

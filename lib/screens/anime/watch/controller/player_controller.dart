@@ -466,6 +466,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> _initMediaSession() async {
+    if (!playerSettings.useMediaSession) return;
     try {
       await _mediaSession.activate();
       _isMediaSessionActive = true;
@@ -1055,8 +1056,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     bool? lastAutoTranslate;
     String? lastTranslateTo;
+    bool? lastUseMediaSession;
 
     _subscriptions.add(settingsController.playerSettings.listen((settings) {
+      final bool useMediaSession = settings.useMediaSession;
+      if (lastUseMediaSession != null &&
+          lastUseMediaSession != useMediaSession) {
+        if (useMediaSession) {
+          _initMediaSession();
+        } else {
+          _deactivateMediaSession();
+        }
+      }
+      lastUseMediaSession = useMediaSession;
+
       final bool autoTranslate = settings.autoTranslate;
       final String? translateTo = (settings as dynamic).translateTo;
 

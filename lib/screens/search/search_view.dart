@@ -157,6 +157,15 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _performSearch();
       });
+    } else if (_selectedSource != null) {
+      if (_selectedSource!.supportsPopular == true) {
+        _extensionBrowseMode = _ExtensionBrowseMode.popular;
+      } else if (_selectedSource!.supportsLatest == true) {
+        _extensionBrowseMode = _ExtensionBrowseMode.latest;
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _performSearch();
+      });
     }
   }
 
@@ -859,7 +868,17 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                           setState(() {
                             _selectedSource = src;
                             _sourceController.setActiveSource(src);
-                            _extensionBrowseMode = _ExtensionBrowseMode.search;
+                            if (_searchController.text.trim().isEmpty) {
+                              if (src.supportsPopular == true) {
+                                _extensionBrowseMode = _ExtensionBrowseMode.popular;
+                              } else if (src.supportsLatest == true) {
+                                _extensionBrowseMode = _ExtensionBrowseMode.latest;
+                              } else {
+                                _extensionBrowseMode = _ExtensionBrowseMode.search;
+                              }
+                            } else {
+                              _extensionBrowseMode = _ExtensionBrowseMode.search;
+                            }
                             _extensionActiveFilters = [];
                             _extensionFiltersLoaded = false;
                             _extensionFilterList = [];

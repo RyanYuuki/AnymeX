@@ -643,6 +643,12 @@ class Settings extends GetxController {
     PlayerSettingsKeys.enableSlideToSeek.set(value);
   }
 
+  bool get useMediaSession => _getPlayerSetting((s) => s.useMediaSession);
+  set useMediaSession(bool value) {
+    playerSettings.update((s) => s?.useMediaSession = value);
+    PlayerSettingsKeys.useMediaSession.set(value);
+  }
+
   bool get playerMenuAnimation =>
       _getPlayerSetting((s) => s.playerMenuAnimation);
   set playerMenuAnimation(bool value) {
