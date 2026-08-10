@@ -58,34 +58,34 @@ import 'package:volume_controller/volume_controller.dart';
 import '../../../../database/isar_models/track.dart' as model;
 
 extension PlayerControllerExtensions on PlayerController {
+  int get currentEpisodeIndex {
+    final cur = currentEpisode.value;
+    final index = episodeList.indexWhere((e) => e.isSameEpisode(cur));
+    if (index != -1) return index;
+    return episodeList.indexWhere((e) => e.number == cur.number);
+  }
+
   bool get hasNextEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = currentEpisodeIndex;
     return index != -1 && index < episodeList.length - 1;
   }
 
   bool get hasPreviousEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = currentEpisodeIndex;
     return index > 0;
   }
 
   Episode? get nextEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = currentEpisodeIndex;
     if (index == -1 || index >= episodeList.length - 1) return null;
     return episodeList[index + 1];
   }
 
   Episode? get previousEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = currentEpisodeIndex;
     if (index <= 0) return null;
     return episodeList[index - 1];
   }
-
-  int get currentEpisodeIndex =>
-      episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
 }
 
 class PlayerController extends GetxController with WidgetsBindingObserver {
@@ -169,7 +169,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Episode? get savedEpisode => offlineStorage.getWatchedEpisode(
-      anilistData.id, currentEpisode.value.number.toString());
+      anilistData.id, currentEpisode.value.number.toString(),
+      episode: currentEpisode.value);
 
   final offlineStorage = Get.find<OfflineStorageController>();
 
@@ -2635,6 +2636,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         lastWatchedTime: DateTime.now().millisecondsSinceEpoch,
         source: episode.source,
         desc: episode.desc,
+        sortKeys: episode.sortKeys,
+        sortVals: episode.sortVals,
+        filler: episode.filler,
       );
 
       await offlineStorage.addOrUpdateAnime(
