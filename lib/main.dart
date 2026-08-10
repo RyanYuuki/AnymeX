@@ -39,9 +39,9 @@ import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/common/glow.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/fps_meter.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_splash_screen.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -142,12 +142,14 @@ void main(List<String> args) async {
 
     await safeCall(() async {
       if (!Platform.isLinux) {
-        if (Platform.isWindows || Platform.isMacOS) {
+        if (Platform.isWindows) {
           webViewEnvironment = await WebViewEnvironment.create();
         }
-        await InAppWebViewController.setWebContentsDebuggingEnabled(
-          !const bool.fromEnvironment('dart.vm.product'),
-        );
+        if (Platform.isAndroid || Platform.isIOS) {
+          await InAppWebViewController.setWebContentsDebuggingEnabled(
+            !const bool.fromEnvironment('dart.vm.product'),
+          );
+        }
       }
     }, errorMessage: 'Failed to initialize WebViewEnvironment');
 
@@ -204,7 +206,7 @@ void main(List<String> args) async {
     await safeCall(() async {
       if (!Platform.isAndroid && !Platform.isIOS) {
         await windowManager.ensureInitialized();
-        await AnymexTitleBar.initialize();
+        await AnymeXTitleBar.initialize();
       } else {
         SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
         SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -288,7 +290,7 @@ class _MainAppState extends State<MainApp> {
     if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.escape) {
       if (_isFullScreen) {
-        AnymexTitleBar.setFullScreen(false);
+        AnymeXTitleBar.setFullScreen(false);
       } else {
         BuildContext escapeContext = Get.context!;
         if (Navigator.of(escapeContext).canPop()) {
@@ -298,7 +300,7 @@ class _MainAppState extends State<MainApp> {
       return KeyEventResult.handled;
     } else if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.f11) {
-      AnymexTitleBar.toggleFullScreen();
+      AnymeXTitleBar.toggleFullScreen();
       return KeyEventResult.handled;
     } else if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.enter) {
@@ -307,7 +309,7 @@ class _MainAppState extends State<MainApp> {
           HardwareKeyboard.instance.logicalKeysPressed
               .contains(LogicalKeyboardKey.altRight);
       if (isAltPressed) {
-        AnymexTitleBar.toggleFullScreen();
+        AnymeXTitleBar.toggleFullScreen();
       }
       return KeyEventResult.handled;
     }
@@ -318,8 +320,8 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
 
-    AnymexTitleBar.isFullScreen
-        .addListener(() => _isFullScreen = AnymexTitleBar.isFullScreen.value);
+    AnymeXTitleBar.isFullScreen
+        .addListener(() => _isFullScreen = AnymeXTitleBar.isFullScreen.value);
 
     focusNode = FocusNode();
 
@@ -374,7 +376,7 @@ class _MainAppState extends State<MainApp> {
                   right: 0,
                   child: Container(
                     color: Colors.transparent,
-                    child: AnymexTitleBar.titleBar(),
+                    child: AnymeXTitleBar.titleBar(),
                   ),
                 ),
                 // const FpsMeter(),
