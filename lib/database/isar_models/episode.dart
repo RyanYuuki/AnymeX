@@ -111,11 +111,10 @@ extension EpisodeMap on Episode {
     if (identical(this, other)) return true;
 
     // 1. If both have valid links, link is the most definitive episode identifier
-    if (link != null &&
-        other.link != null &&
-        link!.trim().isNotEmpty &&
-        other.link!.trim().isNotEmpty) {
-      return link!.trim() == other.link!.trim();
+    final thisLink = link?.trim() ?? '';
+    final otherLink = other.link?.trim() ?? '';
+    if (thisLink.isNotEmpty && otherLink.isNotEmpty) {
+      return thisLink == otherLink;
     }
 
     // 2. If episode numbers don't match, they are not the same
@@ -123,25 +122,28 @@ extension EpisodeMap on Episode {
       return false;
     }
 
-    // 3. If both have sortMap metadata (e.g. season, cour, etc.)
+    // 3. Compare sortMap metadata (e.g. season, cour, etc.)
     final thisSort = sortMap;
     final otherSort = other.sortMap;
-    if (thisSort.isNotEmpty && otherSort.isNotEmpty) {
+    if (thisSort.isNotEmpty || otherSort.isNotEmpty) {
       if (thisSort.length != otherSort.length) return false;
       for (final entry in thisSort.entries) {
         if (otherSort[entry.key]?.toLowerCase() != entry.value.toLowerCase()) {
           return false;
         }
       }
-      return true;
     }
 
-    // 4. If both have titles and they differ
-    if (title != null &&
-        other.title != null &&
-        title!.trim().isNotEmpty &&
-        other.title!.trim().isNotEmpty) {
-      return title!.trim() == other.title!.trim();
+    // 4. If both have titles, compare them
+    final thisTitle = title?.trim() ?? '';
+    final otherTitle = other.title?.trim() ?? '';
+    if (thisTitle.isNotEmpty && otherTitle.isNotEmpty) {
+      return thisTitle == otherTitle;
+    }
+
+    // 5. If one has link and the other doesn't, treat as distinct (e.g. placeholder vs resolved)
+    if (thisLink.isNotEmpty != otherLink.isNotEmpty) {
+      return false;
     }
 
     return true;
