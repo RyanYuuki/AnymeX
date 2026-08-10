@@ -74,7 +74,7 @@ class BetterEpisode extends StatelessWidget {
     if (offlineEpisodes == null) return 0.0;
 
     final savedEP = offlineEpisodes!.cast<Episode?>().firstWhere(
-          (e) => e?.number == episode.number,
+          (e) => e != null && e.isSameEpisode(episode),
           orElse: () => null,
         );
 
