@@ -213,21 +213,47 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     }
 
     final savedData = offlineStorage.getAnimeById(widget.anilistData!.id);
-    final nextEpisode = widget.episodeList
-        .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value + 1));
-    final fallbackEP = widget.episodeList
-        .firstWhereOrNull((e) => e.number.toInt() == (userProgress.value));
     final saved = savedData?.currentEpisode;
-    final nextSaved = saved ?? widget.episodeList[0];
-    if (savedEpisode.value.number != nextSaved.number) {
+    final nextSaved =
+        saved != null ? _resolveEpisode(saved) : widget.episodeList[0];
+    if (savedEpisode.value.number != nextSaved.number ||
+        !savedEpisode.value.isSameEpisode(nextSaved)) {
       savedEpisode.value = nextSaved;
     }
     offlineEpisodes = savedData?.watchedEpisodes ?? widget.episodeList;
-    final nextSelected = nextEpisode ?? fallbackEP ?? savedEpisode.value;
-    if (selectedEpisode.value.number != nextSelected.number) {
+
+    Episode? nextEpisode;
+    if (saved != null) {
+      final savedIndex =
+          widget.episodeList.indexWhere((e) => e.isSameEpisode(saved));
+      if (savedIndex != -1) {
+        final ts = saved.timeStampInMilliseconds ?? 0;
+        final dur = saved.durationInMilliseconds ?? 0;
+        final bool isSavedCompleted =
+            dur > 0 && (ts / dur) * 100 >= settingsController.markAsCompleted;
+        if (isSavedCompleted && savedIndex + 1 < widget.episodeList.length) {
+          nextEpisode = widget.episodeList[savedIndex + 1];
+        } else {
+          nextEpisode = widget.episodeList[savedIndex];
+        }
+      }
+    }
+
+    if (nextEpisode == null) {
+      nextEpisode = widget.episodeList.firstWhereOrNull(
+              (e) => e.number.toInt() == (userProgress.value + 1)) ??
+          widget.episodeList.firstWhereOrNull(
+              (e) => e.number.toInt() == (userProgress.value)) ??
+          savedEpisode.value;
+    }
+
+    final nextSelected = nextEpisode;
+    if (selectedEpisode.value.number != nextSelected.number ||
+        !selectedEpisode.value.isSameEpisode(nextSelected)) {
       selectedEpisode.value = nextSelected;
     }
-    if (continueEpisode.value.number != nextSelected.number) {
+    if (continueEpisode.value.number != nextSelected.number ||
+        !continueEpisode.value.isSameEpisode(nextSelected)) {
       continueEpisode.value = nextSelected;
     }
   }
@@ -235,6 +261,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   void _initSortGrouping() {
     final sections = buildEpisodeSortSections(widget.episodeList);
     final nextSelection = <String, String>{};
+    final savedData =
+        offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
+    final savedSortMap = savedData?.currentEpisode?.sortMap;
 
     for (final section in sections) {
       final availableValues = _availableValuesForKey(
@@ -247,9 +276,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       }
 
       final currentValue = selectedSortValues[section.key];
-      nextSelection[section.key] = availableValues.contains(currentValue)
-          ? currentValue!
-          : availableValues.first;
+      final savedValue = savedSortMap?[section.key];
+      if (currentValue != null && availableValues.contains(currentValue)) {
+        nextSelection[section.key] = currentValue;
+      } else if (savedValue != null && availableValues.contains(savedValue)) {
+        nextSelection[section.key] = savedValue;
+      } else {
+        nextSelection[section.key] = availableValues.first;
+      }
     }
 
     if (selectedSortValues.length != nextSelection.length ||
@@ -284,6 +318,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       return Episode(number: "1", title: "Episode 1");
     }
     return widget.episodeList.firstWhereOrNull((e) {
+          return e.isSameEpisode(episode);
+        }) ??
+        widget.episodeList.firstWhereOrNull((e) {
           return _areEpisodesEquivalent(e, episode);
         }) ??
         widget.episodeList
@@ -325,17 +362,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   bool _areEpisodesEquivalent(Episode first, Episode second) {
-    if (first.number != second.number) {
-      return false;
-    }
-
-    final firstSortMap = first.sortMap;
-    final secondSortMap = second.sortMap;
-    if (firstSortMap.isEmpty || secondSortMap.isEmpty) {
-      return true;
-    }
-
-    return mapEquals(firstSortMap, secondSortMap);
+    return first.isSameEpisode(second);
   }
 
   int _compareEpisodesByNumber(Episode first, Episode second) {

@@ -105,4 +105,47 @@ extension EpisodeMap on Episode {
     }
     return result;
   }
+
+  bool isSameEpisode(Episode? other) {
+    if (other == null) return false;
+    if (identical(this, other)) return true;
+
+    // 1. If both have valid links, link is the most definitive episode identifier
+    final thisLink = link?.trim() ?? '';
+    final otherLink = other.link?.trim() ?? '';
+    if (thisLink.isNotEmpty && otherLink.isNotEmpty) {
+      return thisLink == otherLink;
+    }
+
+    // 2. If episode numbers don't match, they are not the same
+    if (number.trim() != other.number.trim()) {
+      return false;
+    }
+
+    // 3. Compare sortMap metadata (e.g. season, cour, etc.)
+    final thisSort = sortMap;
+    final otherSort = other.sortMap;
+    if (thisSort.isNotEmpty || otherSort.isNotEmpty) {
+      if (thisSort.length != otherSort.length) return false;
+      for (final entry in thisSort.entries) {
+        if (otherSort[entry.key]?.toLowerCase() != entry.value.toLowerCase()) {
+          return false;
+        }
+      }
+    }
+
+    // 4. If both have titles, compare them
+    final thisTitle = title?.trim() ?? '';
+    final otherTitle = other.title?.trim() ?? '';
+    if (thisTitle.isNotEmpty && otherTitle.isNotEmpty) {
+      return thisTitle == otherTitle;
+    }
+
+    // 5. If one has link and the other doesn't, treat as distinct (e.g. placeholder vs resolved)
+    if (thisLink.isNotEmpty != otherLink.isNotEmpty) {
+      return false;
+    }
+
+    return true;
+  }
 }
