@@ -1,3 +1,4 @@
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
 import 'package:anymex/utils/string_extensions.dart';
@@ -226,10 +227,10 @@ class EpisodesPane extends StatelessWidget {
                               (e) => e.link == controller.selectedVideo.value?.url);
                           return idx >= 0 ? idx : 0;
                         }
-                        final numIdx =
-                            controller.currentEpisode.value.number.toInt() - 1;
-                        return numIdx.clamp(
-                            0, controller.episodeList.length - 1);
+                        final numIdx = controller.currentEpisodeIndex;
+                        return numIdx >= 0
+                            ? numIdx.clamp(0, controller.episodeList.length - 1)
+                            : 0;
                       })(),
                       separatorBuilder: (context, i) =>
                           const SizedBox(height: 8),
@@ -239,7 +240,7 @@ class EpisodesPane extends StatelessWidget {
                         final isSelected = controller.isOffline.value
                             ? episode.link ==
                                 controller.selectedVideo.value?.url
-                            : episode == controller.currentEpisode.value;
+                            : episode.isSameEpisode(controller.currentEpisode.value);
                         final offlineEpisode = controller.offlineStorage
                             .getAnimeById(controller.anilistData.id)
                             ?.episodes;
