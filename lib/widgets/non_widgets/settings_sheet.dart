@@ -14,6 +14,7 @@ import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
 import 'package:anymex/widgets/custom_widgets/custom_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/screens/watchium/watchium_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -396,6 +397,14 @@ class SettingsSheet extends StatelessWidget {
         onTap: () {
           Get.back();
           navigate(() => const WatchOffline());
+        },
+      ),
+      _SheetMenuItem(
+        icon: Icons.people_rounded,
+        label: 'Watch Together',
+        onTap: () {
+          Get.back();
+          navigate(() => const WatchiumPage());
         },
       ),
       _SheetMenuItem(

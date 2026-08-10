@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
@@ -11,6 +12,15 @@ import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:get/get.dart';
+
+Future<void> _handleBack() async {
+  final ctx = Get.context;
+  if (ctx == null) return;
+  final shouldClose = await WatchiumService.confirmAndLeave(ctx);
+  if (shouldClose) {
+    Get.back();
+  }
+}
 
 class TopControls extends StatelessWidget {
   final bool enableBlur;
@@ -104,7 +114,7 @@ class TopControls extends StatelessWidget {
         children: [
           ControlButton(
             icon: Icons.arrow_back_ios_rounded,
-            onPressed: () => Get.back(),
+            onPressed: () => _handleBack(),
             tooltip: 'Back',
             isPrimary: true,
           ),
@@ -262,7 +272,7 @@ class TopControls extends StatelessWidget {
               children: [
                 ControlButton(
                   icon: Icons.arrow_back_ios_rounded,
-                  onPressed: () => Get.back(),
+                  onPressed: () => _handleBack(),
                   tooltip: 'Back',
                   isPrimary: true,
                 ),
@@ -444,7 +454,7 @@ class TopControls extends StatelessWidget {
             children: [
               ControlButton(
                 icon: Icons.arrow_back_ios_rounded,
-                onPressed: () => Get.back(),
+                onPressed: () => _handleBack(),
                 tooltip: 'Back',
                 isPrimary: true,
               ),

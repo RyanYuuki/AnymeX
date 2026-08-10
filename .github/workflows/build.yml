@@ -178,6 +178,8 @@ jobs:
           BOT_BASE_URL: ${{ secrets.BOT_BASE_URL }}
           BOT_API_SECRET: ${{ secrets.BOT_API_SECRET }}
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          WATCHIUM_SERVER_URL: ${{ secrets.WATCHIUM_SERVER_URL }}
+          WATCHIUM_API_TOKEN: ${{ secrets.WATCHIUM_API_TOKEN }}
         run: |
           cat > .env << EOF
           AL_CLIENT_ID=$AL_CLIENT_ID
@@ -195,6 +197,8 @@ jobs:
           BOT_BASE_URL=$BOT_BASE_URL
           BOT_API_SECRET=$BOT_API_SECRET
           TMDB_API_KEY=$TMDB_API_KEY
+          WATCHIUM_SERVER_URL=$WATCHIUM_SERVER_URL
+          WATCHIUM_API_TOKEN=$WATCHIUM_API_TOKEN
           EOF
       
       - name: Build Android

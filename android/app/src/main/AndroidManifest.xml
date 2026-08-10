@@ -153,6 +153,13 @@
             <data android:pathPrefix="/manga/" />
         </intent-filter>
 
+        <intent-filter android:label="Watch Together Join">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="anymex" android:host="watchium" android:pathPrefix="/join/" />
+        </intent-filter>
+
         <intent-filter android:label="Open Simkl Link">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />

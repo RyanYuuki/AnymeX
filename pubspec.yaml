@@ -124,6 +124,7 @@ dependencies:
     code_assets: ^1.2.1
     hooks: ^2.0.2
     native_toolchain_c: ^0.19.2
+    socket_io_client: ^3.1.1
     crypto: any
     flutter_cache_manager: any
     encrypt: any

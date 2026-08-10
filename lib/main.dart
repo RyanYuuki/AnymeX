@@ -31,6 +31,7 @@ import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/screens/novel/home_page.dart';
 import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
@@ -260,6 +261,7 @@ void _initializeGetxController() async {
     Get.put(GreetingController());
     Get.put(CommentumService());
     Get.put(CommentPreloader());
+    Get.put(WatchiumService(), permanent: true);
     Get.put(GistSyncController(), permanent: true);
     Get.put(DownloadController(), permanent: true);
     Get.lazyPut(() => CacheController());
