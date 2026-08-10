@@ -7,7 +7,10 @@ abstract class BaseService {
   RxList<Widget> homeWidgets(BuildContext context);
   RxList<Widget> animeWidgets(BuildContext context);
   RxList<Widget> mangaWidgets(BuildContext context);
+  RxList<Widget> novelWidgets(BuildContext context);
   Future<Media> fetchDetails(FetchDetailsParams params);
   Future<void> fetchHomePage();
   Future<List<Media>> search(SearchParams params);
+  void clearState();
+  bool get isDataLoaded;
 }

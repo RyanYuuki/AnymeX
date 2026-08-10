@@ -69,7 +69,7 @@ class LibraryController extends GetxController {
       
       if (selectedListIndex.value != -1) {
         if (customListNames.isEmpty) {
-          selectedListIndex.value = -1;
+          selectedListIndex.value = 0;
         } else if (selectedListIndex.value >= customListNames.length) {
           selectedListIndex.value = customListNames.length - 1;
         }
@@ -81,7 +81,9 @@ class LibraryController extends GetxController {
 
   Future<void> _updateSourceStream() async {
     _streamSubscription?.cancel();
-    isLoading.value = true;
+    if (rawItems.isEmpty) {
+      isLoading.value = true;
+    }
 
     if (selectedListIndex.value != -1) {
       if (customListNames.isEmpty || selectedListIndex.value >= customListNames.length) {
@@ -186,9 +188,16 @@ class LibraryController extends GetxController {
   }
 
   void switchCategory(ItemType typ) {
+    if (type.value == typ) return;
+
+    savePreferences();
+
     type.value = typ;
 
-    DynamicKeys.libraryLastListIndex.set(type.value.name, type.value.index);
+    final savedListIndex =
+        DynamicKeys.libraryLastListIndex.get<int>(type.value.name, 0);
+    selectedListIndex.value = savedListIndex;
+    gridCount.value = DynamicKeys.libraryGridSize.get<int>(type.value.name, 0);
 
     if (searchQuery.isNotEmpty) {
       searchController.clear();

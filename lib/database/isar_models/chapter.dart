@@ -20,6 +20,29 @@ class Chapter {
   List<String>? headerKeys;
   List<String>? headerValues;
 
+  @ignore
+  Map<String, String> get headers {
+    if (headerKeys == null || headerValues == null) return {};
+    if (headerKeys!.isEmpty || headerValues!.isEmpty) return {};
+    final result = <String, String>{};
+    final len = headerKeys!.length < headerValues!.length
+        ? headerKeys!.length
+        : headerValues!.length;
+    for (int i = 0; i < len; i++) {
+      final k = headerKeys![i].trim();
+      final v = headerValues![i].trim();
+      if (k.isNotEmpty && v.isNotEmpty) {
+        result[k] = v;
+      }
+    }
+    return result;
+  }
+
+  set headers(Map<String, String> map) {
+    headerKeys = map.keys.toList();
+    headerValues = map.values.toList();
+  }
+
   String get formattedNumber {
     if (number == null) return '-';
     if (number! % 1 == 0) return number!.toInt().toString();

@@ -39,7 +39,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:anymex/controllers/services/mal/mal_api.dart';
+
 class MalService extends GetxController implements BaseService, OnlineService {
+  final api = MalApi();
   final communityService = Get.find<CommunityService>();
 
   Media? _firstMediaWithCover(Iterable<Media> mediaList) {
@@ -98,13 +101,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Future<List<Media>> fetchDataFromApi(String url,
       {String? customFields}) async {
-    final newField = customFields ?? field;
-    final data = await fetchMAL('$url&$newField') as Map<String, dynamic>;
-    final isManga = url.contains('/manga/');
-    return (data['data'] as List<dynamic>)
-        .map((e) => Media.fromMAL(e, isManga: isManga))
-        .toList()
-        .removeDupes();
+    return api.fetchRanking(url, customFields: customFields);
   }
 
   Widget buildSectionIfNotEmpty(String title, RxList<Media> list,
@@ -126,7 +123,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Popular Anime", popularAnimes),
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
-                  // Underrated Anime section at the bottom (filtered for logged-in users)
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityAnimes();
@@ -160,7 +156,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
                   ...sourceController.novelSections,
-                  // Underrated Manga section at the bottom (filtered for logged-in users)
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityMangas();
@@ -180,38 +175,59 @@ class MalService extends GetxController implements BaseService, OnlineService {
       ].obs;
 
   @override
+  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+
+  @override
+  bool get isDataLoaded =>
+      trendingAnimes.isNotEmpty ||
+      popularAnimes.isNotEmpty ||
+      trendingManga.isNotEmpty;
+
+  @override
+  void clearState() {
+    trendingAnimes.clear();
+    popularAnimes.clear();
+    topAnimes.clear();
+    upcomingAnimes.clear();
+    trendingManga.clear();
+    topManga.clear();
+    topManhwa.clear();
+    topManhua.clear();
+    animeList.clear();
+    mangaList.clear();
+    continueWatching.clear();
+    continueReading.clear();
+  }
+
+  @override
   Future<void> fetchHomePage() async {
     try {
-      trendingAnimes.value = (await fetchDataFromApi(
+      trendingAnimes.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15'))
           .removeDupes();
-      for (var i in trendingAnimes) {
-        print("${i.cover} - ${i.poster}");
-      }
-      popularAnimes.value = (await fetchDataFromApi(
+      popularAnimes.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15'))
           .removeDupes();
-      topAnimes.value = (await fetchDataFromApi(
+      topAnimes.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15'))
           .removeDupes();
-      upcomingAnimes.value = (await fetchDataFromApi(
+      upcomingAnimes.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15'))
           .removeDupes();
 
-      trendingManga.value = (await fetchDataFromApi(
+      trendingManga.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15'))
           .removeDupes();
-      topManga.value = (await fetchDataFromApi(
+      topManga.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15'))
           .removeDupes();
-      topManhwa.value = (await fetchDataFromApi(
+      topManhwa.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15'))
           .removeDupes();
-      topManhua.value = (await fetchDataFromApi(
+      topManhua.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'))
           .removeDupes();
 
-      // Fetch underrated content
       await communityService.fetchAll();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');

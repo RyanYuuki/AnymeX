@@ -143,15 +143,8 @@ class ServiceHandler extends GetxController {
   RxList<Widget> homeWidgets(BuildContext context) =>
       service.homeWidgets(context);
 
-  RxList<Widget> novelWidgets(BuildContext context) {
-    if (serviceType.value == ServicesType.anilist) {
-      return anilistService.mangaWidgets(context);
-    } else if (serviceType.value == ServicesType.mal) {
-      return malService.mangaWidgets(context);
-    } else {
-      return extensionService.novelSections;
-    }
-  }
+  RxList<Widget> novelWidgets(BuildContext context) =>
+      service.novelWidgets(context);
 
   Source? getSourceForMedia(Media media) {
     if (media.serviceType == ServicesType.extensions) {
@@ -195,9 +188,13 @@ class ServiceHandler extends GetxController {
   Future<List<Media>?> search(SearchParams params) async =>
       service.search(params);
 
+  void clearState() => service.clearState();
+
   void changeService(ServicesType type) {
     ServiceKeys.serviceType.set(type.index);
     serviceType.value = type;
-    fetchHomePage();
+    if (!service.isDataLoaded) {
+      fetchHomePage();
+    }
   }
 }

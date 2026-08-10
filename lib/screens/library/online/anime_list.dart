@@ -502,6 +502,11 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
       _tabController = TabController(length: orderedTabs.length, vsync: this);
     }
 
+    final tabFilteredItems = <String, List<TrackedMedia>>{};
+    for (final tab in orderedTabs) {
+      tabFilteredItems[tab] = _applyFilters(_getFilteredList(animeList, tab));
+    }
+
     return Glow(
       child: Scaffold(
         appBar: AppBar(
@@ -515,7 +520,6 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
           title: Text("$userName's ${widget.title ?? 'Anime'} List",
               style: TextStyle(fontSize: 16, color: colors.primary)),
           actions: [
-            // Search toggle
             IconButton(
               onPressed: () {
                 setState(() {
@@ -532,13 +536,11 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               ),
               tooltip: _searchOpen ? 'Close search' : 'Search',
             ),
-            // Random
             IconButton(
               onPressed: _openRandom,
               icon: const Icon(Iconsax.shuffle, size: 20),
               tooltip: 'Random',
             ),
-            // Genre filter
             IconButton(
               onPressed: () => _showGenreFilter(context),
               icon: Badge(
@@ -549,7 +551,6 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               ),
               tooltip: 'Filter genres',
             ),
-            // 3-dot menu
             PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert_rounded, size: 22),
               shape: RoundedRectangleBorder(
@@ -662,8 +663,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                   labelPadding: const EdgeInsets.symmetric(horizontal: 14),
                   indicatorSize: TabBarIndicatorSize.label,
                   tabs: orderedTabs.map((tab) {
-                    final filtered =
-                        _applyFilters(_getFilteredList(animeList, tab));
+                    final filtered = tabFilteredItems[tab] ?? [];
                     final label = '${tab.toUpperCase()} (${filtered.length})';
                     return Tab(
                       child: ConstrainedBox(
@@ -687,12 +687,11 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
         body: TabBarView(
           controller: _tabController,
           children: orderedTabs.map((tab) {
-            final items = _applyFilters(_getFilteredList(animeList, tab));
+            final items = tabFilteredItems[tab] ?? [];
 
             if (items.isEmpty) {
               return Center(
-                key: ValueKey(
-                    'empty-$tab-$_sortMode-$_sortAscending-$_searchQuery-${_selectedGenres.join(",")}'),
+                key: PageStorageKey<String>('empty-$tab'),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -717,8 +716,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                 itemWidth: 115);
 
             return GridView.builder(
-              key: ValueKey(
-                  '$tab-$_sortMode-$_sortAscending-$_searchQuery-${_selectedGenres.join(",")}'),
+              key: PageStorageKey<String>('grid-$tab'),
               padding: const EdgeInsets.all(10),
               physics: const BouncingScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

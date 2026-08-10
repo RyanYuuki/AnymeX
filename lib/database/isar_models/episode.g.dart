@@ -19,68 +19,73 @@ const EpisodeSchema = Schema(
       type: IsarType.object,
       target: r'Video',
     ),
-    r'desc': PropertySchema(
+    r'dateUpload': PropertySchema(
       id: 1,
+      name: r'dateUpload',
+      type: IsarType.string,
+    ),
+    r'desc': PropertySchema(
+      id: 2,
       name: r'desc',
       type: IsarType.string,
     ),
     r'durationInMilliseconds': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'durationInMilliseconds',
       type: IsarType.long,
     ),
     r'filler': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'filler',
       type: IsarType.bool,
     ),
     r'lastWatchedTime': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'lastWatchedTime',
       type: IsarType.long,
     ),
     r'link': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'link',
       type: IsarType.string,
     ),
     r'number': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'number',
       type: IsarType.string,
     ),
     r'sortKeys': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'sortKeys',
       type: IsarType.stringList,
     ),
     r'sortVals': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'sortVals',
       type: IsarType.stringList,
     ),
     r'source': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'source',
       type: IsarType.string,
     ),
     r'thumbnail': PropertySchema(
-      id: 10,
+      id: 11,
       name: r'thumbnail',
       type: IsarType.string,
     ),
     r'timeStampInMilliseconds': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'timeStampInMilliseconds',
       type: IsarType.long,
     ),
     r'title': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'title',
       type: IsarType.string,
     ),
     r'videoTracks': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'videoTracks',
       type: IsarType.objectList,
       target: r'Video',
@@ -103,6 +108,12 @@ int _episodeEstimateSize(
     if (value != null) {
       bytesCount +=
           3 + VideoSchema.estimateSize(value, allOffsets[Video]!, allOffsets);
+    }
+  }
+  {
+    final value = object.dateUpload;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
     }
   }
   {
@@ -188,20 +199,21 @@ void _episodeSerialize(
     VideoSchema.serialize,
     object.currentTrack,
   );
-  writer.writeString(offsets[1], object.desc);
-  writer.writeLong(offsets[2], object.durationInMilliseconds);
-  writer.writeBool(offsets[3], object.filler);
-  writer.writeLong(offsets[4], object.lastWatchedTime);
-  writer.writeString(offsets[5], object.link);
-  writer.writeString(offsets[6], object.number);
-  writer.writeStringList(offsets[7], object.sortKeys);
-  writer.writeStringList(offsets[8], object.sortVals);
-  writer.writeString(offsets[9], object.source);
-  writer.writeString(offsets[10], object.thumbnail);
-  writer.writeLong(offsets[11], object.timeStampInMilliseconds);
-  writer.writeString(offsets[12], object.title);
+  writer.writeString(offsets[1], object.dateUpload);
+  writer.writeString(offsets[2], object.desc);
+  writer.writeLong(offsets[3], object.durationInMilliseconds);
+  writer.writeBool(offsets[4], object.filler);
+  writer.writeLong(offsets[5], object.lastWatchedTime);
+  writer.writeString(offsets[6], object.link);
+  writer.writeString(offsets[7], object.number);
+  writer.writeStringList(offsets[8], object.sortKeys);
+  writer.writeStringList(offsets[9], object.sortVals);
+  writer.writeString(offsets[10], object.source);
+  writer.writeString(offsets[11], object.thumbnail);
+  writer.writeLong(offsets[12], object.timeStampInMilliseconds);
+  writer.writeString(offsets[13], object.title);
   writer.writeObjectList<Video>(
-    offsets[13],
+    offsets[14],
     allOffsets,
     VideoSchema.serialize,
     object.videoTracks,
@@ -220,20 +232,21 @@ Episode _episodeDeserialize(
       VideoSchema.deserialize,
       allOffsets,
     ),
-    desc: reader.readStringOrNull(offsets[1]),
-    durationInMilliseconds: reader.readLongOrNull(offsets[2]),
-    filler: reader.readBoolOrNull(offsets[3]),
-    lastWatchedTime: reader.readLongOrNull(offsets[4]),
-    link: reader.readStringOrNull(offsets[5]),
-    number: reader.readStringOrNull(offsets[6]) ?? "1",
-    sortKeys: reader.readStringList(offsets[7]),
-    sortVals: reader.readStringList(offsets[8]),
-    source: reader.readStringOrNull(offsets[9]),
-    thumbnail: reader.readStringOrNull(offsets[10]),
-    timeStampInMilliseconds: reader.readLongOrNull(offsets[11]),
-    title: reader.readStringOrNull(offsets[12]),
+    dateUpload: reader.readStringOrNull(offsets[1]),
+    desc: reader.readStringOrNull(offsets[2]),
+    durationInMilliseconds: reader.readLongOrNull(offsets[3]),
+    filler: reader.readBoolOrNull(offsets[4]),
+    lastWatchedTime: reader.readLongOrNull(offsets[5]),
+    link: reader.readStringOrNull(offsets[6]),
+    number: reader.readStringOrNull(offsets[7]) ?? "1",
+    sortKeys: reader.readStringList(offsets[8]),
+    sortVals: reader.readStringList(offsets[9]),
+    source: reader.readStringOrNull(offsets[10]),
+    thumbnail: reader.readStringOrNull(offsets[11]),
+    timeStampInMilliseconds: reader.readLongOrNull(offsets[12]),
+    title: reader.readStringOrNull(offsets[13]),
     videoTracks: reader.readObjectList<Video>(
-      offsets[13],
+      offsets[14],
       VideoSchema.deserialize,
       allOffsets,
       Video(),
@@ -258,28 +271,30 @@ P _episodeDeserializeProp<P>(
     case 1:
       return (reader.readStringOrNull(offset)) as P;
     case 2:
-      return (reader.readLongOrNull(offset)) as P;
-    case 3:
-      return (reader.readBoolOrNull(offset)) as P;
-    case 4:
-      return (reader.readLongOrNull(offset)) as P;
-    case 5:
       return (reader.readStringOrNull(offset)) as P;
+    case 3:
+      return (reader.readLongOrNull(offset)) as P;
+    case 4:
+      return (reader.readBoolOrNull(offset)) as P;
+    case 5:
+      return (reader.readLongOrNull(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset) ?? "1") as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 7:
-      return (reader.readStringList(offset)) as P;
+      return (reader.readStringOrNull(offset) ?? "1") as P;
     case 8:
       return (reader.readStringList(offset)) as P;
     case 9:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readStringList(offset)) as P;
     case 10:
       return (reader.readStringOrNull(offset)) as P;
     case 11:
-      return (reader.readLongOrNull(offset)) as P;
-    case 12:
       return (reader.readStringOrNull(offset)) as P;
+    case 12:
+      return (reader.readLongOrNull(offset)) as P;
     case 13:
+      return (reader.readStringOrNull(offset)) as P;
+    case 14:
       return (reader.readObjectList<Video>(
         offset,
         VideoSchema.deserialize,
@@ -306,6 +321,152 @@ extension EpisodeQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
         property: r'currentTrack',
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'dateUpload',
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'dateUpload',
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dateUpload',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'dateUpload',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'dateUpload',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'dateUpload',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'dateUpload',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'dateUpload',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'dateUpload',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'dateUpload',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'dateUpload',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Episode, Episode, QAfterFilterCondition> dateUploadIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'dateUpload',
+        value: '',
       ));
     });
   }

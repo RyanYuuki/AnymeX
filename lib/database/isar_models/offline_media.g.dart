@@ -192,6 +192,24 @@ const OfflineMediaSchema = CollectionSchema(
           caseSensitive: true,
         )
       ],
+    ),
+    r'mediaTypeIndex_mediaId': IndexSchema(
+      id: 5474613011502500303,
+      name: r'mediaTypeIndex_mediaId',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'mediaTypeIndex',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+        IndexPropertySchema(
+          name: r'mediaId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
     )
   },
   links: {},
@@ -815,6 +833,191 @@ extension OfflineMediaQueryWhere
               indexName: r'mediaId',
               lower: [],
               upper: [mediaId],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexIsNullAnyMediaId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'mediaTypeIndex_mediaId',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexIsNotNullAnyMediaId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'mediaTypeIndex_mediaId',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexEqualToAnyMediaId(int? mediaTypeIndex) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'mediaTypeIndex_mediaId',
+        value: [mediaTypeIndex],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexNotEqualToAnyMediaId(int? mediaTypeIndex) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'mediaTypeIndex_mediaId',
+              lower: [],
+              upper: [mediaTypeIndex],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'mediaTypeIndex_mediaId',
+              lower: [mediaTypeIndex],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'mediaTypeIndex_mediaId',
+              lower: [mediaTypeIndex],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'mediaTypeIndex_mediaId',
+              lower: [],
+              upper: [mediaTypeIndex],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexGreaterThanAnyMediaId(
+    int? mediaTypeIndex, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'mediaTypeIndex_mediaId',
+        lower: [mediaTypeIndex],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexLessThanAnyMediaId(
+    int? mediaTypeIndex, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'mediaTypeIndex_mediaId',
+        lower: [],
+        upper: [mediaTypeIndex],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexBetweenAnyMediaId(
+    int? lowerMediaTypeIndex,
+    int? upperMediaTypeIndex, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'mediaTypeIndex_mediaId',
+        lower: [lowerMediaTypeIndex],
+        includeLower: includeLower,
+        upper: [upperMediaTypeIndex],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexEqualToMediaIdIsNull(int? mediaTypeIndex) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'mediaTypeIndex_mediaId',
+        value: [mediaTypeIndex, null],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexEqualToMediaIdIsNotNull(int? mediaTypeIndex) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'mediaTypeIndex_mediaId',
+        lower: [mediaTypeIndex, null],
+        includeLower: false,
+        upper: [
+          mediaTypeIndex,
+        ],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexMediaIdEqualTo(int? mediaTypeIndex, String? mediaId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'mediaTypeIndex_mediaId',
+        value: [mediaTypeIndex, mediaId],
+      ));
+    });
+  }
+
+  QueryBuilder<OfflineMedia, OfflineMedia, QAfterWhereClause>
+      mediaTypeIndexEqualToMediaIdNotEqualTo(
+          int? mediaTypeIndex, String? mediaId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'mediaTypeIndex_mediaId',
+              lower: [mediaTypeIndex],
+              upper: [mediaTypeIndex, mediaId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'mediaTypeIndex_mediaId',
+              lower: [mediaTypeIndex, mediaId],
+              includeLower: false,
+              upper: [mediaTypeIndex],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'mediaTypeIndex_mediaId',
+              lower: [mediaTypeIndex, mediaId],
+              includeLower: false,
+              upper: [mediaTypeIndex],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'mediaTypeIndex_mediaId',
+              lower: [mediaTypeIndex],
+              upper: [mediaTypeIndex, mediaId],
               includeUpper: false,
             ));
       }

@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:anymex/utils/oauth_helper.dart';
 import 'dart:math' as math;
 
-import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
@@ -33,11 +32,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:anymex/controllers/services/simkl/simkl_api.dart';
 
 enum SimklSearchCategory { anime, movie, show }
 
 class SimklService extends GetxController
     implements BaseService, OnlineService {
+  final api = SimklApi();
   RxList<Media> trendingMovies = <Media>[].obs;
   RxList<Media> trendingSeries = <Media>[].obs;
   Rx<Media> detailsData = Media(
@@ -59,105 +60,25 @@ class SimklService extends GetxController
 
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
-    final id = params.id;
-    final newId = id.split('*').first;
-    final isSeries = id.split('*').last == "SERIES";
-    Logger.i(isSeries.toString());
-    final clientId = dotenv.env['SIMKL_CLIENT_ID'];
-    final resp = await get(Uri.parse(
-        "https://api.simkl.com/${isSeries ? 'tv' : 'movies'}/$newId?extended=full&client_id=$clientId"));
-    if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body);
-      data['id'] = '$newId*${isSeries ? "SERIES" : "MOVIE"}';
-      data['__isMovie'] = !isSeries;
-
-      if (isSeries && data['next_episode'] == null && (data['status']?.toString().toLowerCase() == 'airing' || data['status']?.toString().toLowerCase() == 'returning series')) {
-        try {
-          final epResp = await get(Uri.parse("https://api.simkl.com/tv/episodes/$newId?client_id=$clientId"));
-          if (epResp.statusCode == 200) {
-            data['episodes'] = jsonDecode(epResp.body);
-          }
-        } catch (e) {
-          Logger.i("Failed to fetch episodes for Simkl series $newId: $e");
-        }
-      }
-
-      final tmdbId = data['ids']?['tmdb']?.toString();
-      final tmdbApiKey = dotenv.env['TMDB_API_KEY'];
-      if (tmdbId != null && tmdbId.isNotEmpty && tmdbApiKey != null && tmdbApiKey.isNotEmpty) {
-        try {
-          final creditsResp = await get(Uri.parse(
-              "https://api.themoviedb.org/3/${isSeries ? 'tv' : 'movie'}/$tmdbId/credits?api_key=$tmdbApiKey"));
-          if (creditsResp.statusCode == 200) {
-            data['tmdb_credits'] = jsonDecode(creditsResp.body);
-          }
-        } catch (e) {
-          Logger.i("Failed to fetch TMDb credits for $tmdbId: $e");
-        }
-      }
-
-      cacheController.addCache(data);
-      detailsData.value = Media.fromSimkl(data, !isSeries);
-      return detailsData.value;
-    } else {
-      throw Exception('Failed to fetch trending movies: ${resp.statusCode}');
-    }
+    final media = await api.fetchDetails(params);
+    detailsData.value = media;
+    return media;
   }
 
   Future<void> fetchMovies() async {
-    final url =
-        "https://api.simkl.com/movies/trending?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}&perPage=20";
-    final resp = await get(Uri.parse(url));
-    if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as List<dynamic>;
-      final list = data.map((e) {
-        return Media.fromSimkl(e, true);
-      }).toList();
-      trendingMovies.value = list;
-    } else {
-      Logger.i(url);
-      Logger.i("Error Ocurred: ${resp.body}");
-      throw Exception('Failed to fetch trending movies: ${resp.statusCode}');
-    }
+    trendingMovies.value = await api.fetchTrending(true);
   }
 
   Future<void> fetchSeries() async {
-    final resp = await get(Uri.parse(
-        "https://api.simkl.com/tv/trending?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}"));
-
-    if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as List<dynamic>;
-      final list = data.map((e) {
-        return Media.fromSimkl(e, false);
-      }).toList();
-      trendingSeries.value = list;
-    } else {
-      throw Exception('Failed to fetch trending series: ${resp.statusCode}');
-    }
+    trendingSeries.value = await api.fetchTrending(false);
   }
 
   Future<List<Media>> _fetchTvGenres(String country) async {
-    final url =
-        "https://api.simkl.com/tv/genres/all/all-types/$country/all-networks/all-years/rank?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}&limit=20";
-    final resp = await get(Uri.parse(url));
-    if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as List<dynamic>;
-      return data.map((e) => Media.fromSimkl(e, false)).toList();
-    }
-    Logger.i("Failed to fetch TV genres for $country: ${resp.statusCode}");
-    return [];
+    return api.fetchGenres('tv', country);
   }
 
   Future<List<Media>> _fetchMovieGenres(String country) async {
-    final url =
-        "https://api.simkl.com/movies/genres/all/all-types/$country/all-years/rank?extended=overview&client_id=${dotenv.env['SIMKL_CLIENT_ID']}&limit=20";
-    final resp = await get(Uri.parse(url));
-    if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as List<dynamic>;
-      return data.map((e) => Media.fromSimkl(e, true)).toList();
-    }
-    Logger.i("Failed to fetch movie genres for $country: ${resp.statusCode}");
-    return [];
+    return api.fetchGenres('movies', country);
   }
 
   Future<void> fetchCountrySeries() async {
@@ -199,51 +120,15 @@ class SimklService extends GetxController
       ]);
 
   Future<List<Media>> searchMovies(String query, {int page = 1}) async {
-    final movieUrl = Uri.https('api.simkl.com', '/search/movie', {
-      'q': query,
-      'extended': 'full',
-      'page': '$page',
-      'limit': '25',
-      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
-    });
-    final resp = await get(movieUrl);
-    if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as List<dynamic>;
-      return data.map((e) => Media.fromSimklSearch(e)).toList();
-    }
-    return [];
+    return api.searchMedia('movie', query, page: page);
   }
 
   Future<List<Media>> searchSeries(String query, {int page = 1}) async {
-    final seriesUrl = Uri.https('api.simkl.com', '/search/tv', {
-      'q': query,
-      'extended': 'full',
-      'page': '$page',
-      'limit': '25',
-      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
-    });
-    final resp = await get(seriesUrl);
-    if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as List<dynamic>;
-      return data.map((e) => Media.fromSimklSearch(e)).toList();
-    }
-    return [];
+    return api.searchMedia('tv', query, page: page);
   }
 
   Future<List<Media>> searchAnime(String query, {int page = 1}) async {
-    final animeUrl = Uri.https('api.simkl.com', '/search/anime', {
-      'q': query,
-      'extended': 'full',
-      'page': '$page',
-      'limit': '25',
-      'client_id': '${dotenv.env['SIMKL_CLIENT_ID']}',
-    });
-    final resp = await get(animeUrl);
-    if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as List<dynamic>;
-      return data.map((e) => Media.fromSimklSearch(e)).toList();
-    }
-    return [];
+    return api.searchMedia('anime', query, page: page);
   }
 
   @override
@@ -508,6 +393,30 @@ class SimklService extends GetxController
           }),
         ],
       ].obs;
+
+  @override
+  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+
+  @override
+  bool get isDataLoaded =>
+      trendingMovies.isNotEmpty || trendingSeries.isNotEmpty;
+
+  @override
+  void clearState() {
+    trendingMovies.clear();
+    trendingSeries.clear();
+    koreanSeries.clear();
+    japaneseSeries.clear();
+    usSeries.clear();
+    ukSeries.clear();
+    canadaSeries.clear();
+    koreanMovies.clear();
+    usMovies.clear();
+    ukMovies.clear();
+    canadaMovies.clear();
+    continueWatchingMovies.clear();
+    continueWatchingSeries.clear();
+  }
 
   @override
   RxBool isLoggedIn = false.obs;

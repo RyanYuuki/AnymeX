@@ -482,6 +482,21 @@ class SourceController extends GetxController implements BaseService {
       ].obs;
 
   @override
+  RxList<Widget> novelWidgets(BuildContext context) =>
+      [Obx(() => Column(children: novelSections))].obs;
+
+  @override
+  bool get isDataLoaded => _homeReady;
+
+  @override
+  void clearState() {
+    novelSections.clear();
+    _animeSections.clear();
+    _mangaSections.clear();
+    _homeSections.clear();
+  }
+
+  @override
   Future<void> fetchHomePage() async {
     try {
       _buildOfflineSections();

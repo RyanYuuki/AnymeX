@@ -28,6 +28,7 @@ class Video {
     this.audios,
   });
 
+  @ignore
   Map<String, String>? get headers {
     if (headerKeys == null || headerValues == null) return null;
     final map = <String, String>{};

@@ -181,8 +181,6 @@ class ChapterRecognition {
 }
 
 Episode DEpisodeToEpisode(DEpisode chapter) {
-  // var episodeNumber = ChapterRecognition.parseChapterNumber(
-  //     selectedMedia?.title ?? '', chapter.name ?? '');
   return Episode(
     number: chapter.episodeNumber,
     link: chapter.url,
@@ -192,6 +190,7 @@ Episode DEpisodeToEpisode(DEpisode chapter) {
     thumbnail: chapter.thumbnail,
     desc: chapter.description,
     filler: chapter.filler,
+    dateUpload: chapter.dateUpload,
   );
 }
 
