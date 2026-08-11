@@ -229,10 +229,10 @@ class PluginManager {
     AnymeXRuntimeBridge.setInstalledRelease(release.tagName, release.title);
   }
 
-  Future<bool> syncLocalApk(String apkPath) async {
-    final isJar = apkPath.toLowerCase().endsWith('.jar');
-    final isApk = apkPath.toLowerCase().endsWith('.apk');
-    final isWasm = apkPath.toLowerCase().endsWith('.wasm');
+  Future<bool> syncLocalRuntimeFile(String filePath) async {
+    final isJar = filePath.toLowerCase().endsWith('.jar');
+    final isApk = filePath.toLowerCase().endsWith('.apk');
+    final isWasm = filePath.toLowerCase().endsWith('.wasm');
 
     if (Platform.isAndroid && !isApk) {
       errorSnackBar('Please select a valid APK file.');
@@ -247,14 +247,14 @@ class PluginManager {
       return false;
     }
 
-    if (!await File(apkPath).exists()) {
-      errorSnackBar('Local file not found at: $apkPath');
+    if (!await File(filePath).exists()) {
+      errorSnackBar('Local file not found at: $filePath');
       return false;
     }
 
     try {
       if (Platform.isAndroid) {
-        await AnymeXRuntimeBridge.useLocalApk(apkPath);
+        await AnymeXRuntimeBridge.useLocalApk(filePath);
       } else {
         final paths = RuntimePaths();
         final destPath = await paths.bridgePath;
@@ -262,13 +262,14 @@ class PluginManager {
         if (await destFile.exists()) {
           await destFile.delete();
         }
-        await File(apkPath).copy(destPath);
+        await File(filePath).copy(destPath);
         
         final toolsDir = await paths.toolsDir;
         final metadataFile = File('${toolsDir.path}/metadata.json');
+        final fileTypeLabel = Platform.isIOS ? 'WASM' : 'Jar';
         await metadataFile.writeAsString(jsonEncode({
           'version': 'Local-${DateTime.now().millisecondsSinceEpoch}',
-          'title': 'Local Synced Jar',
+          'title': 'Local Synced $fileTypeLabel',
         }));
         await AnymeXRuntimeBridge.loadMetadata();
       }
@@ -280,7 +281,8 @@ class PluginManager {
         successSnackBar('Plugin synced from local APK.');
         return true;
       } else if (!Platform.isAndroid) {
-        successSnackBar('Plugin jar copied. Please restart the app.');
+        final fileTypeLabel = Platform.isIOS ? 'WASM' : 'JAR';
+        successSnackBar('Plugin $fileTypeLabel copied. Please restart the app.');
         return true;
       }
 
@@ -292,6 +294,9 @@ class PluginManager {
     }
   }
 
+  /// Backwards-compatible alias for [syncLocalRuntimeFile].
+  Future<bool> syncLocalApk(String filePath) => syncLocalRuntimeFile(filePath);
+
   Future<bool> forceSyncLocalApk() async {
     const localPath = '/storage/emulated/0/AnymeX/anymex_runtime_host.apk';
     if (!await File(localPath).exists()) {
@@ -299,7 +304,7 @@ class PluginManager {
       return false;
     }
 
-    return syncLocalApk(localPath);
+    return syncLocalRuntimeFile(localPath);
   }
 }
 
