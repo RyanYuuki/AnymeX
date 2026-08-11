@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
-class AnymexContainer extends StatelessWidget {
+class AnymeXContainer extends StatelessWidget {
   final Widget? child;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
@@ -19,7 +19,7 @@ class AnymexContainer extends StatelessWidget {
   final Clip clipBehavior;
   final bool enableGlow;
 
-  const AnymexContainer({
+  const AnymeXContainer({
     super.key,
     this.child,
     this.padding,

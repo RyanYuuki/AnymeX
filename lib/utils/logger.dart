@@ -198,29 +198,34 @@ Pretty Name: ${info.prettyName}
   static void _initMethodChannelHandler() {
     const channel = MethodChannel('anymexLogger');
     channel.setMethodCallHandler((call) async {
-      if (call.method == 'log') {
-        final args = call.arguments as Map;
-        final level = args['level'] as String? ?? 'INFO';
-        final tag = args['tag'] as String? ?? 'NATIVE';
-        final msg = args['message'] as String? ?? '';
-        final fullMsg = '[NATIVE] [$tag] $msg';
+      try {
+        if (call.method == 'log') {
+          final args = call.arguments as Map;
+          final level = args['level'] as String? ?? 'INFO';
+          final tag = args['tag'] as String? ?? 'NATIVE';
+          final msg = args['message'] as String? ?? '';
+          final fullMsg = '[NATIVE] [$tag] $msg';
 
-        switch (level) {
-          case 'DEBUG':
-          case 'VERBOSE':
-            d(fullMsg, 'NATIVE');
-            break;
-          case 'WARNING':
-            w(fullMsg, 'NATIVE');
-            break;
-          case 'ERROR':
-            e(fullMsg, loggerName: 'NATIVE');
-            break;
-          default:
-            i(fullMsg, 'NATIVE');
-            break;
+          switch (level) {
+            case 'DEBUG':
+            case 'VERBOSE':
+              d(fullMsg, 'NATIVE');
+              break;
+            case 'WARNING':
+              w(fullMsg, 'NATIVE');
+              break;
+            case 'ERROR':
+              e(fullMsg, loggerName: 'NATIVE');
+              break;
+            default:
+              i(fullMsg, 'NATIVE');
+              break;
+          }
         }
+      } catch (e) {
+        developer.log('Logger: Error handling method call: $e', name: 'LOGGER');
       }
+      return null;
     });
 
     // Notify native that we are ready to receive logs

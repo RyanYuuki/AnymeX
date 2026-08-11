@@ -12,11 +12,11 @@ import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/header/header.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -148,13 +148,11 @@ class _ExtensionScreenState extends State<ExtensionScreen>
       ],
     );
 
-    return Glow(
-      disabled: widget.isTabScreen,
-      isTabScreen: widget.isTabScreen,
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.transparent,
-        body: Stack(
+    return AnymeXScaffold(
+  disabled: widget.isTabScreen,
+  isTabScreen: widget.isTabScreen,
+  resizeToAvoidBottomInset: false,
+  body: Stack(
           children: [
             mainContent,
             if (showMobileAppBar)
@@ -183,9 +181,8 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                 ),
               ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildContentTypeBar() {

@@ -13,7 +13,7 @@ import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/m3u8_parser.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -160,7 +160,7 @@ Future<void> _handleMangaTap(OfflineMedia media) async {
   var chapters = media.chapters ?? [];
   if (chapters.length <= 1) {
     Get.dialog(
-      const Center(child: AnymexProgressIndicator()),
+      const Center(child: AnymeXProgressIndicator()),
       barrierDismissible: false,
     );
     try {
@@ -642,7 +642,7 @@ class _LoaderLogSession {
               children: [
                 Row(
                   children: [
-                    const AnymexProgressIndicator(),
+                    const AnymeXProgressIndicator(),
                     const SizedBox(width: 12),
                     const Expanded(
                       child: Text(

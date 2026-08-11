@@ -4,8 +4,8 @@ import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/animation/animations.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 
 enum EpisodeLayoutType {
@@ -132,14 +132,14 @@ class BetterEpisode extends StatelessWidget {
                 if (isFiller)
                   const Padding(
                     padding: EdgeInsets.only(bottom: 2.0),
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: "[Filler]",
                       size: 10,
                       color: Colors.orange,
                       variant: TextVariant.bold,
                     ),
                   ),
-                AnymexText(
+                AnymeXText(
                   text: episodeTitle,
                   variant: TextVariant.bold,
                   maxLines: 2,
@@ -197,7 +197,7 @@ class BetterEpisode extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
                                   color: Colors.orange.withOpacity(0.5))),
-                          child: const AnymexText(
+                          child: const AnymeXText(
                             text: "FILLER",
                             size: 10,
                             color: Colors.orange,
@@ -205,7 +205,7 @@ class BetterEpisode extends StatelessWidget {
                           ),
                         ),
                       ),
-                    AnymexText(
+                    AnymeXText(
                       text: episodeTitle,
                       variant: TextVariant.bold,
                       maxLines: 3,
@@ -321,7 +321,7 @@ class BetterEpisode extends StatelessWidget {
                 ),
               ],
             ),
-            child: AnymexText(
+            child: AnymeXText(
               text: "EP $episodeNumber",
               variant: TextVariant.bold,
               color: Colors.white,
@@ -338,7 +338,7 @@ class BetterEpisode extends StatelessWidget {
         ? 'No Description Available'
         : description!;
 
-    return AnymexText(
+    return AnymeXText(
       text: displayText,
       variant: TextVariant.regular,
       maxLines: 3,

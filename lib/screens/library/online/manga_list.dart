@@ -6,14 +6,14 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/database/kv_helper.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 enum _MangaSortMode { lastUpdated, score, title, releaseDate }
 
@@ -268,7 +268,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
 
   void _showSortMenu(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -361,7 +361,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
     final sortedGenres = _allGenres.toList()..sort();
     final tempSelected = Set<String>.from(_selectedGenres);
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       StatefulBuilder(
         builder: (ctx, setSheetState) => Column(
           mainAxisSize: MainAxisSize.min,
@@ -487,9 +487,8 @@ class _AnilistMangaListState extends State<AnilistMangaList>
       tabFilteredItems[tab] = _applyFilters(_getFilteredList(mangaList, tab));
     }
 
-    return Glow(
-      child: Scaffold(
-        appBar: AppBar(
+    return AnymeXScaffold(
+  appBar: AppBar(
           titleSpacing: 0,
           leading: IconButton(
               onPressed: () => Navigator.pop(context),
@@ -664,7 +663,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
             ),
           ),
         ),
-        body: TabBarView(
+  body: TabBarView(
           controller: _tabController,
           children: orderedTabs.map((tab) {
             final items = tabFilteredItems[tab] ?? [];
@@ -720,8 +719,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               },
             );
           }).toList(),
-        ),
-      ),
-    );
+        )
+);
   }
 }

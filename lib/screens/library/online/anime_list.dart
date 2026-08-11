@@ -4,14 +4,14 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 enum _SortMode { lastUpdated, score, title, releaseDate }
 
@@ -291,7 +291,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
 
   void _showSortMenu(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -385,7 +385,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
     final sortedGenres = _allGenres.toList()..sort();
     final tempSelected = Set<String>.from(_selectedGenres);
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       StatefulBuilder(
         builder: (ctx, setSheetState) => Column(
           mainAxisSize: MainAxisSize.min,
@@ -507,9 +507,8 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
       tabFilteredItems[tab] = _applyFilters(_getFilteredList(animeList, tab));
     }
 
-    return Glow(
-      child: Scaffold(
-        appBar: AppBar(
+    return AnymeXScaffold(
+  appBar: AppBar(
           titleSpacing: 0,
           leading: IconButton(
               onPressed: () => Navigator.pop(context),
@@ -684,7 +683,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
             ),
           ),
         ),
-        body: TabBarView(
+  body: TabBarView(
           controller: _tabController,
           children: orderedTabs.map((tab) {
             final items = tabFilteredItems[tab] ?? [];
@@ -740,8 +739,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               },
             );
           }).toList(),
-        ),
-      ),
-    );
+        )
+);
   }
 }

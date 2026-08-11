@@ -2,7 +2,7 @@ import 'package:anymex/models/reader/tap_zones.dart';
 import 'package:anymex/repositories/tap_zone_repository.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -94,9 +94,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
     final currentLayout = _getCurrentLayout();
     final onSave = _getCurrentSaveCallback();
 
-    return Glow(
-      child: Scaffold(
-        appBar: AppBar(
+    return AnymeXScaffold(
+  appBar: AppBar(
           title: const Text("Tap Zones"),
           actions: [
             IconButton(
@@ -129,10 +128,9 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
             const SizedBox(width: 8),
           ],
         ),
-        body: Column(
+  body: Column(
           children: [
-            // Modes
-            Padding(
+                        Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: _ElegantSegmentedControl(
                 options: [
@@ -187,9 +185,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
               )),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildEditor(

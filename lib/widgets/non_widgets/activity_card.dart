@@ -23,7 +23,7 @@ import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     show ItemType;
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 class ActivityCard extends StatefulWidget {
   final AnilistActivity activity;
@@ -76,7 +76,7 @@ class _ActivityCardState extends State<ActivityCard> {
     final animeScore = (double.tryParse(tracked.score ?? '') ?? 0.0).obs;
     final animeProgress = (int.tryParse(tracked.episodeCount ?? '') ?? 0).obs;
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       ListEditorModal(
         animeStatus: animeStatus,
         isManga: isManga,

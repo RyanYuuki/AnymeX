@@ -1,4 +1,4 @@
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:flutter/material.dart';
 
 class CustomSlider extends StatefulWidget {

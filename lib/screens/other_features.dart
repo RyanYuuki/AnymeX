@@ -6,8 +6,8 @@ import 'package:anymex/screens/anime/misc/list_exporter.dart';
 import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 
 class OtherFeaturesPage extends StatelessWidget {
@@ -18,9 +18,8 @@ class OtherFeaturesPage extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Glow(
-      child: Scaffold(
-        body: Column(children: [
+    return AnymeXScaffold(
+  body: Column(children: [
           const NestedHeader(title: 'Other Features'),
           const SizedBox(height: 32),
           Expanded(
@@ -127,9 +126,8 @@ class OtherFeaturesPage extends StatelessWidget {
               ],
             ),
           ),
-        ]),
-      ),
-    );
+        ])
+);
   }
 }
 
@@ -232,13 +230,13 @@ class NestedHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: title,
                         variant: TextVariant.semiBold,
                         size: 18,
                       ),
                       if (subtitleText != null)
-                        AnymexText(
+                        AnymeXText(
                           text: subtitleText,
                           variant: TextVariant.regular,
                           size: 12,
@@ -294,7 +292,7 @@ class NestedHeader extends StatelessWidget {
             const SizedBox(width: 12),
           ],
           Expanded(
-            child: AnymexText(
+            child: AnymeXText(
               text: title,
               variant: TextVariant.semiBold,
               size: 22,

@@ -12,9 +12,9 @@ import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:anymex/widgets/common/source_selector.dart';
 
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -118,9 +118,9 @@ class ChapterSection extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: AnymexTextSpans(
+                        child: AnymeXTextSpans(
                           spans: [
-                            AnymexTextSpan(
+                            AnymeXTextSpan(
                               text: searchedTitle.value,
                               variant: TextVariant.semiBold,
                               size: 14,
@@ -176,7 +176,7 @@ class ChapterSection extends StatelessWidget {
                                 color: context.colors.primary,
                               ),
                               const SizedBox(width: 6),
-                              AnymexText(
+                              AnymeXText(
                                 text: "Wrong Title?",
                                 size: 12,
                                 color: context.colors.primary,
@@ -258,7 +258,7 @@ class ChapterSection extends StatelessWidget {
                       const SliverToBoxAdapter(
                         child: Row(
                           children: [
-                            AnymexText(
+                            AnymeXText(
                               text: "Chapters",
                               variant: TextVariant.bold,
                               size: 18,
@@ -278,7 +278,7 @@ class ChapterSection extends StatelessWidget {
                         const SliverToBoxAdapter(
                           child: SizedBox(
                             height: 500,
-                            child: Center(child: AnymexProgressIndicator()),
+                            child: Center(child: AnymeXProgressIndicator()),
                           ),
                         )
                       else if (searchedTitle.value.toLowerCase() !=
@@ -291,7 +291,7 @@ class ChapterSection extends StatelessWidget {
                       else
                         const SliverToBoxAdapter(
                           child: Center(
-                              child: AnymexText(text: "No Match Found")),
+                              child: AnymeXText(text: "No Match Found")),
                         ),
                     ],
                   ),

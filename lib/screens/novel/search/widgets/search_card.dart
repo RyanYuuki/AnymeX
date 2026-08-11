@@ -2,8 +2,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/animations.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +76,7 @@ class GridNovelCard extends StatelessWidget {
               children: [
                 const Icon(Iconsax.book, color: Colors.grey, size: 16),
                 const SizedBox(width: 2),
-                AnymexText(
+                AnymeXText(
                   text: media.title.toUpperCase(),
                   maxLines: 1,
                   variant: TextVariant.regular,
@@ -89,7 +89,7 @@ class GridNovelCard extends StatelessWidget {
             const SizedBox(height: 5),
             SizedBox(
               width: cardWidth,
-              child: AnymexText(
+              child: AnymeXText(
                 text: media.title,
                 maxLines: 2,
                 size: 14,
@@ -121,7 +121,7 @@ class GridNovelCard extends StatelessWidget {
             color: context.colors.onPrimary,
           ),
           const SizedBox(width: 4),
-          AnymexText(
+          AnymeXText(
             text: media.rating,
             color: context.colors.onPrimary,
             size: 12,

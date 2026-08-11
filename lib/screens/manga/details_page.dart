@@ -27,14 +27,14 @@ import 'package:anymex/utils/media_share.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -375,10 +375,9 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
 
   Widget _buildDesktopLayout(BuildContext context) {
-    return Glow(
-      color: posterColor,
-      child: Scaffold(
-        body: Row(
+    return AnymeXScaffold(
+  color: posterColor,
+  body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDesktopNav(),
@@ -386,9 +385,8 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
               child: _commonSaikouLayout(context),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _commonSaikouLayout(BuildContext context) {
@@ -451,7 +449,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            AnymexText(
+                                            AnymeXText(
                                               text: convertAniListStatus(
                                                   mangaStatus.value,
                                                   isManga: true),
@@ -485,7 +483,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                                  ),
                                ] else ...[
                                  Expanded(
-                                   child: AnymexButton2(
+                                   child: AnymeXButton2(
                                      onTap: () {
                                        showCustomListDialog(
                                            context, anilistData!);
@@ -524,7 +522,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
                 ] else ...[
                   const SizedBox(
                     height: 400,
-                    child: Center(child: AnymexProgressIndicator()),
+                    child: Center(child: AnymeXProgressIndicator()),
                   )
                 ],
               ],
@@ -549,7 +547,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Widget _buildInfoPageBody(BuildContext context) {
     if (!_isTransitionFinished) {
-      return const Center(child: AnymexProgressIndicator());
+      return const Center(child: AnymeXProgressIndicator());
     }
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 120),
@@ -561,7 +559,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Widget _buildChapterPageBody(BuildContext context) {
     if (!_isTransitionFinished) {
-      return const Center(child: AnymexProgressIndicator());
+      return const Center(child: AnymeXProgressIndicator());
     }
     return CustomScrollView(
       slivers: [
@@ -581,7 +579,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   Widget _buildCommentsPageBody(BuildContext context) {
     if (!_isTransitionFinished) {
-      return const Center(child: AnymexProgressIndicator());
+      return const Center(child: AnymeXProgressIndicator());
     }
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 120),
@@ -635,23 +633,23 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: AnymexTextSpans(
+              child: AnymeXTextSpans(
                 fontSize: 14,
                 spans: [
-                  AnymexTextSpan(
+                  AnymeXTextSpan(
                     text: "Chapter ",
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
-                  AnymexTextSpan(
+                  AnymeXTextSpan(
                     text: mangaProgress.value.toString(),
                     variant: TextVariant.bold,
                     color: context.colors.primary,
                   ),
-                  AnymexTextSpan(
+                  AnymeXTextSpan(
                     text: ' of ',
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
                   ),
-                  AnymexTextSpan(
+                  AnymeXTextSpan(
                     text: anilistData?.totalChapters.toString() ??
                         anilistData?.totalChapters.toString() ??
                         '??',
@@ -730,17 +728,16 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
   }
   // Common Info Section
 
-  Glow _buildAndroidLayout(BuildContext context) {
-    return Glow(
-      color: posterColor,
-      child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          extendBody: true,
-          bottomNavigationBar: sourceController.shouldShowExtensions.value
+  AnymeXScaffold _buildAndroidLayout(BuildContext context) {
+    return AnymeXScaffold(
+  color: posterColor,
+  resizeToAvoidBottomInset: false,
+  extendBody: true,
+  bottomNavigationBar: sourceController.shouldShowExtensions.value
               ? _buildMobiledNav()
               : null,
-          body: _commonSaikouLayout(context)),
-    );
+  body: _commonSaikouLayout(context)
+);
   }
 
   // Desktop Navigation bar: START
@@ -837,7 +834,7 @@ class _MangaDetailsPageState extends State<MangaDetailsPage> {
 
   // List Editor Modal: START
   void showListEditorModal(BuildContext context) {
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
         showDragHandle: true,
         ListEditorModal(
           animeStatus: mangaStatus,

@@ -7,10 +7,10 @@ import 'package:anymex/screens/search/source_search_page.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
@@ -55,12 +55,12 @@ class Header extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (type == PageType.library) ...[
-                      const AnymexText(
+                      const AnymeXText(
                         text: "Library",
                         autoResize: true,
                         maxLines: 1,
                       ),
-                      AnymexText(
+                      AnymeXText(
                         text: "All your local shi",
                         autoResize: true,
                         maxLines: 1,
@@ -68,12 +68,12 @@ class Header extends StatelessWidget {
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.extensions) ...[
-                      const AnymexText(
+                      const AnymeXText(
                         text: "Extensions",
                         autoResize: true,
                         maxLines: 1,
                       ),
-                      AnymexText(
+                      AnymeXText(
                         text: "Manage plugins & sources",
                         autoResize: true,
                         maxLines: 1,
@@ -81,12 +81,12 @@ class Header extends StatelessWidget {
                         variant: TextVariant.semiBold,
                       ),
                     ] else ...[
-                      Obx(() => AnymexText(
+                      Obx(() => AnymeXText(
                             text: "${greetingController.currentGreeting.value},",
                             autoResize: true,
                             maxLines: 1,
                           )),
-                      AnymexText(
+                      AnymeXText(
                         text: profileData.profileData.value.name ?? 'Guest',
                         autoResize: true,
                         maxLines: 1,
@@ -276,17 +276,17 @@ class Header extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AnymexTextSpans(
+                      AnymeXTextSpans(
                         fontSize: 18,
                         spans: [
-                          const AnymexTextSpan(
+                          const AnymeXTextSpan(
                               text: 'Hey ', variant: TextVariant.bold),
-                          AnymexTextSpan(
+                          AnymeXTextSpan(
                               text:
                                   '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
                               color: context.colors.primary,
                               variant: TextVariant.bold),
-                          const AnymexTextSpan(
+                          const AnymeXTextSpan(
                               text: ', what are we doing today?',
                               variant: TextVariant.bold)
                         ],

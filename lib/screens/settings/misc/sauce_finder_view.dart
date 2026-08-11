@@ -5,8 +5,8 @@ import 'package:anymex/models/sauce/sauce_result.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/sauce_finder.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -84,18 +84,16 @@ class _SauceFinderViewState extends State<SauceFinderView> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             _buildAppBar(),
             Expanded(
               child: _buildLayout(colorScheme),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildAppBar() {

@@ -42,8 +42,8 @@ import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/subtitle_pre_translator.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
-import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' as d;
 import 'package:flutter/foundation.dart';
@@ -1894,7 +1894,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void _revertOrientations() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     if (!Platform.isAndroid && !Platform.isIOS) {
-      AnymexTitleBar.setFullScreen(false);
+      AnymeXTitleBar.setFullScreen(false);
     }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -1993,7 +1993,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleFullScreen() {
-    AnymexTitleBar.toggleFullScreen();
+    AnymeXTitleBar.toggleFullScreen();
     onUserInteraction();
   }
 
@@ -2551,7 +2551,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> launchExternalPlayer() async {
     final url = selectedVideo.value?.url;
     if (url == null || url.isEmpty) {
-      AnymexToast.show(
+      AnymeXToast.show(
         message: 'No stream URL available',
         duration: const Duration(seconds: 2),
       );
@@ -2561,14 +2561,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     pause();
 
     final headers = selectedVideo.value?.headers;
-    AnymexToast.show(
+    AnymeXToast.show(
       message: 'Opening in external player...',
       duration: const Duration(seconds: 2),
     );
 
     final success = await ExternalPlayer.launch(url, headers: headers);
     if (!success) {
-      AnymexToast.show(
+      AnymeXToast.show(
         message: 'Failed to launch external player',
         duration: const Duration(seconds: 2),
       );
@@ -2576,7 +2576,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _showVideoFitToast(BoxFit fit) {
-    AnymexToast.show(
+    AnymeXToast.show(
         message: fit.name.capitalizeFirst ?? '',
         duration: const Duration(milliseconds: 700));
   }

@@ -6,8 +6,8 @@ import 'package:anymex/screens/anime/widgets/comments/controller/comments_contro
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -202,7 +202,7 @@ class _CommentSectionState extends State<CommentSection> {
           child: Row(
             children: [
               Expanded(
-                child: AnymexText(
+                child: AnymeXText(
                   text: 'Comments',
                   variant: TextVariant.semiBold,
                   color: colorScheme.onSurface,
@@ -212,7 +212,7 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ),
               5.width(),
-              AnymexText(
+              AnymeXText(
                 text: _getTotalCommentCount(controller.comments),
                 color: colorScheme.onSurfaceVariant,
                 size: 13,
@@ -815,7 +815,7 @@ class _CommentSectionState extends State<CommentSection> {
               Row(
                 children: [
                   Flexible(
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: comment.username,
                       variant: TextVariant.bold,
                       color: colorScheme.onSurface,

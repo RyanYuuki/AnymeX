@@ -12,8 +12,8 @@ import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/source_selector.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -268,7 +268,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                       const SliverToBoxAdapter(
                         child: SizedBox(
                           height: 500,
-                          child: Center(child: AnymexProgressIndicator()),
+                          child: Center(child: AnymeXProgressIndicator()),
                         ),
                       )
                     else if (chunkedChapters.isEmpty)
@@ -276,7 +276,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                         child: SizedBox(
                           height: 240,
                           child: Center(
-                            child: AnymexText(text: "No Chapters Found"),
+                            child: AnymeXText(text: "No Chapters Found"),
                           ),
                         ),
                       )
@@ -330,7 +330,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
             child: Row(
               children: [
                 Expanded(
-                  child: AnymexText(
+                  child: AnymeXText(
                     text: title.isEmpty ? controller.initialMedia.title : title,
                     variant: TextVariant.semiBold,
                     size: 14,
@@ -375,7 +375,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                             .opaque(0.3),
                       ),
                     ),
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: 'Wrong Title?',
                       size: 12,
                       variant: TextVariant.semiBold,
@@ -389,7 +389,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
           const SizedBox(height: 10),
           Row(
             children: [
-              const AnymexText(
+              const AnymeXText(
                 text: 'Chapters',
                 variant: TextVariant.bold,
                 size: 18,

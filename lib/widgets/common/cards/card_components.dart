@@ -3,8 +3,8 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -140,7 +140,7 @@ class MediaBadge extends StatelessWidget {
             children: [
               Icon(badgeIcon, size: 16, color: theme.colorScheme.onPrimary),
               const SizedBox(width: 4),
-              AnymexText(
+              AnymeXText(
                 text: badgeText,
                 color: theme.colorScheme.onPrimary,
                 size: 12,
@@ -171,7 +171,7 @@ class MediaBadge extends StatelessWidget {
                 color: isBlurred ? theme.colorScheme.primary : theme.colorScheme.onPrimary,
               ),
               const SizedBox(width: 4),
-              AnymexText(
+              AnymeXText(
                 text: badgeText,
                 color: isBlurred ? theme.colorScheme.primary : theme.colorScheme.onPrimary,
                 size: 11,
@@ -219,7 +219,7 @@ class MediaTitle extends StatelessWidget {
           ),
         ),
         padding: const EdgeInsets.all(8),
-        child: AnymexText(
+        child: AnymeXText(
           text: title,
           maxLines: maxLines,
           size: isDesktop ? 14 : 12,
@@ -233,7 +233,7 @@ class MediaTitle extends StatelessWidget {
 
     return SizedBox(
       height: 50,
-      child: AnymexText(
+      child: AnymeXText(
         text: title,
         maxLines: maxLines,
         size: isDesktop ? 14 : 12,
@@ -278,7 +278,7 @@ class MediaProgress extends StatelessWidget {
               color: theme.colorScheme.onPrimary,
             ),
             const SizedBox(width: 4),
-            AnymexText(
+            AnymeXText(
               text: progressText,
               color: theme.colorScheme.onPrimary,
               size: 12,

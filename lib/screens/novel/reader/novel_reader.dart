@@ -8,8 +8,8 @@ import 'package:anymex/screens/novel/reader/widgets/novel_content.dart';
 import 'package:anymex/screens/novel/reader/widgets/settings_view.dart';
 import 'package:anymex/screens/novel/reader/widgets/top_controls.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -83,7 +83,9 @@ class _NovelReaderState extends State<NovelReader>
         );
       }
       if (controller.useSystemReaderTheme) {
-        return Glow(child: content);
+        return AnymeXScaffold(
+  body: content
+);
       }
       return content;
     });
@@ -329,7 +331,7 @@ class _NovelReaderState extends State<NovelReader>
                         ),
                       ),
                       const SizedBox(height: 4),
-                      AnymexText(
+                      AnymeXText(
                         text: displayTitle,
                         size: 14,
                         variant: TextVariant.semiBold,

@@ -5,7 +5,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
@@ -74,7 +74,7 @@ class PluginManager {
   }) async {
     if (!context.mounted) return;
 
-    await AnymexSheet.custom(
+    await AnymeXSheet.custom(
       _PluginReleaseSheet(
         manager: this,
         release: release,
@@ -93,7 +93,7 @@ class PluginManager {
   }) async {
     if (!context.mounted) return;
 
-    await AnymexSheet.custom(
+    await AnymeXSheet.custom(
       _PluginReleaseSheet(
         manager: this,
         release: release,

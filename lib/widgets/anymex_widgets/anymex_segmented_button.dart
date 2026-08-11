@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 
-class AnymexSegmentedButton extends StatelessWidget {
+class AnymeXSegmentedButton extends StatelessWidget {
   final VoidCallback? onTap;
   final bool isSelected;
   final String? title;
@@ -9,7 +9,7 @@ class AnymexSegmentedButton extends StatelessWidget {
   final Widget? titleWidget;
   final EdgeInsets? padding;
 
-  const AnymexSegmentedButton({
+  const AnymeXSegmentedButton({
     super.key,
     this.onTap,
     required this.isSelected,

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,21 +9,21 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
-class FullscreenImageViewer extends StatefulWidget {
+class AnymeXFullscreenImageViewer extends StatefulWidget {
   final String imageUrl;
   final String tag;
 
-  const FullscreenImageViewer({
+  const AnymeXFullscreenImageViewer({
     super.key,
     required this.imageUrl,
     required this.tag,
   });
 
   @override
-  State<FullscreenImageViewer> createState() => _FullscreenImageViewerState();
+  State<AnymeXFullscreenImageViewer> createState() => _FullscreenImageViewerState();
 }
 
-class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
+class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
   Future<void> _saveImage(String url) async {
     try {
       snackBar("Downloading image...");

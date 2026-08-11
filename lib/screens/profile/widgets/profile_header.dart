@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:anymex/screens/profile/widgets/hover_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -105,7 +105,7 @@ class DesktopProfileHeader extends StatelessWidget {
                         Navigator.of(context, rootNavigator: true)
                             .push(
                           MaterialPageRoute(
-                            builder: (_) => FullscreenImageViewer(
+                            builder: (_) => AnymeXFullscreenImageViewer(
                               imageUrl: imageUrl,
                               tag: 'profile_banner_$name',
                             ),
@@ -714,7 +714,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         Navigator.of(context, rootNavigator: true)
                             .push(
                           MaterialPageRoute(
-                            builder: (_) => FullscreenImageViewer(
+                            builder: (_) => AnymeXFullscreenImageViewer(
                               imageUrl: imageUrl,
                               tag: 'profile_banner_$name',
                             ),
@@ -778,7 +778,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         if (avatarUrl.isNotEmpty) {
                           Navigator.of(context, rootNavigator: true).push(
                             MaterialPageRoute(
-                              builder: (_) => FullscreenImageViewer(
+                              builder: (_) => AnymeXFullscreenImageViewer(
                                 imageUrl: avatarUrl,
                                 tag: 'profile_avatar_$name',
                               ),

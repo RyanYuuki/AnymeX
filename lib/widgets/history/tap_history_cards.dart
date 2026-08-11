@@ -6,9 +6,9 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +64,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
         width: getResponsiveSize(context,
           mobileSize: MediaQuery.sizeOf(context).width / 1.5,
           desktopSize: MediaQuery.sizeOf(context).width / 3),
-        child: AnymexCard(
+        child: AnymeXCard(
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             side: BorderSide(
@@ -115,7 +115,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: AnymexText(
+                                      child: AnymeXText(
                                         text: media.title,
                                         size: 14,
                                         variant: TextVariant.bold,
@@ -143,7 +143,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                               size: 12,
                                             ),
                                             const SizedBox(width: 2),
-                                            AnymexText(
+                                            AnymeXText(
                                               text: media.rating,
                                               color: colorScheme.onPrimary,
                                               size: 11,
@@ -163,7 +163,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                   children: [
                                     // Time opened text
                                     Expanded(
-                                      child: AnymexText(
+                                      child: AnymeXText(
                                         text: 'Opened ${_getTimeAgo()}',
                                         size: 11,
                                         color: colorScheme.onSurfaceVariant,
@@ -182,7 +182,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                           borderRadius: BorderRadius.circular(
                                               4.multiplyRadius()),
                                         ),
-                                        child: AnymexText(
+                                        child: AnymeXText(
                                           text: media.format.toUpperCase(),
                                           size: 10,
                                           color: colorScheme.onSurfaceVariant,

@@ -1,7 +1,7 @@
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 
-class AnymexDropdown extends StatefulWidget {
+class AnymeXDropdown extends StatefulWidget {
   final List<DropdownItem> items;
   final DropdownItem? selectedItem;
   final Function(DropdownItem) onChanged;
@@ -11,7 +11,7 @@ class AnymexDropdown extends StatefulWidget {
   final VoidCallback? onActionPressed;
   final List<Widget>? actions;
 
-  const AnymexDropdown({
+  const AnymeXDropdown({
     super.key,
     required this.items,
     this.selectedItem,
@@ -24,10 +24,10 @@ class AnymexDropdown extends StatefulWidget {
   });
 
   @override
-  State<AnymexDropdown> createState() => _AnymexDropdownState();
+  State<AnymeXDropdown> createState() => _AnymexDropdownState();
 }
 
-class _AnymexDropdownState extends State<AnymexDropdown>
+class _AnymexDropdownState extends State<AnymeXDropdown>
     with TickerProviderStateMixin {
   static const double _dropdownMaxHeight = 320;
   static const double _dropdownSpacing = 8;

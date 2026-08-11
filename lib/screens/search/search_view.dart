@@ -19,7 +19,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/future_reusable_carousel.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
@@ -28,10 +28,10 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_search_bar.dart';
 import 'package:get/get.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 enum ViewMode { grid, list }
@@ -685,10 +685,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
+    return AnymeXScaffold(
+  resizeToAvoidBottomInset: false,
+  body: SafeArea(
           bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -735,9 +734,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               Expanded(child: _buildMainContent()),
             ],
           ),
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildModernSearchBar() {
@@ -747,90 +745,37 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
     final colors = Theme.of(context).colorScheme;
 
-    return SizedBox(
-      height: 44,
-      child: ValueListenableBuilder<TextEditingValue>(
-        valueListenable: _searchController,
-        builder: (context, value, child) {
-          final isNotEmpty = value.text.isNotEmpty;
-          return TextField(
-            controller: _searchController,
-            focusNode: _searchFocusNode,
-            style: TextStyle(
-              fontSize: 14,
-              fontFamily: 'Poppins',
-              fontWeight: FontWeight.w500,
-              color: colors.onSurface,
-            ),
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: colors.surfaceContainerHighest.withOpacity(0.35),
-              hintText: hintText,
-              hintStyle: TextStyle(
-                fontSize: 13,
-                fontFamily: 'Poppins',
-                color: colors.onSurface.withOpacity(0.45),
-              ),
-              prefixIcon: Icon(
-                IconlyLight.search,
-                size: 18,
-                color: colors.onSurface.withOpacity(0.5),
-              ),
-              suffixIcon: isNotEmpty
-                  ? IconButton(
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {
-                          _searchState = SearchState.initial;
-                          _searchResults = null;
-                          _currentPage = 1;
-                          _isLoadingMore = false;
-                          _hasMoreResults = false;
-                          _lastSearchQuery = '';
-                          _lastApiFilters = {};
-                          _extensionSearchItems.clear();
-                        });
-                      },
-                      icon: Icon(
-                        Icons.cancel_rounded,
-                        size: 18,
-                        color: colors.onSurface.withOpacity(0.5),
-                      ),
-                    )
-                  : (!isExtensionMode &&
-                          serviceHandler.serviceType.value == ServicesType.anilist)
-                      ? IconButton(
-                          onPressed: _showFilterBottomSheet,
-                          icon: Icon(
-                            Icons.tune_rounded,
-                            size: 18,
-                            color: _activeFilters.isNotEmpty
-                                ? colors.primary
-                                : colors.onSurface.withOpacity(0.5),
-                          ),
-                        )
-                      : null,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(22),
-            borderSide: BorderSide(
-              color: colors.onSurface.withOpacity(0.08),
-              width: 0.5,
+    return AnymeXSearchBar(
+      controller: _searchController,
+      focusNode: _searchFocusNode,
+      hintText: hintText,
+      onSubmitted: (query) => _performSearch(query: query),
+      onClear: () {
+        setState(() {
+          _searchState = SearchState.initial;
+          _searchResults = null;
+          _currentPage = 1;
+          _isLoadingMore = false;
+          _hasMoreResults = false;
+          _lastSearchQuery = '';
+          _lastApiFilters = {};
+          _extensionSearchItems.clear();
+        });
+      },
+      trailing: [
+        if (!isExtensionMode &&
+            serviceHandler.serviceType.value == ServicesType.anilist)
+          IconButton(
+            onPressed: _showFilterBottomSheet,
+            icon: Icon(
+              Icons.tune_rounded,
+              size: 18,
+              color: _activeFilters.isNotEmpty
+                  ? colors.primary
+                  : colors.onSurface.withOpacity(0.5),
             ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(22),
-            borderSide: BorderSide(
-              color: colors.primary.withOpacity(0.4),
-              width: 1.2,
-            ),
-          ),
-        ),
-        onSubmitted: (query) => _performSearch(query: query),
-          );
-        },
-      ),
+      ],
     );
   }
 
@@ -1409,12 +1354,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 24),
-          const AnymexText.bold(
+          const AnymeXText.bold(
             text: 'Oops! Something went wrong',
             size: 18,
           ),
           const SizedBox(height: 8),
-          AnymexText.regular(
+          AnymeXText.regular(
             text: _errorMessage ?? 'Please try again later',
             textAlign: TextAlign.center,
             size: 14,
@@ -1424,7 +1369,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ElevatedButton.icon(
             onPressed: () => _performSearch(),
             icon: Icon(Iconsax.refresh, color: context.colors.onPrimary),
-            label: const AnymexText.semiBold(text: 'Try Again', size: 14),
+            label: const AnymeXText.semiBold(text: 'Try Again', size: 14),
             style: ElevatedButton.styleFrom(
               backgroundColor: context.colors.primary,
               foregroundColor: context.colors.onPrimary,
@@ -1457,12 +1402,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 24),
-          const AnymexText.bold(
+          const AnymeXText.bold(
             text: 'No results found',
             size: 18,
           ),
           const SizedBox(height: 8),
-          AnymexText.regular(
+          AnymeXText.regular(
             text: 'Try adjusting your search terms or filters',
             textAlign: TextAlign.center,
             size: 14,
@@ -1583,7 +1528,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AnymexText(
+                    AnymeXText(
                       text: media.title,
                       maxLines: 2,
                       size: 16,

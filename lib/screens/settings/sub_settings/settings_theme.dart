@@ -9,9 +9,9 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/liquid.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/dialogs/logo_animation_preview_dialog.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -22,7 +22,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 
 import 'package:provider/provider.dart';
 
@@ -192,9 +192,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Column(children: [
+    return AnymeXScaffold(
+  body: Column(children: [
           const NestedHeader(title: 'Theme'),
           Padding(
             padding:
@@ -263,9 +262,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
               ),
             ),
           ),
-        ]),
-      ),
-    );
+        ])
+);
   }
 
   Widget _buildThemeTab() {
@@ -299,12 +297,12 @@ class _SettingsThemeState extends State<SettingsTheme> {
         ),
         if (customTheme) ...[
           const SizedBox(height: 20),
-          AnymexCard(
+          AnymeXCard(
             padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymexText(
+                AnymeXText(
                   text: "Custom Themes",
                   size: 16,
                   variant: TextVariant.semiBold,

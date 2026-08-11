@@ -9,9 +9,9 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/watchium/watchium_page.dart';
@@ -28,7 +28,7 @@ class SettingsSheet extends StatelessWidget {
   final serviceHandler = Get.find<ServiceHandler>();
 
   static void show(BuildContext context) {
-    AnymexSheet(
+    AnymeXSheet(
       customWidget: SettingsSheet(),
     ).show(context);
   }
@@ -65,7 +65,7 @@ class SettingsSheet extends StatelessWidget {
         },
     ];
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(Get.context!).size.height * 0.95,
@@ -92,13 +92,13 @@ class SettingsSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const AnymexText(
+                const AnymeXText(
                   text: "Choose Provider",
                   size: 20,
                   variant: TextVariant.bold,
                 ),
                 const SizedBox(height: 5),
-                AnymexText(
+                AnymeXText(
                   text: "Select your preferred content source",
                   size: 14,
                   color: theme.colorScheme.onSurface
@@ -174,7 +174,7 @@ class SettingsSheet extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    AnymexText(
+                                    AnymeXText(
                                       text: service['name'] as String,
                                       size: 16,
                                       variant: TextVariant.semiBold,
@@ -182,7 +182,7 @@ class SettingsSheet extends StatelessWidget {
                                     ),
                                     if (service['desc'] != null) ...[
                                       const SizedBox(height: 2),
-                                      AnymexText(
+                                      AnymeXText(
                                         text: service['desc'] as String,
                                         size: 12,
                                         color: theme.colorScheme.onSurface
@@ -296,7 +296,7 @@ class SettingsSheet extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymexText(
+                AnymeXText(
                   text: serviceHandler.profileData.value.name ?? 'Guest',
                   variant: TextVariant.semiBold,
                   size: 14,
@@ -314,7 +314,7 @@ class SettingsSheet extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        AnymexText(
+                        AnymeXText(
                           text: serviceHandler.isLoggedIn.value
                               ? 'Tap to logout'
                               : 'Tap to login',
@@ -498,7 +498,7 @@ class SettingsSheet extends StatelessWidget {
             finalIcon,
             const SizedBox(width: 12),
             Expanded(
-              child: AnymexText(
+              child: AnymeXText(
                 text: item.label,
                 size: 13.5,
                 variant: TextVariant.semiBold,

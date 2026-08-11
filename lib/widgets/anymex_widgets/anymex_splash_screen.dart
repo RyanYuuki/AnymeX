@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 
 /// Splash Screen with Animated Logo
 class AnymeXSplashScreen extends StatefulWidget {

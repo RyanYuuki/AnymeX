@@ -8,7 +8,7 @@ import 'package:anymex/screens/manga/widgets/reader/reader_color_overlay.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_page_actions_dialog.dart';
 import 'package:anymex/widgets/subsampling_scale_image_view/subsampling_image_provider.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +104,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AnymexProgressIndicator(),
+          AnymeXProgressIndicator(),
           SizedBox(height: 16),
           Text('Loading pages...'),
         ],
@@ -394,7 +394,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnymexProgressIndicator(value: progress),
+            AnymeXProgressIndicator(value: progress),
             const SizedBox(height: 8),
             Text('Loading page ${pageIndex + 1}$progressText...'),
           ],

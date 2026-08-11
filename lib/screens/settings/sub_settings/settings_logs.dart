@@ -5,8 +5,8 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,9 +20,8 @@ class SettingsLogs extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
 
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Logs'),
             Expanded(
@@ -36,7 +35,7 @@ class SettingsLogs extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                         title: 'Logs',
                         initialExpanded: true,
                         content: Column(
@@ -121,8 +120,7 @@ class SettingsLogs extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }

@@ -9,9 +9,9 @@ import 'package:anymex/screens/library/editor/list_editor.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
-import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_icon_wrapper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -161,7 +161,7 @@ class CustomSliderTile extends StatelessWidget {
           children: [
             Row(
               children: [
-                AnymexIcon(icon, size: 30, color: context.colors.primary),
+                AnymeXIcon(icon, size: 30, color: context.colors.primary),
                 const SizedBox(width: 20),
                 Expanded(
                   child: Column(
@@ -196,7 +196,7 @@ class CustomSliderTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
                 children: [
-                  AnymexText(
+                  AnymeXText(
                     text: sliderValue.toInt() == 0
                         ? 'Auto'
                         : (sliderValue % 1 == 0
@@ -219,7 +219,7 @@ class CustomSliderTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  AnymexText(
+                  AnymeXText(
                     text: max % 1 == 0
                         ? max.toInt().toString()
                         : max.toStringAsFixed(1),

@@ -6,16 +6,16 @@ import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/screens/settings/widgets/carousel_style_selector.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 class SettingsUi extends StatefulWidget {
@@ -49,9 +49,8 @@ class _SettingsUiState extends State<SettingsUi> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-        child: Scaffold(
-            body: Column(children: [
+    return AnymeXScaffold(
+  body: Column(children: [
       const NestedHeader(title: 'UI'),
       Expanded(
         child: SingleChildScrollView(
@@ -64,7 +63,7 @@ class _SettingsUiState extends State<SettingsUi> {
                     () => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AnymexExpansionTile(
+                        AnymeXExpansionTile(
                             title: 'Common',
                             initialExpanded: true,
                             content: Column(
@@ -143,7 +142,7 @@ class _SettingsUiState extends State<SettingsUi> {
                                 10.height(),
                               ],
                             )),
-                        AnymexExpansionTile(
+                        AnymeXExpansionTile(
                             title: 'Extras',
                             content: Column(
                               children: [
@@ -212,7 +211,8 @@ class _SettingsUiState extends State<SettingsUi> {
               )),
         ),
       ),
-    ])));
+    ])
+);
   }
 
   void _showReorderTabsDialog(BuildContext context) {
@@ -240,7 +240,7 @@ class _SettingsUiState extends State<SettingsUi> {
           builder: (context, setDialogState) {
             final theme = Theme.of(context);
 
-            return AnymexDialog(
+            return AnymeXDialog(
               title: 'Reorder Navigation Tabs',
               contentWidget: SizedBox(
                 width: double.maxFinite,
@@ -337,7 +337,7 @@ class _SettingsUiState extends State<SettingsUi> {
                                       color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                     const SizedBox(width: 10),
-                                    AnymexText(
+                                    AnymeXText(
                                       text: isSimkl ? (tab == 'Anime' ? 'Movies' : (tab == 'Manga' ? 'Series' : tab)) : tab,
                                       variant: TextVariant.semiBold,
                                     ),
@@ -422,7 +422,7 @@ class _SettingsUiState extends State<SettingsUi> {
                                       color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
                                     ),
                                     const SizedBox(width: 10),
-                                    AnymexText(
+                                    AnymeXText(
                                       text: isSimkl ? (tab == 'Anime' ? 'Movies' : (tab == 'Manga' ? 'Series' : tab)) : tab,
                                       variant: TextVariant.semiBold,
                                       color: theme.colorScheme.onSurface.withOpacity(0.6),

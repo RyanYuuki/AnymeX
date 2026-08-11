@@ -1,15 +1,15 @@
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 
-class AnymexSheet extends StatelessWidget {
+class AnymeXSheet extends StatelessWidget {
   final String? title;
   final String? message;
   final Widget? contentWidget;
   final Widget? customWidget;
   final bool showDragHandle;
 
-  const AnymexSheet({
+  const AnymeXSheet({
     super.key,
     this.title,
     this.message,
@@ -23,7 +23,7 @@ class AnymexSheet extends StatelessWidget {
     BuildContext context, {
     bool showDragHandle = false,
   }) =>
-      AnymexSheet(
+      AnymeXSheet(
         customWidget: widget,
         showDragHandle: showDragHandle,
       ).show<T>(context);
@@ -36,7 +36,7 @@ class AnymexSheet extends StatelessWidget {
       isScrollControlled: true,
       showDragHandle: false,
       backgroundColor: Colors.transparent,
-      builder: (context) => AnymexSheet(
+      builder: (context) => AnymeXSheet(
         title: title,
         message: message,
         contentWidget: contentWidget,
@@ -77,12 +77,12 @@ class AnymexSheet extends StatelessWidget {
                 customWidget!
               else ...[
                 if (title != null) ...[
-                  AnymexText(text: title!, size: 18, variant: TextVariant.bold),
+                  AnymeXText(text: title!, size: 18, variant: TextVariant.bold),
                   const SizedBox(height: 10),
                 ],
                 contentWidget ??
                     (message != null
-                        ? AnymexText(
+                        ? AnymeXText(
                             text: message!,
                             textAlign: TextAlign.center,
                             size: 14)

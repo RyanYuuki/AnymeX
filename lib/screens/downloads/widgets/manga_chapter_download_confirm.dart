@@ -3,8 +3,8 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -81,12 +81,12 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymexText(
+                    const AnymeXText(
                       text: 'Start Manga Download',
                       variant: TextVariant.bold,
                       size: 16,
                     ),
-                    AnymexText(
+                    AnymeXText(
                       text: media.name ?? '',
                       size: 13,
                       maxLines: 1,
@@ -144,7 +144,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                     size: 16, color: theme.primary),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: AnymexText(
+                  child: AnymeXText(
                     text:
                         'Images will be downloaded in full quality. Each chapter is stored in its own folder.',
                     size: 12,
@@ -156,7 +156,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           SafeArea(
-            child: AnymexButton(
+            child: AnymeXContainerButton(
               onTap: () => _startDownload(context),
               color: theme.primary,
               radius: 16,
@@ -167,7 +167,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                   Icon(HugeIcons.strokeRoundedDownload04,
                       size: 20, color: theme.onPrimary),
                   const SizedBox(width: 8),
-                  AnymexText(
+                  AnymeXText(
                     text:
                         'Download $count Chapter${count != 1 ? 's' : ''}',
                     size: 15,
@@ -210,14 +210,14 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: theme.primary),
         const SizedBox(width: 10),
-        AnymexText(
+        AnymeXText(
           text: label,
           size: 13,
           color: theme.onSurface.opaque(0.6),
         ),
         const Spacer(),
         Flexible(
-          child: AnymexText(
+          child: AnymeXText(
             text: value,
             size: 13,
             variant: TextVariant.semiBold,

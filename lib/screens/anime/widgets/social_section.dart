@@ -6,7 +6,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:get/get.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -120,7 +120,7 @@ class SocialSection extends StatelessWidget {
                           Icon(Icons.star_rounded,
                               size: 12, color: theme.onPrimary),
                           const SizedBox(width: 4),
-                          AnymexText(
+                          AnymeXText(
                             text: Get.find<AnilistAuth>().isLoggedIn.value
                                 ? Get.find<AnilistAuth>().formatScore(user.userScore)
                                 : (user.userScore! > 10.0 ? user.userScore! / 10.0 : user.userScore!).toStringAsFixed(1),
@@ -136,7 +136,7 @@ class SocialSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             if (status.isNotEmpty)
-              AnymexText(
+              AnymeXText(
                 text: status,
                 size: 12,
                 color: theme.onSurface.withOpacity(0.7),
@@ -144,7 +144,7 @@ class SocialSection extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             const SizedBox(height: 2),
-            AnymexText(
+            AnymeXText(
               text: user.userName ?? 'Unknown',
               size: 13,
               maxLines: 1,

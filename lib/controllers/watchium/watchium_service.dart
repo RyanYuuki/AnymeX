@@ -10,12 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class WatchiumService extends GetxController {
   static const _joinTimeout = Duration(seconds: 10);
 
-  IO.Socket? _socket;
+  io.Socket? _socket;
   String? _token;
   String? _userId;
   String? _currentRoomCode;
@@ -23,17 +23,12 @@ class WatchiumService extends GetxController {
   Timer? _heartbeatTimer;
   String? _lastClientId;
 
-  /// Completer for awaiting join confirmation (party:state or party:error).
-  /// Completes true on party:state, false on party:error with JOIN_FAILED, or timeout.
   Completer<bool>? _joinCompleter;
 
-  /// Password to use for the next join attempt.
   String? _pendingPassword;
 
-  /// Password of the currently joined room (for auto-rejoin after disconnect).
   String? _roomPassword;
 
-  // Reactive state
   final Rx<WatchiumRoomState?> roomState = Rx(null);
   final RxList<WatchiumChatMessage> chatMessages = RxList();
   final RxList<WatchiumReaction> reactions = RxList();
@@ -46,24 +41,18 @@ class WatchiumService extends GetxController {
 
   String get serverUrl =>
       dotenv.env['WATCHIUM_SERVER_URL'] ??
-          WatchiumKeys.serverUrl.get<String>('');
+      WatchiumKeys.serverUrl.get<String>('');
 
-  String get _apiToken =>
-      dotenv.env['WATCHIUM_API_TOKEN'] ?? '';
+  String get _apiToken => dotenv.env['WATCHIUM_API_TOKEN'] ?? '';
 
-  /// True when we have a confirmed room (party:state received and we're connected).
   final RxBool inRoom = false.obs;
 
-  /// True when a join request is in-flight (waiting for party:state or party:error).
   final RxBool isJoining = false.obs;
 
-  /// True when the in-player watch party side pane is open.
   final RxBool isPartyPaneOpened = false.obs;
 
-  /// Id of the locally logged-in user, or null when not authenticated.
   String? get currentUserId => _userId;
 
-  /// True if the current user is a co-host (not host).
   bool get isCohost {
     if (_userId == null) return false;
     final me = roomState.value?.members
@@ -71,11 +60,8 @@ class WatchiumService extends GetxController {
     return me != null && me.isNotEmpty;
   }
 
-  /// True if the user can manage chat settings (host or cohost).
   bool get canModerateChat => isHost.value || isCohost;
 
-  /// Whether the member is following the host's playback (seek/play/pause locked).
-  /// Stored locally — each member chooses their own mode. Default true.
   final RxBool followHost = (WatchiumKeys.followHost.get<bool>(true)).obs;
 
   void setFollowHost(bool value) {
@@ -83,9 +69,6 @@ class WatchiumService extends GetxController {
     WatchiumKeys.followHost.set(value);
   }
 
-  /// Shows a leave-room confirmation dialog if the user is in a room.
-  /// Returns true if the player should close (no room / user confirmed leave).
-  /// Returns false if the user cancelled.
   static Future<bool> confirmAndLeave(BuildContext context) async {
     try {
       final watchium = Get.find<WatchiumService>();
@@ -118,7 +101,6 @@ class WatchiumService extends GetxController {
     return true;
   }
 
-  /// True if the user can send chat (not disabled, not announcement mode as member).
   bool get canSendChat {
     final state = roomState.value;
     if (state == null) return false;
@@ -130,8 +112,6 @@ class WatchiumService extends GetxController {
   void _updateInRoom() {
     inRoom.value = _currentRoomCode != null && _socket?.connected == true;
   }
-
-  // ---- Auth ----
 
   Future<bool> login() async {
     try {
@@ -149,16 +129,11 @@ class WatchiumService extends GetxController {
       String providerUserId = profile.id ?? '';
       String username = profile.name ?? 'Unknown';
       String? avatarUrl = profile.avatar;
+      provider = serviceHandler.serviceType.value.name;
 
-      if (serviceHandler.serviceType.value == ServicesType.anilist) {
-        provider = 'anilist';
-      } else if (serviceHandler.serviceType.value == ServicesType.mal) {
-        provider = 'mal';
-      } else if (serviceHandler.serviceType.value == ServicesType.simkl) {
-        provider = 'simkl';
-      }
-
-      Logger.i('Logging in with provider=$provider, userId=$providerUserId, username=$username', 'WATCHIUM');
+      Logger.i(
+          'Logging in with provider=$provider, userId=$providerUserId, username=$username',
+          'WATCHIUM');
 
       final response = await http.post(
         Uri.parse('$serverUrl/api/auth/login'),
@@ -193,8 +168,6 @@ class WatchiumService extends GetxController {
     }
   }
 
-  // ---- Socket Connection ----
-
   void _connectSocket() {
     if (_socket?.connected == true) {
       Logger.d('Socket already connected, skipping', 'WATCHIUM');
@@ -204,9 +177,9 @@ class WatchiumService extends GetxController {
     isConnecting.value = true;
     Logger.i('Connecting socket to $serverUrl/watch', 'WATCHIUM');
 
-    _socket = IO.io(
+    _socket = io.io(
       '$serverUrl/watch',
-      IO.OptionBuilder()
+      io.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()
           .setAuth({
@@ -222,12 +195,10 @@ class WatchiumService extends GetxController {
       error.value = '';
       Logger.i('Socket connected (id=${_socket?.id})', 'WATCHIUM');
 
-      // Auto-rejoin if we were in a room before the disconnect.
-      // The server loses socket mapping on disconnect, so we must
-      // re-emit party:join to get back into the room.
       final pendingRoom = _currentRoomCode;
       if (pendingRoom != null && roomState.value != null) {
-        Logger.i('Auto-rejoining room $pendingRoom after reconnect', 'WATCHIUM');
+        Logger.i(
+            'Auto-rejoining room $pendingRoom after reconnect', 'WATCHIUM');
         _socket!.emit('party:join', {
           'code': pendingRoom,
           if (_roomPassword != null) 'password': _roomPassword,
@@ -248,7 +219,7 @@ class WatchiumService extends GetxController {
       isConnected.value = false;
       isConnecting.value = false;
       error.value = 'Connection failed';
-      // Fail any pending join
+
       _failJoinCompleter('Connection failed');
       _updateInRoom();
       Logger.e('Socket connect error', error: err, loggerName: 'WATCHIUM');
@@ -262,8 +233,10 @@ class WatchiumService extends GetxController {
       isHost.value = _isHost;
       _currentRoomCode = state.code;
       _updateInRoom();
-      Logger.d('party:state received, host=${state.hostUserId}, members=${state.members.length}, code=${state.code}', 'WATCHIUM');
-      // Complete the pending join completer with success
+      Logger.d(
+          'party:state received, host=${state.hostUserId}, members=${state.members.length}, code=${state.code}',
+          'WATCHIUM');
+
       _joinCompleter?.complete(true);
       _joinCompleter = null;
       isJoining.value = false;
@@ -286,7 +259,9 @@ class WatchiumService extends GetxController {
         maxMembers: current.maxMembers,
         createdAt: current.createdAt,
       );
-      Logger.d('party:sync received, positionSec=${pb['positionSec']}, isPlaying=${pb['isPlaying']}', 'WATCHIUM');
+      Logger.d(
+          'party:sync received, positionSec=${pb['positionSec']}, isPlaying=${pb['isPlaying']}',
+          'WATCHIUM');
     });
 
     _socket!.on('party:content', (data) {
@@ -309,7 +284,9 @@ class WatchiumService extends GetxController {
         maxMembers: current.maxMembers,
         createdAt: current.createdAt,
       );
-      Logger.d('party:content received, anime=${content.animeTitle}, episode=${content.episodeNumber}', 'WATCHIUM');
+      Logger.d(
+          'party:content received, anime=${content.animeTitle}, episode=${content.episodeNumber}',
+          'WATCHIUM');
     });
 
     _socket!.on('party:member', (data) {
@@ -319,8 +296,8 @@ class WatchiumService extends GetxController {
       final members = (memberData['members'] as List)
           .map((e) => WatchiumMember.fromJson(e as Map<String, dynamic>))
           .toList();
-      final newHostUserId = memberData['hostUserId'] as String? ??
-          current.hostUserId;
+      final newHostUserId =
+          memberData['hostUserId'] as String? ?? current.hostUserId;
       roomState.value = WatchiumRoomState(
         code: current.code,
         hostUserId: newHostUserId,
@@ -333,7 +310,7 @@ class WatchiumService extends GetxController {
         maxMembers: current.maxMembers,
         createdAt: current.createdAt,
       );
-      // Update isHost in case host was transferred
+
       final nowHost = newHostUserId == _userId;
       if (nowHost != _isHost) {
         _isHost = nowHost;
@@ -349,11 +326,15 @@ class WatchiumService extends GetxController {
       if (messages.isNotEmpty) {
         chatMessages.clear();
         for (final m in messages) {
-          chatMessages.add(WatchiumChatMessage.fromJson(m as Map<String, dynamic>));
+          chatMessages
+              .add(WatchiumChatMessage.fromJson(m as Map<String, dynamic>));
         }
-        // Keep max 100
-        while (chatMessages.length > 100) chatMessages.removeAt(0);
-        Logger.i('party:history: loaded ${messages.length} messages', 'WATCHIUM');
+
+        while (chatMessages.length > 100) {
+          chatMessages.removeAt(0);
+        }
+        Logger.i(
+            'party:history: loaded ${messages.length} messages', 'WATCHIUM');
       }
     });
 
@@ -379,9 +360,9 @@ class WatchiumService extends GetxController {
       final errCode = errData['code'] as String? ?? '';
       final errMsg = errData['message'] as String? ?? 'Unknown error';
       error.value = errMsg;
-      Logger.w('party:error received: code=$errCode, message=$errMsg', 'WATCHIUM');
+      Logger.w(
+          'party:error received: code=$errCode, message=$errMsg', 'WATCHIUM');
 
-      // If the server rate limited us, surface it to the user.
       if (errCode == 'RATE_LIMITED') {
         warningSnackBar(
           errMsg,
@@ -390,11 +371,9 @@ class WatchiumService extends GetxController {
         );
       }
 
-      // If this is a join rejection, fail the completer and clear stale state
       if (errCode == 'JOIN_FAILED') {
         _failJoinCompleter(errMsg);
-        // If no completer was pending, this was an auto-rejoin after reconnect.
-        // The room is gone — clear all stale state so the UI reflects reality.
+
         if (_joinCompleter == null && roomState.value != null) {
           Logger.w('Auto-rejoin failed, clearing stale room state', 'WATCHIUM');
           _leaveRoomInternal();
@@ -409,26 +388,31 @@ class WatchiumService extends GetxController {
       if (current == null) return;
       final changedByKey = settingsData['changedByKey'] as String?;
       final changedBy = settingsData['changedBy'] as String?;
-      final newChatDisabled = settings['chatDisabled'] as bool? ?? current.chatDisabled;
-      final newAnnouncementMode = settings['announcementMode'] as bool? ?? current.announcementMode;
+      final newChatDisabled =
+          settings['chatDisabled'] as bool? ?? current.chatDisabled;
+      final newAnnouncementMode =
+          settings['announcementMode'] as bool? ?? current.announcementMode;
       roomState.value = WatchiumRoomState(
         code: current.code,
         hostUserId: current.hostUserId,
         members: current.members,
         content: current.content,
         playback: current.playback,
-        onlyHostControls: settings['onlyHostControls'] as bool? ?? current.onlyHostControls,
+        onlyHostControls:
+            settings['onlyHostControls'] as bool? ?? current.onlyHostControls,
         chatDisabled: newChatDisabled,
         announcementMode: newAnnouncementMode,
         maxMembers: current.maxMembers,
         createdAt: current.createdAt,
       );
-      Logger.i('party:settings: chatDisabled=$newChatDisabled, announcementMode=$newAnnouncementMode (changedBy=$changedBy, key=$changedByKey)', 'WATCHIUM');
+      Logger.i(
+          'party:settings: chatDisabled=$newChatDisabled, announcementMode=$newAnnouncementMode (changedBy=$changedBy, key=$changedByKey)',
+          'WATCHIUM');
     });
 
     _socket!.on('party:closed', (data) {
-      final reason = (data as Map<String, dynamic>)['reason'] as String? ??
-          'closed';
+      final reason =
+          (data as Map<String, dynamic>)['reason'] as String? ?? 'closed';
       _leaveRoomInternal();
       error.value = 'Room $reason';
       Logger.w('party:closed, reason=$reason', 'WATCHIUM');
@@ -438,8 +422,6 @@ class WatchiumService extends GetxController {
     Logger.d('Socket connect() called', 'WATCHIUM');
   }
 
-  /// Notify (via snackbar) when a member joins or leaves the room,
-  /// depending on the user's notification settings.
   void _handleMemberChanges(
       List<WatchiumMember> oldMembers, List<WatchiumMember> newMembers) {
     if (oldMembers.isEmpty || newMembers.isEmpty) return;
@@ -449,8 +431,7 @@ class WatchiumService extends GetxController {
     if (WatchiumKeys.notifyOnMemberJoin.get<bool>(true)) {
       for (final m in newMembers) {
         if (!oldIds.contains(m.userId) && m.userId != _userId) {
-          infoSnackBar('${m.username} joined the party',
-              title: 'New member');
+          infoSnackBar('${m.username} joined the party', title: 'New member');
         }
       }
     }
@@ -464,21 +445,18 @@ class WatchiumService extends GetxController {
     }
   }
 
-  /// Fail the current join completer (if any) and clean up pending join state.
   void _failJoinCompleter(String message) {
     if (_joinCompleter != null && !_joinCompleter!.isCompleted) {
       _joinCompleter!.complete(false);
     }
     _joinCompleter = null;
     isJoining.value = false;
-    // Clear any stale room state from a failed join
+
     if (roomState.value == null) {
       _currentRoomCode = null;
       _updateInRoom();
     }
   }
-
-  // ---- Room Actions ----
 
   Future<String?> createRoom({
     required String animeTitle,
@@ -494,7 +472,8 @@ class WatchiumService extends GetxController {
     int maxMembers = 10,
     String? password,
   }) async {
-    Logger.i('Creating room: anime="$animeTitle", episode=$episodeNumber', 'WATCHIUM');
+    Logger.i('Creating room: anime="$animeTitle", episode=$episodeNumber',
+        'WATCHIUM');
     try {
       final ok = await login();
       if (!ok) return null;
@@ -537,11 +516,11 @@ class WatchiumService extends GetxController {
       roomCode.value = code;
       Logger.i('Room created, code=$code', 'WATCHIUM');
 
-      // Connect socket and wait for join confirmation
       _connectSocket();
       final joined = await _waitForJoin(code);
       if (!joined) {
-        Logger.w('Failed to join created room $code: ${error.value}', 'WATCHIUM');
+        Logger.w(
+            'Failed to join created room $code: ${error.value}', 'WATCHIUM');
         return null;
       }
 
@@ -560,16 +539,15 @@ class WatchiumService extends GetxController {
       final ok = await login();
       if (!ok) return false;
 
-      // If already in this room
       if (_currentRoomCode == code && inRoom.value && roomState.value != null) {
         Logger.d('Already in room $code', 'WATCHIUM');
         error.value = 'You are already in this room';
         return false;
       }
 
-      // If in a different room, don't auto-leave — let caller decide
       if (_currentRoomCode != null && _currentRoomCode != code) {
-        Logger.i('Already in room $_currentRoomCode, cannot join $code', 'WATCHIUM');
+        Logger.i(
+            'Already in room $_currentRoomCode, cannot join $code', 'WATCHIUM');
         error.value = 'You are already in another room. Leave it first.';
         return false;
       }
@@ -578,7 +556,6 @@ class WatchiumService extends GetxController {
       _pendingPassword = password;
       _connectSocket();
 
-      // Wait for join confirmation (party:state) or rejection (party:error)
       final joined = await _waitForJoin(code);
       if (!joined) {
         Logger.w('Join room $code failed: ${error.value}', 'WATCHIUM');
@@ -593,10 +570,8 @@ class WatchiumService extends GetxController {
       return false;
     }
   }
-  /// Emit party:join and wait for party:state (success) or party:error (failure).
-  /// Returns true if join was confirmed, false otherwise.
+
   Future<bool> _waitForJoin(String code) async {
-    // Wait for socket to connect first
     if (_socket?.connected != true) {
       Logger.d('Waiting for socket to connect...', 'WATCHIUM');
       for (int i = 0; i < 50; i++) {
@@ -613,32 +588,28 @@ class WatchiumService extends GetxController {
       }
     }
 
-    // Set up the completer
     _joinCompleter = Completer<bool>();
     isJoining.value = true;
     error.value = '';
 
-    // Emit the join
     Logger.d('Emitting party:join for code=$code', 'WATCHIUM');
     _socket!.emitWithAck('party:join', {
       'code': code,
       if (_pendingPassword != null) 'password': _pendingPassword,
     });
-    // Store password for auto-rejoin after disconnect
+
     _roomPassword = _pendingPassword;
     _pendingPassword = null;
 
-    // Wait with timeout
-    final result = await _joinCompleter!.future
-        .timeout(_joinTimeout, onTimeout: () {
+    final result =
+        await _joinCompleter!.future.timeout(_joinTimeout, onTimeout: () {
       Logger.w('Join timed out for code=$code', 'WATCHIUM');
       return false;
     });
 
     if (!result) {
-      // Join was rejected or timed out — clean up
       isJoining.value = false;
-      // If no state was received, the room is invalid
+
       if (roomState.value == null || roomState.value!.code != code) {
         _currentRoomCode = null;
         _updateInRoom();
@@ -647,24 +618,21 @@ class WatchiumService extends GetxController {
 
     return result;
   }
+
   void leaveRoom() {
     Logger.i('Leaving room $_currentRoomCode', 'WATCHIUM');
     if (_currentRoomCode == null) return;
     _socket?.emit('party:leave', {'code': _currentRoomCode});
     _leaveRoomInternal();
-    // Disconnect socket to guarantee backend cleanup.
-    // Reconnects automatically on next join.
+
     _socket?.disconnect();
   }
 
-  /// Leave the room and close the player screen.
   void leaveRoomAndClosePlayer() {
     leaveRoom();
     Get.back();
   }
 
-  /// Force-leave locally without sending to server.
-  /// Used when the user is stuck in a ghost/broken room state.
   void forceLeaveRoom() {
     Logger.w('Force leaving room $_currentRoomCode (local only)', 'WATCHIUM');
     _joinCompleter?.complete(false);
@@ -701,14 +669,15 @@ class WatchiumService extends GetxController {
     _userId = null;
   }
 
-  // ---- Playback Sync (Host) ----
-
   void sendControl(String action, {double? positionSec, double? rate}) {
     if (_currentRoomCode == null || !_isHost) {
-      Logger.w('sendControl skipped: not in room or not host (action=$action)', 'WATCHIUM');
+      Logger.w('sendControl skipped: not in room or not host (action=$action)',
+          'WATCHIUM');
       return;
     }
-    Logger.d('sendControl: action=$action, positionSec=$positionSec, rate=$rate', 'WATCHIUM');
+    Logger.d(
+        'sendControl: action=$action, positionSec=$positionSec, rate=$rate',
+        'WATCHIUM');
     _socket?.emit('party:control', {
       'code': _currentRoomCode,
       'action': action,
@@ -717,19 +686,26 @@ class WatchiumService extends GetxController {
     });
   }
 
-  void sendPlay() { Logger.d('sendPlay', 'WATCHIUM'); sendControl('play'); }
-  void sendPause() { Logger.d('sendPause', 'WATCHIUM'); sendControl('pause'); }
+  void sendPlay() {
+    Logger.d('sendPlay', 'WATCHIUM');
+    sendControl('play');
+  }
+
+  void sendPause() {
+    Logger.d('sendPause', 'WATCHIUM');
+    sendControl('pause');
+  }
+
   void sendSeek(double positionSec) {
     Logger.d('sendSeek: $positionSec', 'WATCHIUM');
     sendControl('seek', positionSec: positionSec);
   }
+
   void sendRate(double rate) {
     Logger.d('sendRate: $rate', 'WATCHIUM');
     sendControl('rate', rate: rate);
   }
 
-  /// Sends a single heartbeat with the current playback position and state.
-  /// Called by [WatchiumSyncController] on a 3-second periodic timer.
   void sendHeartbeat(double positionSec, bool isPlaying) {
     if (_currentRoomCode == null || !_isHost) {
       Logger.w('sendHeartbeat skipped: not in room or not host', 'WATCHIUM');
@@ -748,8 +724,6 @@ class WatchiumService extends GetxController {
     Logger.d('Heartbeat stopped', 'WATCHIUM');
   }
 
-  // ---- Kick ----
-
   void kickMember(String targetUserId) {
     if (_currentRoomCode == null || !_isHost) {
       Logger.w('kickMember skipped: not in room or not host', 'WATCHIUM');
@@ -762,8 +736,6 @@ class WatchiumService extends GetxController {
     });
   }
 
-  // ---- Transfer Host ----
-
   void transferHost(String targetUserId) {
     if (_currentRoomCode == null || !_isHost) {
       Logger.w('transferHost skipped: not in room or not host', 'WATCHIUM');
@@ -775,8 +747,6 @@ class WatchiumService extends GetxController {
       'targetUserId': targetUserId,
     });
   }
-
-  // ---- Co-host ----
 
   void promoteCohost(String targetUserId) {
     if (_currentRoomCode == null || !_isHost) {
@@ -802,21 +772,19 @@ class WatchiumService extends GetxController {
     });
   }
 
-  // ---- Content (Host sets anime) ----
-
   void setContent(WatchiumAnimeContent content) {
     if (_currentRoomCode == null || !_isHost) {
       Logger.w('setContent skipped: not in room or not host', 'WATCHIUM');
       return;
     }
-    Logger.d('setContent: anime=${content.animeTitle}, episode=${content.episodeNumber}', 'WATCHIUM');
+    Logger.d(
+        'setContent: anime=${content.animeTitle}, episode=${content.episodeNumber}',
+        'WATCHIUM');
     _socket?.emit('party:content', {
       'code': _currentRoomCode,
       'content': content.toJson(),
     });
   }
-
-  // ---- Server Selection ----
 
   void selectServer(String serverId) {
     if (_currentRoomCode == null) {
@@ -830,8 +798,6 @@ class WatchiumService extends GetxController {
     });
   }
 
-  // ---- Chat ----
-
   void sendChat(String text) {
     if (_currentRoomCode == null) return;
     _lastClientId = DateTime.now().millisecondsSinceEpoch.toString();
@@ -843,8 +809,6 @@ class WatchiumService extends GetxController {
     });
   }
 
-  /// Toggle a chat moderation setting (host/cohost only).
-  /// [key] is 'chatDisabled' or 'announcementMode'.
   void toggleChatSetting(String key, bool value) {
     if (_currentRoomCode == null) return;
     Logger.i('toggleChatSetting: $key=$value', 'WATCHIUM');
@@ -854,8 +818,6 @@ class WatchiumService extends GetxController {
       'value': value,
     });
   }
-
-  // ---- Reactions ----
 
   void sendReaction(String emoji) {
     if (_currentRoomCode == null) return;
@@ -867,8 +829,6 @@ class WatchiumService extends GetxController {
       'clientId': _lastClientId,
     });
   }
-
-  // ---- List Rooms ----
 
   final RxList<WatchiumRoomState> publicRooms = RxList();
   final RxBool isLoadingRooms = false.obs;
@@ -906,8 +866,6 @@ class WatchiumService extends GetxController {
     }
   }
 
-  // ---- Get Room Info (for deep link join) ----
-
   Future<WatchiumRoomState?> getRoomInfo(String code) async {
     Logger.d('Getting room info for code=$code', 'WATCHIUM');
     try {
@@ -923,7 +881,8 @@ class WatchiumService extends GetxController {
       );
 
       if (response.statusCode != 200) {
-        Logger.w('Get room info failed: HTTP ${response.statusCode}', 'WATCHIUM');
+        Logger.w(
+            'Get room info failed: HTTP ${response.statusCode}', 'WATCHIUM');
         return null;
       }
 
@@ -935,8 +894,6 @@ class WatchiumService extends GetxController {
       return null;
     }
   }
-
-  // ---- Deep Link Join ----
 
   Future<bool> handleDeepLinkJoin(String code, {String? password}) async {
     Logger.i('Deep link join: code=$code', 'WATCHIUM');

@@ -12,8 +12,8 @@ import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/future_reusable_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
@@ -84,7 +84,7 @@ Container buildChip(String label) {
     ),
     child: FittedBox(
       fit: BoxFit.scaleDown,
-      child: AnymexText(
+      child: AnymeXText(
         text: label,
         variant: TextVariant.bold,
         color: Get.theme.colorScheme.onPrimary,

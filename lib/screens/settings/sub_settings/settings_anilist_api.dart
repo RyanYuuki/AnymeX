@@ -5,10 +5,10 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/markdown.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_icon_wrapper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -542,9 +542,8 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Column(children: [
+    return AnymeXScaffold(
+  body: Column(children: [
           const NestedHeader(title: 'Anilist Settings'),
           Expanded(
             child: _loading
@@ -563,9 +562,8 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                         ],
                       ),
           ),
-        ]),
-      ),
-    );
+        ])
+);
   }
 
   // Sections
@@ -580,7 +578,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     if (!mergeValues.contains(s.activityMergeTime)) mergeValues.add(s.activityMergeTime);
     mergeValues.sort();
 
-    return AnymexExpansionTile(
+    return AnymeXExpansionTile(
       title: 'Anime & Manga',
       initialExpanded: true,
       content: Column(children: [
@@ -622,7 +620,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     final mangaSections = _sectionOrderOptions(base: _mangaBaseSectionOrder,
       splitCompletedSections: _mangaCompletedSplitSections, splitCompleted: s.splitCompletedManga);
 
-    return AnymexExpansionTile(
+    return AnymeXExpansionTile(
       title: 'List Options',
       initialExpanded: true,
       content: Column(children: [
@@ -680,7 +678,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     final tzValue = _normalizeTimezoneValue(s.timezone);
     if (!tzValues.contains(tzValue)) tzValues.add(tzValue);
 
-    return AnymexExpansionTile(
+    return AnymeXExpansionTile(
       title: 'Other',
       initialExpanded: false,
       content: Column(children: [
@@ -718,7 +716,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        AnymexIcon(Icons.notes_rounded, size: 30, color: context.colors.primary),
+        AnymeXIcon(Icons.notes_rounded, size: 30, color: context.colors.primary),
         const SizedBox(width: 20),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [

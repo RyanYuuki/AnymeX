@@ -7,15 +7,15 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
 class AIRecommendation extends StatefulWidget {
@@ -117,16 +117,15 @@ class _AIRecommendationState extends State<AIRecommendation> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        appBar: AppBar(
+    return AnymeXScaffold(
+  appBar: AppBar(
           backgroundColor: Colors.transparent,
           leading: IconButton(
             onPressed: () => Get.back(),
             icon: const Icon(Icons.arrow_back_ios_new),
           ),
           title: Obx(() {
-            return AnymexText(
+            return AnymeXText(
               text:
                   "AI Picks ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
               color: context.colors.primary,
@@ -140,13 +139,12 @@ class _AIRecommendationState extends State<AIRecommendation> {
                 icon: const Icon(Icons.settings))
           ],
         ),
-        body: Obx(() => recItems.isEmpty
+  body: Obx(() => recItems.isEmpty
             ? !serviceHandler.isLoggedIn.value
                 ? _buildInputBox(context)
-                : const Center(child: AnymexProgressIndicator())
-            : _buildRecommendations(context)),
-      ),
-    );
+                : const Center(child: AnymeXProgressIndicator())
+            : _buildRecommendations(context))
+);
   }
 
   Column _buildInputBox(BuildContext context) {
@@ -177,7 +175,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             decoration: BoxDecoration(
                 color: context.colors.primary,
                 borderRadius: BorderRadius.circular(12.multiplyRadius())),
-            child: AnymexText(
+            child: AnymeXText(
               text: "Search",
               variant: TextVariant.semiBold,
               color: context.colors.onPrimary,
@@ -208,7 +206,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                     if (isLoading.value) {
                       return const Padding(
                         padding: EdgeInsets.all(8.0),
-                        child: Center(child: AnymexProgressIndicator()),
+                        child: Center(child: AnymeXProgressIndicator()),
                       );
                     }
                     if (noMoreItems.value) {
@@ -276,7 +274,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const AnymexText(
+                const AnymeXText(
                   text: "Settings",
                   variant: TextVariant.bold,
                   size: 20,
@@ -286,7 +284,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: "Grid",
                         variant: TextVariant.bold,
                         color: context.colors.primary,
@@ -303,7 +301,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: "18+",
                         variant: TextVariant.bold,
                         color: context.colors.primary,
@@ -354,7 +352,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnymexText(
+                  AnymeXText(
                     text: data.title,
                     variant: TextVariant.semiBold,
                     maxLines: 1,
@@ -363,7 +361,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   ),
                   const SizedBox(height: 5),
                   Flexible(
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: data.description,
                       color: Colors.grey[300],
                       maxLines: 5,
@@ -384,7 +382,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                                 borderRadius:
                                     BorderRadius.circular(8.multiplyRadius()),
                               ),
-                              child: AnymexText(
+                              child: AnymeXText(
                                 text: e,
                                 variant: TextVariant.semiBold,
                                 color: context.colors.onPrimary,

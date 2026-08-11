@@ -1,17 +1,17 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 
-class AnymexExpansionTile extends StatelessWidget {
+class AnymeXExpansionTile extends StatelessWidget {
   final String title;
   final Widget content;
   final bool initialExpanded;
   final Widget? leading;
 
-  const AnymexExpansionTile({
+  const AnymeXExpansionTile({
     super.key,
     required this.title,
     required this.content,
@@ -25,7 +25,7 @@ class AnymexExpansionTile extends StatelessWidget {
     final shouldExpand =
         initialExpanded || (highlightProvider?.expansionTitle == title);
 
-    return AnymexCard(
+    return AnymeXCard(
       clipBehavior: Clip.antiAlias,
       child: Theme(
         data: Theme.of(context).copyWith(
@@ -43,7 +43,7 @@ class AnymexExpansionTile extends StatelessWidget {
           iconColor: context.colors.primary,
           collapsedIconColor: context.colors.onSurfaceVariant,
           leading: leading,
-          title: AnymexText(
+          title: AnymeXText(
             text: title,
             size: 15,
             variant: TextVariant.semiBold,
@@ -65,7 +65,7 @@ class AnymexExpansionTile extends StatelessWidget {
   }
 }
 
-class AnymexCard extends StatelessWidget {
+class AnymeXCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;
   final bool enableAnimation;
@@ -73,7 +73,7 @@ class AnymexCard extends StatelessWidget {
   final ShapeBorder? shape;
   final Clip? clipBehavior;
 
-  const AnymexCard({
+  const AnymeXCard({
     super.key,
     required this.child,
     this.padding,

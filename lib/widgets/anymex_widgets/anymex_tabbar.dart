@@ -1,4 +1,4 @@
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -110,7 +110,7 @@ class AnymeXTabBar extends StatelessWidget {
                                 const SizedBox(width: 6),
                               ],
                               Flexible(
-                                child: AnymexText(
+                                child: AnymeXText(
                                   text: e.value,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,

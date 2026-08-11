@@ -25,7 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
-import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/header/header.dart';
 import 'package:flutter/services.dart';
 
 class MyLibrary extends StatefulWidget {

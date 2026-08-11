@@ -12,9 +12,9 @@ import 'package:anymex/screens/anime/widgets/episode_range.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
@@ -133,12 +133,10 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
         height: getResponsiveValue(context,
             mobileValue: MediaQuery.sizeOf(context).height * 0.8,
             desktopValue: null),
-        child: Glow(
-          child: Column(
-            // Changed from SuperListView to Column for better performance
-            children: [
-              // Header section
-              Padding(
+        child: AnymeXScaffold(
+  body: Column(
+                        children: [
+                            Padding(
                 padding: EdgeInsets.symmetric(
                     vertical: 20,
                     horizontal: getResponsiveSize(context,
@@ -148,7 +146,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   children: [
                     const Row(
                       children: [
-                        AnymexText(
+                        AnymeXText(
                             text: "Episodes",
                             size: 20,
                             variant: TextVariant.semiBold)
@@ -164,8 +162,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   ],
                 ),
               ),
-              // 3. LAZY LOADING: Use ListView.builder instead of GridView with shrinkWrap
-              Expanded(
+                            Expanded(
                 child: ListView.builder(
                   padding: EdgeInsets.symmetric(
                       horizontal: getResponsiveSize(context,
@@ -181,8 +178,8 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                 ),
               ),
             ],
-          ),
-        ),
+          )
+),
       );
     });
   }
@@ -280,13 +277,13 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         10.height(),
-        AnymexText(
+        AnymeXText(
           text: "Error Occured",
           variant: TextVariant.bold,
           size: 18,
         ),
         20.height(),
-        AnymexText(
+        AnymeXText(
           text: "Server-chan is taking a nap!",
           variant: TextVariant.semiBold,
           size: 18,
@@ -298,7 +295,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             color: Colors.red.opaque(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: AnymexText(
+          child: AnymeXText(
             text: errorMessage,
             variant: TextVariant.regular,
             size: 14,
@@ -314,7 +311,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
     return const SizedBox(
       height: 200,
       child: Center(
-        child: AnymexText(
+        child: AnymeXText(
           text: "No servers available",
           variant: TextVariant.bold,
           size: 16,
@@ -334,7 +331,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             alignment: Alignment.center,
-            child: const AnymexText(
+            child: const AnymeXText(
               text: "Choose Server",
               size: 18,
               variant: TextVariant.bold,
@@ -351,7 +348,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                 },
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
-                title: AnymexText(
+                title: AnymeXText(
                   text: e.quality?.toUpperCase() ?? "Unknown",
                   variant: TextVariant.bold,
                   size: 16,
@@ -365,7 +362,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 trailing: const Icon(Iconsax.play5),
-                subtitle: AnymexText(
+                subtitle: AnymeXText(
                   text:
                       sourceController.activeSource.value!.name!.toUpperCase(),
                   variant: TextVariant.semiBold,
@@ -418,7 +415,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: AnymexText(
+              child: AnymeXText(
                 text: episode.title ?? 'Episode ${episode.number}',
                 variant: TextVariant.bold,
                 maxLines: 2,
@@ -475,7 +472,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
               Expanded(
                 child: SizedBox(
                   height: 100,
-                  child: AnymexText(
+                  child: AnymeXText(
                     text: episode.title ?? 'Episode ${episode.number}',
                     variant: TextVariant.bold,
                     maxLines: 4,
@@ -487,7 +484,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           ),
           const SizedBox(height: 8),
           Expanded(
-            child: AnymexText(
+            child: AnymeXText(
               text: (episode.desc?.isEmpty ?? true)
                   ? 'No Description Available'
                   : episode.desc!,
@@ -518,7 +515,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             ),
             boxShadow: [glowingShadow(context)],
           ),
-          child: AnymexText(
+          child: AnymeXText(
             text: "EP $episodeNumber",
             variant: TextVariant.bold,
           ),

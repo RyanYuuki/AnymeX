@@ -4,7 +4,7 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Extensions/Extensions.dart';
@@ -169,9 +169,8 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   @override
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Obx(() {
+    return AnymeXScaffold(
+  body: Obx(() {
           final displayList = _displayManagers;
           if (displayList.isEmpty) {
             return Column(children: [
@@ -225,9 +224,8 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             Expanded(child: _buildBody()),
           ]);
         }),
-        floatingActionButton: Obx(() => _buildFab() ?? const SizedBox.shrink()),
-      ),
-    );
+  floatingActionButton: Obx(() => _buildFab() ?? const SizedBox.shrink())
+);
   }
 
   Widget _buildManagerBar() {

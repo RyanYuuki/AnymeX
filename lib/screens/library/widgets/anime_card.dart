@@ -4,8 +4,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +71,7 @@ class AnimeCard extends StatelessWidget {
                             color: context.colors.primary,
                           ),
                           const SizedBox(width: 3),
-                          AnymexText(
+                          AnymeXText(
                             text: data.rating ?? '0.0',
                             variant: TextVariant.bold,
                           ),
@@ -103,7 +103,7 @@ class AnimeCard extends StatelessWidget {
                             color: context.colors.primary,
                           ),
                           const SizedBox(width: 3),
-                          AnymexText(
+                          AnymeXText(
                             text: data.currentEpisode?.number ?? '??',
                             variant: TextVariant.bold,
                           ),
@@ -118,7 +118,7 @@ class AnimeCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               width: double.infinity,
-              child: AnymexText(
+              child: AnymeXText(
                 text: data.name ?? '??',
                 size: 13,
                 maxLines: 1,

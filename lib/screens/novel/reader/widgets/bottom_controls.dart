@@ -1,7 +1,7 @@
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -187,7 +187,7 @@ class NovelBottomControls extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: controller.currentChapter.value.title ??
                           'Unknown Chapter',
                       size: isDesktop ? 14 : 12,
@@ -269,7 +269,7 @@ class NovelBottomControls extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: controller.currentChapter.value.title ??
                           'Unknown Chapter',
                       size: isDesktop ? 14 : 12,

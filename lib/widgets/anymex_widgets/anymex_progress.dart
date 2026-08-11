@@ -1,12 +1,12 @@
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 
-class AnymexProgressIndicator extends StatelessWidget {
+class AnymeXProgressIndicator extends StatelessWidget {
   final double? value;
   final double? strokeWidth;
   final Color? backgroundColor;
 
-  const AnymexProgressIndicator({
+  const AnymeXProgressIndicator({
     super.key,
     this.value,
     this.strokeWidth,

@@ -2,7 +2,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
 import 'package:anymex/widgets/common/dynamic_style_selector.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,7 +27,7 @@ void showHistoryCardStyleSelector(BuildContext context) {
     builder: (dialogContext) {
       return Obx(
         () {
-          return AnymexDialog(
+          return AnymeXDialog(
             padding: const EdgeInsets.all(10),
             title: 'Card Style',
             onConfirm: () {

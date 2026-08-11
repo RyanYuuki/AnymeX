@@ -8,9 +8,9 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
@@ -524,9 +524,8 @@ class _UserMediaListPageState extends State<UserMediaListPage>
     final typeLabel = widget.type == 'ANIME' ? 'Anime' : 'Manga';
 
     if (_loading) {
-      return Glow(
-        child: Scaffold(
-          appBar: AppBar(
+      return AnymeXScaffold(
+  appBar: AppBar(
             leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
@@ -536,15 +535,13 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               style: TextStyle(fontSize: 16, color: colors.primary),
             ),
           ),
-          body: const Center(child: AnymexProgressIndicator()),
-        ),
-      );
+  body: const Center(child: AnymeXProgressIndicator())
+);
     }
 
     if (_lists.isEmpty || _tabNames.isEmpty) {
-      return Glow(
-        child: Scaffold(
-          appBar: AppBar(
+      return AnymeXScaffold(
+  appBar: AppBar(
             leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
@@ -554,9 +551,8 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               style: TextStyle(fontSize: 16, color: colors.primary),
             ),
           ),
-          body: const Center(child: Text('No entries found')),
-        ),
-      );
+  body: const Center(child: Text('No entries found'))
+);
     }
 
     final tabs = _isReversed ? _tabNames.reversed.toList() : _tabNames;
@@ -566,9 +562,8 @@ class _UserMediaListPageState extends State<UserMediaListPage>
       _tabController = TabController(length: tabs.length, vsync: this);
     }
 
-    return Glow(
-      child: Scaffold(
-        appBar: AppBar(
+    return AnymeXScaffold(
+  appBar: AppBar(
           titleSpacing: 0,
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
@@ -595,14 +590,12 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               ),
               tooltip: _searchOpen ? 'Close search' : 'Search',
             ),
-            // Random
-            IconButton(
+                        IconButton(
               onPressed: _openRandom,
               icon: const Icon(Iconsax.shuffle, size: 20),
               tooltip: 'Random',
             ),
-            // Genre filter
-            IconButton(
+                        IconButton(
               onPressed: () => _showGenreFilter(context),
               icon: Badge(
                 isLabelVisible: _selectedGenres.isNotEmpty,
@@ -612,8 +605,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               ),
               tooltip: 'Filter genres',
             ),
-            // 3-dot menu
-            PopupMenuButton<String>(
+                        PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert_rounded, size: 22),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14)),
@@ -746,7 +738,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
             ),
           ),
         ),
-        body: TabBarView(
+  body: TabBarView(
           controller: _tabController,
           children: tabs.map((name) {
             final items = _applyFilters(_lists[name] ?? []);
@@ -800,8 +792,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               },
             );
           }).toList(),
-        ),
-      ),
-    );
+        )
+);
   }
 }

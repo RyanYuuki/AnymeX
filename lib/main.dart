@@ -36,9 +36,8 @@ import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
-import 'package:anymex/widgets/common/fps_meter.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
@@ -521,13 +520,13 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     final authService = Get.put(ServiceHandler());
-    return Glow(
-      child: PlatformBuilder(
+    return AnymeXScaffold(
+  body: PlatformBuilder(
         strictMode: false,
         desktopBuilder: _buildDesktopLayout(context, authService),
         androidBuilder: _buildAndroidLayout(authService),
-      ),
-    );
+      )
+);
   }
 
   Widget _buildDesktopLayout(BuildContext context, ServiceHandler authService) {

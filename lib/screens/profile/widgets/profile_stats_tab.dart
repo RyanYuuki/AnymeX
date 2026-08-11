@@ -10,7 +10,7 @@ import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
@@ -107,7 +107,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                       ),
                     ),
                     alignment: Alignment.center,
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: _tabLabel(tab),
                       size: 13,
                       variant:
@@ -140,7 +140,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             Padding(
               padding: const EdgeInsets.all(40),
               child: Center(
-                child: AnymexText(
+                child: AnymeXText(
                   text: 'No stats available',
                   color: colorScheme.onSurface.opaque(0.5),
                 ),
@@ -390,7 +390,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                 selected ? c.primary.opaque(0.3) : c.outlineVariant.opaque(0.3),
           ),
         ),
-        child: AnymexText(
+        child: AnymeXText(
           text: label,
           size: 11,
           variant: selected ? TextVariant.semiBold : TextVariant.regular,
@@ -430,7 +430,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                 child: Icon(icon, size: 20, color: c.primary),
               ),
               const SizedBox(width: 12),
-              AnymexText(
+              AnymeXText(
                 text: title,
                 variant: TextVariant.bold,
                 size: 18,
@@ -451,7 +451,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          AnymexText(
+          AnymeXText(
             text: text,
             size: 20,
             variant: TextVariant.bold,
@@ -460,7 +460,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 2),
-          AnymexText(
+          AnymeXText(
             text: subtitle,
             size: 13,
             color: c.onSurfaceVariant,
@@ -604,13 +604,13 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AnymexText(
+                    AnymeXText(
                         text: val.toString(),
                         size: 13,
                         color: color,
                         variant: TextVariant.bold),
                     const SizedBox(width: 8),
-                    AnymexText(
+                    AnymeXText(
                         text: _getLabel(items[i]),
                         size: 13,
                         color: color.withOpacity(0.8),
@@ -640,7 +640,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
           ),
         ),
         const SizedBox(height: 14),
-        AnymexText(
+        AnymeXText(
           text: 'Total entries: $total',
           size: 13,
           color: c.onSurfaceVariant,
@@ -674,7 +674,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             children: [
               SizedBox(
                 width: 45,
-                child: AnymexText(
+                child: AnymeXText(
                   text: _getLabel(item),
                   size: 12,
                   color: c.onSurfaceVariant,
@@ -707,7 +707,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
               const SizedBox(width: 8),
               SizedBox(
                 width: 35,
-                child: AnymexText(
+                child: AnymeXText(
                   text: _getValDisplay(val),
                   size: 11,
                   variant: TextVariant.semiBold,
@@ -772,7 +772,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: AnymexText(
+                  child: AnymeXText(
                     text: '#${i + 1}',
                     size: 11,
                     variant: TextVariant.bold,
@@ -796,7 +796,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                 ],
                 // Name
                 Expanded(
-                  child: AnymexText(
+                  child: AnymeXText(
                     text: item.label,
                     size: 13,
                     variant: TextVariant.semiBold,
@@ -810,13 +810,13 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    AnymexText(
+                    AnymeXText(
                       text: primaryValue,
                       size: 14,
                       variant: TextVariant.bold,
                       color: c.primary,
                     ),
-                    AnymexText(
+                    AnymeXText(
                       text: secondaryValue,
                       size: 10,
                       color: c.onSurface.opaque(0.5),
@@ -840,7 +840,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return Padding(
       padding: const EdgeInsets.all(40),
       child: Center(
-        child: AnymexText(
+        child: AnymeXText(
           text: msg,
           color: context.colors.onSurface.opaque(0.5),
         ),

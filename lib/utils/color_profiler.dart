@@ -9,8 +9,8 @@ import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -516,7 +516,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Iconsax.eye, size: 20),
                       SizedBox(width: 8),
-                      AnymexText.semiBold(text: 'Shaders'),
+                      AnymeXText.semiBold(text: 'Shaders'),
                     ],
                   ),
                 ),
@@ -526,7 +526,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Icons.movie_filter_rounded, size: 20),
                       SizedBox(width: 8),
-                      AnymexText.semiBold(text: 'Visual'),
+                      AnymeXText.semiBold(text: 'Visual'),
                     ],
                   ),
                 ),
@@ -536,7 +536,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Icons.dashboard_customize, size: 20),
                       SizedBox(width: 8),
-                      AnymexText.semiBold(text: 'Presets'),
+                      AnymeXText.semiBold(text: 'Presets'),
                     ],
                   ),
                 ),
@@ -546,7 +546,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Icons.tune, size: 20),
                       SizedBox(width: 8),
-                      AnymexText.semiBold(text: 'Custom'),
+                      AnymeXText.semiBold(text: 'Custom'),
                     ],
                   ),
                 ),
@@ -631,7 +631,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                   ),
                 ),
                 const SizedBox(height: 20),
-                AnymexExpansionTile(
+                AnymeXExpansionTile(
                   title: 'ANIME 4K',
                   initialExpanded: true,
                   content: Obx(() {
@@ -829,7 +829,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               ),
               const SizedBox(height: 20),
               ...groupedProfiles.entries.map((category) {
-                return AnymexExpansionTile(
+                return AnymeXExpansionTile(
                   title: category.key,
                   initialExpanded: true,
                   content: Column(

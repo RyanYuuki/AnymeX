@@ -1,8 +1,8 @@
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/profile/widgets/profile_common.dart';
 import 'package:anymex/screens/profile/widgets/hover_action_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +81,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                         Navigator.of(context, rootNavigator: true)
                             .push(
                           MaterialPageRoute(
-                            builder: (_) => FullscreenImageViewer(
+                            builder: (_) => AnymeXFullscreenImageViewer(
                               imageUrl: imageUrl,
                               tag: 'profile_banner_$name',
                             ),

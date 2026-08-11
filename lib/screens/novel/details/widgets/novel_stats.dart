@@ -4,7 +4,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -45,7 +45,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const AnymexText(
+              const AnymeXText(
                 text: "Statistics",
                 variant: TextVariant.bold,
                 size: 20,
@@ -81,7 +81,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const AnymexText(
+              const AnymeXText(
                 text: "Synopsis",
                 variant: TextVariant.bold,
                 size: 16,
@@ -102,7 +102,7 @@ class NovelStats extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (data.genres.isNotEmpty) ...[
-          const AnymexText(
+          const AnymeXText(
             text: "Genres",
             variant: TextVariant.bold,
             size: 17,
@@ -150,13 +150,13 @@ class StateItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        AnymexText(
+        AnymeXText(
           text: label,
           variant: TextVariant.semiBold,
           color: context.colors.onSurface.opaque(0.9),
         ),
         Expanded(
-          child: AnymexText(
+          child: AnymeXText(
             text: value,
             variant: TextVariant.semiBold,
             color: context.colors.primary,

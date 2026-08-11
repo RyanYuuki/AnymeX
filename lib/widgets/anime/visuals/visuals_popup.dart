@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -374,7 +374,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
                     ),
                   )
                 : const Center(
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: "No Visuals found for this Anime (╥﹏╥)",
                       color: Colors.white,
                     ),
@@ -418,7 +418,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
                               blurRadius: 10,
                             )
                           ]),
-                      child: AnymexText(
+                      child: AnymeXText(
                         text: "${effectiveIndex + 1} / ${currentList.length}",
                         color: Colors.white,
                         variant: TextVariant.bold,
@@ -546,7 +546,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
             ),
             if (isSelected) ...[
               const SizedBox(width: 10),
-              AnymexText(
+              AnymeXText(
                 text: label,
                 color: Colors.white,
                 variant: TextVariant.bold,

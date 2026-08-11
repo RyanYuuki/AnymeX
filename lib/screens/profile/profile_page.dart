@@ -5,7 +5,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:anymex/widgets/common/navbar.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -362,22 +362,20 @@ class _ProfilePageState extends State<ProfilePage>
       desktopValue: true,
     );
 
-    return Glow(
-      child: Scaffold(
-        backgroundColor: context.theme.colorScheme.surface,
-        extendBody: true,
-        bottomNavigationBar: isDesktop
+    return AnymeXScaffold(
+  backgroundColor: context.theme.colorScheme.surface,
+  extendBody: true,
+  bottomNavigationBar: isDesktop
             ? null
             : ResponsiveNavBar(
                 isDesktop: false,
                 currentIndex: _selectedTab,
                 items: _profileNavItems,
               ),
-        body: _ready
+  body: _ready
             ? _buildBody(context, isDesktop)
-            : const Center(child: CircularProgressIndicator()),
-      ),
-    );
+            : const Center(child: CircularProgressIndicator())
+);
   }
 
   void _showCreateActivitySheet(BuildContext context) {

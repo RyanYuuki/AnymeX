@@ -4,10 +4,10 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -45,9 +45,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Common'),
             Expanded(
@@ -62,7 +61,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (Platform.isWindows || Platform.isLinux)
-                        AnymexExpansionTile(
+                        AnymeXExpansionTile(
                           initialExpanded: true,
                           title: 'Bridge Settings (Desktop)',
                           content: Column(
@@ -80,7 +79,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                             ],
                           ),
                         ),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                         initialExpanded: true,
                         title: 'Universal',
                         content: Column(
@@ -135,7 +134,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           ],
                         ),
                       ),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                         initialExpanded: true,
                         title: 'Community Recommendations',
                         content: Column(
@@ -263,7 +262,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           ],
                         ),
                       ),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                           initialExpanded: true,
                           title: 'Anilist',
                           content: CustomTile(
@@ -273,7 +272,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                 "Choose which list to show on home page",
                             onTap: () => _showHomePageCardsDialog(ServicesType.anilist),
                           )),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                           initialExpanded: true,
                           title: 'MyAnimeList',
                           content: CustomTile(
@@ -283,7 +282,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                                 "Choose which list to show on home page",
                             onTap: () => _showHomePageCardsDialog(ServicesType.mal),
                           )),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                           initialExpanded: true,
                           title: 'Simkl',
                           content: CustomTile(
@@ -299,9 +298,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   void _showHomePageCardsDialog([ServicesType? serviceType]) {
@@ -373,7 +371,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
       context: context,
       builder: (dialogContext) {
         return Obx(
-          () => AnymexDialog(
+          () => AnymeXDialog(
             title:
                 'Bridge Mode (If selecting one, dont forget to restart gang)',
             onConfirm: () => settings.saveBridgeMode(tempBridgeMode.value),
@@ -445,12 +443,12 @@ class _BridgeModeOptionTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymexText(
+                    AnymeXText(
                       text: title,
                       variant: TextVariant.semiBold,
                     ),
                     const SizedBox(height: 4),
-                    AnymexText(
+                    AnymeXText(
                       text: subtitle,
                       size: 12,
                       color: context.colors.onSurface.opaque(0.7),

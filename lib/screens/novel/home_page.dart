@@ -2,7 +2,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/common/installed_extensions_gridview.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/header/header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';

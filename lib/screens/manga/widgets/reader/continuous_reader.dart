@@ -4,7 +4,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/widgets/subsampling_scale_image_view/subsampling_image_provider.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Page.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_chapter_transition.dart';
 import 'package:flutter/foundation.dart';
@@ -443,7 +443,7 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnymexProgressIndicator(value: progress),
+            AnymeXProgressIndicator(value: progress),
             const SizedBox(height: 8),
             Text('Loading page $pageNumber$progressText...'),
           ],

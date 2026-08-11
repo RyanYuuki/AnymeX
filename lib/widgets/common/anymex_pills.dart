@@ -1,6 +1,6 @@
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 
 enum PillStyle { connective, standalone }
@@ -197,7 +197,7 @@ class _DefaultPillContent extends StatelessWidget {
           ),
           const SizedBox(width: 6),
         ],
-        AnymexText.semiBold(
+        AnymeXText.semiBold(
           text: item.label,
           size: 12,
           color: item.isSelected ? colors.primary : colors.onSurface,

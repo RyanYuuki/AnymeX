@@ -1,6 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -18,7 +18,7 @@ class MediaShare {
       mediaService: baseMedia.serviceType,
     );
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       Builder(
         builder: (sheetContext) {
           return SafeArea(

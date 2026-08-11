@@ -3,9 +3,9 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -147,7 +147,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: widget.studioName,
                           variant: TextVariant.bold,
                           size: 20,
@@ -221,7 +221,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
-                                  AnymexText(
+                                  AnymeXText(
                                     text: "$_favouritesCount",
                                     size: 14,
                                     variant: TextVariant.bold,
@@ -251,7 +251,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                   Padding(
                     padding: const EdgeInsets.all(40),
                     child: Center(
-                      child: AnymexText(
+                      child: AnymeXText(
                         text: 'No media found for this studio',
                         variant: TextVariant.regular,
                         size: 16,
@@ -325,7 +325,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           : null,
                     ),
                     const SizedBox(width: 10),
-                    AnymexText(
+                    AnymeXText(
                       text: "On My List",
                       size: 14,
                       color: theme.onSurface.withOpacity(0.7),
@@ -341,7 +341,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
             Padding(
               padding: const EdgeInsets.only(top: 40),
               child: Center(
-                child: AnymexText(
+                child: AnymeXText(
                   text: showOnlyOnList.value
                       ? "No media found on your list"
                       : "No media found",
@@ -368,7 +368,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                 Divider(color: theme.primary.withOpacity(0.3))),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: AnymexText(
+                          child: AnymeXText(
                             text: "$year (${mediaList.length})",
                             variant: TextVariant.bold,
                             size: 18,
@@ -482,7 +482,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                     color: colorScheme.primary,
                                   ),
                                   const SizedBox(width: 2),
-                                  AnymexText(
+                                  AnymeXText(
                                     text: media.rating,
                                     variant: TextVariant.bold,
                                     size: 10,
@@ -500,7 +500,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
             ),
             const SizedBox(height: 6),
             // Title
-            AnymexText(
+            AnymeXText(
               text: media.title,
               variant: TextVariant.semiBold,
               size: 12,

@@ -2,7 +2,7 @@ import 'package:anymex/controllers/services/storage/storage_manager_service.dart
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 
@@ -204,9 +204,8 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
         ? 0.0
         : (_imageCacheBytes / thresholdBytes).clamp(0.0, 1.0);
 
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Storage Manager'),
             Expanded(
@@ -332,8 +331,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }

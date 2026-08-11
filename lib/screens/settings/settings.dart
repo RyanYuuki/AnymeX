@@ -1,4 +1,3 @@
-import 'package:anymex/screens/onboarding/welcome_dialog.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
@@ -19,9 +18,9 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/utils/updater.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -90,10 +89,9 @@ class _SettingsPageState extends State<SettingsPage> {
         mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
         desktopValue: const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0));
 
-    return Glow(
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-            body: Column(children: [
+    return AnymeXScaffold(
+  resizeToAvoidBottomInset: false,
+  body: Column(children: [
       const NestedHeader(title: 'Settings'),
       Padding(
         padding:
@@ -104,7 +102,8 @@ class _SettingsPageState extends State<SettingsPage> {
           child: _isSearching
               ? _buildSearchResults(listPadding)
               : _buildCategoryList(listPadding)),
-    ])));
+    ])
+);
   }
 
   Widget _buildSearchBar(BuildContext context) {
@@ -138,13 +137,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 color:
                     context.colors.onSurface.opaque(0.15, iReallyMeanIt: true)),
             const SizedBox(height: 16),
-            AnymexText(
+            AnymeXText(
               text: 'No search results',
               size: 16,
               color: context.colors.onSurface.opaque(0.4, iReallyMeanIt: true),
             ),
             const SizedBox(height: 6),
-            AnymexText(
+            AnymeXText(
               text: 'Try a different keyword',
               size: 13,
               color: context.colors.onSurface.opaque(0.3, iReallyMeanIt: true),
@@ -164,7 +163,7 @@ class _SettingsPageState extends State<SettingsPage> {
         final items = _searchResults[category]!;
         return Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: AnymexExpansionTile(
+          child: AnymeXExpansionTile(
             title: category,
             initialExpanded: true,
             content: Column(

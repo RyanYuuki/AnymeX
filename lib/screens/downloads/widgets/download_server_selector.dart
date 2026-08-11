@@ -4,7 +4,7 @@ import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as hive;
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -213,11 +213,11 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymexText(
+                const AnymeXText(
                     text: 'Choose Quality',
                     variant: TextVariant.bold,
                     size: 16),
-                AnymexText(
+                AnymeXText(
                   text: 'Fetching from first episode · auto-matched for batch',
                   size: 12,
                   color: theme.onSurface.opaque(0.5),
@@ -264,7 +264,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
               Icon(Icons.error_outline_rounded,
                   size: 48, color: theme.error.opaque(0.6)),
               const SizedBox(height: 12),
-              const AnymexText(
+              const AnymeXText(
                   text: 'Failed to fetch servers',
                   variant: TextVariant.semiBold,
                   size: 15),
@@ -284,7 +284,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                     border: Border.all(color: theme.primary.opaque(0.4)),
                   ),
                   child:
-                      AnymexText(text: 'Retry', size: 14, color: theme.primary),
+                      AnymeXText(text: 'Retry', size: 14, color: theme.primary),
                 ),
               ),
             ],
@@ -301,7 +301,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
               Icon(Icons.cloud_off_rounded,
                   size: 48, color: theme.onSurface.opaque(0.2)),
               const SizedBox(height: 12),
-              AnymexText(
+              AnymeXText(
                   text: 'No servers available',
                   variant: TextVariant.semiBold,
                   size: 15,
@@ -331,7 +331,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                         height: 16,
                         child: ExpressiveLoadingIndicator()),
                     const SizedBox(width: 8),
-                    AnymexText(
+                    AnymeXText(
                         text: 'Scanning for more servers...',
                         size: 12,
                         color: theme.onSurface.opaque(0.5)),
@@ -394,7 +394,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(
-                                    child: AnymexText(
+                                    child: AnymeXText(
                                       text: quality,
                                       variant: TextVariant.semiBold,
                                       size: 14,
@@ -547,7 +547,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                           : theme.onSurface.opaque(0.4)),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: canDownload
                           ? 'Download (${widget.episodes.length} ep${widget.episodes.length != 1 ? 's' : ''}) · ${_selectedQuality.value}'
                           : 'Loading servers...',

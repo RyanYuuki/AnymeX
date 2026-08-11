@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/shaders.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dropdown.dart';
 import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
@@ -22,9 +22,9 @@ import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
@@ -1129,9 +1129,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-        child: Scaffold(
-            body: Column(children: [
+    return AnymeXScaffold(
+  body: Column(children: [
       if (!widget.isModal) const NestedHeader(title: 'Player Settings'),
       Expanded(
         child: SingleChildScrollView(
@@ -1153,7 +1152,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (_supportsDecoderSelection)
-                        AnymexExpansionTile(
+                        AnymeXExpansionTile(
                             title: 'Playback',
                             initialExpanded: true,
                             content: Column(
@@ -1196,7 +1195,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                 ),
                               ],
                             )),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                         initialExpanded: false,
                         title: 'Anime 4K Enhancement',
                         content: Container(
@@ -1490,7 +1489,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                                     return Container(
                                                       margin: const EdgeInsets.only(
                                                           top: 20.0),
-                                                      child: AnymexDropdown(
+                                                      child: AnymeXDropdown(
                                                           items: availProfiles
                                                               .map((e) =>
                                                                   DropdownItem(
@@ -1752,7 +1751,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                           ),
                         ),
                       ),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                           title: 'Experimental',
                           initialExpanded: false,
                           content: Builder(builder: (context) {
@@ -1949,7 +1948,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                               ],
                             );
                           })),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                           initialExpanded: true,
                           title: 'Common',
                           content: Column(
@@ -2200,7 +2199,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                               ),
                             ],
                           )),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                           title: 'Subtitles',
                           content: Column(
                             children: [
@@ -2423,7 +2422,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                               ),
                             ],
                           )),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                         title: 'Bottom Controls',
                         content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2511,7 +2510,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
           ),
         ),
       ),
-    ])));
+    ])
+);
   }
 
   Widget _buildSectionLabel(String label) {
@@ -2597,7 +2597,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     return ListTile(
       key: key,
       leading: Icon(control.icon, size: 22),
-      title: AnymexText(
+      title: AnymeXText(
         text: control.name,
         variant: TextVariant.semiBold,
       ),

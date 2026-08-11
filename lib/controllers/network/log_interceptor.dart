@@ -2,7 +2,6 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:rhttp/rhttp.dart';
 
 class LogInterceptor extends Interceptor {

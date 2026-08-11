@@ -4,7 +4,7 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -157,9 +157,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Glow(
-      child: Scaffold(
-        body: Stack(
+    return AnymeXScaffold(
+  body: Stack(
           children: [
             Column(
               children: [
@@ -273,9 +272,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               return const SizedBox.shrink();
             }),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }
 

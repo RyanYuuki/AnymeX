@@ -3,9 +3,9 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -151,10 +151,8 @@ class _HistoryEditorState extends State<HistoryEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: StreamBuilder<List<OfflineMedia>>(
+    return AnymeXScaffold(
+  body: StreamBuilder<List<OfflineMedia>>(
           stream: _historyStream(),
           builder: (context, snapshot) {
             final historyItems = snapshot.data ?? [];
@@ -169,15 +167,14 @@ class _HistoryEditorState extends State<HistoryEditor> {
             );
           },
         ),
-        floatingActionButton: StreamBuilder<List<OfflineMedia>>(
+  floatingActionButton: StreamBuilder<List<OfflineMedia>>(
           stream: _historyStream(),
           builder: (context, snapshot) {
             final historyItems = snapshot.data ?? [];
             return _buildFAB(historyItems);
           },
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildAppBar(List<OfflineMedia> historyItems) {
@@ -437,7 +434,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: item.name ?? item.jname ?? 'Unknown',
                         size: 16,
                         variant: TextVariant.semiBold,
@@ -446,7 +443,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                         isMarquee: true,
                       ),
                       const SizedBox(height: 4),
-                      AnymexText(
+                      AnymeXText(
                         text: subtitle,
                         size: 14,
                         variant: TextVariant.regular,

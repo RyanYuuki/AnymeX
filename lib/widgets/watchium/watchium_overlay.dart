@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/controllers/watchium/watchium_sync_controller.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,7 +21,7 @@ class WatchiumOverlay extends StatelessWidget {
       if (state == null) return const SizedBox.shrink();
 
       return ValueListenableBuilder<bool>(
-        valueListenable: AnymexTitleBar.isFullScreen,
+        valueListenable: AnymeXTitleBar.isFullScreen,
         builder: (_, isFullScreen, __) {
           final isWindows = !kIsWeb && Platform.isWindows;
           return Positioned(

@@ -4,7 +4,7 @@ import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -330,7 +330,7 @@ class SocialTabState extends State<SocialTab> {
                                     ),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: AnymexText(
+                                    child: AnymeXText(
                                       text: user.name,
                                       size: 15,
                                       variant: TextVariant.bold,
@@ -426,7 +426,7 @@ class SocialTabState extends State<SocialTab> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 4),
-                              child: AnymexText(
+                              child: AnymeXText(
                                 text: user.name,
                                 size: 11.5,
                                 variant: TextVariant.bold,

@@ -57,7 +57,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
       final containerHeight = isDefaultStyle ? 27.0 : 27.0;
       final markerSize = isDefaultStyle ? 15.0 : 4.0;
 
-      bool _isFollowMode() {
+      bool isFollowMode() {
         try {
           final watchium = Get.find<WatchiumService>();
           return watchium.inRoom.value && watchium.followHost.value && !watchium.isHost.value;
@@ -67,7 +67,7 @@ class _ProgressSliderState extends State<ProgressSlider> {
       }
 
       return IgnorePointer(
-        ignoring: _isFollowMode(),
+        ignoring: isFollowMode(),
         child: SizedBox(
           height: containerHeight,
           child: Stack(

@@ -1,8 +1,8 @@
 import 'package:anymex/utils/function.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Mangayomi/Eval/dart/model/filter.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
 
@@ -137,7 +137,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: Row(
               children: [
-                const AnymexText.bold(text: 'Filters', size: 18),
+                const AnymeXText.bold(text: 'Filters', size: 18),
                 const Spacer(),
                 _isResetting
                     ? SizedBox(
@@ -152,7 +152,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                       )
                     : TextButton(
                         onPressed: _reset,
-                        child: AnymexText.semiBold(
+                        child: AnymeXText.semiBold(
                           text: 'Reset',
                           size: 14,
                           color: theme.colorScheme.primary,
@@ -168,7 +168,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const AnymexText.semiBold(
+                  child: const AnymeXText.semiBold(
                     text: 'Apply',
                     size: 14,
                   ),
@@ -199,7 +199,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: AnymexText.regular(
+                  child: AnymeXText.regular(
                     text: "Note: If the extension supports reset to load filters and it doesn't work, try searching something first or open WebView. If that doesn't work, then click the 'Reset' button to load filters.",
                     size: 11.5,
                     maxLines: 999,
@@ -245,7 +245,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
   Widget _buildHeader(HeaderFilter f) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 16, 4, 6),
-      child: AnymexText.bold(
+      child: AnymeXText.bold(
         text: f.name,
         size: 15,
         color: Theme.of(context).colorScheme.primary,
@@ -256,7 +256,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
   Widget _buildCheckbox(int i, CheckBoxFilter f) {
     return CheckboxListTile(
       dense: true,
-      title: AnymexText(text: f.name, size: 14),
+      title: AnymeXText(text: f.name, size: 14),
       value: f.state,
       onChanged: (v) {
         setState(() {
@@ -300,7 +300,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
 
     return ListTile(
       dense: true,
-      title: AnymexText(text: f.name, size: 14),
+      title: AnymeXText(text: f.name, size: 14),
       trailing: GestureDetector(
         onTap: () {
           setState(() {
@@ -322,7 +322,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: borderColor),
           ),
-          child: AnymexText.semiBold(
+          child: AnymeXText.semiBold(
             text: labels[f.state],
             size: 12,
             color: textColor,
@@ -333,7 +333,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
   }
 
   Widget _buildSelect(int i, SelectFilter f) {
-    return AnymexExpansionTile(
+    return AnymeXExpansionTile(
       title: f.name,
       content: Wrap(
         alignment: WrapAlignment.start,
@@ -364,7 +364,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
 
   Widget _buildSort(int i, SortFilter f) {
     final state = f.state;
-    return AnymexExpansionTile(
+    return AnymeXExpansionTile(
       title: f.name,
       content: Wrap(
         alignment: WrapAlignment.start,
@@ -416,7 +416,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: (f.values[j] as SelectFilterOption).name,
                         size: 12,
                       ),
@@ -504,7 +504,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                 : theme.colorScheme.onSurface.withOpacity(0.1),
           ),
         ),
-        child: AnymexText(
+        child: AnymeXText(
           text: label,
           size: 12,
           color: isSelected
@@ -573,7 +573,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
 
     final hasContent = flatItems.isNotEmpty || subGroups.isNotEmpty;
 
-    return AnymexExpansionTile(
+    return AnymeXExpansionTile(
       title: group.name,
       initialExpanded: false,
       content: Column(
@@ -645,7 +645,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
           if (!hasContent)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              child: AnymexText.regular(
+              child: AnymeXText.regular(
                 text: 'No matches found',
                 size: 12,
                 color: theme.colorScheme.onSurface.withOpacity(0.5),
@@ -711,7 +711,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
 
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, top: 6.0),
-      child: AnymexExpansionTile(
+      child: AnymeXExpansionTile(
         title: subGroup.name,
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -811,7 +811,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: borderColor),
         ),
-        child: AnymexText(
+        child: AnymeXText(
           text: tri.name,
           size: 12,
           color: textColor,
@@ -865,7 +865,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
                 : theme.colorScheme.onSurface.withOpacity(0.1),
           ),
         ),
-        child: AnymexText(
+        child: AnymeXText(
           text: label,
           size: 12,
           color: isSelected

@@ -1,7 +1,7 @@
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 
 class ReaderChapterTransition extends StatelessWidget {
@@ -180,14 +180,14 @@ class ReaderChapterTransition extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymexText.semiBold(
+                AnymeXText.semiBold(
                   text: label.toUpperCase(),
                   size: 11,
                   color: isTarget ? scheme.primary : scheme.onSurfaceVariant,
                   maxLines: 1,
                 ),
                 const SizedBox(height: 6),
-                AnymexText.bold(
+                AnymeXText.bold(
                   text: title,
                   size: 18,
                   maxLines: 2,
@@ -195,7 +195,7 @@ class ReaderChapterTransition extends StatelessWidget {
                 ),
                 if (chapter.scanlator?.isNotEmpty ?? false) ...[
                   const SizedBox(height: 4),
-                  AnymexText(
+                  AnymeXText(
                     text: chapter.scanlator!,
                     size: 12,
                     color: scheme.onSurface.withOpacity(0.58),
@@ -242,7 +242,7 @@ class ReaderChapterTransition extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: AnymexText(
+            child: AnymeXText(
               text: text,
               color: context.colors.onSurface.withOpacity(0.82),
               maxLines: 2,
@@ -270,7 +270,7 @@ class ReaderChapterTransition extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: AnymexText.semiBold(
+            child: AnymeXText.semiBold(
               text: '$gap missing chapter${gap == 1 ? '' : 's'} between these',
               color: context.colors.error,
               maxLines: 2,

@@ -4,7 +4,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/common/carousel/carousel_style_registry.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
 import 'package:anymex/widgets/common/dynamic_style_selector.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -16,7 +16,7 @@ void showCarouselStyleSelector(BuildContext context) {
     context: context,
     builder: (dialogContext) {
       return Obx(
-        () => AnymexDialog(
+        () => AnymeXDialog(
           title: 'Carousel Style',
           onConfirm: () {
             settingsController.carouselStyle = selectedIndex.value;

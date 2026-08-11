@@ -1,8 +1,8 @@
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -87,7 +87,7 @@ class NovelTopControls extends StatelessWidget {
               SizedBox(
                 width: 30,
                 height: 30,
-                child: AnymexProgressIndicator(
+                child: AnymeXProgressIndicator(
                   value: controller.novelContent.isEmpty
                       ? 0
                       : controller.progress.value,
@@ -104,7 +104,7 @@ class NovelTopControls extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymexText(
+                          AnymeXText(
                             text: controller.currentChapter.value.title ??
                                 'Unknown Chapter',
                             size: 12,

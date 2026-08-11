@@ -1,7 +1,7 @@
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -40,10 +40,8 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
     final theme = context.colors;
     final sourceController = Get.find<SourceController>();
 
-    return Glow(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Extension Testing'),
             Expanded(
@@ -68,9 +66,8 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildExtensionTypeSection(ColorScheme theme) {

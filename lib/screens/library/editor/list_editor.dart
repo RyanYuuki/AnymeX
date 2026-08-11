@@ -4,8 +4,8 @@ import 'dart:ui';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -44,10 +44,8 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             _buildAppBar(),
             Expanded(
@@ -55,9 +53,8 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             ),
           ],
         ),
-        floatingActionButton: _buildFAB(),
-      ),
-    );
+  floatingActionButton: _buildFAB()
+);
   }
 
   Widget _buildAppBar() {

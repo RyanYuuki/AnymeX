@@ -1,8 +1,8 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../cast_service.dart';
@@ -13,7 +13,7 @@ class CastDeviceDialog extends StatefulWidget {
   const CastDeviceDialog({super.key, required this.controller});
 
   static Future<void> show(BuildContext context, PlayerController controller) async {
-    await AnymexSheet.custom(
+    await AnymeXSheet.custom(
       CastDeviceDialog(controller: controller),
       context,
       showDragHandle: true,
@@ -46,7 +46,7 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
           children: [
             Icon(Icons.cast_rounded, color: theme.colorScheme.primary, size: 22),
             const SizedBox(width: 10),
-            const AnymexText(
+            const AnymeXText(
               text: 'Cast to Device',
               variant: TextVariant.bold,
               size: 18,
@@ -84,12 +84,12 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AnymexText(
+                        AnymeXText(
                           text: active.name,
                           variant: TextVariant.bold,
                           size: 14,
                         ),
-                        AnymexText(
+                        AnymeXText(
                           text: 'Connected (${active.host})',
                           size: 12,
                           color: theme.colorScheme.onSurfaceVariant,
@@ -115,7 +115,7 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
           if (devices.isEmpty && castService.isSearching.value) {
             return const SizedBox(
               height: 120,
-              child: Center(child: AnymexProgressIndicator()),
+              child: Center(child: AnymeXProgressIndicator()),
             );
           }
 
@@ -123,7 +123,7 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
             return const SizedBox(
               height: 120,
               child: Center(
-                child: AnymexText(
+                child: AnymeXText(
                   text: 'No casting devices found on local network.',
                   size: 14,
                 ),

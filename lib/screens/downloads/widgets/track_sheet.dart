@@ -11,8 +11,8 @@ import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -37,7 +37,7 @@ Future<void> showTrackSheetForMedia(
   String? poster,
   bool isManga = false,
 }) {
-  return AnymexSheet.custom(
+  return AnymeXSheet.custom(
     _TrackSheet(
       mediaId: mediaId,
       title: title,
@@ -457,7 +457,7 @@ class _TrackSheetState extends State<_TrackSheet> {
     final animeProgress = b.progress.obs;
     final currentAnime = tracked.obs;
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       ListEditorModal(
         animeStatus: animeStatus,
         isManga: !b.isAnime,

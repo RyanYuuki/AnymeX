@@ -27,7 +27,7 @@ class WatchiumAnimeServer {
   final String serverName;
   final String? quality;
   final String type;
-  // Full stream data (from host, so joiners can play directly)
+
   final String? url;
   final String? originalUrl;
   final Map<String, String>? headers;
@@ -76,7 +76,6 @@ class WatchiumAnimeServer {
         'audios': audios?.map((e) => e.toJson()).toList(),
       };
 
-  /// Convert to a Video model for the player
   Video toVideo() {
     return Video(
       url: url,
@@ -84,7 +83,8 @@ class WatchiumAnimeServer {
       originalUrl: originalUrl ?? url,
       headerKeys: headers?.keys.toList(),
       headerValues: headers?.values.toList(),
-      subtitles: subtitles?.map((e) => Track(file: e.file, label: e.label)).toList(),
+      subtitles:
+          subtitles?.map((e) => Track(file: e.file, label: e.label)).toList(),
       audios: audios?.map((e) => Track(file: e.file, label: e.label)).toList(),
     );
   }
@@ -164,7 +164,7 @@ class WatchiumAnimeContent {
 
 class WatchiumPlayback {
   double positionSec;
-   bool isPlaying;
+  bool isPlaying;
   double rate;
   int updatedAt;
 
@@ -175,7 +175,8 @@ class WatchiumPlayback {
     required this.updatedAt,
   });
 
-  factory WatchiumPlayback.fromJson(Map<String, dynamic> json) => WatchiumPlayback(
+  factory WatchiumPlayback.fromJson(Map<String, dynamic> json) =>
+      WatchiumPlayback(
         positionSec: (json['positionSec'] as num).toDouble(),
         isPlaying: json['isPlaying'] as bool,
         rate: (json['rate'] as num).toDouble(),
@@ -220,7 +221,7 @@ class WatchiumRoomState {
   final bool chatDisabled;
   final bool announcementMode;
   final int maxMembers;
-  final int createdAt; // ms timestamp
+  final int createdAt;
 
   WatchiumRoomState({
     required this.code,
@@ -238,27 +239,25 @@ class WatchiumRoomState {
   factory WatchiumRoomState.fromJson(Map<String, dynamic> json) {
     final settings = json['settings'] as Map<String, dynamic>?;
     return WatchiumRoomState(
-        code: json['code'] as String,
-        hostUserId: json['hostUserId'] as String,
-        members: (json['members'] as List?)
-                ?.map((e) =>
-                    WatchiumMember.fromJson(e as Map<String, dynamic>))
-                .toList() ??
-            [],
-        content: json['content'] != null
-            ? WatchiumAnimeContent.fromJson(
-                json['content'] as Map<String, dynamic>)
-            : null,
-        playback: json['playback'] != null
-            ? WatchiumPlayback.fromJson(
-                json['playback'] as Map<String, dynamic>)
-            : null,
-        onlyHostControls: settings?['onlyHostControls'] as bool? ?? true,
-        chatDisabled: settings?['chatDisabled'] as bool? ?? false,
-        announcementMode: settings?['announcementMode'] as bool? ?? false,
-        maxMembers: json['maxMembers'] as int? ?? 10,
-        createdAt: json['createdAt'] as int? ?? 0,
-      );
+      code: json['code'] as String,
+      hostUserId: json['hostUserId'] as String,
+      members: (json['members'] as List?)
+              ?.map((e) => WatchiumMember.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      content: json['content'] != null
+          ? WatchiumAnimeContent.fromJson(
+              json['content'] as Map<String, dynamic>)
+          : null,
+      playback: json['playback'] != null
+          ? WatchiumPlayback.fromJson(json['playback'] as Map<String, dynamic>)
+          : null,
+      onlyHostControls: settings?['onlyHostControls'] as bool? ?? true,
+      chatDisabled: settings?['chatDisabled'] as bool? ?? false,
+      announcementMode: settings?['announcementMode'] as bool? ?? false,
+      maxMembers: json['maxMembers'] as int? ?? 10,
+      createdAt: json['createdAt'] as int? ?? 0,
+    );
   }
 }
 
@@ -282,8 +281,7 @@ class WatchiumChatMessage {
   factory WatchiumChatMessage.fromJson(Map<String, dynamic> json) =>
       WatchiumChatMessage(
         userId: (json['user'] as Map<String, dynamic>)['id'] as String,
-        username:
-            (json['user'] as Map<String, dynamic>)['username'] as String,
+        username: (json['user'] as Map<String, dynamic>)['username'] as String,
         avatarUrl:
             (json['user'] as Map<String, dynamic>)['avatarUrl'] as String?,
         text: json['text'] as String,
@@ -307,10 +305,10 @@ class WatchiumReaction {
     required this.ts,
   });
 
-  factory WatchiumReaction.fromJson(Map<String, dynamic> json) => WatchiumReaction(
+  factory WatchiumReaction.fromJson(Map<String, dynamic> json) =>
+      WatchiumReaction(
         userId: (json['user'] as Map<String, dynamic>)['id'] as String,
-        username:
-            (json['user'] as Map<String, dynamic>)['username'] as String,
+        username: (json['user'] as Map<String, dynamic>)['username'] as String,
         avatarUrl:
             (json['user'] as Map<String, dynamic>)['avatarUrl'] as String?,
         emoji: json['emoji'] as String,

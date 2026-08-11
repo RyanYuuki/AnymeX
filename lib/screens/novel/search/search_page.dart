@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 
 enum SearchState { initial, loading, success, error, empty }
 
@@ -479,8 +479,8 @@ class _NovelSearchPageState extends State<NovelSearchPage>
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: SafeArea(
+    return AnymeXScaffold(
+  body: SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: Column(
@@ -575,7 +575,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
             ],
           ),
         ),
-      ),
-    );
+      )
+);
   }
 }

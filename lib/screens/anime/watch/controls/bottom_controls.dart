@@ -7,7 +7,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart'
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/widgets/watchium/watchium_create_dialog.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -211,7 +211,7 @@ class BottomControls extends StatelessWidget {
                             size: 20,
                           ),
                         ),
-                      AnymexText(
+                      AnymeXText(
                         text: controller.skipButtonLabel,
                         variant: TextVariant.semiBold,
                         color: controller.isLocked.value

@@ -1,5 +1,5 @@
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/widgets.dart';
 
 class EmptyLibrary extends StatelessWidget {
@@ -20,7 +20,7 @@ class EmptyLibrary extends StatelessWidget {
         const SizedBox(
           height: 20,
         ),
-        AnymexText(
+        AnymeXText(
             text: isHistory ? "Your history is empty" : "Your library is empty")
       ],
     );

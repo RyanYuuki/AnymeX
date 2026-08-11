@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
-class AnymexToast {
+class AnymeXToast {
   static SnackbarController? _activeSnackbar;
 
   static void show({
@@ -70,7 +70,7 @@ class AnymexToast {
                   ),
                   12.width(),
                   Flexible(
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: message,
                       size: 13,
                       color: colorScheme.onSurface,

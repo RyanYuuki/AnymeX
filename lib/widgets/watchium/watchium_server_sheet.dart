@@ -7,8 +7,8 @@ import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/screens/anime/widgets/track_dialog.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -27,7 +27,7 @@ void showWatchiumServerSheet({
     return;
   }
 
-  AnymexSheet.custom(
+  AnymeXSheet.custom(
     _WatchiumServerSheetContent(content: content),
     context,
     showDragHandle: true,
@@ -87,11 +87,11 @@ class _WatchiumServerSheetContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymexText(
+                const AnymeXText(
                     text: 'Choose Quality',
                     variant: TextVariant.bold,
                     size: 16),
-                AnymexText(
+                AnymeXText(
                   text: 'Select streaming server quality to watch',
                   size: 12,
                   color: theme.onSurface.opaque(0.5),
@@ -222,7 +222,7 @@ class _ServerTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: (server.quality ?? server.serverName)
                             .toUpperCase(),
                         variant: TextVariant.bold,
@@ -231,7 +231,7 @@ class _ServerTile extends StatelessWidget {
                       ),
                       if (server.quality != null) ...[
                         const SizedBox(height: 2),
-                        AnymexText(
+                        AnymeXText(
                           text: server.serverName.toUpperCase(),
                           variant: TextVariant.semiBold,
                           size: 11,

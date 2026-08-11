@@ -30,14 +30,14 @@ import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -619,24 +619,22 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
     );
   }
 
-  Glow _buildAndroidLayout(BuildContext context) {
-    return Glow(
-      color: posterColor,
-      child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          extendBody: true,
-          bottomNavigationBar: sourceController.shouldShowExtensions.value
+  AnymeXScaffold _buildAndroidLayout(BuildContext context) {
+    return AnymeXScaffold(
+  color: posterColor,
+  resizeToAvoidBottomInset: false,
+
+  bottomNavigationBar: sourceController.shouldShowExtensions.value
               ? _buildMobiledNav()
               : null,
-          body: _commonSaikouLayout(context)),
-    );
+  body: _commonSaikouLayout(context)
+);
   }
 
   Widget _buildDesktopLayout(BuildContext context) {
-    return Glow(
-      color: posterColor,
-      child: Scaffold(
-        body: Row(
+    return AnymeXScaffold(
+  color: posterColor,
+  body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDesktopNav(),
@@ -644,9 +642,8 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               child: _commonSaikouLayout(context),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _commonSaikouLayout(BuildContext context) {
@@ -709,7 +706,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            AnymexText(
+                                            AnymeXText(
                                               text: convertAniListStatus(
                                                   animeStatus.value),
                                               variant: TextVariant.bold,
@@ -739,7 +736,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                                 ),
                               ] else ...[
                                 Expanded(
-                                  child: AnymexButton2(
+                                  child: AnymeXButton2(
                                     onTap: () {
                                       showCustomListDialog(
                                           context, anilistData!);
@@ -778,7 +775,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 ] else ...[
                   const SizedBox(
                     height: 400,
-                    child: Center(child: AnymexProgressIndicator()),
+                    child: Center(child: AnymeXProgressIndicator()),
                   )
                 ],
               ],
@@ -803,7 +800,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Widget _buildInfoPageBody(BuildContext context) {
     if (!_isTransitionFinished) {
-      return const Center(child: AnymexProgressIndicator());
+      return const Center(child: AnymeXProgressIndicator());
     }
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 120),
@@ -815,7 +812,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Widget _buildEpisodePageBody(BuildContext context) {
     if (!_isTransitionFinished) {
-      return const Center(child: AnymexProgressIndicator());
+      return const Center(child: AnymeXProgressIndicator());
     }
     return CustomScrollView(
       slivers: [
@@ -837,7 +834,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
 
   Widget _buildCommentsPageBody(BuildContext context) {
     if (!_isTransitionFinished) {
-      return const Center(child: AnymexProgressIndicator());
+      return const Center(child: AnymeXProgressIndicator());
     }
     return SingleChildScrollView(
       padding: const EdgeInsets.only(bottom: 120),
@@ -892,7 +889,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
                 style: TextStyle(
                     fontSize: 11, color: context.colors.onSurface.opaque(0.5))),
             const SizedBox(height: 2),
-            AnymexText(
+            AnymeXText(
                 text: value,
                 size: 14,
                 variant: TextVariant.semiBold,
@@ -935,23 +932,23 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: AnymexTextSpans(
+                child: AnymeXTextSpans(
                   fontSize: 14,
                   spans: [
-                    AnymexTextSpan(
+                    AnymeXTextSpan(
                       text: "Episode ",
                       color: context.colors.onSurface.opaque(0.7),
                     ),
-                    AnymexTextSpan(
+                    AnymeXTextSpan(
                       text: currentAnime.value?.episodeCount?.toString() ?? '0',
                       variant: TextVariant.bold,
                       color: context.colors.primary,
                     ),
-                    AnymexTextSpan(
+                    AnymeXTextSpan(
                       text: ' of ',
                       color: context.colors.onSurface.opaque(0.7),
                     ),
-                    AnymexTextSpan(
+                    AnymeXTextSpan(
                       text: anilistData?.totalEpisodes.toString() ?? '??',
                       variant: TextVariant.bold,
                       color: context.colors.primary,
@@ -1140,7 +1137,7 @@ class _AnimeDetailsPageState extends State<AnimeDetailsPage> {
   }
 
   void showListEditorModal(BuildContext context) {
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
         showDragHandle: false,
         ListEditorModal(
           animeStatus: animeStatus,

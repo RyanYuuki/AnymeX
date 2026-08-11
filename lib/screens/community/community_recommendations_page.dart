@@ -10,9 +10,9 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
@@ -184,15 +184,15 @@ class _CommunityRecommendationsPageState
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnymexText(
+                  AnymeXText(
                     text: 'Filter Settings',
                     variant: TextVariant.semiBold,
                     color: context.colors.primary,
                   ),
                   const SizedBox(height: 8),
                   SwitchListTile(
-                    title: const AnymexText(text: 'Hide by List Status'),
-                    subtitle: const AnymexText(
+                    title: const AnymeXText(text: 'Hide by List Status'),
+                    subtitle: const AnymeXText(
                         text: 'Filter out entries already in your list'),
                     value: svc.filterByListEnabled.value,
                     onChanged: (v) {
@@ -202,7 +202,7 @@ class _CommunityRecommendationsPageState
                   ),
                   if (svc.filterByListEnabled.value) ...[
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Completed'),
+                      title: const AnymeXText(text: 'Hide Completed'),
                       value: svc.filterCompleted.value,
                       onChanged: (v) {
                         svc.filterCompleted.value = v;
@@ -210,7 +210,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Watching / Reading'),
+                      title: const AnymeXText(text: 'Hide Watching / Reading'),
                       value: svc.filterWatching.value,
                       onChanged: (v) {
                         svc.filterWatching.value = v;
@@ -218,7 +218,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Dropped'),
+                      title: const AnymeXText(text: 'Hide Dropped'),
                       value: svc.filterDropped.value,
                       onChanged: (v) {
                         svc.filterDropped.value = v;
@@ -226,7 +226,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Planning'),
+                      title: const AnymeXText(text: 'Hide Planning'),
                       value: svc.filterPlanning.value,
                       onChanged: (v) {
                         svc.filterPlanning.value = v;
@@ -234,7 +234,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide On Hold / Paused'),
+                      title: const AnymeXText(text: 'Hide On Hold / Paused'),
                       value: svc.filterPaused.value,
                       onChanged: (v) {
                         svc.filterPaused.value = v;
@@ -242,7 +242,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Rewatching'),
+                      title: const AnymeXText(text: 'Hide Rewatching'),
                       value: svc.filterRepeating.value,
                       onChanged: (v) {
                         svc.filterRepeating.value = v;
@@ -251,7 +251,7 @@ class _CommunityRecommendationsPageState
                     ),
                   ],
                   SwitchListTile(
-                    title: const AnymexText(text: 'Hide NSFW'),
+                    title: const AnymeXText(text: 'Hide NSFW'),
                     value: svc.hideNsfw.value,
                     onChanged: (v) {
                       svc.hideNsfw.value = v;
@@ -271,9 +271,8 @@ class _CommunityRecommendationsPageState
   Widget build(BuildContext context) {
     final isDesktop = getPlatform(context);
 
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             NestedHeader(
               title: 'Community Recommendations',
@@ -315,7 +314,7 @@ class _CommunityRecommendationsPageState
                             color: context.colors.onSurfaceVariant
                                 .withOpacity(0.5)),
                         const SizedBox(height: 12),
-                        AnymexText(
+                        AnymeXText(
                           text: 'No recommendations found',
                           color:
                               context.colors.onSurfaceVariant.withOpacity(0.7),
@@ -375,9 +374,8 @@ class _CommunityRecommendationsPageState
               }),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }
 
@@ -943,7 +941,7 @@ class _SeeAllListTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymexText(
+                    AnymeXText(
                       text: item.displayTitle,
                       variant: TextVariant.semiBold,
                       maxLines: 2,
@@ -951,7 +949,7 @@ class _SeeAllListTile extends StatelessWidget {
                     ),
                     if (item.reason != null && item.reason!.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      AnymexText(
+                      AnymeXText(
                         text: item.reason!,
                         variant: TextVariant.regular,
                         maxLines: 2,
@@ -976,7 +974,7 @@ class _SeeAllListTile extends StatelessWidget {
                                   size: 18),
                             ),
                             const SizedBox(width: 4),
-                            AnymexText(
+                            AnymeXText(
                               text: author,
                               variant: TextVariant.semiBold,
                               color: colors.primary,
@@ -1013,7 +1011,7 @@ class _SeeAllListTile extends StatelessWidget {
                               Icon(Icons.people_rounded,
                                   size: 12, color: colors.onSecondaryContainer),
                               const SizedBox(width: 4),
-                              AnymexText(
+                              AnymeXText(
                                 text: '${item.reasonCount} recommendations',
                                 size: 11,
                                 color: colors.onSecondaryContainer,

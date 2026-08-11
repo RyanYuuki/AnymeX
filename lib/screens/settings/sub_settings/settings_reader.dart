@@ -5,8 +5,8 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme_registry.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -298,9 +298,8 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Reader'),
             Expanded(
@@ -309,7 +308,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                   padding: const EdgeInsets.fromLTRB(15, 20, 15, 50),
                   child: Column(
                     children: [
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                         title: 'Manga',
                         initialExpanded: true,
                         content: Column(
@@ -544,7 +543,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ],
                         ),
                       ),
-                      AnymexExpansionTile(
+                      AnymeXExpansionTile(
                         title: 'Novel',
                         initialExpanded: true,
                         content: Column(
@@ -852,8 +851,7 @@ class _SettingsReaderState extends State<SettingsReader> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }

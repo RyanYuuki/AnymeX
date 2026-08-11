@@ -7,8 +7,8 @@ import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
@@ -259,7 +259,7 @@ class BlurAnimeCard extends StatelessWidget {
                         SizedBox(
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
-                        AnymexText(
+                        AnymeXText(
                           text: "Episode ${data.nextAiringEpisode!.episode}",
                           size: 14,
                           maxLines: 2,
@@ -268,7 +268,7 @@ class BlurAnimeCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 10),
-                        AnymexText(
+                        AnymeXText(
                           text: data.title,
                           size: 14,
                           maxLines: 2,
@@ -292,7 +292,7 @@ class BlurAnimeCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular((8.multiplyRadius())),
                     color: context.colors.primary,
                   ),
-                  child: AnymexText(
+                  child: AnymeXText(
                     text: '',
                     size: 12,
                     color: context.colors.onPrimary,

@@ -2,7 +2,7 @@
 
 import 'package:anymex/utils/oauth_helper.dart';
 import 'dart:convert';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -195,7 +195,7 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-    final selectedMethod = await AnymexSheet.custom<String>(
+    final selectedMethod = await AnymeXSheet.custom<String>(
       loginSheetHelper(
         context: context,
         title: 'Login to AniList',

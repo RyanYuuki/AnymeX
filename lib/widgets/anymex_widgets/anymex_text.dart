@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 enum TextVariant { regular, semiBold, bold }
 
-class AnymexText extends StatelessWidget {
+class AnymeXText extends StatelessWidget {
   final String text;
   final TextVariant variant;
   final Color? color;
@@ -20,7 +20,7 @@ class AnymexText extends StatelessWidget {
   final double? stepGranularity;
   final bool isMarquee;
 
-  const AnymexText({
+  const AnymeXText({
     super.key,
     required this.text,
     this.variant = TextVariant.regular,
@@ -37,7 +37,7 @@ class AnymexText extends StatelessWidget {
     this.isMarquee = false,
   });
 
-  const AnymexText.regular({
+  const AnymeXText.regular({
     Key? key,
     required String text,
     Color? color,
@@ -68,7 +68,7 @@ class AnymexText extends StatelessWidget {
           isMarquee: isMarquee,
         );
 
-  const AnymexText.semiBold({
+  const AnymeXText.semiBold({
     Key? key,
     required String text,
     Color? color,
@@ -99,7 +99,7 @@ class AnymexText extends StatelessWidget {
           isMarquee: isMarquee,
         );
 
-  const AnymexText.bold({
+  const AnymeXText.bold({
     Key? key,
     required String text,
     Color? color,

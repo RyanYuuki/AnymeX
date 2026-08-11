@@ -1,8 +1,8 @@
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_icon_wrapper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -147,7 +147,7 @@ class CustomSwitchTile extends StatelessWidget {
       padding: padding,
       child: Row(
         children: [
-          AnymexIcon(icon, size: 30, color: context.colors.primary),
+          AnymeXIcon(icon, size: 30, color: context.colors.primary),
           const SizedBox(width: 20),
           Expanded(
             child: Column(
@@ -239,7 +239,7 @@ class CustomTile extends StatelessWidget {
               child: Row(
                 children: [
                   if (prefix == null)
-                    AnymexIcon(icon, size: 30, color: context.colors.primary)
+                    AnymeXIcon(icon, size: 30, color: context.colors.primary)
                   else
                     prefix!,
                   const SizedBox(width: 20),
@@ -341,7 +341,7 @@ class CustomSliderTile extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    AnymexIcon(icon, size: 30, color: context.colors.primary),
+                    AnymeXIcon(icon, size: 30, color: context.colors.primary),
                     const SizedBox(width: 20),
                     Expanded(
                       child: Column(
@@ -376,7 +376,7 @@ class CustomSliderTile extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Row(
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: sliderValue % 1 == 0
                             ? sliderValue.toInt().toString()
                             : sliderValue.toStringAsFixed(1),
@@ -404,7 +404,7 @@ class CustomSliderTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      AnymexText(
+                      AnymeXText(
                         text: max % 1 == 0
                             ? max.toInt().toString()
                             : max.toStringAsFixed(1),

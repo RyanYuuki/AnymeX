@@ -1,9 +1,9 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class ContinueWatchingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
 
-    return AnymexCard(
+    return AnymeXCard(
       shape: RoundedRectangleBorder(
         side: BorderSide(
           color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
@@ -87,7 +87,7 @@ class ContinueWatchingCard extends StatelessWidget {
                         Icon(Icons.timelapse_rounded,
                             size: 10, color: context.colors.onPrimary),
                         const SizedBox(width: 4),
-                        AnymexText(
+                        AnymeXText(
                             text: media.date ?? '',
                             size: 10,
                             variant: TextVariant.bold,
@@ -155,7 +155,7 @@ class ContinueWatchingCard extends StatelessWidget {
                             )
                           ],
                         ),
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: media.formattedEpisodeTitle ?? '',
                           size: 11,
                           maxLines: 1,
@@ -191,7 +191,7 @@ class ContinueWatchingCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AnymexText(
+                        AnymeXText(
                           text: media.progressTitle ?? media.title!,
                           size: 13,
                           maxLines: 1,
@@ -203,7 +203,7 @@ class ContinueWatchingCard extends StatelessWidget {
                             media.title != media.progressTitle)
                           Padding(
                             padding: const EdgeInsets.only(top: 2),
-                            child: AnymexText(
+                            child: AnymeXText(
                               text: media.title!,
                               size: 11,
                               maxLines: 1,
@@ -219,7 +219,7 @@ class ContinueWatchingCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: media.progressText!,
                       size: 11,
                       color: colorScheme.primary,

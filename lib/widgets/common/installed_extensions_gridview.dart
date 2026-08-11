@@ -3,8 +3,8 @@ import 'package:anymex/screens/search/source_search_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -183,7 +183,7 @@ class _InstalledExtensionsGridViewState
               ),
             ),
             const SizedBox(height: 14),
-            AnymexText.semiBold(
+            AnymeXText.semiBold(
               text: _searchQuery.isEmpty
                   ? 'No $title extensions installed'
                   : 'No extensions found for "$_searchQuery"',
@@ -202,7 +202,7 @@ class _InstalledExtensionsGridViewState
                   });
                 },
                 icon: const Icon(Icons.close_rounded, size: 18),
-                label: const AnymexText.regular(
+                label: const AnymeXText.regular(
                   text: 'Clear Filter',
                   size: 14,
                 ),

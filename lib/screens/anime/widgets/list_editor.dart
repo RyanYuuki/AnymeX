@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -960,7 +960,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
         Expanded(
           child: SizedBox(
             height: 46,
-            child: AnymexButton(
+            child: AnymeXContainerButton(
               onTap: actionsDisabled ? null : () {
                 Navigator.pop(context);
                 widget.onDelete(widget.media.id);
@@ -983,7 +983,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
         Expanded(
           child: SizedBox(
             height: 46,
-            child: AnymexButton(
+            child: AnymeXContainerButton(
               borderRadius: BorderRadius.circular(14),
               onTap: () async {
                       if (actionsDisabled) return;

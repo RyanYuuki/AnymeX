@@ -2,9 +2,9 @@
 
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:blur/blur.dart';
@@ -25,7 +25,7 @@ class UnifiedHistoryCard extends StatelessWidget {
       context.colors.primaryContainer.opaque(0.8),
     ];
 
-    return AnymexCard(
+    return AnymeXCard(
       shape: RoundedRectangleBorder(
           side: BorderSide(
             color: colorScheme.primary.opaque(0.3),
@@ -98,7 +98,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                                   BorderRadius.circular(8.multiplyRadius()),
                               color: colorScheme.primary,
                             ),
-                            child: AnymexText(
+                            child: AnymeXText(
                               text: media.formattedEpisodeTitle.toString(),
                               size: 12,
                               variant: TextVariant.bold,
@@ -107,7 +107,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           // Episode title
-                          AnymexText(
+                          AnymeXText(
                             text: media.progressTitle ?? media.title!,
                             size: 15,
                             maxLines: getResponsiveValue(context,
@@ -119,7 +119,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           if (media.title != null &&
                               media.title != media.progressTitle)
-                            AnymexText(
+                            AnymeXText(
                               text: media.title!,
                               size: 14,
                               maxLines: 1,
@@ -136,13 +136,13 @@ class UnifiedHistoryCard extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  AnymexText(
+                                  AnymeXText(
                                     text: media.date!,
                                     size: 12,
                                     color:
                                         colorScheme.onSurface.opaque(0.7),
                                   ),
-                                  AnymexText(
+                                  AnymeXText(
                                     text: media.progressText ?? '??',
                                     size: 12,
                                     color: colorScheme.primary,
@@ -184,7 +184,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
-    return AnymexCard(
+    return AnymeXCard(
       shape: RoundedRectangleBorder(
         side: BorderSide(
           color: colorScheme.primary.opaque(0.3),
@@ -227,7 +227,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                               BorderRadius.circular(8.multiplyRadius()),
                           color: colorScheme.primary,
                         ),
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: media.formattedEpisodeTitle ?? '',
                           size: 12,
                           variant: TextVariant.bold,
@@ -242,7 +242,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                               BorderRadius.circular(8.multiplyRadius()),
                           color: colorScheme.surfaceVariant,
                         ),
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: media.date!,
                           size: 12,
                           variant: TextVariant.regular,
@@ -252,7 +252,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  AnymexText(
+                  AnymeXText(
                     text: media.progressTitle ?? media.title!,
                     size: 15,
                     maxLines: 1,
@@ -261,7 +261,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   if (media.title != null && media.title != media.progressTitle)
-                    AnymexText(
+                    AnymeXText(
                       text: media.title!,
                       size: 13,
                       maxLines: 1,
@@ -287,7 +287,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      AnymexText(
+                      AnymeXText(
                         text: media.progressText!,
                         size: 12,
                         color: colorScheme.primary,
@@ -313,7 +313,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
-    return AnymexCard(
+    return AnymeXCard(
       shape: RoundedRectangleBorder(
           side: BorderSide(
             color: colorScheme.primary.opaque(0.3),
@@ -361,7 +361,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                               BorderRadius.circular(8.multiplyRadius()),
                           color: colorScheme.primary,
                         ),
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: media.formattedEpisodeTitle ?? 'Episode ??',
                           size: 12,
                           variant: TextVariant.bold,
@@ -369,7 +369,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      AnymexText(
+                      AnymeXText(
                         text: media.progressTitle ?? media.title!,
                         size: 15,
                         maxLines: getResponsiveValue(context,
@@ -381,7 +381,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                       const SizedBox(height: 4),
                       if (media.title != null &&
                           media.title != media.progressTitle)
-                        AnymexText(
+                        AnymeXText(
                           text: media.title!,
                           size: 14,
                           maxLines: 1,
@@ -398,12 +398,12 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              AnymexText(
+                              AnymeXText(
                                 text: media.date!,
                                 size: 12,
                                 color: colorScheme.onSurface.opaque(0.7),
                               ),
-                              AnymexText(
+                              AnymeXText(
                                 text: media.progressText!,
                                 size: 12,
                                 color: colorScheme.primary,

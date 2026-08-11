@@ -12,16 +12,16 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/continue_watching_cards.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
-import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
+import 'package:anymex/widgets/header/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -163,7 +163,7 @@ class _HomePageState extends State<HomePage> {
       OfflineStorageController controller, List<OfflineMedia> items) {
     showDialog(
       context: context,
-      builder: (context) => AnymexDialog(
+      builder: (context) => AnymeXDialog(
         title: 'Clear All History',
         contentWidget: const Text(
           'Are you sure you want to clear all local watch history? This action cannot be undone.',
@@ -290,20 +290,20 @@ class _HomePageState extends State<HomePage> {
                   Obx(
                     () => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: AnymexTextSpans(
+                      child: AnymeXTextSpans(
                         fontSize: 27,
                         spans: [
-                          const AnymexTextSpan(
+                          const AnymeXTextSpan(
                               text: 'Hey ',
                               size: 30,
                               variant: TextVariant.bold),
-                          AnymexTextSpan(
+                          AnymeXTextSpan(
                               text:
                                   '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
                               size: 30,
                               color: context.colors.primary,
                               variant: TextVariant.bold),
-                          const AnymexTextSpan(
+                          const AnymeXTextSpan(
                               text: ', what are we doing today?',
                               size: 30,
                               variant: TextVariant.bold),
@@ -459,7 +459,7 @@ class ImageButton extends StatelessWidget {
             ),
           ),
           Positioned.fill(
-            child: AnymexButton(
+            child: AnymeXContainerButton(
               onTap: onPressed,
               onLongPress: onLongPress,
               padding: EdgeInsets.zero,

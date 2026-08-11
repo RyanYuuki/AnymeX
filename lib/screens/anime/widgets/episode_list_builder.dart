@@ -19,10 +19,10 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -726,7 +726,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       });
     }
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -787,11 +787,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymexText(
+                const AnymeXText(
                     text: 'Choose Quality',
                     variant: TextVariant.bold,
                     size: 16),
-                AnymexText(
+                AnymeXText(
                   text: 'Select streaming server quality to watch',
                   size: 12,
                   color: theme.onSurface.opaque(0.5),
@@ -836,13 +836,13 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       mainAxisSize: MainAxisSize.min,
       children: [
         10.height(),
-        AnymexText(
+        AnymeXText(
           text: "Error Occured",
           variant: TextVariant.bold,
           size: 18,
         ),
         20.height(),
-        AnymexText(
+        AnymeXText(
           text: "Server-chan is taking a nap!",
           variant: TextVariant.semiBold,
           size: 18,
@@ -854,7 +854,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             color: Colors.red.opaque(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: AnymexText(
+          child: AnymeXText(
             text: errorMessage,
             variant: TextVariant.regular,
             size: 14,
@@ -870,7 +870,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     return const SizedBox(
       height: 200,
       child: Center(
-        child: AnymexText(
+        child: AnymeXText(
           text: "No servers available",
           variant: TextVariant.bold,
           size: 16,
@@ -901,7 +901,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       height: 16,
                       child: ExpressiveLoadingIndicator()),
                   const SizedBox(width: 8),
-                  AnymexText(
+                  AnymeXText(
                       text: 'Scanning for more servers...',
                       size: 12,
                       color: theme.onSurface.opaque(0.5)),
@@ -1008,14 +1008,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymexText(
+                          AnymeXText(
                             text: quality,
                             variant: TextVariant.bold,
                             size: 14,
                             maxLines: 10,
                           ),
                           const SizedBox(height: 2),
-                          AnymexText(
+                          AnymeXText(
                             text: sourceController.activeSource.value!.name!
                                 .toUpperCase(),
                             variant: TextVariant.semiBold,
@@ -1155,7 +1155,7 @@ class ContinueEpisodeButton extends StatelessWidget {
                 ),
               ),
               Positioned.fill(
-                child: AnymexButton(
+                child: AnymeXContainerButton(
                   onTap: onPressed,
                   padding: EdgeInsets.zero,
                   border: BorderSide(color: Colors.transparent),
@@ -1170,7 +1170,7 @@ class ContinueEpisodeButton extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          AnymexText(
+                          AnymeXText(
                             text: episodeLabel.toUpperCase(),
                             variant: TextVariant.semiBold,
                             color: textColor,

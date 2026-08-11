@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:anymex/utils/language.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -54,7 +54,7 @@ class SourceSelectorWidget extends StatelessWidget {
   });
 
   void _openSheet(BuildContext context) {
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       _SourceSheetContent(
         activeSource: activeSource,
         installedSources: installedSources,
@@ -458,7 +458,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
             children: [
               Icon(Icons.extension_rounded, size: 20, color: colors.primary),
               const SizedBox(width: 10),
-              AnymexText(
+              AnymeXText(
                 text: widget.label ??
                     (widget.isManga
                         ? 'Select Manga Source'

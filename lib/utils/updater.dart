@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:anymex/utils/abi_checker.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -201,7 +201,7 @@ class UpdateManager {
     String changelog,
     Map<String, String> downloadUrls,
   ) {
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       UpdateBottomSheet(
         currentVersion: currentVersion,
         newVersion: newVersion,
@@ -475,7 +475,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AnymexText(
+                  const AnymeXText(
                     text: "New Version Available",
                     variant: TextVariant.bold,
                     size: 18,
@@ -534,7 +534,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
             Icon(Icons.auto_awesome_rounded,
                 color: colorScheme.primary, size: 18),
             const SizedBox(width: 8),
-            const AnymexText(
+            const AnymeXText(
               text: "What's New",
               variant: TextVariant.bold,
               size: 15,
@@ -626,7 +626,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
         Row(
           children: [
             Expanded(
-              child: AnymexButton(
+              child: AnymeXContainerButton(
                 onTap: _isDownloading ? null : () => Navigator.pop(context),
                 height: 48,
                 borderRadius: BorderRadius.circular(16),
@@ -645,7 +645,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
             const SizedBox(width: 12),
             Expanded(
               flex: 2,
-              child: AnymexButton(
+              child: AnymeXContainerButton(
                 onTap: _isDownloading ? null : _downloadAndInstall,
                 height: 48,
                 color: colorScheme.primary,

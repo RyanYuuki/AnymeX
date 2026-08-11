@@ -8,11 +8,10 @@ import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -20,7 +19,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class BigCarouselPortrait extends StatefulWidget {
   final List<Media> data;
@@ -82,7 +80,7 @@ class _BigCarouselPortraitState extends State<BigCarouselPortrait> {
         .trim();
     final colors = Theme.of(context).colorScheme;
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
         SizedBox(
           height: MediaQuery.sizeOf(context).height * 0.4,
           child: Column(
@@ -459,7 +457,7 @@ class _BigCarouselPortraitState extends State<BigCarouselPortrait> {
                                   child: Row(
                                     children: [
                                       Expanded(
-                                        child: AnymexText(
+                                        child: AnymeXText(
                                           text: cleanDescription.isNotEmpty
                                               ? cleanDescription
                                               : 'Tap to read description',

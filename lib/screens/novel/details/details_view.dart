@@ -9,11 +9,11 @@ import 'package:anymex/screens/novel/details/widgets/novel_stats.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/gradient_image.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -89,28 +89,24 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
   }
 
   Widget _buildDesktopLayout(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Row(
+    return AnymeXScaffold(
+  body: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDesktopNav(),
             Expanded(child: _commonLayout(context)),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildAndroidLayout(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        extendBody: true,
-        bottomNavigationBar: _buildMobiledNav(),
-        body: _commonLayout(context),
-      ),
-    );
+    return AnymeXScaffold(
+  resizeToAvoidBottomInset: false,
+  extendBody: true,
+  bottomNavigationBar: _buildMobiledNav(),
+  body: _commonLayout(context)
+);
   }
 
   Widget _commonLayout(BuildContext context) {
@@ -165,7 +161,7 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
       },
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: AnymexProgressIndicator());
+          return const Center(child: AnymeXProgressIndicator());
         }
 
         return PageView(
@@ -415,25 +411,25 @@ class _NovelDetailsPageState extends State<NovelDetailsPage> {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: AnymexTextSpans(
+            child: AnymeXTextSpans(
               fontSize: 14,
               spans: [
-                AnymexTextSpan(
+                AnymeXTextSpan(
                   text: "Chapter ",
                   color: context.colors.onSurface.opaque(0.7),
                 ),
-                AnymexTextSpan(
+                AnymeXTextSpan(
                   text: controller.offlineMedia.value?.currentChapter?.number
                           .toString() ??
                       '1',
                   variant: TextVariant.bold,
                   color: context.colors.primary,
                 ),
-                AnymexTextSpan(
+                AnymeXTextSpan(
                   text: ' of ',
                   color: context.colors.onSurface.opaque(0.7),
                 ),
-                AnymexTextSpan(
+                AnymeXTextSpan(
                   text: controller.media.value.totalChapters ??
                       controller.media.value.totalEpisodes,
                   variant: TextVariant.bold,

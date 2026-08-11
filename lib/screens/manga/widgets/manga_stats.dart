@@ -12,7 +12,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:get/get.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -112,7 +112,7 @@ class _MangaStatsState extends State<MangaStats> {
                   context,
                   icon: Icons.language_rounded,
                   title: "Romaji Title",
-                  content: AnymexText(
+                  content: AnymeXText(
                     text: widget.data.romajiTitle,
                     variant: TextVariant.semiBold,
                     size: 15,
@@ -321,7 +321,7 @@ class _MangaStatsState extends State<MangaStats> {
                 ),
               ),
               const SizedBox(width: 12),
-              AnymexText(
+              AnymeXText(
                 text: title,
                 variant: TextVariant.bold,
                 size: 20,
@@ -371,7 +371,7 @@ class _MangaStatsState extends State<MangaStats> {
                 ),
               ),
               const SizedBox(width: 10),
-              AnymexText(
+              AnymeXText(
                 text: title,
                 variant: TextVariant.bold,
                 size: 16,
@@ -428,13 +428,13 @@ class _MangaStatsState extends State<MangaStats> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AnymexText(
+                      const AnymeXText(
                         text: "Recent News",
                         variant: TextVariant.bold,
                         size: 14,
                       ),
                       const SizedBox(height: 4),
-                      AnymexText(
+                      AnymeXText(
                         text: "Read latest updates about this manga",
                         variant: TextVariant.regular,
                         size: 13,
@@ -531,7 +531,7 @@ class _MangaStatsState extends State<MangaStats> {
                     color: colorScheme.primary.opaque(0.7, iReallyMeanIt: true),
                   ),
                   const SizedBox(width: 6),
-                  AnymexText(
+                  AnymeXText(
                     text: stat['label'].toString(),
                     variant: TextVariant.regular,
                     size: 11,
@@ -541,7 +541,7 @@ class _MangaStatsState extends State<MangaStats> {
                 ],
               ),
               const SizedBox(height: 6),
-              AnymexText(
+              AnymeXText(
                 text: stat['value'].toString(),
                 variant: TextVariant.bold,
                 size: 15,
@@ -593,14 +593,14 @@ class _MangaStatsState extends State<MangaStats> {
                       if (_latestChapter != null) ...[
                         Row(
                           children: [
-                            AnymexText(
+                            AnymeXText(
                               text: "Current • ",
                               variant: TextVariant.regular,
                               size: 11,
                               color: colorScheme.onSurface
                                   .opaque(0.6, iReallyMeanIt: true),
                             ),
-                            AnymexText(
+                            AnymeXText(
                               text: _latestChapter!,
                               variant: TextVariant.bold,
                               size: 11,
@@ -610,7 +610,7 @@ class _MangaStatsState extends State<MangaStats> {
                         ),
                         const SizedBox(height: 4),
                       ],
-                      AnymexText(
+                      AnymeXText(
                         text: "Next Release",
                         variant: TextVariant.regular,
                         size: 11,
@@ -618,7 +618,7 @@ class _MangaStatsState extends State<MangaStats> {
                             .opaque(0.6, iReallyMeanIt: true),
                       ),
                       const SizedBox(height: 4),
-                      AnymexText(
+                      AnymeXText(
                         text: "${pred.nextChapter} • $dateStr",
                         variant: TextVariant.bold,
                         size: 14,
@@ -661,7 +661,7 @@ class _MangaStatsState extends State<MangaStats> {
         children: [
           Expanded(
             flex: 2,
-            child: AnymexText(
+            child: AnymeXText(
               text: label,
               variant: TextVariant.semiBold,
               size: 13,
@@ -674,7 +674,7 @@ class _MangaStatsState extends State<MangaStats> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: chapters
                   .map(
-                    (chapter) => AnymexText(
+                    (chapter) => AnymeXText(
                       text: chapter,
                       variant: TextVariant.bold,
                       size: 13,
@@ -722,7 +722,7 @@ class _MangaStatsState extends State<MangaStats> {
                     width: 1,
                   ),
                 ),
-                child: AnymexText(
+                child: AnymeXText(
                   text: chip.label,
                   size: 12,
                   variant: TextVariant.semiBold,
@@ -761,7 +761,7 @@ class _MangaStatsState extends State<MangaStats> {
             ),
           ),
           const SizedBox(width: 10),
-          AnymexText(
+          AnymeXText(
             text: title,
             variant: TextVariant.bold,
             size: 16,
@@ -799,7 +799,7 @@ class _MangaStatsState extends State<MangaStats> {
             ),
           ),
           const SizedBox(width: 12),
-          AnymexText(
+          AnymeXText(
             text: title,
             variant: TextVariant.bold,
             size: 20,

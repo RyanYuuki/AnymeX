@@ -3,9 +3,9 @@ import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';
@@ -123,7 +123,7 @@ class CharactersCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymexText(
+                          child: AnymeXText(
                             text: itemData.name ?? '??',
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
@@ -259,7 +259,7 @@ class CharactersCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymexText(
+                          child: AnymeXText(
                             text: itemData?.name ?? 'No Voice Actor',
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
@@ -383,7 +383,7 @@ class StaffCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymexText(
+                          child: AnymeXText(
                             text: itemData.name ?? '??',
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
@@ -394,7 +394,7 @@ class StaffCarousel extends StatelessWidget {
                         ),
                         if (itemData.primaryOccupations != null &&
                             itemData.primaryOccupations!.isNotEmpty)
-                          AnymexText(
+                          AnymeXText(
                             text: itemData.primaryOccupations!.join(", "),
                             maxLines: 1,
                             size: 10,

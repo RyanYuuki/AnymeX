@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
-class AnymexChip extends StatelessWidget {
+class AnymeXChip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final Function(bool e) onSelected;
   final bool showCheck;
 
-  const AnymexChip({
+  const AnymeXChip({
     super.key,
     required this.label,
     required this.isSelected,
@@ -65,13 +65,13 @@ class AnymexChip extends StatelessWidget {
   }
 }
 
-class AnymexIconChip extends StatelessWidget {
+class AnymeXIconChip extends StatelessWidget {
   final Widget icon;
   final bool isSelected;
   final Function(bool e) onSelected;
   final bool showCheck;
 
-  const AnymexIconChip(
+  const AnymeXIconChip(
       {super.key,
       required this.icon,
       required this.isSelected,

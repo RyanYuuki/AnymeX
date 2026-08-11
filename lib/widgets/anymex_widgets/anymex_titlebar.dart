@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -11,7 +11,7 @@ import 'package:win32/win32.dart';
 import 'dart:ffi';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide isar;
 
-class AnymexTitleBar {
+class AnymeXTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
   static final ValueNotifier<bool> isMaximized = ValueNotifier(false);
 
@@ -39,7 +39,7 @@ class AnymexTitleBar {
       await windowManager.show();
       await windowManager.focus();
 
-      AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+      AnymeXTitleBar.isMaximized.value = await windowManager.isMaximized();
       await windowManager.setPreventClose(true);
       windowManager.addListener(_WindowListener());
     });
@@ -52,7 +52,7 @@ class AnymexTitleBar {
     GetWindowPlacement(hwnd, placement);
 
     final isMaximized = placement.ref.showCmd == SW_SHOWMAXIMIZED;
-    AnymexTitleBar.isMaximized.value = isMaximized;
+    AnymeXTitleBar.isMaximized.value = isMaximized;
 
     calloc.free(placement);
   }
@@ -77,7 +77,7 @@ class AnymexTitleBar {
 
 class _WindowListener extends WindowListener {
   Future<void> _sync() async {
-    AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+    AnymeXTitleBar.isMaximized.value = await windowManager.isMaximized();
   }
 
   @override
@@ -89,7 +89,7 @@ class _WindowListener extends WindowListener {
   @override
   void onWindowResized() async {
     if (Platform.isWindows) {
-      AnymexTitleBar.listenToWin32();
+      AnymeXTitleBar.listenToWin32();
     }
   }
 
@@ -120,7 +120,7 @@ class _TitleBarWidget extends StatelessWidget {
       await windowManager.maximize();
     }
 
-    AnymexTitleBar.isMaximized.value = await windowManager.isMaximized();
+    AnymeXTitleBar.isMaximized.value = await windowManager.isMaximized();
   }
 
   @override
@@ -183,7 +183,7 @@ class _TitleBarWidget extends StatelessWidget {
                 buttonColor: defaultColor,
               ),
               ValueListenableBuilder<bool>(
-                valueListenable: AnymexTitleBar.isMaximized,
+                valueListenable: AnymeXTitleBar.isMaximized,
                 builder: (_, isMaximized, __) {
                   return _WindowButton(
                     icon: isMaximized

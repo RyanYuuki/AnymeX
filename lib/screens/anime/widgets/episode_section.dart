@@ -18,11 +18,11 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/common/source_selector.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -223,7 +223,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             return SizedBox(
               height: 300,
               child: Center(
-                child: AnymexText(
+                child: AnymeXText(
                   text: snapshot.error.toString().contains('lateinit')
                       ? "Restart the App Gang"
                       : "Looks like even the episodes are avoiding your taste in shows\n:(",
@@ -238,7 +238,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const SizedBox(
               height: 500,
-              child: Center(child: AnymexProgressIndicator()),
+              child: Center(child: AnymeXProgressIndicator()),
             );
           }
 
@@ -246,7 +246,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
             if (widget.episodeList?.isEmpty ?? true) {
               return const SizedBox(
                 height: 500,
-                child: Center(child: AnymexProgressIndicator()),
+                child: Center(child: AnymeXProgressIndicator()),
               );
             }
           }
@@ -270,7 +270,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
       context: context,
       builder: (dialogContext) {
         return Obx(
-          () => AnymexDialog(
+          () => AnymeXDialog(
             title: 'Episode List Settings',
             onConfirm: () {
               widget.isAnify.value = tempUseAnify.value;
@@ -327,9 +327,9 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: AnymexTextSpans(
+                        child: AnymeXTextSpans(
                           spans: [
-                            AnymexTextSpan(
+                            AnymeXTextSpan(
                               text: widget.searchedTitle.value,
                               variant: TextVariant.semiBold,
                               size: 14,
@@ -391,7 +391,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                                 color: context.colors.primary,
                               ),
                               const SizedBox(width: 6),
-                              AnymexText(
+                              AnymeXText(
                                 text: "Wrong Title?",
                                 size: 12,
                                 color: context.colors.primary,
@@ -466,7 +466,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                         () => Row(
                           children: [
                             const Expanded(
-                              child: AnymexText(
+                              child: AnymeXText(
                                 text: "Episodes",
                                 variant: TextVariant.bold,
                                 size: 18,
@@ -499,7 +499,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
                                         color: context.colors.primary,
                                       ),
                                       const SizedBox(width: 8),
-                                      AnymexText(
+                                      AnymeXText(
                                         text: widget.isAnify.value
                                             ? 'Anify / Kitsu'
                                             : 'Default',
@@ -550,7 +550,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
           child: SizedBox(
             height: 300,
             child: Center(
-              child: AnymexText(
+              child: AnymeXText(
                 text: "Looks like even the episodes are avoiding your taste in shows\n:(",
                 size: 20,
                 textAlign: TextAlign.center,
@@ -565,7 +565,7 @@ class _EpisodeSectionState extends State<EpisodeSection> {
         return const SliverToBoxAdapter(
           child: SizedBox(
             height: 500,
-            child: Center(child: AnymexProgressIndicator()),
+            child: Center(child: AnymeXProgressIndicator()),
           ),
         );
       }
@@ -619,12 +619,12 @@ class _ProviderOptionTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymexText(
+                    AnymeXText(
                       text: title,
                       variant: TextVariant.semiBold,
                     ),
                     const SizedBox(height: 4),
-                    AnymexText(
+                    AnymeXText(
                       text: subtitle,
                       size: 12,
                       color: context.colors.onSurface.opaque(0.7),

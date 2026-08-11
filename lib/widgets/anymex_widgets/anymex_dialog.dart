@@ -1,10 +1,10 @@
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
-class AnymexDialog extends StatelessWidget {
+class AnymeXDialog extends StatelessWidget {
   final String title;
   final String? message;
   final Widget? contentWidget;
@@ -14,7 +14,7 @@ class AnymexDialog extends StatelessWidget {
   final bool showCancelButton;
   final String confirmText;
 
-  const AnymexDialog({
+  const AnymeXDialog({
     super.key,
     required this.title,
     this.message,
@@ -29,7 +29,7 @@ class AnymexDialog extends StatelessWidget {
   void show(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AnymexDialog(
+      builder: (context) => AnymeXDialog(
         title: title,
         message: message,
         contentWidget: contentWidget,
@@ -64,7 +64,7 @@ class AnymexDialog extends StatelessWidget {
             Flexible(
               child: SingleChildScrollView(
                 child: message != null
-                    ? AnymexText(
+                    ? AnymeXText(
                         text: message!, textAlign: TextAlign.center, size: 14)
                     : (contentWidget ?? const SizedBox.shrink()),
               ),
@@ -86,7 +86,7 @@ class AnymexDialog extends StatelessWidget {
                         backgroundColor:
                             context.colors.surfaceContainer,
                       ),
-                      child: AnymexText(
+                      child: AnymeXText(
                           text: 'Cancel',
                           size: 14,
                           color: context.colors.primary,
@@ -108,7 +108,7 @@ class AnymexDialog extends StatelessWidget {
                       backgroundColor:
                           context.colors.primaryFixed,
                     ),
-                    child: AnymexText(
+                    child: AnymeXText(
                         text: confirmText,
                         size: 14,
                         color: Colors.black,
@@ -123,7 +123,7 @@ class AnymexDialog extends StatelessWidget {
     );
   }
 }
-// class AnymexDialog extends StatelessWidget {
+// class AnymeXDialog extends StatelessWidget {
 //   final String title;
 //   final String? message;
 //   final Widget? contentWidget;
@@ -133,7 +133,7 @@ class AnymexDialog extends StatelessWidget {
 //   final VoidCallback? onCancel;
 //   final bool enableV2;
 
-//   const AnymexDialog({
+//   const AnymeXDialog({
 //     super.key,
 //     required this.title,
 //     this.message,
@@ -148,7 +148,7 @@ class AnymexDialog extends StatelessWidget {
 //   void show(BuildContext context) {
 //     showDialog(
 //       context: context,
-//       builder: (context) => AnymexDialog(
+//       builder: (context) => AnymeXDialog(
 //         title: title,
 //         message: message,
 //         contentWidget: contentWidget,
@@ -169,11 +169,11 @@ class AnymexDialog extends StatelessWidget {
 //         child: Column(
 //           mainAxisSize: MainAxisSize.min,
 //           children: [
-//             AnymexText(text: title, size: 18, variant: TextVariant.bold),
+//             AnymeXText(text: title, size: 18, variant: TextVariant.bold),
 //             const SizedBox(height: 10),
 //             contentWidget ??
 //                 (message != null
-//                     ? AnymexText(
+//                     ? AnymeXText(
 //                         text: message!, textAlign: TextAlign.center, size: 14)
 //                     : const SizedBox.shrink()),
 //             const SizedBox(height: 20),
@@ -192,7 +192,7 @@ class AnymexDialog extends StatelessWidget {
 //                     if (onConfirm != null) onConfirm!();
 //                     Navigator.of(context).pop();
 //                   },
-//                   child: AnymexText(
+//                   child: AnymeXText(
 //                     text: confirmText,
 //                     color: context.colors.primary,
 //                   ),

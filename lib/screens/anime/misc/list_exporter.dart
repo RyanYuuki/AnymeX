@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -334,13 +334,13 @@ class _ListExporterPageState extends State<ListExporterPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnymexText(
+              AnymeXText(
                 text: title,
                 variant: TextVariant.semiBold,
                 size: 15,
               ),
               const SizedBox(height: 3),
-              AnymexText(
+              AnymeXText(
                 text: subtitle,
                 size: 12,
                 color: Colors.grey,
@@ -367,21 +367,20 @@ class _ListExporterPageState extends State<ListExporterPage> {
           serviceType == ServicesType.mal ? 'MyAnimeList' : 'AniList';
       final isAnilist = serviceType != ServicesType.mal;
 
-      return Glow(
-        child: Scaffold(
-          appBar: AppBar(
+      return AnymeXScaffold(
+  appBar: AppBar(
             leading: IconButton(
               onPressed: () => Get.back(),
               icon: const Icon(Icons.arrow_back_ios_new),
             ),
-            title: AnymexText(
+            title: AnymeXText(
               text: "${widget.isManga ? "Manga" : "Anime"} List Exporter",
               variant: TextVariant.bold,
               size: 18,
               color: colorScheme.primary,
             ),
           ),
-          body: Padding(
+  body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -399,7 +398,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: isLoggedIn
                             ? "Ready to export your $serviceName ${widget.isManga ? 'Manga' : 'Anime'} list?"
                             : "Please login to export your list",
@@ -432,7 +431,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AnymexText(
+                                  AnymeXText(
                                     text:
                                         serviceHandler.profileData.value.name ??
                                             'User',
@@ -440,7 +439,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                                     size: 16,
                                   ),
                                   const SizedBox(height: 5),
-                                  AnymexText(
+                                  AnymeXText(
                                     text:
                                         "Exporting your ${widget.isManga ? 'manga' : 'anime'} list...",
                                     size: 14,
@@ -468,7 +467,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: "Export Settings",
                         variant: TextVariant.bold,
                         size: 16,
@@ -504,7 +503,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                 const Spacer(),
                 SizedBox(
                   width: double.infinity,
-                  child: AnymexButton(
+                  child: AnymeXContainerButton(
                     onTap: isLoggedIn ? _exportList : null,
                     radius: 100,
                     height: 55,
@@ -522,7 +521,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                               const Icon(HugeIcons.strokeRoundedDownload01,
                                   color: Colors.white),
                               const SizedBox(width: 10),
-                              AnymexText(
+                              AnymeXText(
                                 text:
                                     "Export ${serviceType == ServicesType.mal ? 'MAL' : 'AniList'} XML",
                                 variant: TextVariant.bold,
@@ -536,9 +535,8 @@ class _ListExporterPageState extends State<ListExporterPage> {
                 const SizedBox(height: 30),
               ],
             ),
-          ),
-        ),
-      );
+          )
+);
     });
   }
 }

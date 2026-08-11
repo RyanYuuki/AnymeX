@@ -5,9 +5,9 @@ import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
@@ -247,7 +247,7 @@ class _CharacterStaffSheetContentState
                                     widget.heroTag ?? widget.item.id.toString();
                                 Navigator.of(context, rootNavigator: true).push(
                                   MaterialPageRoute(
-                                    builder: (_) => FullscreenImageViewer(
+                                    builder: (_) => AnymeXFullscreenImageViewer(
                                       imageUrl: widget.item.image!,
                                       tag: tag,
                                     ),
@@ -288,7 +288,7 @@ class _CharacterStaffSheetContentState
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: AnymexText(
+                                      child: AnymeXText(
                                         text: widget.item.name ?? 'Unknown',
                                         size: 22,
                                         variant: TextVariant.bold,
@@ -331,7 +331,7 @@ class _CharacterStaffSheetContentState
                                           CrossAxisAlignment.start,
                                       children: [
                                         const SizedBox(height: 4),
-                                        AnymexText(
+                                        AnymeXText(
                                           text: nativeName,
                                           size: 16,
                                           color:
@@ -401,7 +401,7 @@ class _CharacterStaffSheetContentState
                                               size: 20,
                                             ),
                                             const SizedBox(width: 8),
-                                            AnymexText(
+                                            AnymeXText(
                                               text: "${() {
                                                     if (fullItem is Character ||
                                                         fullItem is Staff) {
@@ -441,7 +441,7 @@ class _CharacterStaffSheetContentState
                                       occupations != null) {
                                     return Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
-                                      child: AnymexText(
+                                      child: AnymeXText(
                                         text: occupations.join(", "),
                                         size: 12,
                                         color: theme.primary,
@@ -685,7 +685,7 @@ class _CharacterStaffSheetContentState
                                 voiceActors.isNotEmpty) ...[
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: AnymexText(
+                                child: AnymeXText(
                                   text: "Voice Actors",
                                   variant: TextVariant.bold,
                                   size: 16,
@@ -739,7 +739,7 @@ class _CharacterStaffSheetContentState
                                               SizedBox(
                                                 height: 32,
                                                 child: Center(
-                                                  child: AnymexText(
+                                                  child: AnymeXText(
                                                     text:
                                                         actor.name ?? 'Unknown',
                                                     size: 12,
@@ -766,7 +766,7 @@ class _CharacterStaffSheetContentState
                                                         BorderRadius.circular(
                                                             4),
                                                   ),
-                                                  child: AnymexText(
+                                                  child: AnymeXText(
                                                     text: actor.language!,
                                                     size: 10,
                                                     color: theme.primary,
@@ -786,7 +786,7 @@ class _CharacterStaffSheetContentState
                             if (voicedCharacters.isNotEmpty) ...[
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: AnymexText(
+                                child: AnymeXText(
                                   text: "Voiced Characters",
                                   variant: TextVariant.bold,
                                   size: 16,
@@ -810,7 +810,7 @@ class _CharacterStaffSheetContentState
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    AnymexText(
+                                    AnymeXText(
                                       text: widget.isCharacter
                                           ? "Appears In"
                                           : "Works & Roles",
@@ -854,7 +854,7 @@ class _CharacterStaffSheetContentState
                                                     : null,
                                               )),
                                           const SizedBox(width: 10),
-                                          AnymexText(
+                                          AnymeXText(
                                             text: "On My List",
                                             size: 14,
                                             color: theme.onSurface
@@ -880,7 +880,7 @@ class _CharacterStaffSheetContentState
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 20),
                                     child: Center(
-                                      child: AnymexText(
+                                      child: AnymeXText(
                                         text: showOnlyOnList.value
                                             ? "No media found on your list"
                                             : "No media found",
@@ -928,7 +928,7 @@ class _CharacterStaffSheetContentState
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 10),
-                                              child: AnymexText(
+                                              child: AnymeXText(
                                                 text:
                                                     "TBA (${unknownYearMedia.length})",
                                                 variant: TextVariant.bold,
@@ -965,7 +965,7 @@ class _CharacterStaffSheetContentState
                                                   padding: const EdgeInsets
                                                       .symmetric(
                                                       horizontal: 10),
-                                                  child: AnymexText(
+                                                  child: AnymeXText(
                                                     text:
                                                         "$year (${mediaList.length})",
                                                     variant: TextVariant.bold,
@@ -1065,7 +1065,7 @@ class _CharacterStaffSheetContentState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            AnymexText(
+                            AnymeXText(
                               text: character.name ?? '?',
                               size: 12,
                               color: Colors.white,
@@ -1075,7 +1075,7 @@ class _CharacterStaffSheetContentState
                               variant: TextVariant.bold,
                             ),
                             if (media != null)
-                              AnymexText(
+                              AnymeXText(
                                 text: media.title,
                                 size: 10,
                                 color: theme.primary,
@@ -1272,7 +1272,7 @@ class _CharacterStaffSheetContentState
                     ),
                   ),
                   const SizedBox(height: 5),
-                  AnymexText(
+                  AnymeXText(
                     text: item.title,
                     variant: TextVariant.bold,
                     maxLines: 1,
@@ -1474,7 +1474,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
           children: [
             SizedBox(
               width: 140,
-              child: AnymexText(
+              child: AnymeXText(
                 text: "$label:",
                 size: 14,
                 variant: TextVariant.bold,
@@ -1483,7 +1483,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: AnymexText(
+              child: AnymeXText(
                 text: value,
                 size: 14,
                 maxLines: 10,
@@ -1504,7 +1504,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
           children: [
             SizedBox(
               width: 140,
-              child: AnymexText(
+              child: AnymeXText(
                 text: "$label:",
                 size: 14,
                 variant: TextVariant.bold,
@@ -1541,7 +1541,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
     for (final match in spoilerRegex.allMatches(value)) {
       final before = value.substring(lastEnd, match.start).trim();
       if (before.isNotEmpty) {
-        widgets.add(AnymexText(
+        widgets.add(AnymeXText(
           text: before,
           size: 14,
           variant: TextVariant.semiBold,
@@ -1553,7 +1553,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
     }
     final remaining = value.substring(lastEnd).trim();
     if (remaining.isNotEmpty) {
-      widgets.add(AnymexText(
+      widgets.add(AnymeXText(
         text: remaining,
         size: 14,
         variant: TextVariant.semiBold,
@@ -1568,7 +1568,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
         children: [
           SizedBox(
             width: 140,
-            child: AnymexText(
+            child: AnymeXText(
               text: "$label:",
               size: 14,
               variant: TextVariant.bold,

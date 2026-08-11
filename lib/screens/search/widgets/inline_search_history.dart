@@ -1,7 +1,7 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -83,7 +83,7 @@ class InlineSearchHistory extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    AnymexText(
+                    AnymeXText(
                       text: 'Recent Searches',
                       variant: TextVariant.semiBold,
                       size: 15,
@@ -116,7 +116,7 @@ class InlineSearchHistory extends StatelessWidget {
                               .opaque(0.8, iReallyMeanIt: true),
                         ),
                         const SizedBox(width: 4),
-                        AnymexText(
+                        AnymeXText(
                           text: "Clear",
                           size: 11,
                           color: Theme.of(context)
@@ -174,7 +174,7 @@ class InlineSearchHistory extends StatelessWidget {
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: AnymexText(
+                              child: AnymeXText(
                                 text: term,
                                 variant: TextVariant.semiBold,
                                 size: 14,

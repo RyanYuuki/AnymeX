@@ -7,9 +7,9 @@ import 'package:anymex/screens/settings/sub_settings/settings_tap_zones.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -24,7 +24,7 @@ class TabbedReaderSettings {
     final wasVolumeEnabled = controller.volumeKeysEnabled.value;
     if (wasVolumeEnabled) controller.pauseVolumeKeys();
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       _TabbedSettingsSheet(
         controller: controller,
         settings: settings,
@@ -89,7 +89,7 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const AnymexText(
+          const AnymeXText(
             text: 'Reader Settings',
             size: 18,
             variant: TextVariant.bold,

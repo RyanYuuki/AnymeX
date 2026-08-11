@@ -5,10 +5,10 @@ import 'package:anymex/screens/novel/details/controller/details_controller.dart'
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/animations.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -125,7 +125,7 @@ class ChapterListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
         boxShadow: [glowingShadow(context)],
       ),
-      child: AnymexText(
+      child: AnymeXText(
         text: chapter.formattedNumber,
         variant: TextVariant.bold,
         color: context.colors.onPrimary,
@@ -159,7 +159,7 @@ class ChapterListItem extends StatelessWidget {
           SizedBox(
             width: 40,
             height: 40,
-            child: AnymexProgressIndicator(
+            child: AnymeXProgressIndicator(
               value: progress,
               strokeWidth: 4,
               backgroundColor: context.colors.surfaceContainerHighest,
@@ -188,7 +188,7 @@ class ChapterListItem extends StatelessWidget {
         SizedBox(
           width: getResponsiveSize(context,
               mobileSize: Get.width * 0.4, desktopSize: 200),
-          child: AnymexText(
+          child: AnymeXText(
             text: '${chapter.title}$progressText',
             variant: TextVariant.semiBold,
             maxLines: 2,
@@ -199,7 +199,7 @@ class ChapterListItem extends StatelessWidget {
         SizedBox(
           width: getResponsiveSize(context,
               mobileSize: Get.width * 0.4, desktopSize: 200),
-          child: AnymexText(
+          child: AnymeXText(
             text: chapterMetaText.isNotEmpty
                 ? chapterMetaText
                 : calcTime(chapter.releaseDate ?? '0'),
@@ -215,13 +215,13 @@ class ChapterListItem extends StatelessWidget {
   Widget _buildReadButton(BuildContext context) {
     return Container(
       decoration: BoxDecoration(boxShadow: [glowingShadow(context)]),
-      child: AnymexButton(
+      child: AnymeXContainerButton(
         onTap: onTap,
         radius: 12,
         width: 100,
         height: 40,
         color: context.colors.primary,
-        child: AnymexText(
+        child: AnymeXText(
           text: "Read",
           variant: TextVariant.semiBold,
           color: context.colors.onPrimary,

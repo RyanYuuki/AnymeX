@@ -4,7 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/models/logo_animation_type.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 
 class LogoAnimationPreviewDialog extends StatefulWidget {
   final LogoAnimationType initialAnimation;

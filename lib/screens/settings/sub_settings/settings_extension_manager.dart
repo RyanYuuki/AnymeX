@@ -5,13 +5,13 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -184,7 +184,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     }
     if (!mounted) return;
     final theme = Theme.of(context);
-    AnymexSheet(
+    AnymeXSheet(
       title: 'Select Version to Rollback',
       showDragHandle: true,
       contentWidget: Container(
@@ -336,9 +336,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       );
     }
 
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Extension Manager'),
             Expanded(
@@ -466,9 +465,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildPluginStatusCard(BuildContext context) {

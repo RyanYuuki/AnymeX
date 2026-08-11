@@ -1,10 +1,10 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_icon_wrapper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
@@ -36,7 +36,7 @@ class ProfileTile extends StatelessWidget {
       );
 
       if (isPrimary && isLoggedIn) {
-        return AnymexExpansionTile(
+        return AnymeXExpansionTile(
             title: 'Primary',
             initialExpanded: true,
             content: Column(
@@ -66,7 +66,7 @@ class ProfileTile extends StatelessWidget {
                   ),
                 ),
                 10.height(),
-                AnymexText(
+                AnymeXText(
                   text: userData.name!,
                   variant: TextVariant.semiBold,
                 ),
@@ -94,7 +94,7 @@ class ProfileTile extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      AnymexIconWrapper(
+                      AnymeXIconWrapper(
                         child: CircleAvatar(
                             backgroundColor: Colors.transparent,
                             radius: 16,
@@ -102,7 +102,7 @@ class ProfileTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: 'Connected to $title',
                         ),
                       ),
@@ -110,7 +110,7 @@ class ProfileTile extends StatelessWidget {
                         onTap: () {
                           service.logout();
                         },
-                        child: const AnymexIconWrapper(
+                        child: const AnymeXIconWrapper(
                           child: CircleAvatar(
                             backgroundColor: Colors.transparent,
                             radius: 16,
@@ -127,7 +127,7 @@ class ProfileTile extends StatelessWidget {
             ));
       }
 
-      return AnymexExpansionTile(
+      return AnymeXExpansionTile(
         content: Column(
           children: [
             Container(
@@ -176,7 +176,7 @@ class ProfileTile extends StatelessWidget {
                             ),
                           ),
                         )
-                      : AnymexIconWrapper(
+                      : AnymeXIconWrapper(
                           child: CircleAvatar(
                               backgroundColor: Colors.transparent,
                               radius: 16,
@@ -187,14 +187,14 @@ class ProfileTile extends StatelessWidget {
                       ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AnymexText(
+                            AnymeXText(
                               text: userData!.name ?? 'Guest',
                               variant: TextVariant.semiBold,
                             ),
                             const SizedBox(height: 5),
                             SizedBox(
                               width: 130,
-                              child: AnymexText(
+                              child: AnymeXText(
                                 text: 'Connected to $title',
                                 color: context.colors.primary,
                                 maxLines: 2,
@@ -202,7 +202,7 @@ class ProfileTile extends StatelessWidget {
                             )
                           ],
                         )
-                      : AnymexText(
+                      : AnymeXText(
                           text: 'Connect to $title',
                         ),
                   const Spacer(),
@@ -210,7 +210,7 @@ class ProfileTile extends StatelessWidget {
                     onTap: () {
                       isLoggedIn ? service.logout() : service.login(context);
                     },
-                    child: AnymexIconWrapper(
+                    child: AnymeXIconWrapper(
                       child: CircleAvatar(
                         backgroundColor: Colors.transparent,
                         radius: 16,

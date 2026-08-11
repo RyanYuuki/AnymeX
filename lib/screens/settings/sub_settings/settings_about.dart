@@ -4,9 +4,9 @@ import 'package:anymex/screens/settings/sub_settings/contributors/contributors.d
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -64,9 +64,8 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'About'),
             Expanded(
@@ -333,9 +332,8 @@ class AboutPage extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }
 
@@ -346,9 +344,8 @@ class _ForksPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = context.colors;
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Forks'),
             Expanded(
@@ -422,8 +419,7 @@ class _ForksPage extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }

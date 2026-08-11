@@ -1,6 +1,6 @@
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -515,7 +515,7 @@ class NovelSettingsPanel extends StatelessWidget {
 
   Widget _buildFontFamilySelector(BuildContext context) {
     return Obx(() {
-      return AnymexDropdown(
+      return AnymeXDropdown(
         icon: HugeIcons.strokeRoundedTextFont,
         label: 'Font Family',
         selectedItem: DropdownItem(
@@ -537,7 +537,7 @@ class NovelSettingsPanel extends StatelessWidget {
 
   Widget _buildTtsVoiceSelector(BuildContext context) {
     return Obx(() {
-      return AnymexDropdown(
+      return AnymeXDropdown(
         icon: Icons.record_voice_over,
         label: 'Voice',
         selectedItem: DropdownItem(

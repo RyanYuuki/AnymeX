@@ -7,7 +7,7 @@ import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/cards/media_card_registry.dart';
 import 'package:anymex/widgets/common/cards/media_cards.dart';
 import 'package:anymex/widgets/common/dynamic_style_selector.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +20,7 @@ void showCardStyleSwitcher(BuildContext context) {
     builder: (dialogContext) {
       return Obx(
         () {
-          return AnymexDialog(
+          return AnymeXDialog(
             title: 'Card Style',
             onConfirm: () {
               settingsController.cardStyle = selectedStyle.value.index;

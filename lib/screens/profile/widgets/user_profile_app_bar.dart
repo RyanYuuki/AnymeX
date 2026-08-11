@@ -2,8 +2,8 @@ import 'dart:ui';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/profile/widgets/profile_common.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -193,7 +193,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         Navigator.of(context, rootNavigator: true)
                             .push(
                           MaterialPageRoute(
-                            builder: (_) => FullscreenImageViewer(
+                            builder: (_) => AnymeXFullscreenImageViewer(
                               imageUrl: imageUrl,
                               tag: 'profile_banner_$name',
                             ),
@@ -257,7 +257,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         if (avatarUrl.isNotEmpty) {
                           Navigator.of(context, rootNavigator: true).push(
                             MaterialPageRoute(
-                              builder: (_) => FullscreenImageViewer(
+                              builder: (_) => AnymeXFullscreenImageViewer(
                                 imageUrl: avatarUrl,
                                 tag: 'profile_avatar_$name',
                               ),

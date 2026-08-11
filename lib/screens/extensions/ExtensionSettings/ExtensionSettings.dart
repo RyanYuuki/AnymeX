@@ -1,8 +1,8 @@
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -119,9 +119,8 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
   @override
   Widget build(BuildContext context) {
     var theme = context.colors;
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             NestedHeader(
               title: "${widget.source.name} Settings",
@@ -185,7 +184,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                                 context: context,
                                 builder: (context) => StatefulBuilder(
                                   builder: (context, setDialogState) =>
-                                      AnymexDialog(
+                                      AnymeXDialog(
                                     title: p.title ?? 'Select Option',
                                     onConfirm: () {
                                       p.valueIndex = tempIndex;
@@ -236,7 +235,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                                 context: context,
                                 builder: (context) => StatefulBuilder(
                                   builder: (context, setDialogState) =>
-                                      AnymexDialog(
+                                      AnymeXDialog(
                                     title: p.title ?? 'Select Options',
                                     onConfirm: () {
                                       p.values = tempSelectedValues.toList();
@@ -293,7 +292,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                               String tempValue = p.value ?? p.text ?? '';
                               showDialog(
                                 context: context,
-                                builder: (context) => AnymexDialog(
+                                builder: (context) => AnymeXDialog(
                                   title:
                                       p.dialogTitle ?? p.title ?? 'Edit Text',
                                   onConfirm: () {
@@ -305,7 +304,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       if (p.dialogMessage != null) ...[
-                                        AnymexText(
+                                        AnymeXText(
                                           text: p.dialogMessage!,
                                           size: 14,
                                           color: theme.onSurfaceVariant,
@@ -354,9 +353,8 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }
 
@@ -404,13 +402,13 @@ class _PreferenceTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymexText(
+                    AnymeXText(
                       text: title,
                       variant: TextVariant.semiBold,
                       color: isSelected ? context.colors.primary : null,
                     ),
                     const SizedBox(height: 4),
-                    AnymexText(
+                    AnymeXText(
                       text: subtitle,
                       size: 11,
                       color: context.colors.onSurface.opaque(0.7),

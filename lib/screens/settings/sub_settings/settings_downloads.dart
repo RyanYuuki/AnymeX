@@ -1,8 +1,8 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +16,8 @@ class SettingsDownloads extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
 
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Download Settings'),
             Expanded(
@@ -33,7 +32,7 @@ class SettingsDownloads extends StatelessWidget {
                   children: [
                     Obx(() => Column(
                           children: [
-                            AnymexExpansionTile(
+                            AnymeXExpansionTile(
                               title: 'Common Settings',
                               initialExpanded: true,
                               content: Column(
@@ -104,7 +103,7 @@ class SettingsDownloads extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            AnymexExpansionTile(
+                            AnymeXExpansionTile(
                               title: 'Anime Settings',
                               content: Column(
                                 children: [
@@ -130,7 +129,7 @@ class SettingsDownloads extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            AnymexExpansionTile(
+                            AnymeXExpansionTile(
                               title: 'Manga Settings',
                               content: Column(
                                 children: [
@@ -155,8 +154,7 @@ class SettingsDownloads extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }

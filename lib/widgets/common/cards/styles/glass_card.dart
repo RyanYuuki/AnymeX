@@ -4,7 +4,7 @@ import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_components.dart';
 import 'package:anymex/widgets/common/cards/media_card_registry.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 
@@ -96,7 +96,7 @@ class GlassCard extends CarouselCard {
                           ),
                         ),
                       ),
-                      child: AnymexText(
+                      child: AnymeXText(
                         text: itemData.title ?? '?',
                         maxLines: 2,
                         size: desktop ? 13 : 11,

@@ -5,7 +5,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 
 import 'package:anymex/widgets/common/navbar.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -400,20 +400,18 @@ class _UserProfilePageState extends State<UserProfilePage>
     final bool isDesktop =
         getResponsiveValue(context, mobileValue: false, desktopValue: true);
 
-    return Glow(
-      child: Scaffold(
-        backgroundColor: context.theme.colorScheme.surface,
-        extendBody: true,
-        bottomNavigationBar: isDesktop
+    return AnymeXScaffold(
+  backgroundColor: context.theme.colorScheme.surface,
+  extendBody: true,
+  bottomNavigationBar: isDesktop
             ? null
             : ResponsiveNavBar(
                 isDesktop: false,
                 currentIndex: _selectedTab,
                 items: _profileNavItems,
               ),
-        body: _buildBody(context, isDesktop),
-      ),
-    );
+  body: _buildBody(context, isDesktop)
+);
   }
 
   List<Widget> _buildTabSlivers(BuildContext context, Profile user) {

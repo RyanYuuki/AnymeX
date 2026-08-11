@@ -7,7 +7,7 @@ import 'package:anymex/screens/manga/widgets/reader/auto_scroll_menu.dart';
 import 'package:anymex/screens/manga/widgets/reader/tabbed_reader_settings.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme.dart';
 import 'package:anymex/screens/manga/widgets/reader/top_controls.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -190,7 +190,7 @@ class _ChapterPill extends StatelessWidget {
   }
 
   void _showChapterSheet(BuildContext context) {
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       const ChapterListSheet(),
       context,
       showDragHandle: true,
@@ -403,9 +403,9 @@ class _LiquidSurface extends StatelessWidget {
     this.height,
     this.padding,
     this.radius = 20,
-    this.blurSigma = 20,
-    this.tintAlpha = 0.12,
-    this.edgeAlpha = 0.25,
+    this.blurSigma = 24,
+    this.tintAlpha = 0.28,
+    this.edgeAlpha = 0.34,
   });
 
   final Widget child;

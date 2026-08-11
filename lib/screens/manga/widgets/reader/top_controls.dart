@@ -4,9 +4,9 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/tabbed_reader_settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:get/get.dart';
@@ -120,7 +120,7 @@ class ReaderTopControls extends StatelessWidget {
               SizedBox(
                 width: 30,
                 height: 30,
-                child: AnymexProgressIndicator(
+                child: AnymeXProgressIndicator(
                   value: controller.pageList.isEmpty
                       ? 0
                       : (controller.currentPageIndex.value /
@@ -138,7 +138,7 @@ class ReaderTopControls extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: AnymexText(
+                          child: AnymeXText(
                             text: controller.currentChapter.value?.title ??
                                 'Unknown Chapter',
                             size: 12,
@@ -169,7 +169,7 @@ class ReaderTopControls extends StatelessWidget {
   }
 
   void _showChaptersList(BuildContext context) {
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
       const ChapterListSheet(),
       context,
       showDragHandle: true,
@@ -303,7 +303,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
               children: [
                 Icon(Icons.menu_book_rounded, size: 20, color: colors.primary),
                 const SizedBox(width: 10),
-                const AnymexText(
+                const AnymeXText(
                   text: 'Chapters',
                   size: 16,
                   variant: TextVariant.bold,
@@ -435,7 +435,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                               size: 40,
                               color: colors.onSurface.withOpacity(0.4)),
                           const SizedBox(height: 8),
-                          AnymexText(
+                          AnymeXText(
                             text: 'No chapters found',
                             color: colors.onSurface.withOpacity(0.6),
                           ),
@@ -535,7 +535,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: AnymexText.semiBold(
+                  child: AnymeXText.semiBold(
                     text: displayTitle,
                     size: 13,
                     color: isCurrent ? colors.primary : colors.onSurface,

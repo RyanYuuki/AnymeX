@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:anymex/models/Anilist/anilist_activity.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/widgets/non_widgets/activity_card.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/function.dart';
@@ -689,7 +689,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                         ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: liker.name,
                           size: 16,
                           variant: TextVariant.bold,

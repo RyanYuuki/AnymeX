@@ -10,8 +10,8 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
@@ -65,7 +65,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
           _buildHeaderTitle(),
           const SizedBox(height: 10),
           widget.isLoading
-              ? const Center(child: AnymexProgressIndicator())
+              ? const Center(child: AnymeXProgressIndicator())
               : _buildCarouselList(),
         ],
       ),
@@ -78,7 +78,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   Widget _buildHeaderTitle() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
-      child: AnymexText(
+      child: AnymeXText(
         text: widget.title,
         variant: TextVariant.semiBold,
         size: 17,
@@ -105,7 +105,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
                   ? Iconsax.book
                   : Icons.movie_filter_rounded),
               const SizedBox(height: 10, width: double.infinity),
-              AnymexText(
+              AnymeXText(
                 text: widget.type != ItemType.anime
                     ? "For real, why aren't you reading yet? 📚"
                     : "Lowkey time for a binge sesh 🎬",

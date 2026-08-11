@@ -4,10 +4,10 @@ import 'package:anymex/controllers/source/source_mapper.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
@@ -108,7 +108,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
             Obx(() => searchStatus.value.isNotEmpty
                 ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: searchStatus.value,
                       variant: TextVariant.semiBold,
                       color: Theme.of(context).colorScheme.primary,
@@ -121,7 +121,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                 future: searchFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: AnymexProgressIndicator());
+                    return const Center(child: AnymeXProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Text('Error: ${snapshot.error}'),

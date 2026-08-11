@@ -6,9 +6,9 @@ import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -81,7 +81,7 @@ class BigCarouselClassicState extends State<BigCarouselClassic> {
         .trim();
     final colors = Theme.of(context).colorScheme;
 
-    AnymexSheet.custom(
+    AnymeXSheet.custom(
         SizedBox(
           height: MediaQuery.sizeOf(context).height * 0.4,
           child: Column(
@@ -422,7 +422,7 @@ Widget buildCarouselCard({
                                 child: Row(
                                   children: [
                                     Expanded(
-                                      child: AnymexText(
+                                      child: AnymeXText(
                                         text: cleanDescription.isNotEmpty
                                             ? cleanDescription
                                             : 'Tap to read description',

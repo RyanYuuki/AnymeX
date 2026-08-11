@@ -4,8 +4,8 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -131,7 +131,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
               ),
               const SizedBox(width: 8),
               Flexible(
-                child: AnymexText(
+                child: AnymeXText(
                   text: username,
                   variant: TextVariant.semiBold,
                   color: context.colors.primary,
@@ -145,7 +145,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                     size: 16, color: context.colors.primary),
               ],
               const SizedBox(width: 4),
-              AnymexText(
+              AnymeXText(
                 text: "'s Recs",
                 variant: TextVariant.semiBold,
                 color: context.colors.onSurfaceVariant,
@@ -178,7 +178,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
             ),
             const SizedBox(width: 8),
             Flexible(
-              child: AnymexText(
+              child: AnymeXText(
                 text: username,
                 variant: TextVariant.semiBold,
                 color: context.colors.primary,
@@ -192,7 +192,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                   size: 16, color: context.colors.primary),
             ],
             const SizedBox(width: 4),
-            AnymexText(
+            AnymeXText(
               text: "'s Recs",
               variant: TextVariant.semiBold,
               color: context.colors.onSurfaceVariant,
@@ -244,7 +244,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                 size: 48,
                 color: context.colors.onSurfaceVariant.withOpacity(0.5)),
             const SizedBox(height: 12),
-            AnymexText(
+            AnymeXText(
               text: 'No recommendations found',
               color: context.colors.onSurfaceVariant.withOpacity(0.7),
               variant: TextVariant.semiBold,
@@ -320,7 +320,7 @@ class _RecCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      child: AnymexText(
+                      child: AnymeXText(
                         text: item.media.rating.toString(),
                         size: 10,
                         color: Colors.white,
@@ -333,7 +333,7 @@ class _RecCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          AnymexText(
+          AnymeXText(
             text: item.media.title,
             variant: TextVariant.semiBold,
             maxLines: 2,
@@ -341,7 +341,7 @@ class _RecCard extends StatelessWidget {
             size: 11,
           ),
           const SizedBox(height: 2),
-          AnymexText(
+          AnymeXText(
             text: item.reason.displayText,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

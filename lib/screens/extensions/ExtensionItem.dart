@@ -8,9 +8,9 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/AlertDialogBuilder.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/dialogs/alert_dialog_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/Services/CloudStream/CloudStreamSourceMethods.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -312,7 +312,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                     height: 40,
                     width: 40,
                     child: Center(
-                      child: AnymexProgressIndicator(strokeWidth: 2.0),
+                      child: AnymeXProgressIndicator(strokeWidth: 2.0),
                     ),
                   )
                 : _buildTrailing(isInstalled, updateAvailable, theme),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math' show Random;
 import 'package:anymex/utils/oauth_helper.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -31,7 +31,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -107,7 +107,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Widget buildSectionIfNotEmpty(String title, RxList<Media> list,
       {bool isManga = false}) {
     return list.isEmpty
-        ? const AnymexProgressIndicator()
+        ? const AnymeXProgressIndicator()
         : buildSection(title, list,
             type: isManga ? ItemType.manga : ItemType.anime);
   }
@@ -115,7 +115,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> animeWidgets(BuildContext context) => [
         Obx(() => trendingAnimes.isEmpty
-            ? const Center(child: AnymexProgressIndicator())
+            ? const Center(child: AnymeXProgressIndicator())
             : Column(
                 children: [
                   buildBigCarousel(trendingAnimes, false),
@@ -144,7 +144,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> mangaWidgets(BuildContext context) => [
         Obx(() => trendingManga.isEmpty
-            ? const Center(child: AnymexProgressIndicator())
+            ? const Center(child: AnymeXProgressIndicator())
             : Column(
                 children: [
                   buildBigCarousel(trendingManga, true),
@@ -535,7 +535,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> login(BuildContext context) async {
-    final selectedMethod = await AnymexSheet.custom<String>(
+    final selectedMethod = await AnymeXSheet.custom<String>(
       loginSheetHelper(
         context: context,
         title: 'Login to MyAnimeList',

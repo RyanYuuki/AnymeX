@@ -4,10 +4,10 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/watch_order_util.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 
@@ -67,22 +67,21 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Watch Order'),
             Expanded(
               child: Builder(
                 builder: (context) {
                   if (isLoading) {
-                    return const Center(child: AnymexProgressIndicator());
+                    return const Center(child: AnymeXProgressIndicator());
                   }
                   if (error != null) {
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: error!,
                           textAlign: TextAlign.center,
                         ),
@@ -91,7 +90,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                   }
                   if (watchOrder.isEmpty) {
                     return const Center(
-                        child: AnymexText(text: "No watch order found."));
+                        child: AnymeXText(text: "No watch order found."));
                   }
 
                   return ListView.builder(
@@ -110,9 +109,8 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildTimelineItem(
@@ -229,14 +227,14 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                           color: colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: item.relationType.toUpperCase(),
                           size: 9,
                           color: colorScheme.onPrimaryContainer,
                           variant: TextVariant.bold,
                         ),
                       ),
-                    AnymexText(
+                    AnymeXText(
                       text: item.nameEnglish ?? item.name,
                       variant: TextVariant.bold,
                       size: 15,
@@ -248,7 +246,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                         item.nameEnglish!.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: item.name,
                           size: 11,
                           color: colorScheme.onSurfaceVariant,
@@ -276,7 +274,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                     ),
                     const SizedBox(height: 8),
                     if (item.rating.isNotEmpty)
-                      AnymexText(
+                      AnymeXText(
                         text: (item.rating),
                         size: 12,
                         variant: TextVariant.semiBold,

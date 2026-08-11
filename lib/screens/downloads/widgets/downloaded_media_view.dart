@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
-import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
@@ -12,9 +11,9 @@ import 'package:anymex/screens/downloads/widgets/video_thumbnail_widget.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +76,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
 
   void _showDeleteEpisodeDialog(
       BuildContext context, DownloadedEpisodeMeta ep) {
-    AnymexDialog(
+    AnymeXDialog(
       title: 'Delete episode?',
       message:
           'Episode ${ep.number} will be permanently removed from your downloads.',
@@ -96,7 +95,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   void _showDeleteChapterDialog(
       BuildContext context, DownloadedChapterMeta ch) {
     final display = ch.displayTitle;
-    AnymexDialog(
+    AnymeXDialog(
       title: 'Delete chapter?',
       message: '$display will be permanently removed from your downloads.',
       onConfirm: () async {
@@ -114,7 +113,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     final count = _isManga
         ? (_mangaMeta?.chapters.length ?? 0)
         : (_meta?.episodes.length ?? 0);
-    AnymexDialog(
+    AnymeXDialog(
       title: _isManga ? 'Delete all chapters?' : 'Delete all episodes?',
       message:
           '"${widget.summary.title}" — $count ${_isManga ? 'chapters' : 'episodes'} will be permanently removed.',
@@ -135,11 +134,9 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         ? (_mangaMeta?.chapters.isEmpty ?? true)
         : (_meta?.episodes.isEmpty ?? true);
 
-    return Glow(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        floatingActionButton: _buildContinueFab(),
-        body: SafeArea(
+    return AnymeXScaffold(
+  floatingActionButton: _buildContinueFab(),
+  body: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
@@ -166,9 +163,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               ],
             ),
           ),
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget? _buildContinueFab() {

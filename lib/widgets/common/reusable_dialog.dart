@@ -1,4 +1,4 @@
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
@@ -24,7 +24,7 @@ void showCustomDialog({
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnymexText(
+            AnymeXText(
               text: title,
               variant: TextVariant.bold,
             ),

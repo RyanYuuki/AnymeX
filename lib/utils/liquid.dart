@@ -7,7 +7,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -153,7 +153,7 @@ class Liquid {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        AnymexProgressIndicator(
+                        AnymeXProgressIndicator(
                           value: progressController.progress.value > 0
                               ? progressController.progress.value
                               : null,

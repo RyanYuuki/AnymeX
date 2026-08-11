@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:extended_image/extended_image.dart' as ext;
 import 'package:anymex/utils/image_cropper.dart';
@@ -156,7 +156,7 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return widget.placeholder ??
-              const Center(child: AnymexProgressIndicator());
+              const Center(child: AnymeXProgressIndicator());
         }
         if (snapshot.hasData && snapshot.data != null) {
           final file = snapshot.data!;

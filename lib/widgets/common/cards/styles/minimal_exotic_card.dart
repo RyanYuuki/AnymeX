@@ -5,7 +5,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_components.dart';
 import 'package:anymex/widgets/common/cards/media_card_registry.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 
@@ -128,14 +128,14 @@ class MinimalExoticCard extends CarouselCard {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (variant == DataVariant.library) ...[
-            AnymexText(
+            AnymeXText(
               text: !type.isAnime ? 'Chapter ' : 'Episode ',
               size: 12,
               color: context.colors.onPrimary,
               variant: TextVariant.bold,
             ),
             const SizedBox(width: 4),
-            AnymexText(
+            AnymeXText(
               text: itemData.source ?? '',
               color: context.colors.onPrimary,
               size: 12,
@@ -153,7 +153,7 @@ class MinimalExoticCard extends CarouselCard {
               color: context.colors.onPrimary,
             ),
             const SizedBox(width: 4),
-            AnymexText(
+            AnymeXText(
               text: (itemData.extraData ?? '').replaceAll('_', ' '),
               color: context.colors.onPrimary,
               size: 12,

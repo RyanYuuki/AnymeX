@@ -9,13 +9,13 @@ import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -25,8 +25,8 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/screens/library/widgets/library_deps.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
-import 'package:anymex/widgets/legacy_header.dart' as legacy;
-import 'package:anymex/widgets/custom_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/header/legacy_header.dart' as legacy;
+import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart' hide CustomSliderTile;
@@ -275,7 +275,7 @@ class Header extends StatelessWidget {
 
     switch (type) {
       case PageType.home:
-        return AnymexText(
+        return AnymeXText(
           text: "AnymeX",
           autoResize: true,
           maxLines: 1,
@@ -284,7 +284,7 @@ class Header extends StatelessWidget {
           color: context.colors.primary,
         );
       case PageType.anime:
-        return AnymexText(
+        return AnymeXText(
           text: isSimkl ? "Movies" : "Anime",
           autoResize: true,
           maxLines: 1,
@@ -292,7 +292,7 @@ class Header extends StatelessWidget {
           variant: TextVariant.bold,
         );
       case PageType.manga:
-        return AnymexText(
+        return AnymeXText(
           text: isSimkl ? "Series" : "Manga",
           autoResize: true,
           maxLines: 1,
@@ -300,7 +300,7 @@ class Header extends StatelessWidget {
           variant: TextVariant.bold,
         );
       case PageType.novel:
-        return const AnymexText(
+        return const AnymeXText(
           text: "Novels",
           autoResize: true,
           maxLines: 1,
@@ -308,7 +308,7 @@ class Header extends StatelessWidget {
           variant: TextVariant.bold,
         );
       case PageType.library:
-        return const AnymexText(
+        return const AnymeXText(
           text: "Library",
           autoResize: true,
           maxLines: 1,
@@ -316,7 +316,7 @@ class Header extends StatelessWidget {
           variant: TextVariant.bold,
         );
       case PageType.extensions:
-        return const AnymexText(
+        return const AnymeXText(
           text: "Extensions",
           autoResize: true,
           maxLines: 1,
@@ -329,7 +329,7 @@ class Header extends StatelessWidget {
   Widget _buildHeaderSubtitle(BuildContext context,
       GreetingController greetingController, ServiceHandler profileData) {
     if (type == PageType.library) {
-      return AnymexText(
+      return AnymeXText(
         text: "All your local shi",
         autoResize: true,
         maxLines: 1,
@@ -338,7 +338,7 @@ class Header extends StatelessWidget {
       );
     }
     if (type == PageType.extensions) {
-      return AnymexText(
+      return AnymeXText(
         text: "Manage plugins & sources",
         autoResize: true,
         maxLines: 1,
@@ -348,7 +348,7 @@ class Header extends StatelessWidget {
     }
 
     final greeting = greetingController.currentGreeting.value;
-    return AnymexText(
+    return AnymeXText(
       text: greeting,
       autoResize: true,
       maxLines: 1,
@@ -520,7 +520,7 @@ class Header extends StatelessWidget {
 
   void _showSortingSettings(
           BuildContext context, LibraryController controller) =>
-      AnymexSheet.custom(
+      AnymeXSheet.custom(
         LibrarySettingsSheet(controller: controller),
         context,
         showDragHandle: true,

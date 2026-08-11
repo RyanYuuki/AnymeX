@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +98,7 @@ class _GistSyncCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 14),
                       const Expanded(
-                        child: AnymexText(
+                        child: AnymeXText(
                           text: 'GitHub Gist Sync',
                           variant: TextVariant.semiBold,
                           size: 16,
@@ -188,7 +188,7 @@ class _GistSyncCard extends StatelessWidget {
                       ),
                       if (hasCloudGist == true) ...[
                         const SizedBox(height: 14),
-                        AnymexText(
+                        AnymeXText(
                           text: 'Sync Preferences',
                           size: 12,
                           variant: TextVariant.bold,
@@ -250,7 +250,7 @@ class _GistSyncCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: AnymexText(
+                                child: AnymeXText(
                                   text: hasCloudGist == null
                                       ? 'Checking cloud gist status. Sync now to create one if needed.'
                                       : 'Create your cloud gist first to unlock sync preferences.',
@@ -442,7 +442,7 @@ class _GistSyncCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const AnymexText(
+                const AnymeXText(
                   text: 'Manage GitHub Gist Sync',
                   variant: TextVariant.bold,
                   size: 18,
@@ -490,7 +490,7 @@ class _GistSyncCard extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AnymexText(
+                                  AnymeXText(
                                     text: displayName ?? username,
                                     variant: TextVariant.semiBold,
                                     size: 14,
@@ -498,7 +498,7 @@ class _GistSyncCard extends StatelessWidget {
                                   if (displayName != null &&
                                       username.isNotEmpty &&
                                       username != 'GitHub User')
-                                    AnymexText(
+                                    AnymeXText(
                                       text: '@$username',
                                       size: 11,
                                       color: ctx.colors.onSurfaceVariant,
@@ -519,7 +519,7 @@ class _GistSyncCard extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        AnymexText(
+                        AnymeXText(
                           text: _statusText(
                             isLogged: isLogged,
                             isSyncing: isSyncing,
@@ -570,7 +570,7 @@ class _GistSyncCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                AnymexText(
+                AnymeXText(
                   text: 'Cloud Tools',
                   size: 12,
                   variant: TextVariant.bold,
@@ -616,7 +616,7 @@ class _GistSyncCard extends StatelessWidget {
                         },
                 ),
                 const SizedBox(height: 16),
-                AnymexText(
+                AnymeXText(
                   text: 'Account',
                   size: 12,
                   variant: TextVariant.bold,
@@ -814,7 +814,7 @@ class _GistSyncCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   const Expanded(
-                    child: AnymexText(
+                    child: AnymeXText(
                       text: 'Import Gist JSON',
                       variant: TextVariant.semiBold,
                       size: 16,
@@ -825,7 +825,7 @@ class _GistSyncCard extends StatelessWidget {
               const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerLeft,
-                child: AnymexText(
+                child: AnymeXText(
                   text:
                       'Choose how to apply the selected JSON file to your AnymeX cloud gist.',
                   size: 12,
@@ -885,7 +885,7 @@ class _StatusPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: color.withOpacity(0.35)),
       ),
-      child: AnymexText(
+      child: AnymeXText(
         text: label,
         size: 10,
         variant: TextVariant.semiBold,
@@ -978,13 +978,13 @@ class _SyncPreferenceTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymexText(
+                    AnymeXText(
                       text: title,
                       size: 13,
                       variant: TextVariant.semiBold,
                     ),
                     const SizedBox(height: 1),
-                    AnymexText(
+                    AnymeXText(
                       text: subtitle,
                       size: 11,
                       color: colors.onSurfaceVariant,
@@ -1059,13 +1059,13 @@ class _SheetActionTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymexText(
+                      AnymeXText(
                         text: title,
                         size: 13,
                         variant: TextVariant.semiBold,
                       ),
                       const SizedBox(height: 1),
-                      AnymexText(
+                      AnymeXText(
                         text: subtitle,
                         size: 11,
                         color: colors.onSurfaceVariant,
@@ -1139,7 +1139,7 @@ class _ImportModeOptionTile extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: AnymexText(
+                          child: AnymeXText(
                             text: title,
                             variant: TextVariant.semiBold,
                             size: 13,
@@ -1153,7 +1153,7 @@ class _ImportModeOptionTile extends StatelessWidget {
                               color: accent.withOpacity(0.14),
                               borderRadius: BorderRadius.circular(999),
                             ),
-                            child: AnymexText(
+                            child: AnymeXText(
                               text: badge!,
                               size: 10,
                               variant: TextVariant.semiBold,
@@ -1163,7 +1163,7 @@ class _ImportModeOptionTile extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 3),
-                    AnymexText(
+                    AnymeXText(
                       text: subtitle,
                       size: 11,
                       maxLines: 3,
