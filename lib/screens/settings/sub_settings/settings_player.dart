@@ -14,16 +14,17 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme_registry.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
-import 'package:anymex/screens/other_features.dart';
+
 import 'package:anymex/screens/settings/sub_settings/widgets/settings_json_shared.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:anymex/utils/subtitle_style_renderer.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
+
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
@@ -106,8 +107,7 @@ final List<_BottomControl> _bottomControls = [
       defaultPosition: 'left'),
   const _BottomControl(
       id: 'shaders', name: 'Shaders', icon: Icons.tune_rounded),
-  const _BottomControl(
-      id: 'source', name: 'Source', icon: Icons.cloud_rounded),
+  const _BottomControl(id: 'source', name: 'Source', icon: Icons.cloud_rounded),
   const _BottomControl(
       id: 'tracks',
       name: 'Tracks (Audio/Subs)',
@@ -122,7 +122,9 @@ final List<_BottomControl> _bottomControls = [
   const _BottomControl(
       id: 'aspect_ratio', name: 'Aspect Ratio', icon: Icons.fit_screen),
   const _BottomControl(
-      id: 'external_player', name: 'External Player', icon: Icons.launch_rounded),
+      id: 'external_player',
+      name: 'External Player',
+      icon: Icons.launch_rounded),
   const _BottomControl(
       id: 'watch_together',
       name: 'Watch Together',
@@ -130,7 +132,8 @@ final List<_BottomControl> _bottomControls = [
       defaultPosition: 'right'),
 ];
 
-class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStateMixin {
+class _SettingsPlayerState extends State<SettingsPlayer>
+    with TickerProviderStateMixin {
   final settings = Get.find<Settings>();
   RxDouble speed = 0.0.obs;
   Rx<Color> subtitleColor = Colors.white.obs;
@@ -314,7 +317,9 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     bool changed = false;
     for (final control in _bottomControls) {
       if (!allUserIds.contains(control.id)) {
-        final position = control.defaultPosition == 'left' ? _leftButtonIds : _rightButtonIds;
+        final position = control.defaultPosition == 'left'
+            ? _leftButtonIds
+            : _rightButtonIds;
         position.add(control.id);
         _buttonConfigs[control.id] = {'visible': true};
         changed = true;
@@ -1127,505 +1132,357 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
-  body: Column(children: [
-      if (!widget.isModal) const NestedHeader(title: 'Player Settings'),
-      Expanded(
-        child: SingleChildScrollView(
-          padding: getResponsiveValue(context,
-              mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 50.0),
-              desktopValue: const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (widget.isModal) ...[
-                const Center(
-                  child: Text("Player Settings",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                )
-              ],
-              SizedBox(height: widget.isModal ? 30.0 : 0),
-              Obx(() => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (_supportsDecoderSelection)
-                        AnymeXExpansionTile(
-                            title: 'Playback',
-                            initialExpanded: true,
-                            content: Column(
+      showHeader: true,
+      headerTitle: 'Player Settings',
+      body: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                    16.0, widget.isModal ? 10.0 : 8.0, 16.0, 30.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.isModal) ...[
+                      const Center(
+                        child: Text("Player Settings",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20)),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                    SizedBox(height: widget.isModal ? 30.0 : 0),
+                    Obx(
+                      () => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (_supportsDecoderSelection)
+                            AnymeXSectionBuilder(
+                              title: 'Playback',
                               children: [
-                                CustomTile(
-                                  padding: 10,
+                                AnymeXTile(
                                   icon: Icons.memory_rounded,
                                   title: 'Decoder',
-                                  isDescBold: true,
-                                  descColor: Theme.of(context)
-                                      .colorScheme
-                                      .primary,
-                                  description:
-                                      _decoderDescription(settings.hardwareDecoder),
+                                  subtitle: _decoderDescription(
+                                      settings.hardwareDecoder),
                                   onTap: _showDecoderModeDialog,
                                 ),
-                                CustomTile(
-                                  padding: 10,
+                                AnymeXTile(
                                   icon: Icons.settings_system_daydream_rounded,
                                   title: 'Video Renderer',
-                                  isDescBold: true,
-                                  descColor: Theme.of(context)
-                                      .colorScheme
-                                      .primary,
-                                  description:
-                                      _rendererDescription(settings.videoOutput),
+                                  subtitle: _rendererDescription(
+                                      settings.videoOutput),
                                   onTap: _showRendererSelectionDialog,
                                 ),
-                                CustomTile(
-                                  padding: 10,
+                                AnymeXTile(
                                   icon: Icons.audiotrack_rounded,
                                   title: 'Audio Engine',
-                                  isDescBold: true,
-                                  descColor: Theme.of(context)
-                                      .colorScheme
-                                      .primary,
-                                  description:
+                                  subtitle:
                                       _audioDescription(settings.audioOutput),
                                   onTap: _showAudioSelectionDialog,
                                 ),
                               ],
-                            )),
-                      AnymeXExpansionTile(
-                        initialExpanded: false,
-                        title: 'Anime 4K Enhancement',
-                        content: Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .surfaceContainerHighest
-                                .withValues(alpha: 0.4),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .outline
-                                  .withValues(alpha: 0.2),
                             ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          AnymeXSectionBuilder(
+                            title: 'Anime 4K Enhancement',
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primaryContainer
-                                          .withValues(alpha: 0.5),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Icon(
-                                      Iconsax.eye,
-                                      color: Theme.of(context).colorScheme.primary,
-                                      size: 20,
-                                    ),
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest
+                                      .withValues(alpha: 0.4),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .outline
+                                        .withValues(alpha: 0.2),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       children: [
-                                        Text(
-                                          'Anime 4K Enhancement',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Real-time 4K upscaling for anime content',
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withValues(alpha: 0.7),
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              Obx(
-                                () {
-                                  return Column(
-                                    children: [
-                                      if (_isDownloading.value) ...[
                                         Container(
-                                          padding: const EdgeInsets.all(16),
+                                          padding: const EdgeInsets.all(8),
                                           decoration: BoxDecoration(
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .primaryContainer
-                                                .withValues(alpha: 0.3),
-                                            borderRadius: BorderRadius.circular(12),
+                                                .withValues(alpha: 0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                           ),
+                                          child: Icon(
+                                            Iconsax.eye,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                            size: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
                                           child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Row(
-                                                children: [
-                                                  AnimatedBuilder(
-                                                    animation: _pulseAnimation,
-                                                    builder: (context, child) {
-                                                      return Transform.scale(
-                                                        scale:
-                                                            _pulseAnimation.value,
-                                                        child: Icon(
-                                                          Iconsax.document_download,
-                                                          color: Theme.of(context)
-                                                              .colorScheme
-                                                              .primary,
-                                                          size: 16,
-                                                        ),
-                                                      );
-                                                    },
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Expanded(
-                                                    child: Text(
-                                                      _currentStatus.value,
-                                                      style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .onSurface,
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    '${(_downloadProgress.value * 100).toInt()}%',
-                                                    style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .primary,
-                                                      fontWeight: FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 12),
-                                              LinearProgressIndicator(
-                                                value: _downloadProgress.value,
-                                                backgroundColor: Theme.of(context)
-                                                    .colorScheme
-                                                    .outline
-                                                    .withValues(alpha: 0.2),
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<Color>(
-                                                  Theme.of(context)
+                                              Text(
+                                                'Anime 4K Enhancement',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 16,
+                                                  color: Theme.of(context)
                                                       .colorScheme
-                                                      .primary,
+                                                      .onSurface,
                                                 ),
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
+                                              ),
+                                              Text(
+                                                'Real-time 4K upscaling for anime content',
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurface
+                                                      .withValues(alpha: 0.7),
+                                                  fontSize: 12,
+                                                ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                      ] else if (_shadersDownloaded.value) ...[
-                                        Column(
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Obx(
+                                      () {
+                                        return Column(
                                           children: [
-                                            Container(
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primaryContainer
-                                                    .withValues(alpha: 0.3),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                border: Border.all(
+                                            if (_isDownloading.value) ...[
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.all(16),
+                                                decoration: BoxDecoration(
                                                   color: Theme.of(context)
                                                       .colorScheme
-                                                      .primary
+                                                      .primaryContainer
                                                       .withValues(alpha: 0.3),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
                                                 ),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Iconsax.play,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                    size: 20,
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment.start,
+                                                child: Column(
+                                                  children: [
+                                                    Row(
                                                       children: [
-                                                        Text(
-                                                          'Enable Shaders',
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color: Theme.of(context)
-                                                                .colorScheme
-                                                                .onSurface,
+                                                        AnimatedBuilder(
+                                                          animation:
+                                                              _pulseAnimation,
+                                                          builder:
+                                                              (context, child) {
+                                                            return Transform
+                                                                .scale(
+                                                              scale:
+                                                                  _pulseAnimation
+                                                                      .value,
+                                                              child: Icon(
+                                                                Iconsax
+                                                                    .document_download,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .primary,
+                                                                size: 16,
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 8),
+                                                        Expanded(
+                                                          child: Text(
+                                                            _currentStatus
+                                                                .value,
+                                                            style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .onSurface,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
                                                           ),
                                                         ),
                                                         Text(
-                                                          getResponsiveValue(
-                                                              context,
-                                                              mobileValue:
-                                                                  'if Enabled the Shaders will be applied to the player through hdr menu',
-                                                              desktopValue:
-                                                                  'if Enabled the Shaders will be applied to the player through keybindings'),
+                                                          '${(_downloadProgress.value * 100).toInt()}%',
                                                           style: TextStyle(
-                                                            color: Theme.of(context)
+                                                            color: Theme.of(
+                                                                    context)
                                                                 .colorScheme
-                                                                .onSurface
-                                                                .withValues(
-                                                                    alpha: 0.7),
-                                                            fontSize: 12,
+                                                                .primary,
+                                                            fontWeight:
+                                                                FontWeight.bold,
                                                           ),
                                                         ),
                                                       ],
                                                     ),
-                                                  ),
-                                                  Obx(() {
-                                                    return Switch(
-                                                      value: _enableShaders.value,
-                                                      onChanged: (value) {
-                                                        _enableShaders.value =
-                                                            value;
-                                                        PlayerUiKeys.shadersEnabled.set(_enableShaders.value);
-                                                      },
-                                                    );
-                                                  })
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Container(
-                                              padding: const EdgeInsets.all(16),
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primaryContainer
-                                                    .withValues(alpha: 0.3),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                border: Border.all(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .primary
-                                                      .withValues(alpha: 0.3),
-                                                ),
-                                              ),
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Icon(
-                                                        Iconsax.play,
-                                                        color: Theme.of(context)
+                                                    const SizedBox(height: 12),
+                                                    LinearProgressIndicator(
+                                                      value: _downloadProgress
+                                                          .value,
+                                                      backgroundColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .outline
+                                                              .withValues(
+                                                                  alpha: 0.2),
+                                                      valueColor:
+                                                          AlwaysStoppedAnimation<
+                                                              Color>(
+                                                        Theme.of(context)
                                                             .colorScheme
                                                             .primary,
-                                                        size: 20,
                                                       ),
-                                                      const SizedBox(width: 12),
-                                                      Expanded(
-                                                        child: Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Text(
-                                                              'Choose Shader Profile',
-                                                              style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight.w600,
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .onSurface,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              'Choose accordingly to your system specs.\nMid End = Eg. GTX 980, GTX 1060, RX 570\nHigh End = Eg. GTX 1080, RTX 2070, RTX 3060, RX 590, Vega 56',
-                                                              style: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .onSurface
-                                                                    .withValues(
-                                                                        alpha: 0.7),
-                                                                fontSize: 12,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Obx(() {
-                                                    List<String> availProfiles = [
-                                                      'MID-END',
-                                                      'HIGH-END'
-                                                    ];
-
-                                                    return Container(
-                                                      margin: const EdgeInsets.only(
-                                                          top: 20.0),
-                                                      child: AnymeXDropdown(
-                                                          items: availProfiles
-                                                              .map((e) =>
-                                                                  DropdownItem(
-                                                                      text: e,
-                                                                      value: e))
-                                                              .toList(),
-                                                          selectedItem: DropdownItem(
-                                                              text: settingsController
-                                                                  .selectedProfile,
-                                                              value: settingsController
-                                                                  .selectedProfile),
-                                                          label: "SELECT PROFILE",
-                                                          icon: Iconsax.play,
-                                                          onChanged: (e) =>
-                                                              settingsController
-                                                                      .selectedProfile =
-                                                                  e.text),
-                                                    );
-                                                  })
-                                                ],
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            AnimatedContainer(
-                                              width:
-                                                  _enableShaders.value ? null : 0,
-                                              curve: Curves.easeInOut,
-                                              height:
-                                                  _enableShaders.value ? null : 0,
-                                              duration:
-                                                  const Duration(milliseconds: 300),
-                                              padding: EdgeInsets.all(
-                                                  _enableShaders.value ? 16 : 0),
-                                              margin:
-                                                  const EdgeInsets.only(bottom: 8),
-                                              decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .errorContainer
-                                                    .withValues(alpha: 0.3),
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
-                                                border: Border.all(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .primary
-                                                      .withValues(alpha: 0.3),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              4),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                              child: Row(
+                                            ] else if (_shadersDownloaded
+                                                .value) ...[
+                                              Column(
                                                 children: [
-                                                  Icon(
-                                                    Iconsax.info_circle,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                    size: 20,
-                                                  ),
-                                                  const SizedBox(width: 12),
-                                                  Expanded(
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment.start,
-                                                      children: [
-                                                        Text(
-                                                          'Warning',
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color: Theme.of(context)
-                                                                .colorScheme
-                                                                .onSurface,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          getResponsiveValue(
-                                                              context,
-                                                              mobileValue:
-                                                                  'you might get black screen or it may not work.',
-                                                              desktopValue:
-                                                                  'will lag like hell on older gpus'),
-                                                          style: TextStyle(
-                                                            color: Theme.of(context)
-                                                                .colorScheme
-                                                                .onErrorContainer
-                                                                .withValues(
-                                                                    alpha: 0.7),
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            getResponsiveValue(
-                                              context,
-                                              mobileValue: const SizedBox.shrink(),
-                                              strictMode: true,
-                                              desktopValue: Obx(() {
-                                                return AnimatedOpacity(
-                                                  opacity: _enableShaders.value
-                                                      ? 1
-                                                      : 0.3,
-                                                  duration: const Duration(
-                                                      milliseconds: 300),
-                                                  child: Container(
+                                                  Container(
                                                     padding:
-                                                        const EdgeInsets.all(16),
+                                                        const EdgeInsets.all(
+                                                            16),
                                                     decoration: BoxDecoration(
                                                       color: Theme.of(context)
                                                           .colorScheme
                                                           .primaryContainer
-                                                          .withValues(alpha: 0.3),
+                                                          .withValues(
+                                                              alpha: 0.3),
                                                       borderRadius:
-                                                          BorderRadius.circular(12),
+                                                          BorderRadius.circular(
+                                                              12),
                                                       border: Border.all(
                                                         color: Theme.of(context)
                                                             .colorScheme
                                                             .primary
-                                                            .withValues(alpha: 0.3),
+                                                            .withValues(
+                                                                alpha: 0.3),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Iconsax.play,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                          size: 20,
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 12),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                'Enable Shaders',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onSurface,
+                                                                ),
+                                                              ),
+                                                              Text(
+                                                                getResponsiveValue(
+                                                                    context,
+                                                                    mobileValue:
+                                                                        'if Enabled the Shaders will be applied to the player through hdr menu',
+                                                                    desktopValue:
+                                                                        'if Enabled the Shaders will be applied to the player through keybindings'),
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onSurface
+                                                                      .withValues(
+                                                                          alpha:
+                                                                              0.7),
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        Obx(() {
+                                                          return Switch(
+                                                            value:
+                                                                _enableShaders
+                                                                    .value,
+                                                            onChanged: (value) {
+                                                              _enableShaders
+                                                                      .value =
+                                                                  value;
+                                                              PlayerUiKeys
+                                                                  .shadersEnabled
+                                                                  .set(_enableShaders
+                                                                      .value);
+                                                            },
+                                                          );
+                                                        })
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            16),
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primaryContainer
+                                                          .withValues(
+                                                              alpha: 0.3),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                      border: Border.all(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
+                                                            .withValues(
+                                                                alpha: 0.3),
                                                       ),
                                                     ),
                                                     child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment.start,
                                                       children: [
                                                         Row(
                                                           children: [
                                                             Icon(
-                                                              Iconsax.keyboard,
-                                                              color:
-                                                                  Theme.of(context)
-                                                                      .colorScheme
-                                                                      .primary,
+                                                              Iconsax.play,
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .primary,
                                                               size: 20,
                                                             ),
                                                             const SizedBox(
@@ -1637,28 +1494,30 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                                                         .start,
                                                                 children: [
                                                                   Text(
-                                                                    'Shader Profiles Initialized',
+                                                                    'Choose Shader Profile',
                                                                     style:
                                                                         TextStyle(
                                                                       fontWeight:
                                                                           FontWeight
                                                                               .w600,
-                                                                      color: context
-                                                                          .colors
+                                                                      color: Theme.of(
+                                                                              context)
+                                                                          .colorScheme
                                                                           .onSurface,
                                                                     ),
                                                                   ),
                                                                   Text(
-                                                                    'Use keyboard shortcuts during playback to switch profiles',
+                                                                    'Choose accordingly to your system specs.\nMid End = Eg. GTX 980, GTX 1060, RX 570\nHigh End = Eg. GTX 1080, RTX 2070, RTX 3060, RX 590, Vega 56',
                                                                     style:
                                                                         TextStyle(
-                                                                      color: context
-                                                                          .colors
+                                                                      color: Theme.of(
+                                                                              context)
+                                                                          .colorScheme
                                                                           .onSurface
                                                                           .withValues(
-                                                                              alpha:
-                                                                                  0.7),
-                                                                      fontSize: 12,
+                                                                              alpha: 0.7),
+                                                                      fontSize:
+                                                                          12,
                                                                     ),
                                                                   ),
                                                                 ],
@@ -1666,300 +1525,505 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                                             ),
                                                           ],
                                                         ),
-                                                        const SizedBox(height: 16),
-                                                        Text(
-                                                          'Available Keybindings:',
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color: Theme.of(context)
-                                                                .colorScheme
-                                                                .onSurface,
-                                                            fontSize: 13,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(height: 12),
-                                                        _buildKeybindingItem(
-                                                            'CTRL + 1',
-                                                            'Anime4K: Mode A (Fast)'),
-                                                        _buildKeybindingItem(
-                                                            'CTRL + 2',
-                                                            'Anime4K: Mode B (Fast)'),
-                                                        _buildKeybindingItem(
-                                                            'CTRL + 3',
-                                                            'Anime4K: Mode C (Fast)'),
-                                                        _buildKeybindingItem(
-                                                            'CTRL + 4',
-                                                            'Anime4K: Mode A+A (Fast)'),
-                                                        _buildKeybindingItem(
-                                                            'CTRL + 5',
-                                                            'Anime4K: Mode B+B (Fast)'),
-                                                        _buildKeybindingItem(
-                                                            'CTRL + 6',
-                                                            'Anime4K: Mode C+A (Fast)'),
-                                                        _buildKeybindingItem(
-                                                            'CTRL + 0',
-                                                            'Reset (Clear Shaders)'),
+                                                        Obx(() {
+                                                          List<String>
+                                                              availProfiles = [
+                                                            'MID-END',
+                                                            'HIGH-END'
+                                                          ];
+
+                                                          return Container(
+                                                            margin:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    top: 20.0),
+                                                            child: AnymeXDropdown(
+                                                                items: availProfiles
+                                                                    .map((e) => DropdownItem(
+                                                                        text: e,
+                                                                        value:
+                                                                            e))
+                                                                    .toList(),
+                                                                selectedItem: DropdownItem(
+                                                                    text: settingsController
+                                                                        .selectedProfile,
+                                                                    value: settingsController
+                                                                        .selectedProfile),
+                                                                label:
+                                                                    "SELECT PROFILE",
+                                                                icon: Iconsax
+                                                                    .play,
+                                                                onChanged: (e) =>
+                                                                    settingsController
+                                                                            .selectedProfile =
+                                                                        e.text),
+                                                          );
+                                                        })
                                                       ],
                                                     ),
                                                   ),
-                                                );
-                                              }),
-                                            ),
+                                                  const SizedBox(height: 8),
+                                                  AnimatedContainer(
+                                                    width: _enableShaders.value
+                                                        ? null
+                                                        : 0,
+                                                    curve: Curves.easeInOut,
+                                                    height: _enableShaders.value
+                                                        ? null
+                                                        : 0,
+                                                    duration: const Duration(
+                                                        milliseconds: 300),
+                                                    padding: EdgeInsets.all(
+                                                        _enableShaders.value
+                                                            ? 16
+                                                            : 0),
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            bottom: 8),
+                                                    decoration: BoxDecoration(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .errorContainer
+                                                          .withValues(
+                                                              alpha: 0.3),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12),
+                                                      border: Border.all(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
+                                                            .withValues(
+                                                                alpha: 0.3),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          Iconsax.info_circle,
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                          size: 20,
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 12),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                'Warning',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onSurface,
+                                                                ),
+                                                              ),
+                                                              Text(
+                                                                getResponsiveValue(
+                                                                    context,
+                                                                    mobileValue:
+                                                                        'you might get black screen or it may not work.',
+                                                                    desktopValue:
+                                                                        'will lag like hell on older gpus'),
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onErrorContainer
+                                                                      .withValues(
+                                                                          alpha:
+                                                                              0.7),
+                                                                  fontSize: 12,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  getResponsiveValue(
+                                                    context,
+                                                    mobileValue:
+                                                        const SizedBox.shrink(),
+                                                    strictMode: true,
+                                                    desktopValue: Obx(() {
+                                                      return AnimatedOpacity(
+                                                        opacity:
+                                                            _enableShaders.value
+                                                                ? 1
+                                                                : 0.3,
+                                                        duration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    300),
+                                                        child: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(16),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .primaryContainer
+                                                                .withValues(
+                                                                    alpha: 0.3),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        12),
+                                                            border: Border.all(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .primary
+                                                                  .withValues(
+                                                                      alpha:
+                                                                          0.3),
+                                                            ),
+                                                          ),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  Icon(
+                                                                    Iconsax
+                                                                        .keyboard,
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .primary,
+                                                                    size: 20,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      width:
+                                                                          12),
+                                                                  Expanded(
+                                                                    child:
+                                                                        Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                          'Shader Profiles Initialized',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontWeight:
+                                                                                FontWeight.w600,
+                                                                            color:
+                                                                                context.colors.onSurface,
+                                                                          ),
+                                                                        ),
+                                                                        Text(
+                                                                          'Use keyboard shortcuts during playback to switch profiles',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color:
+                                                                                context.colors.onSurface.withValues(alpha: 0.7),
+                                                                            fontSize:
+                                                                                12,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              const SizedBox(
+                                                                  height: 16),
+                                                              Text(
+                                                                'Available Keybindings:',
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onSurface,
+                                                                  fontSize: 13,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                  height: 12),
+                                                              _buildKeybindingItem(
+                                                                  'CTRL + 1',
+                                                                  'Anime4K: Mode A (Fast)'),
+                                                              _buildKeybindingItem(
+                                                                  'CTRL + 2',
+                                                                  'Anime4K: Mode B (Fast)'),
+                                                              _buildKeybindingItem(
+                                                                  'CTRL + 3',
+                                                                  'Anime4K: Mode C (Fast)'),
+                                                              _buildKeybindingItem(
+                                                                  'CTRL + 4',
+                                                                  'Anime4K: Mode A+A (Fast)'),
+                                                              _buildKeybindingItem(
+                                                                  'CTRL + 5',
+                                                                  'Anime4K: Mode B+B (Fast)'),
+                                                              _buildKeybindingItem(
+                                                                  'CTRL + 6',
+                                                                  'Anime4K: Mode C+A (Fast)'),
+                                                              _buildKeybindingItem(
+                                                                  'CTRL + 0',
+                                                                  'Reset (Clear Shaders)'),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }),
+                                                  ),
+                                                ],
+                                              )
+                                            ] else ...[
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: FilledButton.icon(
+                                                  onPressed: _downloadShaders,
+                                                  icon: const Icon(Iconsax
+                                                      .document_download),
+                                                  label: const Text(
+                                                      'Download 4K Shaders'),
+                                                  style: FilledButton.styleFrom(
+                                                    backgroundColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
+                                                            .withValues(
+                                                                alpha: 0.9),
+                                                    foregroundColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimary,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        vertical: 16),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Text(
+                                                'Download size: ~4MB',
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurface
+                                                      .withValues(alpha: 0.6),
+                                                  fontSize: 11,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
                                           ],
-                                        )
-                                      ] else ...[
-                                        SizedBox(
-                                          width: double.infinity,
-                                          child: FilledButton.icon(
-                                            onPressed: _downloadShaders,
-                                            icon: const Icon(
-                                                Iconsax.document_download),
-                                            label:
-                                                const Text('Download 4K Shaders'),
-                                            style: FilledButton.styleFrom(
-                                              backgroundColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary
-                                                  .withValues(alpha: 0.9),
-                                              foregroundColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary,
-                                              padding: const EdgeInsets.symmetric(
-                                                  vertical: 16),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          'Download size: ~4MB',
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface
-                                                .withValues(alpha: 0.6),
-                                            fontSize: 11,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ],
-                                  );
-                                },
-                              )
+                                        );
+                                      },
+                                    )
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                      ),
-                      AnymeXExpansionTile(
-                          title: 'Experimental',
-                          initialExpanded: false,
-                          content: Builder(builder: (context) {
-                            final experimentalEnabled = PlayerUiKeys
-                                .playerExperimentalEnabled
-                                .get<bool>(false);
-                            final mpvCore =
-                                PlayerCoreVisualSettings.getMpvCoreSettings();
-
-                            return Column(
-                              children: [
-                                CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
-                                  icon: Icons.science_outlined,
-                                  title: 'Enable Experimental Settings',
-                                  description:
-                                      'Required for Core and Visual tuning. Keep off on low-end devices.',
-                                  switchValue: experimentalEnabled,
-                                  onChanged: (val) {
-                                    PlayerUiKeys.playerExperimentalEnabled
-                                        .set<bool>(val);
-                                    setState(() {});
-                                  },
-                                ),
-                                if (!experimentalEnabled)
-                                  _buildExperimentalGateMessage(
-                                      'Core and Visual settings are disabled. Enable Experimental to use them.'),
-                                if (experimentalEnabled)
-                                  Column(
-                                    children: [
-                                      CustomTile(
-                                        padding: 10,
-                                        icon: Icons.sync_rounded,
-                                        title: 'Video Sync',
-                                        isDescBold: true,
-                                        descColor: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        description:
-                                            (mpvCore['videoSync'] as String?) ??
-                                                'audio',
-                                        onTap: () =>
-                                            _showMpvCoreSelectionDialog(
-                                          title: 'Video Sync',
-                                          items: const [
-                                            'audio',
-                                            'display-resample',
-                                            'display-vdrop',
-                                            'display-adrop',
-                                          ],
-                                          selected: (mpvCore['videoSync']
-                                                  as String?) ??
-                                              'audio',
-                                          getTitle: (item) => item,
-                                          key: 'videoSync',
-                                        ),
-                                      ),
-                                      CustomSwitchTile(
-                                        padding: const EdgeInsets.all(10),
-                                        icon: Icons.movie_filter_rounded,
-                                        title: 'Frame Interpolation',
-                                        description:
-                                            'Smoother motion, can increase GPU usage',
-                                        switchValue: (mpvCore['interpolation']
-                                                as bool?) ??
-                                            false,
-                                        onChanged: (val) {
-                                          PlayerCoreVisualSettings
-                                              .setMpvCoreSetting(
-                                                  'interpolation', val);
-                                          setState(() {});
-                                        },
-                                      ),
-                                      CustomSwitchTile(
-                                        padding: const EdgeInsets.all(10),
-                                        icon: Icons.graphic_eq_rounded,
-                                        title: 'Audio Pitch Correction',
-                                        description:
-                                            'Keep voice pitch stable at higher speeds',
-                                        switchValue:
-                                            (mpvCore['audioPitchCorrection']
-                                                    as bool?) ??
-                                                true,
-                                        onChanged: (val) {
-                                          PlayerCoreVisualSettings
-                                              .setMpvCoreSetting(
-                                                  'audioPitchCorrection', val);
-                                          setState(() {});
-                                        },
-                                      ),
-                                      CustomSliderTile(
-                                        icon: Icons.timer_outlined,
-                                        title: 'Cache Minutes',
-                                        description:
-                                            'Read-ahead duration in Minutes',
-                                        sliderValue: ((mpvCore['cacheMinutes']
-                                                    as num?) ??
-                                                5)
-                                            .toDouble(),
-                                        min: 0,
-                                        max: 60,
-                                        divisions: 60,
-                                        label: ((mpvCore['cacheMinutes']
-                                                    as num?) ??
-                                                5)
-                                            .toInt()
-                                            .toString(),
-                                        onChanged: (value) {
-                                          PlayerCoreVisualSettings
-                                              .setMpvCoreSetting('cacheMinutes',
-                                                  value.round());
-                                          setState(() {});
-                                        },
-                                      ),
-                                      CustomSliderTile(
-                                        icon: Icons.downloading_rounded,
-                                        title: 'Demuxer Readahead',
-                                        description: 'Readahead seconds',
-                                        sliderValue:
-                                            ((mpvCore['demuxerReadaheadSeconds']
-                                                        as num?) ??
-                                                    30)
-                                                .toDouble(),
-                                        min: 0,
-                                        max: 120,
-                                        divisions: 24,
-                                        label:
-                                            ((mpvCore['demuxerReadaheadSeconds']
-                                                        as num?) ??
-                                                    30)
-                                                .toInt()
-                                                .toString(),
-                                        onChanged: (value) {
-                                          PlayerCoreVisualSettings
-                                              .setMpvCoreSetting(
-                                                  'demuxerReadaheadSeconds',
-                                                  value.round());
-                                          setState(() {});
-                                        },
-                                      ),
-                                      CustomSliderTile(
-                                        icon: Icons.storage_rounded,
-                                        title: 'Demuxer Max Buffer',
-                                        description:
-                                            'Maximum demuxer buffer (MB)',
-                                        sliderValue:
-                                            ((mpvCore['demuxerMaxBytesMb']
-                                                        as num?) ??
-                                                    128)
-                                                .toDouble(),
-                                        min: 16,
-                                        max: 512,
-                                        divisions: 62,
-                                        label: ((mpvCore['demuxerMaxBytesMb']
-                                                    as num?) ??
-                                                128)
-                                            .toInt()
-                                            .toString(),
-                                        onChanged: (value) {
-                                          PlayerCoreVisualSettings
-                                              .setMpvCoreSetting(
-                                                  'demuxerMaxBytesMb',
-                                                  value.round());
-                                          setState(() {});
-                                        },
-                                      ),
-                                      CustomSliderTile(
-                                        icon: Icons.developer_board_rounded,
-                                        title: 'Decoder Threads',
-                                        description:
-                                            '0 means automatic thread count',
-                                        sliderValue: ((mpvCore['vdLavcThreads']
-                                                    as num?) ??
-                                                4)
-                                            .toDouble(),
-                                        min: 0,
-                                        max: 16,
-                                        divisions: 16,
-                                        label: ((mpvCore['vdLavcThreads']
-                                                    as num?) ??
-                                                4)
-                                            .toInt()
-                                            .toString(),
-                                        onChanged: (value) {
-                                          PlayerCoreVisualSettings
-                                              .setMpvCoreSetting(
-                                                  'vdLavcThreads',
-                                                  value.round());
-                                          setState(() {});
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                              ],
-                            );
-                          })),
-                      AnymeXExpansionTile(
-                          initialExpanded: true,
-                          title: 'Common',
-                          content: Column(
+                          AnymeXSectionBuilder(
+                            title: 'Experimental',
                             children: [
-                              CustomSwitchTile(
+                              Builder(builder: (context) {
+                                final experimentalEnabled = PlayerUiKeys
+                                    .playerExperimentalEnabled
+                                    .get<bool>(false);
+                                final mpvCore = PlayerCoreVisualSettings
+                                    .getMpvCoreSettings();
+
+                                return Column(
+                                  children: [
+                                    AnymeXTile.toggle(
+                                      icon: Icons.science_outlined,
+                                      title: 'Enable Experimental Settings',
+                                      subtitle:
+                                          'Required for Core and Visual tuning. Keep off on low-end devices.',
+                                      value: experimentalEnabled,
+                                      onChanged: (val) {
+                                        PlayerUiKeys.playerExperimentalEnabled
+                                            .set<bool>(val);
+                                        setState(() {});
+                                      },
+                                    ),
+                                    if (!experimentalEnabled)
+                                      _buildExperimentalGateMessage(
+                                          'Core and Visual settings are disabled. Enable Experimental to use them.'),
+                                    if (experimentalEnabled)
+                                      Column(
+                                        children: [
+                                          AnymeXTile(
+                                            icon: Icons.sync_rounded,
+                                            title: 'Video Sync',
+                                            subtitle: (mpvCore['videoSync']
+                                                    as String?) ??
+                                                'audio',
+                                            onTap: () =>
+                                                _showMpvCoreSelectionDialog(
+                                              title: 'Video Sync',
+                                              items: const [
+                                                'audio',
+                                                'display-resample',
+                                                'display-vdrop',
+                                                'display-adrop',
+                                              ],
+                                              selected: (mpvCore['videoSync']
+                                                      as String?) ??
+                                                  'audio',
+                                              getTitle: (item) => item,
+                                              key: 'videoSync',
+                                            ),
+                                          ),
+                                          AnymeXTile.toggle(
+                                            icon: Icons.movie_filter_rounded,
+                                            title: 'Frame Interpolation',
+                                            subtitle:
+                                                'Smoother motion, can increase GPU usage',
+                                            value:
+                                                (mpvCore['interpolation']
+                                                        as bool?) ??
+                                                    false,
+                                            onChanged: (val) {
+                                              PlayerCoreVisualSettings
+                                                  .setMpvCoreSetting(
+                                                      'interpolation', val);
+                                              setState(() {});
+                                            },
+                                          ),
+                                          AnymeXTile.toggle(
+                                            icon: Icons.graphic_eq_rounded,
+                                            title: 'Audio Pitch Correction',
+                                            subtitle:
+                                                'Keep voice pitch stable at higher speeds',
+                                            value:
+                                                (mpvCore['audioPitchCorrection']
+                                                        as bool?) ??
+                                                    true,
+                                            onChanged: (val) {
+                                              PlayerCoreVisualSettings
+                                                  .setMpvCoreSetting(
+                                                      'audioPitchCorrection',
+                                                      val);
+                                              setState(() {});
+                                            },
+                                          ),
+                                          AnymeXTile.slider(
+                                            icon: Icons.timer_outlined,
+                                            title: 'Cache Minutes',
+                                            subtitle:
+                                                'Read-ahead duration in Minutes',
+                                            value:
+                                                ((mpvCore['cacheMinutes']
+                                                            as num?) ??
+                                                        5)
+                                                    .toDouble(),
+                                            min: 0,
+                                            max: 60,
+                                            divisions: 60,
+                                            onChanged: (value) {
+                                              PlayerCoreVisualSettings
+                                                  .setMpvCoreSetting(
+                                                      'cacheMinutes',
+                                                      value.round());
+                                              setState(() {});
+                                            },
+                                          ),
+                                          AnymeXTile.slider(
+                                            icon: Icons.downloading_rounded,
+                                            title: 'Demuxer Readahead',
+                                            subtitle: 'Readahead seconds',
+                                            value:
+                                                ((mpvCore['demuxerReadaheadSeconds']
+                                                            as num?) ??
+                                                        30)
+                                                    .toDouble(),
+                                            min: 0,
+                                            max: 120,
+                                            divisions: 24,
+                                            onChanged: (value) {
+                                              PlayerCoreVisualSettings
+                                                  .setMpvCoreSetting(
+                                                      'demuxerReadaheadSeconds',
+                                                      value.round());
+                                              setState(() {});
+                                            },
+                                          ),
+                                          AnymeXTile.slider(
+                                            icon: Icons.storage_rounded,
+                                            title: 'Demuxer Max Buffer',
+                                            subtitle:
+                                                'Maximum demuxer buffer (MB)',
+                                            value:
+                                                ((mpvCore['demuxerMaxBytesMb']
+                                                            as num?) ??
+                                                        128)
+                                                    .toDouble(),
+                                            min: 16,
+                                            max: 512,
+                                            divisions: 62,
+                                            onChanged: (value) {
+                                              PlayerCoreVisualSettings
+                                                  .setMpvCoreSetting(
+                                                      'demuxerMaxBytesMb',
+                                                      value.round());
+                                              setState(() {});
+                                            },
+                                          ),
+                                          AnymeXTile.slider(
+                                            icon: Icons.developer_board_rounded,
+                                            title: 'Decoder Threads',
+                                            subtitle:
+                                                '0 means automatic thread count',
+                                            value:
+                                                ((mpvCore['vdLavcThreads']
+                                                            as num?) ??
+                                                        4)
+                                                    .toDouble(),
+                                            min: 0,
+                                            max: 16,
+                                            divisions: 16,
+                                            onChanged: (value) {
+                                              PlayerCoreVisualSettings
+                                                  .setMpvCoreSetting(
+                                                      'vdLavcThreads',
+                                                      value.round());
+                                              setState(() {});
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                  ],
+                                );
+                              }),
+                            ],
+                          ),
+                          AnymeXSectionBuilder(
+                            title: 'Common',
+                            children: [
+                               AnymeXTile.toggle(
                                   icon: Icons.subtitles,
-                                  padding: const EdgeInsets.all(10),
                                   title: "Use Libass for Subtitles",
-                                  description:
+                                  subtitle:
                                       "Better subtitle rendering using libass library",
-                                  switchValue: _useLibass,
+                                  value: _useLibass,
                                   onChanged: (val) async {
                                     setState(() {
                                       _useLibass = val;
@@ -1974,265 +2038,239 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                       }
                                     }
                                   }),
-                              CustomSwitchTile(
+                               AnymeXTile.toggle(
                                   icon: Icons.launch_rounded,
-                                  padding: const EdgeInsets.all(10),
                                   title: "Use External Player",
-                                  description:
+                                  subtitle:
                                       "Open video stream in external player by default",
-                                  switchValue: _useExternalPlayer,
+                                  value: _useExternalPlayer,
                                   onChanged: (val) {
                                     setState(() {
                                       _useExternalPlayer = val;
                                     });
                                     PlayerKeys.useExternalPlayer.set<bool>(val);
                                   }),
-                              CustomTile(
-                                padding: 10,
-                                descColor:
-                                    Theme.of(context).colorScheme.primary,
-                                isDescBold: true,
-                                icon: HugeIcons.strokeRoundedPlaySquare,
-                                onTap: _showPlayerControlThemeDialog,
-                                title: 'Player Theme',
-                                description: PlayerControlThemeRegistry.resolve(
-                                  settings.playerControlTheme,
-                                ).name,
-                              ),
-                              CustomTile(
-                                padding: 10,
-                                descColor:
-                                    Theme.of(context).colorScheme.primary,
-                                isDescBold: true,
-                                icon: Icons.data_object_rounded,
-                                onTap: () => showJsonPlayerThemesSheet(
-                                    context, setState, settings),
-                                title: 'JSON Theme Manager',
-                                description:
-                                    '${PlayerControlThemeRegistry.jsonThemes.length} imported theme(s)',
-                              ),
-                              CustomTile(
-                                padding: 10,
-                                descColor:
-                                    Theme.of(context).colorScheme.primary,
-                                isDescBold: true,
-                                icon: Icons.tune_rounded,
-                                onTap: _showMediaIndicatorThemeDialog,
-                                title: 'Swipe Indicator Theme',
-                                description:
-                                    MediaIndicatorThemeRegistry.resolve(
-                                  settings.mediaIndicatorTheme,
-                                ).name,
-                              ),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile(
+                                 icon: HugeIcons.strokeRoundedPlaySquare,
+                                 onTap: _showPlayerControlThemeDialog,
+                                 title: 'Player Theme',
+                                 subtitle: PlayerControlThemeRegistry.resolve(
+                                   settings.playerControlTheme,
+                                 ).name,
+                               ),
+                               AnymeXTile(
+                                 icon: Icons.data_object_rounded,
+                                 onTap: () => showJsonPlayerThemesSheet(
+                                     context, setState, settings),
+                                 title: 'JSON Theme Manager',
+                                 subtitle:
+                                     '${PlayerControlThemeRegistry.jsonThemes.length} imported theme(s)',
+                               ),
+                               AnymeXTile(
+                                 icon: Icons.tune_rounded,
+                                 onTap: _showMediaIndicatorThemeDialog,
+                                 title: 'Swipe Indicator Theme',
+                                 subtitle:
+                                     MediaIndicatorThemeRegistry.resolve(
+                                   settings.mediaIndicatorTheme,
+                                 ).name,
+                               ),
+                               AnymeXTile.toggle(
                                   icon: Icons.stay_current_portrait,
                                   title: "Default Portrait",
-                                  description:
+                                  subtitle:
                                       "For psychopaths who like watching in portrait",
-                                  switchValue: settings.defaultPortraitMode,
+                                  value: settings.defaultPortraitMode,
                                   onChanged: (val) =>
                                       settings.defaultPortraitMode = val),
-                              CustomTile(
-                                padding: 10,
-                                isDescBold: true,
-                                icon: Icons.speed,
-                                descColor:
-                                    Theme.of(context).colorScheme.primary,
-                                onTap: _showPlaybackSpeedDialog,
-                                title: "Playback Speed",
-                                description:
-                                    '${settings.speed.toStringAsFixed(1)}x',
-                              ),
-                              CustomTile(
-                                padding: 10,
-                                icon: Icons.aspect_ratio,
-                                title: 'Resize Mode',
-                                isDescBold: true,
-                                description:
-                                    settings.resizeMode.capitalizeFirst!,
-                                descColor:
-                                    Theme.of(context).colorScheme.primary,
-                                onTap: () {
-                                  _showResizeModeDialog();
-                                },
-                              ),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile(
+                                 icon: Icons.speed,
+                                 onTap: _showPlaybackSpeedDialog,
+                                 title: "Playback Speed",
+                                 subtitle:
+                                     '${settings.speed.toStringAsFixed(1)}x',
+                               ),
+                               AnymeXTile(
+                                 icon: Icons.aspect_ratio,
+                                 title: 'Resize Mode',
+                                 subtitle:
+                                     settings.resizeMode.capitalizeFirst!,
+                                 onTap: () {
+                                   _showResizeModeDialog();
+                                 },
+                               ),
+                               AnymeXTile.toggle(
                                   icon: Icons.fast_forward,
                                   title: "Auto Skip OP",
-                                  description: "Auto skip the opening song",
-                                  switchValue: settings.autoSkipOP,
+                                  subtitle: "Auto skip the opening song",
+                                  value: settings.autoSkipOP,
                                   onChanged: (val) =>
                                       settings.autoSkipOP = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.fast_forward_outlined,
                                   title: "Auto Skip ED",
-                                  description: "Auto skip the ending song",
-                                  switchValue: settings.autoSkipED,
+                                  subtitle: "Auto skip the ending song",
+                                  value: settings.autoSkipED,
                                   onChanged: (val) =>
                                       settings.autoSkipED = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.fast_forward_outlined,
                                   title: "Auto Skip Recap",
-                                  description: "Auto skip the recap section",
-                                  switchValue: settings.autoSkipRecap,
+                                  subtitle: "Auto skip the recap section",
+                                  value: settings.autoSkipRecap,
                                   onChanged: (val) =>
                                       settings.autoSkipRecap = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.all_inclusive,
                                   title: "Auto Skip Once Only",
-                                  description: "Auto skip only once per watch",
-                                  switchValue: settings.autoSkipOnce,
+                                  subtitle: "Auto skip only once per watch",
+                                  value: settings.autoSkipOnce,
                                   onChanged: (val) =>
                                       settings.autoSkipOnce = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.skip_next_rounded,
                                   title: "Auto Skip Filler",
-                                  description:
+                                  subtitle:
                                       "Automatically skip filler episodes when going to next episode",
-                                  switchValue: settings.autoSkipFiller,
+                                  value: settings.autoSkipFiller,
                                   onChanged: (val) =>
                                       settings.autoSkipFiller = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.play_disabled_rounded,
                                   title: "Gesture for Brightness & Volume",
-                                  description:
+                                  subtitle:
                                       "Enable vertical swiping on the left/right sides of the player screen to adjust brightness and volume",
-                                  switchValue: settings.enableSwipeControls,
+                                  value: settings.enableSwipeControls,
                                   onChanged: (val) =>
                                       settings.enableSwipeControls = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.gesture_rounded,
                                   title: "Hold to Speed Up",
-                                  description:
+                                  subtitle:
                                       "Enable holding on player screen to temporarily speed up video playback",
-                                  switchValue: settings.enableHoldToSeek,
+                                  value: settings.enableHoldToSeek,
                                   onChanged: (val) =>
                                       settings.enableHoldToSeek = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.swap_horiz_rounded,
                                   title: "Swipe to Seek",
-                                  description:
+                                  subtitle:
                                       "Enable horizontal swiping on player screen to seek through video",
-                                  switchValue: settings.enableSlideToSeek,
+                                  value: settings.enableSlideToSeek,
                                   onChanged: (val) =>
                                       settings.enableSlideToSeek = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.screenshot_rounded,
                                   title: "Save Last Frame",
-                                  description:
+                                  subtitle:
                                       "Saves a screenshot of the last frame you watched. Disabling this significantly reduces storage usage",
-                                  switchValue: settings.enableScreenshot,
+                                  value: settings.enableScreenshot,
                                   onChanged: (val) =>
                                       settings.enableScreenshot = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.bluetooth_audio_rounded,
                                   title: "Media Session (Bluetooth Support)",
-                                  description:
+                                  subtitle:
                                       "Enable background media controls for Bluetooth headsets and system media notifications. Note: Enabling this will increase battery usage.",
-                                  switchValue: settings.useMediaSession,
+                                  value: settings.useMediaSession,
                                   onChanged: (val) =>
                                       settings.useMediaSession = val),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile.toggle(
                                   icon: Icons.animation_rounded,
                                   title: "Animate Control Overlay",
-                                  description:
+                                  subtitle:
                                       "Disable to show and hide player controls instantly",
-                                  switchValue: settings.playerMenuAnimation,
+                                  value: settings.playerMenuAnimation,
                                   onChanged: (val) =>
                                       settings.playerMenuAnimation = val),
-                              CustomSliderTile(
-                                sliderValue: settings.seekDuration.toDouble(),
-                                max: 50,
-                                divisions: 10,
-                                onChanged: (double value) {
-                                  setState(() {
-                                    settings.seekDuration = value.toInt();
-                                  });
-                                },
-                                label: settings.seekDuration.toString(),
-                                title: 'DoubleTap to Seek',
-                                description:
-                                    'Adjust Double Tap To Seek Duration',
-                                icon: Iconsax.forward5,
-                              ),
-                              CustomSliderTile(
-                                sliderValue: settings.skipDuration.toDouble(),
-                                max: 120,
-                                divisions: 24,
-                                label: settings.skipDuration.toString(),
-                                onChanged: (double value) {
-                                  setState(() {
-                                    settings.skipDuration = value.toInt();
-                                  });
-                                },
-                                title: 'MegaSkip Duration',
-                                description: 'Adjust MegaSkip Duration',
-                                icon: Iconsax.forward5,
-                              ),
-                              CustomSliderTile(
-                                sliderValue:
-                                    settings.markAsCompleted.toDouble(),
-                                max: 100,
-                                divisions: 20,
-                                label: settings.markAsCompleted.toString(),
-                                onChanged: (double value) {
-                                  setState(() {
-                                    settings.markAsCompleted = value.toInt();
-                                  });
-                                },
-                                title: 'Mark As Watched',
-                                description:
-                                    'How much in percentage to mark episode as watched',
-                                icon: Iconsax.tick_circle,
-                              ),
+                               AnymeXTile.slider(
+                                 value: settings.seekDuration.toDouble(),
+                                 max: 50,
+                                 min: 0,
+                                 divisions: 10,
+                                 onChanged: (double value) {
+                                   setState(() {
+                                     settings.seekDuration = value.toInt();
+                                   });
+                                 },
+                                 title: 'DoubleTap to Seek',
+                                 subtitle:
+                                     'Adjust Double Tap To Seek Duration',
+                                 icon: Iconsax.forward5,
+                               ),
+                               AnymeXTile.slider(
+                                 value: settings.skipDuration.toDouble(),
+                                 max: 120,
+                                 min: 0,
+                                 divisions: 24,
+                                 onChanged: (double value) {
+                                   setState(() {
+                                     settings.skipDuration = value.toInt();
+                                   });
+                                 },
+                                 title: 'MegaSkip Duration',
+                                 subtitle: 'Adjust MegaSkip Duration',
+                                 icon: Iconsax.forward5,
+                               ),
+                               AnymeXTile.slider(
+                                 value:
+                                     settings.markAsCompleted.toDouble(),
+                                 max: 100,
+                                 min: 0,
+                                 divisions: 20,
+                                 onChanged: (double value) {
+                                   setState(() {
+                                     settings.markAsCompleted = value.toInt();
+                                   });
+                                 },
+                                 title: 'Mark As Watched',
+                                 subtitle:
+                                     'How much in percentage to mark episode as watched',
+                                 icon: Iconsax.tick_circle,
+                               ),
                             ],
-                          )),
-                      AnymeXExpansionTile(
-                          title: 'Subtitles',
-                          content: Column(
+                          ),
+                          AnymeXSectionBuilder(
+                            title: 'Subtitles',
                             children: [
-                              CustomTile(
-                                padding: 10.0,
-                                icon: Icons.closed_caption_rounded,
-                                title: 'Preferred Subtitle Language',
-                                description: SubtitleTranslator.languages[settings.preferredSubtitleLanguage] ?? 'None (Disabled)',
-                                onTap: () => showSelectionDialog<String>(
-                                  title: "Preferred Subtitle Language",
-                                  items: ['none', ...SubtitleTranslator.languages.keys],
-                                  selectedItem: settings.playerSettings.value.preferredSubtitleLanguage.obs,
-                                  getTitle: (code) => code == 'none' ? 'None (Disabled)' : SubtitleTranslator.languages[code]!,
-                                  onItemSelected: (code) { settings.preferredSubtitleLanguage = code; setState(() {}); },
-                                ),
-                              ),
-                              CustomSwitchTile(
-                                  padding: const EdgeInsets.all(10),
+                               AnymeXTile(
+                                 icon: Icons.closed_caption_rounded,
+                                 title: 'Preferred Subtitle Language',
+                                 subtitle: SubtitleTranslator.languages[
+                                         settings.preferredSubtitleLanguage] ??
+                                     'None (Disabled)',
+                                 onTap: () => showSelectionDialog<String>(
+                                   title: "Preferred Subtitle Language",
+                                   items: [
+                                     'none',
+                                     ...SubtitleTranslator.languages.keys
+                                   ],
+                                   selectedItem: settings.playerSettings.value
+                                       .preferredSubtitleLanguage.obs,
+                                   getTitle: (code) => code == 'none'
+                                       ? 'None (Disabled)'
+                                       : SubtitleTranslator.languages[code]!,
+                                   onItemSelected: (code) {
+                                     settings.preferredSubtitleLanguage = code;
+                                     setState(() {});
+                                   },
+                                 ),
+                               ),
+                               AnymeXTile.toggle(
                                   icon: Icons.lightbulb,
                                   title: 'Transition Subtitle',
-                                  description:
+                                  subtitle:
                                       'By disabling this you can avoid the transition between subtitles.',
-                                  switchValue: settings.transitionSubtitle,
+                                  value: settings.transitionSubtitle,
                                   onChanged: (e) {
                                     settings.transitionSubtitle = e;
                                   }),
-                              CustomSwitchTile(
-                                padding: const EdgeInsets.all(10),
+                              AnymeXTile.toggle(
                                 icon: HugeIcons.strokeRoundedTranslate,
                                 title: 'Auto Translate Subtitles',
-                                description:
+                                subtitle:
                                     'Use AI to translate soft-subtitles live',
-                                switchValue:
+                                value:
                                     settings.playerSettings.value.autoTranslate,
                                 onChanged: (val) {
                                   settings.playerSettings
@@ -2243,11 +2281,10 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                               ),
                               if (!widget.isModal &&
                                   settings.playerSettings.value.autoTranslate)
-                                CustomTile(
-                                  padding: 10.0,
+                                AnymeXTile(
                                   icon: Icons.language,
                                   title: 'Translate To',
-                                  description: SubtitleTranslator.languages[
+                                  subtitle: SubtitleTranslator.languages[
                                           settings.playerSettings.value
                                               .translateTo] ??
                                       'Select Language',
@@ -2255,25 +2292,23 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                     _showTranslationLanguageDialog();
                                   },
                                 ),
-                              CustomTile(
-                                padding: 10,
+                              AnymeXTile(
                                 icon: Icons.font_download_rounded,
                                 title: 'Subtitle Font',
-                                description:
+                                subtitle:
                                     settings.playerSettings.value.subtitleFont,
                                 onTap: _showFontSelectionDialog,
                               ),
-                              CustomTile(
-                                padding: 10,
+                              AnymeXTile(
                                 icon: Icons.format_paint_rounded,
                                 title: 'Outline Type',
-                                description: normalizeSubtitleOutlineType(
+                                subtitle: normalizeSubtitleOutlineType(
                                     settings.playerSettings.value
                                         .subtitleOutlineType),
                                 onTap: _showOutlineTypeDialog,
                               ),
-                              CustomSliderTile(
-                                sliderValue: settings
+                              AnymeXTile.slider(
+                                value: settings
                                     .playerSettings.value.subtitleOpacity,
                                 min: 0.1,
                                 max: 1.0,
@@ -2285,11 +2320,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   settings.playerSettings.refresh();
                                 },
                                 title: 'Subtitle Transparency',
-                                description: 'Adjust text visibility',
+                                subtitle: 'Adjust text visibility',
                                 icon: Icons.opacity,
                               ),
-                              CustomSliderTile(
-                                sliderValue: settings
+                              AnymeXTile.slider(
+                                value: settings
                                     .playerSettings.value.subtitleBottomMargin,
                                 min: 0.0,
                                 max: 500.0,
@@ -2302,12 +2337,11 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   settings.playerSettings.refresh();
                                 },
                                 title: 'Bottom Margin',
-                                description: 'Distance from bottom of screen',
+                                subtitle: 'Distance from bottom of screen',
                                 icon: Icons.vertical_align_bottom,
                               ),
-                              CustomTile(
-                                padding: 10,
-                                description: 'Change subtitle colors',
+                              AnymeXTile(
+                                subtitle: 'Change subtitle colors',
                                 icon: Icons.palette,
                                 title: 'Subtitle Color',
                                 onTap: () {
@@ -2321,11 +2355,10 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   }, fontColorOptions);
                                 },
                               ),
-                              CustomTile(
-                                padding: 10,
+                              AnymeXTile(
                                 icon: Icons.palette,
                                 title: 'Subtitle Outline Color',
-                                description: 'Change subtitle outline color',
+                                subtitle: 'Change subtitle outline color',
                                 onTap: () {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Outline Color',
@@ -2336,9 +2369,8 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   }, colorOptions);
                                 },
                               ),
-                              CustomTile(
-                                padding: 10,
-                                description: 'Change subtitle background color',
+                              AnymeXTile(
+                                subtitle: 'Change subtitle background color',
                                 icon: Icons.palette,
                                 title: 'Subtitle Background Color',
                                 onTap: () {
@@ -2351,19 +2383,19 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   }, colorOptions);
                                 },
                               ),
-                              CustomSliderTile(
-                                sliderValue: settings.subtitleSize.toDouble(),
+                              AnymeXTile.slider(
+                                value: settings.subtitleSize.toDouble(),
                                 min: 12.0,
                                 max: 90.0,
                                 onChanged: (double value) {
                                   settings.subtitleSize = value.toInt();
                                 },
                                 title: 'Subtitle Size',
-                                description: 'Adjust Sub Size',
+                                subtitle: 'Adjust Sub Size',
                                 icon: Iconsax.subtitle5,
                               ),
-                              CustomSliderTile(
-                                sliderValue:
+                              AnymeXTile.slider(
+                                value:
                                     settings.subtitleOutlineWidth.toDouble(),
                                 min: 1.0,
                                 max: 8.0,
@@ -2372,7 +2404,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                   settings.subtitleOutlineWidth = value.toInt();
                                 },
                                 title: 'Subtitle Outline Width',
-                                description: 'Adjust Subtitle Outline Width',
+                                subtitle: 'Adjust Subtitle Outline Width',
                                 icon: Iconsax.subtitle5,
                               ),
                               const SizedBox(height: 20),
@@ -2421,97 +2453,93 @@ class _SettingsPlayerState extends State<SettingsPlayer> with TickerProviderStat
                                 ),
                               ),
                             ],
-                          )),
-                      AnymeXExpansionTile(
-                        title: 'Bottom Controls',
-                        content: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildJsonThemeInfoCard(),
-                            _buildSectionLabel('Left Side'),
-                            ReorderableListView.builder(
-                              key: const Key('left_list'),
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: _leftButtonIds.length,
-                              itemBuilder: (context, index) {
-                                final id = _leftButtonIds[index];
-                                final control = _bottomControls
-                                    .firstWhere((c) => c.id == id);
-                                return _buildControlTile(control, 'left',
-                                    key: ValueKey('left_$id'));
-                              },
-                              onReorder: (oldIndex, newIndex) {
-                                setState(() {
-                                  if (newIndex > oldIndex) {
-                                    newIndex -= 1;
-                                  }
-                                  final String item =
-                                      _leftButtonIds.removeAt(oldIndex);
-                                  _leftButtonIds.insert(newIndex, item);
-                                  _saveButtonConfig();
-                                });
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            _buildSectionLabel('Right Side'),
-                            ReorderableListView.builder(
-                              key: const Key('right_list'),
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: _rightButtonIds.length,
-                              itemBuilder: (context, index) {
-                                final id = _rightButtonIds[
-                                    _rightButtonIds.length - 1 - index];
-                                final control = _bottomControls
-                                    .firstWhere((c) => c.id == id);
-                                return _buildControlTile(control, 'right',
-                                    key: ValueKey('right_$id'));
-                              },
-                              onReorder: (oldIndex, newIndex) {
-                                setState(() {
-                                  _rightButtonIds =
-                                      _rightButtonIds.reversed.toList();
-                                  if (newIndex > oldIndex) {
-                                    newIndex -= 1;
-                                  }
-                                  final String item =
-                                      _rightButtonIds.removeAt(oldIndex);
-                                  _rightButtonIds.insert(newIndex, item);
-                                  _rightButtonIds =
-                                      _rightButtonIds.reversed.toList();
-                                  _saveButtonConfig();
-                                });
-                              },
-                            ),
-                            if (_hiddenButtonIds.isNotEmpty) ...[
-                              const SizedBox(height: 16),
-                              _buildSectionLabel('Hidden'),
-                              ListView.builder(
-                                key: const Key('hidden_list'),
+                          ),
+                          AnymeXSectionBuilder(
+                            title: 'Bottom Controls',
+                            children: [
+                              _buildJsonThemeInfoCard(),
+                              _buildSectionLabel('Left Side'),
+                              ReorderableListView.builder(
+                                key: const Key('left_list'),
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
-                                itemCount: _hiddenButtonIds.length,
+                                itemCount: _leftButtonIds.length,
                                 itemBuilder: (context, index) {
-                                  final id = _hiddenButtonIds[index];
+                                  final id = _leftButtonIds[index];
                                   final control = _bottomControls
                                       .firstWhere((c) => c.id == id);
-                                  return _buildControlTile(control, 'hidden',
-                                      key: ValueKey('hidden_$id'));
+                                  return _buildControlTile(control, 'left',
+                                      key: ValueKey('left_$id'));
+                                },
+                                onReorder: (oldIndex, newIndex) {
+                                  setState(() {
+                                    if (newIndex > oldIndex) {
+                                      newIndex -= 1;
+                                    }
+                                    final String item =
+                                        _leftButtonIds.removeAt(oldIndex);
+                                    _leftButtonIds.insert(newIndex, item);
+                                    _saveButtonConfig();
+                                  });
                                 },
                               ),
+                              const SizedBox(height: 16),
+                              _buildSectionLabel('Right Side'),
+                              ReorderableListView.builder(
+                                key: const Key('right_list'),
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: _rightButtonIds.length,
+                                itemBuilder: (context, index) {
+                                  final id = _rightButtonIds[
+                                      _rightButtonIds.length - 1 - index];
+                                  final control = _bottomControls
+                                      .firstWhere((c) => c.id == id);
+                                  return _buildControlTile(control, 'right',
+                                      key: ValueKey('right_$id'));
+                                },
+                                onReorder: (oldIndex, newIndex) {
+                                  setState(() {
+                                    _rightButtonIds =
+                                        _rightButtonIds.reversed.toList();
+                                    if (newIndex > oldIndex) {
+                                      newIndex -= 1;
+                                    }
+                                    final String item =
+                                        _rightButtonIds.removeAt(oldIndex);
+                                    _rightButtonIds.insert(newIndex, item);
+                                    _rightButtonIds =
+                                        _rightButtonIds.reversed.toList();
+                                    _saveButtonConfig();
+                                  });
+                                },
+                              ),
+                              if (_hiddenButtonIds.isNotEmpty) ...[
+                                const SizedBox(height: 16),
+                                _buildSectionLabel('Hidden'),
+                                ListView.builder(
+                                  key: const Key('hidden_list'),
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: _hiddenButtonIds.length,
+                                  itemBuilder: (context, index) {
+                                    final id = _hiddenButtonIds[index];
+                                    final control = _bottomControls
+                                        .firstWhere((c) => c.id == id);
+                                    return _buildControlTile(control, 'hidden',
+                                        key: ValueKey('hidden_$id'));
+                                  },
+                                ),
+                              ],
                             ],
-                          ],
-                        ),
-                      )
-                    ],
-                  ))
-            ],
-          ),
-        ),
-      ),
-    ])
-);
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+    );
   }
 
   Widget _buildSectionLabel(String label) {

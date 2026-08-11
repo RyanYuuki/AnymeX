@@ -1,8 +1,8 @@
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
-import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 
@@ -79,36 +79,28 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                     title: const Text('Cached Images'),
                     subtitle: Text('App posters, icons, avatars. Size: ${_service.formatBytes(imageSize)}'),
                     value: deleteImages,
-                    onChanged: (val) {
-                      setDialogState(() => deleteImages = val ?? false);
-                    },
+                    onChanged: (v) => setDialogState(() => deleteImages = v ?? true),
                   ),
                   CheckboxListTile(
                     activeColor: context.colors.primary,
                     title: const Text('Torrent Stream Cache'),
-                    subtitle: Text('Temporary torrent video data. Size: ${_service.formatBytes(torrentSize)}'),
+                    subtitle: Text('Temporary video chunks. Size: ${_service.formatBytes(torrentSize)}'),
                     value: deleteTorrents,
-                    onChanged: (val) {
-                      setDialogState(() => deleteTorrents = val ?? false);
-                    },
+                    onChanged: (v) => setDialogState(() => deleteTorrents = v ?? true),
                   ),
                   CheckboxListTile(
                     activeColor: context.colors.primary,
-                    title: const Text('Watch History Snapshots'),
-                    subtitle: Text('Screenshots of last-watched frames. Size: ${_service.formatBytes(snapshotSize)}'),
+                    title: const Text('Novel Snapshots'),
+                    subtitle: Text('Downloaded web novel pages. Size: ${_service.formatBytes(snapshotSize)}'),
                     value: deleteSnapshots,
-                    onChanged: (val) {
-                      setDialogState(() => deleteSnapshots = val ?? false);
-                    },
+                    onChanged: (v) => setDialogState(() => deleteSnapshots = v ?? false),
                   ),
                   CheckboxListTile(
                     activeColor: context.colors.primary,
                     title: const Text('Other Temporary Files'),
-                    subtitle: Text('Video buffer, updates, thumbnails. Size: ${_service.formatBytes(otherTempSize)}'),
+                    subtitle: Text('Logs, temp downloads. Size: ${_service.formatBytes(otherTempSize)}'),
                     value: deleteOther,
-                    onChanged: (val) {
-                      setDialogState(() => deleteOther = val ?? false);
-                    },
+                    onChanged: (v) => setDialogState(() => deleteOther = v ?? true),
                   ),
                 ],
               ),
@@ -189,7 +181,10 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
     setState(() => _isRunningAction = true);
     try {
       await _service.factoryResetIsar();
-      snackBar('Isar data deleted');
+      snackBar('App data has been completely reset');
+      if (mounted) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
     } catch (e) {
       snackBar('Factory reset failed: $e');
     } finally {
@@ -205,89 +200,81 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
         : (_imageCacheBytes / thresholdBytes).clamp(0.0, 1.0);
 
     return AnymeXScaffold(
-  body: Column(
-          children: [
-            const NestedHeader(title: 'Storage Manager'),
-            Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: context.colors.surfaceContainer.opaque(0.35),
-                        border: Border.all(
-                          color: context.colors.outline.opaque(0.12),
-                        ),
-                      ),
-                      child: _isLoading
-                          ? const Center(
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Temporary App Cache',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: context.colors.onSurface,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  _service.formatBytes(_imageCacheBytes),
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.colors.primary,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(6),
-                                  child: LinearProgressIndicator(
-                                    value: usageRatio,
-                                    minHeight: 8,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Threshold: ${_thresholdGb.toStringAsFixed(1)} GB',
-                                  style: TextStyle(
-                                    color: context.colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: context.colors.surfaceContainer.opaque(0.30),
-                      ),
-                      child: Column(
+      showHeader: true,
+      headerTitle: 'Storage Manager',
+      body: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXSectionBuilder(
+                        title: 'Cache Overview',
                         children: [
-                          CustomSliderTile(
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            child: _isLoading
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Temporary App Cache',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: context.colors.onSurface,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        _service.formatBytes(_imageCacheBytes),
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          color: context.colors.primary,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(6),
+                                        child: LinearProgressIndicator(
+                                          value: usageRatio,
+                                          minHeight: 8,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Threshold: ${_thresholdGb.toStringAsFixed(1)} GB',
+                                        style: TextStyle(
+                                          color: context.colors.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ],
+                      ),
+                      AnymeXSectionBuilder(
+                        title: 'Storage Options',
+                        children: [
+                          AnymeXTile.slider(
                             icon: Icons.storage_rounded,
                             title: 'Auto-clear threshold',
-                            description:
+                            subtitle:
                                 'If temporary app cache reaches this size, it will be cleared automatically.',
-                            sliderValue: _thresholdGb,
+                            value: _thresholdGb,
                             min: StorageManagerService.minThresholdGb,
                             max: StorageManagerService.maxThresholdGb,
                             divisions: 39,
-                            label: '${_thresholdGb.toStringAsFixed(1)} GB',
+                            valueTransformer: (v) =>
+                                '${v.toStringAsFixed(1)} GB',
                             onChanged: (value) {
                               setState(() => _thresholdGb = value);
-                            },
-                            onChangedEnd: (value) {
                               _service.setThresholdGb(value);
                               _service
                                   .enforceImageCacheLimit()
@@ -299,13 +286,13 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                               });
                             },
                           ),
-                          CustomTile(
+                          AnymeXTile(
                             icon: Icons.delete_sweep_rounded,
                             title: 'Clear app cache now',
-                            description:
+                            subtitle:
                                 'Delete all cached images, torrent stream chunks, and temporary files.',
                             onTap: _showClearCacheDialog,
-                            postFix: _isRunningAction
+                            trailing: _isRunningAction
                                 ? const SizedBox(
                                     width: 20,
                                     height: 20,
@@ -315,23 +302,19 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                   )
                                 : null,
                           ),
-                          CustomTile(
+                          AnymeXTile(
                             icon: Icons.warning_rounded,
                             title: 'Factory reset',
-                            description:
+                            subtitle:
                                 'Delete everything stored of AnymeX permanently.',
-                            descColor: context.colors.error,
+                            iconColor: context.colors.error,
                             onTap: _factoryResetIsar,
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        )
-);
+                    ],
+                  ),
+                )
+    );
   }
 }

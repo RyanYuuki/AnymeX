@@ -7,7 +7,7 @@ import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
@@ -200,30 +200,30 @@ void showWelcomeDialogg(BuildContext context) {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CustomTile(
+                          AnymeXTile(
                             icon: HugeIcons.strokeRoundedUserCheck01,
                             title: 'Choose Service / Tracker',
-                            description:
+                            subtitle:
                                 'Select AniList, MyAnimeList, Simkl, or Extensions mode',
                             onTap: () {
                               SettingsSheet().showServiceSelector(context);
                             },
                           ),
                           const SizedBox(height: 6),
-                          CustomTile(
+                          AnymeXTile(
                             icon: HugeIcons.strokeRoundedPuzzle,
                             title: 'Extensions & Repositories',
-                            description:
+                            subtitle:
                                 'Manage sources and repositories to use the app to its full potential',
                             onTap: () {
                               navigate(() => const ExtensionScreen());
                             },
                           ),
                           const SizedBox(height: 6),
-                          CustomTile(
+                          AnymeXTile(
                             icon: HugeIcons.strokeRoundedDiscord,
                             title: 'Join Discord Community',
-                            description:
+                            subtitle:
                                 'Propose new features, report bugs, and chat with other members',
                             onTap: () async {
                               final url = Get.find<Settings>().discordUrl.value;
@@ -232,10 +232,10 @@ void showWelcomeDialogg(BuildContext context) {
                             },
                           ),
                           const SizedBox(height: 6),
-                          CustomTile(
+                          AnymeXTile(
                             icon: HugeIcons.strokeRoundedTelegram,
                             title: 'Join Telegram Channel',
-                            description:
+                            subtitle:
                                 'Stay updated with the latest releases, announcements, and discussions',
                             onTap: () async {
                               final url = Get.find<Settings>().telegramUrl.value;
@@ -245,12 +245,12 @@ void showWelcomeDialogg(BuildContext context) {
                           ),
                           const SizedBox(height: 6),
                           if (Platform.isAndroid) ...[
-                            CustomSwitchTile(
+                            AnymeXTile.toggle(
                               icon: HugeIcons.strokeRoundedFolderSecurity,
                               title: "Storage Permission",
-                              description:
+                              subtitle:
                                   "Allow storage access to download app & extension updates",
-                              switchValue: storagePermissionGranted.value,
+                              value: storagePermissionGranted.value,
                               onChanged: (val) {
                                 if (val) {
                                   requestStoragePermission();
@@ -258,12 +258,12 @@ void showWelcomeDialogg(BuildContext context) {
                               },
                             ),
                             const SizedBox(height: 6),
-                            CustomSwitchTile(
+                            AnymeXTile.toggle(
                               icon: HugeIcons.strokeRoundedDownload01,
                               title: "Install Permission",
-                              description:
+                              subtitle:
                                   "Allow installing updates for extensions and app",
-                              switchValue: installPermissionGranted.value,
+                              value: installPermissionGranted.value,
                               onChanged: (val) {
                                 if (val) {
                                   requestInstallPermission();
@@ -271,10 +271,10 @@ void showWelcomeDialogg(BuildContext context) {
                               },
                             ),
                             const SizedBox(height: 6),
-                            CustomTile(
+                            AnymeXTile(
                               icon: Icons.link_rounded,
                               title: 'Open Supported Links',
-                              description:
+                              subtitle:
                                   'Allow AnymeX to automatically open anime & manga web links',
                               onTap: () async {
                                 bool opened = false;

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/anime/misc/list_exporter.dart';
@@ -7,6 +6,7 @@ import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 
@@ -131,183 +131,7 @@ class OtherFeaturesPage extends StatelessWidget {
   }
 }
 
-class NestedHeader extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final Widget? action;
-  final bool disablePrefix;
-
-  const NestedHeader({
-    super.key,
-    required this.title,
-    this.subtitle,
-    this.action,
-    this.disablePrefix = false,
-  });
-
-  Widget _buildFloatingBox(BuildContext context, {required Widget child}) {
-    final theme = Theme.of(context);
-    final borderRadius = BorderRadius.circular(24.multiplyRadius());
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        border: Border.all(
-          color: theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
-          width: 0.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.opaque(0.08, iReallyMeanIt: true),
-            blurRadius: 24,
-            spreadRadius: 0,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: theme.colorScheme.primary.opaque(0.04, iReallyMeanIt: true),
-            blurRadius: 16,
-            spreadRadius: 0,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainer.opaque(0.4),
-              borderRadius: borderRadius,
-            ),
-            child: child,
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isWindows = Platform.isWindows;
-    final isDesktop = MediaQuery.sizeOf(context).width > 600;
-    final canPop = !disablePrefix &&
-        (ModalRoute.of(context)?.canPop == true) &&
-        !(ModalRoute.of(context)?.isFirst ?? true);
-
-    if (isDesktop) {
-      final subtitleText = subtitle ??
-          (title == 'Extensions' ? 'Manage installed plugins & sources' : null);
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(24, 18, 24, 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildFloatingBox(
-              context,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (canPop) ...[
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: theme.colorScheme.onSurface,
-                        size: 18,
-                      ),
-                      style: IconButton.styleFrom(
-                        backgroundColor: theme.colorScheme.surfaceContainerHighest
-                            .opaque(0.3, iReallyMeanIt: true),
-                        padding: const EdgeInsets.all(10),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AnymeXText(
-                        text: title,
-                        variant: TextVariant.semiBold,
-                        size: 18,
-                      ),
-                      if (subtitleText != null)
-                        AnymeXText(
-                          text: subtitleText,
-                          variant: TextVariant.regular,
-                          size: 12,
-                          color: theme.colorScheme.onSurface.opaque(0.6),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            if (action != null)
-              _buildFloatingBox(
-                context,
-                child: action!,
-              ),
-          ],
-        ),
-      );
-    }
-
-    final topPadding = isWindows
-        ? 42.0
-        : (MediaQuery.paddingOf(context).top > 0
-            ? MediaQuery.paddingOf(context).top + 8
-            : 16.0);
-
-    return Container(
-      padding: EdgeInsets.only(top: topPadding, left: 20, right: 20, bottom: 16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface.opaque(0.4),
-        border: Border(
-          bottom: BorderSide(
-            color: theme.colorScheme.outline.opaque(0.2, iReallyMeanIt: true),
-            width: 1,
-          ),
-        ),
-      ),
-      child: Row(
-        children: [
-          if (canPop) ...[
-            IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(
-                Icons.arrow_back_ios_rounded,
-                color: theme.colorScheme.onSurface,
-              ),
-              style: IconButton.styleFrom(
-                backgroundColor: theme.colorScheme.surfaceContainerHighest
-                    .opaque(0.3, iReallyMeanIt: true),
-                padding: const EdgeInsets.all(12),
-              ),
-            ),
-            const SizedBox(width: 12),
-          ],
-          Expanded(
-            child: AnymeXText(
-              text: title,
-              variant: TextVariant.semiBold,
-              size: 22,
-              isMarquee: true,
-            ),
-          ),
-          if (action != null) ...[
-            const SizedBox(width: 12),
-            action!,
-          ],
-        ],
-      ),
-    );
-  }
-}
+typedef NestedHeader = AnymeXHeader;
 
 class _FeatureCard extends StatelessWidget {
   final IconData icon;

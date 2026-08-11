@@ -23,13 +23,12 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
-import 'package:anymex/screens/library/widgets/library_deps.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex/widgets/header/legacy_header.dart' as legacy;
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart' hide CustomSliderTile;
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/novel/search/search_page.dart';
 
@@ -737,26 +736,27 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Obx(() {
-          return CustomSliderTile(
+          return AnymeXTile.slider(
             icon: Icons.grid_view_rounded,
             title: 'Grid Size',
-            description: 'Adjust Items per row',
-            sliderValue: widget.controller.gridCount.value.toDouble(),
+            subtitle: 'Adjust Items per row',
+            value: widget.controller.gridCount.value.toDouble(),
+            min: 0.0,
+            max: 10.0,
             onChanged: (e) {
               widget.controller.gridCount.value = e.toInt();
               widget.controller.savePreferences();
             },
-            max: 10,
           );
         }),
         const SizedBox(height: 12),
         Obx(() {
-          return CustomSwitchTile(
+          return AnymeXTile.toggle(
             icon: Icons.translate_rounded,
             title: 'Use Alternate Title',
-            description:
+            subtitle:
                 'Switch between default title and romaji/alternate title across library & cards',
-            switchValue: settings.useAlternateTitle.value,
+            value: settings.useAlternateTitle.value,
             onChanged: (e) {
               settings.useAlternateTitle.value = e;
               General.useAlternateTitle.set(e);

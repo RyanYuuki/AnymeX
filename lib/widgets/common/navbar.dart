@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +56,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
     super.initState();
     _previousIndex = widget.currentIndex;
     _indicatorController = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 320),
       vsync: this,
     );
     _indicatorPosition = Tween<double>(
@@ -99,19 +98,20 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
 
     final borderRadius = widget.borderRadius ??
         BorderRadius.circular(
-          widget.isDesktop ? 24.multiplyRadius() : 28.multiplyRadius(),
+          widget.isDesktop ? 30.multiplyRadius() : 36.multiplyRadius(),
         );
 
-    final bottomPadding = widget.isDesktop ? 0.0 : MediaQuery.paddingOf(context).bottom;
+    final bottomPadding =
+        widget.isDesktop ? 0.0 : MediaQuery.paddingOf(context).bottom;
     final finalMargin = widget.margin != null
         ? widget.margin!.copyWith(
             bottom: widget.margin!.bottom + bottomPadding,
           )
         : EdgeInsets.only(
-            left: widget.isDesktop ? 5 : 40,
-            right: widget.isDesktop ? 5 : 40,
-            top: widget.isDesktop ? 0 : 20,
-            bottom: (widget.isDesktop ? 0 : 20) + bottomPadding,
+            left: widget.isDesktop ? 8 : 20,
+            right: widget.isDesktop ? 8 : 20,
+            top: widget.isDesktop ? 0 : 12,
+            bottom: (widget.isDesktop ? 0 : 12) + bottomPadding,
           );
 
     return AnimatedContainer(
@@ -121,21 +121,15 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         border: Border.all(
-          color: theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
-          width: 0.5,
+          color: theme.colorScheme.onSurface.opaque(0.12, iReallyMeanIt: true),
+          width: 0.8,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.opaque(0.08, iReallyMeanIt: true),
+            color: Colors.black.opaque(0.12, iReallyMeanIt: true),
             blurRadius: 24,
             spreadRadius: 0,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: theme.colorScheme.primary.opaque(0.04, iReallyMeanIt: true),
-            blurRadius: 40,
-            spreadRadius: -8,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -145,14 +139,14 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
           final isTranslucent = translucent.value;
           return BackdropFilter(
             filter: isTranslucent
-                ? ImageFilter.blur(sigmaX: 10, sigmaY: 10)
+                ? ImageFilter.blur(sigmaX: 25, sigmaY: 25)
                 : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
             child: Container(
               decoration: BoxDecoration(
                 color: isTranslucent
-                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.45)
+                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
                     : theme.colorScheme.surfaceContainer
-                        .withValues(alpha: 0.92),
+                        .withValues(alpha: 0.95),
                 borderRadius: borderRadius,
               ),
               child: widget.isDesktop
@@ -168,7 +162,7 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
   Widget _buildMobileLayout(ThemeData theme) {
     final itemCount = widget.items.length;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       child: SizedBox(
         height: 58,
         child: LayoutBuilder(
@@ -183,25 +177,22 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
                   builder: (context, _) {
                     final pos = _indicatorPosition.value;
                     return Positioned(
-                      left: pos * itemWidth + 4,
+                      left: pos * itemWidth + 3,
                       top: 3,
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
-                        width: itemWidth - 8,
+                        width: itemWidth - 6,
                         height: 52,
                         decoration: BoxDecoration(
                           borderRadius:
-                              BorderRadius.circular(22.multiplyRadius()),
+                              BorderRadius.circular(28.multiplyRadius()),
                           color: theme.colorScheme.primary
-                              .opaque(0.12, iReallyMeanIt: true),
+                              .opaque(0.14, iReallyMeanIt: true),
                           border: Border.all(
                             color: theme.colorScheme.primary
-                                .opaque(0.15, iReallyMeanIt: true),
-                            width: 0.5,
+                                .opaque(0.2, iReallyMeanIt: true),
+                            width: 0.6,
                           ),
-                          boxShadow: [
-                            glowingShadow(context),
-                          ],
                         ),
                       ),
                     );
@@ -255,17 +246,14 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
                     duration: const Duration(milliseconds: 200),
                     height: itemHeight - 4,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18.multiplyRadius()),
+                      borderRadius: BorderRadius.circular(22.multiplyRadius()),
                       color: theme.colorScheme.primary
-                          .opaque(0.12, iReallyMeanIt: true),
+                          .opaque(0.14, iReallyMeanIt: true),
                       border: Border.all(
                         color: theme.colorScheme.primary
-                            .opaque(0.15, iReallyMeanIt: true),
-                        width: 0.5,
+                            .opaque(0.2, iReallyMeanIt: true),
+                        width: 0.6,
                       ),
-                      boxShadow: [
-                        lightGlowingShadow(context),
-                      ],
                     ),
                   ),
                 );
@@ -279,58 +267,11 @@ class _ResponsiveNavBarState extends State<ResponsiveNavBar>
                 return Padding(
                   padding:
                       EdgeInsets.only(bottom: index < itemCount - 1 ? gap : 0),
-                  child: AnymexOnTap(
-                    margin: 0,
-                    scale: 1,
-                    onTap: () => item.onTap(index),
-                    child: SizedBox(
-                      height: itemHeight,
-                      width: double.infinity,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeOutCubic,
-                            width: 3,
-                            height: isSelected ? 24 : 0,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? theme.colorScheme.primary
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(1.5),
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: theme.colorScheme.primary
-                                            .opaque(0.5, iReallyMeanIt: true),
-                                        blurRadius: 8,
-                                        spreadRadius: 0,
-                                      ),
-                                    ]
-                                  : [],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          item.altIcon ??
-                              AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 250),
-                                child: Icon(
-                                  isSelected
-                                      ? item.selectedIcon
-                                      : item.unselectedIcon,
-                                  key: ValueKey(isSelected),
-                                  color: isSelected
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurface
-                                          .opaque(0.5, iReallyMeanIt: true),
-                                  size: item.iconSize ?? 22,
-                                ),
-                              ),
-                          const SizedBox(width: 8),
-                        ],
-                      ),
-                    ),
+                  child: _DesktopNavItem(
+                    item: item,
+                    isSelected: isSelected,
+                    theme: theme,
+                    index: index,
                   ),
                 );
               }),
@@ -362,7 +303,7 @@ class _MobileNavItem extends StatelessWidget {
         children: [
           item.altIcon ??
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
+                duration: const Duration(milliseconds: 220),
                 switchInCurve: Curves.easeOutCubic,
                 switchOutCurve: Curves.easeInCubic,
                 child: Icon(
@@ -375,9 +316,9 @@ class _MobileNavItem extends StatelessWidget {
                   size: item.iconSize ?? 22,
                 ),
               ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 3),
           AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 220),
             style: TextStyle(
               fontSize: isSelected ? 10.5 : 10,
               fontFamily: isSelected ? 'Poppins-SemiBold' : 'Poppins',
@@ -395,7 +336,8 @@ class _MobileNavItem extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 size: isSelected ? 10.5 : 10,
-                variant: isSelected ? TextVariant.semiBold : TextVariant.regular,
+                variant:
+                    isSelected ? TextVariant.semiBold : TextVariant.regular,
                 color: isSelected
                     ? theme.colorScheme.primary
                     : theme.colorScheme.onSurface
@@ -404,6 +346,92 @@ class _MobileNavItem extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DesktopNavItem extends StatefulWidget {
+  final NavItem item;
+  final bool isSelected;
+  final ThemeData theme;
+  final int index;
+
+  const _DesktopNavItem({
+    required this.item,
+    required this.isSelected,
+    required this.theme,
+    required this.index,
+  });
+
+  @override
+  State<_DesktopNavItem> createState() => _DesktopNavItemState();
+}
+
+class _DesktopNavItemState extends State<_DesktopNavItem> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = widget.isSelected;
+    final theme = widget.theme;
+    final item = widget.item;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: AnymexOnTap(
+        margin: 0,
+        scale: 0.97,
+        onTap: () => item.onTap(widget.index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          height: 56,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            color: _isHovered && !isSelected
+                ? theme.colorScheme.onSurface.opaque(0.06, iReallyMeanIt: true)
+                : Colors.transparent,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOutCubic,
+                width: 3,
+                height: isSelected ? 24 : 0,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(1.5),
+                ),
+              ),
+              const SizedBox(width: 8),
+              item.altIcon ??
+                  AnimatedScale(
+                    scale: _isHovered || isSelected ? 1.08 : 1.0,
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOutCubic,
+                    child: Icon(
+                      isSelected ? item.selectedIcon : item.unselectedIcon,
+                      key: ValueKey(isSelected),
+                      color: isSelected
+                          ? theme.colorScheme.primary
+                          : _isHovered
+                              ? theme.colorScheme.onSurface
+                                  .opaque(0.85, iReallyMeanIt: true)
+                              : theme.colorScheme.onSurface
+                                  .opaque(0.5, iReallyMeanIt: true),
+                      size: item.iconSize ?? 22,
+                    ),
+                  ),
+              const SizedBox(width: 8),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -442,10 +470,10 @@ class _NavBarItemState extends State<NavBarItem>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 250),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.9, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
     );
     if (widget.isSelected) {
@@ -483,25 +511,15 @@ class _NavBarItemState extends State<NavBarItem>
           mainAxisSize: MainAxisSize.min,
           children: [
             AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 250),
               curve: Curves.easeOutCubic,
               width: 3,
-              height: widget.isSelected ? 28 : 0,
+              height: widget.isSelected ? 26 : 0,
               decoration: BoxDecoration(
                 color: widget.isSelected
                     ? theme.colorScheme.primary
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(1.5),
-                boxShadow: widget.isSelected
-                    ? [
-                        BoxShadow(
-                          color: theme.colorScheme.primary
-                              .opaque(0.5, iReallyMeanIt: true),
-                          blurRadius: 8,
-                          spreadRadius: 0,
-                        ),
-                      ]
-                    : [],
               ),
             ),
             AnymexOnTap(
@@ -509,7 +527,7 @@ class _NavBarItemState extends State<NavBarItem>
               scale: 1,
               onTap: widget.onTap,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 250),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: widget.isSelected
@@ -517,8 +535,6 @@ class _NavBarItemState extends State<NavBarItem>
                           .opaque(0.1, iReallyMeanIt: true)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(14),
-                  boxShadow:
-                      widget.isSelected ? [lightGlowingShadow(context)] : [],
                 ),
                 child: widget.altIcon ??
                     ScaleTransition(
@@ -546,7 +562,7 @@ class _NavBarItemState extends State<NavBarItem>
           onTap: widget.onTap,
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 250),
             curve: Curves.easeOutCubic,
             width: widget.isSelected ? 72.0 : 50.0,
             height: 46.0,
@@ -555,7 +571,6 @@ class _NavBarItemState extends State<NavBarItem>
                   ? theme.colorScheme.primary.opaque(0.1, iReallyMeanIt: true)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(22),
-              boxShadow: widget.isSelected ? [glowingShadow(context)] : [],
             ),
             child: Center(
               child: widget.altIcon ??

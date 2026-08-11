@@ -3,6 +3,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,17 @@ class AnymeXScaffold extends StatelessWidget {
   final bool disabled;
   final bool isTabScreen;
 
+  final bool showHeader;
+  final String? headerTitle;
+  final String? headerSubtitle;
+  final Widget? headerAction;
+  final bool headerEnableSearch;
+  final TextEditingController? headerSearchController;
+  final ValueChanged<String>? onHeaderSearchChanged;
+  final ValueChanged<String>? onHeaderSearchSubmitted;
+  final VoidCallback? onHeaderSearchClear;
+  final String headerSearchHint;
+
   const AnymeXScaffold({
     super.key,
     this.body,
@@ -80,6 +92,16 @@ class AnymeXScaffold extends StatelessWidget {
     this.color = '',
     this.disabled = false,
     this.isTabScreen = false,
+    this.showHeader = false,
+    this.headerTitle,
+    this.headerSubtitle,
+    this.headerAction,
+    this.headerEnableSearch = false,
+    this.headerSearchController,
+    this.onHeaderSearchChanged,
+    this.onHeaderSearchSubmitted,
+    this.onHeaderSearchClear,
+    this.headerSearchHint = 'Search...',
   });
 
   static final Map<String, ColorScheme> _colorSchemeCache = {};
@@ -118,9 +140,24 @@ class AnymeXScaffold extends StatelessWidget {
     final isDesktop = Platform.isWindows;
     final isOled = Provider.of<ThemeProvider>(context).isOled;
 
+    final resolvedBody = showHeader
+        ? _HeaderBodyShell(
+            title: headerTitle ?? '',
+            subtitle: headerSubtitle,
+            action: headerAction,
+            enableSearch: headerEnableSearch,
+            searchController: headerSearchController,
+            onSearchChanged: onHeaderSearchChanged,
+            onSearchSubmitted: onHeaderSearchSubmitted,
+            onSearchClear: onHeaderSearchClear,
+            searchHint: headerSearchHint,
+            child: body ?? const SizedBox.shrink(),
+          )
+        : body;
+
     final scaffold = Scaffold(
       appBar: appBar,
-      body: body,
+      body: resolvedBody,
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
       floatingActionButtonAnimator: floatingActionButtonAnimator,
@@ -475,4 +512,67 @@ Shimmer placeHolderWidget(BuildContext context) {
       color: context.colors.secondaryContainer,
     ),
   );
+}
+
+class _HeaderBodyShell extends StatefulWidget {
+  final String title;
+  final String? subtitle;
+  final Widget? action;
+  final bool enableSearch;
+  final TextEditingController? searchController;
+  final ValueChanged<String>? onSearchChanged;
+  final ValueChanged<String>? onSearchSubmitted;
+  final VoidCallback? onSearchClear;
+  final String searchHint;
+  final Widget child;
+
+  const _HeaderBodyShell({
+    required this.title,
+    this.subtitle,
+    this.action,
+    this.enableSearch = false,
+    this.searchController,
+    this.onSearchChanged,
+    this.onSearchSubmitted,
+    this.onSearchClear,
+    this.searchHint = 'Search...',
+    required this.child,
+  });
+
+  @override
+  State<_HeaderBodyShell> createState() => _HeaderBodyShellState();
+}
+
+class _HeaderBodyShellState extends State<_HeaderBodyShell> {
+  final _headerKey = GlobalKey<AnymeXHeaderState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (n) {
+          _headerKey.currentState?.onScrollNotification(n);
+          return false;
+        },
+        child: Column(
+          children: [
+            AnymeXHeader(
+              key: _headerKey,
+              title: widget.title,
+              subtitle: widget.subtitle,
+              action: widget.action,
+              enableSearch: widget.enableSearch,
+              searchController: widget.searchController,
+              onSearchChanged: widget.onSearchChanged,
+              onSearchSubmitted: widget.onSearchSubmitted,
+              onSearchClear: widget.onSearchClear,
+              searchHint: widget.searchHint,
+            ),
+            Expanded(child: widget.child),
+          ],
+        ),
+      ),
+    );
+  }
 }

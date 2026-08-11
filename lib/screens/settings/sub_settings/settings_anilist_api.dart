@@ -1,14 +1,13 @@
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Anilist/anilist_user_settings.dart';
-import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/markdown.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_icon_wrapper.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -539,136 +538,206 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     inputController.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
-  body: Column(children: [
-          const NestedHeader(title: 'Anilist Settings'),
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : _error != null && _settings == null
-                    ? _buildError()
-                    : ScrollWrapper(
-                        comfortPadding: false,
-                        customPadding: const EdgeInsets.fromLTRB(12, 16, 12, 28),
-                        children: [
-                          if (_error != null) _buildInlineError(),
-                          _buildGeneralSection(),
-                          _buildListSection(),
-                          _buildOtherSection(),
-                          _buildSaveButton(),
-                        ],
-                      ),
-          ),
-        ])
-);
+      showHeader: true,
+      headerTitle: 'Anilist Settings',
+      body: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : _error != null && _settings == null
+                        ? _buildError()
+                        : ScrollWrapper(
+                            comfortPadding: false,
+                            customPadding:
+                                const EdgeInsets.fromLTRB(16, 75, 16, 28),
+                            children: [
+                              if (_error != null) _buildInlineError(),
+                              _buildGeneralSection(),
+                              _buildListSection(),
+                              _buildOtherSection(),
+                              _buildSaveButton(),
+                            ],
+                          )
+    );
   }
-
-  // Sections
 
   Widget _buildGeneralSection() {
     final s = _settings!;
     final titleValues = _titleLanguageValues.contains(s.titleLanguage)
-        ? _titleLanguageValues : <String>[..._titleLanguageValues, s.titleLanguage];
+        ? _titleLanguageValues
+        : <String>[..._titleLanguageValues, s.titleLanguage];
     final staffValues = _staffNameLanguageValues.contains(s.staffNameLanguage)
-        ? _staffNameLanguageValues : <String>[..._staffNameLanguageValues, s.staffNameLanguage];
+        ? _staffNameLanguageValues
+        : <String>[..._staffNameLanguageValues, s.staffNameLanguage];
     final mergeValues = <int>[..._activityMergeTimeValues];
-    if (!mergeValues.contains(s.activityMergeTime)) mergeValues.add(s.activityMergeTime);
+    if (!mergeValues.contains(s.activityMergeTime)) {
+      mergeValues.add(s.activityMergeTime);
+    }
     mergeValues.sort();
 
-    return AnymeXExpansionTile(
+    return AnymeXSectionBuilder(
       title: 'Anime & Manga',
-      initialExpanded: true,
-      content: Column(children: [
-        CustomTile(icon: Icons.title_rounded, title: 'Title Language',
-          description: _titleLanguageLabel(s.titleLanguage), isDescBold: true,
-          onTap: () => _showOptionPicker<String>(title: 'Title Language', items: titleValues,
-            value: s.titleLanguage, itemLabel: _titleLanguageLabel,
-            onChanged: (v) => _update((s) => s.titleLanguage = v))),
-        CustomTile(icon: Icons.record_voice_over_rounded, title: 'Staff & Character Name Language',
-          description: _staffNameLanguageLabel(s.staffNameLanguage), isDescBold: true,
-          onTap: () => _showOptionPicker<String>(title: 'Staff & Character Name Language', items: staffValues,
-            value: s.staffNameLanguage, itemLabel: _staffNameLanguageLabel,
-            onChanged: (v) => _update((s) => s.staffNameLanguage = v))),
-        CustomTile(icon: Icons.schedule_rounded, title: 'Activity Merge Time',
-          description: _activityMergeLabel(s.activityMergeTime), isDescBold: true,
-          onTap: () => _showOptionPicker<int>(title: 'Activity Merge Time', items: mergeValues,
-            value: s.activityMergeTime, itemLabel: _activityMergeLabel,
-            onChanged: (v) => _update((s) => s.activityMergeTime = v))),
-        CustomSwitchTile(icon: Icons.notifications_active_rounded, title: 'Airing Anime Notifications',
-          description: 'Enable notifications for upcoming airing episodes.',
-          switchValue: s.airingNotifications,
-          onChanged: (v) => _update((s) => s.airingNotifications = v)),
-        CustomSwitchTile(icon: Icons.warning_amber_rounded, title: '18+ Content',
-          description: 'Enable NSFW/adult entries in AniList content.',
-          switchValue: s.displayAdultContent,
-          onChanged: (v) => _update((s) => s.displayAdultContent = v)),
-      ]),
+      children: [
+        AnymeXTile(
+            icon: Icons.title_rounded,
+            title: 'Title Language',
+            subtitle: _titleLanguageLabel(s.titleLanguage),
+            onTap: () => _showOptionPicker<String>(
+                title: 'Title Language',
+                items: titleValues,
+                value: s.titleLanguage,
+                itemLabel: _titleLanguageLabel,
+                onChanged: (v) => _update((s) => s.titleLanguage = v))),
+        AnymeXTile(
+            icon: Icons.record_voice_over_rounded,
+            title: 'Staff & Character Name Language',
+            subtitle: _staffNameLanguageLabel(s.staffNameLanguage),
+            onTap: () => _showOptionPicker<String>(
+                title: 'Staff & Character Name Language',
+                items: staffValues,
+                value: s.staffNameLanguage,
+                itemLabel: _staffNameLanguageLabel,
+                onChanged: (v) => _update((s) => s.staffNameLanguage = v))),
+        AnymeXTile(
+            icon: Icons.schedule_rounded,
+            title: 'Activity Merge Time',
+            subtitle: _activityMergeLabel(s.activityMergeTime),
+            onTap: () => _showOptionPicker<int>(
+                title: 'Activity Merge Time',
+                items: mergeValues,
+                value: s.activityMergeTime,
+                itemLabel: _activityMergeLabel,
+                onChanged: (v) => _update((s) => s.activityMergeTime = v))),
+        AnymeXTile.toggle(
+            icon: Icons.notifications_active_rounded,
+            title: 'Airing Anime Notifications',
+            subtitle: 'Enable notifications for upcoming airing episodes.',
+            value: s.airingNotifications,
+            onChanged: (v) => _update((s) => s.airingNotifications = v)),
+        AnymeXTile.toggle(
+            icon: Icons.warning_amber_rounded,
+            title: '18+ Content',
+            subtitle: 'Enable NSFW/adult entries in AniList content.',
+            value: s.displayAdultContent,
+            onChanged: (v) => _update((s) => s.displayAdultContent = v)),
+      ],
     );
   }
 
   Widget _buildListSection() {
     final s = _settings!;
     final scoreValues = _scoreFormatValues.contains(s.scoreFormat)
-        ? _scoreFormatValues : <String>[..._scoreFormatValues, s.scoreFormat];
+        ? _scoreFormatValues
+        : <String>[..._scoreFormatValues, s.scoreFormat];
     final rowValues = _rowOrderValues.contains(s.rowOrder)
-        ? _rowOrderValues : <String>[..._rowOrderValues, s.rowOrder];
-    final animeSections = _sectionOrderOptions(base: _animeBaseSectionOrder,
-      splitCompletedSections: _animeCompletedSplitSections, splitCompleted: s.splitCompletedAnime);
-    final mangaSections = _sectionOrderOptions(base: _mangaBaseSectionOrder,
-      splitCompletedSections: _mangaCompletedSplitSections, splitCompleted: s.splitCompletedManga);
+        ? _rowOrderValues
+        : <String>[..._rowOrderValues, s.rowOrder];
+    final animeSections = _sectionOrderOptions(
+        base: _animeBaseSectionOrder,
+        splitCompletedSections: _animeCompletedSplitSections,
+        splitCompleted: s.splitCompletedAnime);
+    final mangaSections = _sectionOrderOptions(
+        base: _mangaBaseSectionOrder,
+        splitCompletedSections: _mangaCompletedSplitSections,
+        splitCompleted: s.splitCompletedManga);
 
-    return AnymeXExpansionTile(
+    return AnymeXSectionBuilder(
       title: 'List Options',
-      initialExpanded: true,
-      content: Column(children: [
-        CustomTile(icon: Icons.scoreboard_rounded, title: 'Scoring System',
-          description: _scoreFormatLabel(s.scoreFormat), isDescBold: true,
-          onTap: () => _showOptionPicker<String>(title: 'Scoring System', items: scoreValues,
-            value: s.scoreFormat, itemLabel: _scoreFormatLabel,
-            onChanged: (v) => _update((s) => s.scoreFormat = v))),
-        CustomTile(icon: Icons.sort_rounded, title: 'Default List Order',
-          description: _rowOrderLabel(s.rowOrder), isDescBold: true,
-          onTap: () => _showOptionPicker<String>(title: 'Default List Order', items: rowValues,
-            value: s.rowOrder, itemLabel: _rowOrderLabel,
-            onChanged: (v) => _update((s) => s.rowOrder = v))),
-        CustomSwitchTile(icon: Icons.view_stream_rounded, title: 'Split Completed Anime List',
-          description: 'Separate completed anime list into sections by format.',
-          switchValue: s.splitCompletedAnime,
-          onChanged: (v) => _update((s) {
-            s.splitCompletedAnime = v;
-            s.animeSectionOrder = _normalizeSectionOrder(s.animeSectionOrder,
-              _sectionOrderOptions(base: _animeBaseSectionOrder,
-                splitCompletedSections: _animeCompletedSplitSections, splitCompleted: v));
-          })),
-        CustomSwitchTile(icon: Icons.view_stream_rounded, title: 'Split Completed Manga List',
-          description: 'Separate completed manga list into sections by format.',
-          switchValue: s.splitCompletedManga,
-          onChanged: (v) => _update((s) {
-            s.splitCompletedManga = v;
-            s.mangaSectionOrder = _normalizeSectionOrder(s.mangaSectionOrder,
-              _sectionOrderOptions(base: _mangaBaseSectionOrder,
-                splitCompletedSections: _mangaCompletedSplitSections, splitCompleted: v));
-          })),
-        CustomTile(icon: Icons.list_alt_rounded, title: 'Anime Custom Lists',
-          description: s.animeCustomLists.isEmpty ? 'No lists added' : s.animeCustomLists.join(', '),
-          onTap: () => _editCustomLists(title: 'Anime Custom Lists', current: s.animeCustomLists,
-            onApply: (v) => _update((s) => s.animeCustomLists = v))),
-        CustomTile(icon: Icons.menu_book_rounded, title: 'Manga Custom Lists',
-          description: s.mangaCustomLists.isEmpty ? 'No lists added' : s.mangaCustomLists.join(', '),
-          onTap: () => _editCustomLists(title: 'Manga Custom Lists', current: s.mangaCustomLists,
-            onApply: (v) => _update((s) => s.mangaCustomLists = v))),
-        CustomTile(icon: Icons.reorder_rounded, title: 'Anime Section Order',
-          description: 'Drag to reorder · ${_normalizeSectionOrder(s.animeSectionOrder, animeSections).length} items',
-          onTap: () => _editSectionOrder(title: 'Anime', current: s.animeSectionOrder,
-            allowedValues: animeSections, onApply: (v) => _update((s) => s.animeSectionOrder = v))),
-        CustomTile(icon: Icons.reorder_rounded, title: 'Manga Section Order',
-          description: 'Drag to reorder · ${_normalizeSectionOrder(s.mangaSectionOrder, mangaSections).length} items',
-          onTap: () => _editSectionOrder(title: 'Manga', current: s.mangaSectionOrder,
-            allowedValues: mangaSections, onApply: (v) => _update((s) => s.mangaSectionOrder = v))),
-      ]),
+      children: [
+        AnymeXTile(
+            icon: Icons.scoreboard_rounded,
+            title: 'Scoring System',
+            subtitle: _scoreFormatLabel(s.scoreFormat),
+            onTap: () => _showOptionPicker<String>(
+                title: 'Scoring System',
+                items: scoreValues,
+                value: s.scoreFormat,
+                itemLabel: _scoreFormatLabel,
+                onChanged: (v) => _update((s) => s.scoreFormat = v))),
+        AnymeXTile(
+            icon: Icons.sort_rounded,
+            title: 'Default List Order',
+            subtitle: _rowOrderLabel(s.rowOrder),
+            onTap: () => _showOptionPicker<String>(
+                title: 'Default List Order',
+                items: rowValues,
+                value: s.rowOrder,
+                itemLabel: _rowOrderLabel,
+                onChanged: (v) => _update((s) => s.rowOrder = v))),
+        AnymeXTile.toggle(
+            icon: Icons.view_stream_rounded,
+            title: 'Split Completed Anime List',
+            subtitle:
+                'Separate completed anime list into sections by format.',
+            value: s.splitCompletedAnime,
+            onChanged: (v) => _update((s) {
+                  s.splitCompletedAnime = v;
+                  s.animeSectionOrder = _normalizeSectionOrder(
+                      s.animeSectionOrder,
+                      _sectionOrderOptions(
+                          base: _animeBaseSectionOrder,
+                          splitCompletedSections:
+                              _animeCompletedSplitSections,
+                          splitCompleted: v));
+                })),
+        AnymeXTile.toggle(
+            icon: Icons.view_stream_rounded,
+            title: 'Split Completed Manga List',
+            subtitle:
+                'Separate completed manga list into sections by format.',
+            value: s.splitCompletedManga,
+            onChanged: (v) => _update((s) {
+                  s.splitCompletedManga = v;
+                  s.mangaSectionOrder = _normalizeSectionOrder(
+                      s.mangaSectionOrder,
+                      _sectionOrderOptions(
+                          base: _mangaBaseSectionOrder,
+                          splitCompletedSections:
+                              _mangaCompletedSplitSections,
+                          splitCompleted: v));
+                })),
+        AnymeXTile(
+            icon: Icons.list_alt_rounded,
+            title: 'Anime Custom Lists',
+            subtitle: s.animeCustomLists.isEmpty
+                ? 'No lists added'
+                : s.animeCustomLists.join(', '),
+            onTap: () => _editCustomLists(
+                title: 'Anime Custom Lists',
+                current: s.animeCustomLists,
+                onApply: (v) => _update((s) => s.animeCustomLists = v))),
+        AnymeXTile(
+            icon: Icons.menu_book_rounded,
+            title: 'Manga Custom Lists',
+            subtitle: s.mangaCustomLists.isEmpty
+                ? 'No lists added'
+                : s.mangaCustomLists.join(', '),
+            onTap: () => _editCustomLists(
+                title: 'Manga Custom Lists',
+                current: s.mangaCustomLists,
+                onApply: (v) => _update((s) => s.mangaCustomLists = v))),
+        AnymeXTile(
+            icon: Icons.reorder_rounded,
+            title: 'Anime Section Order',
+            subtitle:
+                'Drag to reorder · ${_normalizeSectionOrder(s.animeSectionOrder, animeSections).length} items',
+            onTap: () => _editSectionOrder(
+                title: 'Anime',
+                current: s.animeSectionOrder,
+                allowedValues: animeSections,
+                onApply: (v) => _update((s) => s.animeSectionOrder = v))),
+        AnymeXTile(
+            icon: Icons.reorder_rounded,
+            title: 'Manga Section Order',
+            subtitle:
+                'Drag to reorder · ${_normalizeSectionOrder(s.mangaSectionOrder, mangaSections).length} items',
+            onTap: () => _editSectionOrder(
+                title: 'Manga',
+                current: s.mangaSectionOrder,
+                allowedValues: mangaSections,
+                onApply: (v) => _update((s) => s.mangaSectionOrder = v))),
+      ],
     );
   }
 
@@ -678,22 +747,21 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     final tzValue = _normalizeTimezoneValue(s.timezone);
     if (!tzValues.contains(tzValue)) tzValues.add(tzValue);
 
-    return AnymeXExpansionTile(
+    return AnymeXSectionBuilder(
       title: 'Other',
-      initialExpanded: false,
-      content: Column(children: [
-        CustomSwitchTile(icon: Icons.lock_rounded, title: 'Restrict Messages To Following',
-          description: 'Allow only users I follow to message me.',
-          switchValue: s.restrictMessagesToFollowing,
+      children: [
+        AnymeXTile.toggle(icon: Icons.lock_rounded, title: 'Restrict Messages To Following',
+          subtitle: 'Allow only users I follow to message me.',
+          value: s.restrictMessagesToFollowing,
           onChanged: (v) => _update((s) => s.restrictMessagesToFollowing = v)),
-        CustomTile(icon: Icons.public_rounded, title: 'Select Timezone',
-          description: _timezoneLabel(tzValue), isDescBold: true,
+        AnymeXTile(icon: Icons.public_rounded, title: 'Select Timezone',
+          subtitle: _timezoneLabel(tzValue),
           onTap: () => _showOptionPicker<String>(title: 'Select Timezone', items: tzValues,
             value: tzValue, itemLabel: _timezoneLabel,
             onChanged: (v) => _update((s) => s.timezone = v))),
 
         _buildAboutEditor(),
-      ]),
+      ],
     );
   }
 
@@ -809,8 +877,6 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
       ]),
     );
   }
-
-  
 
   Widget _buildSaveButton() => Padding(
     padding: const EdgeInsets.only(top: 18),

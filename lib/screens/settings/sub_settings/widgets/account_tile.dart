@@ -2,8 +2,8 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_icon_wrapper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -36,100 +36,40 @@ class ProfileTile extends StatelessWidget {
       );
 
       if (isPrimary && isLoggedIn) {
-        return AnymeXExpansionTile(
-            title: 'Primary',
-            initialExpanded: true,
-            content: Column(
-              children: [
-                Center(
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                            strokeAlign: BorderSide.strokeAlignOutside,
-                            width: 3,
-                            color: colorScheme.primary)),
-                    clipBehavior: Clip.antiAlias,
-                    child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: AnymeXImage(
-                          imageUrl: userData!.avatar!,
-                          fit: BoxFit.cover,
-                          radius: 0,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                10.height(),
-                AnymeXText(
-                  text: userData.name!,
-                  variant: TextVariant.semiBold,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        colorScheme.secondaryContainer.opaque(0.6),
-                        colorScheme.surfaceContainerHighest.opaque(0.5)
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.shadow.opaque(0.1),
-                        blurRadius: 8,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.all(20),
-                  margin: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      AnymeXIconWrapper(
-                        child: CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: 16,
-                            child: fallback),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: AnymeXText(
-                          text: 'Connected to $title',
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          service.logout();
-                        },
-                        child: const AnymeXIconWrapper(
-                          child: CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            radius: 16,
-                            child: Icon(
-                              IconlyLight.logout,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ));
-      }
-
-      return AnymeXExpansionTile(
-        content: Column(
+        return AnymeXSectionBuilder(
+          title: 'Primary Account ($title)',
           children: [
+            Center(
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    border: Border.all(
+                        strokeAlign: BorderSide.strokeAlignOutside,
+                        width: 3,
+                        color: colorScheme.primary)),
+                clipBehavior: Clip.antiAlias,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: AnymeXImage(
+                      imageUrl: userData!.avatar!,
+                      fit: BoxFit.cover,
+                      radius: 0,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            10.height(),
+            Center(
+              child: AnymeXText(
+                text: userData.name!,
+                variant: TextVariant.semiBold,
+              ),
+            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -150,72 +90,32 @@ class ProfileTile extends StatelessWidget {
                 ],
               ),
               padding: const EdgeInsets.all(20),
-              margin: const EdgeInsets.symmetric(vertical: 10.0),
+              margin: const EdgeInsets.all(10.0),
               child: Row(
+                mainAxisSize: MainAxisSize.max,
                 children: [
-                  isLoggedIn
-                      ? Container(
-                          clipBehavior: Clip.antiAlias,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(
-                                  strokeAlign: BorderSide.strokeAlignOutside,
-                                  width: 3,
-                                  color: colorScheme.primary)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(2.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: AnymeXImage(
-                                height: 50,
-                                width: 50,
-                                imageUrl: userData?.avatar ?? '',
-                                fit: BoxFit.cover,
-                                radius: 0,
-                              ),
-                            ),
-                          ),
-                        )
-                      : AnymeXIconWrapper(
-                          child: CircleAvatar(
-                              backgroundColor: Colors.transparent,
-                              radius: 16,
-                              child: fallback),
-                        ),
+                  AnymeXIconWrapper(
+                    child: CircleAvatar(
+                        backgroundColor: Colors.transparent,
+                        radius: 16,
+                        child: fallback),
+                  ),
                   const SizedBox(width: 10),
-                  isLoggedIn
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AnymeXText(
-                              text: userData!.name ?? 'Guest',
-                              variant: TextVariant.semiBold,
-                            ),
-                            const SizedBox(height: 5),
-                            SizedBox(
-                              width: 130,
-                              child: AnymeXText(
-                                text: 'Connected to $title',
-                                color: context.colors.primary,
-                                maxLines: 2,
-                              ),
-                            )
-                          ],
-                        )
-                      : AnymeXText(
-                          text: 'Connect to $title',
-                        ),
-                  const Spacer(),
+                  Expanded(
+                    child: AnymeXText(
+                      text: 'Connected to $title',
+                    ),
+                  ),
                   InkWell(
                     onTap: () {
-                      isLoggedIn ? service.logout() : service.login(context);
+                      service.logout();
                     },
-                    child: AnymeXIconWrapper(
+                    child: const AnymeXIconWrapper(
                       child: CircleAvatar(
                         backgroundColor: Colors.transparent,
                         radius: 16,
                         child: Icon(
-                          isLoggedIn ? IconlyLight.logout : IconlyLight.login,
+                          IconlyLight.logout,
                         ),
                       ),
                     ),
@@ -224,9 +124,106 @@ class ProfileTile extends StatelessWidget {
               ),
             ),
           ],
-        ),
+        );
+      }
+
+      return AnymeXSectionBuilder(
         title: title,
-        initialExpanded: service.isLoggedIn.value,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  colorScheme.secondaryContainer.opaque(0.6),
+                  colorScheme.surfaceContainerHighest.opaque(0.5)
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.opaque(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(20),
+            margin: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Row(
+              children: [
+                isLoggedIn
+                    ? Container(
+                        clipBehavior: Clip.antiAlias,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(
+                                strokeAlign: BorderSide.strokeAlignOutside,
+                                width: 3,
+                                color: colorScheme.primary)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: AnymeXImage(
+                              height: 50,
+                              width: 50,
+                              imageUrl: userData?.avatar ?? '',
+                              fit: BoxFit.cover,
+                              radius: 0,
+                            ),
+                          ),
+                        ),
+                      )
+                    : AnymeXIconWrapper(
+                        child: CircleAvatar(
+                            backgroundColor: Colors.transparent,
+                            radius: 16,
+                            child: fallback),
+                      ),
+                const SizedBox(width: 10),
+                isLoggedIn
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymeXText(
+                            text: userData!.name ?? 'Guest',
+                            variant: TextVariant.semiBold,
+                          ),
+                          const SizedBox(height: 5),
+                          SizedBox(
+                            width: 130,
+                            child: AnymeXText(
+                              text: 'Connected to $title',
+                              color: context.colors.primary,
+                              maxLines: 2,
+                            ),
+                          )
+                        ],
+                      )
+                    : AnymeXText(
+                        text: 'Connect to $title',
+                      ),
+                const Spacer(),
+                InkWell(
+                  onTap: () {
+                    isLoggedIn ? service.logout() : service.login(context);
+                  },
+                  child: AnymeXIconWrapper(
+                    child: CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: 16,
+                      child: Icon(
+                        isLoggedIn ? IconlyLight.logout : IconlyLight.login,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       );
     });
   }

@@ -4,7 +4,6 @@ import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -12,6 +11,8 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -337,88 +338,38 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     }
 
     return AnymeXScaffold(
-  body: Column(
-          children: [
-            const NestedHeader(title: 'Extension Manager'),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: getResponsiveValue(context,
-                      mobileValue:
-                          const EdgeInsets.fromLTRB(14.0, 20.0, 14.0, 30.0),
-                      desktopValue:
-                          const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
+      showHeader: true,
+      headerTitle: 'Extension Manager',
+      body: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildPluginStatusCard(context),
                       ..._buildExtensionSettings(context),
-                      const SizedBox(height: 25),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 4.0, bottom: 10.0),
-                        child: Text(
-                          'PLUGIN INSTALLATION & SYNC',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: colors.primary,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ),
-                      Obx(() {
-                        final _ = bridge.isReady.value;
-                        final isInstalled =
-                            bridge.isReady.value || _isLoadedFromStorage.value;
-                        return Container(
-                          decoration: BoxDecoration(
-                            color:
-                                colors.surfaceContainer.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                                color: colors.outlineVariant
-                                    .withValues(alpha: 0.4)),
-                          ),
-                          child: Column(
-                            children: [
-                              CustomTile(
-                                icon: Icons.cloud_download_rounded,
-                                title: isInstalled
-                                    ? 'Update Plugin'
-                                    : 'Download the Plugin',
-                                description: isInstalled
-                                    ? 'Check and install the latest plugin update from Github'
-                                    : 'Automatically download and install the latest plugin version',
-                                onTap: isInstalled
-                                    ? (_isCheckingUpdate
-                                        ? null
-                                        : _checkForUpdates)
-                                    : _showInstallPopup,
-                                postFix: _isCheckingUpdate
-                                    ? SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: colors.primary,
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              if (Platform.isAndroid) ...[
-                                Divider(
-                                    height: 1,
-                                    color: colors.outlineVariant
-                                        .withValues(alpha: 0.3)),
-                                CustomTile(
-                                  icon: Icons.install_mobile_rounded,
-                                  title: 'Load Plugin APK from Storage',
-                                  description: Platform.isAndroid
-                                      ? 'Select a runtime APK from local storage to manually install'
-                                      : 'Select a runtime JAR from local storage to manually install',
-                                  onTap:
-                                      _isSyncingLocalApk ? null : _syncLocalApk,
-                                  postFix: _isSyncingLocalApk
+                      AnymeXSectionBuilder(
+                        title: 'Plugin Installation & Sync',
+                        children: [
+                          Obx(() {
+                            final _ = bridge.isReady.value;
+                            final isInstalled = bridge.isReady.value ||
+                                _isLoadedFromStorage.value;
+                            return Column(
+                              children: [
+                                AnymeXTile(
+                                  icon: Icons.cloud_download_rounded,
+                                  title: isInstalled
+                                      ? 'Update Plugin'
+                                      : 'Download the Plugin',
+                                  subtitle: isInstalled
+                                      ? 'Check and install the latest plugin update from Github'
+                                      : 'Automatically download and install the latest plugin version',
+                                  onTap: isInstalled
+                                      ? (_isCheckingUpdate
+                                          ? null
+                                          : _checkForUpdates)
+                                      : _showInstallPopup,
+                                  trailing: _isCheckingUpdate
                                       ? SizedBox(
                                           width: 18,
                                           height: 18,
@@ -429,44 +380,50 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                         )
                                       : null,
                                 ),
+                                if (Platform.isAndroid)
+                                  AnymeXTile(
+                                    icon: Icons.install_mobile_rounded,
+                                    title: 'Load Plugin APK from Storage',
+                                    subtitle: Platform.isAndroid
+                                        ? 'Select a runtime APK from local storage to manually install'
+                                        : 'Select a runtime JAR from local storage to manually install',
+                                    onTap: _isSyncingLocalApk ? null : _syncLocalApk,
+                                    trailing: _isSyncingLocalApk
+                                        ? SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: colors.primary,
+                                            ),
+                                          )
+                                        : null,
+                                  ),
+                                if (isInstalled) ...[
+                                  AnymeXTile(
+                                    icon: Icons.refresh_rounded,
+                                    title: 'Force Re-download',
+                                    subtitle:
+                                        'Re-download and reinstall the plugin from scratch',
+                                    onTap: _forceReDownload,
+                                  ),
+                                  AnymeXTile(
+                                    icon: Icons.history_rounded,
+                                    title: 'Rollback Version',
+                                    subtitle:
+                                        'Downgrade or switch to a specific plugin version',
+                                    onTap: _showRollbackDialog,
+                                  ),
+                                ],
                               ],
-                              if (isInstalled) ...[
-                                Divider(
-                                    height: 1,
-                                    color: colors.outlineVariant
-                                        .withValues(alpha: 0.3)),
-                                CustomTile(
-                                  icon: Icons.refresh_rounded,
-                                  title: 'Force Re-download',
-                                  description:
-                                      'Re-download and reinstall the plugin from scratch',
-                                  onTap: _forceReDownload,
-                                ),
-                                Divider(
-                                    height: 1,
-                                    color: colors.outlineVariant
-                                        .withValues(alpha: 0.3)),
-                                CustomTile(
-                                  icon: Icons.history_rounded,
-                                  title: 'Rollback Version',
-                                  description:
-                                      'Downgrade or switch to a specific plugin version',
-                                  onTap: _showRollbackDialog,
-                                ),
-                              ],
-                            ],
-                          ),
-                        );
-                      }),
-                      40.height()
+                            );
+                          }),
+                        ],
+                      ),
                     ],
                   ),
-                ),
-              ),
-            ),
-          ],
-        )
-);
+                )
+    );
   }
 
   Widget _buildPluginStatusCard(BuildContext context) {
@@ -701,7 +658,6 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   }
 
   List<Widget> _buildExtensionSettings(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     final em = Get.find<ExtensionManager>();
     final settingsList = <Widget>[];
 
@@ -709,33 +665,17 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       final managerSettings = manager.settings;
       if (managerSettings == null || managerSettings.isEmpty) continue;
 
-      settingsList.add(const SizedBox(height: 25));
-      settingsList.add(
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0, bottom: 10.0),
-          child: Text(
-            '${manager.name.toUpperCase()} SETTINGS',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-              color: colors.primary,
-              letterSpacing: 1.2,
-            ),
-          ),
-        ),
-      );
-
       final children = <Widget>[];
       for (final entry in managerSettings.entries) {
         final setting = entry.value;
 
         if (setting.type == 'bool') {
           children.add(
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Icons.settings_input_component_rounded,
               title: setting.label,
-              description: setting.description,
-              switchValue: setting.value as bool,
+              subtitle: setting.description,
+              value: setting.value as bool,
               onChanged: (val) {
                 setting.onChanged(val);
                 setState(() {});
@@ -744,10 +684,10 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           );
         } else if (setting.type == 'string') {
           children.add(
-            CustomTile(
+            AnymeXTile(
               icon: Icons.folder_open_rounded,
               title: setting.label,
-              description: (setting.value as String).isNotEmpty
+              subtitle: (setting.value as String).isNotEmpty
                   ? setting.value as String
                   : setting.description,
               onTap: () => _showTextInputDialog(
@@ -766,14 +706,9 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
 
       if (children.isNotEmpty) {
         settingsList.add(
-          Container(
-            decoration: BoxDecoration(
-              color: colors.surfaceContainer.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                  color: colors.outlineVariant.withValues(alpha: 0.4)),
-            ),
-            child: Column(children: children),
+          AnymeXSectionBuilder(
+            title: '${manager.name} Settings',
+            children: children,
           ),
         );
       }

@@ -5,13 +5,11 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/logo_animation_type.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/liquid.dart';
 import 'package:anymex/widgets/common/checkmark_tile.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/dialogs/logo_animation_preview_dialog.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -21,8 +19,6 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 
 import 'package:provider/provider.dart';
 
@@ -42,7 +38,6 @@ class _SettingsThemeState extends State<SettingsTheme> {
   late int selectedVariantIndex;
   final settings = Get.find<Settings>();
   late LogoAnimationType selectedLogoAnimation;
-  static int _selectedTabIndex = 0;
 
   final List<Map<String, dynamic>> themeModes = [
     {"label": "Light", "color": Colors.white},
@@ -52,20 +47,11 @@ class _SettingsThemeState extends State<SettingsTheme> {
   String themeMode = "Light";
   late List<Map<String, dynamic>> customColorMap;
 
-  late final PageController _pageController;
-
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: _selectedTabIndex);
     _initializeDbVars();
     _initializeLogoAnimation();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
   }
 
   void handleThemeMode(String theme) {
@@ -193,77 +179,22 @@ class _SettingsThemeState extends State<SettingsTheme> {
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
-  body: Column(children: [
-          const NestedHeader(title: 'Theme'),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: AnymeXTabBar(
-              selectTabs: const ["Theme", "Wallpaper", "Extras"],
-              selectedIndex: _selectedTabIndex,
-              onTabSelected: (index) {
-                final current = _selectedTabIndex;
-                setState(() {
-                  _selectedTabIndex = index;
-                });
-                if (_pageController.hasClients) {
-                  if ((index - current).abs() > 1) {
-                    final adjacent = index > current ? index - 1 : index + 1;
-                    _pageController.jumpToPage(adjacent);
-                  }
-                  _pageController.animateToPage(
-                    index,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                }
-              },
-            ),
-          ),
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(16, 8, 16, 20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withOpacity(0.35),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color:
-                      Theme.of(context).colorScheme.outline.withOpacity(0.12),
-                ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: PageView(
-                  key: const PageStorageKey('settings_theme_page_view'),
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _selectedTabIndex = index;
-                    });
-                  },
-                  children: [
-                    SingleChildScrollView(
-                      padding:
-                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 50.0),
-                      child: _buildThemeTab(),
-                    ),
-                    SingleChildScrollView(
-                      padding:
-                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 50.0),
-                      child: _buildWallpaperTab(),
-                    ),
-                    SingleChildScrollView(
-                      padding:
-                          const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 50.0),
-                      child: _buildExtrasTab(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ])
-);
+      showHeader: true,
+      headerTitle: 'Theme',
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildThemeTab(),
+            const SizedBox(height: 20),
+            _buildWallpaperTab(),
+            const SizedBox(height: 20),
+            _buildExtrasTab(),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildThemeTab() {
@@ -271,130 +202,94 @@ class _SettingsThemeState extends State<SettingsTheme> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildModeTemplates(),
-        const SizedBox(height: 30),
-        CustomSwitchTile(
-          icon: HugeIcons.strokeRoundedPaintBrush01,
-          title: "Default Theme",
-          description: "Play around with App theme",
-          switchValue: defaultTheme,
-          onChanged: handleDefaultSwitch,
-        ),
-        const SizedBox(height: 10),
-        CustomSwitchTile(
-          icon: HugeIcons.strokeRoundedImage01,
-          title: "Material You",
-          description: "Take color from your wallpaper (A12+)",
-          switchValue: materialTheme,
-          onChanged: handleMaterialSwitch,
-        ),
-        const SizedBox(height: 10),
-        CustomSwitchTile(
-          icon: HugeIcons.strokeRoundedColors,
-          title: "Custom Theme",
-          description: "Choose your favourite color!",
-          switchValue: customTheme,
-          onChanged: handleCustomThemeSwitch,
-        ),
-        if (customTheme) ...[
-          const SizedBox(height: 20),
-          AnymeXCard(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnymeXText(
-                  text: "Custom Themes",
-                  size: 16,
-                  variant: TextVariant.semiBold,
-                  color: context.colors.primary,
-                ),
-                const SizedBox(height: 10),
-                SingleChildScrollView(child: _buildColorTemplates())
-              ],
+        const SizedBox(height: 20),
+        AnymeXSectionBuilder(
+          title: 'Themes',
+          children: [
+            AnymeXTile.toggle(
+              icon: HugeIcons.strokeRoundedPaintBrush01,
+              title: "Default Theme",
+              subtitle: "Play around with App theme",
+              value: defaultTheme,
+              onChanged: handleDefaultSwitch,
             ),
-          ),
-        ],
-        const SizedBox(height: 10),
-        Obx(() {
-          return CustomSwitchTile(
-            disabled: settings.liquidMode,
-            icon: HugeIcons.strokeRoundedFlower,
-            title: "Bloom",
-            description: "Enables a soft, glowing gradient effect.",
-            switchValue: !settings.disableGradient,
-            onChanged: (val) => settings.disableGradient = !val,
-          );
-        }),
-        CustomTile(
-          icon: HugeIcons.strokeRoundedPaintBoard,
-          title: "Palette",
-          description: "Choose your favourite palette!",
-          onTap: () {
-            showPaletteSelectionDialog(context);
-          },
-        ),
-        const SizedBox(height: 10),
-        Obx(() {
-          return CustomSwitchTile(
-            icon: Icons.texture_rounded,
-            title: "Grain Texture Overlay",
-            description: "Apply a subtle film grain texture over the interface",
-            switchValue: settings.useGrainTexture,
-            onChanged: (val) => settings.useGrainTexture = val,
-          );
-        }),
-        Obx(() {
-          if (!settings.useGrainTexture) return const SizedBox.shrink();
-          final val = settings.grainIntensity;
-          int selectedIndex = 0;
-          if (val <= 0.04) {
-            selectedIndex = 0;
-          } else if (val <= 0.10) {
-            selectedIndex = 1;
-          } else {
-            selectedIndex = 2;
-          }
-
-          return Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Grain Intensity",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                AnymeXTabBar(
-                  selectTabs: const ["Low", "Medium", "High"],
-                  selectedIndex: selectedIndex,
-                  onTabSelected: (index) {
-                    if (index == 0) {
-                      settings.grainIntensity = 0.03;
-                    } else if (index == 1) {
-                      settings.grainIntensity = 0.07;
-                    } else {
-                      settings.grainIntensity = 0.15;
-                    }
-                  },
-                ),
-                const SizedBox(height: 10),
-              ],
+            AnymeXTile.toggle(
+              icon: HugeIcons.strokeRoundedImage01,
+              title: "Material You",
+              subtitle: "Take color from your wallpaper (A12+)",
+              value: materialTheme,
+              onChanged: handleMaterialSwitch,
             ),
-          );
-        }),
-        const SizedBox(height: 10),
-        CustomSwitchTile(
-          icon: HugeIcons.strokeRoundedMoon,
-          title: "Oled Mode",
-          description: "Go Super Dark Mode!",
-          switchValue: isOled,
-          onChanged: handleOledSwitch,
+            AnymeXTile.expandableToggle(
+              icon: HugeIcons.strokeRoundedColors,
+              title: "Custom Theme",
+              subtitle: "Choose your favourite color!",
+              value: customTheme,
+              onChanged: handleCustomThemeSwitch,
+              child: _buildColorTemplates(),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        AnymeXSectionBuilder(
+          title: 'Appearance',
+          children: [
+            Obx(() {
+              return AnymeXTile.toggle(
+                enabled: !settings.liquidMode,
+                icon: HugeIcons.strokeRoundedFlower,
+                title: "Bloom",
+                subtitle: "Enables a soft, glowing gradient effect.",
+                value: !settings.disableGradient,
+                onChanged: (val) => settings.disableGradient = !val,
+              );
+            }),
+            AnymeXTile(
+              icon: HugeIcons.strokeRoundedPaintBoard,
+              title: "Palette",
+              subtitle: "Choose your favourite palette!",
+              onTap: () {
+                showPaletteSelectionDialog(context);
+              },
+            ),
+            Obx(() {
+              return AnymeXTile.toggle(
+                icon: Icons.texture_rounded,
+                title: "Grain Texture Overlay",
+                subtitle:
+                    "Apply a subtle film grain texture over the interface",
+                value: settings.useGrainTexture,
+                onChanged: (val) => settings.useGrainTexture = val,
+              );
+            }),
+            Obx(() {
+              if (!settings.useGrainTexture) return const SizedBox.shrink();
+              final val = settings.grainIntensity;
+              final intensities = [0.03, 0.07, 0.15];
+              final labels = ['Low', 'Medium', 'High'];
+              final current = val <= 0.04
+                  ? 0.03
+                  : val <= 0.10
+                      ? 0.07
+                      : 0.15;
+              return AnymeXTile.segmented<double>(
+                icon: Icons.grain_rounded,
+                title: 'Grain Intensity',
+                subtitle: 'Amount of film grain applied',
+                value: current,
+                options: intensities,
+                optionLabelTransformer: (v) => labels[intensities.indexOf(v)],
+                onChanged: (v) => settings.grainIntensity = v,
+              );
+            }),
+            AnymeXTile.toggle(
+              icon: HugeIcons.strokeRoundedMoon,
+              title: "Oled Mode",
+              subtitle: "Go Super Dark Mode!",
+              value: isOled,
+              onChanged: handleOledSwitch,
+            ),
+          ],
         ),
       ],
     );
@@ -402,52 +297,48 @@ class _SettingsThemeState extends State<SettingsTheme> {
 
   Widget _buildWallpaperTab() {
     return Obx(() {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      return AnymeXSectionBuilder(
+        title: 'Wallpaper',
         children: [
-          CustomSwitchTile(
+          AnymeXTile.toggle(
             icon: HugeIcons.strokeRoundedBlur,
             title: "Liquid Mode",
-            description: "Make everything glassy & liquidy...",
-            switchValue: settings.liquidMode,
+            subtitle: "Make everything glassy & liquidy...",
+            value: settings.liquidMode,
             onChanged: (e) {
               settings.disableGradient = false;
               settings.liquidMode = e;
             },
           ),
           if (settings.liquidMode) ...[
-            const SizedBox(height: 10),
-            CustomTile(
+            AnymeXTile(
               icon: HugeIcons.strokeRoundedImageAdd01,
               title: "Liquid Background",
-              description: "Choose a custom background for liquid mode.",
+              subtitle: "Choose a custom background for liquid mode.",
               onTap: () async {
                 await Liquid.pickLiquidBackground(context);
               },
             ),
-            const SizedBox(height: 10),
-            CustomSwitchTile(
-              switchValue: settings.retainOriginalColor,
+            AnymeXTile.toggle(
+              value: settings.retainOriginalColor,
               icon: HugeIcons.strokeRoundedImageComposition,
               title: "Retain Original Color",
-              description:
+              subtitle:
                   "Enable this if you want to retain the original color of your wallpaper",
               onChanged: (e) => settings.retainOriginalColor = e,
             ),
-            const SizedBox(height: 10),
-            CustomSwitchTile(
-              switchValue: settings.usePosterColor,
+            AnymeXTile.toggle(
+              value: settings.usePosterColor,
               icon: HugeIcons.strokeRoundedImageDownload,
               title: "Use Poster Color",
-              description: "Applies anime/manga poster color on details page",
+              subtitle: "Applies anime/manga poster color on details page",
               onChanged: (e) => settings.usePosterColor = e,
             ),
-            const SizedBox(height: 10),
-            CustomTile(
+            AnymeXTile(
               icon: HugeIcons.strokeRoundedRefresh,
               title: "Reset to Default Picture",
-              postFix: 0.width(),
-              description: "Reset to default wallpaper!",
+              showChevron: false,
+              subtitle: "Reset to default wallpaper!",
               onTap: () => settings.liquidBackgroundPath = "",
             ),
           ],
@@ -457,23 +348,22 @@ class _SettingsThemeState extends State<SettingsTheme> {
   }
 
   Widget _buildExtrasTab() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return AnymeXSectionBuilder(
+      title: 'Miscellaneous',
       children: [
-        CustomTile(
+        AnymeXTile(
           icon: HugeIcons.strokeRoundedPlayCircle,
           title: "Logo Animation",
-          description: "Customize your logo animation style",
+          subtitle: "Customize your logo animation style",
           onTap: _showLogoAnimationDialog,
         ),
         if (Platform.isAndroid) ...[
-          const SizedBox(height: 10),
           Obx(() {
             final label = settings.getPreferredRefreshRateLabel();
-            return CustomTile(
+            return AnymeXTile(
               icon: HugeIcons.strokeRoundedRefresh,
               title: "Refresh Rate",
-              description: "Current mode: $label",
+              subtitle: "Current mode: $label",
               onTap: () {
                 showRefreshRateDialog(context);
               },
@@ -988,7 +878,6 @@ class _SettingsThemeState extends State<SettingsTheme> {
   }
 
   void _showCustomColorPicker() {
-    final provider = Provider.of<ThemeProvider>(context, listen: false);
     String initialHex = ThemeKeys.customHexColor.get<String>("#FFFFFF");
     final controller = TextEditingController(text: initialHex);
 
@@ -1245,247 +1134,184 @@ class _SettingsThemeState extends State<SettingsTheme> {
   }
 
   Widget _buildColorTemplates() {
-    return GridView.builder(
-      shrinkWrap: true,
-      scrollDirection: Axis.vertical,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: colorMap.length + 1,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: getResponsiveCrossAxisCount(context),
-          mainAxisExtent: 150,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10),
-      itemBuilder: (context, index) {
-        final Color customColor;
-        final String label;
-        final bool isSelected;
-        final ColorScheme colorScheme;
+    final colors = context.colors;
 
-        if (index == 0) {
-          final hexStr = ThemeKeys.customHexColor.get<String>("#FFFFFF");
-          customColor = Color(int.parse(hexStr.replaceFirst('#', '0xff')));
-          label = "Custom";
-          isSelected = selectedColorIndex == -1;
-          colorScheme = ColorScheme.fromSeed(
-              seedColor: customColor, brightness: Theme.of(context).brightness);
-        } else {
-          final themeIndex = index - 1;
-          final theme = colorMap.entries.toList()[themeIndex];
-          customColor = theme.value;
-          label = theme.key;
-          isSelected = selectedColorIndex == themeIndex;
-          colorScheme = ColorScheme.fromSeed(
-              seedColor: customColor, brightness: Theme.of(context).brightness);
-        }
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: List.generate(colorMap.length + 1, (index) {
+          final Color seedColor;
+          final String label;
+          final bool isSelected;
+          final ColorScheme colorScheme;
 
-        return GestureDetector(
-          onTap: () {
-            if (index == 0) {
-              if (!isSelected) {
-                handleColorSelection(-1);
+          if (index == 0) {
+            final hexStr = ThemeKeys.customHexColor.get<String>("#FFFFFF");
+            seedColor = Color(int.parse(hexStr.replaceFirst('#', '0xff')));
+            label = "Custom";
+            isSelected = selectedColorIndex == -1;
+            colorScheme = ColorScheme.fromSeed(
+              seedColor: seedColor,
+              brightness: Theme.of(context).brightness,
+            );
+          } else {
+            final entry = colorMap.entries.toList()[index - 1];
+            seedColor = entry.value;
+            label = entry.key;
+            isSelected = selectedColorIndex == index - 1;
+            colorScheme = ColorScheme.fromSeed(
+              seedColor: seedColor,
+              brightness: Theme.of(context).brightness,
+            );
+          }
+
+          return GestureDetector(
+            onTap: () {
+              if (index == 0) {
+                if (!isSelected) handleColorSelection(-1);
+                _showCustomColorPicker();
+              } else {
+                handleColorSelection(index - 1);
               }
-              _showCustomColorPicker();
-            } else {
-              handleColorSelection(index - 1);
-            }
-          },
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(right: 10),
-                height: 120,
-                width: MediaQuery.sizeOf(context).width / 2,
-                clipBehavior: Clip.antiAlias,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 3,
-                    color: isSelected
-                        ? context.colors.primary
-                        : Colors.transparent,
-                  ),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: Theme.of(context).colorScheme.primary.opaque(
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? 0.3
-                                    : 0.4),
-                            blurRadius: 20,
-                            spreadRadius: 4.0,
-                            offset: const Offset(-2.0, 0),
-                          ),
-                        ]
-                      : [],
-                  color: context.colors.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        child: Container(
-                            clipBehavior: Clip.antiAlias,
-                            height: 150,
-                            width: 300,
-                            padding: const EdgeInsets.only(left: 10, top: 5),
-                            decoration: BoxDecoration(
-                              color: customColor,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            alignment: Alignment.center,
-                            child: Container(
-                              height: 45,
-                              width: 70,
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                  color: colorScheme.secondaryContainer,
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Container(
-                                        width: 15,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            color: colorScheme.primary),
-                                      ),
-                                      Container(
-                                        width: 15,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            color: colorScheme.secondary),
-                                      ),
-                                      Container(
-                                        width: 15,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            color: colorScheme.secondaryFixed),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Container(
-                                        width: 15,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            color: colorScheme.onPrimary),
-                                      ),
-                                      Container(
-                                        width: 15,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            color: colorScheme.tertiary),
-                                      ),
-                                      Container(
-                                        width: 15,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            color: colorScheme.primaryFixedDim),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )),
-                      ),
-                      Positioned(
-                          top: 10,
-                          left: 10,
-                          child: index == 0
-                              ? Icon(
-                                  Icons.color_lens_outlined,
-                                  size: 14,
-                                  color: context.colors.onSurface,
-                                )
-                              : Row(
-                                  children: [
-                                    Container(
-                                      width: 10,
-                                      height: 10,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 2),
-                                      decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          borderRadius:
-                                              BorderRadius.circular(50)),
-                                    ),
-                                    Container(
-                                      width: 10,
-                                      height: 10,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 2),
-                                      decoration: BoxDecoration(
-                                          color: Colors.yellow,
-                                          borderRadius:
-                                              BorderRadius.circular(50)),
-                                    ),
-                                    Container(
-                                      width: 10,
-                                      height: 10,
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 2),
-                                      decoration: BoxDecoration(
-                                          color: Colors.green,
-                                          borderRadius:
-                                              BorderRadius.circular(50)),
-                                    ),
-                                  ],
-                                )),
-                      AnimatedPositioned(
-                        bottom: 0,
-                        right: 0,
-                        duration: const Duration(milliseconds: 300),
-                        child: AnimatedOpacity(
-                          opacity: isSelected ? 1.0 : 0.0,
-                          duration: const Duration(milliseconds: 300),
-                          child: SizedBox(
-                            width: 30,
-                            height: 30,
-                            child: Icon(
-                              IconlyBold.tickSquare,
-                              size: 18,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryFixedVariant,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              width: 76,
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? colors.primary.opaque(0.12, iReallyMeanIt: true)
+                    : colors.surfaceContainerHighest
+                        .opaque(0.3, iReallyMeanIt: true),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  width: isSelected ? 2 : 1,
+                  color: isSelected
+                      ? colors.primary
+                      : colors.onSurface.opaque(0.08, iReallyMeanIt: true),
                 ),
               ),
-              const SizedBox(height: 10),
-              Text(
-                label,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (index == 0)
+                    _buildCustomColorSwatch(colorScheme, seedColor, isSelected)
+                  else
+                    _buildColorSwatch(colorScheme, isSelected),
+                  const SizedBox(height: 8),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.w600,
+                      color: isSelected
+                          ? colors.primary
+                          : colors.onSurface.opaque(0.7, iReallyMeanIt: true),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-            ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildColorSwatch(ColorScheme cs, bool isSelected) {
+    return SizedBox(
+      width: 38,
+      height: 38,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: cs.primary,
+              shape: BoxShape.circle,
+            ),
+            child: isSelected
+                ? Icon(
+                    Icons.check_rounded,
+                    size: 20,
+                    color: cs.onPrimary,
+                  )
+                : null,
           ),
-        );
-      },
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                color: cs.secondaryContainer,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: cs.surface,
+                  width: 2,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCustomColorSwatch(
+      ColorScheme cs, Color seedColor, bool isSelected) {
+    final isDarkSeed =
+        ThemeData.estimateBrightnessForColor(seedColor) == Brightness.dark;
+
+    return SizedBox(
+      width: 38,
+      height: 38,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: const BoxDecoration(
+              gradient: SweepGradient(
+                colors: [
+                  Colors.red,
+                  Colors.yellow,
+                  Colors.green,
+                  Colors.cyan,
+                  Colors.blue,
+                  Colors.purple,
+                  Colors.red,
+                ],
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: seedColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isSelected ? Icons.check_rounded : Icons.colorize_rounded,
+                  size: 14,
+                  color: isDarkSeed ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -7,7 +7,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/slider_semantics.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -1235,11 +1235,11 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     required String description,
     required IconData icon,
   }) {
-    return CustomSwitchTile(
+    return AnymeXTile.toggle(
       icon: icon,
       title: title,
-      description: description,
-      switchValue: (_visualSettings[keyName] as bool?) ?? false,
+      subtitle: description,
+      value: (_visualSettings[keyName] as bool?) ?? false,
       onChanged: (value) {
         setState(() => _visualSettings[keyName] = value);
         _applyVisualSettings();
@@ -1254,12 +1254,10 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     required List<String> items,
   }) {
     final current = (_visualSettings[keyName] as String?) ?? items.first;
-    return CustomTile(
+    return AnymeXTile(
       icon: icon,
       title: title,
-      description: current,
-      isDescBold: true,
-      descColor: Theme.of(context).colorScheme.primary,
+      subtitle: current,
       onTap: () {
         showSelectionDialog<String>(
           title: title,
@@ -1286,15 +1284,14 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     required int divisions,
   }) {
     final value = ((_visualSettings[keyName] as num?) ?? min).toDouble();
-    return CustomSliderTile(
+    return AnymeXTile.slider(
       icon: icon,
       title: title,
-      description: description,
-      sliderValue: value.clamp(min, max),
+      subtitle: description,
+      value: value.clamp(min, max),
       min: min,
       max: max,
-      divisions: divisions.toDouble(),
-      label: value.round().toString(),
+      divisions: divisions,
       onChanged: (newValue) {
         setState(() => _visualSettings[keyName] = newValue.round());
         _applyVisualSettings();

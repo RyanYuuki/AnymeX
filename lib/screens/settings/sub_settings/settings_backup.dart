@@ -3,8 +3,9 @@ import 'package:anymex/controllers/sync/progress_sync_section.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -158,122 +159,66 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
     final theme = Theme.of(context);
 
     return AnymeXScaffold(
-  body: Stack(
-          children: [
-            Column(
-              children: [
-                const NestedHeader(title: 'Data Management'),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _SectionHeader(title: "Current Library"),
-                        const SizedBox(height: 16),
-                        Obx(() {
-                          controller.isRestoring.value;
-                          return FutureBuilder(
-                            future: controller.getLibraryStats(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                      ConnectionState.done &&
-                                  snapshot.data != null) {
-                                return LibraryDashboard(stats: snapshot.data!);
-                              } else {
-                                return const CircularProgressIndicator();
-                              }
-                            },
-                          );
-                        }),
-                        const SizedBox(height: 32),
-                        const _SectionHeader(title: "Actions"),
-                        const SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                            color:
-                                theme.colorScheme.surfaceContainer.opaque(0.4),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 4, vertical: 8),
-                          child: Column(
-                            children: [
-                              CustomTile(
-                                title: "Create Backup",
-                                description:
-                                    "Secure your library to local storage",
-                                icon: Icons.backup_rounded,
-                                onTap: _handleBackup,
-                              ),
-                              const SizedBox(height: 16),
-                              CustomTile(
-                                title: "Restore Data",
-                                description: "Import your .anymex backup file",
-                                icon: Icons.settings_backup_restore_rounded,
-                                onTap: () => _handleRestore(context),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-                        const _SectionHeader(title: "Cloud Sync"),
-                        const SizedBox(height: 16),
-                        const ProgressSyncSection(),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Obx(() {
-              if (controller.isBackingUp.value ||
-                  controller.isRestoring.value) {
-                return Container(
-                  color: Colors.black.withOpacity(0.55),
-                  child: Center(
-                    child: Card(
-                      color: theme.colorScheme.surfaceContainer,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+      showHeader: true,
+      headerTitle: 'Data Management',
+      body: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXSectionBuilder(
+                        title: 'Current Library',
+                        children: [
+                          Obx(() {
+                            controller.isRestoring.value;
+                            return FutureBuilder(
+                              future: controller.getLibraryStats(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                        ConnectionState.done &&
+                                    snapshot.data != null) {
+                                  return LibraryDashboard(
+                                      stats: snapshot.data!);
+                                } else {
+                                  return const Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+                                }
+                              },
+                            );
+                          }),
+                        ],
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 24),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 20),
-                            Text(
-                              controller.isRestoring.value
-                                  ? 'Restoring Backup...'
-                                  : 'Creating Backup...',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Please do not close the app',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurface
-                                    .withOpacity(0.6),
-                              ),
-                            ),
-                          ],
-                        ),
+                      AnymeXSectionBuilder(
+                        title: 'Actions',
+                        children: [
+                          AnymeXTile(
+                            title: "Create Backup",
+                            subtitle: "Secure your library to local storage",
+                            icon: Icons.backup_rounded,
+                            onTap: _handleBackup,
+                          ),
+                          AnymeXTile(
+                            title: "Restore Data",
+                            subtitle: "Import your .anymex backup file",
+                            icon: Icons.settings_backup_restore_rounded,
+                            onTap: () => _handleRestore(context),
+                          ),
+                        ],
                       ),
-                    ),
+                      AnymeXSectionBuilder(
+                        title: 'Cloud Sync',
+                        children: const [
+                          ProgressSyncSection(),
+                        ],
+                      ),
+                    ],
                   ),
-                );
-              }
-              return const SizedBox.shrink();
-            }),
-          ],
-        )
-);
+                )
+    );
   }
 }
 

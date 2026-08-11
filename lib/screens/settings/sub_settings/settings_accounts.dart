@@ -9,6 +9,8 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -24,27 +26,25 @@ class SettingsAccounts extends StatefulWidget {
 }
 
 class _SettingsAccountsState extends State<SettingsAccounts> {
+
   @override
   Widget build(BuildContext context) {
     final serviceHandler = Get.find<ServiceHandler>();
     final services = [
       {
+        'serviceIcon': 'anilist.png',
         'service': serviceHandler.anilistService,
-        'icon': 'assets/images/anilist-icon.png',
-        'title': "Anilist",
-        'color': const Color(0xFF02A9FF),
+        'title': 'Anilist',
       },
       {
+        'serviceIcon': 'mal.png',
         'service': serviceHandler.malService,
-        'icon': 'assets/images/mal-icon.png',
-        'title': "MyAnimeList",
-        'color': const Color(0xFF2E51A2),
+        'title': 'MyAnimeList',
       },
       {
+        'serviceIcon': 'simkl.png',
         'service': serviceHandler.simklService,
-        'icon': 'assets/images/simkl-icon.png',
-        'title': "Simkl",
-        'color': const Color(0xFF000000),
+        'title': 'Simkl',
       },
     ];
 
@@ -53,46 +53,31 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
             .compareTo(a['service'] == serviceHandler.onlineService ? 1 : 0));
 
     return AnymeXScaffold(
-  body: Column(
-          children: [
-            const NestedHeader(title: 'Accounts'),
-            Expanded(
-              child: ScrollWrapper(
-                comfortPadding: false,
-                customPadding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 24.0),
-                children: [
-                  _buildSectionHeader(context, "Social Presence"),
-                  const SizedBox(height: 12),
-                  const DiscordTile(),
-                  const SizedBox(height: 24),
-                  _buildSectionHeader(context, "Tracking Services"),
-                  const SizedBox(height: 12),
-                  ...services.map((s) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12.0),
-                        child: TrackingServiceCard(
-                          serviceIcon: s['icon'] as String,
-                          service: s['service'] as OnlineService,
-                          title: s['title'] as String,
-                        ),
-                      )),
-                ],
-              ),
-            ),
-          ],
-        )
-);
-  }
-
-  Widget _buildSectionHeader(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4.0),
-      child: AnymeXText(
-        text: title.toUpperCase(),
-        variant: TextVariant.bold,
-        color: context.colors.onSurfaceVariant.withOpacity(0.7),
-        size: 12,
-      ),
+      showHeader: true,
+      headerTitle: 'Accounts',
+      body: ScrollWrapper(
+                  comfortPadding: false,
+                  customPadding:
+                      const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+                  children: [
+                    const AnymeXSectionBuilder(
+                      title: 'Social Presence',
+                      children: [
+                        DiscordTile(),
+                      ],
+                    ),
+                    AnymeXSectionBuilder(
+                      title: 'Tracking Services',
+                      children: services
+                          .map((s) => TrackingServiceCard(
+                                serviceIcon: s['serviceIcon'] as String,
+                                service: s['service'] as OnlineService,
+                                title: s['title'] as String,
+                              ))
+                          .toList(),
+                    ),
+                  ],
+                )
     );
   }
 }

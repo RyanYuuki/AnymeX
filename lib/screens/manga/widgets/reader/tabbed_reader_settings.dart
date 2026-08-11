@@ -6,7 +6,7 @@ import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_
 import 'package:anymex/screens/settings/sub_settings/settings_tap_zones.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -158,14 +158,14 @@ class _ReadingModePage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
           children: [
-            CustomTile(
+            AnymeXTile(
               title: 'Layout',
-              description: switch (currentLayout) {
+              subtitle: switch (currentLayout) {
                 MangaPageViewMode.continuous => 'Continuous',
                 MangaPageViewMode.paged => 'Paged',
               },
               icon: Iconsax.card,
-              postFix: Container(
+              trailing: Container(
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   color: context.colors.surfaceContainer,
@@ -208,16 +208,16 @@ class _ReadingModePage extends StatelessWidget {
                 ),
               ),
             ),
-            CustomTile(
+            AnymeXTile(
               title: 'Direction',
-              description: switch (currentDirection) {
+              subtitle: switch (currentDirection) {
                 MangaPageViewDirection.down => 'Top-Down',
                 MangaPageViewDirection.right => 'LTR',
                 MangaPageViewDirection.up => 'Bottom-Up',
                 MangaPageViewDirection.left => 'RTL',
               },
               icon: Iconsax.direct_right,
-              postFix: Container(
+              trailing: Container(
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   color: context.colors.surfaceContainer,
@@ -262,15 +262,15 @@ class _ReadingModePage extends StatelessWidget {
                 ),
               ),
             ),
-            CustomTile(
+            AnymeXTile(
               title: 'Dual Page Mode',
-              description: switch (currentDual) {
+              subtitle: switch (currentDual) {
                 DualPageMode.off => 'Standard (Single)',
                 DualPageMode.auto => 'Auto (Landscape)',
                 DualPageMode.force => 'Force (Always)',
               },
               icon: Iconsax.book_1,
-              postFix: Container(
+              trailing: Container(
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   color: context.colors.surfaceContainer,
@@ -314,49 +314,49 @@ class _ReadingModePage extends StatelessWidget {
               ),
             ),
             if (Platform.isAndroid || Platform.isIOS)
-              CustomTile(
+              AnymeXTile(
                 title: 'Tap Zones',
-                description: 'Customize gestures',
+                subtitle: 'Customize gestures',
                 icon: Icons.touch_app_rounded,
                 onTap: () {
                   Navigator.pop(context);
                   navigate(() => const TapZoneSettingsScreen());
                 },
               ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Iconsax.pharagraphspacing,
               title: 'Spaced Pages',
-              description: 'Continuous Mode only',
-              switchValue: controller.spacedPages.value,
+              subtitle: 'Continuous Mode only',
+              value: controller.spacedPages.value,
               onChanged: (_) => controller.toggleSpacedPages(),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Iconsax.arrow,
               title: 'Overscroll',
-              description: 'To Prev/Next Chapter',
-              switchValue: controller.overscrollToChapter.value,
+              subtitle: 'To Prev/Next Chapter',
+              value: controller.overscrollToChapter.value,
               onChanged: (_) => controller.toggleOverscrollToChapter(),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Icons.smartphone_rounded,
               title: 'Auto Webtoon Mode',
-              description:
+              subtitle:
                   'Automatically switch to continuous mode for long-strip manga',
-              switchValue: controller.autoWebtoonMode.value,
+              value: controller.autoWebtoonMode.value,
               onChanged: (_) => controller.toggleAutoWebtoonMode(),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Icons.onetwothree_rounded,
               title: 'Navigate by Number',
-              description: 'Always checks current chapter number and compares it with next/prev chapter, navigating only when the number is different. Navigate by Chapter will just move to the next item in the list even if there are duplicates.',
-              switchValue: controller.navigateByNumber.value,
+              subtitle: 'Always checks current chapter number and compares it with next/prev chapter, navigating only when the number is different. Navigate by Chapter will just move to the next item in the list even if there are duplicates.',
+              value: controller.navigateByNumber.value,
               onChanged: (_) => controller.toggleNavigateByNumber(),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Icons.fullscreen_rounded,
               title: 'Fit to Screen Width',
-              description: 'Stretch images to fit screen width',
-              switchValue: controller.fitToScreen.value,
+              subtitle: 'Stretch images to fit screen width',
+              value: controller.fitToScreen.value,
               onChanged: (_) => controller.toggleFitToScreen(),
             ),
             20.height()
@@ -379,17 +379,17 @@ class _GeneralPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
           children: [
-            CustomTile(
+            AnymeXTile(
               title: 'Control Theme',
-              description: ReaderControlThemeRegistry.resolve(
+              subtitle: ReaderControlThemeRegistry.resolve(
                       settings.readerControlThemeRx.value)
                   .name,
               icon: Icons.style_rounded,
               onTap: () => _showThemeDialog(context, settings),
             ),
-            CustomTile(
+            AnymeXTile(
               title: 'Background',
-              description: switch (controller.readerTheme.value) {
+              subtitle: switch (controller.readerTheme.value) {
                 0 => 'White',
                 1 => 'Black',
                 2 => 'Gray',
@@ -398,9 +398,9 @@ class _GeneralPage extends StatelessWidget {
               icon: Icons.format_paint_rounded,
               onTap: () => _showThemePicker(context),
             ),
-            CustomTile(
+            AnymeXTile(
               title: 'Image Filter Quality',
-              description: switch (controller.imageFilterQuality.value) {
+              subtitle: switch (controller.imageFilterQuality.value) {
                 0 => 'None (Nearest)',
                 1 => 'Low (Bilinear)',
                 3 => 'High (Bicubic)',
@@ -410,82 +410,78 @@ class _GeneralPage extends StatelessWidget {
               icon: Icons.image_search_rounded,
               onTap: () => _showFilterQualityDialog(context),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Iconsax.eye,
               title: 'Persistent Page Indicator',
-              description: 'Always show page indicator',
-              switchValue: controller.showPageIndicator.value,
+              subtitle: 'Always show page indicator',
+              value: controller.showPageIndicator.value,
               onChanged: (_) => controller.togglePageIndicator(),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Icons.crop_rounded,
               title: 'Crop Borders',
-              description: 'Remove white/black borders',
-              switchValue: controller.cropImages.value,
+              subtitle: 'Remove white/black borders',
+              value: controller.cropImages.value,
               onChanged: (_) => controller.toggleCropImages(),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Icons.screen_lock_rotation_rounded,
               title: 'Keep Screen On',
-              description: 'Prevent screen from sleeping while reading',
-              switchValue: controller.keepScreenOn.value,
+              subtitle: 'Prevent screen from sleeping while reading',
+              value: controller.keepScreenOn.value,
               onChanged: (_) => controller.toggleKeepScreenOn(),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Icons.compare_arrows_rounded,
               title: 'Always Show Chapter Transition',
-              description:
+              subtitle:
                   'Show transition page even when chapters are adjacent',
-              switchValue: controller.alwaysShowChapterTransition.value,
+              value: controller.alwaysShowChapterTransition.value,
               onChanged: (_) => controller.toggleAlwaysShowChapterTransition(),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Icons.touch_app_rounded,
               title: 'Long Press for Page Actions',
-              description: 'Long-press a page to save, share, or copy it',
-              switchValue: controller.longPressPageActionsEnabled.value,
+              subtitle: 'Long-press a page to save, share, or copy it',
+              value: controller.longPressPageActionsEnabled.value,
               onChanged: (_) => controller.toggleLongPressPageActions(),
             ),
-            CustomSwitchTile(
+            AnymeXTile.toggle(
               icon: Icons.monitor_rounded,
               title: 'E-ink Display Refresh',
-              description: 'Flash screen on page turn to clear ghosting',
-              switchValue: controller.displayRefreshEnabled.value,
+              subtitle: 'Flash screen on page turn to clear ghosting',
+              value: controller.displayRefreshEnabled.value,
               onChanged: (_) => controller.toggleDisplayRefresh(),
             ),
             if (controller.displayRefreshEnabled.value) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: CustomSliderTile(
+                child: AnymeXTile.slider(
                   title: 'Flash Duration',
                   icon: Icons.timer_rounded,
-                  description: 'Milliseconds',
-                  sliderValue:
+                  subtitle: 'Milliseconds',
+                  value:
                       controller.displayRefreshDurationMs.value.toDouble(),
                   min: 50,
                   max: 500,
                   divisions: 18,
-                  label: '${controller.displayRefreshDurationMs.value}ms',
                   onChanged: (v) =>
                       controller.displayRefreshDurationMs.value = v.toInt(),
-                  onChangedEnd: (_) => controller.savePreferences(),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: CustomSliderTile(
+                child: AnymeXTile.slider(
                   title: 'Flash Every N Pages',
                   icon: Icons.refresh_rounded,
-                  description: 'Flash frequency',
-                  sliderValue:
+                  subtitle: 'Flash frequency',
+                  value:
                       controller.displayRefreshInterval.value.toDouble(),
                   min: 1,
                   max: 10,
                   divisions: 9,
-                  label: controller.displayRefreshInterval.value.toString(),
                   onChanged: (v) =>
                       controller.displayRefreshInterval.value = v.toInt(),
-                  onChangedEnd: (_) => controller.savePreferences(),
                 ),
               ),
               Padding(
@@ -519,18 +515,18 @@ class _GeneralPage extends StatelessWidget {
               ),
             ],
             if (Platform.isAndroid) ...[
-              CustomSwitchTile(
+              AnymeXTile.toggle(
                 icon: Iconsax.volume_high,
                 title: 'Volume Keys Navigation',
-                description: 'Use volume keys to change pages',
-                switchValue: controller.volumeKeysEnabled.value,
+                subtitle: 'Use volume keys to change pages',
+                value: controller.volumeKeysEnabled.value,
                 onChanged: (_) => controller.toggleVolumeKeys(),
               ),
-              CustomSwitchTile(
+              AnymeXTile.toggle(
                 icon: Iconsax.arrow_swap_horizontal,
                 title: 'Invert Volume Keys',
-                description: 'Swap Up/Down actions',
-                switchValue: controller.invertVolumeKeys.value,
+                subtitle: 'Swap Up/Down actions',
+                value: controller.invertVolumeKeys.value,
                 onChanged: (val) {
                   controller.invertVolumeKeys.value = val;
                   controller.savePreferences();
@@ -538,73 +534,66 @@ class _GeneralPage extends StatelessWidget {
               ),
             ],
             if (controller.readingLayout.value == MangaPageViewMode.continuous) ...[
-              CustomSwitchTile(
+              AnymeXTile.toggle(
                 icon: Icons.play_arrow_rounded,
                 title: 'Auto Scroll',
-                description: 'Automatically scroll/advance pages',
-                switchValue: controller.autoScrollEnabled.value,
+                subtitle: 'Automatically scroll/advance pages',
+                value: controller.autoScrollEnabled.value,
                 onChanged: (_) => controller.toggleAutoScroll(),
               ),
               if (controller.autoScrollEnabled.value)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: CustomSliderTile(
+                  child: AnymeXTile.slider(
                     title: 'Auto Scroll Speed',
                     icon: Icons.speed,
-                    description: 'Seconds per page / screen',
-                    sliderValue: controller.autoScrollSpeed.value,
+                    subtitle: 'Seconds per page / screen',
+                    value: controller.autoScrollSpeed.value,
                     min: 1.0,
                     max: 10.0,
-                    label:
-                        '${controller.autoScrollSpeed.value.toStringAsFixed(1)}s',
                     divisions: 18,
                     onChanged: controller.setAutoScrollSpeed,
-                    onChangedEnd: (_) => controller.savePreferences(),
                   ),
                 ),
             ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: CustomSliderTile(
+              child: AnymeXTile.slider(
                 title: 'Preload Pages',
                 icon: Icons.image_aspect_ratio_rounded,
-                description: 'Pages ahead of time for faster loading',
-                sliderValue: controller.preloadPages.value.toDouble(),
+                subtitle: 'Pages ahead of time for faster loading',
+                value: controller.preloadPages.value.toDouble(),
                 min: 1,
                 max: 15,
-                label: controller.preloadPages.value.toString(),
                 divisions: 14,
                 onChanged: (v) => controller.preloadPages.value = v.toInt(),
-                onChangedEnd: (_) => controller.savePreferences(),
               ),
             ),
             if (!Platform.isAndroid && !Platform.isIOS) ...[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: CustomSliderTile(
+                child: AnymeXTile.slider(
                   title: 'Image Width',
                   icon: Icons.image_aspect_ratio_rounded,
-                  description: 'Continuous Mode only',
-                  sliderValue: controller.pageWidthMultiplier.value,
+                  subtitle: 'Continuous Mode only',
+                  value: controller.pageWidthMultiplier.value,
                   min: 1.0,
                   max: 2.5,
                   divisions: 15,
                   onChanged: (v) => controller.pageWidthMultiplier.value = v,
-                  onChangedEnd: (_) => controller.savePreferences(),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: CustomSliderTile(
+                child: AnymeXTile.slider(
                   title: 'Scroll Multiplier',
                   icon: Icons.speed,
-                  description: 'Key & Volume Scrolling Speed',
-                  sliderValue: controller.scrollSpeedMultiplier.value,
+                  subtitle: 'Key & Volume Scrolling Speed',
+                  value: controller.scrollSpeedMultiplier.value,
                   min: 1.0,
                   max: 5.0,
                   divisions: 9,
                   onChanged: (v) => controller.scrollSpeedMultiplier.value = v,
-                  onChangedEnd: (_) => controller.savePreferences(),
                 ),
               ),
             ],

@@ -3,10 +3,9 @@ import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme_registry.dart';
-import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -299,559 +298,386 @@ class _SettingsReaderState extends State<SettingsReader> {
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
-  body: Column(
-          children: [
-            const NestedHeader(title: 'Reader'),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 20, 15, 50),
+      showHeader: true,
+      headerTitle: 'Reader Settings',
+      body: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
                   child: Column(
                     children: [
-                      AnymeXExpansionTile(
+                      AnymeXSectionBuilder(
                         title: 'Manga',
-                        initialExpanded: true,
-                        content: Column(
-                          children: [
-                            CustomTile(
-                              padding: 10.0,
-                              icon: Icons.style_rounded,
-                              title: 'Control Theme',
-                              description: ReaderControlThemeRegistry.resolve(
-                                      settings.readerControlTheme)
-                                  .name,
-                              onTap: _showReaderControlThemeDialog,
+                        children: [
+                          AnymeXTile(
+                            icon: Icons.style_rounded,
+                            title: 'Control Theme',
+                            subtitle: ReaderControlThemeRegistry.resolve(
+                                    settings.readerControlTheme)
+                                .name,
+                            onTap: _showReaderControlThemeDialog,
+                          ),
+                          AnymeXTile(
+                            icon: Iconsax.card,
+                            title: 'Layout',
+                            subtitle:
+                                _mangaLayout == 0 ? 'Continuous' : 'Paged',
+                            onTap: _showMangaLayoutDialog,
+                          ),
+                          AnymeXTile(
+                            icon: Iconsax.direct_right,
+                            title: 'Direction',
+                            subtitle: switch (_mangaDirection) {
+                              0 => 'Bottom-Up',
+                              1 => 'Top-Down',
+                              2 => 'RTL',
+                              _ => 'LTR',
+                            },
+                            onTap: _showMangaDirectionDialog,
+                          ),
+                          AnymeXTile(
+                            icon: Iconsax.book_1,
+                            title: 'Dual Page Mode',
+                            subtitle: switch (_mangaDualPageMode) {
+                              1 => 'Auto (Laptop/Tab)',
+                              2 => 'Force (Dual)',
+                              _ => 'Standard (Single)',
+                            },
+                            onTap: _showMangaDualPageDialog,
+                          ),
+                          AnymeXTile(
+                            icon: Icons.image_search_rounded,
+                            title: 'Image Filter Quality',
+                            subtitle: switch (_mangaFilterQuality) {
+                              0 => 'None (Nearest)',
+                              1 => 'Low (Bilinear)',
+                              3 => 'High (Bicubic)',
+                              4 => 'Lanczos Pre-scale (Best)',
+                              _ => 'Medium (Default)',
+                            },
+                            onTap: _showMangaFilterQualityDialog,
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Iconsax.pharagraphspacing,
+                            title: 'Spaced Pages',
+                            subtitle: 'Continuous mode only',
+                            value: _mangaSpacedPages,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.spacedPages,
+                              value,
+                              () => _mangaSpacedPages = value,
                             ),
-                            CustomTile(
-                              padding: 10.0,
-                              icon: Iconsax.card,
-                              title: 'Layout',
-                              description:
-                                  _mangaLayout == 0 ? 'Continuous' : 'Paged',
-                              onTap: _showMangaLayoutDialog,
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Iconsax.arrow,
+                            title: 'Overscroll',
+                            subtitle: 'Overscroll to prev/next chapter',
+                            value: _mangaOverscroll,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.overscrollToChapter,
+                              value,
+                              () => _mangaOverscroll = value,
                             ),
-                            CustomTile(
-                              padding: 10.0,
-                              icon: Iconsax.direct_right,
-                              title: 'Direction',
-                              description: switch (_mangaDirection) {
-                                0 => 'Bottom-Up',
-                                1 => 'Top-Down',
-                                2 => 'RTL',
-                                _ => 'LTR',
-                              },
-                              onTap: _showMangaDirectionDialog,
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Iconsax.eye,
+                            title: 'Persistent Page Indicator',
+                            subtitle: 'Always show page indicator',
+                            value: _mangaPageIndicator,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.showPageIndicator,
+                              value,
+                              () => _mangaPageIndicator = value,
                             ),
-                            CustomTile(
-                              padding: 10.0,
-                              icon: Iconsax.book_1,
-                              title: 'Dual Page Mode',
-                              description: switch (_mangaDualPageMode) {
-                                1 => 'Auto (Laptop/Tab)',
-                                2 => 'Force (Dual)',
-                                _ => 'Standard (Single)',
-                              },
-                              onTap: _showMangaDualPageDialog,
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Icons.crop_rounded,
+                            title: 'Crop Borders',
+                            subtitle: 'Remove white/black borders',
+                            value: _mangaCropBorders,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.cropImages,
+                              value,
+                              () => _mangaCropBorders = value,
                             ),
-                            CustomTile(
-                              padding: 10.0,
-                              icon: Icons.image_search_rounded,
-                              title: 'Image Filter Quality',
-                              description: switch (_mangaFilterQuality) {
-                                0 => 'None (Nearest)',
-                                1 => 'Low (Bilinear)',
-                                3 => 'High (Bicubic)',
-                                4 => 'Lanczos Pre-scale (Best)',
-                                _ => 'Medium (Default)',
-                              },
-                              onTap: _showMangaFilterQualityDialog,
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Icons.fullscreen_rounded,
+                            title: 'Fit to Screen Width',
+                            subtitle: 'Stretch images to fit screen width',
+                            value: _mangaFitToScreen,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.fitToScreen,
+                              value,
+                              () => _mangaFitToScreen = value,
                             ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Iconsax.pharagraphspacing,
-                              title: 'Spaced Pages',
-                              description: 'Continuous mode only',
-                              switchValue: _mangaSpacedPages,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.spacedPages,
-                                value,
-                                () => _mangaSpacedPages = value,
-                              ),
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Icons.play_arrow_rounded,
+                            title: 'Auto Scroll',
+                            subtitle: 'Automatically scroll pages',
+                            value: _mangaAutoScroll,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.autoScrollEnabled,
+                              value,
+                              () => _mangaAutoScroll = value,
                             ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Iconsax.arrow,
-                              title: 'Overscroll',
-                              description: 'Overscroll to prev/next chapter',
-                              switchValue: _mangaOverscroll,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.overscrollToChapter,
-                                value,
-                                () => _mangaOverscroll = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Iconsax.eye,
-                              title: 'Persistent Page Indicator',
-                              description: 'Always show page indicator',
-                              switchValue: _mangaPageIndicator,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.showPageIndicator,
-                                value,
-                                () => _mangaPageIndicator = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.crop_rounded,
-                              title: 'Crop Borders',
-                              description: 'Remove white/black borders',
-                              switchValue: _mangaCropBorders,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.cropImages,
-                                value,
-                                () => _mangaCropBorders = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.fullscreen_rounded,
-                              title: 'Fit to Screen Width',
-                              description: 'Stretch images to fit screen width',
-                              switchValue: _mangaFitToScreen,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.fitToScreen,
-                                value,
-                                () => _mangaFitToScreen = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.play_arrow_rounded,
-                              title: 'Auto Scroll',
-                              description: 'Automatically scroll pages',
-                              switchValue: _mangaAutoScroll,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.autoScrollEnabled,
-                                value,
-                                () => _mangaAutoScroll = value,
-                              ),
-                            ),
-                            if (_mangaAutoScroll)
-                              CustomSliderTile(
-                                icon: Icons.speed_rounded,
-                                title: 'Auto Scroll Speed',
-                                description:
-                                    'Seconds per screen/page (lower is faster)',
-                                sliderValue: _mangaAutoScrollSpeed,
-                                min: 1.0,
-                                max: 10.0,
-                                divisions: 18,
-                                onChanged: (value) {
-                                  setState(() => _mangaAutoScrollSpeed = value);
-                                  ReaderKeys.autoScrollSpeed.set(value);
-                                },
-                              ),
-                            if (Platform.isAndroid)
-                              CustomSwitchTile(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 10.0),
-                                icon: Iconsax.volume_high,
-                                title: 'Volume Keys Navigation',
-                                description: 'Use volume keys to change pages',
-                                switchValue: _mangaVolumeKeys,
-                                onChanged: (value) => _setReaderBool(
-                                  ReaderKeys.volumeKeysEnabled,
-                                  value,
-                                  () => _mangaVolumeKeys = value,
-                                ),
-                              ),
-                            if (Platform.isAndroid)
-                              CustomSwitchTile(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 10.0),
-                                icon: Iconsax.arrow_swap_horizontal,
-                                title: 'Invert Volume Keys',
-                                description: 'Swap up/down actions',
-                                switchValue: _mangaInvertVolumeKeys,
-                                onChanged: (value) => _setReaderBool(
-                                  ReaderKeys.invertVolumeKeys,
-                                  value,
-                                  () => _mangaInvertVolumeKeys = value,
-                                ),
-                              ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.lock_clock_rounded,
-                              title: 'Keep Screen On',
-                              description: 'Prevent screen from sleeping',
-                              switchValue: _mangaKeepScreenOn,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.keepScreenOn,
-                                value,
-                                () => _mangaKeepScreenOn = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.swap_vert_rounded,
-                              title: 'Auto Webtoon Mode',
-                              description: 'Auto switch to vertical mode',
-                              switchValue: _mangaAutoWebtoon,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.autoWebtoonMode,
-                                value,
-                                () => _mangaAutoWebtoon = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.swap_horiz_rounded,
-                              title: 'Always Show Chapter Transition',
-                              description:
-                                  'Show chapter transition even without gaps',
-                              switchValue: _mangaChapterTransition,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.alwaysShowChapterTransition,
-                                value,
-                                () => _mangaChapterTransition = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.touch_app_rounded,
-                              title: 'Long Press Page Actions',
-                              description: 'Enable long press quick actions',
-                              switchValue: _mangaLongPressActions,
-                              onChanged: (value) => _setReaderBool(
-                                ReaderKeys.longPressPageActionsEnabled,
-                                value,
-                                () => _mangaLongPressActions = value,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      AnymeXExpansionTile(
-                        title: 'Novel',
-                        initialExpanded: true,
-                        content: Column(
-                          children: [
-                            CustomTile(
-                              padding: 10.0,
-                              icon: Icons.palette_rounded,
-                              title: 'Theme',
-                              description: switch (_novelThemeMode) {
-                                0 => 'Light',
-                                1 => 'Dark',
-                                2 => 'Sepia',
-                                _ => 'System',
-                              },
-                              onTap: _showNovelThemeDialog,
-                            ),
-                            CustomTile(
-                              padding: 10.0,
-                              icon: HugeIcons.strokeRoundedTextFont,
-                              title: 'Font Family',
-                              description: _novelFontFamily,
-                              onTap: _showNovelFontDialog,
-                            ),
-                            CustomSliderTile(
-                              icon: Icons.format_size_rounded,
-                              title: 'Font Size',
-                              description: 'Text size',
-                              sliderValue: _novelFontSize,
-                              min: 12,
-                              max: 24,
-                              divisions: 12,
-                              onChanged: (value) {
-                                setState(() => _novelFontSize =
-                                    value.clamp(12.0, 24.0).toDouble());
-                                NovelReaderKeys.fontSize.set(_novelFontSize);
-                              },
-                            ),
-                            CustomSliderTile(
-                              icon: Icons.height_rounded,
-                              title: 'Line Height',
-                              description: 'Distance between lines',
-                              sliderValue: _novelLineHeight,
+                          ),
+                          if (_mangaAutoScroll)
+                            AnymeXTile.slider(
+                              icon: Icons.speed_rounded,
+                              title: 'Auto Scroll Speed',
+                              subtitle:
+                                  'Seconds per screen/page (lower is faster)',
+                              value: _mangaAutoScrollSpeed,
                               min: 1.0,
-                              max: 3.0,
-                              divisions: 20,
+                              max: 10.0,
+                              divisions: 18,
                               onChanged: (value) {
-                                setState(() => _novelLineHeight =
-                                    value.clamp(1.0, 3.0).toDouble());
-                                NovelReaderKeys.lineHeight
-                                    .set(_novelLineHeight);
+                                setState(() => _mangaAutoScrollSpeed = value);
+                                ReaderKeys.autoScrollSpeed.set(value);
                               },
                             ),
-                            CustomSliderTile(
-                              icon: Icons.opacity_rounded,
-                              title: 'Background Opacity',
-                              description: 'Reader background opacity',
-                              sliderValue: _novelBackgroundOpacity,
-                              min: 0.3,
-                              max: 1.0,
-                              divisions: 7,
-                              onChanged: (value) {
-                                setState(() => _novelBackgroundOpacity =
-                                    value.clamp(0.3, 1.0).toDouble());
-                                NovelReaderKeys.backgroundOpacity
-                                    .set(_novelBackgroundOpacity);
-                              },
-                            ),
-                            CustomSliderTile(
-                              icon: Icons.text_fields_rounded,
-                              title: 'Letter Spacing',
-                              description: 'Space between letters',
-                              sliderValue: _novelLetterSpacing,
-                              min: -1.0,
-                              max: 2.0,
-                              divisions: 30,
-                              onChanged: (value) {
-                                setState(() => _novelLetterSpacing =
-                                    value.clamp(-1.0, 2.0).toDouble());
-                                NovelReaderKeys.letterSpacing
-                                    .set(_novelLetterSpacing);
-                              },
-                            ),
-                            CustomSliderTile(
-                              icon: Icons.text_rotation_none_rounded,
-                              title: 'Word Spacing',
-                              description: 'Space between words',
-                              sliderValue: _novelWordSpacing,
-                              min: 0.0,
-                              max: 5.0,
-                              divisions: 25,
-                              onChanged: (value) {
-                                setState(() => _novelWordSpacing =
-                                    value.clamp(0.0, 5.0).toDouble());
-                                NovelReaderKeys.wordSpacing
-                                    .set(_novelWordSpacing);
-                              },
-                            ),
-                            CustomSliderTile(
-                              icon: Icons.format_line_spacing_rounded,
-                              title: 'Paragraph Spacing',
-                              description: 'Space between paragraphs',
-                              sliderValue: _novelParagraphSpacing,
-                              min: 8.0,
-                              max: 32.0,
-                              divisions: 12,
-                              onChanged: (value) {
-                                setState(() => _novelParagraphSpacing =
-                                    value.clamp(8.0, 32.0).toDouble());
-                                NovelReaderKeys.paragraphSpacing
-                                    .set(_novelParagraphSpacing);
-                              },
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.chrome_reader_mode_rounded,
-                              title: 'Page Reader Mode',
-                              description: 'Read one page at a time',
-                              switchValue: _novelPageReaderMode,
-                              onChanged: (value) => _setNovelBool(
-                                NovelReaderKeys.pageReader,
-                                value,
-                                () => _novelPageReaderMode = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.play_arrow_rounded,
-                              title: 'Auto Scroll',
-                              description: 'Automatically scroll content',
-                              switchValue: _novelAutoScroll,
-                              onChanged: (value) => _setNovelBool(
-                                NovelReaderKeys.autoScroll,
-                                value,
-                                () => _novelAutoScroll = value,
-                              ),
-                            ),
-                            if (_novelAutoScroll)
-                              CustomSliderTile(
-                                icon: Icons.speed_rounded,
-                                title: 'Auto Scroll Speed',
-                                description:
-                                    'Seconds per screen (lower is faster)',
-                                sliderValue: _novelAutoScrollSpeed,
-                                min: 1.0,
-                                max: 10.0,
-                                divisions: 18,
-                                onChanged: (value) {
-                                  setState(() => _novelAutoScrollSpeed =
-                                      value.clamp(1.0, 10.0).toDouble());
-                                  NovelReaderKeys.autoScrollSpeed
-                                      .set(_novelAutoScrollSpeed);
-                                },
-                              ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
+                          if (Platform.isAndroid)
+                            AnymeXTile.toggle(
                               icon: Iconsax.volume_high,
-                              title: 'Volume Button Scrolling',
-                              description: 'Use volume buttons to scroll',
-                              switchValue: _novelVolumeScrolling,
-                              onChanged: (value) => _setNovelBool(
-                                NovelReaderKeys.volumeScrolling,
+                              title: 'Volume Keys Navigation',
+                              subtitle: 'Use volume keys to change pages',
+                              value: _mangaVolumeKeys,
+                              onChanged: (value) => _setReaderBool(
+                                ReaderKeys.volumeKeysEnabled,
                                 value,
-                                () => _novelVolumeScrolling = value,
+                                () => _mangaVolumeKeys = value,
                               ),
                             ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.touch_app_rounded,
-                              title: 'Tap to Scroll',
-                              description: 'Tap top/bottom to scroll',
-                              switchValue: _novelTapToScroll,
-                              onChanged: (value) => _setNovelBool(
-                                NovelReaderKeys.tapToScroll,
+                          if (Platform.isAndroid)
+                            AnymeXTile.toggle(
+                              icon: Iconsax.arrow_swap_horizontal,
+                              title: 'Invert Volume Keys',
+                              subtitle: 'Swap up/down actions',
+                              value: _mangaInvertVolumeKeys,
+                              onChanged: (value) => _setReaderBool(
+                                ReaderKeys.invertVolumeKeys,
                                 value,
-                                () => _novelTapToScroll = value,
+                                () => _mangaInvertVolumeKeys = value,
                               ),
                             ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.swipe_rounded,
-                              title: 'Swipe Between Chapters',
-                              description: 'Enable chapter swipe navigation',
-                              switchValue: _novelSwipeGestures,
+                          AnymeXTile.toggle(
+                            icon: Icons.lock_clock_rounded,
+                            title: 'Keep Screen On',
+                            subtitle: 'Prevent screen from sleeping',
+                            value: _mangaKeepScreenOn,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.keepScreenOn,
+                              value,
+                              () => _mangaKeepScreenOn = value,
+                            ),
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Icons.swap_vert_rounded,
+                            title: 'Auto Webtoon Mode',
+                            subtitle: 'Auto switch to vertical mode',
+                            value: _mangaAutoWebtoon,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.autoWebtoonMode,
+                              value,
+                              () => _mangaAutoWebtoon = value,
+                            ),
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Icons.swap_horiz_rounded,
+                            title: 'Always Show Chapter Transition',
+                            subtitle:
+                                'Show chapter transition even without gaps',
+                            value: _mangaChapterTransition,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.alwaysShowChapterTransition,
+                              value,
+                              () => _mangaChapterTransition = value,
+                            ),
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Icons.touch_app_rounded,
+                            title: 'Long Press Page Actions',
+                            subtitle: 'Enable long press quick actions',
+                            value: _mangaLongPressActions,
+                            onChanged: (value) => _setReaderBool(
+                              ReaderKeys.longPressPageActionsEnabled,
+                              value,
+                              () => _mangaLongPressActions = value,
+                            ),
+                          ),
+                        ],
+                      ),
+                      AnymeXSectionBuilder(
+                        title: 'Novel',
+                        children: [
+                          AnymeXTile(
+                            icon: Icons.palette_rounded,
+                            title: 'Theme',
+                            subtitle: switch (_novelThemeMode) {
+                              0 => 'Light',
+                              1 => 'Dark',
+                              2 => 'Sepia',
+                              _ => 'System',
+                            },
+                            onTap: _showNovelThemeDialog,
+                          ),
+                          AnymeXTile(
+                            icon: HugeIcons.strokeRoundedTextFont,
+                            title: 'Font Family',
+                            subtitle: _novelFontFamily,
+                            onTap: _showNovelFontDialog,
+                          ),
+                          AnymeXTile.slider(
+                            icon: Icons.format_size_rounded,
+                            title: 'Font Size',
+                            subtitle: 'Text size',
+                            value: _novelFontSize,
+                            min: 12,
+                            max: 24,
+                            divisions: 12,
+                            onChanged: (value) {
+                              setState(() => _novelFontSize =
+                                  value.clamp(12.0, 24.0).toDouble());
+                              NovelReaderKeys.fontSize.set(_novelFontSize);
+                            },
+                          ),
+                          AnymeXTile.slider(
+                            icon: Icons.height_rounded,
+                            title: 'Line Height',
+                            subtitle: 'Distance between lines',
+                            value: _novelLineHeight,
+                            min: 1.0,
+                            max: 3.0,
+                            divisions: 20,
+                            onChanged: (value) {
+                              setState(() => _novelLineHeight =
+                                  value.clamp(1.0, 3.0).toDouble());
+                              NovelReaderKeys.lineHeight.set(_novelLineHeight);
+                            },
+                          ),
+                          AnymeXTile.slider(
+                            icon: Icons.opacity_rounded,
+                            title: 'Background Opacity',
+                            subtitle: 'Reader background opacity',
+                            value: _novelBackgroundOpacity,
+                            min: 0.3,
+                            max: 1.0,
+                            divisions: 7,
+                            onChanged: (value) {
+                              setState(() => _novelBackgroundOpacity =
+                                  value.clamp(0.3, 1.0).toDouble());
+                              NovelReaderKeys.backgroundOpacity
+                                  .set(_novelBackgroundOpacity);
+                            },
+                          ),
+                          AnymeXTile.slider(
+                            icon: Icons.text_fields_rounded,
+                            title: 'Letter Spacing',
+                            subtitle: 'Space between letters',
+                            value: _novelLetterSpacing,
+                            min: -1.0,
+                            max: 2.0,
+                            divisions: 30,
+                            onChanged: (value) {
+                              setState(() => _novelLetterSpacing =
+                                  value.clamp(-1.0, 2.0).toDouble());
+                              NovelReaderKeys.letterSpacing
+                                  .set(_novelLetterSpacing);
+                            },
+                          ),
+                          AnymeXTile.slider(
+                            icon: Icons.text_rotation_none_rounded,
+                            title: 'Word Spacing',
+                            subtitle: 'Space between words',
+                            value: _novelWordSpacing,
+                            min: 0.0,
+                            max: 5.0,
+                            divisions: 25,
+                            onChanged: (value) {
+                              setState(() => _novelWordSpacing =
+                                  value.clamp(0.0, 5.0).toDouble());
+                              NovelReaderKeys.wordSpacing
+                                  .set(_novelWordSpacing);
+                            },
+                          ),
+                          AnymeXTile.slider(
+                            icon: Icons.format_line_spacing_rounded,
+                            title: 'Paragraph Spacing',
+                            subtitle: 'Space between paragraphs',
+                            value: _novelParagraphSpacing,
+                            min: 8.0,
+                            max: 32.0,
+                            divisions: 12,
+                            onChanged: (value) {
+                              setState(() => _novelParagraphSpacing =
+                                  value.clamp(8.0, 32.0).toDouble());
+                              NovelReaderKeys.paragraphSpacing
+                                  .set(_novelParagraphSpacing);
+                            },
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Icons.chrome_reader_mode_rounded,
+                            title: 'Page Reader Mode',
+                            subtitle: 'Read one page at a time',
+                            value: _novelPageReaderMode,
+                            onChanged: (value) => _setNovelBool(
+                              NovelReaderKeys.pageReader,
+                              value,
+                              () => _novelPageReaderMode = value,
+                            ),
+                          ),
+                          AnymeXTile.toggle(
+                            icon: Icons.play_arrow_rounded,
+                            title: 'Auto Scroll',
+                            subtitle: 'Automatically scroll content',
+                            value: _novelAutoScroll,
+                            onChanged: (value) => _setNovelBool(
+                              NovelReaderKeys.autoScroll,
+                              value,
+                              () => _novelAutoScroll = value,
+                            ),
+                          ),
+                          if (_novelAutoScroll)
+                            AnymeXTile.slider(
+                              icon: Icons.speed_rounded,
+                              title: 'Auto Scroll Speed',
+                              subtitle:
+                                  'Seconds per screen (lower is faster)',
+                              value: _novelAutoScrollSpeed,
+                              min: 1.0,
+                              max: 10.0,
+                              divisions: 18,
+                              onChanged: (value) {
+                                setState(() => _novelAutoScrollSpeed =
+                                    value.clamp(1.0, 10.0).toDouble());
+                                NovelReaderKeys.autoScrollSpeed
+                                    .set(_novelAutoScrollSpeed);
+                              },
+                            ),
+                          if (_novelTtsEnabled)
+                            AnymeXTile.toggle(
+                              icon: Icons.skip_next_rounded,
+                              title: 'TTS Auto Advance',
+                              subtitle:
+                                  'Automatically move to next text segment',
+                              value: _novelTtsAutoAdvance,
                               onChanged: (value) => _setNovelBool(
-                                NovelReaderKeys.swipeGestures,
+                                NovelReaderKeys.ttsAutoAdvance,
                                 value,
-                                () => _novelSwipeGestures = value,
+                                () => _novelTtsAutoAdvance = value,
                               ),
                             ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.lock_clock_rounded,
-                              title: 'Keep Screen On',
-                              description: 'Prevent screen from sleeping',
-                              switchValue: _novelKeepScreenOn,
-                              onChanged: (value) => _setNovelBool(
-                                NovelReaderKeys.keepScreenOn,
-                                value,
-                                () => _novelKeepScreenOn = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.pie_chart_rounded,
-                              title: 'Show Reading Progress',
-                              description: 'Show current reading progress',
-                              switchValue: _novelReadingProgress,
-                              onChanged: (value) => _setNovelBool(
-                                NovelReaderKeys.showReadingProgress,
-                                value,
-                                () => _novelReadingProgress = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.schedule_rounded,
-                              title: 'Show Battery & Time',
-                              description: 'Show status info while reading',
-                              switchValue: _novelBatteryTime,
-                              onChanged: (value) => _setNovelBool(
-                                NovelReaderKeys.showBatteryTime,
-                                value,
-                                () => _novelBatteryTime = value,
-                              ),
-                            ),
-                            CustomSwitchTile(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              icon: Icons.record_voice_over_rounded,
-                              title: 'Enable TTS',
-                              description: 'Read text aloud',
-                              switchValue: _novelTtsEnabled,
-                              onChanged: (value) => _setNovelBool(
-                                NovelReaderKeys.ttsEnabled,
-                                value,
-                                () => _novelTtsEnabled = value,
-                              ),
-                            ),
-                            if (_novelTtsEnabled)
-                              CustomSliderTile(
-                                icon: Icons.slow_motion_video_rounded,
-                                title: 'TTS Speed',
-                                description: 'Speech speed',
-                                sliderValue: _novelTtsSpeed,
-                                min: 0.1,
-                                max: 1.0,
-                                divisions: 9,
-                                onChanged: (value) {
-                                  setState(() => _novelTtsSpeed =
-                                      value.clamp(0.1, 1.0).toDouble());
-                                  NovelReaderKeys.ttsSpeed.set(_novelTtsSpeed);
-                                },
-                              ),
-                            if (_novelTtsEnabled)
-                              CustomSliderTile(
-                                icon: Icons.graphic_eq_rounded,
-                                title: 'TTS Pitch',
-                                description: 'Speech pitch',
-                                sliderValue: _novelTtsPitch,
-                                min: 0.5,
-                                max: 2.0,
-                                divisions: 15,
-                                onChanged: (value) {
-                                  setState(() => _novelTtsPitch =
-                                      value.clamp(0.5, 2.0).toDouble());
-                                  NovelReaderKeys.ttsPitch.set(_novelTtsPitch);
-                                },
-                              ),
-                            if (_novelTtsEnabled)
-                              CustomSwitchTile(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10.0, vertical: 10.0),
-                                icon: Icons.skip_next_rounded,
-                                title: 'TTS Auto Advance',
-                                description:
-                                    'Automatically move to next text segment',
-                                switchValue: _novelTtsAutoAdvance,
-                                onChanged: (value) => _setNovelBool(
-                                  NovelReaderKeys.ttsAutoAdvance,
-                                  value,
-                                  () => _novelTtsAutoAdvance = value,
-                                ),
-                              ),
-                            CustomTile(
-                              padding: 10.0,
-                              icon: Icons.restart_alt_rounded,
-                              title: 'Reset Novel Reader Settings',
-                              description: 'Restore all novel reader defaults',
-                              onTap: _resetNovelDefaults,
-                            ),
-                          ],
-                        ),
+                          AnymeXTile(
+                            icon: Icons.restart_alt_rounded,
+                            title: 'Reset Novel Reader Settings',
+                            subtitle: 'Restore all novel reader defaults',
+                            onTap: _resetNovelDefaults,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ),
-              ),
-            ),
-          ],
-        )
-);
+                )
+    );
   }
 }

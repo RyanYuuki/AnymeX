@@ -4,16 +4,14 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/widgets/card_selector.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/screens/settings/widgets/carousel_style_selector.dart';
-import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -50,169 +48,156 @@ class _SettingsUiState extends State<SettingsUi> {
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
-  body: Column(children: [
-      const NestedHeader(title: 'UI'),
-      Expanded(
-        child: SingleChildScrollView(
-          child: Padding(
-              padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 50),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Obx(
+      showHeader: true,
+      headerTitle: 'UI Settings',
+      body: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+                  child: Obx(
                     () => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AnymeXExpansionTile(
-                            title: 'Common',
-                            initialExpanded: true,
-                            content: Column(
-                              children: [
-                                CustomSwitchTile(
-                                    icon: HugeIcons.strokeRoundedBounceRight,
-                                    title: "Enable Animation",
-                                    description:
-                                        "Enable Animation on Carousels, Disable it to get smoother experience",
-                                    switchValue: settings.enableAnimation,
-                                    onChanged: (val) {
-                                      settings.enableAnimation = val;
-                                    }),
-                                CustomSwitchTile(
-                                    icon: Iconsax.image,
-                                    title: "Enable Ken Burns",
-                                    description:
-                                        "Enable background animations on anime/manga posters",
-                                    switchValue: settings.enablePosterKenBurns,
-                                    onChanged: (val) {
-                                      settings.enablePosterKenBurns = val;
-                                    }),
-                                CustomSwitchTile(
-                                    icon: Icons.colorize,
-                                    title: "Translucent Nav",
-                                    description: "Enable translucent tab bar",
-                                    switchValue: settings.transculentBar,
-                                    onChanged: (val) {
-                                      settings.transculentBar = val;
-                                    }),
-                                CustomSwitchTile(
-                                    icon: Icons.view_headline_rounded,
-                                    title: "Use Legacy Header",
-                                    description:
-                                        "Enable the classic simple header style on home screens",
-                                    switchValue: settings.useLegacyHeader,
-                                    onChanged: (val) {
-                                      settings.useLegacyHeader = val;
-                                    }),
-                                if (Platform.isAndroid || Platform.isIOS)
-                                  CustomSwitchTile(
-                                      icon: Icons.fullscreen_rounded,
-                                      title: "Immersive Mode",
-                                      description:
-                                          "Hide status bar and system navigation bar for an immersed view",
-                                      switchValue: settings.enableImmersiveMode,
-                                      onChanged: (val) {
-                                        settings.enableImmersiveMode = val;
-                                      }),
-                                CustomTile(
-                                  onTap: () => showCardStyleSwitcher(context),
-                                  icon: Iconsax.card5,
-                                  title: "Card Style",
-                                  description: "Change card style",
-                                ),
-                                CustomTile(
-                                  onTap: () =>
-                                      showHistoryCardStyleSelector(context),
-                                  icon: Iconsax.card5,
-                                  title: "History Card Style",
-                                  description: "Change history card style",
-                                ),
-                                CustomTile(
-                                  onTap: () => showCarouselStyleSelector(context),
-                                  icon: Icons.view_carousel_rounded,
-                                  title: "Carousel Style",
-                                  description: "Change home screen big carousel style",
-                                ),
-                                CustomTile(
-                                  icon: Icons.reorder_rounded,
-                                  title: 'Reorder Navigation Tabs',
-                                  description:
-                                      'Drag and drop to reorder the main navigation tabs',
-                                  onTap: () => _showReorderTabsDialog(context),
-                                ),
-                                10.height(),
-                              ],
-                            )),
-                        AnymeXExpansionTile(
-                            title: 'Extras',
-                            content: Column(
-                              children: [
-                                CustomSliderTile(
-                                  icon: HugeIcons.strokeRoundedLighthouse,
-                                  title: "Glow Multiplier",
-                                  description:
-                                      "Adjust the glow of all the elements",
-                                  sliderValue: settings.glowMultiplier,
-                                  onChanged: (value) => handleSliderChange(
-                                      'glowMultiplier', value),
-                                  max: 5.0,
-                                ),
-                                const SizedBox(height: 20),
-                                CustomSliderTile(
-                                  icon: HugeIcons.strokeRoundedRadius,
-                                  title: "Radius Multiplier",
-                                  description:
-                                      "Adjust the radius of all the elements",
-                                  sliderValue: settings.radiusMultiplier,
-                                  onChanged: (value) => handleSliderChange(
-                                      'radiusMultiplier', value),
-                                  max: 3.0,
-                                ),
-                                const SizedBox(height: 20),
-                                CustomSliderTile(
-                                  icon: HugeIcons.strokeRoundedRadius,
-                                  title: "Blur Multiplier",
-                                  description:
-                                      "Adjust the Glow Blur of all the elements",
-                                  sliderValue: settings.blurMultiplier,
-                                  onChanged: (value) => handleSliderChange(
-                                      'blurMultiplier', value),
-                                  max: 5.0,
-                                ),
-                                const SizedBox(height: 20),
-                                CustomSliderTile(
-                                  icon: HugeIcons.strokeRoundedRadius,
-                                  title: "Card Roundness",
-                                  description:
-                                      "Adjust the Roundness of All Cards",
-                                  sliderValue: settings.cardRoundness,
-                                  onChanged: (value) => handleSliderChange(
-                                      'cardRoundness', value),
-                                  max: 5.0,
-                                ),
-                                const SizedBox(height: 20),
-                                CustomSliderTile(
-                                  icon: HugeIcons.strokeRoundedRadius,
-                                  title: "Card Animation Duration",
-                                  description:
-                                      "Adjust the Animation of All Cards",
-                                  sliderValue:
-                                      settings.animationDuration.toDouble(),
-                                  onChanged: (value) =>
-                                      handleSliderChange('animation', value),
-                                  max: 1000,
-                                  divisions: 10,
-                                ),
-                              ],
-                            )),
+                        AnymeXSectionBuilder(
+                          title: 'Common',
+                          children: [
+                            AnymeXTile.toggle(
+                              icon: HugeIcons.strokeRoundedBounceRight,
+                              title: "Enable Animation",
+                              subtitle:
+                                  "Enable animation on carousels for smooth motion",
+                              value: settings.enableAnimation,
+                              onChanged: (val) {
+                                settings.enableAnimation = val;
+                              },
+                            ),
+                            AnymeXTile.toggle(
+                              icon: Iconsax.image,
+                              title: "Enable Ken Burns",
+                              subtitle:
+                                  "Enable background animation on poster images",
+                              value: settings.enablePosterKenBurns,
+                              onChanged: (val) {
+                                settings.enablePosterKenBurns = val;
+                              },
+                            ),
+                            AnymeXTile.toggle(
+                              icon: Icons.colorize,
+                              title: "Translucent Nav",
+                              subtitle: "Enable translucent navigation bar",
+                              value: settings.transculentBar,
+                              onChanged: (val) {
+                                settings.transculentBar = val;
+                              },
+                            ),
+                            AnymeXTile.toggle(
+                              icon: Icons.view_headline_rounded,
+                              title: "Use Legacy Header",
+                              subtitle:
+                                  "Enable classic simple header style on home screens",
+                              value: settings.useLegacyHeader,
+                              onChanged: (val) {
+                                settings.useLegacyHeader = val;
+                              },
+                            ),
+                            if (Platform.isAndroid || Platform.isIOS)
+                              AnymeXTile.toggle(
+                                icon: Icons.fullscreen_rounded,
+                                title: "Immersive Mode",
+                                subtitle:
+                                    "Hide system status and navigation bars",
+                                value: settings.enableImmersiveMode,
+                                onChanged: (val) {
+                                  settings.enableImmersiveMode = val;
+                                },
+                              ),
+                            AnymeXTile(
+                              onTap: () => showCardStyleSwitcher(context),
+                              icon: Iconsax.card5,
+                              title: "Card Style",
+                              subtitle: "Customize media card presentation",
+                            ),
+                            AnymeXTile(
+                              onTap: () => showHistoryCardStyleSelector(context),
+                              icon: Iconsax.card5,
+                              title: "History Card Style",
+                              subtitle: "Customize history card presentation",
+                            ),
+                            AnymeXTile(
+                              onTap: () => showCarouselStyleSelector(context),
+                              icon: Icons.view_carousel_rounded,
+                              title: "Carousel Style",
+                              subtitle: "Change home screen hero carousel style",
+                            ),
+                            AnymeXTile(
+                              icon: Icons.reorder_rounded,
+                              title: 'Reorder Navigation Tabs',
+                              subtitle:
+                                  'Drag and drop to reorder navigation bar tabs',
+                              onTap: () => _showReorderTabsDialog(context),
+                            ),
+                          ],
+                        ),
+                        AnymeXSectionBuilder(
+                          title: 'Extras',
+                          children: [
+                            AnymeXTile.slider(
+                              icon: HugeIcons.strokeRoundedLighthouse,
+                              title: "Glow Multiplier",
+                              subtitle: "Adjust element glow intensity",
+                              value: settings.glowMultiplier,
+                              min: 0,
+                              max: 5.0,
+                              onChanged: (value) =>
+                                  handleSliderChange('glowMultiplier', value),
+                            ),
+                            AnymeXTile.slider(
+                              icon: HugeIcons.strokeRoundedRadius,
+                              title: "Radius Multiplier",
+                              subtitle: "Adjust corner radius of elements",
+                              value: settings.radiusMultiplier,
+                              min: 0,
+                              max: 3.0,
+                              onChanged: (value) =>
+                                  handleSliderChange('radiusMultiplier', value),
+                            ),
+                            AnymeXTile.slider(
+                              icon: HugeIcons.strokeRoundedRadius,
+                              title: "Blur Multiplier",
+                              subtitle: "Adjust glow blur intensity",
+                              value: settings.blurMultiplier,
+                              min: 0,
+                              max: 5.0,
+                              onChanged: (value) =>
+                                  handleSliderChange('blurMultiplier', value),
+                            ),
+                            AnymeXTile.slider(
+                              icon: HugeIcons.strokeRoundedRadius,
+                              title: "Card Roundness",
+                              subtitle: "Adjust roundness of all media cards",
+                              value: settings.cardRoundness,
+                              min: 0,
+                              max: 5.0,
+                              onChanged: (value) =>
+                                  handleSliderChange('cardRoundness', value),
+                            ),
+                            AnymeXTile.slider(
+                              icon: HugeIcons.strokeRoundedRadius,
+                              title: "Card Animation Duration",
+                              subtitle: "Adjust card animation speed",
+                              value: settings.animationDuration.toDouble(),
+                              min: 0,
+                              max: 1000,
+                              divisions: 10,
+                              valueTransformer: (v) => "${v.toInt()}ms",
+                              onChanged: (value) =>
+                                  handleSliderChange('animation', value),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                  )
-                ],
-              )),
-        ),
-      ),
-    ])
-);
+                  ),
+                )
+    );
   }
 
   void _showReorderTabsDialog(BuildContext context) {

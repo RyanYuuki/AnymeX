@@ -166,66 +166,43 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     }
   }
 
-  @override
+
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
-  body: Obx(() {
-          final displayList = _displayManagers;
-          if (displayList.isEmpty) {
-            return Column(children: [
-              NestedHeader(
-                title: 'Extensions',
-                action: Platform.isIOS
-                    ? null
-                    : IconButton(
-                        onPressed: () => navigate(() => const SettingsExtensionManager()),
-                        icon: const Icon(Icons.settings_suggest_rounded),
-                        tooltip: 'Extension Manager',
+      showHeader: true,
+      headerTitle: 'Extensions',
+      body: Obx(() {
+                  final displayList = _displayManagers;
+                  if (displayList.isEmpty) {
+                    return Center(
+                      child: Text('No extension managers found.',
+                          style: TextStyle(color: context.colors.onSurfaceVariant)),
+                    );
+                  }
+
+                  if (_managerIndex >= displayList.length) {
+                    _managerIndex = 0;
+                  }
+
+                  return Column(children: [
+                    const SizedBox(height: 70),
+                    if (displayList.length > 1) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _buildManagerBar(),
                       ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text('No extension managers found.',
-                      style: TextStyle(color: context.colors.onSurfaceVariant)),
-                ),
-              ),
-            ]);
-          }
-
-          if (_managerIndex >= displayList.length) {
-            _managerIndex = 0;
-          }
-
-          return Column(children: [
-            NestedHeader(
-              title: 'Extensions',
-              action: Platform.isIOS
-                  ? null
-                  : IconButton(
-                      onPressed: () => navigate(() => const SettingsExtensionManager()),
-                      icon: const Icon(Icons.settings_suggest_rounded),
-                      tooltip: 'Extension Manager',
+                      const SizedBox(height: 8),
+                    ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: _buildTypeBar(),
                     ),
-            ),
-            const SizedBox(height: 10),
-            if (displayList.length > 1) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildManagerBar(),
-              ),
-              const SizedBox(height: 8),
-            ],
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildTypeBar(),
-            ),
-            const SizedBox(height: 4),
-            Expanded(child: _buildBody()),
-          ]);
-        }),
-  floatingActionButton: Obx(() => _buildFab() ?? const SizedBox.shrink())
-);
+                    const SizedBox(height: 4),
+                    Expanded(child: _buildBody()),
+                  ]);
+                })
+    );
   }
 
   Widget _buildManagerBar() {
