@@ -52,7 +52,6 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     final activeManagers = em.managers;
 
     for (final m in activeManagers) {
-      if (Platform.isIOS && m.requiresPlugin) continue;
       list.add({
         'name': m.name,
         'manager': m,
@@ -60,24 +59,22 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       });
     }
 
-    if (!Platform.isIOS) {
-      final hasAniyomi = activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
-      final hasCloudStream = activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
+    final hasAniyomi = activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
+    final hasCloudStream = activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
 
-      if (!hasAniyomi) {
-        list.add({
-          'name': 'Aniyomi',
-          'manager': null,
-          'isMock': true,
-        });
-      }
-      if (!hasCloudStream) {
-        list.add({
-          'name': 'CloudStream',
-          'manager': null,
-          'isMock': true,
-        });
-      }
+    if (!hasAniyomi) {
+      list.add({
+        'name': 'Aniyomi',
+        'manager': null,
+        'isMock': true,
+      });
+    }
+    if (!hasCloudStream) {
+      list.add({
+        'name': 'CloudStream',
+        'manager': null,
+        'isMock': true,
+      });
     }
 
     list.sort((a, b) {
