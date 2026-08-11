@@ -20,7 +20,6 @@ class PluginManager {
   String get installedReleaseTitle => AnymeXRuntimeBridge.installedReleaseTitle;
 
   Future<void> ensurePluginLoaded(BuildContext context) async {
-    if (Platform.isIOS) return;
     final isLoaded = await AnymeXRuntimeBridge.isLoaded();
     if (isLoaded) return;
 
@@ -38,7 +37,6 @@ class PluginManager {
     BuildContext context, {
     bool showIfUpToDate = false,
   }) async {
-    if (Platform.isIOS) return;
     final release = await fetchLatestRelease();
     if (release == null) {
       errorSnackBar('Failed to check plugin updates.');
@@ -125,7 +123,7 @@ class PluginManager {
           .whereType<Map<String, dynamic>>()
           .toList();
 
-      final extension = Platform.isAndroid ? '.apk' : '.jar';
+      final extension = Platform.isAndroid ? '.apk' : (Platform.isIOS ? '.wasm' : '.jar');
       final assetJson = assets.firstWhereOrNull(
         (asset) =>
             (asset['name'] as String? ?? '').toLowerCase().endsWith(extension),
@@ -173,7 +171,7 @@ class PluginManager {
         final assets = (json['assets'] as List<dynamic>? ?? [])
             .whereType<Map<String, dynamic>>()
             .toList();
-        final extension = Platform.isAndroid ? '.apk' : '.jar';
+        final extension = Platform.isAndroid ? '.apk' : (Platform.isIOS ? '.wasm' : '.jar');
         final assetJson = assets.firstWhereOrNull(
           (asset) => (asset['name'] as String? ?? '').toLowerCase().endsWith(extension),
         );
@@ -234,12 +232,17 @@ class PluginManager {
   Future<bool> syncLocalApk(String apkPath) async {
     final isJar = apkPath.toLowerCase().endsWith('.jar');
     final isApk = apkPath.toLowerCase().endsWith('.apk');
+    final isWasm = apkPath.toLowerCase().endsWith('.wasm');
 
     if (Platform.isAndroid && !isApk) {
       errorSnackBar('Please select a valid APK file.');
       return false;
     }
-    if (!Platform.isAndroid && !isJar) {
+    if (Platform.isIOS && !isWasm) {
+      errorSnackBar('Please select a valid WASM file.');
+      return false;
+    }
+    if (!Platform.isAndroid && !Platform.isIOS && !isJar) {
       errorSnackBar('Please select a valid JAR file.');
       return false;
     }
@@ -627,7 +630,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
           _buildMetaRow(
             colors,
             'File size',
-            Platform.isAndroid
+            Platform.isAndroid || Platform.isIOS
                 ? _formatBytes(_release!.asset.sizeBytes)
                 : (widget.mode == _PluginSheetMode.install
                     ? '${_formatBytes(_release!.asset.sizeBytes)} + ~60 MB JRE'
