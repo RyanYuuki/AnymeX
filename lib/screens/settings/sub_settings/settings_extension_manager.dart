@@ -27,7 +27,7 @@ class SettingsExtensionManager extends StatefulWidget {
 class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   final _pluginManager = PluginManager();
   bool _isCheckingUpdate = false;
-  bool _isSyncingLocalApk = false;
+  bool _isSyncingLocalRuntimeFile = false;
   bool _needsRestart = false;
   final RxBool _isLoadedFromStorage = false.obs;
   String get _installedVersion => AnymeXRuntimeBridge.installedVersion;
@@ -119,8 +119,8 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     }
   }
 
-  void _syncLocalApk() async {
-    if (_isSyncingLocalApk) return;
+  void _syncLocalRuntimeFile() async {
+    if (_isSyncingLocalRuntimeFile) return;
 
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -131,14 +131,14 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       withData: false,
     );
 
-    final apkPath = result?.files.single.path;
-    if (apkPath == null || apkPath.isEmpty) return;
+    final filePath = result?.files.single.path;
+    if (filePath == null || filePath.isEmpty) return;
     if (!mounted) return;
 
-    setState(() => _isSyncingLocalApk = true);
+    setState(() => _isSyncingLocalRuntimeFile = true);
     try {
       final oldVersion = _installedVersion;
-      final synced = await _pluginManager.syncLocalApk(apkPath);
+      final synced = await _pluginManager.syncLocalRuntimeFile(filePath);
       if (mounted && synced) {
         _checkStorageStatus();
         if (_installedVersion != oldVersion) {
@@ -150,7 +150,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
         }
       }
     } finally {
-      if (mounted) setState(() => _isSyncingLocalApk = false);
+      if (mounted) setState(() => _isSyncingLocalRuntimeFile = false);
     }
   }
 
@@ -408,20 +408,24 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                       )
                                     : null,
                               ),
-                              if (Platform.isAndroid) ...[
+                              if (Platform.isAndroid || Platform.isIOS) ...[
                                 Divider(
                                     height: 1,
                                     color: colors.outlineVariant
                                         .withValues(alpha: 0.3)),
                                 CustomTile(
                                   icon: Icons.install_mobile_rounded,
-                                  title: 'Load Plugin APK from Storage',
+                                  title:
+                                      'Load Plugin ${Platform.isAndroid ? 'APK' : (Platform.isIOS ? 'WASM' : 'JAR')} from Storage',
                                   description: Platform.isAndroid
                                       ? 'Select a runtime APK from local storage to manually install'
-                                      : 'Select a runtime JAR from local storage to manually install',
-                                  onTap:
-                                      _isSyncingLocalApk ? null : _syncLocalApk,
-                                  postFix: _isSyncingLocalApk
+                                      : (Platform.isIOS
+                                          ? 'Select a runtime WASM from local storage to manually install'
+                                          : 'Select a runtime JAR from local storage to manually install'),
+                                  onTap: _isSyncingLocalRuntimeFile
+                                      ? null
+                                      : _syncLocalRuntimeFile,
+                                  postFix: _isSyncingLocalRuntimeFile
                                       ? SizedBox(
                                           width: 18,
                                           height: 18,
@@ -558,7 +562,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                             ? status
                             : isActive
                                 ? (_isLoadedFromStorage.value
-                                    ? 'Using local storage APK'
+                                    ? 'Using local runtime file'
                                     : 'Aniyomi & Cloudstream ready')
                                 : 'Install runtime plugin to unlock Aniyomi & Cloudstream',
                         style: TextStyle(
