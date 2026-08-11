@@ -124,7 +124,9 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
 
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: Platform.isAndroid ? const ['apk'] : const ['jar'],
+      allowedExtensions: Platform.isAndroid
+          ? const ['apk']
+          : (Platform.isIOS ? const ['wasm'] : const ['jar']),
       allowMultiple: false,
       withData: false,
     );
