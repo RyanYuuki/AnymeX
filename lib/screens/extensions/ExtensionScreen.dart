@@ -531,9 +531,8 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   }
 
   Widget _buildSourceTypeChips() {
-    final allSourceTypes = Platform.isIOS
-        ? ['all', 'Mangayomi', 'Sora']
-        : ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora', 'Kotatsu'];
+    // All source types available on all platforms (iOS now uses JNI bridge)
+    final allSourceTypes = ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora', 'Kotatsu'];
 
     return Obx(() {
       final selectedType = _selectedSourceType.value;

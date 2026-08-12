@@ -20,7 +20,6 @@ class PluginManager {
   String get installedReleaseTitle => AnymeXRuntimeBridge.installedReleaseTitle;
 
   Future<void> ensurePluginLoaded(BuildContext context) async {
-    if (Platform.isIOS) return;
     final isLoaded = await AnymeXRuntimeBridge.isLoaded();
     if (isLoaded) return;
 
@@ -38,7 +37,6 @@ class PluginManager {
     BuildContext context, {
     bool showIfUpToDate = false,
   }) async {
-    if (Platform.isIOS) return;
     final release = await fetchLatestRelease();
     if (release == null) {
       errorSnackBar('Failed to check plugin updates.');

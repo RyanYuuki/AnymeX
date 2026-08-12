@@ -52,7 +52,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     final activeManagers = em.managers;
 
     for (final m in activeManagers) {
-      if (Platform.isIOS && m.requiresPlugin) continue;
+      // No iOS restriction — plugin managers are now supported on iOS via JNI bridge
       list.add({
         'name': m.name,
         'manager': m,
@@ -60,24 +60,23 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       });
     }
 
-    if (!Platform.isIOS) {
-      final hasAniyomi = activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
-      final hasCloudStream = activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
+    // Show mock entries for Aniyomi/CloudStream on all platforms (including iOS)
+    final hasAniyomi = activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
+    final hasCloudStream = activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
 
-      if (!hasAniyomi) {
-        list.add({
-          'name': 'Aniyomi',
-          'manager': null,
-          'isMock': true,
-        });
-      }
-      if (!hasCloudStream) {
-        list.add({
-          'name': 'CloudStream',
-          'manager': null,
-          'isMock': true,
-        });
-      }
+    if (!hasAniyomi) {
+      list.add({
+        'name': 'Aniyomi',
+        'manager': null,
+        'isMock': true,
+      });
+    }
+    if (!hasCloudStream) {
+      list.add({
+        'name': 'CloudStream',
+        'manager': null,
+        'isMock': true,
+      });
     }
 
     list.sort((a, b) {
@@ -177,13 +176,11 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             return Column(children: [
               NestedHeader(
                 title: 'Extensions',
-                action: Platform.isIOS
-                    ? null
-                    : IconButton(
-                        onPressed: () => navigate(() => const SettingsExtensionManager()),
-                        icon: const Icon(Icons.settings_suggest_rounded),
-                        tooltip: 'Extension Manager',
-                      ),
+                action: IconButton(
+                  onPressed: () => navigate(() => const SettingsExtensionManager()),
+                  icon: const Icon(Icons.settings_suggest_rounded),
+                  tooltip: 'Extension Manager',
+                ),
               ),
               Expanded(
                 child: Center(
@@ -201,13 +198,11 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
           return Column(children: [
             NestedHeader(
               title: 'Extensions',
-              action: Platform.isIOS
-                  ? null
-                  : IconButton(
-                      onPressed: () => navigate(() => const SettingsExtensionManager()),
-                      icon: const Icon(Icons.settings_suggest_rounded),
-                      tooltip: 'Extension Manager',
-                    ),
+              action: IconButton(
+                onPressed: () => navigate(() => const SettingsExtensionManager()),
+                icon: const Icon(Icons.settings_suggest_rounded),
+                tooltip: 'Extension Manager',
+              ),
             ),
             const SizedBox(height: 10),
             if (displayList.length > 1) ...[

@@ -115,8 +115,8 @@ dependencies:
     marquee: ^2.3.0
     anymex_extension_runtime_bridge:
         git:
-            url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
-            ref: main    
+            url: https://github.com/Shebyyy/AnymeXExtensionRuntimeBridge.git
+            ref: test    
     # anymex_extension_runtime_bridge: 
     #     path: ../AnymeXExtensionRuntimeBridge
     jxl_coder: ^0.1.0
@@ -142,8 +142,8 @@ dev_dependencies:
 dependency_overrides:
   libtorrent_flutter:
     git:
-      url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
-      ref: main
+      url: https://github.com/Shebyyy/AnymeXExtensionRuntimeBridge.git
+      ref: test
       path: packages/libtorrent_flutter
   flutter_inappwebview: 6.2.0-beta.2
   media_kit:

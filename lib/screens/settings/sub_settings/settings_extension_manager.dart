@@ -321,20 +321,6 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final bridge = AnymeXRuntimeBridge.controller;
-    if (Platform.isIOS) {
-      return const Scaffold(
-        body: Column(
-          children: [
-            NestedHeader(title: 'Extension Manager'),
-            Expanded(
-              child: Center(
-                child: Text('Extension Manager is not supported on iOS.'),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
 
     return Glow(
       child: Scaffold(
