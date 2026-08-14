@@ -171,6 +171,11 @@ enum PluginKeys {
   useInternalExtensionLoading,
 }
 
+enum ServerBridgeKeys {
+  username,
+  password,
+}
+
 enum AuthKeys {
   authToken,
   malAuthToken,
