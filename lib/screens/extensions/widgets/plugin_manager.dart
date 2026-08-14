@@ -23,13 +23,15 @@ class PluginManager {
 
   bool get isServerBridgeConnected => ServerBridge().isInitialized;
 
-  String? get serverUsername => ServerBridgeKeys.username.get<String>();
+  String? get serverUsername => ServerBridgeKeys.username.get<String?>(null);
+
+  String? get serverPassword => ServerBridgeKeys.password.get<String?>(null);
 
   /// On iOS: connect to server bridge instead of downloading plugin.
   Future<void> ensurePluginLoaded(BuildContext context) async {
     if (Platform.isIOS) {
-      final username = ServerBridgeKeys.username.get<String>();
-      final password = ServerBridgeKeys.password.get<String>();
+      final username = ServerBridgeKeys.username.get<String?>(null);
+      final password = ServerBridgeKeys.password.get<String?>(null);
       if (username != null && password != null) {
         await _connectServerBridge(username, password);
       }
