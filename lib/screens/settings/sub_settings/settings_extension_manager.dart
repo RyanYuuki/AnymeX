@@ -643,32 +643,34 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
               color: colors.onSurface,
             ),
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: usernameController,
-                decoration: InputDecoration(
-                  labelText: 'Username',
-                  hintText: 'min 3 characters',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                    hintText: 'min 3 characters',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'min 4 characters',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'min 4 characters',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(
