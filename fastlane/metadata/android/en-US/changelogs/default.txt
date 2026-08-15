@@ -1,44 +1,23 @@
 ### 🌟 Features
--  toggle to enable disable unified library by @RyanYuuki
--  Cast Support (Beta) by @RyanYuuki
--  auto selected audio track on multi track source by @RyanYuuki
--  subs and tracks indication on server in downloads by @RyanYuuki
--  source side multi audio support by @RyanYuuki
+-  episode & chapter style switcher by @RyanYuuki
+-  nav bar style switcher by @RyanYuuki
+-  UI REVAMP (1/3) by @RyanYuuki
+-  Watchium - Watch Together, Real-time Chat, Playback Sync & Party Controls (#520) by @Shebyyy
 
 ### 🔧 Bug Fixes & Improvements
--  fixed cast not being visible for existing users by @RyanYuuki
--  fixing refresh rate issue on player picking highest instead of video fps by @RyanYuuki
--  fixed wrong placements of button on manga page by @RyanYuuki
--  changed media session to a toggle based feature since its pretty glitchy by @RyanYuuki
--  fixed subtitle margin to be accurate by @RyanYuuki
--  fixed sub sync and playback speed not showing up on local player by @RyanYuuki
--  fixed orientation change causing status bar to not go away by @RyanYuuki
--  added missing buttons on ios theme by @RyanYuuki
--  fixed movies and series tabs on simkl service by @RyanYuuki
--  fixed simkl sorting by @RyanYuuki
--  fixed list editor not showing started at and completed at date by @RyanYuuki
--  fixed simkl calendar by @RyanYuuki
--  fixed local server based sources by @RyanYuuki
--  fixed more ui collisions on some pages by @RyanYuuki
--  fixed novel not saving to library by @RyanYuuki
--  fixed crash when downloading due to second rust spawn by @RyanYuuki
--  fixed green screen on some downloads and fixed cancel not actually cancelling by @RyanYuuki
--  fixed .ts segments showing up in gallery by @RyanYuuki
--  fixed player crashes by @RyanYuuki
+-  fixed macos grey screen by @RyanYuuki
+
+### 🔧 Refactors
+-  mass rename and migrated to custom scaffold for all pages by @RyanYuuki
+-  docoupled service code, organized files, made models efficient by @RyanYuuki
 
 ### 🎨 Style Changes
--  extension screen bg fix, wallpaper change by @RyanYuuki
--  fixing minor ui fuckups by @RyanYuuki
--  minor ui changes related to sheet by @RyanYuuki
--  fixed ui collisions, improved updater ui, fixed bad margins on sheet by @RyanYuuki
-
-### 🚀 Performance Improvements
--  reduced slight stutters, fixed color flashes on page transitions by @RyanYuuki
--  major performance improvement on keyboard triggers by @RyanYuuki
--  migrated to FlutterFragmentActivity for better performance by @RyanYuuki
+-  revamped the entire settings and subsettings pages by @RyanYuuki
 
 ### 🧹 Chores & Documentation
--  bump version to v3.1.4 (patch release) by @RyanYuuki
+-  bump version to v3.1.5 (patch release) by @RyanYuuki
+-  dynamic dialog for social links by @RyanYuuki
+-  updated dc server link by @RyanYuuki
 -  update sideloading source by @ghost
 
  
