@@ -20,7 +20,6 @@ class PluginManager {
   String get installedReleaseTitle => AnymeXRuntimeBridge.installedReleaseTitle;
 
   Future<void> ensurePluginLoaded(BuildContext context) async {
-    if (Platform.isIOS) return;
     final isLoaded = await AnymeXRuntimeBridge.isLoaded();
     if (isLoaded) return;
 
@@ -38,7 +37,6 @@ class PluginManager {
     BuildContext context, {
     bool showIfUpToDate = false,
   }) async {
-    if (Platform.isIOS) return;
     final release = await fetchLatestRelease();
     if (release == null) {
       errorSnackBar('Failed to check plugin updates.');
@@ -125,7 +123,7 @@ class PluginManager {
           .whereType<Map<String, dynamic>>()
           .toList();
 
-      final extension = Platform.isAndroid ? '.apk' : '.jar';
+      final extension = Platform.isAndroid ? '.apk' : (Platform.isIOS ? '.wasm' : '.jar');
       final assetJson = assets.firstWhereOrNull(
         (asset) =>
             (asset['name'] as String? ?? '').toLowerCase().endsWith(extension),
@@ -173,7 +171,7 @@ class PluginManager {
         final assets = (json['assets'] as List<dynamic>? ?? [])
             .whereType<Map<String, dynamic>>()
             .toList();
-        final extension = Platform.isAndroid ? '.apk' : '.jar';
+        final extension = Platform.isAndroid ? '.apk' : (Platform.isIOS ? '.wasm' : '.jar');
         final assetJson = assets.firstWhereOrNull(
           (asset) => (asset['name'] as String? ?? '').toLowerCase().endsWith(extension),
         );
@@ -231,27 +229,32 @@ class PluginManager {
     AnymeXRuntimeBridge.setInstalledRelease(release.tagName, release.title);
   }
 
-  Future<bool> syncLocalApk(String apkPath) async {
-    final isJar = apkPath.toLowerCase().endsWith('.jar');
-    final isApk = apkPath.toLowerCase().endsWith('.apk');
+  Future<bool> syncLocalRuntimeFile(String filePath) async {
+    final isJar = filePath.toLowerCase().endsWith('.jar');
+    final isApk = filePath.toLowerCase().endsWith('.apk');
+    final isWasm = filePath.toLowerCase().endsWith('.wasm');
 
     if (Platform.isAndroid && !isApk) {
       errorSnackBar('Please select a valid APK file.');
       return false;
     }
-    if (!Platform.isAndroid && !isJar) {
+    if (Platform.isIOS && !isWasm) {
+      errorSnackBar('Please select a valid WASM file.');
+      return false;
+    }
+    if (!Platform.isAndroid && !Platform.isIOS && !isJar) {
       errorSnackBar('Please select a valid JAR file.');
       return false;
     }
 
-    if (!await File(apkPath).exists()) {
-      errorSnackBar('Local file not found at: $apkPath');
+    if (!await File(filePath).exists()) {
+      errorSnackBar('Local file not found at: $filePath');
       return false;
     }
 
     try {
       if (Platform.isAndroid) {
-        await AnymeXRuntimeBridge.useLocalApk(apkPath);
+        await AnymeXRuntimeBridge.useLocalApk(filePath);
       } else {
         final paths = RuntimePaths();
         final destPath = await paths.bridgePath;
@@ -259,13 +262,14 @@ class PluginManager {
         if (await destFile.exists()) {
           await destFile.delete();
         }
-        await File(apkPath).copy(destPath);
+        await File(filePath).copy(destPath);
         
         final toolsDir = await paths.toolsDir;
         final metadataFile = File('${toolsDir.path}/metadata.json');
+        final fileTypeLabel = Platform.isIOS ? 'WASM' : 'Jar';
         await metadataFile.writeAsString(jsonEncode({
           'version': 'Local-${DateTime.now().millisecondsSinceEpoch}',
-          'title': 'Local Synced Jar',
+          'title': 'Local Synced $fileTypeLabel',
         }));
         await AnymeXRuntimeBridge.loadMetadata();
       }
@@ -277,7 +281,8 @@ class PluginManager {
         successSnackBar('Plugin synced from local APK.');
         return true;
       } else if (!Platform.isAndroid) {
-        successSnackBar('Plugin jar copied. Please restart the app.');
+        final fileTypeLabel = Platform.isIOS ? 'WASM' : 'JAR';
+        successSnackBar('Plugin $fileTypeLabel copied. Please restart the app.');
         return true;
       }
 
@@ -289,6 +294,9 @@ class PluginManager {
     }
   }
 
+  /// Backwards-compatible alias for [syncLocalRuntimeFile].
+  Future<bool> syncLocalApk(String filePath) => syncLocalRuntimeFile(filePath);
+
   Future<bool> forceSyncLocalApk() async {
     const localPath = '/storage/emulated/0/AnymeX/anymex_runtime_host.apk';
     if (!await File(localPath).exists()) {
@@ -296,7 +304,7 @@ class PluginManager {
       return false;
     }
 
-    return syncLocalApk(localPath);
+    return syncLocalRuntimeFile(localPath);
   }
 }
 
@@ -627,7 +635,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
           _buildMetaRow(
             colors,
             'File size',
-            Platform.isAndroid
+            Platform.isAndroid || Platform.isIOS
                 ? _formatBytes(_release!.asset.sizeBytes)
                 : (widget.mode == _PluginSheetMode.install
                     ? '${_formatBytes(_release!.asset.sizeBytes)} + ~60 MB JRE'
