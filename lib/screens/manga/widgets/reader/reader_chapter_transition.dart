@@ -140,7 +140,7 @@ class ReaderChapterTransition extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final title = chapter.title?.trim().isNotEmpty == true
         ? chapter.title!.trim()
-        : 'Chapter ${chapter.number ?? '?'}';
+        : 'Chapter ${chapter.formattedNumber}';
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),

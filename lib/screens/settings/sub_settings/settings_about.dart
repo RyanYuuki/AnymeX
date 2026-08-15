@@ -73,9 +73,11 @@ class _AboutPageState extends State<AboutPage> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'About',
-      body: SuperListView(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+      body: Builder(
+        builder: (ctx) => SuperListView(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
                   children: [
+                    SizedBox(height: AnymeXHeaderScope.of(ctx)),
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
@@ -338,6 +340,7 @@ class _AboutPageState extends State<AboutPage> {
                     const SizedBox(height: 16),
                   ],
                 )
+      ),
     );
   }
 }

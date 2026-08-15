@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/scheduler.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -2590,11 +2591,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     try {
       final episode = currentEpisode.value;
-      final currentTimestamp = episode.timeStampInMilliseconds;
-      final totalDuration = episodeDuration.value.inMilliseconds;
+      final currentTimestamp = currentPosition.value.inMilliseconds > 0
+          ? currentPosition.value.inMilliseconds
+          : (episode.timeStampInMilliseconds ?? 0);
+      final totalDuration = episodeDuration.value.inMilliseconds > 0
+          ? episodeDuration.value.inMilliseconds
+          : (episode.durationInMilliseconds ?? 0);
 
-      if (currentTimestamp == null) return;
-      if (episodeDuration.value.inMinutes < 1) return;
+      if (totalDuration < 1000) return;
 
       Uint8List? screenshot;
       String? thumbnailPath;
@@ -2631,7 +2635,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         thumbnail: thumbnailPath ?? episode.thumbnail,
         currentTrack: selectedVideo.value,
         videoTracks: episodeTracks,
-        durationInMilliseconds: episode.durationInMilliseconds,
+        durationInMilliseconds: totalDuration,
         lastWatchedTime: DateTime.now().millisecondsSinceEpoch,
         source: episode.source,
         desc: episode.desc,

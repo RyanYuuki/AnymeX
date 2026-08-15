@@ -30,6 +30,8 @@ double getResponsiveGridCardAspectRatio(BuildContext context) {
       return desktop ? (150 / 230) : (108 / 170);
     case CardStyle.glass:
       return desktop ? (150 / 230) : (108 / 170);
+    case CardStyle.simple:
+      return desktop ? (150 / 290) : (108 / 230);
   }
 }
 

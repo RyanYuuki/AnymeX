@@ -486,7 +486,8 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
     final formattedNum = _formatNumber(chapter.number);
     String displayTitle = chapter.title?.trim() ?? '';
     if (displayTitle.isEmpty ||
-        displayTitle.toLowerCase() == 'chapter ${chapter.number}') {
+        displayTitle.toLowerCase() == 'chapter ${chapter.number}' ||
+        displayTitle.toLowerCase() == 'chapter ${chapter.formattedNumber}') {
       displayTitle = 'Chapter $formattedNum';
     }
 

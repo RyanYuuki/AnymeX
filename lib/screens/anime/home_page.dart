@@ -45,7 +45,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
     final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
-    final double bottomNavBarHeight = MediaQuery.paddingOf(context).bottom;
+    final double bottomNavBarHeight = isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 65.0);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -71,10 +71,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                     children: serviceHandler.animeWidgets(context),
                   );
                 }),
-                if (!isDesktop)
-                  SizedBox(height: bottomNavBarHeight)
-                else
-                  const SizedBox(height: 50),
+                SizedBox(height: bottomNavBarHeight),
               ],
             ),
           ),

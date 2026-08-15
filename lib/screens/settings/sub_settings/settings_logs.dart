@@ -24,8 +24,9 @@ class _SettingsLogsState extends State<SettingsLogs> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Logs',
-      body: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -72,6 +73,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
                     ],
                   ),
                 )
+      ),
     );
   }
 }

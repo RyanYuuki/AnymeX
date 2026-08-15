@@ -89,7 +89,6 @@ class _WatchScreenState extends State<WatchScreen> {
     try {
       final watchium = Get.find<WatchiumService>();
 
-      // React to inRoom changes — create/destroy sync controller dynamically
       _inRoomWorker = ever(watchium.inRoom, (inRoom) {
         if (inRoom) {
           _ensureSyncController();
@@ -98,30 +97,23 @@ class _WatchScreenState extends State<WatchScreen> {
         }
       });
 
-      // Handle initial state (player opened while already in room)
       if (watchium.inRoom.value) {
         _ensureSyncController();
       }
-    } catch (_) {
-      // WatchiumService not registered — not in a watch-together session
-    }
+    } catch (_) {}
   }
 
   void _ensureSyncController() {
     try {
       Get.put(WatchiumSyncController(playerController: controller),
           tag: 'watchiumSync');
-    } catch (_) {
-      // Already registered — safe to ignore
-    }
+    } catch (_) {}
   }
 
   void _disposeSyncController() {
     try {
       Get.delete<WatchiumSyncController>(tag: 'watchiumSync');
-    } catch (_) {
-      // Not registered — safe to ignore
-    }
+    } catch (_) {}
   }
 
   Future<bool> _onWillPop() {
@@ -220,15 +212,15 @@ class _WatchScreenState extends State<WatchScreen> {
                   left: 0,
                   child: SpeedPopup(controller: controller),
                 ),
-                const Positioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: WatchiumPartyPopup(),
-                ),
-                const WatchiumOverlay(),
-                const _WatchiumOverlays(),
+                // const Positioned(
+                //   right: 0,
+                //   top: 0,
+                //   bottom: 0,
+                //   left: 0,
+                //   child: WatchiumPartyPopup(),
+                // ),
+                // const WatchiumOverlay(),
+                // const _WatchiumOverlays(),
               ],
             ],
           );

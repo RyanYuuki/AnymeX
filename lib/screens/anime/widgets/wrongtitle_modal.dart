@@ -158,26 +158,35 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                             : widget.isManga
                                 ? sourceController.activeMangaSource.value
                                 : sourceController.activeSource.value;
-                        final carouselData = item.toCarouselData(sourceId: source?.id);
-                        final itemType = widget.isNovel ? ItemType.novel : (widget.isManga ? ItemType.manga : ItemType.anime);
+                        final carouselData =
+                            item.toCarouselData(sourceId: source?.id);
+                        final itemType = widget.isNovel
+                            ? ItemType.novel
+                            : (widget.isManga
+                                ? ItemType.manga
+                                : ItemType.anime);
                         final heroTag = '${item.url}-$index-wrong-title';
 
                         return AnymexOnTap(
                           onTap: () {
+                            FocusManager.instance.primaryFocus?.unfocus();
                             SourceMapper.interruptMapping();
                             if (source != null && widget.mediaId != null) {
                               sourceController.setActiveSource(source,
                                   mediaId: widget.mediaId);
                             }
-                            widget.onTap(item);
                             Get.back();
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              widget.onTap(item);
+                            });
                           },
                           child: MediaCardGate(
                             itemData: carouselData,
                             tag: heroTag,
                             variant: DataVariant.regular,
                             type: itemType,
-                            cardStyle: CardStyle.values[settingsController.cardStyle],
+                            cardStyle:
+                                CardStyle.values[settingsController.cardStyle],
                           ),
                         );
                       },

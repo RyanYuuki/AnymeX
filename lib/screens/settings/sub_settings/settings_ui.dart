@@ -4,6 +4,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/widgets/card_selector.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/screens/settings/widgets/carousel_style_selector.dart';
+import 'package:anymex/screens/settings/widgets/navbar_selector.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -50,8 +51,9 @@ class _SettingsUiState extends State<SettingsUi> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'UI Settings',
-      body: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
                   child: Obx(
                     () => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,16 +71,8 @@ class _SettingsUiState extends State<SettingsUi> {
                                 settings.enableAnimation = val;
                               },
                             ),
-                            AnymeXTile.toggle(
-                              icon: Iconsax.image,
-                              title: "Enable Ken Burns",
-                              subtitle:
-                                  "Enable background animation on poster images",
-                              value: settings.enablePosterKenBurns,
-                              onChanged: (val) {
-                                settings.enablePosterKenBurns = val;
-                              },
-                            ),
+
+
                             AnymeXTile.toggle(
                               icon: Icons.colorize,
                               title: "Translucent Nav",
@@ -126,6 +120,12 @@ class _SettingsUiState extends State<SettingsUi> {
                               icon: Icons.view_carousel_rounded,
                               title: "Carousel Style",
                               subtitle: "Change home screen hero carousel style",
+                            ),
+                            AnymeXTile(
+                              onTap: () => showNavBarStyleSwitcher(context),
+                              icon: Icons.navigation_rounded,
+                              title: 'Nav Bar Style',
+                              subtitle: 'Choose your navigation bar look',
                             ),
                             AnymeXTile(
                               icon: Icons.reorder_rounded,
@@ -197,6 +197,7 @@ class _SettingsUiState extends State<SettingsUi> {
                     ),
                   ),
                 )
+      ),
     );
   }
 

@@ -234,6 +234,122 @@ class AnymeXTile extends StatelessWidget {
     );
   }
 
+  factory AnymeXTile.radio({
+    Key? key,
+    IconData? icon,
+    Widget? leading,
+    required String title,
+    String? subtitle,
+    required bool selected,
+    required VoidCallback? onTap,
+    Color? iconColor,
+    Color? iconBackgroundColor,
+    BorderRadius? borderRadius,
+    EdgeInsetsGeometry? padding,
+    bool enabled = true,
+  }) {
+    return AnymeXTile(
+      key: key,
+      icon: icon,
+      leading: leading,
+      title: title,
+      subtitle: subtitle,
+      iconColor: iconColor,
+      iconBackgroundColor: iconBackgroundColor,
+      borderRadius: borderRadius,
+      padding: padding,
+      enabled: enabled,
+      showChevron: false,
+      onTap: enabled ? onTap : null,
+      trailing: Builder(
+        builder: (context) {
+          final colors = context.colors;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: selected ? colors.primary : colors.onSurface.withOpacity(0.24),
+                width: 2,
+              ),
+              color: selected ? colors.primary : Colors.transparent,
+            ),
+            child: selected
+                ? Center(
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  )
+                : null,
+          );
+        },
+      ),
+    );
+  }
+
+  factory AnymeXTile.checkbox({
+    Key? key,
+    IconData? icon,
+    Widget? leading,
+    required String title,
+    String? subtitle,
+    required bool value,
+    required ValueChanged<bool>? onChanged,
+    Color? iconColor,
+    Color? iconBackgroundColor,
+    BorderRadius? borderRadius,
+    EdgeInsetsGeometry? padding,
+    bool enabled = true,
+  }) {
+    return AnymeXTile(
+      key: key,
+      icon: icon,
+      leading: leading,
+      title: title,
+      subtitle: subtitle,
+      iconColor: iconColor,
+      iconBackgroundColor: iconBackgroundColor,
+      borderRadius: borderRadius,
+      padding: padding,
+      enabled: enabled,
+      showChevron: false,
+      onTap: enabled && onChanged != null ? () => onChanged(!value) : null,
+      trailing: Builder(
+        builder: (context) {
+          final colors = context.colors;
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: value ? colors.primary : colors.onSurface.withOpacity(0.24),
+                width: 2,
+              ),
+              color: value ? colors.primary : Colors.transparent,
+            ),
+            child: value
+                ? Icon(
+                    Icons.check_rounded,
+                    size: 14,
+                    color: colors.onPrimary,
+                  )
+                : null,
+          );
+        },
+      ),
+    );
+  }
+
+
   static Widget segmented<T>({
     Key? key,
     IconData? icon,

@@ -543,14 +543,15 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Anilist Settings',
-      body: _loading
+      body: Builder(
+        builder: (ctx) => _loading
                     ? const Center(child: CircularProgressIndicator())
                     : _error != null && _settings == null
                         ? _buildError()
                         : ScrollWrapper(
                             comfortPadding: false,
                             customPadding:
-                                const EdgeInsets.fromLTRB(16, 75, 16, 28),
+                                EdgeInsets.fromLTRB(16, AnymeXHeaderScope.of(ctx), 16, 28),
                             children: [
                               if (_error != null) _buildInlineError(),
                               _buildGeneralSection(),
@@ -559,6 +560,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                               _buildSaveButton(),
                             ],
                           )
+      )
     );
   }
 

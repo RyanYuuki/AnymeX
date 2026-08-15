@@ -750,6 +750,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       focusNode: _searchFocusNode,
       hintText: hintText,
       onSubmitted: (query) => _performSearch(query: query),
+      
       onClear: () {
         setState(() {
           _searchState = SearchState.initial;
@@ -851,11 +852,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                     _performSearch();
                   },
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 6),
               ],
               if (!isManga &&
                   serviceHandler.serviceType.value == ServicesType.anilist) ...[
-                const SizedBox(width: 12),
                 _buildActionButton(
                   icon: Iconsax.eye,
                   label: 'Image',

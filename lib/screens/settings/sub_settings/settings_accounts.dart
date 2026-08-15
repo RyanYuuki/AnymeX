@@ -55,11 +55,12 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Accounts',
-      body: ScrollWrapper(
+      body: Builder(
+        builder: (ctx) => ScrollWrapper(
                   comfortPadding: false,
-                  customPadding:
-                      const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+                  customPadding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
                   children: [
+                    SizedBox(height: AnymeXHeaderScope.of(ctx)),
                     const AnymeXSectionBuilder(
                       title: 'Social Presence',
                       children: [
@@ -78,6 +79,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                     ),
                   ],
                 )
+      ),
     );
   }
 }

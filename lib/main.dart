@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:anymex/widgets/common/fps_meter.dart';
 import 'package:rhttp/rhttp.dart';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -22,6 +23,7 @@ import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/firebase_options.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
@@ -38,6 +40,10 @@ import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
@@ -59,7 +65,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:window_manager/window_manager.dart';
 
 WebViewEnvironment? webViewEnvironment;
@@ -385,7 +390,7 @@ class _MainAppState extends State<MainApp> {
           return Stack(
             children: [
               child!,
-              // const FpsMeter(),
+              const FpsMeter(),
             ],
           );
         },
@@ -417,7 +422,119 @@ class _FilterScreenState extends State<FilterScreen> {
       final settings = Get.find<Settings>();
       settings.checkForUpdates(context);
       settings.showWelcomeDialog(context);
+
+      final launchCount = KvHelper.get<int>('anymex_discord_notice_launch_count', defaultVal: 0) + 1;
+      KvHelper.set('anymex_discord_notice_launch_count', launchCount);
+
+      if (launchCount <= 3) {
+        _showDiscordNoticeDialog(context);
+      }
     });
+  }
+
+  void _showDiscordNoticeDialog(BuildContext context) {
+    final settings = Get.find<Settings>();
+    bool isUnlocked = KvHelper.get<bool>('anymex_discord_notice_unlocked', defaultVal: false);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return PopScope(
+              canPop: false,
+              child: AnymeXDialog(
+                title: 'Discord Taken Down',
+                forceAction: true,
+                showCancelButton: false,
+                confirmText: 'Okay',
+                isConfirmEnabled: isUnlocked,
+                onConfirm: () {},
+                contentWidget: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnymeXText(
+                      text: isUnlocked
+                          ? 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nYou have already visited our social links, so the Okay button is unlocked.'
+                          : 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nOnce you click to join one of them, the Okay button below will unlock.',
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      textAlign: TextAlign.center,
+                      maxLines: 999,
+                    ),
+                    const SizedBox(height: 20),
+                    AnymexOnTap(
+                      onTap: () async {
+                        final url = settings.discordUrl.value;
+                        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                        KvHelper.set('anymex_discord_notice_unlocked', true);
+                        setDialogState(() {
+                          isUnlocked = true;
+                        });
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF5865F2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(HugeIcons.strokeRoundedDiscord, color: Colors.white, size: 20),
+                            SizedBox(width: 8),
+                            AnymeXText(
+                              text: 'Join New Discord',
+                              color: Colors.white,
+                              variant: TextVariant.bold,
+                              size: 13,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    AnymexOnTap(
+                      onTap: () async {
+                        final url = settings.telegramUrl.value;
+                        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                        KvHelper.set('anymex_discord_notice_unlocked', true);
+                        setDialogState(() {
+                          isUnlocked = true;
+                        });
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0088CC),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(HugeIcons.strokeRoundedTelegram, color: Colors.white, size: 20),
+                            SizedBox(width: 8),
+                            AnymeXText(
+                              text: 'Join Telegram Channel',
+                              color: Colors.white,
+                              variant: TextVariant.bold,
+                              size: 13,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _onItemTapped(int index) {
@@ -542,14 +659,15 @@ class _FilterScreenState extends State<FilterScreen> {
           Obx(() {
             final isSimkl = authService.serviceType.value == ServicesType.simkl;
             final navTabs = _getNavTabs(authService, settings);
+            final navRailWidth = settings.navBarStyle == 0 ? 110.0 : 110.0;
             return SizedBox(
-                width: 120,
-                child: SuperListView(
+                width: navRailWidth,
+                child: ListView(
                   children: [
                     ResponsiveNavBar(
                       isDesktop: true,
                       currentIndex: _selectedIndex.clamp(0, navTabs.length),
-                      margin: const EdgeInsets.fromLTRB(20, 18, 15, 10),
+                      margin: const EdgeInsets.fromLTRB(12, 18, 12, 10),
                       borderRadius: BorderRadius.circular(50),
                       items: [
                         NavItem(

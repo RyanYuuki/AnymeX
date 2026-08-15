@@ -302,7 +302,10 @@ class _CommunityRecommendationsPageState
                 final cardStyle =
                     CardStyle.values[settingsController.cardStyle];
                 final cardHeight = getCardHeight(cardStyle, isDesktop);
-                final crossAxisCount = isDesktop ? 4 : 3;
+                final crossAxisCount = getResponsiveCrossAxisVal(
+                  MediaQuery.sizeOf(context).width,
+                  itemWidth: 105,
+                );
 
                 if (data.isEmpty) {
                   return Center(

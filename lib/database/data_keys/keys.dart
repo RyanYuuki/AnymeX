@@ -67,6 +67,7 @@ enum PlayerUiKeys {
 
 enum ReaderKeys {
   readerControlTheme,
+  chapterStyle,
   readingLayout,
   readingDirection,
   imageWidth,
@@ -292,6 +293,7 @@ enum UISettingsKeys {
   useGrainTexture,
   grainIntensity,
   enableImmersiveMode,
+  navBarStyle,
 }
 
 enum DownloadKeys {

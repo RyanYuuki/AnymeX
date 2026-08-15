@@ -99,9 +99,10 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Tap Zones',
-      body: Column(
+      body: Builder(
+        builder: (ctx) => Column(
                   children: [
-                    const SizedBox(height: 70),
+                    SizedBox(height: AnymeXHeaderScope.of(ctx)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       child: _ElegantSegmentedControl(
@@ -157,6 +158,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                     ),
                   ],
                 )
+      ),
     );
   }
 

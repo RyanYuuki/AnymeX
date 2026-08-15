@@ -23,8 +23,9 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Download Settings',
-      body: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
                   child: Obx(
                     () => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,6 +105,7 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
                     ),
                   ),
                 )
+      ),
     );
   }
 }

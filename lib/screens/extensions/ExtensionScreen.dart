@@ -659,6 +659,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
         selectedLanguage: lang,
         selectedSourceType: sourceType,
         showRecommended: !installed,
+        isTabScreen: widget.isTabScreen,
       );
     });
   }

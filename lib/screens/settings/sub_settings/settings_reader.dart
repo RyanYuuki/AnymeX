@@ -190,6 +190,21 @@ class _SettingsReaderState extends State<SettingsReader> {
     );
   }
 
+  void _showChapterStyleDialog() {
+    showSelectionDialog<String>(
+      title: 'Chapter Tile Style',
+      items: const ['compact', 'detailed'],
+      selectedItem: settings.chapterStyleRx,
+      getTitle: (value) => value == 'compact' ? 'Compact' : 'Detailed (Classic)',
+      onItemSelected: (value) {
+        setState(() {
+          settings.chapterStyle = value;
+        });
+      },
+      leadingIcon: Icons.list_alt_rounded,
+    );
+  }
+
   void _showNovelThemeDialog() {
     showSelectionDialog<int>(
       title: 'Novel Theme',
@@ -300,8 +315,9 @@ class _SettingsReaderState extends State<SettingsReader> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Reader Settings',
-      body: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
                   child: Column(
                     children: [
                       AnymeXSectionBuilder(
@@ -355,6 +371,12 @@ class _SettingsReaderState extends State<SettingsReader> {
                             },
                             onTap: _showMangaFilterQualityDialog,
                           ),
+                          Obx(() => AnymeXTile(
+                            icon: Icons.list_alt_rounded,
+                            title: 'Chapter Tile Style',
+                            subtitle: settings.chapterStyle == 'compact' ? 'Compact' : 'Detailed (Classic)',
+                            onTap: _showChapterStyleDialog,
+                          )),
                           AnymeXTile.toggle(
                             icon: Iconsax.pharagraphspacing,
                             title: 'Spaced Pages',
@@ -678,6 +700,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                     ],
                   ),
                 )
+      ),
     );
   }
 }

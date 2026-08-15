@@ -2,21 +2,18 @@ import 'dart:convert';
 
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 void showJsonPlayerThemesSheet(
     BuildContext context, StateSetter parentSetState, dynamic settings) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    backgroundColor: Colors.transparent,
-    builder: (_) => JsonThemesSheet(
-      settings: settings,
-      parentSetState: parentSetState,
-    ),
-  );
+  AnymeXSheet.custom(
+      JsonThemesSheet(
+        settings: settings,
+        parentSetState: parentSetState,
+      ),
+      context);
 }
 
 class JsonThemesSheet extends StatefulWidget {
@@ -171,150 +168,119 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    final mqPadding = MediaQuery.paddingOf(context);
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.4,
-      maxChildSize: 0.92,
-      expand: false,
-      builder: (_, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: context.colors.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 12, bottom: 4),
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color:
-                        context.colors.onSurfaceVariant.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: context.colors.secondaryContainer,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(Icons.style_rounded,
+                  color: context.colors.onSecondaryContainer, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Player Themes',
+                      style: tt.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700)),
+                  Text('Import & manage custom JSON themes',
+                      style: tt.bodySmall?.copyWith(
+                          color: context.colors.onSurfaceVariant)),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.close_rounded),
+              style: IconButton.styleFrom(
+                  backgroundColor:
+                      context.colors.surfaceContainerHighest),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        _ImportActionsRow(
+          isImporting: _isImporting,
+          onPickFiles: _pickAndImportFiles,
+          onImportUrl: _importFromUrl,
+        ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOutCubic,
+          child: _importStatus != null
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: _StatusBanner(
+                    message: _importStatus!,
+                    isSuccess: _importSuccess,
                   ),
-                ),
+                )
+              : const SizedBox.shrink(),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Text(
+              'Installed Themes',
+              style: tt.labelMedium
+                  ?.copyWith(color: context.colors.onSurfaceVariant),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: context.colors.secondaryContainer,
+                borderRadius: BorderRadius.circular(20),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 12, 16, 0),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: context.colors.secondaryContainer,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(Icons.style_rounded,
-                          color: context.colors.onSecondaryContainer, size: 22),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Player Themes',
-                              style: tt.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.w700)),
-                          Text('Import & manage custom JSON themes',
-                              style: tt.bodySmall?.copyWith(
-                                  color: context.colors.onSurfaceVariant)),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close_rounded),
-                      style: IconButton.styleFrom(
-                          backgroundColor:
-                              context.colors.surfaceContainerHighest),
-                    ),
-                  ],
-                ),
+              child: Text(
+                '${_themes.length}',
+                style: tt.labelSmall?.copyWith(
+                    color: context.colors.onSecondaryContainer,
+                    fontWeight: FontWeight.w700),
               ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _ImportActionsRow(
-                  isImporting: _isImporting,
-                  onPickFiles: _pickAndImportFiles,
-                  onImportUrl: _importFromUrl,
-                ),
-              ),
-              AnimatedSize(
-                duration: const Duration(milliseconds: 280),
-                curve: Curves.easeOutCubic,
-                child: _importStatus != null
-                    ? Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-                        child: _StatusBanner(
-                          message: _importStatus!,
-                          isSuccess: _importSuccess,
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Text(
-                      'Installed Themes',
-                      style: tt.labelMedium
-                          ?.copyWith(color: context.colors.onSurfaceVariant),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: context.colors.secondaryContainer,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        '${_themes.length}',
-                        style: tt.labelSmall?.copyWith(
-                            color: context.colors.onSecondaryContainer,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: _themes.isEmpty
-                    ? _EmptyState()
-                    : ListView.builder(
-                        controller: scrollController,
-                        padding: EdgeInsets.fromLTRB(
-                            16, 0, 16, mqPadding.bottom + 16),
-                        itemCount: _themes.length,
-                        itemBuilder: (ctx, i) {
-                          final theme = _themes[i];
-                          final selected =
-                              widget.settings.playerControlTheme == theme.id;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: _ThemeCard(
-                              theme: theme,
-                              selected: selected,
-                              onTap: () => _selectTheme(theme.id),
-                              onDelete: () => _removeTheme(theme.id),
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * 0.45,
           ),
-        );
-      },
+          child: _themes.isEmpty
+              ? _EmptyState()
+              : ListView.builder(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  padding: EdgeInsets.zero,
+                  itemCount: _themes.length,
+                  itemBuilder: (ctx, i) {
+                    final theme = _themes[i];
+                    final selected =
+                        widget.settings.playerControlTheme == theme.id;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: _ThemeCard(
+                        theme: theme,
+                        selected: selected,
+                        onTap: () => _selectTheme(theme.id),
+                        onDelete: () => _removeTheme(theme.id),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }

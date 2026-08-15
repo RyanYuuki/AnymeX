@@ -1332,6 +1332,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.12.19"
+  material3_expressive_loading_indicator:
+    dependency: "direct main"
+    description:
+      name: material3_expressive_loading_indicator
+      sha256: "3d5940dcdf02f488bc41c01e3105b355de59443ea89122f73500eeca83ebacc0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   material_color_utilities:
     dependency: transitive
     description:

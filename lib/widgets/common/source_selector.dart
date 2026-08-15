@@ -54,6 +54,7 @@ class SourceSelectorWidget extends StatelessWidget {
   });
 
   void _openSheet(BuildContext context) {
+    FocusManager.instance.primaryFocus?.unfocus();
     AnymeXSheet.custom(
       _SourceSheetContent(
         activeSource: activeSource,
@@ -61,13 +62,19 @@ class SourceSelectorWidget extends StatelessWidget {
         isManga: isManga,
         label: label,
         onSourceSelected: (source) {
+          FocusManager.instance.primaryFocus?.unfocus();
           Navigator.of(context, rootNavigator: true).pop();
-          onSourceSelected(source);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            onSourceSelected(source);
+          });
         },
         onSubSourceSelected: onSubSourceSelected != null
             ? (sub) {
+                FocusManager.instance.primaryFocus?.unfocus();
                 Navigator.of(context, rootNavigator: true).pop();
-                onSubSourceSelected!(sub);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  onSubSourceSelected!(sub);
+                });
               }
             : null,
       ),

@@ -6,9 +6,10 @@ import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/utils/liquid.dart';
-import 'package:anymex/widgets/common/checkmark_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/dialogs/logo_animation_preview_dialog.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -18,7 +19,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 
 import 'package:provider/provider.dart';
 
@@ -105,9 +105,12 @@ class _SettingsThemeState extends State<SettingsTheme> {
   }
 
   void _showLogoAnimationDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => LogoAnimationPreviewDialog(
+    AnymeXDialog(
+      title: 'Logo Animation',
+      showCancelButton: false,
+      confirmText: 'Close',
+      onConfirm: () {},
+      contentWidget: LogoAnimationPreviewDialog(
         initialAnimation: selectedLogoAnimation,
         onConfirm: (LogoAnimationType animationType) {
           setState(() {
@@ -116,7 +119,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
           ThemeKeys.logoAnimationType.set(animationType.index);
         },
       ),
-    );
+    ).show(context);
   }
 
   void handleDefaultSwitch(bool value) {
@@ -181,17 +184,20 @@ class _SettingsThemeState extends State<SettingsTheme> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Theme',
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildThemeTab(),
-            const SizedBox(height: 20),
-            _buildWallpaperTab(),
-            const SizedBox(height: 20),
-            _buildExtrasTab(),
-          ],
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+          padding:
+              EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildThemeTab(),
+              const SizedBox(height: 20),
+              _buildWallpaperTab(),
+              const SizedBox(height: 20),
+              _buildExtrasTab(),
+            ],
+          ),
         ),
       ),
     );
@@ -375,240 +381,106 @@ class _SettingsThemeState extends State<SettingsTheme> {
   }
 
   void showPaletteSelectionDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: context.colors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Container(
-            width: getResponsiveValue(context,
-                mobileValue: null, desktopValue: 500.0),
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Palettes',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                SuperListView.builder(
-                  shrinkWrap: true,
-                  itemCount: dynamicSchemeVariantKeys.length,
-                  itemBuilder: (context, index) {
-                    String label = dynamicSchemeVariantKeys[index];
-                    bool isSelected = index == selectedVariantIndex;
-
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 7),
-                      child: ListTileWithCheckMark(
-                        color: context.colors.primary,
-                        active: isSelected,
-                        leading: const Icon(HugeIcons.strokeRoundedColorPicker),
-                        title: label,
-                        onTap: () => handlePaletteChange(index),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30)),
-                            backgroundColor: context.colors.surfaceContainer,
-                          ),
-                          child: Text('Cancel',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: context.colors.primary,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30)),
-                            backgroundColor: context.colors.primaryFixed,
-                          ),
-                          child: const Text('Confirm',
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: "LexendDeca",
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    AnymeXDialog(
+      title: 'Palettes',
+      showCancelButton: false,
+      confirmText: 'Close',
+      onConfirm: () {},
+      contentWidget: AnymeXTileBuilder<String>(
+        items: dynamicSchemeVariantKeys,
+        selectedItem: dynamicSchemeVariantKeys[selectedVariantIndex],
+        getTitle: (label) => label,
+        onItemPressed: (label) {
+          final index = dynamicSchemeVariantKeys.indexOf(label);
+          setState(() {
+            selectedVariantIndex = index;
+          });
+          handlePaletteChange(index);
+        },
+      ),
+    ).show(context);
   }
 
   void showRefreshRateDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor: context.colors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Container(
-            width: getResponsiveValue(context,
-                mobileValue: null, desktopValue: 500.0),
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Select Refresh Rate',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                const SizedBox(height: 16),
-                Flexible(
-                  child: FutureBuilder<List<DisplayMode>>(
-                    future: FlutterDisplayMode.supported,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: CircularProgressIndicator(),
-                          ),
-                        );
-                      }
-                      if (snapshot.hasError) {
-                        return Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              'Error loading refresh rates: ${snapshot.error}'),
-                        );
-                      }
+    AnymeXDialog(
+      title: 'Select Refresh Rate',
+      showCancelButton: false,
+      confirmText: 'Close',
+      onConfirm: () {},
+      contentWidget: FutureBuilder<List<DisplayMode>>(
+        future: FlutterDisplayMode.supported,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          if (snapshot.hasError) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text('Error loading refresh rates: ${snapshot.error}'),
+            );
+          }
 
-                      final modes = (snapshot.data ?? [])
-                          .where((m) =>
-                              m != DisplayMode.auto &&
-                              m.id != 0 &&
-                              m.width != 0 &&
-                              m.height != 0)
-                          .toList();
-                      final List<DisplayMode> options = [
-                        DisplayMode.auto,
-                        ...modes,
-                      ];
+          final modes = (snapshot.data ?? [])
+              .where((m) =>
+                  m != DisplayMode.auto &&
+                  m.id != 0 &&
+                  m.width != 0 &&
+                  m.height != 0)
+              .toList();
+          final List<DisplayMode> options = [
+            DisplayMode.auto,
+            ...modes,
+          ];
 
-                      return Obx(() {
-                        final preferredMode =
-                            settings.preferredDisplayMode.value;
-                        final activeMode = settings.activeDisplayMode.value;
+          return Obx(() {
+            final preferredMode =
+                settings.preferredDisplayMode.value ?? DisplayMode.auto;
+            final activeMode = settings.activeDisplayMode.value;
 
-                        return SuperListView.builder(
-                          shrinkWrap: true,
-                          itemCount: options.length,
-                          itemBuilder: (context, index) {
-                            final mode = options[index];
-                            final isSelected =
-                                (preferredMode ?? DisplayMode.auto).id ==
-                                        mode.id &&
-                                    (preferredMode ?? DisplayMode.auto).width ==
-                                        mode.width &&
-                                    (preferredMode ?? DisplayMode.auto)
-                                            .height ==
-                                        mode.height &&
-                                    (preferredMode ?? DisplayMode.auto)
-                                            .refreshRate ==
-                                        mode.refreshRate;
-                            final isActive = activeMode != null &&
-                                activeMode.id == mode.id &&
-                                activeMode.width == mode.width &&
-                                activeMode.height == mode.height &&
-                                activeMode.refreshRate == mode.refreshRate;
+            final matchedSelected = options.firstWhere(
+              (m) =>
+                  m.id == preferredMode.id &&
+                  m.width == preferredMode.width &&
+                  m.height == preferredMode.height &&
+                  m.refreshRate == preferredMode.refreshRate,
+              orElse: () => DisplayMode.auto,
+            );
 
-                            final String title;
-                            final String subtitle;
-                            if (mode == DisplayMode.auto) {
-                              title = 'Auto';
-                              subtitle = isActive
-                                  ? 'System Managed [Active]'
-                                  : 'System Managed';
-                            } else {
-                              title = '${mode.width}x${mode.height}';
-                              subtitle = isActive
-                                  ? '${mode.refreshRate.toInt()}Hz [Active]'
-                                  : '${mode.refreshRate.toInt()}Hz';
-                            }
-
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 7),
-                              child: ListTileWithCheckMark(
-                                color: context.colors.primary,
-                                active: isSelected,
-                                leading: const Icon(Icons.speed_rounded),
-                                title: title,
-                                subtitle: subtitle,
-                                onTap: () async {
-                                  await settings.savePreferredDisplayMode(mode);
-                                },
-                              ),
-                            );
-                          },
-                        );
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
-                      backgroundColor: context.colors.primaryFixed,
-                    ),
-                    child: const Text('Close',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontFamily: "LexendDeca",
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+            return AnymeXTileBuilder<DisplayMode>(
+              items: options,
+              selectedItem: matchedSelected,
+              getTitle: (mode) {
+                if (mode == DisplayMode.auto) return 'Auto';
+                return '${mode.width}x${mode.height}';
+              },
+              getSubtitle: (mode) {
+                final isActive = activeMode != null &&
+                    activeMode.id == mode.id &&
+                    activeMode.width == mode.width &&
+                    activeMode.height == mode.height &&
+                    activeMode.refreshRate == mode.refreshRate;
+                if (mode == DisplayMode.auto) {
+                  return isActive
+                      ? 'System Managed [Active]'
+                      : 'System Managed';
+                }
+                return isActive
+                    ? '${mode.refreshRate.toInt()}Hz [Active]'
+                    : '${mode.refreshRate.toInt()}Hz';
+              },
+              onItemPressed: (mode) async {
+                await settings.savePreferredDisplayMode(mode);
+              },
+            );
+          });
+        },
+      ),
+    ).show(context);
   }
 
   Widget _buildModeTemplates() {
@@ -920,211 +792,173 @@ class _SettingsThemeState extends State<SettingsTheme> {
               isValid = true;
             }
 
-            return Dialog(
-              backgroundColor: context.colors.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Container(
-                width: getResponsiveValue(context,
-                    mobileValue: null, desktopValue: 400.0),
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Custom Color Picker',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                    ),
-                    const SizedBox(height: 16),
-                    Center(
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: isValid ? previewColor : Colors.grey,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: (isValid ? previewColor : Colors.grey)
-                                  .withOpacity(0.4),
-                              blurRadius: 12,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: !isValid
-                            ? const Icon(Icons.error_outline,
-                                color: Colors.white, size: 30)
-                            : null,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Hue',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      height: 12,
+            return AnymeXDialog(
+              title: 'Custom Color Picker',
+              confirmText: 'Confirm',
+              onConfirm: () {
+                if (isValid) {
+                  handleCustomColorSelection(previewColor);
+                }
+              },
+              contentWidget: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 80,
+                      height: 80,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        gradient: const LinearGradient(
-                          colors: [
-                            Colors.red,
-                            Colors.yellow,
-                            Colors.green,
-                            Colors.cyan,
-                            Colors.blue,
-                            Colors.purple,
-                            Colors.red,
-                          ],
-                        ),
-                      ),
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: Colors.transparent,
-                          inactiveTrackColor: Colors.transparent,
-                          trackHeight: 12,
-                          thumbColor: Colors.white,
-                        ),
-                        child: Slider(
-                          value: hue,
-                          min: 0.0,
-                          max: 360.0,
-                          onChanged: (val) {
-                            setDialogState(() {
-                              hue = val;
-                              updateColorFromSliders();
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'Saturation',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      height: 12,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.white,
-                            HSVColor.fromAHSV(1.0, hue, 1.0, 1.0).toColor(),
-                          ],
-                        ),
-                      ),
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: Colors.transparent,
-                          inactiveTrackColor: Colors.transparent,
-                          trackHeight: 12,
-                          thumbColor: Colors.white,
-                        ),
-                        child: Slider(
-                          value: saturation,
-                          min: 0.0,
-                          max: 1.0,
-                          onChanged: (val) {
-                            setDialogState(() {
-                              saturation = val;
-                              updateColorFromSliders();
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'Lightness',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      height: 12,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.black,
-                            HSVColor.fromAHSV(1.0, hue, saturation, 1.0)
-                                .toColor(),
-                          ],
-                        ),
-                      ),
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: Colors.transparent,
-                          inactiveTrackColor: Colors.transparent,
-                          trackHeight: 12,
-                          thumbColor: Colors.white,
-                        ),
-                        child: Slider(
-                          value: value,
-                          min: 0.0,
-                          max: 1.0,
-                          onChanged: (val) {
-                            setDialogState(() {
-                              value = val;
-                              updateColorFromSliders();
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: controller,
-                      decoration: InputDecoration(
-                        labelText: 'Hex Color Code',
-                        hintText: '#3F51B5 or 3F51B5',
-                        errorText: isValid ? null : 'Invalid Hex color code',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onChanged: (val) {
-                        setDialogState(() {});
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cancel'),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          onPressed: isValid
-                              ? () {
-                                  Navigator.of(context).pop();
-                                  handleCustomColorSelection(previewColor);
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: context.colors.primary,
-                            foregroundColor: context.colors.onPrimary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+                        color: isValid ? previewColor : Colors.grey,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: (isValid ? previewColor : Colors.grey)
+                                .withOpacity(0.4),
+                            blurRadius: 12,
+                            spreadRadius: 2,
                           ),
-                          child: const Text('Confirm'),
-                        ),
-                      ],
+                        ],
+                      ),
+                      child: !isValid
+                          ? const Icon(Icons.error_outline,
+                              color: Colors.white, size: 30)
+                          : null,
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Hue',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    height: 12,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      gradient: const LinearGradient(
+                        colors: [
+                          Colors.red,
+                          Colors.yellow,
+                          Colors.green,
+                          Colors.cyan,
+                          Colors.blue,
+                          Colors.purple,
+                          Colors.red,
+                        ],
+                      ),
+                    ),
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: Colors.transparent,
+                        inactiveTrackColor: Colors.transparent,
+                        trackHeight: 12,
+                        thumbColor: Colors.white,
+                      ),
+                      child: Slider(
+                        value: hue,
+                        min: 0.0,
+                        max: 360.0,
+                        onChanged: (val) {
+                          setDialogState(() {
+                            hue = val;
+                            updateColorFromSliders();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Saturation',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    height: 12,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.white,
+                          HSVColor.fromAHSV(1.0, hue, 1.0, 1.0).toColor(),
+                        ],
+                      ),
+                    ),
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: Colors.transparent,
+                        inactiveTrackColor: Colors.transparent,
+                        trackHeight: 12,
+                        thumbColor: Colors.white,
+                      ),
+                      child: Slider(
+                        value: saturation,
+                        min: 0.0,
+                        max: 1.0,
+                        onChanged: (val) {
+                          setDialogState(() {
+                            saturation = val;
+                            updateColorFromSliders();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Lightness',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  const SizedBox(height: 6),
+                  Container(
+                    height: 12,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.black,
+                          HSVColor.fromAHSV(1.0, hue, saturation, 1.0)
+                              .toColor(),
+                        ],
+                      ),
+                    ),
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: Colors.transparent,
+                        inactiveTrackColor: Colors.transparent,
+                        trackHeight: 12,
+                        thumbColor: Colors.white,
+                      ),
+                      child: Slider(
+                        value: value,
+                        min: 0.0,
+                        max: 1.0,
+                        onChanged: (val) {
+                          setDialogState(() {
+                            value = val;
+                            updateColorFromSliders();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: controller,
+                    decoration: InputDecoration(
+                      labelText: 'Hex Color Code',
+                      hintText: '#3F51B5 or 3F51B5',
+                      errorText: isValid ? null : 'Invalid Hex color code',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onChanged: (val) {
+                      setDialogState(() {});
+                    },
+                  ),
+                ],
               ),
             );
           },

@@ -1,8 +1,6 @@
 import 'package:anymex/controllers/services/backup_restore/backup_restore_service.dart';
 import 'package:anymex/controllers/sync/progress_sync_section.dart';
-import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -44,7 +42,6 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
           backupSettings = backSettings;
           backupAuthTokens = backAuthTokens;
           hasSelected = true;
-          Navigator.of(context).pop();
         },
       ),
     );
@@ -156,13 +153,12 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Data Management',
-      body: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -212,29 +208,12 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXSectionBuilder(
                         title: 'Cloud Sync',
                         children: const [
-                          ProgressSyncSection(),
+                          const ProgressSyncSection(),
                         ],
                       ),
                     ],
                   ),
                 )
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title.toUpperCase(),
-      style: TextStyle(
-        color: context.colors.primary,
-        fontSize: 11,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 1.5,
       ),
     );
   }

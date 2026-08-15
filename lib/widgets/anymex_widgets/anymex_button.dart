@@ -150,9 +150,14 @@ class AnymeXContainerButton extends StatelessWidget {
         child: ElevatedButtonTheme(
           data: ElevatedButtonThemeData(
               style: ElevatedButton.styleFrom(
+                  minimumSize: width != null && height != null
+                      ? Size(width!, height!)
+                      : Size.zero,
                   maximumSize: width != null && height != null
                       ? Size(width!, height!)
                       : null,
+                  padding: EdgeInsets.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   backgroundColor: color,
                   shape: RoundedRectangleBorder(
                       borderRadius: effectiveRadius ?? BorderRadius.circular(0),

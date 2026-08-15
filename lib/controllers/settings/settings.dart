@@ -31,6 +31,7 @@ class Settings extends GetxController {
   final playerControlThemeRx = 'default'.obs;
   final mediaIndicatorThemeRx = 'default'.obs;
   final readerControlThemeRx = 'default'.obs;
+  final chapterStyleRx = 'compact'.obs;
 
   RxBool useAlternateTitle = false.obs;
   RxBool enableBetaUpdates = false.obs;
@@ -87,6 +88,8 @@ class Settings extends GetxController {
         PlayerUiKeys.mediaIndicatorTheme.get<String>('default');
     readerControlThemeRx.value =
         ReaderKeys.readerControlTheme.get<String>('default');
+    chapterStyleRx.value =
+        ReaderKeys.chapterStyle.get<String>('compact');
 
     useAlternateTitle.value = General.useAlternateTitle.get<bool>(false);
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
@@ -312,6 +315,12 @@ class Settings extends GetxController {
   set carouselStyle(int value) {
     uiSettings.update((s) => s?.carouselStyle = value);
     UISettingsKeys.carouselStyle.set(value);
+  }
+
+  int get navBarStyle => _getUISetting((s) => s.navBarStyle);
+  set navBarStyle(int value) {
+    uiSettings.update((s) => s?.navBarStyle = value);
+    UISettingsKeys.navBarStyle.set(value);
   }
 
   double get glowDensity => _getUISetting((s) => s.glowDensity);
@@ -586,6 +595,12 @@ class Settings extends GetxController {
   set readerControlTheme(String value) {
     readerControlThemeRx.value = value;
     ReaderKeys.readerControlTheme.set(value);
+  }
+
+  String get chapterStyle => chapterStyleRx.value;
+  set chapterStyle(String value) {
+    chapterStyleRx.value = value;
+    ReaderKeys.chapterStyle.set(value);
   }
 
   int get subtitleOutlineWidth =>

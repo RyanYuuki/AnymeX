@@ -290,7 +290,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+          const SliverToBoxAdapter(child: SizedBox(height: 250)),
         ],
       );
     });

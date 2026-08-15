@@ -19,6 +19,7 @@ class ExtensionList extends StatefulWidget {
   final String selectedLanguage;
   final String selectedSourceType;
   final bool showRecommended;
+  final bool isTabScreen;
 
   const ExtensionList({
     required this.installed,
@@ -27,6 +28,7 @@ class ExtensionList extends StatefulWidget {
     required this.selectedLanguage,
     required this.selectedSourceType,
     this.showRecommended = true,
+    this.isTabScreen = false,
     super.key,
   });
 
@@ -301,8 +303,9 @@ class _ExtensionListState extends State<ExtensionList>
   Widget build(BuildContext context) {
     super.build(context);
     final isDesktop = MediaQuery.sizeOf(context).width > 600;
-    final bottomScrollPadding =
-        isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 80.0);
+    final bottomScrollPadding = (isDesktop || !widget.isTabScreen)
+        ? 60.0
+        : (MediaQuery.paddingOf(context).bottom + 105.0);
 
     return RefreshIndicator(
       onRefresh: _refreshData,
@@ -371,8 +374,9 @@ class _ExtensionListState extends State<ExtensionList>
 
   Widget _buildInstalledView(List<Source> installed, List<Source> updates) {
     final isDesktop = MediaQuery.sizeOf(context).width > 600;
-    final bottomScrollPadding =
-        isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 80.0);
+    final bottomScrollPadding = (isDesktop || !widget.isTabScreen)
+        ? 60.0
+        : (MediaQuery.paddingOf(context).bottom + 105.0);
     final hasUpdates = updates.isNotEmpty;
     final hasInstalled = installed.isNotEmpty;
 

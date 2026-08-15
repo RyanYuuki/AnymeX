@@ -3,12 +3,11 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -46,8 +45,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Common Settings',
-      body: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -285,6 +285,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
                     ],
                   ),
                 )
+      ),
     );
   }
 
@@ -347,24 +348,16 @@ class _SettingsCommonState extends State<SettingsCommon> {
         builder: (context, setDialogState) {
           return AnymeXDialog(
             title: 'Home Page Cards (${type.name.toUpperCase()})',
-            contentWidget: SizedBox(
-              width: double.maxFinite,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: localState.keys.map((key) {
-                    return AnymeXTile.toggle(
-                      title: key,
-                      value: localState[key] ?? true,
-                      onChanged: (value) {
-                        setDialogState(() {
-                          localState[key] = value;
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
-              ),
+            contentWidget: AnymeXTileBuilder<String>(
+              items: localState.keys.toList(),
+              isSelected: (key) => localState[key] ?? true,
+              isRadio: false,
+              getTitle: (key) => key,
+              onItemPressed: (key) {
+                setDialogState(() {
+                  localState[key] = !(localState[key] ?? true);
+                });
+              },
             ),
             onConfirm: () {
               targetCards.clear();
@@ -387,17 +380,18 @@ class _SettingsCommonState extends State<SettingsCommon> {
   void _showBridgeModeDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: const Text('Select Bridge Mode'),
-        content: Column(
+      builder: (context) => AnymeXDialog(
+        title: 'Select Bridge Mode',
+        showCancelButton: false,
+        confirmText: 'Dismiss',
+        onConfirm: () {},
+        contentWidget: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _BridgeModeOptionTile(
+            AnymeXTile.radio(
               title: 'JNI Mode (Recommended)',
               subtitle: 'Faster performance and direct integration.',
-              value: 'jni',
-              currentValue: settings.bridgeMode.value,
+              selected: settings.bridgeMode.value == 'jni',
               onTap: () {
                 settings.saveBridgeMode('jni');
                 Navigator.pop(context);
@@ -405,11 +399,10 @@ class _SettingsCommonState extends State<SettingsCommon> {
               },
             ),
             const SizedBox(height: 8),
-            _BridgeModeOptionTile(
+            AnymeXTile.radio(
               title: 'Sidecar Mode',
               subtitle: 'Separate process, higher stability.',
-              value: 'sidecar',
-              currentValue: settings.bridgeMode.value,
+              selected: settings.bridgeMode.value == 'sidecar',
               onTap: () {
                 settings.saveBridgeMode('sidecar');
                 Navigator.pop(context);
@@ -423,54 +416,3 @@ class _SettingsCommonState extends State<SettingsCommon> {
   }
 }
 
-class _BridgeModeOptionTile extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String value;
-  final String currentValue;
-  final VoidCallback onTap;
-
-  const _BridgeModeOptionTile({
-    required this.title,
-    required this.subtitle,
-    required this.value,
-    required this.currentValue,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isSelected = value == currentValue;
-    final colors = context.colors;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: isSelected
-            ? colors.primary.opaque(0.12, iReallyMeanIt: true)
-            : colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isSelected
-              ? colors.primary
-              : colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-        ),
-      ),
-      child: ListTile(
-        onTap: onTap,
-        title: AnymeXText(
-          text: title,
-          variant: TextVariant.semiBold,
-          size: 14,
-        ),
-        subtitle: AnymeXText(
-          text: subtitle,
-          size: 12,
-          color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-        ),
-        trailing: isSelected
-            ? Icon(Icons.check_circle_rounded, color: colors.primary)
-            : null,
-      ),
-    );
-  }
-}

@@ -1350,7 +1350,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ...controller.filteredChapters.map((chapter) {
                   final isSelected = controller.isChapterSelected(chapter);
                   final numDisplay = chapter.number != null
-                      ? 'Chapter ${chapter.number! % 1 == 0 ? chapter.number!.toInt() : chapter.number}'
+                      ? 'Chapter ${chapter.formattedNumber}'
                       : chapter.title ?? 'Chapter';
 
                   return Container(

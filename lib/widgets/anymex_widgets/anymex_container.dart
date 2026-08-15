@@ -65,20 +65,18 @@ class AnymeXContainer extends StatelessWidget {
                   : null,
         );
 
-    return Obx(() {
-      return ClipRRect(
-        borderRadius: effectiveRadius ?? BorderRadius.circular(0),
-        clipBehavior: clipBehavior,
-        child: Container(
-          height: height,
-          width: width,
-          alignment: alignment,
-          margin: margin,
-          padding: padding,
-          decoration: effectiveDecoration,
-          child: child,
-        ),
-      );
-    });
+    return ClipRRect(
+      borderRadius: effectiveRadius ?? BorderRadius.circular(0),
+      clipBehavior: clipBehavior,
+      child: Container(
+        height: height,
+        width: width,
+        alignment: alignment,
+        margin: margin,
+        padding: padding,
+        decoration: effectiveDecoration,
+        child: child,
+      ),
+    );
   }
 }

@@ -582,6 +582,7 @@ class OfflineStorageController extends GetxController {
         }
       });
     });
+    update();
   }
 
   Future<void> addOrUpdateManga(
@@ -610,6 +611,7 @@ class OfflineStorageController extends GetxController {
         }
       });
     });
+    update();
   }
 
   Future<void> addOrUpdateNovel(
@@ -638,6 +640,7 @@ class OfflineStorageController extends GetxController {
         }
       });
     });
+    update();
   }
 
   Future<void> addOrUpdateWatchedEpisode(
@@ -675,6 +678,7 @@ class OfflineStorageController extends GetxController {
 
       await isar.offlineMedias.put(existingAnime);
     });
+    update();
 
     if (syncToCloud) {
       _syncCtrl?.pushEpisodeProgress(
@@ -730,6 +734,7 @@ class OfflineStorageController extends GetxController {
 
       await isar.offlineMedias.put(existingManga);
     });
+    update();
 
     if (syncToCloud) {
       _syncCtrl?.pushChapterProgress(

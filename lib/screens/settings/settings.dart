@@ -15,6 +15,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/utils/updater.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
@@ -64,8 +65,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    const listPadding = EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 24.0);
-
     return AnymeXScaffold(
       resizeToAvoidBottomInset: false,
       showHeader: true,
@@ -75,13 +74,18 @@ class _SettingsPageState extends State<SettingsPage> {
       headerSearchHint: 'Search settings...',
       onHeaderSearchChanged: (value) => setState(() {}),
       onHeaderSearchClear: () => setState(() {}),
-      body: _isSearching
-          ? _buildSearchResults(listPadding)
-          : _buildCategoryList(listPadding),
+      body: Builder(
+        builder: (ctx) {
+          final headerHeight = AnymeXHeaderScope.of(ctx);
+          return _isSearching
+              ? _buildSearchResults(headerHeight)
+              : _buildCategoryList(headerHeight);
+        },
+      ),
     );
   }
 
-  Widget _buildSearchResults(EdgeInsets padding) {
+  Widget _buildSearchResults(double headerHeight) {
     if (_searchResults.isEmpty) {
       return Center(
         child: Column(
@@ -113,10 +117,11 @@ class _SettingsPageState extends State<SettingsPage> {
     final categories = _search.sortedCategories(query);
 
     return ListView.builder(
-      padding: EdgeInsets.fromLTRB(padding.left, 12, padding.right, 20),
-      itemCount: categories.length,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+      itemCount: categories.length + 1,
       itemBuilder: (context, index) {
-        final category = categories[index];
+        if (index == 0) return SizedBox(height: headerHeight - 12);
+        final category = categories[index - 1];
         final items = _searchResults[category]!;
 
         return AnymeXSectionBuilder(
@@ -143,11 +148,11 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildCategoryList(EdgeInsets padding) {
+  Widget _buildCategoryList(double headerHeight) {
     return SuperListView(
-      padding: padding,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       children: [
-        const SizedBox(height: 8),
+        SizedBox(height: headerHeight),
         _buildCategorySection(
           title: "Accounts & Sync",
           tiles: [
@@ -177,7 +182,8 @@ class _SettingsPageState extends State<SettingsPage> {
             _buildTile(
               icon: Icons.storage_rounded,
               title: "Storage Manager",
-              description: "Manage cached images, thresholds, and reset app data",
+              description:
+                  "Manage cached images, thresholds, and reset app data",
               destination: SettingsStorageManager.new,
             ),
           ],
@@ -254,7 +260,21 @@ class _SettingsPageState extends State<SettingsPage> {
                 title: "Test",
                 description: "Debug extensions and update sheet",
                 customTap: () async {
-                  UpdateManager().showTestUpdateSheet(context);
+                  AnymeXDialog(
+                    title: "Debug",
+                    contentWidget: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnymeXTile(
+                          icon: HugeIcons.strokeRoundedBug01,
+                          title: "Debug Extensions",
+                          subtitle: "Debug extensions and view logs",
+                          onTap: () async {},
+                        ),
+                      ],
+                    ),
+                    onConfirm: () {},
+                  ).show(context);
                 },
               ),
           ],

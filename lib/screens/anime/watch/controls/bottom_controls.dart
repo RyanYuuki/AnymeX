@@ -331,27 +331,25 @@ class BottomControls extends StatelessWidget {
         tooltip: 'External Player',
         compact: true,
       ),
-      'watch_together': Obx(() {
-        final watchium = Get.find<WatchiumService>();
-        return ControlButton(
-          icon: watchium.inRoom.value ? Icons.people_rounded : Icons.people_outline_rounded,
-          onPressed: () {
-            if (watchium.inRoom.value) {
-              // Already in a room — toggle the party sidebar (chat + members)
-              watchium.isPartyPaneOpened.value =
-                  !watchium.isPartyPaneOpened.value;
-            } else {
-              // Not in a room — show create/join sheet
-              showWatchiumCreateSheet(
-                context: Get.context!,
-                playerController: controller,
-              );
-            }
-          },
-          tooltip: watchium.inRoom.value ? 'Watch Together (In Room)' : 'Watch Together',
-          compact: true,
-        );
-      }),
+      // 'watch_together': Obx(() {
+      //   final watchium = Get.find<WatchiumService>();
+      //   return ControlButton(
+      //     icon: watchium.inRoom.value ? Icons.people_rounded : Icons.people_outline_rounded,
+      //     onPressed: () {
+      //       if (watchium.inRoom.value) {
+      //         watchium.isPartyPaneOpened.value =
+      //             !watchium.isPartyPaneOpened.value;
+      //       } else {
+      //         showWatchiumCreateSheet(
+      //           context: Get.context!,
+      //           playerController: controller,
+      //         );
+      //       }
+      //     },
+      //     tooltip: watchium.inRoom.value ? 'Watch Together (In Room)' : 'Watch Together',
+      //     compact: true,
+      //   );
+      // }),
       'cast': ControlButton(
         icon: Icons.cast_rounded,
         onPressed: () => CastDeviceDialog.show(context, controller),

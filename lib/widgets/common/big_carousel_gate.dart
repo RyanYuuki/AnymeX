@@ -19,12 +19,13 @@ class BigCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final safeData = data.take(15).toList();
     return Obx(() {
       return CarouselStyleRegistry.build(
         key: key,
         selectedIndex: CarouselStyleRegistry.normalizeIndex(
             settingsController.carouselStyle),
-        data: data,
+        data: safeData,
         carouselType: carouselType,
       );
     });

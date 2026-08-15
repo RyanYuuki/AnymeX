@@ -3,6 +3,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 
@@ -67,61 +68,49 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            return AlertDialog(
-              backgroundColor: context.colors.surface,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: const Text('Clear App Cache'),
-              content: Column(
+            return AnymeXDialog(
+              title: 'Clear App Cache',
+              confirmText: 'Clear Selected',
+              onConfirm: () async {
+                await _executeClear(
+                  deleteImages: deleteImages,
+                  deleteTorrents: deleteTorrents,
+                  deleteSnapshots: deleteSnapshots,
+                  deleteOther: deleteOther,
+                );
+              },
+              contentWidget: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CheckboxListTile(
-                    activeColor: context.colors.primary,
-                    title: const Text('Cached Images'),
-                    subtitle: Text('App posters, icons, avatars. Size: ${_service.formatBytes(imageSize)}'),
+                  AnymeXTile.checkbox(
+                    title: 'Cached Images',
+                    subtitle: 'App posters, icons, avatars. Size: ${_service.formatBytes(imageSize)}',
                     value: deleteImages,
-                    onChanged: (v) => setDialogState(() => deleteImages = v ?? true),
+                    onChanged: (v) => setDialogState(() => deleteImages = v),
                   ),
-                  CheckboxListTile(
-                    activeColor: context.colors.primary,
-                    title: const Text('Torrent Stream Cache'),
-                    subtitle: Text('Temporary video chunks. Size: ${_service.formatBytes(torrentSize)}'),
+                  const SizedBox(height: 8),
+                  AnymeXTile.checkbox(
+                    title: 'Torrent Stream Cache',
+                    subtitle: 'Temporary video chunks. Size: ${_service.formatBytes(torrentSize)}',
                     value: deleteTorrents,
-                    onChanged: (v) => setDialogState(() => deleteTorrents = v ?? true),
+                    onChanged: (v) => setDialogState(() => deleteTorrents = v),
                   ),
-                  CheckboxListTile(
-                    activeColor: context.colors.primary,
-                    title: const Text('Novel Snapshots'),
-                    subtitle: Text('Downloaded web novel pages. Size: ${_service.formatBytes(snapshotSize)}'),
+                  const SizedBox(height: 8),
+                  AnymeXTile.checkbox(
+                    title: 'Novel Snapshots',
+                    subtitle: 'Downloaded web novel pages. Size: ${_service.formatBytes(snapshotSize)}',
                     value: deleteSnapshots,
-                    onChanged: (v) => setDialogState(() => deleteSnapshots = v ?? false),
+                    onChanged: (v) => setDialogState(() => deleteSnapshots = v),
                   ),
-                  CheckboxListTile(
-                    activeColor: context.colors.primary,
-                    title: const Text('Other Temporary Files'),
-                    subtitle: Text('Logs, temp downloads. Size: ${_service.formatBytes(otherTempSize)}'),
+                  const SizedBox(height: 8),
+                  AnymeXTile.checkbox(
+                    title: 'Other Temporary Files',
+                    subtitle: 'Logs, temp downloads. Size: ${_service.formatBytes(otherTempSize)}',
                     value: deleteOther,
-                    onChanged: (v) => setDialogState(() => deleteOther = v ?? true),
+                    onChanged: (v) => setDialogState(() => deleteOther = v),
                   ),
                 ],
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  onPressed: () async {
-                    Navigator.pop(context);
-                    await _executeClear(
-                      deleteImages: deleteImages,
-                      deleteTorrents: deleteTorrents,
-                      deleteSnapshots: deleteSnapshots,
-                      deleteOther: deleteOther,
-                    );
-                  },
-                  child: const Text('Clear Selected'),
-                ),
-              ],
             );
           },
         );
@@ -158,21 +147,12 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Factory Reset'),
-        content: const Text(
-          'This will permanently delete all data stored of AnymeX. This cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete All'),
-          ),
-        ],
+      builder: (context) => AnymeXDialog(
+        title: 'Factory Reset',
+        confirmText: 'Delete All',
+        confirmResultGetter: () => true,
+        onConfirm: () {},
+        message: 'This will permanently delete all data stored of AnymeX. This cannot be undone.',
       ),
     );
 
@@ -202,8 +182,9 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Storage Manager',
-      body: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 30.0),
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -315,6 +296,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                     ],
                   ),
                 )
+      ),
     );
   }
 }

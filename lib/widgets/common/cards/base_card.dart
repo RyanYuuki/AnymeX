@@ -4,7 +4,7 @@ import 'package:anymex/widgets/common/cards/card_components.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 
-enum CardStyle { saikou, exotic, minimalExotic, modern, glass }
+enum CardStyle { saikou, exotic, minimalExotic, modern, glass, simple }
 
 abstract class CarouselCard extends StatelessWidget {
   final CarouselData itemData;

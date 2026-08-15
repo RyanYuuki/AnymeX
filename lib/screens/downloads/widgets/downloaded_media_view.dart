@@ -11,6 +11,7 @@ import 'package:anymex/screens/downloads/widgets/video_thumbnail_widget.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
@@ -34,8 +35,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   final downloadController = Get.find<DownloadController>();
 
   DownloadedMediaSummary get _currentSummary =>
-      downloadController.downloadedMedia.firstWhereOrNull(
-          (s) => s.folderName == widget.summary.folderName) ??
+      downloadController.downloadedMedia
+          .firstWhereOrNull((s) => s.folderName == widget.summary.folderName) ??
       widget.summary;
 
   bool get _isManga => _currentSummary.mediaType == 'Manga';
@@ -135,8 +136,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         : (_meta?.episodes.isEmpty ?? true);
 
     return AnymeXScaffold(
-  floatingActionButton: _buildContinueFab(),
-  body: SafeArea(
+        floatingActionButton: _buildContinueFab(),
+        body: SafeArea(
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
@@ -163,8 +164,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               ],
             ),
           ),
-        )
-);
+        ));
   }
 
   Widget? _buildContinueFab() {
@@ -272,7 +272,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       if (!trackCtrl.hasAnyBinding(mediaId)) return;
 
       int progress = 0;
-      final threshold = settingsController.markAsCompleted; // user-configured % (default 90)
+      final threshold =
+          settingsController.markAsCompleted; // user-configured % (default 90)
       if (!_isManga && _meta != null) {
         for (final e in _meta!.episodes) {
           final n = int.tryParse(e.number) ?? 0;
@@ -352,8 +353,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
 
   Widget _buildHero(BuildContext context, ColorScheme theme) {
     final summary = _currentSummary;
-    final hasPoster =
-        summary.poster != null && summary.poster!.isNotEmpty;
+    final hasPoster = summary.poster != null && summary.poster!.isNotEmpty;
     final count = _isManga
         ? (_mangaMeta?.chapters.length ?? '-')
         : (_meta?.episodes.length ?? '-');
@@ -617,8 +617,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.track_changes_rounded,
-                size: 15, color: theme.primary),
+            Icon(Icons.track_changes_rounded, size: 15, color: theme.primary),
             const SizedBox(width: 6),
             Text(
               'Track',
@@ -635,8 +634,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               final bound = trackCtrl.bindingCount(mediaId);
               final total = trackCtrl.loggedInTrackers().length;
               return Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
                   color: bound > 0
                       ? theme.primary.withOpacity(0.25)
@@ -766,14 +764,16 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                     width: 120,
                                     height: 68,
                                     decoration: BoxDecoration(
-                                      color: theme.surfaceContainer.withOpacity(0.5),
+                                      color: theme.surfaceContainer
+                                          .withOpacity(0.5),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Center(
                                       child: Text(
                                         episode.number,
                                         style: TextStyle(
-                                          color: theme.onSurface.withOpacity(0.3),
+                                          color:
+                                              theme.onSurface.withOpacity(0.3),
                                           fontSize: 16,
                                           fontWeight: FontWeight.w800,
                                         ),
@@ -837,9 +837,10 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                 child: LinearProgressIndicator(
                                   value: progress,
                                   minHeight: 3,
-                                  backgroundColor: Colors.white.withOpacity(0.2),
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(theme.primary),
+                                  backgroundColor:
+                                      Colors.white.withOpacity(0.2),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      theme.primary),
                                 ),
                               ),
                             ),
@@ -878,54 +879,60 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                             horizontal: 8, vertical: 3),
                                         decoration: BoxDecoration(
                                           color: theme.secondary,
-                                          borderRadius: const BorderRadius.horizontal(
+                                          borderRadius:
+                                              const BorderRadius.horizontal(
                                             left: Radius.circular(8),
                                             right: Radius.circular(5),
                                           ),
                                         ),
-                                        child: Text(
-                                          relativeTime.toUpperCase(),
-                                          style: TextStyle(
-                                            fontFamily: 'Poppins-SemiBold',
-                                            fontSize: 9.0,
-                                            color: theme.secondary.computeLuminance() > 0.5
-                                                ? Colors.black
-                                                : Colors.white,
-                                          ),
+                                        child: AnymeXText.semiBold(
+                                          text: relativeTime.toUpperCase(),
+                                          size: 9.0,
+                                          color: theme.secondary
+                                                      .computeLuminance() >
+                                                  0.5
+                                              ? Colors.black
+                                              : Colors.white,
                                         ),
                                       ),
                                       const SizedBox(width: 2),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 3),
-                                        decoration: BoxDecoration(
-                                          color: theme.tertiary,
-                                          borderRadius: const BorderRadius.horizontal(
-                                            left: Radius.circular(5),
-                                            right: Radius.circular(8),
+                                      Flexible(
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: theme.tertiary,
+                                            borderRadius:
+                                                const BorderRadius.horizontal(
+                                              left: Radius.circular(5),
+                                              right: Radius.circular(8),
+                                            ),
                                           ),
-                                        ),
-                                        child: Text(
-                                          (episode.quality ?? 'VIDEO').toUpperCase(),
-                                          style: TextStyle(
-                                            fontFamily: 'Poppins-SemiBold',
-                                            fontSize: 9.0,
-                                            color: theme.tertiary.computeLuminance() > 0.5
+                                          child: AnymeXText.semiBold(
+                                            text: (episode.quality ?? 'VIDEO')
+                                                .toUpperCase(),
+                                            maxLines: 1,
+                                            size: 9.0,
+                                            color: theme.tertiary
+                                                        .computeLuminance() >
+                                                    0.5
                                                 ? Colors.black
                                                 : Colors.white,
                                           ),
                                         ),
-                                      ),
+                                      )
                                     ],
                                   ),
                                 ),
                                 if (episode.episode.filler == true) ...[
                                   const SizedBox(width: 6),
-                                  _buildInfoBadge(theme, 'Filler', theme.secondary),
+                                  _buildInfoBadge(
+                                      theme, 'Filler', theme.secondary),
                                 ],
                                 if (isWatched) ...[
                                   const SizedBox(width: 6),
-                                  _buildInfoBadge(theme, 'Watched', theme.primary),
+                                  _buildInfoBadge(
+                                      theme, 'Watched', theme.primary),
                                 ],
                               ],
                             ),
@@ -1093,9 +1100,11 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                     style: TextStyle(
                                       fontFamily: 'Poppins-SemiBold',
                                       fontSize: 9.0,
-                                      color: theme.secondary.computeLuminance() > 0.5
-                                          ? Colors.black
-                                          : Colors.white,
+                                      color:
+                                          theme.secondary.computeLuminance() >
+                                                  0.5
+                                              ? Colors.black
+                                              : Colors.white,
                                     ),
                                   ),
                                 ),
@@ -1114,7 +1123,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                     style: TextStyle(
                                       fontFamily: 'Poppins-SemiBold',
                                       fontSize: 9.0,
-                                      color: theme.tertiary.computeLuminance() > 0.5
+                                      color: theme.tertiary.computeLuminance() >
+                                              0.5
                                           ? Colors.black
                                           : Colors.white,
                                     ),

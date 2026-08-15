@@ -39,6 +39,7 @@ class CharactersCarousel extends StatelessWidget {
         SizedBox(
           height: isDesktop ? 290 : 210,
           child: ListView.builder(
+            key: ObjectKey(characters),
             itemCount: characters.length,
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -153,6 +154,7 @@ class CharactersCarousel extends StatelessWidget {
           SizedBox(
             height: isDesktop ? 290 : 230,
             child: ListView.builder(
+              key: ValueKey('VoiceActors-${characters.hashCode}'),
               itemCount: characters.length,
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
@@ -305,6 +307,7 @@ class StaffCarousel extends StatelessWidget {
         SizedBox(
           height: isDesktop ? 290 : 210,
           child: ListView.builder(
+            key: ObjectKey(staff),
             itemCount: staff.length,
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),

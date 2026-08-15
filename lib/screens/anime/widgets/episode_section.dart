@@ -1,36 +1,25 @@
-// ignore_for_file: invalid_use_of_protected_member
-
-import 'dart:async';
-
-import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/jikan.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/widgets/episode/episode_style_registry.dart';
 import 'package:anymex/screens/anime/widgets/episode_list_builder.dart';
-import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/utils/function.dart';
-
-import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/cloudflare_webview.dart';
-import 'package:anymex/widgets/common/no_source.dart';
-import 'package:anymex/widgets/common/source_selector.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
-
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex_extension_runtime_bridge/Services/CloudStream/CloudStreamSourceMethods.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class EpisodeSection extends StatefulWidget {
+import 'package:anymex/screens/anime/details/controller/media_details_controller.dart';
+import 'package:anymex/widgets/common/unified_source_section.dart';
+
+class EpisodeSection extends StatelessWidget {
   final dynamic searchedTitle;
   final dynamic anilistData;
   final RxList<Episode>? episodeList;
@@ -40,6 +29,8 @@ class EpisodeSection extends StatefulWidget {
   final RxBool disableAnifyForCurrentSource;
   final Future<void> Function() mapToAnilist;
   final Future<void> Function(Media) getDetailsFromSource;
+  final bool isSliverMode;
+  final String tag;
 
   const EpisodeSection({
     super.key,
@@ -52,530 +43,244 @@ class EpisodeSection extends StatefulWidget {
     required this.isAnify,
     required this.showAnify,
     required this.disableAnifyForCurrentSource,
+    this.isSliverMode = false,
+    required this.tag,
   });
 
-  @override
-  State<EpisodeSection> createState() => _EpisodeSectionState();
-}
-
-class _EpisodeSectionState extends State<EpisodeSection> {
-  final RxInt _requestCounter = 0.obs;
-  final Rx<Future<List<Episode>>?> _episodeFuture =
-      Rx<Future<List<Episode>>?>(null);
-  Worker? _episodeListListener;
-  bool _fillerFetched = false;
-
-
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.episodeList != null && widget.episodeList!.isNotEmpty) {
-      _episodeFuture.value = Future.value(widget.episodeList!);
-      _fetchFillerInfo();
-    }
-
-    if (widget.episodeList != null) {
-      _episodeListListener = ever(widget.episodeList!, (episodes) {
-        if (episodes.isNotEmpty && !_fillerFetched) {
-          _fetchFillerInfo();
-        }
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _episodeListListener?.dispose();
-    super.dispose();
-  }
-
-  Future<void> _fetchFillerInfo() async {
-    if (_fillerFetched) return;
-
-    if (widget.episodeList != null && widget.episodeList!.isNotEmpty) {
-      if (widget.episodeList!.any((ep) => ep.filler == true)) {
-        _fillerFetched = true;
-        return;
-      }
-    }
-
-    final malId = widget.anilistData?.idMal;
-    if (malId == null) return;
-
-    _fillerFetched = true;
-
-    try {
-      final fillerMap = await JikanService.getFillerEpisodes(malId.toString());
-
-      if (fillerMap.isNotEmpty && widget.episodeList != null) {
-        bool updated = false;
-
-        for (var ep in widget.episodeList!) {
-          if (fillerMap.containsKey(ep.number)) {
-            ep.filler = true;
-            updated = true;
-          }
-        }
-
-        if (updated && mounted) setState(() {});
-      }
-    } catch (_) {}
-  }
-
-  Future<List<Episode>> _fetchEpisodes(int requestId) async {
-    try {
-      await widget.mapToAnilist();
-
-      if (_requestCounter.value != requestId) {
-        throw Exception('Request cancelled');
-      }
-
-      final episodes = widget.episodeList?.value ?? [];
-      if (episodes.isNotEmpty) {
-        _fetchFillerInfo();
-      }
-
-      return episodes;
-    } catch (e) {
-      if (_requestCounter.value == requestId) {
-        widget.episodeError.value = true;
-      }
-      rethrow;
-    }
-  }
-
-  void handleSourceChange(String? value) {
-    if (value == null) return;
-
-    widget.episodeError.value = false;
-    widget.episodeList?.value = [];
-
-    try {
-      final sourceController = Get.find<ServiceHandler>().extensionService;
-      sourceController.getExtensionByValue(value,
-          mediaId: widget.anilistData?.id?.toString());
-
-      _requestCounter.value++;
-      int currentRequestId = _requestCounter.value;
-
-      _episodeFuture.value = _fetchEpisodes(currentRequestId);
-    } catch (e) {
-      Logger.i(e.toString());
-      widget.episodeError.value = true;
-    }
-  }
-
   void openSourcePreferences(BuildContext context) async {
+    final sourceController = Get.find<SourceController>();
     final active = sourceController.activeSource.value;
     if (active == null) return;
+
     if (active is CloudStreamSource) {
       if (active.hasSettings) {
         await CloudStreamSourceMethods(active).openNativeSettings();
       }
       return;
     }
-    navigate(
-      () => SourcePreferenceScreen(
-        source: active,
-      ),
-    );
+
+    navigate(() => SourcePreferenceScreen(source: active));
   }
-
-  void handleLanguageChange(String? value) {
-    if (value == null) return;
-
-    final activeSource = sourceController.activeSource.value as ASource?;
-    if (activeSource == null || activeSource.langs == null) return;
-
-    final newSubSource =
-        activeSource.langs!.firstWhere((s) => s.id.toString() == value);
-    sourceController.setActiveSource(newSubSource,
-        mediaId: widget.anilistData?.id?.toString());
-
-    widget.episodeError.value = false;
-    widget.episodeList?.value = [];
-    _requestCounter.value++;
-    int currentRequestId = _requestCounter.value;
-    _episodeFuture.value = _fetchEpisodes(currentRequestId);
-
-    setState(() {});
-  }
-
-  Widget buildEpisodeContent() {
-    final sourceController = Get.find<ServiceHandler>().extensionService;
-    return Obx(() {
-      if (sourceController.activeSource.value == null) {
-        return const Padding(
-          padding: EdgeInsets.only(top: 20),
-          child: SizedBox(
-            height: 320,
-            child: NoSourceSelectedWidget(),
-          ),
-        );
-      }
-
-      return FutureBuilder<List<Episode>>(
-        future: _episodeFuture.value,
-        builder: (context, snapshot) {
-          if (widget.episodeError.value &&
-              (widget.episodeList?.value.isEmpty ?? true)) {
-            return SizedBox(
-              height: 300,
-              child: Center(
-                child: AnymeXText(
-                  text: snapshot.error.toString().contains('lateinit')
-                      ? "Restart the App Gang"
-                      : "Looks like even the episodes are avoiding your taste in shows\n:(",
-                  size: 20,
-                  textAlign: TextAlign.center,
-                  variant: TextVariant.semiBold,
-                ),
-              ),
-            );
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SizedBox(
-              height: 500,
-              child: Center(child: AnymeXProgressIndicator()),
-            );
-          }
-
-          if (!snapshot.hasData || (snapshot.data?.isEmpty ?? true)) {
-            if (widget.episodeList?.isEmpty ?? true) {
-              return const SizedBox(
-                height: 500,
-                child: Center(child: AnymeXProgressIndicator()),
-              );
-            }
-          }
-
-          return EpisodeListBuilder(
-            episodeList: widget.episodeList?.value ?? snapshot.data ?? [],
-            anilistData: widget.anilistData,
-          );
-        },
-      );
-    });
-  }
-
-  bool get _hasEpisodeSettingsOption =>
-      widget.showAnify.value && !widget.disableAnifyForCurrentSource.value;
 
   void _showEpisodeSettingsDialog(BuildContext context) {
-    final tempUseAnify = widget.isAnify.value.obs;
-
     showDialog(
       context: context,
       builder: (dialogContext) {
         return Obx(
           () => AnymeXDialog(
             title: 'Episode List Settings',
-            onConfirm: () {
-              widget.isAnify.value = tempUseAnify.value;
-            },
-            contentWidget: _ProviderOptionTile(
-              title: 'Anify / Kitsu',
-              subtitle: 'Use enhanced episode metadata and artwork.',
-              isSelected: tempUseAnify.value,
-              onTap: () => tempUseAnify.value = !tempUseAnify.value,
+            onConfirm: () {},
+            contentWidget: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (showAnify.value && !disableAnifyForCurrentSource.value) ...[
+                  _ProviderOptionTile(
+                    title: 'Anify / Kitsu Artwork',
+                    subtitle: 'Use enhanced episode metadata and covers',
+                    isSelected: isAnify.value,
+                    onTap: () {
+                      isAnify.value = !isAnify.value;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                ],
+                const AnymeXText(
+                  text: 'Layout Style',
+                  variant: TextVariant.bold,
+                  size: 14,
+                ),
+                const SizedBox(height: 8),
+                ...EpisodeStyleRegistry.styles.map((style) {
+                  final isSelected =
+                      EpisodeStyleRegistry.currentStyleId.value == style.id;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _ProviderOptionTile(
+                      title: style.name,
+                      subtitle: style.description,
+                      isSelected: isSelected,
+                      onTap: () {
+                        EpisodeStyleRegistry.setStyle(style.id);
+                      },
+                    ),
+                  );
+                }),
+              ],
             ),
           ),
         );
       },
     );
   }
-  
-  @override
-  Widget build(BuildContext context) {
-    return _buildSliverContent(context);
-  }
 
-  Widget _buildSliverContent(BuildContext context) {
-    final serviceHandler = Get.find<ServiceHandler>();
+  Widget _buildHeader(BuildContext context) {
+    final sourceController = Get.find<SourceController>();
     return Obx(() {
-      return SliverMainAxisGroup(
-        slivers: [
-          if (serviceHandler.serviceType.value != ServicesType.extensions) ...[
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainer
-                        .opaque(0.3),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: context.colors.outline
-                          .opaque(0.2, iReallyMeanIt: true),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.colors.shadow
-                            .opaque(0.08, iReallyMeanIt: true),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: AnymeXTextSpans(
-                          spans: [
-                            AnymeXTextSpan(
-                              text: widget.searchedTitle.value,
-                              variant: TextVariant.semiBold,
-                              size: 14,
-                              color: widget.searchedTitle.value
-                                      .contains('No Match Found')
-                                  ? context.colors.error
-                                  : context.colors.primary,
-                            )
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      AnymexOnTap(
-                        onTap: () {
-                          showWrongTitleModal(
-                            context,
-                            widget.anilistData.title,
-                            (manga) async {
-                              widget.episodeList?.clear();
-                              _requestCounter.value++;
-                              int currentRequestId = _requestCounter.value;
-                              _episodeFuture.value = Future(() async {
-                                await widget.getDetailsFromSource(
-                                    Media.froDMedia(manga, ItemType.anime));
-                                if (_requestCounter.value != currentRequestId) {
-                                  throw Exception('Request cancelled');
-                                }
-                                return widget.episodeList?.value ?? [];
-                              });
-                              final key =
-                                  '${sourceController.activeSource.value?.id}-${widget.anilistData.id}-${widget.anilistData.serviceType.index}';
-                              DynamicKeys.mappedMediaTitle
-                                  .set(key, manga.title);
-                            },
-                            mediaId: widget.anilistData.id.toString(),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color:
-                                context.colors.primaryContainer.opaque(0.4),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .outline
-                                  .opaque(0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.swap_horiz_rounded,
-                                size: 14,
-                                color: context.colors.primary,
-                              ),
-                              const SizedBox(width: 6),
-                              AnymeXText(
-                                text: "Wrong Title?",
-                                size: 12,
-                                color: context.colors.primary,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+      final installed = sourceController.installedExtensions;
+      if (installed.isEmpty) {
+        return const NoSourceSelectedWidget();
+      }
+
+      final activeSource = sourceController.activeSource.value ?? installed.first;
+      final colors = context.colors;
+      final titleText = searchedTitle is RxString
+          ? searchedTitle.value
+          : (searchedTitle is Rx ? searchedTitle.value : searchedTitle.toString());
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          UnifiedSourceSection(
+            media: anilistData is Media
+                ? anilistData
+                : Media(serviceType: ServicesType.extensions),
+            searchedTitle: titleText.toString(),
+            activeSource: activeSource,
+            installedSources: installed,
+            onSourceSelected: (source) {
+              Get.find<MediaDetailsController>(tag: tag).switchSource(source);
+            },
+            onWrongTitleMapped: (manga) async {
+              final controller = Get.find<MediaDetailsController>(tag: tag);
+              controller.episodeList.clear();
+              await controller.fetchSourceDetailsFromMedia(
+                  Media.froDMedia(manga, controller.media.value.mediaType));
+            },
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHighest
+                  .opaque(0.2, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Obx(() => SourceSelectorWidget(
-                  activeSource: sourceController.activeSource.value,
-                  installedSources: sourceController.installedExtensions,
-                  isManga: false,
-                  onSourceSelected: (source) {
-                    handleSourceChange(source.id.toString());
-                  },
-                  onSubSourceSelected: (sub) {
-                    handleLanguageChange(sub.id.toString());
-                  },
-                  onCloudflareBypass: sourceController.activeSource.value?.baseUrl != null
-                      ? () {
-                          final uri = Uri.parse(sourceController.activeSource.value!.baseUrl!);
-                          final origin = '${uri.scheme}://${uri.host}';
-                          context.openCloudflareBypass(origin);
-                        }
-                      : null,
-                  onPreferencesTap: sourceController.activeSource.value != null
-                      ? () => openSourcePreferences(context)
-                      : null,
-                )),
-              ),
-            ),
-          ],
-          const SliverToBoxAdapter(child: SizedBox(height: 20)),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            sliver: DecoratedSliver(
-              decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .surfaceContainer
-                    .opaque(0.3),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color:
-                      context.colors.outline.opaque(0.2, iReallyMeanIt: true),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: context.colors.shadow
-                        .opaque(0.08, iReallyMeanIt: true),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: AnymeXText(
+                    text: 'Episodes',
+                    variant: TextVariant.bold,
+                    size: 18,
                   ),
-                ],
-              ),
-              sliver: SliverPadding(
-                padding: const EdgeInsets.all(16),
-                sliver: SliverMainAxisGroup(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Obx(
-                        () => Row(
-                          children: [
-                            const Expanded(
-                              child: AnymeXText(
-                                text: "Episodes",
-                                variant: TextVariant.bold,
-                                size: 18,
-                              ),
-                            ),
-                            if (_hasEpisodeSettingsOption) ...[
-                              AnymexOnTap(
-                                onTap: () =>
-                                    _showEpisodeSettingsDialog(context),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: context.colors.primaryContainer
-                                        .opaque(0.3),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color:
-                                          context.colors.outline.opaque(0.2),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.settings_outlined,
-                                        size: 16,
-                                        color: context.colors.primary,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      AnymeXText(
-                                        text: widget.isAnify.value
-                                            ? 'Anify / Kitsu'
-                                            : 'Default',
-                                        size: 13,
-                                        variant: TextVariant.semiBold,
-                                        color: context.colors.primary,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
+                ),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _showEpisodeSettingsDialog(context),
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceContainerHighest
+                            .opaque(0.35, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: colors.outline
+                              .opaque(0.15, iReallyMeanIt: true),
                         ),
                       ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.settings_outlined,
+                            size: 16,
+                            color: colors.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          AnymeXText(
+                            text: 'Settings',
+                            size: 12,
+                            color: colors.primary,
+                            variant: TextVariant.bold,
+                          ),
+                        ],
+                      ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
-                    _buildEpisodeContentSliver(context),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 10)),
+          const SizedBox(height: 12),
         ],
       );
     });
   }
 
-  Widget _buildEpisodeContentSliver(BuildContext context) {
-    final sc = Get.find<ServiceHandler>().extensionService;
+  Widget _buildEpisodeListSliver(BuildContext context) {
     return Obx(() {
-      if (sc.activeSource.value == null) {
+      final episodes =
+          Get.find<MediaDetailsController>(tag: tag).episodeList;
+      if (episodeError.value) {
         return const SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.only(top: 20),
-            child: SizedBox(
-              height: 320,
-              child: NoSourceSelectedWidget(),
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: AnymeXText(text: 'Error loading episodes from source'),
             ),
           ),
         );
-      }
-
-      if (widget.episodeError.value &&
-          (widget.episodeList?.isEmpty ?? true)) {
+      } else if (episodes.isEmpty) {
         return const SliverToBoxAdapter(
-          child: SizedBox(
-            height: 300,
-            child: Center(
-              child: AnymeXText(
-                text: "Looks like even the episodes are avoiding your taste in shows\n:(",
-                size: 20,
-                textAlign: TextAlign.center,
-                variant: TextVariant.semiBold,
-              ),
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: AnymeXProgressIndicator(),
             ),
           ),
         );
-      }
-
-      if (widget.episodeList?.isEmpty ?? true) {
-        return const SliverToBoxAdapter(
-          child: SizedBox(
-            height: 500,
-            child: Center(child: AnymeXProgressIndicator()),
-          ),
+      } else {
+        return EpisodeListBuilder(
+          episodeList: episodes,
+          anilistData: anilistData is Media ? anilistData : null,
+          isSliverMode: true,
         );
       }
-
-      return EpisodeListBuilder(
-        episodeList: widget.episodeList!.value,
-        anilistData: widget.anilistData,
-        isSliverMode: true,
-      );
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isSliverMode) {
+      return SliverMainAxisGroup(
+        slivers: [
+          SliverPadding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            sliver: SliverToBoxAdapter(child: _buildHeader(context)),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: _buildEpisodeListSliver(context),
+          ),
+        ],
+      );
+    }
+
+    return CustomScrollView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: _buildHeader(context),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: _buildEpisodeListSliver(context),
+        ),
+      ],
+    );
   }
 }
 
@@ -594,23 +299,25 @@ class _ProviderOptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: isSelected
-                ? context.colors.primaryContainer.opaque(0.35)
-                : context.colors.surfaceContainerHighest.opaque(0.35),
-            borderRadius: BorderRadius.circular(16),
+                ? colors.primaryContainer.opaque(0.35, iReallyMeanIt: true)
+                : colors.surfaceContainerHighest
+                    .opaque(0.3, iReallyMeanIt: true),
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isSelected
-                  ? context.colors.primary.opaque(0.4)
-                  : context.colors.outline.opaque(0.2),
+                  ? colors.primary.opaque(0.4, iReallyMeanIt: true)
+                  : colors.onSurface.opaque(0.1, iReallyMeanIt: true),
             ),
           ),
           child: Row(
@@ -622,24 +329,27 @@ class _ProviderOptionTile extends StatelessWidget {
                     AnymeXText(
                       text: title,
                       variant: TextVariant.semiBold,
+                      size: 13,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     AnymeXText(
                       text: subtitle,
-                      size: 12,
-                      color: context.colors.onSurface.opaque(0.7),
+                      size: 11,
+                      color: colors.onSurface
+                          .opaque(0.6, iReallyMeanIt: true),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Icon(
                 isSelected
                     ? Icons.check_circle_rounded
                     : Icons.radio_button_unchecked_rounded,
                 color: isSelected
-                    ? context.colors.primary
-                    : context.colors.onSurface.opaque(0.5),
+                    ? colors.primary
+                    : colors.onSurface.opaque(0.4, iReallyMeanIt: true),
+                size: 20,
               ),
             ],
           ),

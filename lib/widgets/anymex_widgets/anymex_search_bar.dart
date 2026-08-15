@@ -105,7 +105,20 @@ class _AnymeXSearchBarState extends State<AnymeXSearchBar> {
 
             final hasTrailing = widget.trailing != null && widget.trailing!.isNotEmpty;
 
-            Widget searchInput = TextField(
+            Widget? effectiveSuffix;
+            if (hasTrailing) {
+              effectiveSuffix = Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (suffix != null) suffix,
+                  ...widget.trailing!,
+                ],
+              );
+            } else {
+              effectiveSuffix = suffix;
+            }
+
+            return TextField(
               controller: _effectiveController,
               focusNode: widget.focusNode,
               readOnly: widget.readOnly,
@@ -135,7 +148,7 @@ class _AnymeXSearchBarState extends State<AnymeXSearchBar> {
                       size: 18,
                       color: colors.onSurface.withOpacity(0.5),
                     ),
-                suffixIcon: suffix,
+                suffixIcon: effectiveSuffix,
                 contentPadding: widget.contentPadding ??
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                 enabledBorder: OutlineInputBorder(
@@ -154,17 +167,6 @@ class _AnymeXSearchBarState extends State<AnymeXSearchBar> {
                   ),
                 ),
               ),
-            );
-
-            if (!hasTrailing) {
-              return searchInput;
-            }
-
-            return Row(
-              children: [
-                Expanded(child: searchInput),
-                ...widget.trailing!,
-              ],
             );
           },
         ),

@@ -62,38 +62,41 @@ class MediaPoster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget imageWidget = Hero(
-      tag: heroTag,
-      transitionOnUserGestures: true,
-      flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
-      child: AnymeXImage(
-        imageUrl: imageUrl,
-        radius: radius,
-        height: double.infinity,
-        width: double.infinity,
-        fadeInDuration: Duration.zero,
-        fadeOutDuration: Duration.zero,
-        sourceId: sourceId,
-        isAnime: isAnime,
-      ),
+    Widget innerImage = AnymeXImage(
+      imageUrl: imageUrl,
+      radius: radius,
+      height: double.infinity,
+      width: double.infinity,
+      fadeInDuration: Duration.zero,
+      fadeOutDuration: Duration.zero,
+      sourceId: sourceId,
+      isAnime: isAnime,
     );
 
+    Widget clipWidget;
     if (border != null) {
-      return Container(
+      clipWidget = Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(radius.multiplyRoundness()),
           border: border,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular((radius - 2).clamp(0, double.infinity).toDouble().multiplyRoundness()),
-          child: imageWidget,
+          child: innerImage,
         ),
+      );
+    } else {
+      clipWidget = ClipRRect(
+        borderRadius: BorderRadius.circular(radius.multiplyRoundness()),
+        child: innerImage,
       );
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius.multiplyRoundness()),
-      child: imageWidget,
+    return Hero(
+      tag: heroTag,
+      transitionOnUserGestures: true,
+      flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
+      child: clipWidget,
     );
   }
 }

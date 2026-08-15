@@ -33,6 +33,7 @@ class UISettings {
   bool useGrainTexture;
   double grainIntensity;
   bool enableImmersiveMode;
+  int navBarStyle;
 
   UISettings({
     this.glowMultiplier = 1.0,
@@ -65,6 +66,7 @@ class UISettings {
     this.useGrainTexture = false,
     this.grainIntensity = 0.05,
     this.enableImmersiveMode = false,
+    this.navBarStyle = 0,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -199,6 +201,7 @@ class UISettings {
           UISettingsKeys.grainIntensity.get<double>(uiDefaults.grainIntensity),
       enableImmersiveMode: UISettingsKeys.enableImmersiveMode
           .get<bool>(uiDefaults.enableImmersiveMode),
+      navBarStyle: UISettingsKeys.navBarStyle.get<int>(uiDefaults.navBarStyle),
     );
   }
 }

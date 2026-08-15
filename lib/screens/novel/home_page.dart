@@ -38,7 +38,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
     final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
-    final double bottomNavBarHeight = MediaQuery.paddingOf(context).bottom;
+    final double bottomNavBarHeight = isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 65.0);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -54,16 +54,13 @@ class _NovelHomePageState extends State<NovelHomePage> {
                 const SizedBox(height: 10),
                 Obx(() {
                   final sourceController = Get.find<SourceController>();
-                  sourceController.installedNovelExtensions.value;
+                  sourceController.installedNovelExtensions.toList();
                   return InstalledExtensionsGridView(
                     sources: sourceController.installedNovelExtensions,
                     itemType: ItemType.novel,
                   );
                 }),
-                if (!isDesktop)
-                  SizedBox(height: bottomNavBarHeight)
-                else
-                  const SizedBox(height: 50),
+                SizedBox(height: bottomNavBarHeight),
               ],
             ),
           ),

@@ -20,7 +20,6 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 
 class ReusableCarousel extends StatefulWidget {
   final List<dynamic> data;
@@ -128,19 +127,20 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       return SizedBox(
         height: getCardHeight(CardStyle.values[cardStyleIndex],
             getPlatform(context)),
-        child: SuperListView.builder(
+        child: ListView.builder(
+          key: ValueKey('${widget.title}-${processedData.length}-${widget.data.hashCode}'),
           itemCount: processedData.length,
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
           itemBuilder: (context, index) =>
-              _buildCarouselItem(processedData[index], enableAnimation, cardStyleIndex),
+              _buildCarouselItem(processedData[index], enableAnimation, cardStyleIndex, index),
         ),
       );
     });
   }
 
-  Widget _buildCarouselItem(CarouselData itemData, bool enableAnimation, int cardStyleIndex) {
-    final tag = '${widget.title}-${itemData.id}';
+  Widget _buildCarouselItem(CarouselData itemData, bool enableAnimation, int cardStyleIndex, int index) {
+    final tag = '${widget.title}-${itemData.id}-$index-${DateTime.now().microsecondsSinceEpoch}';
 
     final card = enableAnimation
         ? SlideAndScaleAnimation(child: _buildCard(itemData, tag, cardStyleIndex))

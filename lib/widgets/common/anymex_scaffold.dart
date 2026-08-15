@@ -514,6 +514,27 @@ Shimmer placeHolderWidget(BuildContext context) {
   );
 }
 
+class AnymeXHeaderScope extends InheritedWidget {
+  final double topPadding;
+
+  const AnymeXHeaderScope({
+    super.key,
+    required this.topPadding,
+    required super.child,
+  });
+
+  static double of(BuildContext context) {
+    return context
+            .dependOnInheritedWidgetOfExactType<AnymeXHeaderScope>()
+            ?.topPadding ??
+        0.0;
+  }
+
+  @override
+  bool updateShouldNotify(AnymeXHeaderScope oldWidget) =>
+      topPadding != oldWidget.topPadding;
+}
+
 class _HeaderBodyShell extends StatefulWidget {
   final String title;
   final String? subtitle;
@@ -545,32 +566,89 @@ class _HeaderBodyShell extends StatefulWidget {
 
 class _HeaderBodyShellState extends State<_HeaderBodyShell> {
   final _headerKey = GlobalKey<AnymeXHeaderState>();
+  final _isHeaderVisible = ValueNotifier<bool>(true);
+  double _previousScrollOffset = 0;
+  static const double _scrollThreshold = 50.0;
+
+  void _handleScrollNotification(ScrollNotification notification) {
+    if (notification is! ScrollUpdateNotification) return;
+    final metrics = notification.metrics;
+    if (metrics.axis != Axis.vertical) return;
+
+    final currentOffset = metrics.pixels;
+
+    if (currentOffset <= 0) {
+      if (!_isHeaderVisible.value) _isHeaderVisible.value = true;
+      _previousScrollOffset = currentOffset;
+      return;
+    }
+
+    if (currentOffset >= metrics.maxScrollExtent) return;
+
+    if ((currentOffset - _previousScrollOffset).abs() > _scrollThreshold) {
+      final shouldBeVisible = currentOffset < _previousScrollOffset;
+      if (_isHeaderVisible.value != shouldBeVisible) {
+        _isHeaderVisible.value = shouldBeVisible;
+      }
+      _previousScrollOffset = currentOffset;
+    }
+  }
+
+  @override
+  void dispose() {
+    _isHeaderVisible.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final double headerContentHeight = widget.subtitle != null ? 80.0 : 64.0;
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
+    final totalHeaderHeight = headerContentHeight + statusBarHeight + 24.0;
+
+    final childWithPadding = AnymeXHeaderScope(
+      topPadding: totalHeaderHeight,
+      child: widget.child,
+    );
+
     return SafeArea(
       top: false,
+      bottom: false,
       child: NotificationListener<ScrollNotification>(
         onNotification: (n) {
-          _headerKey.currentState?.onScrollNotification(n);
+          _handleScrollNotification(n);
           return false;
         },
-        child: Column(
-          children: [
-            AnymeXHeader(
-              key: _headerKey,
-              title: widget.title,
-              subtitle: widget.subtitle,
-              action: widget.action,
-              enableSearch: widget.enableSearch,
-              searchController: widget.searchController,
-              onSearchChanged: widget.onSearchChanged,
-              onSearchSubmitted: widget.onSearchSubmitted,
-              onSearchClear: widget.onSearchClear,
-              searchHint: widget.searchHint,
-            ),
-            Expanded(child: widget.child),
-          ],
+        child: ValueListenableBuilder<bool>(
+          valueListenable: _isHeaderVisible,
+          builder: (context, isVisible, _) {
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: childWithPadding,
+                ),
+                AnimatedPositioned(
+                  duration: const Duration(milliseconds: 450),
+                  curve: Curves.easeInOut,
+                  top: isVisible ? 0 : -(totalHeaderHeight + 20.0),
+                  left: 0,
+                  right: 0,
+                  child: AnymeXHeader(
+                    key: _headerKey,
+                    title: widget.title,
+                    subtitle: widget.subtitle,
+                    action: widget.action,
+                    enableSearch: widget.enableSearch,
+                    searchController: widget.searchController,
+                    onSearchChanged: widget.onSearchChanged,
+                    onSearchSubmitted: widget.onSearchSubmitted,
+                    onSearchClear: widget.onSearchClear,
+                    searchHint: widget.searchHint,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
