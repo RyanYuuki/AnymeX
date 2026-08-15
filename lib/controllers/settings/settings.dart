@@ -24,8 +24,10 @@ Settings get settingsController => Get.find<Settings>();
 class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
   late Rx<PlayerSettings> playerSettings;
-  final RxString discordUrl = 'https://discord.gg/hDwQ3heJ8V'.obs;
+  final RxString discordUrl = 'https://discord.gg/GKVvSyXDUD'.obs;
   final RxString telegramUrl = 'https://t.me/AnymeX_Discussion'.obs;
+  final RxBool showJoinDialog = true.obs;
+  VoidCallback? onLinksReady;
 
   final canShowUpdate = true.obs;
   final playerControlThemeRx = 'default'.obs;
@@ -184,9 +186,14 @@ class Settings extends GetxController {
         if (data['telegram'] != null) {
           telegramUrl.value = data['telegram'];
         }
+        if (data['showJoinDialog'] != null) {
+          showJoinDialog.value = data['showJoinDialog'] as bool;
+        }
       }
     } catch (e) {
       Logger.e("Failed to fetch invite links: $e");
+    } finally {
+      onLinksReady?.call();
     }
   }
 

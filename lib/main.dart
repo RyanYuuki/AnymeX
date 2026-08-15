@@ -426,9 +426,12 @@ class _FilterScreenState extends State<FilterScreen> {
       final launchCount = KvHelper.get<int>('anymex_discord_notice_launch_count', defaultVal: 0) + 1;
       KvHelper.set('anymex_discord_notice_launch_count', launchCount);
 
-      if (launchCount <= 3) {
-        _showDiscordNoticeDialog(context);
-      }
+      settings.onLinksReady = () {
+        if (!mounted) return;
+        if (launchCount <= 3 || settings.showJoinDialog.value) {
+          _showDiscordNoticeDialog(context);
+        }
+      };
     });
   }
 
