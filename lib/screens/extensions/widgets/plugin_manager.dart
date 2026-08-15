@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:anymex_extension_runtime_bridge/Runtime/Bridge/ServerBridge.dart';
 import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -16,11 +19,25 @@ class PluginManager {
       'https://api.github.com/repos/RyanYuuki/AnymeXExtensionRuntimeBridge/releases/latest';
 
   String get installedVersion => AnymeXRuntimeBridge.installedVersion;
-
   String get installedReleaseTitle => AnymeXRuntimeBridge.installedReleaseTitle;
 
+  bool get isServerBridgeConnected => ServerBridge().isInitialized;
+
+  String? get serverUsername => ServerBridgeKeys.username.get<String?>(null);
+
+  String? get serverPassword => ServerBridgeKeys.password.get<String?>(null);
+
+  /// On iOS: connect to server bridge instead of downloading plugin.
   Future<void> ensurePluginLoaded(BuildContext context) async {
-    if (Platform.isIOS) return;
+    if (Platform.isIOS) {
+      final username = ServerBridgeKeys.username.get<String?>(null);
+      final password = ServerBridgeKeys.password.get<String?>(null);
+      if (username != null && password != null) {
+        await _connectServerBridge(username, password);
+      }
+      return;
+    }
+
     final isLoaded = await AnymeXRuntimeBridge.isLoaded();
     if (isLoaded) return;
 
@@ -34,11 +51,65 @@ class PluginManager {
     await showInstallSheet(context, release: release);
   }
 
+  /// Register a new account and connect.
+  Future<bool> registerAndConnect(String username, String password) async {
+    try {
+      final result = await ServerAuth.register(
+        username: username,
+        password: password,
+      );
+      if (result['ok'] != true) {
+        errorSnackBar(result['error'] ?? 'Registration failed');
+        return false;
+      }
+      return await _connectServerBridge(username, password);
+    } catch (e) {
+      errorSnackBar('Registration failed: $e');
+      return false;
+    }
+  }
+
+  /// Login with existing credentials and connect.
+  Future<bool> loginAndConnect(String username, String password) async {
+    try {
+      return await _connectServerBridge(username, password);
+    } catch (e) {
+      errorSnackBar('Login failed: $e');
+      return false;
+    }
+  }
+
+  /// Disconnect from server bridge and clear credentials.
+  Future<void> disconnectServerBridge() async {
+    try {
+      await Get.find<ExtensionManager>().disconnectServerBridge();
+    } catch (_) {}
+    ServerBridgeKeys.username.delete();
+    ServerBridgeKeys.password.delete();
+    successSnackBar('Disconnected from server');
+  }
+
+  Future<bool> _connectServerBridge(String username, String password) async {
+    try {
+      await Get.find<ExtensionManager>().initServerBridge(
+        username: username,
+        password: password,
+      );
+      // Store credentials for auto-reconnect.
+      ServerBridgeKeys.username.set(username);
+      ServerBridgeKeys.password.set(password);
+      successSnackBar('Connected to server');
+      return true;
+    } catch (e) {
+      errorSnackBar('Connection failed: $e');
+      return false;
+    }
+  }
+
   Future<void> checkForUpdates(
     BuildContext context, {
     bool showIfUpToDate = false,
   }) async {
-    if (Platform.isIOS) return;
     final release = await fetchLatestRelease();
     if (release == null) {
       errorSnackBar('Failed to check plugin updates.');

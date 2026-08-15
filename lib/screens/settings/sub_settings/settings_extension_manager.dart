@@ -319,22 +319,13 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
 
   @override
   Widget build(BuildContext context) {
+    // On iOS: show server bridge login/register instead of plugin manager.
+    if (Platform.isIOS) {
+      return _buildIosServerBridgePage(context);
+    }
+
     final colors = context.colors;
     final bridge = AnymeXRuntimeBridge.controller;
-    if (Platform.isIOS) {
-      return const Scaffold(
-        body: Column(
-          children: [
-            NestedHeader(title: 'Extension Manager'),
-            Expanded(
-              child: Center(
-                child: Text('Extension Manager is not supported on iOS.'),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
 
     return Glow(
       child: Scaffold(
@@ -464,6 +455,252 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   ),
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIosServerBridgePage(BuildContext context) {
+    final colors = context.colors;
+    final pm = _pluginManager;
+    final isConnected = pm.isServerBridgeConnected;
+    final username = pm.serverUsername;
+
+    return Glow(
+      child: Scaffold(
+        body: Column(
+          children: [
+            const NestedHeader(title: 'Extension Manager'),
+            Expanded(
+              child: isConnected && username != null
+                  ? _buildIosConnected(colors, username, pm)
+                  : _buildIosNotConnected(colors, pm),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIosConnected(ColorScheme colors, String username, PluginManager pm) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: colors.primaryContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.cloud_done_rounded,
+                size: 32,
+                color: colors.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Connected to Server',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: colors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Logged in as $username',
+              style: TextStyle(
+                fontSize: 13,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 20),
+            OutlinedButton.icon(
+              onPressed: () async {
+                await pm.disconnectServerBridge();
+                if (mounted) setState(() {});
+              },
+              icon: const Icon(Icons.logout_rounded, size: 18),
+              label: const Text('Disconnect'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: colors.error,
+                side: BorderSide(color: colors.error.withOpacity(0.5)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIosNotConnected(ColorScheme colors, PluginManager pm) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: colors.primaryContainer.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.cloud_outlined,
+                size: 32,
+                color: colors.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Connect to Server',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: colors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Sign in to use extensions via the cloud server.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: () => _showServerAuthDialog(pm, register: false),
+                    icon: const Icon(Icons.login_rounded, size: 18),
+                    label: const Text('Login'),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colors.primary,
+                      foregroundColor: colors.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _showServerAuthDialog(pm, register: true),
+                    icon: const Icon(Icons.person_add_rounded, size: 18),
+                    label: const Text('Register'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showServerAuthDialog(PluginManager pm, {required bool register}) {
+    final colors = context.colors;
+    final usernameController = TextEditingController();
+    final passwordController = TextEditingController();
+    bool loading = false;
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: colors.surfaceContainerHigh,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            register ? 'Create Account' : 'Sign In',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: colors.onSurface,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                    hintText: 'min 3 characters',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    hintText: 'min 4 characters',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: loading
+                  ? null
+                  : () async {
+                      final username = usernameController.text.trim();
+                      final password = passwordController.text.trim();
+                      if (username.length < 3 || password.length < 4) {
+                        snackBar('Username min 3 chars, password min 4 chars');
+                        return;
+                      }
+                      setDialogState(() => loading = true);
+                      final ok = register
+                          ? await pm.registerAndConnect(username, password)
+                          : await pm.loginAndConnect(username, password);
+                      if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+                      if (ok && mounted) setState(() {});
+                    },
+              child: loading
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(register ? 'Register' : 'Login'),
             ),
           ],
         ),
