@@ -122,63 +122,84 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
 
     final hasActions = widget.action != null || widget.enableSearch;
 
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final maxHeaderWidth = screenWidth * 0.5;
+
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: widget.title,
+        style: const TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Poppins-Bold',
+        ),
+      ),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    final isLongTitle = textPainter.size.width > maxHeaderWidth;
+
     return Row(
       key: const ValueKey('split'),
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Flexible(
-          child: _buildPill(
-            context,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (canPop) ...[
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(
-                      Icons.arrow_back_ios_rounded,
-                      color: theme.colorScheme.onSurface,
-                      size: 16,
-                    ),
-                    style: IconButton.styleFrom(
-                      backgroundColor: theme.colorScheme.surfaceContainerHighest
-                          .opaque(0.3, iReallyMeanIt: true),
-                    ),
+        _buildPill(
+          context,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (canPop) ...[
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: Icon(
+                    Icons.arrow_back_ios_rounded,
+                    color: theme.colorScheme.onSurface,
+                    size: 16,
                   ),
-                  SizedBox(
-                      width: getResponsiveSize(context,
-                          mobileSize: 4, desktopSize: 10)),
-                ],
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AnymeXText(
+                  style: IconButton.styleFrom(
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest
+                        .opaque(0.3, iReallyMeanIt: true),
+                  ),
+                ),
+                SizedBox(
+                    width: getResponsiveSize(context,
+                        mobileSize: 4, desktopSize: 10)),
+              ],
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: maxHeaderWidth,
+                      ),
+                      child: AnymeXText(
                         text: widget.title,
                         variant: TextVariant.bold,
                         size: 16.0,
                         maxLines: 1,
+                        isMarquee: isLongTitle,
+                      ),
+                    ),
+                    if (widget.subtitle != null &&
+                        widget.subtitle!.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      AnymeXText(
+                        text: widget.subtitle!,
+                        variant: TextVariant.regular,
+                        size: 11,
+                        color: theme.colorScheme.onSurface.opaque(0.6),
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (widget.subtitle != null &&
-                          widget.subtitle!.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        AnymeXText(
-                          text: widget.subtitle!,
-                          variant: TextVariant.regular,
-                          size: 11,
-                          color: theme.colorScheme.onSurface.opaque(0.6),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
                     ],
-                  ),
+                  ],
                 ),
-                6.width()
-              ],
-            ),
+              ),
+              6.width()
+            ],
           ),
         ),
         const Spacer(),
