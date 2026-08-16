@@ -390,7 +390,7 @@ class _MainAppState extends State<MainApp> {
           return Stack(
             children: [
               child!,
-              const FpsMeter(),
+              // const FpsMeter(),
             ],
           );
         },

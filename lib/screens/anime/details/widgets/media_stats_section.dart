@@ -470,7 +470,7 @@ Widget buildProgressContainer(
         const SizedBox(height: 8),
         AnymeXLinearIndicator(
           value: pct,
-          minHeight: 8,
+          minHeight: 9,
           backgroundColor: colors.onSurface.opaque(0.1, iReallyMeanIt: true),
           color: colors.primary,
         ),

@@ -55,6 +55,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   late final MediaDetailsController controller;
   late final PageController pageController;
   bool _isAnimatingPage = false;
+  bool _isContinueExpanded = false;
 
   @override
   void initState() {
@@ -550,7 +551,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
         },
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: context.colors.surfaceContainer.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(16),
@@ -566,129 +567,205 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: SizedBox(
-                      width: 80,
-                      height: 48,
-                      child: AnymeXImage(
-                        imageUrl: imageUrl,
-                        fit: BoxFit.cover,
+          child: AnimatedSize(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: onTap,
+                      borderRadius: BorderRadius.circular(16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(6.0),
+                        child: Icon(
+                          isAnime
+                              ? Icons.play_circle_fill_rounded
+                              : Icons.menu_book_rounded,
+                          size: 24,
+                          color: context.colors.primary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isContinueExpanded = !_isContinueExpanded;
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AnymeXText(
+                                text: playButtonText,
+                                variant: TextVariant.bold,
+                                size: 13,
+                                color: context.colors.onSurface,
+                              ),
+                              const SizedBox(height: 1),
+                              AnymeXText(
+                                text: clampedProgress > 0
+                                    ? '$subtitleText • ${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}'
+                                    : subtitleText,
+                                size: 11,
+                                color: context.colors.onSurface
+                                    .opaque(0.6, iReallyMeanIt: true),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () {
+                        setState(() {
+                          _isContinueExpanded = !_isContinueExpanded;
+                        });
+                      },
+                      icon: Icon(
+                        _isContinueExpanded
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.keyboard_arrow_down_rounded,
+                        color: context.colors.onSurface
+                            .opaque(0.6, iReallyMeanIt: true),
+                      ),
+                    ),
+                  ],
+                ),
+                if (_isContinueExpanded) ...[
+                  const SizedBox(height: 12),
+                  const Divider(height: 1, thickness: 0.5),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: SizedBox(
+                          width: 80,
+                          height: 48,
+                          child: AnymeXImage(
+                            imageUrl: imageUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AnymeXText(
+                              text: titleText,
+                              variant: TextVariant.bold,
+                              size: 13,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                AnymeXText(
+                                  text: subtitleText,
+                                  size: 11,
+                                  color: context.colors.onSurface
+                                      .opaque(0.6, iReallyMeanIt: true),
+                                ),
+                                if (clampedProgress > 0) ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    width: 3,
+                                    height: 3,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: context.colors.onSurface
+                                          .opaque(0.4, iReallyMeanIt: true),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  AnymeXText(
+                                    text:
+                                        '${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}',
+                                    size: 11,
+                                    color: context.colors.primary,
+                                    variant: TextVariant.semiBold,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  AnymexOnTap(
+                    onTap: onTap,
+                    child: Container(
+                      width: double.infinity,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        color: context.colors.primary.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: context.colors.primary.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final width = constraints.maxWidth;
+                          return Stack(
+                            children: [
+                              if (clampedProgress > 0)
+                                Positioned(
+                                  left: 0,
+                                  top: 0,
+                                  bottom: 0,
+                                  width: width * clampedProgress,
+                                  child: Container(
+                                    color: context.colors.primary
+                                        .withValues(alpha: 0.22),
+                                  ),
+                                ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      isAnime
+                                          ? Icons.play_arrow_rounded
+                                          : Icons.menu_book_rounded,
+                                      size: 18,
+                                      color: context.colors.primary,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    AnymeXText(
+                                      text: playButtonText,
+                                      variant: TextVariant.bold,
+                                      size: 13,
+                                      color: context.colors.primary,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AnymeXText(
-                          text: titleText,
-                          variant: TextVariant.bold,
-                          size: 13,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            AnymeXText(
-                              text: subtitleText,
-                              size: 11,
-                              color: context.colors.onSurface
-                                  .opaque(0.6, iReallyMeanIt: true),
-                            ),
-                            if (clampedProgress > 0) ...[
-                              const SizedBox(width: 6),
-                              Container(
-                                width: 3,
-                                height: 3,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: context.colors.onSurface
-                                      .opaque(0.4, iReallyMeanIt: true),
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              AnymeXText(
-                                text:
-                                    '${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}',
-                                size: 11,
-                                color: context.colors.primary,
-                                variant: TextVariant.semiBold,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
-              ),
-              const SizedBox(height: 10),
-              AnymexOnTap(
-                onTap: onTap,
-                child: Container(
-                  width: double.infinity,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    color: context.colors.primary.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: context.colors.primary.withValues(alpha: 0.2),
-                      width: 1,
-                    ),
-                  ),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final width = constraints.maxWidth;
-                      return Stack(
-                        children: [
-                          if (clampedProgress > 0)
-                            Positioned(
-                              left: 0,
-                              top: 0,
-                              bottom: 0,
-                              width: width * clampedProgress,
-                              child: Container(
-                                color: context.colors.primary
-                                    .withValues(alpha: 0.22),
-                              ),
-                            ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  isAnime
-                                      ? Icons.play_arrow_rounded
-                                      : Icons.menu_book_rounded,
-                                  size: 18,
-                                  color: context.colors.primary,
-                                ),
-                                const SizedBox(width: 6),
-                                AnymeXText(
-                                  text: playButtonText,
-                                  variant: TextVariant.bold,
-                                  size: 13,
-                                  color: context.colors.primary,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
