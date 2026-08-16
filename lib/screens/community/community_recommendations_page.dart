@@ -272,113 +272,106 @@ class _CommunityRecommendationsPageState
     final isDesktop = getPlatform(context);
 
     return AnymeXScaffold(
-  body: Column(
-          children: [
-            NestedHeader(
-              title: 'Community Recommendations',
-              action: Row(children: [
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _isGridView = !_isGridView;
-                      General.communityListViewIsGrid.set(_isGridView);
-                    });
-                  },
-                  icon: Icon(
-                    _isGridView
-                        ? Icons.view_list_rounded
-                        : Icons.grid_view_rounded,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => _showSettingsSheet(context),
-                  icon: const Icon(Icons.tune_rounded),
-                ),
-              ]),
+        body: Column(
+      children: [
+        NestedHeader(
+          title: 'Community Recommendations',
+          action: Row(children: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _isGridView = !_isGridView;
+                  General.communityListViewIsGrid.set(_isGridView);
+                });
+              },
+              icon: Icon(
+                _isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
+              ),
             ),
-            Expanded(
-              child: Obx(() {
-                final data = _getFilteredData();
-                final cardStyle =
-                    CardStyle.values[settingsController.cardStyle];
-                final cardHeight = getCardHeight(cardStyle, isDesktop);
-                final crossAxisCount = getResponsiveCrossAxisVal(
-                  MediaQuery.sizeOf(context).width,
-                  itemWidth: 105,
-                );
-
-                if (data.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.filter_list_off_rounded,
-                            size: 48,
-                            color: context.colors.onSurfaceVariant
-                                .withOpacity(0.5)),
-                        const SizedBox(height: 12),
-                        AnymeXText(
-                          text: 'No recommendations found',
-                          color:
-                              context.colors.onSurfaceVariant.withOpacity(0.7),
-                          variant: TextVariant.semiBold,
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                if (_isGridView) {
-                  return GridView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      mainAxisExtent: cardHeight +
-                          (CommunityService.votingEnabled ? 38 : 0),
-                    ),
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      final item = data[index];
-                      final id = _mediaId(item);
-                      return _SeeAllCard(
-                        item: item,
-                        type: widget.type,
-                        cardStyle: cardStyle,
-                        isDesktop: isDesktop,
-                        votes: _votes[id],
-                        userVote: _userVotes[id],
-                        isLoading: _loading[id] == true,
-                        onVote: (dir) => _castVote(item, dir),
-                      );
-                    },
-                  );
-                } else {
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      final item = data[index];
-                      final id = _mediaId(item);
-                      return _SeeAllListTile(
-                        item: item,
-                        type: widget.type,
-                        votes: _votes[id],
-                        userVote: _userVotes[id],
-                        isLoading: _loading[id] == true,
-                        onVote: (dir) => _castVote(item, dir),
-                      );
-                    },
-                  );
-                }
-              }),
+            IconButton(
+              onPressed: () => _showSettingsSheet(context),
+              icon: const Icon(Icons.tune_rounded),
             ),
-          ],
-        )
-);
+          ]),
+        ),
+        Expanded(
+          child: Obx(() {
+            final data = _getFilteredData();
+            final cardStyle = CardStyle.values[settingsController.cardStyle];
+            final cardHeight = getCardHeight(cardStyle, isDesktop);
+            final crossAxisCount = getResponsiveCrossAxisVal(
+              MediaQuery.sizeOf(context).width,
+              itemWidth: 105,
+            );
+
+            if (data.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.filter_list_off_rounded,
+                        size: 48,
+                        color:
+                            context.colors.onSurfaceVariant.withOpacity(0.5)),
+                    const SizedBox(height: 12),
+                    AnymeXText(
+                      text: 'No recommendations found',
+                      color: context.colors.onSurfaceVariant.withOpacity(0.7),
+                      variant: TextVariant.semiBold,
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (_isGridView) {
+              return GridView.builder(
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 50),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  mainAxisExtent:
+                      cardHeight + (CommunityService.votingEnabled ? 38 : 0),
+                ),
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final item = data[index];
+                  final id = _mediaId(item);
+                  return _SeeAllCard(
+                    item: item,
+                    type: widget.type,
+                    cardStyle: cardStyle,
+                    isDesktop: isDesktop,
+                    votes: _votes[id],
+                    userVote: _userVotes[id],
+                    isLoading: _loading[id] == true,
+                    onVote: (dir) => _castVote(item, dir),
+                  );
+                },
+              );
+            } else {
+              return ListView.builder(
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 50),
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final item = data[index];
+                  final id = _mediaId(item);
+                  return _SeeAllListTile(
+                    item: item,
+                    type: widget.type,
+                    votes: _votes[id],
+                    userVote: _userVotes[id],
+                    isLoading: _loading[id] == true,
+                    onVote: (dir) => _castVote(item, dir),
+                  );
+                },
+              );
+            }
+          }),
+        ),
+      ],
+    ));
   }
 }
 
