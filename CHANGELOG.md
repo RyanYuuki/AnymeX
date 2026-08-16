@@ -1,29 +1,25 @@
 ### 🆕 Changelog
 ### 🌟 Features
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/efdde97d) episode & chapter style switcher by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/663d5bcf) nav bar style switcher by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/f368ae45) UI REVAMP (1/3) by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/49da5d1b) Watchium - Watch Together, Real-time Chat, Playback Sync & Party Controls (#520) by @Shebyyy
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/03feebae) added list ui toggle on wrong title and fixed dimensions by @RyanYuuki
 
 
 ### 🔧 Bug Fixes & Improvements
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/d86be831) fixed macos grey screen by @RyanYuuki
-
-
-### 🔧 Refactors
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/4aa4e5ce) mass rename and migrated to custom scaffold for all pages by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/3b4108e1) docoupled service code, organized files, made models efficient by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/e532b5c8) ui collision with nav fix by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/8cd4a81e) centralized chapter calc logic to fix navigate by number for overscroll by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/718c8cd5) fixed parsing issues causing grey screen on home and library by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/b9afc494) fixed manga sources not installing not loading icons by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/055408e1) fixed omitted labels on header by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/5f91df84) fixed ui inconsistencies on settings pages by @RyanYuuki
 
 
 ### 🎨 Style Changes
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/41423dd9) revamped the entire settings and subsettings pages by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/956349cd) fixed bad logic of dynamic service causing grey screen by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/15b85949) improved ux of continue button by making it expandible by @RyanYuuki
 
 
 ### 🧹 Chores & Documentation
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/d0818a84) bump version to v3.1.5 (patch release) by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/653b0a2a) dynamic dialog for social links by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/57964a24) updated dc server link by @RyanYuuki
-- [֍](https://github.com/RyanYuuki/AnymeX/commit/c6233206) update sideloading source by @ghost
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/5f4f3ab3) bump version to v3.1.6 (patch release) by @RyanYuuki
+- [֍](https://github.com/RyanYuuki/AnymeX/commit/663786a0) update sideloading source by @ghost
 
 
-![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.1.5/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)
+![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.1.6/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)
