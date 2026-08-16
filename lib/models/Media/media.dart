@@ -190,33 +190,82 @@ class Media {
       determinedType = isManga ? ItemType.manga : ItemType.anime;
     }
 
+    final dynamic rawTitle = node['title'];
+    final String parsedTitle = (rawTitle is Map)
+        ? (rawTitle['english']?.toString() ??
+            rawTitle['romaji']?.toString() ??
+            rawTitle['native']?.toString() ??
+            '??')
+        : (rawTitle?.toString() ?? '??');
+
+    final dynamic rawAltTitles = node['alternative_titles'];
+    final String parsedRomaji = (rawAltTitles is Map)
+        ? (rawAltTitles['en']?.toString() ??
+            rawAltTitles['english']?.toString() ??
+            '??')
+        : '??';
+
+    final dynamic rawMainPic = node['main_picture'];
+    final String parsedPoster = (rawMainPic is Map)
+        ? (rawMainPic['medium']?.toString() ?? '??')
+        : '??';
+    final String parsedCover = (rawMainPic is Map)
+        ? (rawMainPic['large']?.toString() ?? '??')
+        : '??';
+
+    final dynamic rawStartSeason = node['start_season'];
+    final String parsedSeason = (rawStartSeason is Map)
+        ? (rawStartSeason['season']?.toString() ?? '??')
+        : '??';
+
+    final genresVal = node['genres'];
+    List<String> parsedGenres = [];
+    if (genresVal is List) {
+      parsedGenres = genresVal.map((genre) {
+        if (genre is Map) {
+          return genre['name']?.toString() ?? '??';
+        }
+        return genre?.toString() ?? '??';
+      }).toList();
+    }
+
+    final studiosVal = node['studios'];
+    List<String> parsedStudios = [];
+    if (studiosVal is Map && studiosVal['nodes'] is List) {
+      parsedStudios = (studiosVal['nodes'] as List)
+          .map((el) => el['name']?.toString() ?? '??')
+          .toList();
+    } else if (studiosVal is List) {
+      parsedStudios = studiosVal.map((studio) {
+        if (studio is Map) {
+          return studio['name']?.toString() ?? '??';
+        }
+        return studio?.toString() ?? '??';
+      }).toList();
+    }
+
     return Media(
       id: node['id']?.toString() ?? '0',
-      title: node['title'] ?? '??',
-      romajiTitle: node['alternative_titles']?['en'] ?? '??',
-      description: node['synopsis'] ?? '??',
-      poster: node['main_picture']?['medium'] ?? '??',
-      cover: node['main_picture']?['large'] ?? '??',
+      title: parsedTitle,
+      romajiTitle: parsedRomaji,
+      description: node['synopsis']?.toString() ?? '??',
+      poster: parsedPoster,
+      cover: parsedCover,
       totalEpisodes: node['num_episodes']?.toString() ?? '??',
-      type: node['media_type'] ?? '??',
-      season: node['start_season']?['season'] ?? '??',
-      premiered: node['start_date'] ?? '??',
+      type: node['media_type']?.toString() ?? '??',
+      season: parsedSeason,
+      premiered: node['start_date']?.toString() ?? '??',
       duration: node['average_episode_duration']?.toString() ?? '??',
-      status: (node['status'] ?? '??').replaceAll('_', ' '),
+      status: (node['status']?.toString() ?? '??').replaceAll('_', ' '),
       rating: node['mean']?.toString() ?? '??',
       popularity: node['popularity']?.toString() ?? '??',
-      format: node['media_type'] ?? '??',
-      aired: node['start_date'] ?? '??',
+      format: node['media_type']?.toString() ?? '??',
+      aired: node['start_date']?.toString() ?? '??',
       totalChapters: (mediaTypeStr?.toLowerCase() == 'one_shot')
           ? '1'
           : (node['num_chapters']?.toString() ?? '??'),
-      genres: (node['genres'] as List<dynamic>?)
-              ?.map((genre) => genre['name']?.toString() ?? '??')
-              .toList() ??
-          [],
-      studios: (node['studios'] as List<dynamic>?)
-          ?.map((studio) => studio['name']?.toString() ?? '??')
-          .toList(),
+      genres: parsedGenres,
+      studios: parsedStudios,
       characters: [],
       relations: [],
       recommendations: [],
@@ -226,13 +275,12 @@ class Media {
       mediaType: determinedType,
       serviceType: ServicesType.mal,
       synonyms: {
-        if (node['title'] != null) node['title'].toString(),
-        if (node['alternative_titles']?['en'] != null)
-          node['alternative_titles']['en'].toString(),
-        if (node['alternative_titles']?['ja'] != null)
-          node['alternative_titles']['ja'].toString(),
-        ...?((node['alternative_titles']?['synonyms'] as List?)
-            ?.map((e) => e.toString())),
+        parsedTitle,
+        if (parsedRomaji != '??') parsedRomaji,
+        if (rawAltTitles is Map && rawAltTitles['ja'] != null)
+          rawAltTitles['ja'].toString(),
+        if (rawAltTitles is Map && rawAltTitles['synonyms'] is List)
+          ...((rawAltTitles['synonyms'] as List).map((e) => e.toString())),
       }.where((t) => t.isNotEmpty && t != '??' && t != '?').toList(),
     );
   }
@@ -316,51 +364,121 @@ class Media {
       determinedType = isManga ? ItemType.manga : ItemType.anime;
     }
 
+    final dynamic rawTitle = node['title'];
+    final String parsedTitle = (rawTitle is Map)
+        ? (rawTitle['english']?.toString() ??
+            rawTitle['romaji']?.toString() ??
+            rawTitle['native']?.toString() ??
+            '??')
+        : (rawTitle?.toString() ?? '??');
+
+    final dynamic rawAltTitles = node['alternative_titles'];
+    final String parsedRomaji = (rawAltTitles is Map)
+        ? (rawAltTitles['en']?.toString() ??
+            rawAltTitles['english']?.toString() ??
+            '??')
+        : '??';
+
+    final dynamic rawMainPic = node['main_picture'];
+    final String parsedPoster = (rawMainPic is Map)
+        ? (rawMainPic['medium']?.toString() ?? '??')
+        : '??';
+    final String parsedCover = (rawMainPic is Map)
+        ? (rawMainPic['large']?.toString() ?? '??')
+        : '??';
+
+    final dynamic rawStartSeason = node['start_season'];
+    final String parsedSeason = (rawStartSeason is Map)
+        ? (rawStartSeason['season']?.toString() ?? '??')
+        : '??';
+
+    final genresVal = node['genres'];
+    List<String> parsedGenres = [];
+    if (genresVal is List) {
+      parsedGenres = genresVal.map((genre) {
+        if (genre is Map) {
+          return genre['name']?.toString() ?? '??';
+        }
+        return genre?.toString() ?? '??';
+      }).toList();
+    }
+
+    final studiosVal = node['studios'];
+    List<String> parsedStudios = [];
+    if (studiosVal is Map && studiosVal['nodes'] is List) {
+      parsedStudios = (studiosVal['nodes'] as List)
+          .map((el) => el['name']?.toString() ?? '??')
+          .toList();
+    } else if (studiosVal is List) {
+      parsedStudios = studiosVal.map((studio) {
+        if (studio is Map) {
+          return studio['name']?.toString() ?? '??';
+        }
+        return studio?.toString() ?? '??';
+      }).toList();
+    }
+
+    final recsVal = node['recommendations'];
+    List<Media> parsedRecs = [];
+    if (recsVal is Map) {
+      if (recsVal['nodes'] is List) {
+        parsedRecs = (recsVal['nodes'] as List)
+            .map((r) => Media.fromRecs(r))
+            .toList();
+      } else if (recsVal['edges'] is List) {
+        parsedRecs = (recsVal['edges'] as List)
+            .map((e) => Media.fromRecs(e['node'] ?? {}))
+            .where((m) => m.id.isNotEmpty && m.id != '')
+            .toList();
+      }
+    } else if (recsVal is List) {
+      parsedRecs = recsVal
+          .map((e) {
+            if (e is Map) {
+              return Media.fromMAL(Map<String, dynamic>.from(e), isManga: isManga);
+            }
+            return null;
+          })
+          .whereType<Media>()
+          .toList();
+    }
+
     return Media(
       id: node['id']?.toString() ?? '0',
-      title: node['title'] ?? '??',
-      romajiTitle: node['alternative_titles']?['en'] ?? '??',
-      description: node['synopsis'] ?? '??',
-      poster: node['main_picture']?['medium'] ?? '??',
-      cover: node['main_picture']?['large'] ?? '??',
+      title: parsedTitle,
+      romajiTitle: parsedRomaji,
+      description: node['synopsis']?.toString() ?? '??',
+      poster: parsedPoster,
+      cover: parsedCover,
       totalEpisodes: node['num_episodes']?.toString() ?? '??',
-      type: node['media_type']?.toUpperCase() ?? '??',
-      season: node['start_season']?['season'] ?? '??',
-      premiered: node['start_date'] ?? '??',
+      type: node['media_type']?.toString().toUpperCase() ?? '??',
+      season: parsedSeason,
+      premiered: node['start_date']?.toString() ?? '??',
       duration: node['average_episode_duration']?.toString() ?? '??',
-      status: node['status']?.replaceAll('_', ' ')?.toUpperCase() ?? '??',
+      status: node['status']?.toString().replaceAll('_', ' ').toUpperCase() ?? '??',
       rating: node['mean']?.toString() ?? '??',
       popularity: node['popularity']?.toString() ?? '??',
-      format: node['media_type'] ?? '??',
-      aired: node['start_date'] ?? '??',
+      format: node['media_type']?.toString() ?? '??',
+      aired: node['start_date']?.toString() ?? '??',
       totalChapters: (mediaTypeStr?.toLowerCase() == 'one_shot')
           ? '1'
           : (node['num_chapters']?.toString() ?? '??'),
-      genres: (node['genres'] as List<dynamic>?)
-              ?.map((genre) => genre['name']?.toString() ?? '??')
-              .toList() ??
-          [],
-      studios: (node['studios'] as List<dynamic>?)
-          ?.map((studio) => studio['name']?.toString() ?? '??')
-          .toList(),
+      genres: parsedGenres,
+      studios: parsedStudios,
       characters: [],
-      recommendations: (node['recommendations'] as List<dynamic>?)
-              ?.map((e) => Media.fromMAL(e, isManga: isManga))
-              .toList() ??
-          [],
+      recommendations: parsedRecs,
       nextAiringEpisode: null,
       rankings: [],
       mediaContent: [],
       mediaType: determinedType,
       serviceType: ServicesType.mal,
       synonyms: {
-        if (node['title'] != null) node['title'].toString(),
-        if (node['alternative_titles']?['en'] != null)
-          node['alternative_titles']['en'].toString(),
-        if (node['alternative_titles']?['ja'] != null)
-          node['alternative_titles']['ja'].toString(),
-        ...?((node['alternative_titles']?['synonyms'] as List?)
-            ?.map((e) => e.toString())),
+        parsedTitle,
+        if (parsedRomaji != '??') parsedRomaji,
+        if (rawAltTitles is Map && rawAltTitles['ja'] != null)
+          rawAltTitles['ja'].toString(),
+        if (rawAltTitles is Map && rawAltTitles['synonyms'] is List)
+          ...((rawAltTitles['synonyms'] as List).map((e) => e.toString())),
       }.where((t) => t.isNotEmpty && t != '??' && t != '?').toList(),
     );
   }
@@ -934,39 +1052,109 @@ class Media {
     List<Media> recs = [];
     final recsJson = json['recommendations'];
     if (recsJson != null) {
-      if (recsJson['nodes'] != null) {
-        recs =
-            (recsJson['nodes'] as List).map((r) => Media.fromRecs(r)).toList();
-      } else if (recsJson['edges'] != null) {
-        recs = (recsJson['edges'] as List)
-            .map((e) => Media.fromRecs(e['node'] ?? {}))
-            .where((m) => m.id.isNotEmpty && m.id != '')
+      if (recsJson is Map) {
+        if (recsJson['nodes'] != null) {
+          recs = (recsJson['nodes'] as List)
+              .map((r) => Media.fromRecs(r))
+              .toList();
+        } else if (recsJson['edges'] != null) {
+          recs = (recsJson['edges'] as List)
+              .map((e) => Media.fromRecs(e['node'] ?? {}))
+              .where((m) => m.id.isNotEmpty && m.id != '')
+              .toList();
+        }
+      } else if (recsJson is List) {
+        recs = recsJson
+            .map((r) {
+              if (r is Map) {
+                final nodeData = r['node'] ?? r;
+                if (nodeData is Map) {
+                  return Media.fromMAL(Map<String, dynamic>.from(r));
+                }
+              }
+              return null;
+            })
+            .whereType<Media>()
             .toList();
       }
+    }
+
+    final titleVal = json['title'];
+    final String parsedTitle = (titleVal is Map)
+        ? (titleVal['userPreferred']?.toString() ??
+            titleVal['english']?.toString() ??
+            titleVal['romaji']?.toString() ??
+            '??')
+        : (titleVal?.toString() ?? '??');
+    final String parsedRomaji = (titleVal is Map)
+        ? (titleVal['romaji']?.toString() ?? '??')
+        : (titleVal?.toString() ?? '??');
+
+    final coverVal = json['coverImage'];
+    final String parsedPoster = (coverVal is Map)
+        ? (coverVal['large']?.toString() ?? coverVal['medium']?.toString() ?? '??')
+        : (json['main_picture'] is Map
+            ? json['main_picture']['medium']?.toString() ?? '??'
+            : '??');
+    final String parsedColor = (coverVal is Map) ? (coverVal['color']?.toString() ?? '') : '';
+
+    final genresVal = json['genres'];
+    List<String> parsedGenres = [];
+    if (genresVal is List) {
+      parsedGenres = genresVal.map((e) {
+        if (e is Map) return e['name']?.toString() ?? '??';
+        return e.toString();
+      }).toList();
+    }
+
+    final studiosVal = json['studios'];
+    List<String> parsedStudios = [];
+    if (studiosVal is Map && studiosVal['nodes'] is List) {
+      parsedStudios = (studiosVal['nodes'] as List)
+          .map((el) => el['name']?.toString() ?? '??')
+          .toList();
+    } else if (studiosVal is List) {
+      parsedStudios = studiosVal.map((el) {
+        if (el is Map) return el['name']?.toString() ?? '??';
+        return el.toString();
+      }).toList();
+    }
+
+    final charactersVal = json['characters'];
+    List<Character> parsedCharacters = [];
+    if (charactersVal is Map && charactersVal['edges'] is List) {
+      parsedCharacters = (charactersVal['edges'] as List)
+          .map((character) => Character.fromJson(character))
+          .toList();
+    }
+
+    final relationsVal = json['relations'];
+    List<Relation> parsedRelations = [];
+    if (relationsVal is Map && relationsVal['edges'] is List) {
+      parsedRelations = (relationsVal['edges'] as List)
+          .map((relation) => Relation.fromJson(relation))
+          .toList();
     }
 
     var media = Media(
       id: json['id'].toString(),
       idMal: json['idMal']?.toString() ?? '0',
-      romajiTitle: json['title']['romaji'] ?? '?',
-      title: json['title']['userPreferred'] ??
-          json['title']['english'] ??
-          json['title']['romaji'] ??
-          '?',
-      description: json['description'] ?? '?',
-      poster: json['coverImage']['large'] ?? '?',
+      romajiTitle: parsedRomaji,
+      title: parsedTitle,
+      description: json['description']?.toString() ?? '?',
+      poster: parsedPoster,
       isAdult: json['isAdult'] ?? false,
-      color: json['coverImage']['color'] ?? '',
-      cover: json['bannerImage'],
+      color: parsedColor,
+      cover: json['bannerImage']?.toString(),
       totalEpisodes: (json['episodes'] as int?)?.toString() ?? '?',
-      type: json['type'] ?? '?',
-      season: json['season'] ?? '?',
+      type: json['type']?.toString() ?? '?',
+      season: json['season']?.toString() ?? '?',
       premiered: '${json['season'] ?? '?'} ${json['seasonYear'] ?? '?'}',
       duration: '${json['duration'] ?? '?'}m',
-      status: (json['status'] ?? '?').replaceAll('_', ' '),
+      status: (json['status']?.toString() ?? '?').replaceAll('_', ' '),
       rating: ((json['averageScore'] ?? 0) / 10).toString(),
       popularity: json['popularity']?.toString() ?? '6900',
-      format: json['format'] ?? '?',
+      format: json['format']?.toString() ?? '?',
       aired: _parseDateRange(json['startDate'], json['endDate']),
       seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
       totalChapters:
@@ -974,18 +1162,10 @@ class Media {
                   'one_shot')
               ? '1'
               : (json['chapters']?.toString() ?? '?'),
-      genres: List<String>.from(json['genres'] ?? []),
-      studios: (json['studios']?['nodes'] as List?)
-              ?.map((el) => el['name'].toString())
-              .toList() ??
-          [],
-      characters: (json['characters']?['edges'] as List?)
-          ?.map((character) => Character.fromJson(character))
-          .toList(),
-      relations: (json['relations']?['edges'] as List?)
-              ?.map((relation) => Relation.fromJson(relation))
-              .toList() ??
-          [],
+      genres: parsedGenres,
+      studios: parsedStudios,
+      characters: parsedCharacters,
+      relations: parsedRelations,
       recommendations: recs,
       nextAiringEpisode: json['nextAiringEpisode'] != null
           ? NextAiringEpisode.fromJson(json['nextAiringEpisode'])
@@ -997,15 +1177,16 @@ class Media {
       mediaType: type,
       serviceType: ServicesType.anilist,
       synonyms: {
-        if (json['title']?['english'] != null)
-          json['title']['english'].toString(),
-        if (json['title']?['userPreferred'] != null)
-          json['title']['userPreferred'].toString(),
-        if (json['title']?['romaji'] != null)
-          json['title']['romaji'].toString(),
-        if (json['title']?['native'] != null)
-          json['title']['native'].toString(),
-        ...?((json['synonyms'] as List?)?.cast<String>()),
+        parsedTitle,
+        if (parsedRomaji != '??') parsedRomaji,
+        if (titleVal is Map) ...{
+          if (titleVal['english'] != null) titleVal['english'].toString(),
+          if (titleVal['userPreferred'] != null) titleVal['userPreferred'].toString(),
+          if (titleVal['romaji'] != null) titleVal['romaji'].toString(),
+          if (titleVal['native'] != null) titleVal['native'].toString(),
+        },
+        if (json['synonyms'] is List)
+          ...((json['synonyms'] as List).map((e) => e.toString())),
       }.where((t) => t.isNotEmpty && t != '??' && t != '?').toList(),
       tags: (json['tags'] as List?)
               ?.map((t) => MediaTag.fromJson(t))
