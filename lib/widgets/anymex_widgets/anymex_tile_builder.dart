@@ -32,7 +32,10 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     this.isRadio = true,
     this.isSelection = true,
     this.showChevron,
+    this.maxLines,
   });
+
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +55,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
             trailing: getTrailing?.call(item),
             onTap: () => onItemPressed(item),
             showChevron: showChevron?.call(item) ?? false,
+            maxLines: maxLines,
           );
         }
 

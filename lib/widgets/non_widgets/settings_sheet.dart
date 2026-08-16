@@ -55,14 +55,12 @@ class SettingsSheet extends StatelessWidget {
         'icon': 'simkl-icon.png',
         'desc': 'for movies and series'
       },
-      if (serviceHandler.extensionService.installedExtensions.isNotEmpty &&
-          serviceHandler.extensionService.installedMangaExtensions.isNotEmpty)
-        {
-          'type': ServicesType.extensions,
-          'name': "Extensions",
-          'icon': null,
-          'desc': 'Third-party plugins'
-        },
+      {
+        'type': ServicesType.extensions,
+        'name': "Extensions",
+        'icon': null,
+        'desc': 'Third-party plugins'
+      },
     ];
 
     AnymeXSheet.custom(

@@ -157,64 +157,70 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       showHeader: true,
       headerTitle: 'Data Management',
       body: Builder(
-        builder: (ctx) => SingleChildScrollView(
-                  padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AnymeXSectionBuilder(
-                        title: 'Current Library',
-                        children: [
-                          Obx(() {
-                            controller.isRestoring.value;
-                            return FutureBuilder(
-                              future: controller.getLibraryStats(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                        ConnectionState.done &&
-                                    snapshot.data != null) {
-                                  return LibraryDashboard(
-                                      stats: snapshot.data!);
-                                } else {
-                                  return const Padding(
-                                    padding: EdgeInsets.all(16),
-                                    child: Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  );
-                                }
-                              },
-                            );
-                          }),
-                        ],
-                      ),
-                      AnymeXSectionBuilder(
-                        title: 'Actions',
-                        children: [
-                          AnymeXTile(
-                            title: "Create Backup",
-                            subtitle: "Secure your library to local storage",
-                            icon: Icons.backup_rounded,
-                            onTap: _handleBackup,
-                          ),
-                          AnymeXTile(
-                            title: "Restore Data",
-                            subtitle: "Import your .anymex backup file",
-                            icon: Icons.settings_backup_restore_rounded,
-                            onTap: () => _handleRestore(context),
-                          ),
-                        ],
-                      ),
-                      AnymeXSectionBuilder(
-                        title: 'Cloud Sync',
-                        children: const [
-                          const ProgressSyncSection(),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
-      ),
+          builder: (ctx) => SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                    16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymeXSectionBuilder(
+                      title: 'Current Library',
+                      borderSide: Border.all(color: Colors.transparent),
+                      children: [
+                        Obx(() {
+                          controller.isRestoring.value;
+                          return FutureBuilder(
+                            future: controller.getLibraryStats(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.done &&
+                                  snapshot.data != null) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child:
+                                      LibraryDashboard(stats: snapshot.data!),
+                                );
+                              } else {
+                                return const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        }),
+                      ],
+                    ),
+                    AnymeXSectionBuilder(
+                      title: 'Actions',
+                      children: [
+                        AnymeXTile(
+                          title: "Create Backup",
+                          subtitle: "Secure your library to local storage",
+                          icon: Icons.backup_rounded,
+                          onTap: _handleBackup,
+                        ),
+                        AnymeXTile(
+                          title: "Restore Data",
+                          subtitle: "Import your .anymex backup file",
+                          icon: Icons.settings_backup_restore_rounded,
+                          onTap: () => _handleRestore(context),
+                        ),
+                      ],
+                    ),
+                    AnymeXSectionBuilder(
+                      borderSide:
+                          Border.all(color: Colors.transparent, width: 0),
+                      title: 'Cloud Sync',
+                      children: const [
+                        ProgressSyncSection(),
+                      ],
+                    ),
+                  ],
+                ),
+              )),
     );
   }
 }

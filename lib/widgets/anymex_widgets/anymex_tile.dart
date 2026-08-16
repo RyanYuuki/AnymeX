@@ -35,7 +35,10 @@ class AnymeXTile extends StatelessWidget {
     this.padding,
     this.enabled = true,
     this.customContent,
+    this.maxLines,
   });
+
+  final int? maxLines;
 
   static Widget _buildSwitch(
     BuildContext context,
@@ -477,6 +480,7 @@ class AnymeXTile extends StatelessWidget {
                     AnymeXText(
                       text: title,
                       size: 14.5,
+                      maxLines: maxLines ?? 2,
                       variant: TextVariant.semiBold,
                       color: enabled
                           ? colors.onSurface

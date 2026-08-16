@@ -35,8 +35,6 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
 
-import 'package:super_sliver_list/super_sliver_list.dart';
-
 const Map<String, List<String>> fontGroups = {
   'Default': ['Default'],
   'Latin': ['Trebuchet', 'Bahnschrift', 'Tahoma', 'Anime Ace 3', 'Poppins'],
@@ -647,27 +645,23 @@ class _SettingsPlayerState extends State<SettingsPlayer>
   void _showColorSelectionDialog(String title, Color currentColor,
       Function(String) onColorSelected, Map<String, Color> options) {
     AnymeXDialog(
-        title: title,
-        onConfirm: () {},
-        showCancelButton: false,
-        confirmText: 'Close',
-        contentWidget: SizedBox(
-            height: 300,
-            width: double.maxFinite,
-            child: SingleChildScrollView(
-              child: AnymeXTileBuilder<String>(
-                getTitle: (t) => t,
-                onItemPressed: (s) {
-                  onColorSelected(s);
-                  Navigator.pop(context);
-                },
-                selectedItem: options.entries
-                    .firstWhere((entry) => entry.value == currentColor,
-                        orElse: () => const MapEntry('', Colors.transparent))
-                    .key,
-                items: options.keys.toList(),
-              ),
-            ))).show(context);
+      title: title,
+      onConfirm: () {},
+      showCancelButton: false,
+      confirmText: 'Close',
+      contentWidget: AnymeXTileBuilder<String>(
+        getTitle: (t) => t,
+        onItemPressed: (s) {
+          onColorSelected(s);
+          Navigator.pop(context);
+        },
+        selectedItem: options.entries
+            .firstWhere((entry) => entry.value == currentColor,
+                orElse: () => const MapEntry('', Colors.transparent))
+            .key,
+        items: options.keys.toList(),
+      ),
+    ).show(context);
   }
 
   void _showTranslationLanguageDialog() {
@@ -690,30 +684,26 @@ class _SettingsPlayerState extends State<SettingsPlayer>
       onConfirm: () {},
       showCancelButton: false,
       confirmText: 'Close',
-      contentWidget: SizedBox(
-        width: double.maxFinite,
-        child: ListView(
-          shrinkWrap: true,
-          children: fontGroups.entries.map((group) {
-            return AnymeXSectionBuilder(
-                title: group.key,
-                children: group.value
-                    .map((font) => AnymeXTile.radio(
-                          selected:
-                              settings.playerSettings.value.subtitleFont ==
-                                  font,
-                          title: font,
-                          onTap: () {
-                            final current = settings.playerSettings.value;
-                            current.subtitleFont = font;
-                            PlayerSettingsKeys.subtitleFont.set(font);
-                            settings.playerSettings.refresh();
-                            Navigator.pop(context);
-                          },
-                        ))
-                    .toList());
-          }).toList(),
-        ),
+      contentWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: fontGroups.entries.map((group) {
+          return AnymeXSectionBuilder(
+              title: group.key,
+              children: group.value
+                  .map((font) => AnymeXTile.radio(
+                        selected:
+                            settings.playerSettings.value.subtitleFont == font,
+                        title: font,
+                        onTap: () {
+                          final current = settings.playerSettings.value;
+                          current.subtitleFont = font;
+                          PlayerSettingsKeys.subtitleFont.set(font);
+                          settings.playerSettings.refresh();
+                          Navigator.pop(context);
+                        },
+                      ))
+                  .toList());
+        }).toList(),
       ),
     ).show(context);
   }
@@ -2403,11 +2393,13 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                           ),
                           AnymeXSectionBuilder(
                             title: 'Bottom Controls',
+                            disableSeperator: true,
                             children: [
                               _buildJsonThemeInfoCard(),
                               _buildSectionLabel('Left Side'),
                               ReorderableListView.builder(
                                 key: const Key('left_list'),
+                                padding: EdgeInsets.zero,
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: _leftButtonIds.length,
@@ -2416,6 +2408,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                   final control = _bottomControls
                                       .firstWhere((c) => c.id == id);
                                   return _buildControlTile(control, 'left',
+                                      index, _leftButtonIds.length,
                                       key: ValueKey('left_$id'));
                                 },
                                 onReorder: (oldIndex, newIndex) {
@@ -2430,10 +2423,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                   });
                                 },
                               ),
-                              const SizedBox(height: 16),
                               _buildSectionLabel('Right Side'),
                               ReorderableListView.builder(
                                 key: const Key('right_list'),
+                                padding: EdgeInsets.zero,
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: _rightButtonIds.length,
@@ -2443,6 +2436,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                   final control = _bottomControls
                                       .firstWhere((c) => c.id == id);
                                   return _buildControlTile(control, 'right',
+                                      index, _rightButtonIds.length,
                                       key: ValueKey('right_$id'));
                                 },
                                 onReorder: (oldIndex, newIndex) {
@@ -2462,10 +2456,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                 },
                               ),
                               if (_hiddenButtonIds.isNotEmpty) ...[
-                                const SizedBox(height: 16),
                                 _buildSectionLabel('Hidden'),
                                 ListView.builder(
                                   key: const Key('hidden_list'),
+                                  padding: EdgeInsets.zero,
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: _hiddenButtonIds.length,
@@ -2474,6 +2468,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                     final control = _bottomControls
                                         .firstWhere((c) => c.id == id);
                                     return _buildControlTile(control, 'hidden',
+                                        index, _hiddenButtonIds.length,
                                         key: ValueKey('hidden_$id'));
                                   },
                                 ),
@@ -2490,13 +2485,18 @@ class _SettingsPlayerState extends State<SettingsPlayer>
   }
 
   Widget _buildSectionLabel(String label) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Text(label,
-          style: Theme.of(context)
-              .textTheme
-              .titleMedium
-              ?.copyWith(fontFamily: 'Poppins-SemiBold')),
+    final colors = context.colors;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+        child: AnymeXText(
+          text: label,
+          size: 13,
+          variant: TextVariant.bold,
+          color: colors.primary,
+        ),
+      ),
     );
   }
 
@@ -2567,19 +2567,37 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     );
   }
 
-  Widget _buildControlTile(_BottomControl control, String position,
-      {required Key key}) {
-    return ListTile(
+  Widget _buildControlTile(
+    _BottomControl control,
+    String position,
+    int index,
+    int totalCount, {
+    required Key key,
+  }) {
+    final colors = context.colors;
+    final isLast = index == totalCount - 1;
+    return Column(
       key: key,
-      leading: Icon(control.icon, size: 22),
-      title: AnymeXText(
-        text: control.name,
-        variant: TextVariant.semiBold,
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: _buildTrailingButtons(control, position),
-      ),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnymeXTile(
+          icon: control.icon,
+          title: control.name,
+          showChevron: false,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: _buildTrailingButtons(control, position),
+          ),
+        ),
+        if (!isLast)
+          Divider(
+            height: 1,
+            thickness: 0.6,
+            indent: 66,
+            endIndent: 16,
+            color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+          ),
+      ],
     );
   }
 

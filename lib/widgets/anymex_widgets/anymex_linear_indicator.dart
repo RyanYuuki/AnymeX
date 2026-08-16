@@ -22,7 +22,8 @@ class AnymeXLinearIndicator extends StatelessWidget {
       minHeight: minHeight,
       backgroundColor: backgroundColor,
       color: color,
-      waveSpeed: 0.01,
+      gapSize: 0,
+      stopIndicatorColor: Colors.transparent,
       wavelength: 40,
       borderRadius: BorderRadius.circular(50),
     );

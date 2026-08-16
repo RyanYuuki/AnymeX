@@ -42,7 +42,10 @@ class CustomSearchBar extends StatefulWidget {
     this.focusNode,
     this.enableGlow = false,
     this.border,
+    this.borderRadius,
   });
+
+  final BorderRadius? borderRadius;
 
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();
@@ -90,7 +93,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final borderRadius = BorderRadius.circular(16.multiplyRadius());
+    final borderRadius = widget.borderRadius ?? BorderRadius.circular(16.multiplyRadius());
 
     return Container(
       padding: widget.padding ??

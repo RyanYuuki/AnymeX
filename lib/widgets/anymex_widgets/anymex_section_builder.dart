@@ -11,6 +11,8 @@ class AnymeXSectionBuilder extends StatelessWidget {
   final double borderRadius;
   final Color? backgroundColor;
   final double separatorIndent;
+  final BoxBorder? borderSide;
+  final bool disableSeperator;
 
   const AnymeXSectionBuilder({
     super.key,
@@ -20,6 +22,8 @@ class AnymeXSectionBuilder extends StatelessWidget {
     this.padding,
     this.borderRadius = 18.0,
     this.backgroundColor,
+    this.disableSeperator = false,
+    this.borderSide,
     this.separatorIndent = 66.0,
   });
 
@@ -72,7 +76,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
 
       formattedChildren.add(tileWidget);
 
-      if (i < itemCount - 1) {
+      if (i < itemCount - 1 && !disableSeperator) {
         formattedChildren.add(
           Divider(
             height: 1,
@@ -108,10 +112,11 @@ class AnymeXSectionBuilder extends StatelessWidget {
               color: backgroundColor ??
                   colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
               borderRadius: BorderRadius.circular(borderRadius),
-              border: Border.all(
-                color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-                width: 0.8,
-              ),
+              border: borderSide ??
+                  Border.all(
+                    color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+                    width: 0.8,
+                  ),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -63,6 +63,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                     SizedBox(height: AnymeXHeaderScope.of(ctx)),
                     const AnymeXSectionBuilder(
                       title: 'Social Presence',
+                      borderRadius: 24,
                       children: [
                         DiscordTile(),
                       ],
@@ -101,19 +102,6 @@ class DiscordTile extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isLoggedIn
-                ? [
-                    colors.primary.withOpacity(0.15),
-                    colors.surfaceContainer.opaque(0.4),
-                  ]
-                : [
-                    colors.surfaceContainer.opaque(0.4),
-                    colors.surfaceContainerHighest.opaque(0.4),
-                  ],
-          ),
           border: Border.all(
             color: isLoggedIn
                 ? colors.primary.withOpacity(0.3)
