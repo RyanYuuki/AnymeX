@@ -27,6 +27,7 @@ class Settings extends GetxController {
   final RxString discordUrl = 'https://discord.gg/GKVvSyXDUD'.obs;
   final RxString telegramUrl = 'https://t.me/AnymeX_Discussion'.obs;
   final RxBool showJoinDialog = true.obs;
+  bool linksFetched = false;
   VoidCallback? onLinksReady;
 
   final canShowUpdate = true.obs;
@@ -193,6 +194,7 @@ class Settings extends GetxController {
     } catch (e) {
       Logger.e("Failed to fetch invite links: $e");
     } finally {
+      linksFetched = true;
       onLinksReady?.call();
     }
   }

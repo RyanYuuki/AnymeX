@@ -28,101 +28,107 @@ Widget buildMediaStatsSection(
   final rawDesc = media.description;
   final cleanDesc = _cleanHtml(rawDesc);
 
+  final List<Widget> sections = [
+    buildProgressContainer(context, controller),
+    if (controller.isAnime && media.nextAiringEpisode != null)
+      buildAiringCountdownCard(context, controller),
+    if (cleanDesc.isNotEmpty)
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest
+              .opaque(0.3, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const AnymeXText(
+              text: 'Synopsis',
+              size: 15,
+              variant: TextVariant.bold,
+              isMarquee: true,
+            ),
+            const SizedBox(height: 8),
+            AnymeXText(
+              text: cleanDesc,
+              size: 13,
+              maxLines: 8,
+              overflow: TextOverflow.ellipsis,
+              isMarquee: false,
+            ),
+          ],
+        ),
+      ),
+    buildStatsGrid(context, media),
+    buildAlternativeTitles(context, media),
+    if (media.genres.isNotEmpty)
+      _buildSection(
+          'Genres',
+          [
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: media.genres
+                  .map((genre) => buildGenreChip(context, genre))
+                  .toList(),
+            )
+          ],
+          colors),
+    if (media.tags.isNotEmpty)
+      _buildSection(
+          'Tags',
+          [
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: media.tags
+                  .map((tag) => buildTagChip(context, tag))
+                  .toList(),
+            ),
+          ],
+          colors),
+    if (media.friendsWatching != null &&
+        media.friendsWatching!.isNotEmpty)
+      SocialSection(
+        friends: media.friendsWatching!,
+        totalEpisodes: media.totalEpisodes.isNotEmpty
+            ? media.totalEpisodes
+            : media.totalChapters,
+      ),
+    buildSeasonsSection(context, media),
+    if (controller.isAnime)
+      buildExtrasSection(context, media),
+  ];
+
+  final List<Widget> visibleSections = [];
+  for (final section in sections) {
+    if (section is SizedBox &&
+        section.child == null &&
+        section.width == 0 &&
+        section.height == 0) {
+      continue;
+    }
+    visibleSections.add(section);
+  }
+
+  final List<Widget> childrenWithSpacers = [];
+  for (int i = 0; i < visibleSections.length; i++) {
+    childrenWithSpacers.add(visibleSections[i]);
+    if (i < visibleSections.length - 1) {
+      childrenWithSpacers.add(const SizedBox(height: 12));
+    }
+  }
+
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        buildProgressContainer(context, controller),
-        12.height(),
-        if (controller.isAnime && media.nextAiringEpisode != null) ...[
-          buildAiringCountdownCard(context, controller),
-          12.height(),
-        ],
-        if (cleanDesc.isNotEmpty) ...[
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest
-                  .opaque(0.3, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AnymeXText(
-                  text: 'Synopsis',
-                  size: 15,
-                  variant: TextVariant.bold,
-                  isMarquee: true,
-                ),
-                const SizedBox(height: 8),
-                AnymeXText(
-                  text: cleanDesc,
-                  size: 13,
-                  maxLines: 8,
-                  overflow: TextOverflow.ellipsis,
-                  isMarquee: false,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-        ],
-        buildStatsGrid(context, media),
-        const SizedBox(height: 12),
-        buildAlternativeTitles(context, media),
-        if (media.genres.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          _buildSection(
-              'Genres',
-              [
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: media.genres
-                      .map((genre) => buildGenreChip(context, genre))
-                      .toList(),
-                )
-              ],
-              colors),
-          const SizedBox(height: 12),
-        ],
-        if (media.tags.isNotEmpty) ...[
-          _buildSection(
-              'Tags',
-              [
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: media.tags
-                      .map((tag) => buildTagChip(context, tag))
-                      .toList(),
-                ),
-              ],
-              colors)
-        ],
-        if (media.friendsWatching != null &&
-            media.friendsWatching!.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          SocialSection(
-            friends: media.friendsWatching!,
-            totalEpisodes: media.totalEpisodes.isNotEmpty
-                ? media.totalEpisodes
-                : media.totalChapters,
-          ),
-        ],
-        const SizedBox(height: 12),
-        buildSeasonsSection(context, media),
-        if (controller.isAnime) ...[
-          const SizedBox(height: 12),
-          buildExtrasSection(context, media),
-        ],
-      ],
+      children: childrenWithSpacers,
     ),
   );
 }

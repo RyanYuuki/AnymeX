@@ -6,10 +6,8 @@ import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/anilist/anilist_api.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
-import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/jikan.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
@@ -41,12 +39,10 @@ class MediaDetailsController extends GetxController {
     this.initialTabIndex = 0,
   });
 
-  late final SourceController sourceController;
-  late final ServiceHandler serviceHandler;
-  late final OfflineStorageController offlineStorage;
-  late final AnilistAuth anilist;
+  late OfflineStorageController offlineStorage;
+  late AnilistAuth anilist;
 
-  late final Rx<Media> media;
+  late Rx<Media> media;
   final Rxn<OfflineMedia> offlineMedia = Rxn<OfflineMedia>();
   final Rxn<TrackedMedia> trackedMedia = Rxn<TrackedMedia>();
 
@@ -63,7 +59,7 @@ class MediaDetailsController extends GetxController {
   final RxBool isSecondaryLoading = false.obs;
 
   final Rxn<d.Source> activeSource = Rxn<d.Source>();
-  late final RxInt selectedPage;
+  late RxInt selectedPage;
 
   final RxDouble mediaScore = 0.0.obs;
   final RxInt mediaProgress = 0.obs;
@@ -106,8 +102,6 @@ class MediaDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    sourceController = Get.find<SourceController>();
-    serviceHandler = Get.find<ServiceHandler>();
     offlineStorage = Get.find<OfflineStorageController>();
     anilist = Get.find<AnilistAuth>();
 
@@ -134,7 +128,7 @@ class MediaDetailsController extends GetxController {
     offlineStorage.addListener(_offlineStorageListener!);
 
     _fetchContentFromSource();
-    _fetchFullAnilistData().then((_) {
+    _fetchFullDetails().then((_) {
       _fetchSecondaryAnilistData();
     });
   }
@@ -314,38 +308,36 @@ class MediaDetailsController extends GetxController {
     _initOfflineAndTrackedData();
   }
 
-  Future<void> _fetchFullAnilistData() async {
+  Future<void> _fetchFullDetails() async {
     isAnilistLoading.value = true;
     try {
-      final parsedId = int.tryParse(initialMedia.id);
-      if (parsedId != null) {
-        final data = await AnilistApi()
-            .postQuery(detailsPrimaryQuery, variables: {'id': parsedId});
-        if (data != null &&
-            data['data'] != null &&
-            data['data']['Media'] != null) {
-          final fullMedia = Media.fromJson(data['data']['Media']);
-          final prevAlt = media.value.altMediaContent;
-          final prevStaff = media.value.staff;
-          final prevFriends = media.value.friendsWatching;
-          media.value = fullMedia;
-          if (prevAlt != null && media.value.altMediaContent == null) {
-            media.value.altMediaContent = prevAlt;
-          }
-          if (prevStaff != null && media.value.staff == null) {
-            media.value.staff = prevStaff;
-          }
-          if (prevFriends != null && media.value.friendsWatching == null) {
-            media.value.friendsWatching = prevFriends;
-          }
-          Get.find<CacheController>().addCache(data['data']['Media']);
-          if (fullMedia.nextAiringEpisode != null) {
-            startCountdown(fullMedia.nextAiringEpisode!.airingAt);
-          }
-        }
+      if (initialMedia.serviceType == ServicesType.extensions) {
+        return;
+      }
+      final fullMedia = await initialMedia.serviceType.service.fetchDetails(
+        FetchDetailsParams(
+          id: initialMedia.id.toString(),
+          type: initialMedia.mediaType,
+        ),
+      );
+      final prevAlt = media.value.altMediaContent;
+      final prevStaff = media.value.staff;
+      final prevFriends = media.value.friendsWatching;
+      media.value = fullMedia;
+      if (prevAlt != null && media.value.altMediaContent == null) {
+        media.value.altMediaContent = prevAlt;
+      }
+      if (prevStaff != null && media.value.staff == null) {
+        media.value.staff = prevStaff;
+      }
+      if (prevFriends != null && media.value.friendsWatching == null) {
+        media.value.friendsWatching = prevFriends;
+      }
+      if (fullMedia.nextAiringEpisode != null) {
+        startCountdown(fullMedia.nextAiringEpisode!.airingAt);
       }
     } catch (e) {
-      Logger.e('Error fetching full AniList details: $e');
+      Logger.e('Error fetching full media details: $e');
     } finally {
       isAnilistLoading.value = false;
     }
@@ -658,7 +650,7 @@ class MediaDetailsController extends GetxController {
   Future<void> syncDetails() async {
     isSyncing.value = true;
     try {
-      await _fetchFullAnilistData();
+      await _fetchFullDetails();
     } catch (e) {
       errorSnackBar('Sync failed');
     } finally {

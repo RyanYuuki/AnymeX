@@ -3,6 +3,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/utils/ui_extensions/sizing.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ Widget buildCharactersSection(BuildContext context, Media media) {
         ),
       ),
     ],
-  );
+  ).bottomSpacing(16);
 }
 
 Widget buildCharacterCard(BuildContext context, Character character) {

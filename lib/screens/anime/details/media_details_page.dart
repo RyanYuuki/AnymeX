@@ -309,8 +309,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     if (controller.isAnilistLoading.value) {
                       return _buildShimmerCarousel(context);
                     }
-                    return buildCharactersSection(context, mediaData)
-                        .bottomSpacing(16);
+                    return buildCharactersSection(context, mediaData);
                   }),
                   Obx(() {
                     if (controller.isAnilistLoading.value) {
