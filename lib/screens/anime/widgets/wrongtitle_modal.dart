@@ -1,3 +1,4 @@
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/source/source_mapper.dart';
@@ -14,6 +15,9 @@ import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/cards/card_components.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 
 class WrongTitleModal extends StatefulWidget {
   const WrongTitleModal({
@@ -40,6 +44,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
   final sourceController = Get.find<SourceController>();
   final RxString searchStatus = "".obs;
   Worker? _sourceWorker;
+  bool _isCardView = true;
 
   @override
   void initState() {
@@ -85,29 +90,70 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.sizeOf(context).width,
-      height: MediaQuery.sizeOf(context).height * 0.8,
+      height: MediaQuery.sizeOf(context).height * 0.6,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(4),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: CustomSearchBar(
-                disableIcons: true,
-                padding: const EdgeInsets.all(0),
-                controller: controller,
-                onSubmitted: (value) {
-                  setState(() {
-                    searchFuture = performSearch();
-                  });
-                },
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: CustomSearchBar(
+                    disableIcons: true,
+                    padding: const EdgeInsets.all(0),
+                    controller: controller,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(22),
+                      bottomLeft: Radius.circular(22),
+                      topRight: Radius.circular(5),
+                      bottomRight: Radius.circular(5),
+                    ),
+                    onSubmitted: (value) {
+                      setState(() {
+                        searchFuture = performSearch();
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Container(
+                  height: 48,
+                  width: 48,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.35),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(5),
+                      bottomLeft: Radius.circular(5),
+                      topRight: Radius.circular(22),
+                      bottomRight: Radius.circular(22),
+                    ),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      setState(() {
+                        _isCardView = !_isCardView;
+                      });
+                    },
+                    icon: Icon(
+                      _isCardView ? Icons.view_list_rounded : Icons.grid_view_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 20,
+                    ),
+                    tooltip: _isCardView ? 'Switch to List View' : 'Switch to Card View',
+                  ),
+                ),
+              ],
             ),
             Obx(() => searchStatus.value.isNotEmpty
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    padding: const EdgeInsets.only(top: 8.0, left: 4.0),
                     child: AnymeXText(
                       text: searchStatus.value,
                       variant: TextVariant.semiBold,
@@ -115,7 +161,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                     ),
                   )
                 : const SizedBox.shrink()),
-            const SizedBox(height: 16),
+            const SizedBox(height: 10),
             Expanded(
               child: FutureBuilder<List<DMedia?>?>(
                 future: searchFuture,
@@ -135,10 +181,70 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       );
                     }
 
+                    if (!_isCardView) {
+                      return SingleChildScrollView(
+                        child: AnymeXTileBuilder<DMedia>(
+                          items: results.whereType<DMedia>().toList(),
+                          isSelection: false,
+                          maxLines: 3,
+                          showChevron: (_) => false,
+                          getTitle: (item) {
+                            final source = widget.isNovel
+                                ? sourceController.activeNovelSource.value
+                                : widget.isManga
+                                    ? sourceController.activeMangaSource.value
+                                    : sourceController.activeSource.value;
+                            final carouselData =
+                                item.toCarouselData(sourceId: source?.id);
+                            return carouselData.title ?? '';
+                          },
+                          getLeading: (item) {
+                            final source = widget.isNovel
+                                ? sourceController.activeNovelSource.value
+                                : widget.isManga
+                                    ? sourceController.activeMangaSource.value
+                                    : sourceController.activeSource.value;
+                            final carouselData =
+                                item.toCarouselData(sourceId: source?.id);
+                            final itemType = widget.isNovel
+                                ? ItemType.novel
+                                : (widget.isManga
+                                    ? ItemType.manga
+                                    : ItemType.anime);
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: AnymeXImage(
+                                width: 45,
+                                height: 60,
+                                imageUrl: carouselData.poster ?? '',
+                                sourceId: source?.id,
+                                isAnime: itemType == ItemType.anime,
+                              ),
+                            );
+                          },
+                          onItemPressed: (item) {
+                            final source = widget.isNovel
+                                ? sourceController.activeNovelSource.value
+                                : widget.isManga
+                                    ? sourceController.activeMangaSource.value
+                                    : sourceController.activeSource.value;
+                            FocusManager.instance.primaryFocus?.unfocus();
+                            SourceMapper.interruptMapping();
+                            if (source != null && widget.mediaId != null) {
+                              sourceController.setActiveSource(source, mediaId: widget.mediaId);
+                            }
+                            Get.back();
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              widget.onTap(item);
+                            });
+                          },
+                        ),
+                      );
+                    }
+
                     final crossAxisCount = getResponsiveCrossAxisCount(context,
                         maxColumns: 5, baseColumns: 3);
                     return GridView.builder(
-                      padding: const EdgeInsets.all(20),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: crossAxisCount,
                           crossAxisSpacing: 10,
@@ -209,16 +315,10 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
 Future<void> showWrongTitleModal(
     BuildContext context, String initialText, Function(DMedia) onTap,
     {bool isManga = false, bool isNovel = false, String? mediaId}) {
-  return showModalBottomSheet(
-    context: context,
-    backgroundColor: context.colors.surfaceContainer,
-    isScrollControlled: true,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12.0),
-    ),
-    builder: (context) {
-      final isDesktop = MediaQuery.sizeOf(context).width > 600;
-      return SizedBox(
+  final isDesktop = MediaQuery.sizeOf(context).width > 600;
+
+  return AnymeXSheet.custom(
+      SizedBox(
         width: isDesktop
             ? MediaQuery.sizeOf(context).width * 0.8
             : MediaQuery.sizeOf(context).width,
@@ -233,7 +333,6 @@ Future<void> showWrongTitleModal(
               isNovel: isNovel,
               mediaId: mediaId),
         ),
-      );
-    },
-  );
+      ),
+      context);
 }

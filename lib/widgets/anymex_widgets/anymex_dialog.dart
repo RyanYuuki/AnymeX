@@ -66,6 +66,8 @@ class AnymeXDialog extends StatelessWidget {
     final radius = 24.multiplyRadius();
     final buttonRadius = 16.multiplyRadius();
 
+    final isLandscape = MediaQuery.orientationOf(context) == Orientation.landscape;
+
     return PopScope(
         canPop: !forceAction,
         child: BackdropFilter(
@@ -73,8 +75,10 @@ class AnymeXDialog extends StatelessWidget {
             child: Dialog(
               backgroundColor: Colors.transparent,
               elevation: 0,
-              insetPadding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              insetPadding: EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: isLandscape ? 8 : 24,
+              ),
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () {
@@ -92,7 +96,7 @@ class AnymeXDialog extends StatelessWidget {
                         desktopValue: 400.0,
                       ),
                       constraints: BoxConstraints(
-                        maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+                        maxHeight: MediaQuery.sizeOf(context).height * (isLandscape ? 0.95 : 0.85),
                       ),
                       decoration: BoxDecoration(
                         color: translucent
@@ -119,7 +123,11 @@ class AnymeXDialog extends StatelessWidget {
                             sigmaY: translucent ? 20 : 0,
                           ),
                           child: Padding(
-                            padding: padding,
+                            padding: padding == const EdgeInsets.all(24)
+                                ? (isLandscape
+                                    ? const EdgeInsets.symmetric(horizontal: 24, vertical: 12)
+                                    : padding)
+                                : padding,
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
