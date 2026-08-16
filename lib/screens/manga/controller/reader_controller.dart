@@ -276,9 +276,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     if (lastLoaded == null) return;
 
     final curIdx = chapterList.indexOf(lastLoaded);
-    if (curIdx == -1 || curIdx >= chapterList.length - 1) return;
+    if (curIdx == -1) return;
 
-    final nextChapterObj = chapterList[curIdx + 1];
+    final nextIdx = getNextChapterIndex(curIdx);
+    if (nextIdx == -1) return;
+
+    final nextChapterObj = chapterList[nextIdx];
     if (loadedChapters.contains(nextChapterObj) ||
         loadingChapterLinks.contains(nextChapterObj.link)) {
       return;
@@ -977,7 +980,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             : currentChapter.value;
         if (lastLoaded != null) {
           final curIdx = chapterList.indexOf(lastLoaded);
-          if (curIdx == chapterList.length - 1) {
+          if (curIdx == -1 || getNextChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
               title: "Last Chapter",
@@ -997,7 +1000,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             : currentChapter.value;
         if (firstLoaded != null) {
           final curIdx = chapterList.indexOf(firstLoaded);
-          if (curIdx == 0) {
+          if (curIdx == -1 || getPrevChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
               title: "First Chapter",
@@ -1236,9 +1239,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           final curChapter = currentChapter.value;
           if (curChapter != null) {
             final curIdx = chapterList.indexOf(curChapter);
-            if (curIdx > 0) {
-              _isNavigating = true;
-              navigateToChapter(curIdx - 1, initialAtBottom: true);
+            if (curIdx != -1) {
+              final prevIdx = getPrevChapterIndex(curIdx);
+              if (prevIdx != -1) {
+                _isNavigating = true;
+                navigateToChapter(prevIdx, initialAtBottom: true);
+              }
             }
           }
         }
@@ -1645,6 +1651,42 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  int getNextChapterIndex(int currentIndex) {
+    if (currentIndex == -1) return -1;
+    if (navigateByNumber.value) {
+      final current = chapterList[currentIndex];
+      final currentNum = current.number;
+      if (currentNum != null) {
+        for (int i = currentIndex + 1; i < chapterList.length; i++) {
+          if (chapterList[i].number != currentNum) {
+            return i;
+          }
+        }
+        return -1;
+      }
+    }
+    final nextIdx = currentIndex + 1;
+    return (nextIdx < chapterList.length) ? nextIdx : -1;
+  }
+
+  int getPrevChapterIndex(int currentIndex) {
+    if (currentIndex == -1) return -1;
+    if (navigateByNumber.value) {
+      final current = chapterList[currentIndex];
+      final currentNum = current.number;
+      if (currentNum != null) {
+        for (int i = currentIndex - 1; i >= 0; i--) {
+          if (chapterList[i].number != currentNum) {
+            return i;
+          }
+        }
+        return -1;
+      }
+    }
+    final prevIdx = currentIndex - 1;
+    return (prevIdx >= 0) ? prevIdx : -1;
+  }
+
   void chapterNavigator(bool next) async {
     final current = currentChapter.value;
     if (current == null) return;
@@ -1655,33 +1697,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         (c) => c.number == current.number || c.link == current.link);
     if (index == -1) return;
 
-    int newIndex = -1;
-    if (navigateByNumber.value) {
-      final currentNum = current.number;
-      if (currentNum != null) {
-        if (next) {
-          for (int i = index + 1; i < chapterList.length; i++) {
-            if (chapterList[i].number != currentNum) {
-              newIndex = i;
-              break;
-            }
-          }
-        } else {
-          for (int i = index - 1; i >= 0; i--) {
-            if (chapterList[i].number != currentNum) {
-              newIndex = i;
-              break;
-            }
-          }
-        }
-      } else {
-        newIndex = next ? index + 1 : index - 1;
-      }
-    } else {
-      newIndex = next ? index + 1 : index - 1;
-    }
+    final newIndex = next ? getNextChapterIndex(index) : getPrevChapterIndex(index);
 
-    if (newIndex >= 0 && newIndex < chapterList.length) {
+    if (newIndex != -1) {
       navigateToChapter(newIndex);
     } else {
       if (next) {
@@ -1714,21 +1732,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       return;
     }
 
-    if (navigateByNumber.value) {
-      final currentNum = chapter.number;
-      if (currentNum != null) {
-        canGoPrev.value =
-            chapterList.sublist(0, index).any((c) => c.number != currentNum);
-        canGoNext.value =
-            chapterList.sublist(index + 1).any((c) => c.number != currentNum);
-      } else {
-        canGoPrev.value = index > 0;
-        canGoNext.value = index < chapterList.length - 1;
-      }
-    } else {
-      canGoPrev.value = index > 0;
-      canGoNext.value = index < chapterList.length - 1;
-    }
+    canGoPrev.value = getPrevChapterIndex(index) != -1;
+    canGoNext.value = getNextChapterIndex(index) != -1;
   }
 
   Future<void> fetchImages(String url, {bool initialAtBottom = false}) async {

@@ -334,11 +334,10 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
     final ctrl = widget.controller;
     final chapter = spread.chapter ?? ctrl.currentChapter.value!;
     final curIdx = ctrl.chapterList.indexOf(chapter);
-    final targetIdx = spread.isNextTransition ? curIdx + 1 : curIdx - 1;
-    final targetChapter =
-        (targetIdx >= 0 && targetIdx < ctrl.chapterList.length)
-            ? ctrl.chapterList[targetIdx]
-            : null;
+    final targetIdx = spread.isNextTransition
+        ? ctrl.getNextChapterIndex(curIdx)
+        : ctrl.getPrevChapterIndex(curIdx);
+    final targetChapter = (targetIdx != -1) ? ctrl.chapterList[targetIdx] : null;
 
     return Obx(() {
       ctrl.currentPageIndex.value;
