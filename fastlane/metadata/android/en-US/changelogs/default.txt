@@ -1,23 +1,20 @@
 ### 🌟 Features
--  episode & chapter style switcher by @RyanYuuki
--  nav bar style switcher by @RyanYuuki
--  UI REVAMP (1/3) by @RyanYuuki
--  Watchium - Watch Together, Real-time Chat, Playback Sync & Party Controls (#520) by @Shebyyy
+-  added list ui toggle on wrong title and fixed dimensions by @RyanYuuki
 
 ### 🔧 Bug Fixes & Improvements
--  fixed macos grey screen by @RyanYuuki
-
-### 🔧 Refactors
--  mass rename and migrated to custom scaffold for all pages by @RyanYuuki
--  docoupled service code, organized files, made models efficient by @RyanYuuki
+-  ui collision with nav fix by @RyanYuuki
+-  centralized chapter calc logic to fix navigate by number for overscroll by @RyanYuuki
+-  fixed parsing issues causing grey screen on home and library by @RyanYuuki
+-  fixed manga sources not installing not loading icons by @RyanYuuki
+-  fixed omitted labels on header by @RyanYuuki
+-  fixed ui inconsistencies on settings pages by @RyanYuuki
 
 ### 🎨 Style Changes
--  revamped the entire settings and subsettings pages by @RyanYuuki
+-  fixed bad logic of dynamic service causing grey screen by @RyanYuuki
+-  improved ux of continue button by making it expandible by @RyanYuuki
 
 ### 🧹 Chores & Documentation
--  bump version to v3.1.5 (patch release) by @RyanYuuki
--  dynamic dialog for social links by @RyanYuuki
--  updated dc server link by @RyanYuuki
+-  bump version to v3.1.6 (patch release) by @RyanYuuki
 -  update sideloading source by @ghost
 
  
