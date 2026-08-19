@@ -172,6 +172,7 @@ class _LogoAnimationPreviewDialogState
             _selectedAnimation = type;
             _logoKey = UniqueKey();
           });
+          widget.onConfirm(type);
         },
       ),
     );
