@@ -455,7 +455,7 @@ class Header extends StatelessWidget {
     final isSimkl = profileData.serviceType.value == ServicesType.simkl;
 
     if (type == PageType.novel) {
-      navigate(() => const NovelSearchPage());
+      navigate(() => const SearchPage(searchTerm: '', isManga: false, type: ItemType.novel));
       return;
     }
 
