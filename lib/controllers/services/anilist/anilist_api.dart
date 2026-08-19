@@ -51,7 +51,7 @@ class AnilistApi {
     final variables = {'id': int.tryParse(id)};
     final data = await postQuery(characterDetailsQuery, variables: variables);
     if (data != null && data['data'] != null && data['data']['Character'] != null) {
-      return Character.fromDetailJson(data['data']['Character']);
+      return Character.fromJson(data['data']['Character']);
     }
     return null;
   }

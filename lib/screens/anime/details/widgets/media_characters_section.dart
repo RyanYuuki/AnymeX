@@ -88,10 +88,10 @@ Widget buildCharacterCard(BuildContext context, Character character) {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.favorite_rounded,
                           size: 8,
-                          color: Colors.red,
+                          color: context.colors.primary,
                         ),
                         const SizedBox(width: 2),
                         AnymeXText(

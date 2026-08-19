@@ -36,92 +36,91 @@ class Character {
   });
 
   factory Character.fromJson(Map<String, dynamic> json) {
-    return Character(
-      id: json['node']?['id']?.toString(),
-      name: json['node']?['name']?['userPreferred'] ??
-          json['node']?['name']?['full'],
-      nativeName: json['node']?['name']?['native'],
-      favourites: json['node']?['favourites'] ?? 0,
-      image: json['node']?['image']?['large'],
-      role: json['role'],
-      description: json['node']?['description'],
-      isFavourite: json['node']?['isFavourite'],
-      voiceActors: (json['voiceActors'] as List?)
-              ?.map((actor) => VoiceActor.fromJson(actor))
-              .toList() ??
-          [],
-    );
-  }
+    final bool isEdge = json.containsKey('node');
+    final Map<String, dynamic> nodeJson = isEdge 
+        ? (json['node'] as Map<String, dynamic>?) ?? {} 
+        : json;
 
-  factory Character.fromSmallJson(Map<String, dynamic> json) {
-    return Character(
-      id: json['id']?.toString(),
-      name: json['name']['userPreferred'] ?? json['name']['full'],
-      nativeName: json['name']['native'],
-      favourites: json['favourites'] ?? 0,
-      image: json['image']['large'],
-      description: json['description'],
-      isFavourite: json['isFavourite'],
-    );
-  }
+    final id = nodeJson['id']?.toString();
+    final nameMap = nodeJson['name'] as Map<String, dynamic>?;
+    final name = nameMap?['userPreferred'] ?? nameMap?['full'];
+    final nativeName = nameMap?['native'];
+    final favourites = nodeJson['favourites'] ?? 0;
+    
+    final imageMap = nodeJson['image'] as Map<String, dynamic>?;
+    final image = imageMap?['large'];
+    
+    final description = nodeJson['description'];
+    final isFavourite = nodeJson['isFavourite'];
+    final role = json['role'] ?? json['characterRole'];
 
+    List<VoiceActor> voiceActors = [];
+    if (json['voiceActors'] != null) {
+      voiceActors = (json['voiceActors'] as List)
+          .map((actor) => VoiceActor.fromJson(actor as Map<String, dynamic>))
+          .toList();
+    }
 
-  factory Character.fromDetailJson(Map<String, dynamic> json) {
     String? dob;
-    if (json['dateOfBirth'] != null) {
-      final date = json['dateOfBirth'];
+    if (nodeJson['dateOfBirth'] != null) {
+      final date = nodeJson['dateOfBirth'];
       if (date['year'] != null || date['month'] != null || date['day'] != null) {
-         dob = "${date['month'] ?? '?'}/${date['day'] ?? '?'}/${date['year'] ?? '?'}";
+        dob = "${date['month'] ?? '?'}/${date['day'] ?? '?'}/${date['year'] ?? '?'}";
       }
     }
 
-    var voiceActorsMap = <String, VoiceActor>{};
-    var mediaList = (json['media']['edges'] as List?)?.map((e) {
-         var media = Media.fromSmallJson(e['node'], e['node']['type'] == 'MANGA', 
-            role: e['characterRole']);
-         
-         
-         if (e['voiceActors'] != null) {
-           for (var va in e['voiceActors']) {
-               
-             var actor = VoiceActor.fromJson(va);
-             if (actor.id != null) {
-               
-               if (!voiceActorsMap.containsKey(actor.id!) || 
-                   (voiceActorsMap[actor.id!]?.language == null && actor.language != null)) {
-                 voiceActorsMap[actor.id!] = actor;
-               }
-             }
-           }
-         }
-         return media;
+    List<Media>? mediaList;
+    if (nodeJson['media'] != null && nodeJson['media']['edges'] != null) {
+      var voiceActorsMap = <String, VoiceActor>{};
+      mediaList = (nodeJson['media']['edges'] as List?)?.map((e) {
+        var media = Media.fromSmallJson(
+          e['node'],
+          e['node']['type'] == 'MANGA',
+          role: e['characterRole'],
+        );
+
+        if (e['voiceActors'] != null) {
+          for (var va in e['voiceActors']) {
+            var actor = VoiceActor.fromJson(va);
+            if (actor.id != null) {
+              if (!voiceActorsMap.containsKey(actor.id!) ||
+                  (voiceActorsMap[actor.id!]?.language == null && actor.language != null)) {
+                voiceActorsMap[actor.id!] = actor;
+              }
+            }
+          }
+        }
+        return media;
       }).toList();
 
+      if (voiceActors.isEmpty && voiceActorsMap.isNotEmpty) {
+        voiceActors = voiceActorsMap.values.toList()
+          ..sort((a, b) {
+            if (a.language == "Japanese" && b.language != "Japanese") return -1;
+            if (a.language != "Japanese" && b.language == "Japanese") return 1;
+
+            if (a.language == "English" && b.language != "English") return -1;
+            if (a.language != "English" && b.language == "English") return 1;
+
+            return (a.language ?? "").compareTo(b.language ?? "");
+          });
+      }
+    }
+
     return Character(
-      id: json['id']?.toString(),
-      name: json['name']['userPreferred'] ?? json['name']['full'],
-      nativeName: json['name']['native'],
-      favourites: json['favourites'],
-      image: json['image']['large'],
-      description: json['description'],
-      isFavourite: json['isFavourite'],
-      age: json['age'],
-      gender: json['gender'],
-      bloodType: json['bloodType'],
+      id: id,
+      name: name,
+      nativeName: nativeName,
+      favourites: favourites,
+      image: image,
+      role: role,
+      description: description,
+      isFavourite: isFavourite,
+      age: nodeJson['age'],
+      gender: nodeJson['gender'],
+      bloodType: nodeJson['bloodType'],
       dateOfBirth: dob,
-      voiceActors: voiceActorsMap.values.toList()
-        ..sort((a, b) {
-          
-          if (a.language == "Japanese" && b.language != "Japanese") return -1;
-          if (a.language != "Japanese" && b.language == "Japanese") return 1;
-          
-        
-          if (a.language == "English" && b.language != "English") return -1;
-          if (a.language != "English" && b.language == "English") return 1;
-          
-        
-          return (a.language ?? "").compareTo(b.language ?? "");
-        }), 
+      voiceActors: voiceActors,
       media: mediaList,
     );
   }

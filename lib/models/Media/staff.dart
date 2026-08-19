@@ -67,7 +67,7 @@ class Staff {
         if (edge['node'] == null) continue;
         
         var charNode = edge['node'];
-        var character = Character.fromSmallJson(charNode);
+        var character = Character.fromJson(charNode);
         
         
         if (charNode['media'] != null && charNode['media']['nodes'] != null && (charNode['media']['nodes'] as List).isNotEmpty) {
