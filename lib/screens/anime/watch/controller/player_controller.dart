@@ -1232,6 +1232,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _updateMediaSessionState(e);
       if (e) {
         _resetAutoHideTimer();
+        if (playbackSpeed.value != _sessionSpeed) {
+          _basePlayer.setRate(_sessionSpeed);
+        }
       }
       if (isOffline.value) return;
       if (!e) {
