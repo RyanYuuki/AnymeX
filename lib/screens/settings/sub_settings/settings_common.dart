@@ -40,6 +40,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
     homePageCards.putIfAbsent('Recommended Animes', () => true);
     homePageCards.putIfAbsent('Recommended Mangas', () => true);
   }
+  
 
   @override
   Widget build(BuildContext context) {
