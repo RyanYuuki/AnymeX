@@ -154,8 +154,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
             Obx(() => searchStatus.value.isNotEmpty
                 ? Padding(
                     padding: const EdgeInsets.only(top: 8.0, left: 4.0),
-                    child: AnymeXText(
-                      text: searchStatus.value,
+                    child: AnymeXText(searchStatus.value,
                       variant: TextVariant.semiBold,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -170,14 +169,14 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                     return const Center(child: AnymeXProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(
-                      child: Text('Error: ${snapshot.error}'),
+                      child: AnymeXText('Error: ${snapshot.error}'),
                     );
                   } else if (snapshot.hasData && snapshot.data != null) {
                     final results = snapshot.data ?? [];
 
                     if (results.isEmpty) {
                       return const Center(
-                        child: Text('No results found.'),
+                        child: AnymeXText('No results found.'),
                       );
                     }
 
@@ -299,7 +298,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                     );
                   } else {
                     return const Center(
-                      child: Text('No data available.'),
+                      child: AnymeXText('No data available.'),
                     );
                   }
                 },

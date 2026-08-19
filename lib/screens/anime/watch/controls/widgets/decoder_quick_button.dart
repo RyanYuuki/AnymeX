@@ -3,6 +3,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DecoderQuickButton extends StatelessWidget {
   final bool isMobile;
@@ -84,7 +85,7 @@ class DecoderQuickButton extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     _label(current),
                     style: const TextStyle(
                       color: Colors.white,
@@ -156,7 +157,7 @@ class DecoderQuickButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(radius),
               border: border,
             ),
-            child: Text(_label(current), style: style),
+            child: AnymeXText(_label(current), style: style),
           ),
         ),
       );

@@ -4,6 +4,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 enum PolicyType { tos, commentPolicy, commentRules, watchTogetherPolicy }
 
@@ -131,7 +132,7 @@ void _showBottomSheetUI(BuildContext context, String title, String content) {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  AnymeXText(
                     title,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w700,

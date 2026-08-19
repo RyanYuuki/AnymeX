@@ -13,15 +13,14 @@ class EmptyLibrary extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         150.height(),
-        const Text(
+        const AnymeXText(
           '(─‿─)',
           style: TextStyle(fontSize: 50, fontFamily: "Roboto"),
         ),
         const SizedBox(
           height: 20,
         ),
-        AnymeXText(
-            text: isHistory ? "Your history is empty" : "Your library is empty")
+        AnymeXText(isHistory ? "Your history is empty" : "Your library is empty")
       ],
     );
   }

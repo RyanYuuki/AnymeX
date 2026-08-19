@@ -336,8 +336,7 @@ class _ClassicMobileNavItem extends StatelessWidget {
               ),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: AnymeXText(
-                  text: item.label,
+                child: AnymeXText(item.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   size: isSelected ? 10.5 : 10,

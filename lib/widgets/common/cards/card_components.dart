@@ -143,8 +143,7 @@ class MediaBadge extends StatelessWidget {
             children: [
               Icon(badgeIcon, size: 16, color: theme.colorScheme.onPrimary),
               const SizedBox(width: 4),
-              AnymeXText(
-                text: badgeText,
+              AnymeXText(badgeText,
                 color: theme.colorScheme.onPrimary,
                 size: 12,
                 variant: TextVariant.bold,
@@ -174,8 +173,7 @@ class MediaBadge extends StatelessWidget {
                 color: isBlurred ? theme.colorScheme.primary : theme.colorScheme.onPrimary,
               ),
               const SizedBox(width: 4),
-              AnymeXText(
-                text: badgeText,
+              AnymeXText(badgeText,
                 color: isBlurred ? theme.colorScheme.primary : theme.colorScheme.onPrimary,
                 size: 11,
                 variant: TextVariant.bold,
@@ -222,8 +220,7 @@ class MediaTitle extends StatelessWidget {
           ),
         ),
         padding: const EdgeInsets.all(8),
-        child: AnymeXText(
-          text: title,
+        child: AnymeXText(title,
           maxLines: maxLines,
           size: isDesktop ? 14 : 12,
           variant: TextVariant.semiBold,
@@ -236,8 +233,7 @@ class MediaTitle extends StatelessWidget {
 
     return SizedBox(
       height: 50,
-      child: AnymeXText(
-        text: title,
+      child: AnymeXText(title,
         maxLines: maxLines,
         size: isDesktop ? 14 : 12,
         variant: TextVariant.semiBold,
@@ -281,8 +277,7 @@ class MediaProgress extends StatelessWidget {
               color: theme.colorScheme.onPrimary,
             ),
             const SizedBox(width: 4),
-            AnymeXText(
-              text: progressText,
+            AnymeXText(progressText,
               color: theme.colorScheme.onPrimary,
               size: 12,
               variant: TextVariant.bold,

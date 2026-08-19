@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsModeration extends StatefulWidget {
   const SettingsModeration({super.key});
@@ -56,7 +57,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
             children: [
               CustomBackButton(),
               SizedBox(width: 10),
-              Text("Moderation Panel",
+              AnymeXText("Moderation Panel",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
             ],
           ),
@@ -82,7 +83,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                           color: _getRoleColor(),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
+                        child: AnymeXText(
                           commentumService.currentUserRole.value.toUpperCase(),
                           style: const TextStyle(
                             color: Colors.white,
@@ -249,13 +250,13 @@ class _SettingsModerationState extends State<SettingsModeration> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Moderation History'),
+        title: const AnymeXText('Moderation History'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Moderation history will be available in future updates.'),
+            AnymeXText('Moderation history will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:',
+            AnymeXText('Planned features:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Filter by action type'),
             BulletPoint(text: 'Filter by date range'),
@@ -267,7 +268,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -284,14 +285,14 @@ class _SettingsModerationState extends State<SettingsModeration> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Search User'),
+        title: const AnymeXText('Search User'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            AnymeXText(
                 'User search functionality will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:',
+            AnymeXText('Planned features:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Search by username'),
             BulletPoint(text: 'Search by user ID'),
@@ -302,7 +303,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -318,14 +319,14 @@ class _SettingsModerationState extends State<SettingsModeration> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Search Comments'),
+        title: const AnymeXText('Search Comments'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            AnymeXText(
                 'Comment search functionality will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:',
+            AnymeXText('Planned features:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Search by content'),
             BulletPoint(text: 'Search by username'),
@@ -336,7 +337,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -352,13 +353,13 @@ class _SettingsModerationState extends State<SettingsModeration> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Moderation Statistics'),
+        title: const AnymeXText('Moderation Statistics'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Moderation statistics will be available in future updates.'),
+            AnymeXText('Moderation statistics will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned metrics:',
+            AnymeXText('Planned metrics:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Reports resolved'),
             BulletPoint(text: 'Users warned/banned'),
@@ -370,7 +371,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -386,13 +387,13 @@ class _SettingsModerationState extends State<SettingsModeration> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Notification Settings'),
+        title: const AnymeXText('Notification Settings'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Notification settings will be available in future updates.'),
+            AnymeXText('Notification settings will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned notifications:',
+            AnymeXText('Planned notifications:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'New reports'),
             BulletPoint(text: 'Report resolutions'),
@@ -403,7 +404,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -419,14 +420,14 @@ class _SettingsModerationState extends State<SettingsModeration> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Moderation Rules'),
+        title: const AnymeXText('Moderation Rules'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            AnymeXText(
                 'Moderation rules configuration will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:',
+            AnymeXText('Planned features:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Custom banned keywords'),
             BulletPoint(text: 'Auto-moderation thresholds'),
@@ -437,7 +438,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -457,8 +458,8 @@ class BulletPoint extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('• '),
-          Expanded(child: Text(text)),
+          const AnymeXText('• '),
+          Expanded(child: AnymeXText(text)),
         ],
       ),
     );

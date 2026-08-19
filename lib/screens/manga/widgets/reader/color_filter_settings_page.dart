@@ -2,6 +2,7 @@ import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ColorFilterSettingsPage extends StatelessWidget {
   const ColorFilterSettingsPage({super.key, required this.controller});
@@ -135,7 +136,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Blend Mode',
+                    AnymeXText('Blend Mode',
                         style: Theme.of(context).textTheme.titleSmall),
                     const SizedBox(height: 8),
                     Wrap(
@@ -144,7 +145,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
                       children: List.generate(
                         _blendModeLabels.length,
                         (i) => ChoiceChip(
-                          label: Text(_blendModeLabels[i]),
+                          label: AnymeXText(_blendModeLabels[i]),
                           selected: blendMode == i,
                           onSelected: (_) {
                             controller.colorFilterMode.value = i;

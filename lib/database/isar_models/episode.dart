@@ -99,7 +99,28 @@ class Episode {
       sortVals: rawSortVals?.map((e) => e.toString()).toList(),
     );
   }
+
+  Episode clone() {
+    return Episode(
+      number: number,
+      link: link,
+      title: title,
+      desc: desc,
+      thumbnail: thumbnail,
+      filler: filler,
+      dateUpload: dateUpload,
+      sortKeys: sortKeys != null ? List<String>.from(sortKeys!) : null,
+      sortVals: sortVals != null ? List<String>.from(sortVals!) : null,
+      timeStampInMilliseconds: timeStampInMilliseconds,
+      durationInMilliseconds: durationInMilliseconds,
+      lastWatchedTime: lastWatchedTime,
+      currentTrack: currentTrack,
+      videoTracks: videoTracks != null ? List<Video>.from(videoTracks!) : null,
+      source: source,
+    );
+  }
 }
+
 
 extension EpisodeMap on Episode {
   Map<String, String> get sortMap {

@@ -10,6 +10,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:win32/win32.dart';
 import 'dart:ffi';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide isar;
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnymeXTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
@@ -159,7 +160,7 @@ class _TitleBarWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Text(
+              AnymeXText(
                 'AnymeX',
                 style: TextStyle(
                   fontSize: 13,

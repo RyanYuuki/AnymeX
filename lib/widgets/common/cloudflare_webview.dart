@@ -3,6 +3,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class CloudflareBypassWebView extends StatefulWidget {
   final String url;
@@ -110,7 +111,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        AnymeXText(
                           'Bypass Cloudflare',
                           style: TextStyle(
                             color: colors.onSurface,
@@ -118,7 +119,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
+                        AnymeXText(
                           _displayHost,
                           style: TextStyle(
                             color: colors.onSurface.withValues(alpha: 0.55),
@@ -156,7 +157,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                               color:
                                   _synced ? colors.primary : colors.onSurface,
                             ),
-                            label: Text(
+                            label: AnymeXText(
                               _synced ? 'Synced!' : 'Sync Cookies',
                               style: TextStyle(
                                 fontSize: 13,
@@ -187,7 +188,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                       color: colors.onPrimaryContainer.withValues(alpha: 0.8)),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: AnymeXText(
                       'Complete any Cloudflare challenge, then tap "Sync Cookies" to pass the session to extensions.',
                       style: TextStyle(
                         fontSize: 11,

@@ -137,7 +137,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: Row(
               children: [
-                const AnymeXText.bold(text: 'Filters', size: 18),
+                const AnymeXText.bold('Filters', size: 18),
                 const Spacer(),
                 _isResetting
                     ? SizedBox(
@@ -152,8 +152,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                       )
                     : TextButton(
                         onPressed: _reset,
-                        child: AnymeXText.semiBold(
-                          text: 'Reset',
+                        child: AnymeXText.semiBold('Reset',
                           size: 14,
                           color: theme.colorScheme.primary,
                         ),
@@ -168,8 +167,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const AnymeXText.semiBold(
-                    text: 'Apply',
+                  child: const AnymeXText.semiBold('Apply',
                     size: 14,
                   ),
                 ),
@@ -199,8 +197,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: AnymeXText.regular(
-                    text: "Note: If the extension supports reset to load filters and it doesn't work, try searching something first or open WebView. If that doesn't work, then click the 'Reset' button to load filters.",
+                  child: AnymeXText.regular("Note: If the extension supports reset to load filters and it doesn't work, try searching something first or open WebView. If that doesn't work, then click the 'Reset' button to load filters.",
                     size: 11.5,
                     maxLines: 999,
                     color: theme.colorScheme.onSurface.withOpacity(0.8),
@@ -245,8 +242,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
   Widget _buildHeader(HeaderFilter f) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 16, 4, 6),
-      child: AnymeXText.bold(
-        text: f.name,
+      child: AnymeXText.bold(f.name,
         size: 15,
         color: Theme.of(context).colorScheme.primary,
       ),
@@ -256,7 +252,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
   Widget _buildCheckbox(int i, CheckBoxFilter f) {
     return CheckboxListTile(
       dense: true,
-      title: AnymeXText(text: f.name, size: 14),
+      title: AnymeXText(f.name, size: 14),
       value: f.state,
       onChanged: (v) {
         setState(() {
@@ -300,7 +296,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
 
     return ListTile(
       dense: true,
-      title: AnymeXText(text: f.name, size: 14),
+      title: AnymeXText(f.name, size: 14),
       trailing: GestureDetector(
         onTap: () {
           setState(() {
@@ -322,8 +318,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: borderColor),
           ),
-          child: AnymeXText.semiBold(
-            text: labels[f.state],
+          child: AnymeXText.semiBold(labels[f.state],
             size: 12,
             color: textColor,
           ),
@@ -416,8 +411,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      AnymeXText(
-                        text: (f.values[j] as SelectFilterOption).name,
+                      AnymeXText((f.values[j] as SelectFilterOption).name,
                         size: 12,
                       ),
                       if (state.index == j) ...[
@@ -504,8 +498,7 @@ class ExtensionFilterSheetState extends State<ExtensionFilterSheet> {
                 : theme.colorScheme.onSurface.withOpacity(0.1),
           ),
         ),
-        child: AnymeXText(
-          text: label,
+        child: AnymeXText(label,
           size: 12,
           color: isSelected
               ? theme.colorScheme.primary
@@ -645,8 +638,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
           if (!hasContent)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
-              child: AnymeXText.regular(
-                text: 'No matches found',
+              child: AnymeXText.regular('No matches found',
                 size: 12,
                 color: theme.colorScheme.onSurface.withOpacity(0.5),
               ),
@@ -811,8 +803,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: borderColor),
         ),
-        child: AnymeXText(
-          text: tri.name,
+        child: AnymeXText(tri.name,
           size: 12,
           color: textColor,
         ),
@@ -865,8 +856,7 @@ class _GroupFilterWidgetState extends State<_GroupFilterWidget> {
                 : theme.colorScheme.onSurface.withOpacity(0.1),
           ),
         ),
-        child: AnymeXText(
-          text: label,
+        child: AnymeXText(label,
           size: 12,
           color: isSelected
               ? theme.colorScheme.primary

@@ -103,7 +103,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
 
     if (url == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No playable media available')),
+        const SnackBar(content: AnymeXText('No playable media available')),
       );
       return;
     }
@@ -219,7 +219,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                                     const EdgeInsets.symmetric(horizontal: 24),
                                 child: Column(
                                   children: [
-                                    Text(
+                                    AnymeXText(
                                       widget.animeDetails.title,
                                       textAlign: TextAlign.center,
                                       maxLines: 2,
@@ -236,7 +236,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 8),
-                                    Text(
+                                    AnymeXText(
                                       widget.animeDetails.studios?.join(', ') ??
                                           'Unknown Studio',
                                       style: TextStyle(
@@ -302,7 +302,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                         hasScrollBody: false,
                         child: Container(
                           color: surfaceColor,
-                          child: const Center(child: Text("No themes found")),
+                          child: const Center(child: AnymeXText("No themes found")),
                         ),
                       )
                     else
@@ -346,7 +346,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          AnymeXText(
             "Tracks (${themes.length})",
             style: const TextStyle(
               fontSize: 18,
@@ -356,7 +356,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
           FilledButton.icon(
             onPressed: themes.isNotEmpty ? () => _playTheme(0) : null,
             icon: const Icon(Icons.play_arrow_rounded, size: 18),
-            label: const Text("Play All"),
+            label: const AnymeXText("Play All"),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               shape: RoundedRectangleBorder(
@@ -386,7 +386,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                 child: isCurrent && isPlaying
                     ? Icon(Icons.graphic_eq,
                         color: colorScheme.primary, size: 20)
-                    : Text(
+                    : AnymeXText(
                         (index + 1).toString().padLeft(2, '0'),
                         style: TextStyle(
                           color: isCurrent
@@ -403,8 +403,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText(
-                      text: theme.title,
+                    AnymeXText(theme.title,
                       size: 15,
                       variant: TextVariant.semiBold,
                       color: isCurrent
@@ -424,7 +423,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                             color: colorScheme.primary,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             theme.type +
                                 (theme.sequence != null
                                     ? ' ${theme.sequence}'
@@ -437,8 +436,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: AnymeXText(
-                            text: theme.artist.isNotEmpty
+                          child: AnymeXText(theme.artist.isNotEmpty
                                 ? theme.artist
                                 : 'Unknown Artist',
                             size: 12,
@@ -544,16 +542,14 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText(
-                            text: currentTheme.title,
+                          AnymeXText(currentTheme.title,
                             size: 13,
                             variant: TextVariant.bold,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             isMarquee: true,
                           ),
-                          AnymeXText(
-                            text: currentTheme.artist.isNotEmpty
+                          AnymeXText(currentTheme.artist.isNotEmpty
                                 ? currentTheme.artist
                                 : 'Unknown',
                             size: 11,

@@ -22,7 +22,7 @@ void showWatchiumServerSheet({
   final servers = content.availableServers;
   if (servers.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('No servers available for this room')),
+      const SnackBar(content: AnymeXText('No servers available for this room')),
     );
     return;
   }
@@ -87,12 +87,10 @@ class _WatchiumServerSheetContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText(
-                    text: 'Choose Quality',
+                const AnymeXText('Choose Quality',
                     variant: TextVariant.bold,
                     size: 16),
-                AnymeXText(
-                  text: 'Select streaming server quality to watch',
+                AnymeXText('Select streaming server quality to watch',
                   size: 12,
                   color: theme.onSurface.opaque(0.5),
                 ),
@@ -113,7 +111,7 @@ class _WatchiumServerSheetContent extends StatelessWidget {
     final video = server.toVideo();
     if (video.url == null || video.url!.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This server has no playable URL')),
+        const SnackBar(content: AnymeXText('This server has no playable URL')),
       );
       return;
     }
@@ -222,8 +220,7 @@ class _ServerTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymeXText(
-                        text: (server.quality ?? server.serverName)
+                      AnymeXText((server.quality ?? server.serverName)
                             .toUpperCase(),
                         variant: TextVariant.bold,
                         size: 14,
@@ -231,8 +228,7 @@ class _ServerTile extends StatelessWidget {
                       ),
                       if (server.quality != null) ...[
                         const SizedBox(height: 2),
-                        AnymeXText(
-                          text: server.serverName.toUpperCase(),
+                        AnymeXText(server.serverName.toUpperCase(),
                           variant: TextVariant.semiBold,
                           size: 11,
                           color: theme.onSurface.opaque(0.6),
@@ -251,7 +247,7 @@ class _ServerTile extends StatelessWidget {
                       border:
                           Border.all(color: Colors.orange.withOpacity(0.3)),
                     ),
-                    child: const Text('HLS',
+                    child: const AnymeXText('HLS',
                         style: TextStyle(
                             fontSize: 10,
                             color: Colors.orange,
@@ -267,7 +263,7 @@ class _ServerTile extends StatelessWidget {
                       border:
                           Border.all(color: Colors.green.withOpacity(0.3)),
                     ),
-                    child: const Text('Direct',
+                    child: const AnymeXText('Direct',
                         style: TextStyle(
                             fontSize: 10,
                             color: Colors.green,

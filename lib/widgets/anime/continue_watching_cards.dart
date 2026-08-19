@@ -87,8 +87,7 @@ class ContinueWatchingCard extends StatelessWidget {
                         Icon(Icons.timelapse_rounded,
                             size: 10, color: context.colors.onPrimary),
                         const SizedBox(width: 4),
-                        AnymeXText(
-                            text: media.date ?? '',
+                        AnymeXText(media.date ?? '',
                             size: 10,
                             variant: TextVariant.bold,
                             color: context.colors.onPrimary),
@@ -155,8 +154,7 @@ class ContinueWatchingCard extends StatelessWidget {
                             )
                           ],
                         ),
-                        child: AnymeXText(
-                          text: media.formattedEpisodeTitle ?? '',
+                        child: AnymeXText(media.formattedEpisodeTitle ?? '',
                           size: 11,
                           maxLines: 1,
                           variant: TextVariant.bold,
@@ -191,8 +189,7 @@ class ContinueWatchingCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AnymeXText(
-                          text: media.progressTitle ?? media.title!,
+                        AnymeXText(media.progressTitle ?? media.title!,
                           size: 13,
                           maxLines: 1,
                           variant: TextVariant.bold,
@@ -203,8 +200,7 @@ class ContinueWatchingCard extends StatelessWidget {
                             media.title != media.progressTitle)
                           Padding(
                             padding: const EdgeInsets.only(top: 2),
-                            child: AnymeXText(
-                              text: media.title!,
+                            child: AnymeXText(media.title!,
                               size: 11,
                               maxLines: 1,
                               variant: TextVariant.regular,
@@ -219,8 +215,7 @@ class ContinueWatchingCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
-                    child: AnymeXText(
-                      text: media.progressText!,
+                    child: AnymeXText(media.progressText!,
                       size: 11,
                       color: colorScheme.primary,
                       variant: TextVariant.bold,

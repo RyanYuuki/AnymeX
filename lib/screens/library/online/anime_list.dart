@@ -12,6 +12,7 @@ import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 enum _SortMode { lastUpdated, score, title, releaseDate }
 
@@ -304,7 +305,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                   children: [
                     Icon(Icons.sort_rounded, color: colors.primary, size: 20),
                     const SizedBox(width: 10),
-                    Text('Sort By',
+                    AnymeXText('Sort By',
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Poppins-Bold',
@@ -327,7 +328,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                             : Icons.arrow_downward_rounded,
                         size: 16,
                       ),
-                      label: Text(_sortAscending ? 'Ascending' : 'Descending',
+                      label: AnymeXText(_sortAscending ? 'Ascending' : 'Descending',
                           style: const TextStyle(fontSize: 12)),
                     ),
                   ],
@@ -352,7 +353,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                   leading: Icon(icon,
                       color:
                           selected ? colors.primary : colors.onSurfaceVariant),
-                  title: Text(label,
+                  title: AnymeXText(label,
                       style: TextStyle(
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
@@ -396,7 +397,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                 children: [
                   Icon(Iconsax.filter, color: colors.primary, size: 20),
                   const SizedBox(width: 10),
-                  Text('Filter by Genre',
+                  AnymeXText('Filter by Genre',
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Poppins-Bold',
@@ -409,7 +410,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                       onPressed: () =>
                           setSheetState(() => tempSelected.clear()),
                       child:
-                          const Text('Clear', style: TextStyle(fontSize: 12)),
+                          const AnymeXText('Clear', style: TextStyle(fontSize: 12)),
                     ),
                 ],
               ),
@@ -423,7 +424,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                   children: sortedGenres.map((genre) {
                     final isSelected = tempSelected.contains(genre);
                     return FilterChip(
-                      label: Text(genre,
+                      label: AnymeXText(genre,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -472,7 +473,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14))),
-                  child: Text(
+                  child: AnymeXText(
                     tempSelected.isEmpty
                         ? 'Show All'
                         : 'Apply (${tempSelected.length})',
@@ -516,7 +517,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                 Icons.arrow_back_ios_new,
                 color: colors.primary,
               )),
-          title: Text("$userName's ${widget.title ?? 'Anime'} List",
+          title: AnymeXText("$userName's ${widget.title ?? 'Anime'} List",
               style: TextStyle(fontSize: 16, color: colors.primary)),
           actions: [
             IconButton(
@@ -544,7 +545,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               onPressed: () => _showGenreFilter(context),
               icon: Badge(
                 isLabelVisible: _selectedGenres.isNotEmpty,
-                label: Text('${_selectedGenres.length}',
+                label: AnymeXText('${_selectedGenres.length}',
                     style: const TextStyle(fontSize: 9)),
                 child: const Icon(Iconsax.filter, size: 20),
               ),
@@ -575,7 +576,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                       Icon(Icons.sort_rounded,
                           size: 20, color: colors.onSurfaceVariant),
                       const SizedBox(width: 12),
-                      const Text('Sort'),
+                      const AnymeXText('Sort'),
                     ],
                   ),
                 ),
@@ -586,7 +587,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                       Icon(Iconsax.arrow_swap_horizontal,
                           size: 20, color: colors.onSurfaceVariant),
                       const SizedBox(width: 12),
-                      Text(_isReversed ? 'Default tab order' : 'Reverse tabs'),
+                      AnymeXText(_isReversed ? 'Default tab order' : 'Reverse tabs'),
                     ],
                   ),
                 ),
@@ -667,7 +668,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                     return Tab(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 300),
-                        child: Text(
+                        child: AnymeXText(
                           label,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
@@ -698,7 +699,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                         size: 40,
                         color: colors.onSurfaceVariant.withOpacity(0.3)),
                     const SizedBox(height: 12),
-                    Text(
+                    AnymeXText(
                       _searchQuery.isNotEmpty || _selectedGenres.isNotEmpty
                           ? 'No matches found'
                           : 'No entries in $tab',

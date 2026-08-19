@@ -115,8 +115,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: AnymeXText(
-                                        text: media.title,
+                                      child: AnymeXText(media.title,
                                         size: 14,
                                         variant: TextVariant.bold,
                                         maxLines: 1,
@@ -143,8 +142,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                               size: 12,
                                             ),
                                             const SizedBox(width: 2),
-                                            AnymeXText(
-                                              text: media.rating,
+                                            AnymeXText(media.rating,
                                               color: colorScheme.onPrimary,
                                               size: 11,
                                               variant: TextVariant.bold,
@@ -163,8 +161,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                   children: [
                                     // Time opened text
                                     Expanded(
-                                      child: AnymeXText(
-                                        text: 'Opened ${_getTimeAgo()}',
+                                      child: AnymeXText('Opened ${_getTimeAgo()}',
                                         size: 11,
                                         color: colorScheme.onSurfaceVariant,
                                         variant: TextVariant.regular,
@@ -182,8 +179,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                           borderRadius: BorderRadius.circular(
                                               4.multiplyRadius()),
                                         ),
-                                        child: AnymeXText(
-                                          text: media.format.toUpperCase(),
+                                        child: AnymeXText(media.format.toUpperCase(),
                                           size: 10,
                                           color: colorScheme.onSurfaceVariant,
                                         ),

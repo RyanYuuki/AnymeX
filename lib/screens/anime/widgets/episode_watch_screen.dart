@@ -146,8 +146,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   children: [
                     const Row(
                       children: [
-                        AnymeXText(
-                            text: "Episodes",
+                        AnymeXText("Episodes",
                             size: 20,
                             variant: TextVariant.semiBold)
                       ],
@@ -258,12 +257,12 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
         children: const [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
-          Text(
+          AnymeXText(
             'Scanning for video streams...',
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 8),
-          Text(
+          AnymeXText(
             'This may take up to 30 seconds',
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
@@ -277,14 +276,12 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         10.height(),
-        AnymeXText(
-          text: "Error Occured",
+        AnymeXText("Error Occured",
           variant: TextVariant.bold,
           size: 18,
         ),
         20.height(),
-        AnymeXText(
-          text: "Server-chan is taking a nap!",
+        AnymeXText("Server-chan is taking a nap!",
           variant: TextVariant.semiBold,
           size: 18,
         ),
@@ -295,8 +292,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             color: Colors.red.opaque(0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: AnymeXText(
-            text: errorMessage,
+          child: AnymeXText(errorMessage,
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
@@ -311,8 +307,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
     return const SizedBox(
       height: 200,
       child: Center(
-        child: AnymeXText(
-          text: "No servers available",
+        child: AnymeXText("No servers available",
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -331,8 +326,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             alignment: Alignment.center,
-            child: const AnymeXText(
-              text: "Choose Server",
+            child: const AnymeXText("Choose Server",
               size: 18,
               variant: TextVariant.bold,
             ),
@@ -348,8 +342,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                 },
                 contentPadding:
                     const EdgeInsets.symmetric(vertical: 2.5, horizontal: 10),
-                title: AnymeXText(
-                  text: e.quality?.toUpperCase() ?? "Unknown",
+                title: AnymeXText(e.quality?.toUpperCase() ?? "Unknown",
                   variant: TextVariant.bold,
                   size: 16,
                   color: context.colors.primary,
@@ -362,9 +355,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 trailing: const Icon(Iconsax.play5),
-                subtitle: AnymeXText(
-                  text:
-                      sourceController.activeSource.value!.name!.toUpperCase(),
+                subtitle: AnymeXText(sourceController.activeSource.value!.name!.toUpperCase(),
                   variant: TextVariant.semiBold,
                 ),
               ),
@@ -415,8 +406,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: AnymeXText(
-                text: episode.title ?? 'Episode ${episode.number}',
+              child: AnymeXText(episode.title ?? 'Episode ${episode.number}',
                 variant: TextVariant.bold,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -472,8 +462,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
               Expanded(
                 child: SizedBox(
                   height: 100,
-                  child: AnymeXText(
-                    text: episode.title ?? 'Episode ${episode.number}',
+                  child: AnymeXText(episode.title ?? 'Episode ${episode.number}',
                     variant: TextVariant.bold,
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
@@ -484,8 +473,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           ),
           const SizedBox(height: 8),
           Expanded(
-            child: AnymeXText(
-              text: (episode.desc?.isEmpty ?? true)
+            child: AnymeXText((episode.desc?.isEmpty ?? true)
                   ? 'No Description Available'
                   : episode.desc!,
               variant: TextVariant.regular,
@@ -515,8 +503,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             ),
             boxShadow: [glowingShadow(context)],
           ),
-          child: AnymeXText(
-            text: "EP $episodeNumber",
+          child: AnymeXText("EP $episodeNumber",
             variant: TextVariant.bold,
           ),
         ),

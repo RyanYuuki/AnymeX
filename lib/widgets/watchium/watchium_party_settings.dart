@@ -6,6 +6,7 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class WatchiumPartySettings extends StatefulWidget {
   final VoidCallback onBack;
@@ -57,7 +58,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
+            child: AnymeXText(
               'Party Settings',
               style: theme.textTheme.titleLarge?.copyWith(
                 fontFamily: 'Poppins-SemiBold',
@@ -244,7 +245,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
   Widget _sectionHeader(ColorScheme cs, String title) {
     return Padding(
       padding: const EdgeInsets.only(left: 4, bottom: 2),
-      child: Text(
+      child: AnymeXText(
         title,
         style: TextStyle(
           fontFamily: 'Poppins-SemiBold',
@@ -298,7 +299,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       'Overlay position',
                       style: TextStyle(
                         fontFamily: 'Poppins-SemiBold',
@@ -307,7 +308,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Text(
+                    AnymeXText(
                       'Where live comments appear on screen',
                       style: TextStyle(
                         fontFamily: 'Poppins',
@@ -395,7 +396,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
             children: [
               Icon(icon, size: 18, color: isSelected ? cs.primary : cs.onSurface.withValues(alpha: 0.5)),
               const SizedBox(height: 4),
-              Text(
+              AnymeXText(
                 label,
                 style: TextStyle(
                   fontSize: 10,
@@ -445,7 +446,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   title,
                   style: TextStyle(
                     fontFamily: 'Poppins-SemiBold',
@@ -454,7 +455,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
+                AnymeXText(
                   subtitle,
                   style: TextStyle(
                     fontFamily: 'Poppins',

@@ -491,13 +491,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText(
-                  text: 'Choose Quality',
+                const AnymeXText('Choose Quality',
                   variant: TextVariant.bold,
                   size: 16,
                 ),
-                AnymeXText(
-                  text: 'Select streaming server quality to watch',
+                AnymeXText('Select streaming server quality to watch',
                   size: 12,
                   color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                 ),
@@ -521,14 +519,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         children: const [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
-          AnymeXText(
-            text: 'Scanning for video streams...',
+          AnymeXText('Scanning for video streams...',
             size: 16,
             variant: TextVariant.semiBold,
           ),
           SizedBox(height: 8),
-          AnymeXText(
-            text: 'This may take a few seconds',
+          AnymeXText('This may take a few seconds',
             size: 12,
           ),
         ],
@@ -541,8 +537,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 10),
-        const AnymeXText(
-          text: "Error Occurred",
+        const AnymeXText("Error Occurred",
           variant: TextVariant.bold,
           size: 18,
         ),
@@ -553,8 +548,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             color: Colors.red.opaque(0.1, iReallyMeanIt: true),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: AnymeXText(
-            text: errorMessage,
+          child: AnymeXText(errorMessage,
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
@@ -569,8 +563,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     return const SizedBox(
       height: 200,
       child: Center(
-        child: AnymeXText(
-          text: "No servers available",
+        child: AnymeXText("No servers available",
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -601,8 +594,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     child: ExpressiveLoadingIndicator(),
                   ),
                   const SizedBox(width: 8),
-                  AnymeXText(
-                    text: 'Scanning for more servers...',
+                  AnymeXText('Scanning for more servers...',
                     size: 12,
                     color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                   ),
@@ -717,14 +709,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText(
-                            text: quality,
+                          AnymeXText(quality,
                             variant: TextVariant.bold,
                             size: 14,
                           ),
                           const SizedBox(height: 2),
-                          AnymeXText(
-                            text: sourceController.activeSource.value?.name?.toUpperCase() ?? '',
+                          AnymeXText(sourceController.activeSource.value?.name?.toUpperCase() ?? '',
                             variant: TextVariant.semiBold,
                             size: 11,
                             color: theme.onSurface.opaque(0.6, iReallyMeanIt: true),
@@ -839,8 +829,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     isSelected,
                     isWatched,
                     prog,
-                    widget.anilistData?.title,
-                    offlineWatchedEpisodes,
+                    widget.anilistData,
                     () => _handleEpisodeSelection(episode),
                     () {
                       selectedEpisode.value = episode;
@@ -868,8 +857,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       isSelected,
                       isWatched,
                       prog,
-                      widget.anilistData?.title,
-                      offlineWatchedEpisodes,
+                      widget.anilistData,
                       () => _handleEpisodeSelection(episode),
                       () {
                         selectedEpisode.value = episode;
@@ -935,8 +923,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   isSelected,
                   isWatched,
                   prog,
-                  widget.anilistData?.title,
-                  offlineWatchedEpisodes,
+                  widget.anilistData,
                   () => _handleEpisodeSelection(episode),
                   () {
                     selectedEpisode.value = episode;
@@ -1049,8 +1036,7 @@ class ContinueEpisodeButton extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          AnymeXText(
-                            text: episodeLabel.toUpperCase(),
+                          AnymeXText(episodeLabel.toUpperCase(),
                             variant: TextVariant.semiBold,
                             color: textColor,
                             textAlign: TextAlign.center,
@@ -1216,13 +1202,11 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText(
-                  text: 'Choose Quality',
+                const AnymeXText('Choose Quality',
                   variant: TextVariant.bold,
                   size: 16,
                 ),
-                AnymeXText(
-                  text: 'Select streaming server quality to watch',
+                AnymeXText('Select streaming server quality to watch',
                   size: 12,
                   color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                 ),
@@ -1246,14 +1230,12 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
         children: const [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
-          AnymeXText(
-            text: 'Scanning for video streams...',
+          AnymeXText('Scanning for video streams...',
             size: 16,
             variant: TextVariant.semiBold,
           ),
           SizedBox(height: 8),
-          AnymeXText(
-            text: 'This may take a few seconds',
+          AnymeXText('This may take a few seconds',
             size: 12,
           ),
         ],
@@ -1266,8 +1248,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 10),
-        const AnymeXText(
-          text: "Error Occurred",
+        const AnymeXText("Error Occurred",
           variant: TextVariant.bold,
           size: 18,
         ),
@@ -1278,8 +1259,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
             color: Colors.red.opaque(0.1, iReallyMeanIt: true),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: AnymeXText(
-            text: errorMessage,
+          child: AnymeXText(errorMessage,
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
@@ -1294,8 +1274,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
     return const SizedBox(
       height: 200,
       child: Center(
-        child: AnymeXText(
-          text: "No servers available",
+        child: AnymeXText("No servers available",
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -1326,8 +1305,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                     child: ExpressiveLoadingIndicator(),
                   ),
                   const SizedBox(width: 8),
-                  AnymeXText(
-                    text: 'Scanning for more servers...',
+                  AnymeXText('Scanning for more servers...',
                     size: 12,
                     color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                   ),
@@ -1424,14 +1402,12 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText(
-                            text: quality,
+                          AnymeXText(quality,
                             variant: TextVariant.bold,
                             size: 14,
                           ),
                           const SizedBox(height: 2),
-                          AnymeXText(
-                            text: sourceController.activeSource.value?.name?.toUpperCase() ?? '',
+                          AnymeXText(sourceController.activeSource.value?.name?.toUpperCase() ?? '',
                             variant: TextVariant.semiBold,
                             size: 11,
                             color: theme.onSurface.opaque(0.6, iReallyMeanIt: true),

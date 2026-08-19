@@ -580,7 +580,7 @@ class MediaDetailsController extends GetxController {
       return;
     }
     try {
-      final baseList = List<Episode>.from(rawEpisodes);
+      final baseList = rawEpisodes.map((e) => e.clone()).toList();
       final newEps = await AnilistData.fetchEpisodesFromAnify(
         media.value.id,
         baseList,

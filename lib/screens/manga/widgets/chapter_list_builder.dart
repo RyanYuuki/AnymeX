@@ -238,7 +238,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         child: Center(
           child: Padding(
             padding: EdgeInsets.all(24),
-            child: AnymeXText(text: 'No chapters found'),
+            child: AnymeXText('No chapters found'),
           ),
         ),
       );
@@ -391,8 +391,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                             .opaque(0.3, iReallyMeanIt: true),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: AnymeXText(
-                    text: chNum,
+                  child: AnymeXText(chNum,
                     size: 13,
                     variant: TextVariant.bold,
                     color: data.isSelected
@@ -406,8 +405,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AnymeXText(
-                        text: chTitle,
+                      AnymeXText(chTitle,
                         size: 13,
                         variant: TextVariant.semiBold,
                         maxLines: 1,
@@ -415,8 +413,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                       ),
                       if (chapter.scanlator?.isNotEmpty == true) ...[
                         const SizedBox(height: 2),
-                        AnymeXText(
-                          text: chapter.scanlator!,
+                        AnymeXText(chapter.scanlator!,
                           size: 10,
                           color: colors.onSurface
                               .opaque(0.6, iReallyMeanIt: true),
@@ -476,8 +473,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                   : colors.onSurface.opaque(0.08),
             ),
           ),
-          child: AnymeXText(
-            text: chapter.formattedNumber,
+          child: AnymeXText(chapter.formattedNumber,
             variant: TextVariant.bold,
             size: 13,
             color: data.isSelected ? colors.onPrimary : colors.onSurface,
@@ -554,8 +550,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                             backgroundColor: colors.surfaceContainer,
                           ),
                         ),
-                        AnymeXText(
-                          text: '${data.progressPercentage}%',
+                        AnymeXText('${data.progressPercentage}%',
                           size: 9,
                           variant: TextVariant.bold,
                         ),
@@ -573,8 +568,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                           BorderRadius.circular(16.multiplyRadius()),
                       boxShadow: [glowingShadow(context)],
                     ),
-                    child: AnymeXText(
-                      text: chapter.formattedNumber,
+                    child: AnymeXText(chapter.formattedNumber,
                       variant: TextVariant.bold,
                       color: colors.onPrimary,
                     ),
@@ -585,16 +579,14 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AnymeXText(
-                        text: '${chapter.title}$progressText',
+                      AnymeXText('${chapter.title}$progressText',
                         variant: TextVariant.semiBold,
                         size: 13,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 5),
-                      AnymeXText(
-                        text: chapterMetaText,
+                      AnymeXText(chapterMetaText,
                         size: 11,
                         color: colors.inverseSurface.opaque(0.7),
                         fontStyle: FontStyle.italic,
@@ -614,8 +606,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                     width: 90,
                     height: 38,
                     color: colors.primary,
-                    child: AnymeXText(
-                      text: 'Read',
+                    child: AnymeXText('Read',
                       variant: TextVariant.semiBold,
                       color: colors.onPrimary,
                     ),
@@ -664,8 +655,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                       backgroundColor: colors.surfaceContainer,
                       color: colors.primary,
                     ),
-                    AnymeXText(
-                      text: '${data.progressPercentage}%',
+                    AnymeXText('${data.progressPercentage}%',
                       size: 9,
                       variant: TextVariant.bold,
                     ),
@@ -679,9 +669,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                     : colors.primary,
                 size: 20,
               ),
-        title: AnymeXText(
-          text:
-              'Chapter ${chapter.formattedNumber}: ${chapter.title?.isNotEmpty == true ? chapter.title : "Chapter ${chapter.formattedNumber}"}',
+        title: AnymeXText('Chapter ${chapter.formattedNumber}: ${chapter.title?.isNotEmpty == true ? chapter.title : "Chapter ${chapter.formattedNumber}"}',
           size: 13,
           variant: TextVariant.semiBold,
           maxLines: 1,
@@ -689,8 +677,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
           color: data.isSelected ? colors.primary : null,
         ),
         subtitle: chapter.scanlator?.isNotEmpty == true
-            ? AnymeXText(
-                text: chapter.scanlator!,
+            ? AnymeXText(chapter.scanlator!,
                 size: 11,
                 color:
                     colors.onSurface.opaque(0.5, iReallyMeanIt: true),

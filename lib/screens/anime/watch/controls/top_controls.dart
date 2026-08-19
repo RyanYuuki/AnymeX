@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Future<void> _handleBack() async {
   final ctx = Get.context;
@@ -127,7 +128,7 @@ class TopControls extends StatelessWidget {
                 Row(
                   children: [
                     Flexible(
-                      child: Text(
+                      child: AnymeXText(
                         controller.currentEpisode.value.title ??
                             controller.itemName ??
                             'Unknown Title',
@@ -157,7 +158,7 @@ class TopControls extends StatelessWidget {
                               : theme.colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
+                        child: AnymeXText(
                           (controller.anilistData.title == "?"
                                   ? controller.folderName
                                   : controller.anilistData.title) ??
@@ -185,7 +186,7 @@ class TopControls extends StatelessWidget {
                               : theme.colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
+                        child: AnymeXText(
                           controller.currentEpisode.value.number == "Offline"
                               ? "Offline"
                               : "Episode ${controller.currentEpisode.value.number}",
@@ -285,7 +286,7 @@ class TopControls extends StatelessWidget {
                       Row(
                         children: [
                           Flexible(
-                            child: Text(
+                            child: AnymeXText(
                               controller.currentEpisode.value.title ??
                                   controller.itemName ??
                                   'Unknown Title',
@@ -315,7 +316,7 @@ class TopControls extends StatelessWidget {
                                     : theme.colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Text(
+                              child: AnymeXText(
                                 (controller.anilistData.title == "?"
                                         ? controller.folderName
                                         : controller.anilistData.title) ??
@@ -342,7 +343,7 @@ class TopControls extends StatelessWidget {
                                     : theme.colorScheme.primaryContainer,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Text(
+                              child: AnymeXText(
                                 controller.currentEpisode.value.number ==
                                         "Offline"
                                     ? "Offline"
@@ -523,7 +524,7 @@ class TopControls extends StatelessWidget {
                         : theme.colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     (controller.anilistData.title == "?"
                             ? controller.folderName
                             : controller.anilistData.title) ??
@@ -550,7 +551,7 @@ class TopControls extends StatelessWidget {
                         : theme.colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     controller.currentEpisode.value.number == "Offline"
                         ? "Offline"
                         : "Episode ${controller.currentEpisode.value.number}",
@@ -606,7 +607,7 @@ class _QualityChip extends StatelessWidget {
             : theme.colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(isMobile ? 8 : 12),
       ),
-      child: Text(
+      child: AnymeXText(
         _qualityText,
         style:
             (isMobile ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)
@@ -685,7 +686,7 @@ class _UnlockButtonState extends State<_UnlockButton> {
               ),
               if (_confirm) ...[
                 const SizedBox(width: 8),
-                Text(
+                AnymeXText(
                   "Are you sure?",
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.primary,

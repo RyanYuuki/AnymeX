@@ -99,8 +99,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
           if (title != null && title!.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.only(left: 12, bottom: 8),
-              child: AnymeXText(
-                text: title!.toUpperCase(),
+              child: AnymeXText(title!.toUpperCase(),
                 size: 11.5,
                 variant: TextVariant.bold,
                 color: colors.onSurface.opaque(0.45, iReallyMeanIt: true),

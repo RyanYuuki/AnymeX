@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 String getFollowLabel({bool? isFollowing, bool? isFollower}) {
   if (isFollowing == true && isFollower == true) return 'Mutual';
@@ -23,16 +24,16 @@ Future<bool> confirmDiscardComposer(
   final discard = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: Text(discardTitle),
-          content: Text(discardMessage),
+          title: AnymeXText(discardTitle),
+          content: AnymeXText(discardMessage),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Keep editing'),
+              child: const AnymeXText('Keep editing'),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const Text('Discard'),
+              child: const AnymeXText('Discard'),
             ),
           ],
         ),
@@ -58,7 +59,7 @@ Widget buildProfileSheetOption(
           Icon(icon,
               size: 20, color: context.theme.colorScheme.onSurfaceVariant),
           const SizedBox(width: 14),
-          Text(
+          AnymeXText(
             label,
             style: TextStyle(
               fontSize: 15,
@@ -98,7 +99,7 @@ class PlaceholderTab extends StatelessWidget {
                   context.theme.colorScheme.onSurfaceVariant.withOpacity(0.3),
             ),
             const SizedBox(height: 16),
-            Text(
+            AnymeXText(
               title,
               style: TextStyle(
                 fontSize: 18,
@@ -107,7 +108,7 @@ class PlaceholderTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Text(
+            AnymeXText(
               subtitle,
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -155,7 +156,7 @@ class StatRow extends StatelessWidget {
         ),
         SizedBox(width: compact ? 12 : 15),
         Expanded(
-          child: Text(
+          child: AnymeXText(
             label,
             style: TextStyle(
               fontSize: compact ? 12.5 : 14,
@@ -164,7 +165,7 @@ class StatRow extends StatelessWidget {
             ),
           ),
         ),
-        Text(
+        AnymeXText(
           value,
           style: TextStyle(
             fontSize: compact ? 14 : 15,
@@ -205,7 +206,7 @@ void showActivityFilterSheet(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AnymeXText(
                     "Filter Activity",
                     style: TextStyle(
                       fontSize: 18,
@@ -215,7 +216,7 @@ void showActivityFilterSheet(
                   ),
                   const SizedBox(height: 10),
                   CheckboxListTile(
-                    title: const Text('All'),
+                    title: const AnymeXText('All'),
                     value: activityFilters.length == 4,
                     activeColor: context.theme.colorScheme.primary,
                     checkboxShape: RoundedRectangleBorder(
@@ -236,7 +237,7 @@ void showActivityFilterSheet(
                   ...availableFilters.entries.map((entry) {
                     final isSelected = activityFilters.contains(entry.key);
                     return CheckboxListTile(
-                      title: Text(entry.value),
+                      title: AnymeXText(entry.value),
                       value: isSelected,
                       activeColor: context.theme.colorScheme.primary,
                       checkboxShape: RoundedRectangleBorder(
@@ -269,7 +270,7 @@ void showActivityFilterSheet(
                         Navigator.pop(context);
                         onApply();
                       },
-                      child: const Text(
+                      child: const AnymeXText(
                         "Apply Filters",
                         style: TextStyle(
                           fontSize: 16,
@@ -340,7 +341,7 @@ class ProfileDesktopTabs extends StatelessWidget {
                       ),
                     ),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     entry.value,
                     style: TextStyle(
                       fontFamily: 'Poppins',

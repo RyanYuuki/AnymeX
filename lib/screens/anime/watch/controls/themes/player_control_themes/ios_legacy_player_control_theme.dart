@@ -16,6 +16,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class IosLegacyPlayerControlTheme extends PlayerControlTheme {
   IosLegacyPlayerControlTheme();
@@ -91,7 +92,7 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                AnymeXText(
                   controller.currentEpisode.value.title ??
                       controller.itemName ??
                       'Unknown Title',
@@ -708,7 +709,7 @@ class _IosLegacyGlassTag extends StatelessWidget {
               width: 0.9,
             ),
           ),
-          child: Text(
+          child: AnymeXText(
             text,
             style: const TextStyle(
               color: Colors.white70,
@@ -775,7 +776,7 @@ class _IosLegacyGlassActionChip extends StatelessWidget {
                     Icon(icon, size: 16, color: Colors.white),
                     const SizedBox(width: 6),
                   ],
-                  Text(
+                  AnymeXText(
                     label,
                     style: const TextStyle(
                       color: Colors.white,
@@ -882,7 +883,7 @@ class _IosLegacyUnlockButtonState extends State<_IosLegacyUnlockButton>
                     },
                   ),
                   const SizedBox(width: 10),
-                  const Text(
+                  const AnymeXText(
                     'Hold to Unlock',
                     style: TextStyle(
                       color: Colors.white,

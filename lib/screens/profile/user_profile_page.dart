@@ -20,6 +20,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:anymex/screens/profile/widgets/widgets.dart';
 import 'dart:developer';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class UserProfilePage extends StatefulWidget {
   final int userId;
@@ -224,7 +225,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Activity refreshed'),
+        content: AnymeXText('Activity refreshed'),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -274,7 +275,7 @@ class _UserProfilePageState extends State<UserProfilePage>
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: Text(
+          child: AnymeXText(
             'Failed to load profile — account may be private or not found',
             textAlign: TextAlign.center,
           ),
@@ -491,7 +492,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Please login first'),
+                          content: AnymeXText('Please login first'),
                           duration: Duration(milliseconds: 1500),
                         ),
                       );
@@ -640,7 +641,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Center(
-                        child: Text(
+                        child: AnymeXText(
                           'No more activities',
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
@@ -676,7 +677,7 @@ class _UserProfilePageState extends State<UserProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Activity deleted'),
+        content: AnymeXText('Activity deleted'),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -1006,7 +1007,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    AnymeXText(
                       "Message ${_userProfile?.name ?? 'User'}",
                       style: TextStyle(
                         fontSize: 18,
@@ -1056,7 +1057,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(isPrivate
+                              content: AnymeXText(isPrivate
                                   ? 'Private message sent successfully!'
                                   : 'Message posted successfully!'),
                               backgroundColor: Colors.green,
@@ -1069,7 +1070,7 @@ class _UserProfilePageState extends State<UserProfilePage>
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Failed to post message: $e'),
+                              content: AnymeXText('Failed to post message: $e'),
                               backgroundColor: Colors.red,
                             ),
                           );

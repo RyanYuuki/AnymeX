@@ -184,16 +184,14 @@ class _CommunityRecommendationsPageState
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnymeXText(
-                    text: 'Filter Settings',
+                  AnymeXText('Filter Settings',
                     variant: TextVariant.semiBold,
                     color: context.colors.primary,
                   ),
                   const SizedBox(height: 8),
                   SwitchListTile(
-                    title: const AnymeXText(text: 'Hide by List Status'),
-                    subtitle: const AnymeXText(
-                        text: 'Filter out entries already in your list'),
+                    title: const AnymeXText('Hide by List Status'),
+                    subtitle: const AnymeXText('Filter out entries already in your list'),
                     value: svc.filterByListEnabled.value,
                     onChanged: (v) {
                       svc.filterByListEnabled.value = v;
@@ -202,7 +200,7 @@ class _CommunityRecommendationsPageState
                   ),
                   if (svc.filterByListEnabled.value) ...[
                     SwitchListTile(
-                      title: const AnymeXText(text: 'Hide Completed'),
+                      title: const AnymeXText('Hide Completed'),
                       value: svc.filterCompleted.value,
                       onChanged: (v) {
                         svc.filterCompleted.value = v;
@@ -210,7 +208,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymeXText(text: 'Hide Watching / Reading'),
+                      title: const AnymeXText('Hide Watching / Reading'),
                       value: svc.filterWatching.value,
                       onChanged: (v) {
                         svc.filterWatching.value = v;
@@ -218,7 +216,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymeXText(text: 'Hide Dropped'),
+                      title: const AnymeXText('Hide Dropped'),
                       value: svc.filterDropped.value,
                       onChanged: (v) {
                         svc.filterDropped.value = v;
@@ -226,7 +224,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymeXText(text: 'Hide Planning'),
+                      title: const AnymeXText('Hide Planning'),
                       value: svc.filterPlanning.value,
                       onChanged: (v) {
                         svc.filterPlanning.value = v;
@@ -234,7 +232,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymeXText(text: 'Hide On Hold / Paused'),
+                      title: const AnymeXText('Hide On Hold / Paused'),
                       value: svc.filterPaused.value,
                       onChanged: (v) {
                         svc.filterPaused.value = v;
@@ -242,7 +240,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymeXText(text: 'Hide Rewatching'),
+                      title: const AnymeXText('Hide Rewatching'),
                       value: svc.filterRepeating.value,
                       onChanged: (v) {
                         svc.filterRepeating.value = v;
@@ -251,7 +249,7 @@ class _CommunityRecommendationsPageState
                     ),
                   ],
                   SwitchListTile(
-                    title: const AnymeXText(text: 'Hide NSFW'),
+                    title: const AnymeXText('Hide NSFW'),
                     value: svc.hideNsfw.value,
                     onChanged: (v) {
                       svc.hideNsfw.value = v;
@@ -314,8 +312,7 @@ class _CommunityRecommendationsPageState
                         color:
                             context.colors.onSurfaceVariant.withOpacity(0.5)),
                     const SizedBox(height: 12),
-                    AnymeXText(
-                      text: 'No recommendations found',
+                    AnymeXText('No recommendations found',
                       color: context.colors.onSurfaceVariant.withOpacity(0.7),
                       variant: TextVariant.semiBold,
                     ),
@@ -712,7 +709,7 @@ class _VoteBtn extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 3),
-              Text(
+              AnymeXText(
                 '$count',
                 style: TextStyle(
                   fontSize: 10,
@@ -758,7 +755,7 @@ class _AuthorAvatar extends StatelessWidget {
               radius: size / 2,
             )
           : Center(
-              child: Text(
+              child: AnymeXText(
                 (fallbackLabel?.trim().isNotEmpty == true
                         ? fallbackLabel!.trim()[0]
                         : '?')
@@ -805,7 +802,7 @@ class _ReasonCountBadge extends StatelessWidget {
               size: 12, color: theme.colorScheme.onTertiaryContainer),
           const SizedBox(width: 3),
           Flexible(
-            child: Text(
+            child: AnymeXText(
               '$count',
               maxLines: 1,
               style: TextStyle(
@@ -937,16 +934,14 @@ class _SeeAllListTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText(
-                      text: item.displayTitle,
+                    AnymeXText(item.displayTitle,
                       variant: TextVariant.semiBold,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (item.reason != null && item.reason!.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      AnymeXText(
-                        text: item.reason!,
+                      AnymeXText(item.reason!,
                         variant: TextVariant.regular,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -970,8 +965,7 @@ class _SeeAllListTile extends StatelessWidget {
                                   size: 18),
                             ),
                             const SizedBox(width: 4),
-                            AnymeXText(
-                              text: author,
+                            AnymeXText(author,
                               variant: TextVariant.semiBold,
                               color: colors.primary,
                             ),
@@ -1007,8 +1001,7 @@ class _SeeAllListTile extends StatelessWidget {
                               Icon(Icons.people_rounded,
                                   size: 12, color: colors.onSecondaryContainer),
                               const SizedBox(width: 4),
-                              AnymeXText(
-                                text: '${item.reasonCount} recommendations',
+                              AnymeXText('${item.reasonCount} recommendations',
                                 size: 11,
                                 color: colors.onSecondaryContainer,
                                 variant: TextVariant.semiBold,

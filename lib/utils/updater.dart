@@ -399,12 +399,12 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       context: context,
       builder: (context) => AlertDialog(
         icon: const Icon(Icons.error_outline, size: 32, color: Colors.red),
-        title: const Text('Download Failed'),
-        content: Text(message),
+        title: const AnymeXText('Download Failed'),
+        content: AnymeXText(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const AnymeXText('OK'),
           )
         ],
       ),
@@ -420,9 +420,9 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
           color: context.colors.primary,
           size: 32,
         ),
-        title: Text(
+        title: AnymeXText(
             Platform.isAndroid ? 'Installation Started' : 'Download Complete'),
-        content: Text(
+        content: AnymeXText(
           Platform.isAndroid
               ? 'Please follow installation prompts.'
               : 'Installer saved to:\n${filePath ?? 'Downloads'}',
@@ -433,7 +433,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text('OK'),
+            child: const AnymeXText('OK'),
           )
         ],
       ),
@@ -475,8 +475,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AnymeXText(
-                    text: "New Version Available",
+                  const AnymeXText("New Version Available",
                     variant: TextVariant.bold,
                     size: 18,
                   ),
@@ -490,7 +489,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                           color: colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
+                        child: AnymeXText(
                           "v${widget.currentVersion}",
                           style: TextStyle(
                             fontSize: 11,
@@ -512,7 +511,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                           border: Border.all(
                               color: colorScheme.primary.opaque(0.3)),
                         ),
-                        child: Text(
+                        child: AnymeXText(
                           "v${widget.newVersion}",
                           style: TextStyle(
                             fontSize: 11,
@@ -534,8 +533,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
             Icon(Icons.auto_awesome_rounded,
                 color: colorScheme.primary, size: 18),
             const SizedBox(width: 8),
-            const AnymeXText(
-              text: "What's New",
+            const AnymeXText("What's New",
               variant: TextVariant.bold,
               size: 15,
             ),
@@ -592,13 +590,13 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(
+                      child: AnymeXText(
                         _downloadStatus,
                         style: const TextStyle(
                             fontSize: 13, fontWeight: FontWeight.w500),
                       ),
                     ),
-                    Text(
+                    AnymeXText(
                       '${(_downloadProgress * 100).toInt()}%',
                       style: TextStyle(
                         fontSize: 13,
@@ -632,7 +630,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                 borderRadius: BorderRadius.circular(16),
                 border: BorderSide(color: colorScheme.outline.opaque(0.2)),
                 child: Center(
-                  child: Text(
+                  child: AnymeXText(
                     "Later",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
@@ -659,7 +657,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                       color: colorScheme.onPrimary,
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    AnymeXText(
                       _isDownloading
                           ? "Downloading..."
                           : (Platform.isAndroid

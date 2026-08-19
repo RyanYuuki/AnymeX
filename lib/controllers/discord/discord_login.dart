@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DiscordLoginPage extends StatefulWidget {
   final Function(String) onTokenExtracted;
@@ -211,7 +212,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        AnymeXText(
                           'Login to Discord',
                           style: TextStyle(
                             color: Colors.white,
@@ -219,7 +220,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
+                        AnymeXText(
                           'Sign in to continue',
                           style: TextStyle(
                             color: Color(0xFFB5BAC1),

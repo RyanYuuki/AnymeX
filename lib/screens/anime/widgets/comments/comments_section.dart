@@ -93,8 +93,8 @@ class _CommentSectionState extends State<CommentSection> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Comment Policy'),
-        content: const Text(
+        title: const AnymeXText('Comment Policy'),
+        content: const AnymeXText(
           'To maintain a safe and friendly community, please read and accept our comment policy before posting.\n\nWe do not tolerate spam, harassment, or offensive content.',
         ),
         actions: [
@@ -104,7 +104,7 @@ class _CommentSectionState extends State<CommentSection> {
 
               showPolicySheet(context, PolicyType.commentRules);
             },
-            child: const Text('Read Full Rules'),
+            child: const AnymeXText('Read Full Rules'),
           ),
           FilledButton(
             onPressed: () {
@@ -113,7 +113,7 @@ class _CommentSectionState extends State<CommentSection> {
 
               controller.addComment();
             },
-            child: const Text('Accept & Post'),
+            child: const AnymeXText('Accept & Post'),
           ),
         ],
       ),
@@ -173,7 +173,7 @@ class _CommentSectionState extends State<CommentSection> {
                       ]
                     : null,
               ),
-              child: Text(
+              child: AnymeXText(
                 'You need to be logged in to comment.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
@@ -202,8 +202,7 @@ class _CommentSectionState extends State<CommentSection> {
           child: Row(
             children: [
               Expanded(
-                child: AnymeXText(
-                  text: 'Comments',
+                child: AnymeXText('Comments',
                   variant: TextVariant.semiBold,
                   color: colorScheme.onSurface,
                   size: 24,
@@ -212,8 +211,7 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ),
               5.width(),
-              AnymeXText(
-                text: _getTotalCommentCount(controller.comments),
+              AnymeXText(_getTotalCommentCount(controller.comments),
                 color: colorScheme.onSurfaceVariant,
                 size: 13,
                 autoResize: true,
@@ -359,7 +357,7 @@ class _CommentSectionState extends State<CommentSection> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: const AnymeXText(
                         'Cancel',
                         style: TextStyle(fontWeight: FontWeight.w600),
                       ),
@@ -391,7 +389,7 @@ class _CommentSectionState extends State<CommentSection> {
                                 height: 18,
                                 child: ExpressiveLoadingIndicator(),
                               )
-                            : const Text(
+                            : const AnymeXText(
                                 'Post',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
@@ -419,7 +417,7 @@ class _CommentSectionState extends State<CommentSection> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          AnymeXText(
             'Tag',
             style: theme.textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
@@ -453,7 +451,7 @@ class _CommentSectionState extends State<CommentSection> {
                       width: 1.5,
                     ),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     t,
                     style: TextStyle(
                       color: isSelected
@@ -564,7 +562,7 @@ class _CommentSectionState extends State<CommentSection> {
                   color: colorScheme.primary,
                 ),
                 const SizedBox(height: 20),
-                Text(
+                AnymeXText(
                   'Loading comments...',
                   style: TextStyle(
                     color: colorScheme.onSurfaceVariant,
@@ -598,7 +596,7 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
+              AnymeXText(
                 'No comments yet',
                 style: theme.textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurface,
@@ -606,7 +604,7 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              AnymeXText(
                 'Start the conversation and share your thoughts!',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
@@ -713,7 +711,7 @@ class _CommentSectionState extends State<CommentSection> {
                       color: colorScheme.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Text(
+                    child: AnymeXText(
                       '${comment.replies!.length} replies',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
@@ -815,8 +813,7 @@ class _CommentSectionState extends State<CommentSection> {
               Row(
                 children: [
                   Flexible(
-                    child: AnymeXText(
-                      text: comment.username,
+                    child: AnymeXText(comment.username,
                       variant: TextVariant.bold,
                       color: colorScheme.onSurface,
                       size: 15,
@@ -832,7 +829,7 @@ class _CommentSectionState extends State<CommentSection> {
                 ],
               ),
               const SizedBox(height: 4),
-              Text(
+              AnymeXText(
                 timeago.format(DateTime.parse(comment.createdAt)),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
@@ -936,7 +933,7 @@ class _CommentSectionState extends State<CommentSection> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit Comment'),
+        title: const AnymeXText('Edit Comment'),
         content: TextField(
           controller: editController,
           maxLines: 5,
@@ -949,7 +946,7 @@ class _CommentSectionState extends State<CommentSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           FilledButton(
             onPressed: () {
@@ -958,7 +955,7 @@ class _CommentSectionState extends State<CommentSection> {
                 Navigator.pop(context);
               }
             },
-            child: const Text('Save'),
+            child: const AnymeXText('Save'),
           ),
         ],
       ),
@@ -970,13 +967,13 @@ class _CommentSectionState extends State<CommentSection> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Comment'),
-        content: const Text(
+        title: const AnymeXText('Delete Comment'),
+        content: const AnymeXText(
             'Are you sure you want to delete this comment? This action cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           FilledButton(
             onPressed: () {
@@ -987,7 +984,7 @@ class _CommentSectionState extends State<CommentSection> {
               backgroundColor: context.colors.error,
               foregroundColor: context.colors.onError,
             ),
-            child: const Text('Delete'),
+            child: const AnymeXText('Delete'),
           ),
         ],
       ),
@@ -1002,11 +999,11 @@ class _CommentSectionState extends State<CommentSection> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Report Comment'),
+        title: const AnymeXText('Report Comment'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Please select a reason for reporting this comment:'),
+            const AnymeXText('Please select a reason for reporting this comment:'),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value:
@@ -1016,17 +1013,17 @@ class _CommentSectionState extends State<CommentSection> {
                 border: OutlineInputBorder(),
               ),
               items: const [
-                DropdownMenuItem(value: 'spam', child: Text('Spam')),
+                DropdownMenuItem(value: 'spam', child: AnymeXText('Spam')),
                 DropdownMenuItem(
                     value: 'inappropriate',
-                    child: Text('Inappropriate Content')),
+                    child: AnymeXText('Inappropriate Content')),
                 DropdownMenuItem(
-                    value: 'harassment', child: Text('Harassment')),
+                    value: 'harassment', child: AnymeXText('Harassment')),
                 DropdownMenuItem(
-                    value: 'offensive', child: Text('Offensive Language')),
+                    value: 'offensive', child: AnymeXText('Offensive Language')),
                 DropdownMenuItem(
-                    value: 'misinformation', child: Text('Misinformation')),
-                DropdownMenuItem(value: 'other', child: Text('Other')),
+                    value: 'misinformation', child: AnymeXText('Misinformation')),
+                DropdownMenuItem(value: 'other', child: AnymeXText('Other')),
               ],
               onChanged: (value) {
                 reasonController.text = value ?? '';
@@ -1046,7 +1043,7 @@ class _CommentSectionState extends State<CommentSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           FilledButton(
             onPressed: () {
@@ -1056,7 +1053,7 @@ class _CommentSectionState extends State<CommentSection> {
                 Navigator.pop(context);
               }
             },
-            child: const Text('Report'),
+            child: const AnymeXText('Report'),
           ),
         ],
       ),
@@ -1076,7 +1073,7 @@ class _CommentSectionState extends State<CommentSection> {
           width: 1,
         ),
       ),
-      child: Text(
+      child: AnymeXText(
         tag,
         style: TextStyle(
           color: colorScheme.primary,
@@ -1128,7 +1125,7 @@ class _CommentSectionState extends State<CommentSection> {
               ),
               if (count > 0) ...[
                 const SizedBox(width: 6),
-                Text(
+                AnymeXText(
                   count.toString(),
                   style: TextStyle(
                     color: isActive ? activeColor : colorScheme.onSurface,
@@ -1168,7 +1165,7 @@ class _SpoilerTextState extends State<_SpoilerText> {
   @override
   Widget build(BuildContext context) {
     if (!widget.isSpoiler) {
-      return Text(
+      return AnymeXText(
         widget.text,
         style: widget.theme.textTheme.bodyLarge?.copyWith(
           color: widget.colorScheme.onSurface,
@@ -1194,7 +1191,7 @@ class _SpoilerTextState extends State<_SpoilerText> {
               : widget.colorScheme.surfaceContainerHighest.opaque(0.8),
           borderRadius: BorderRadius.circular(6),
         ),
-        child: Text(
+        child: AnymeXText(
           widget.text,
           style: widget.theme.textTheme.bodyLarge?.copyWith(
             color:

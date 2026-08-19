@@ -4,6 +4,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 enum TestState { notStarted, running, completed }
 
@@ -220,7 +221,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
               _buildExtensionIcon(theme),
               const SizedBox(width: 12),
               Expanded(
-                child: Text(
+                child: AnymeXText(
                   widget.source.name ?? 'Unknown',
                   style: TextStyle(
                     fontFamily: 'Poppins',
@@ -339,7 +340,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              AnymeXText(
                 label,
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -349,7 +350,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
+              AnymeXText(
                 result,
                 style: TextStyle(
                   fontSize: 14,

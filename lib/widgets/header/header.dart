@@ -7,6 +7,7 @@ import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -274,8 +275,7 @@ class Header extends StatelessWidget {
 
     switch (type) {
       case PageType.home:
-        return AnymeXText(
-          text: "AnymeX",
+        return AnymeXText("AnymeX",
           autoResize: true,
           maxLines: 1,
           size: 15,
@@ -283,40 +283,35 @@ class Header extends StatelessWidget {
           color: context.colors.primary,
         );
       case PageType.anime:
-        return AnymeXText(
-          text: isSimkl ? "Movies" : "Anime",
+        return AnymeXText(isSimkl ? "Movies" : "Anime",
           autoResize: true,
           maxLines: 1,
           size: 15,
           variant: TextVariant.bold,
         );
       case PageType.manga:
-        return AnymeXText(
-          text: isSimkl ? "Series" : "Manga",
+        return AnymeXText(isSimkl ? "Series" : "Manga",
           autoResize: true,
           maxLines: 1,
           size: 15,
           variant: TextVariant.bold,
         );
       case PageType.novel:
-        return const AnymeXText(
-          text: "Novels",
+        return const AnymeXText("Novels",
           autoResize: true,
           maxLines: 1,
           size: 15,
           variant: TextVariant.bold,
         );
       case PageType.library:
-        return const AnymeXText(
-          text: "Library",
+        return const AnymeXText("Library",
           autoResize: true,
           maxLines: 1,
           size: 15,
           variant: TextVariant.bold,
         );
       case PageType.extensions:
-        return const AnymeXText(
-          text: "Extensions",
+        return const AnymeXText("Extensions",
           autoResize: true,
           maxLines: 1,
           size: 15,
@@ -328,8 +323,7 @@ class Header extends StatelessWidget {
   Widget _buildHeaderSubtitle(BuildContext context,
       GreetingController greetingController, ServiceHandler profileData) {
     if (type == PageType.library) {
-      return AnymeXText(
-        text: "All your local shi",
+      return AnymeXText("All your local shi",
         autoResize: true,
         maxLines: 1,
         size: 11,
@@ -337,8 +331,7 @@ class Header extends StatelessWidget {
       );
     }
     if (type == PageType.extensions) {
-      return AnymeXText(
-        text: "Manage plugins & sources",
+      return AnymeXText("Manage plugins & sources",
         autoResize: true,
         maxLines: 1,
         size: 11,
@@ -347,8 +340,7 @@ class Header extends StatelessWidget {
     }
 
     final greeting = greetingController.currentGreeting.value;
-    return AnymeXText(
-      text: greeting,
+    return AnymeXText(greeting,
       autoResize: true,
       maxLines: 1,
       size: 11,
@@ -504,8 +496,8 @@ class Header extends StatelessWidget {
                     color: context.colors.onSecondaryContainer, size: 18),
           );
           if (count > 0) {
-            return Badge(
-              label: Text(count.toString()),
+            return AnymeXBadge(
+              label: count.toString(),
               backgroundColor: context.colors.primary,
               textColor: context.colors.onPrimary,
               child: avatar,
@@ -570,7 +562,7 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
+          const AnymeXText(
             'Library Settings',
             style: TextStyle(
               fontSize: 18,
@@ -936,7 +928,7 @@ class SortTile extends StatelessWidget {
               ? theme.colorScheme.secondary
               : theme.colorScheme.onSurfaceVariant,
         ),
-        title: Text(
+        title: AnymeXText(
           title,
           style: TextStyle(
             fontSize: 14,

@@ -12,6 +12,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 bool isBase64Image(String value) {
   if (value.isEmpty) return false;
@@ -386,7 +387,7 @@ class _AnymeXImageState extends State<AnymeXImage> {
         ),
       ),
       child: Center(
-        child: Text(
+        child: AnymeXText(
           '(╥﹏╥)',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color:

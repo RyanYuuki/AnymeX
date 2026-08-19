@@ -101,8 +101,7 @@ class GlassCard extends CarouselCard {
           if (shouldShowTitle()) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-              child: AnymeXText(
-                text: itemData.title ?? '?',
+              child: AnymeXText(itemData.title ?? '?',
                 maxLines: 2,
                 size: desktop ? 12 : 10.5,
                 variant: TextVariant.semiBold,

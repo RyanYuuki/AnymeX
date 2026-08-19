@@ -21,6 +21,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 
 import 'package:provider/provider.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsTheme extends StatefulWidget {
   const SettingsTheme({super.key});
@@ -421,7 +422,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
           if (snapshot.hasError) {
             return Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text('Error loading refresh rates: ${snapshot.error}'),
+              child: AnymeXText('Error loading refresh rates: ${snapshot.error}'),
             );
           }
 
@@ -729,7 +730,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(
+                AnymeXText(
                   theme['label'],
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
@@ -827,7 +828,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
+                  const AnymeXText(
                     'Hue',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
@@ -869,7 +870,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const Text(
+                  const AnymeXText(
                     'Saturation',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
@@ -906,7 +907,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const Text(
+                  const AnymeXText(
                     'Lightness',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
@@ -1035,7 +1036,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   else
                     _buildColorSwatch(colorScheme, isSelected),
                   const SizedBox(height: 8),
-                  Text(
+                  AnymeXText(
                     label,
                     style: TextStyle(
                       fontSize: 11,

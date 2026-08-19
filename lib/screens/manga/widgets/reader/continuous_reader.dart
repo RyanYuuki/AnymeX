@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ContinuousReaderView extends StatefulWidget {
   final ReaderController controller;
@@ -444,7 +445,7 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
           children: [
             AnymeXProgressIndicator(value: progress),
             const SizedBox(height: 8),
-            Text('Loading page $pageNumber$progressText...'),
+            AnymeXText('Loading page $pageNumber$progressText...'),
           ],
         ),
       ),

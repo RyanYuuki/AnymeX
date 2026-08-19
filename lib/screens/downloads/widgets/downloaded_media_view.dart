@@ -433,7 +433,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                         color: theme.primaryContainer.withOpacity(0.4),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Text(
+                      child: AnymeXText(
                         summary.extensionName.toUpperCase(),
                         style: TextStyle(
                           color: theme.primary,
@@ -444,7 +444,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    AnymeXText(
                       summary.title,
                       style: TextStyle(
                         color: theme.onSurface,
@@ -472,7 +472,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                               right: Radius.circular(5),
                             ),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             '$count ${_isManga ? 'CH' : 'EPS'}',
                             style: TextStyle(
                               fontFamily: 'Poppins-SemiBold',
@@ -493,7 +493,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                               right: Radius.circular(8),
                             ),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             'DOWNLOADED',
                             style: TextStyle(
                               fontFamily: 'Poppins-SemiBold',
@@ -535,7 +535,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             color: theme.primary.withOpacity(0.7),
           ),
           const SizedBox(width: 8),
-          Text(
+          AnymeXText(
             _isManga ? 'Downloaded Chapters' : 'Downloaded Episodes',
             style: TextStyle(
               color: theme.onSurface.withOpacity(0.7),
@@ -552,7 +552,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 color: theme.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
+              child: AnymeXText(
                 '$count',
                 style: TextStyle(
                   color: theme.primary.withOpacity(0.8),
@@ -619,7 +619,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           children: [
             Icon(Icons.track_changes_rounded, size: 15, color: theme.primary),
             const SizedBox(width: 6),
-            Text(
+            AnymeXText(
               'Track',
               style: TextStyle(
                 color: theme.primary,
@@ -641,7 +641,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                       : theme.surfaceContainer.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
+                child: AnymeXText(
                   total == 0 ? '0' : '$bound/$total',
                   style: TextStyle(
                     color: bound > 0
@@ -672,7 +672,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: color.withOpacity(0.2)),
       ),
-      child: Text(
+      child: AnymeXText(
         label,
         style: TextStyle(
           color: color.withOpacity(0.85),
@@ -692,7 +692,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color.withOpacity(0.15), width: 0.5),
       ),
-      child: Text(
+      child: AnymeXText(
         text,
         style: TextStyle(
           color: color.withOpacity(0.85),
@@ -769,7 +769,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Center(
-                                      child: Text(
+                                      child: AnymeXText(
                                         episode.number,
                                         style: TextStyle(
                                           color:
@@ -813,7 +813,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                 color: Colors.black.withOpacity(0.75),
                                 borderRadius: BorderRadius.circular(6),
                               ),
-                              child: Text(
+                              child: AnymeXText(
                                 'EP ${episode.number}',
                                 style: const TextStyle(
                                   color: Colors.white,
@@ -852,7 +852,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
+                            AnymeXText(
                               episode.title != null && episode.title!.isNotEmpty
                                   ? episode.title!
                                   : 'Episode ${episode.number}',
@@ -885,8 +885,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                             right: Radius.circular(5),
                                           ),
                                         ),
-                                        child: AnymeXText.semiBold(
-                                          text: relativeTime.toUpperCase(),
+                                        child: AnymeXText.semiBold(relativeTime.toUpperCase(),
                                           size: 9.0,
                                           color: theme.secondary
                                                       .computeLuminance() >
@@ -908,8 +907,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                               right: Radius.circular(8),
                                             ),
                                           ),
-                                          child: AnymeXText.semiBold(
-                                            text: (episode.quality ?? 'VIDEO')
+                                          child: AnymeXText.semiBold((episode.quality ?? 'VIDEO')
                                                 .toUpperCase(),
                                             maxLines: 1,
                                             size: 9.0,
@@ -973,7 +971,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 color: theme.onSurface.withOpacity(0.04),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(
+              child: AnymeXText(
                 episode.episode.desc!,
                 style: TextStyle(
                   color: theme.onSurface.withOpacity(0.55),
@@ -1068,7 +1066,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
+                            AnymeXText(
                               chapter.displayTitle,
                               style: TextStyle(
                                 color: theme.onSurface,
@@ -1095,7 +1093,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                       right: Radius.circular(5),
                                     ),
                                   ),
-                                  child: Text(
+                                  child: AnymeXText(
                                     relativeTime.toUpperCase(),
                                     style: TextStyle(
                                       fontFamily: 'Poppins-SemiBold',
@@ -1118,7 +1116,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                       right: Radius.circular(8),
                                     ),
                                   ),
-                                  child: Text(
+                                  child: AnymeXText(
                                     '${chapter.pageCount} PAGES',
                                     style: TextStyle(
                                       fontFamily: 'Poppins-SemiBold',
@@ -1177,7 +1175,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               color: theme.onSurface.withOpacity(0.12),
             ),
             const SizedBox(height: 14),
-            Text(
+            AnymeXText(
               'Nothing downloaded yet',
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.5),
@@ -1187,7 +1185,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
+            AnymeXText(
               'Media you download will appear here.',
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.28),
@@ -1231,7 +1229,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   label,
                   style: TextStyle(
                     color: theme.onPrimary,
@@ -1240,7 +1238,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                     letterSpacing: -0.2,
                   ),
                 ),
-                Text(
+                AnymeXText(
                   subtitle,
                   style: TextStyle(
                     color: theme.onPrimary.withOpacity(0.7),

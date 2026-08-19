@@ -136,8 +136,7 @@ class MangaHistoryCard extends StatelessWidget {
                                   BorderRadius.circular(8.multiplyRadius()),
                               color: colorScheme.primary,
                             ),
-                            child: AnymeXText(
-                              text: _formatEpisodeNumber(),
+                            child: AnymeXText(_formatEpisodeNumber(),
                               size: 12,
                               variant: TextVariant.bold,
                               color: colorScheme.onPrimary,
@@ -145,9 +144,7 @@ class MangaHistoryCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           // Episode title
-                          AnymeXText(
-                            text:
-                                data.currentChapter?.title ?? data.name ?? '??',
+                          AnymeXText(data.currentChapter?.title ?? data.name ?? '??',
                             size: 15,
                             maxLines: getResponsiveValue(context,
                                 mobileValue: 1, desktopValue: 2),
@@ -158,8 +155,7 @@ class MangaHistoryCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           if (data.name != null &&
                               data.name != data.currentChapter?.title)
-                            AnymeXText(
-                              text: data.name!,
+                            AnymeXText(data.name!,
                               size: 14,
                               maxLines: 1,
                               variant: TextVariant.regular,
@@ -172,9 +168,7 @@ class MangaHistoryCard extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AnymeXText(
-                                text:
-                                    'PAGE ${data.currentChapter?.pageNumber} / ${data.currentChapter?.totalPages}',
+                              AnymeXText('PAGE ${data.currentChapter?.pageNumber} / ${data.currentChapter?.totalPages}',
                                 size: 12,
                                 color: colorScheme.primary,
                                 variant: TextVariant.bold,

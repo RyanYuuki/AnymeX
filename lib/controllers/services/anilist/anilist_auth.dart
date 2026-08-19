@@ -25,6 +25,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnilistAuth extends GetxController {
   RxBool isLoggedIn = false.obs;
@@ -253,7 +254,7 @@ class AnilistAuth extends GetxController {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: Text(
+        title: AnymeXText(
           'Login with Token',
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -265,7 +266,7 @@ class AnilistAuth extends GetxController {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            AnymeXText(
               'Please paste the token from the browser',
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -303,7 +304,7 @@ class AnilistAuth extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: AnymeXText(
               'Cancel',
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -338,7 +339,7 @@ class AnilistAuth extends GetxController {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: Text(
+            child: AnymeXText(
               'Login',
               style: TextStyle(
                 fontFamily: 'Poppins',

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class NovelSettingsPanel extends StatelessWidget {
   final NovelReaderController controller;
@@ -115,7 +116,7 @@ class NovelSettingsPanel extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(
+          AnymeXText(
             'Reading Settings',
             style: TextStyle(
               fontSize: 20,
@@ -500,7 +501,7 @@ class NovelSettingsPanel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           title,
           style: TextStyle(
               fontSize: 18,
@@ -591,7 +592,7 @@ class NovelSettingsPanel extends StatelessWidget {
                     : context.colors.onSurface,
               ),
               const SizedBox(width: 12),
-              Text(
+              AnymeXText(
                 label,
                 style: TextStyle(
                   fontSize: 16,
@@ -635,7 +636,7 @@ class NovelSettingsPanel extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AnymeXText(
                     title,
                     style: TextStyle(
                       fontSize: 16,
@@ -646,7 +647,7 @@ class NovelSettingsPanel extends StatelessWidget {
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 4),
-                    Text(
+                    AnymeXText(
                       subtitle,
                       style: TextStyle(
                         fontSize: 12,
@@ -684,7 +685,7 @@ class NovelSettingsPanel extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            AnymeXText(
               title,
               style: TextStyle(
                 fontSize: 16,
@@ -698,7 +699,7 @@ class NovelSettingsPanel extends StatelessWidget {
                     color: context.colors.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     label(value.value),
                     style: TextStyle(
                       fontSize: 14,
@@ -728,7 +729,7 @@ class NovelSettingsPanel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           'Text Alignment',
           style: TextStyle(
             fontSize: 18,
@@ -800,7 +801,7 @@ class NovelSettingsPanel extends StatelessWidget {
                     : context.colors.onSurface,
               ),
               const SizedBox(height: 4),
-              Text(
+              AnymeXText(
                 label,
                 style: TextStyle(
                   fontSize: 12,
@@ -832,7 +833,7 @@ class NovelSettingsPanel extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: const Text(
+        child: const AnymeXText(
           'Reset to Default',
           style: TextStyle(
             fontSize: 16,

@@ -366,7 +366,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Shader reset to Default'),
+          content: const AnymeXText('Shader reset to Default'),
           backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
@@ -388,7 +388,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Reset to Natural profile'),
+          content: const AnymeXText('Reset to Natural profile'),
           backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
@@ -408,7 +408,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Custom settings reset to default'),
+          content: const AnymeXText('Custom settings reset to default'),
           backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
@@ -436,7 +436,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Visual settings reset to defaults'),
+          content: const AnymeXText('Visual settings reset to defaults'),
           backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
@@ -476,7 +476,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
+                AnymeXText(
                   'Color Profiles',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w600,
@@ -516,7 +516,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Iconsax.eye, size: 20),
                       SizedBox(width: 8),
-                      AnymeXText.semiBold(text: 'Shaders'),
+                      AnymeXText.semiBold('Shaders'),
                     ],
                   ),
                 ),
@@ -526,7 +526,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Icons.movie_filter_rounded, size: 20),
                       SizedBox(width: 8),
-                      AnymeXText.semiBold(text: 'Visual'),
+                      AnymeXText.semiBold('Visual'),
                     ],
                   ),
                 ),
@@ -536,7 +536,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Icons.dashboard_customize, size: 20),
                       SizedBox(width: 8),
-                      AnymeXText.semiBold(text: 'Presets'),
+                      AnymeXText.semiBold('Presets'),
                     ],
                   ),
                 ),
@@ -546,7 +546,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     children: [
                       Icon(Icons.tune, size: 20),
                       SizedBox(width: 8),
-                      AnymeXText.semiBold(text: 'Custom'),
+                      AnymeXText.semiBold('Custom'),
                     ],
                   ),
                 ),
@@ -617,7 +617,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
+                        child: AnymeXText(
                           enableShaders
                               ? 'Choose a shader that matches your viewing preference'
                               : 'Shaders are not installed or disabled. Enable and download them from Settings > Experimental',
@@ -695,7 +695,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                 child: Row(
                                   children: [
                                     Expanded(
-                                      child: Text(
+                                      child: AnymeXText(
                                         shader,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
@@ -753,7 +753,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 children: [
                   Icon(Icons.refresh, size: 20),
                   SizedBox(width: 8),
-                  Text('Reset Shader to Default'),
+                  AnymeXText('Reset Shader to Default'),
                 ],
               ),
             ),
@@ -816,7 +816,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
+                      child: AnymeXText(
                         'Choose a preset that matches your viewing preference',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -934,7 +934,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
+                                        AnymeXText(
                                           profileKey
                                               .replaceAll('_', ' ')
                                               .toUpperCase(),
@@ -948,7 +948,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                                           ),
                                         ),
                                         const SizedBox(height: 4),
-                                        Text(
+                                        AnymeXText(
                                           ColorProfileManager
                                                       .profileDescriptions[
                                                   profileKey] ??
@@ -1010,7 +1010,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 children: [
                   Icon(Icons.refresh, size: 20),
                   SizedBox(width: 8),
-                  Text('Reset to Natural Profile'),
+                  AnymeXText('Reset to Natural Profile'),
                 ],
               ),
             ),
@@ -1050,7 +1050,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                         color: theme.colorScheme.primary, size: 20),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
+                      child: AnymeXText(
                         'These controls directly affect mpv rendering quality & picture output',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -1173,7 +1173,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 children: [
                   Icon(Icons.refresh, size: 20),
                   SizedBox(width: 8),
-                  Text('Reset Visual Settings'),
+                  AnymeXText('Reset Visual Settings'),
                 ],
               ),
             ),
@@ -1206,7 +1206,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(height: 12),
-              Text(
+              AnymeXText(
                 'Visual settings are experimental',
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w700,
@@ -1214,7 +1214,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              Text(
+              AnymeXText(
                 'Enable Experimental in Player Settings to use this tab.',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
@@ -1328,7 +1328,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
+                      child: AnymeXText(
                         'Fine-tune individual settings to your preference',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -1364,7 +1364,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 children: [
                   Icon(Icons.refresh, size: 20),
                   SizedBox(width: 8),
-                  Text('Reset to Default Settings'),
+                  AnymeXText('Reset to Default Settings'),
                 ],
               ),
             ),
@@ -1402,7 +1402,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              AnymeXText(
                 displayName,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -1427,7 +1427,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                     ),
                   ],
                 ),
-                child: Text(
+                child: AnymeXText(
                   value.toString(),
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: theme.colorScheme.onPrimary,
@@ -1453,14 +1453,14 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              AnymeXText(
                 '-100',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              Text(
+              AnymeXText(
                 '100',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,

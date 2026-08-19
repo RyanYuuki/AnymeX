@@ -65,8 +65,7 @@ class ProfileTile extends StatelessWidget {
             ),
             10.height(),
             Center(
-              child: AnymeXText(
-                text: userData.name!,
+              child: AnymeXText(userData.name!,
                 variant: TextVariant.semiBold,
               ),
             ),
@@ -102,8 +101,7 @@ class ProfileTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: AnymeXText(
-                      text: 'Connected to $title',
+                    child: AnymeXText('Connected to $title',
                     ),
                   ),
                   InkWell(
@@ -187,23 +185,20 @@ class ProfileTile extends StatelessWidget {
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText(
-                            text: userData!.name ?? 'Guest',
+                          AnymeXText(userData!.name ?? 'Guest',
                             variant: TextVariant.semiBold,
                           ),
                           const SizedBox(height: 5),
                           SizedBox(
                             width: 130,
-                            child: AnymeXText(
-                              text: 'Connected to $title',
+                            child: AnymeXText('Connected to $title',
                               color: context.colors.primary,
                               maxLines: 2,
                             ),
                           )
                         ],
                       )
-                    : AnymeXText(
-                        text: 'Connect to $title',
+                    : AnymeXText('Connect to $title',
                       ),
                 const Spacer(),
                 InkWell(

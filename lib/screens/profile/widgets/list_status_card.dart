@@ -6,6 +6,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 ///
 class ListStatusCard extends StatelessWidget {
@@ -54,7 +55,7 @@ class ListStatusCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          AnymeXText(
             title,
             style: TextStyle(
               fontSize: isDesktop ? 12 : 10.5,
@@ -124,14 +125,14 @@ class ListStatusCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        AnymeXText(
                           label,
                           style: TextStyle(
                             fontSize: isDesktop ? 14 : 12,
                             color: context.theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        Text(
+                        AnymeXText(
                           count.toString(),
                           style: TextStyle(
                             fontSize: isDesktop ? 15 : 13,

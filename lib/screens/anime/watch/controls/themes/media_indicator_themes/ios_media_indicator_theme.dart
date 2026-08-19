@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class IosMediaIndicatorTheme extends MediaIndicatorTheme {
   @override
@@ -116,7 +117,7 @@ class IosMediaIndicatorTheme extends MediaIndicatorTheme {
                           color: Colors.white.opaque(0.9),
                         ),
                         const SizedBox(height: 4),
-                        Text(
+                        AnymeXText(
                           '${data.percent.round()}%',
                           style: textTheme.labelMedium?.copyWith(
                             color: Colors.white.opaque(0.9),

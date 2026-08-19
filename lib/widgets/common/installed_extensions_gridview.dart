@@ -120,7 +120,7 @@ class _InstalledExtensionsGridViewState
                       color: context.colors.primary,
                     ),
                     const SizedBox(width: 6),
-                    Text(
+                    AnymeXText(
                       '${filteredSources.length}',
                       style: TextStyle(
                         fontFamily: 'Poppins-Bold',
@@ -183,8 +183,7 @@ class _InstalledExtensionsGridViewState
               ),
             ),
             const SizedBox(height: 14),
-            AnymeXText.semiBold(
-              text: _searchQuery.isEmpty
+            AnymeXText.semiBold(_searchQuery.isEmpty
                   ? 'No $title extensions installed'
                   : 'No extensions found for "$_searchQuery"',
               textAlign: TextAlign.center,
@@ -202,8 +201,7 @@ class _InstalledExtensionsGridViewState
                   });
                 },
                 icon: const Icon(Icons.close_rounded, size: 18),
-                label: const AnymeXText.regular(
-                  text: 'Clear Filter',
+                label: const AnymeXText.regular('Clear Filter',
                   size: 14,
                 ),
               ),
@@ -281,7 +279,7 @@ class _ExtensionCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
+                        child: AnymeXText(
                           source.name ?? 'Unknown',
                           style: TextStyle(
                             fontFamily: 'Poppins-SemiBold',
@@ -306,7 +304,7 @@ class _ExtensionCard extends StatelessWidget {
                                 .opaque(0.15, iReallyMeanIt: true),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             source.lang!.toUpperCase(),
                             style: TextStyle(
                               fontFamily: 'Poppins-SemiBold',
@@ -324,7 +322,7 @@ class _ExtensionCard extends StatelessWidget {
                               .opaque(0.08, iReallyMeanIt: true),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Text(
+                        child: AnymeXText(
                           'v${source.version ?? "1.0"}',
                           style: TextStyle(
                             fontFamily: 'Poppins-Regular',

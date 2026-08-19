@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AlertDialogBuilder {
   final BuildContext context;
@@ -112,7 +113,7 @@ class AlertDialogBuilder {
       builder: (BuildContext context) {
         _onShow?.call();
         return AlertDialog(
-          title: _titleWidget ?? Text(_title ?? ''),
+          title: _titleWidget ?? AnymeXText(_title ?? ''),
           titleTextStyle: TextStyle(
               fontSize: 20, fontWeight: FontWeight.bold, color: theme.primary),
           content: StatefulBuilder(
@@ -180,7 +181,7 @@ class AlertDialogBuilder {
                   String item = entry.value;
                   return CheckboxListTile(
                     key: ValueKey(item),
-                    title: Text(item,
+                    title: AnymeXText(item,
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     value: _checkedItems![index],
@@ -212,7 +213,7 @@ class AlertDialogBuilder {
                 children: _reorderableItems!.map((item) {
                   return ListTile(
                     key: ValueKey(item),
-                    title: Text(item,
+                    title: AnymeXText(item,
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                   );
@@ -225,7 +226,7 @@ class AlertDialogBuilder {
 
   Widget _buildRadioListContent(StateSetter setState) => _buildListContent(
         (item) => RadioListTile<int>(
-          title: Text(item,
+          title: AnymeXText(item,
               style:
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           value: _items!.indexOf(item),
@@ -242,7 +243,7 @@ class AlertDialogBuilder {
         (item) {
           final index = _items!.indexOf(item);
           return CheckboxListTile(
-            title: Text(item,
+            title: AnymeXText(item,
                 style:
                     const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             value: _checkedItems![index],
@@ -269,7 +270,7 @@ class AlertDialogBuilder {
   Widget _buildDefaultContent() => ConstrainedBox(
         constraints:
             BoxConstraints(minWidth: MediaQuery.sizeOf(context).width * 0.7),
-        child: _customView ?? Text(_message ?? ''),
+        child: _customView ?? AnymeXText(_message ?? ''),
       );
 
   List<Widget> _buildActions() {
@@ -296,7 +297,7 @@ class AlertDialogBuilder {
           onClick?.call();
           Navigator.of(context).pop();
         },
-        child: Text(title,
+        child: AnymeXText(title,
             style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

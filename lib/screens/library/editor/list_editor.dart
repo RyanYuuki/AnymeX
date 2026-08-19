@@ -11,6 +11,7 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class CustomListsEditor extends StatefulWidget {
   final ItemType type;
@@ -108,7 +109,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   'Custom Lists',
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
@@ -117,7 +118,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                     letterSpacing: -0.5,
                   ),
                 ),
-                Text(
+                AnymeXText(
                   '${_lists.length} lists • Tap to expand',
                   style: TextStyle(
                     color: theme.colorScheme.onSurface
@@ -267,7 +268,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            AnymeXText(
                               listData.listName,
                               style: TextStyle(
                                 color: theme.colorScheme.onSurface,
@@ -277,7 +278,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                               ),
                             ),
                             const SizedBox(height: 4),
-                            Text(
+                            AnymeXText(
                               '${listData.listData.length} items',
                               style: TextStyle(
                                 color: theme.colorScheme.onSurface.opaque(0.6),
@@ -344,7 +345,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             height: 1,
           ),
           const SizedBox(height: 16),
-          Text(
+          AnymeXText(
             'Items in this list',
             style: TextStyle(
               color: theme.colorScheme.onSurface.opaque(0.8),
@@ -393,7 +394,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         media.name ?? media.jname ?? 'Unknown Title',
                         style: TextStyle(
                           color: theme.colorScheme.onSurface,
@@ -405,7 +406,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                       ),
                       if (media.type != null) ...[
                         const SizedBox(height: 2),
-                        Text(
+                        AnymeXText(
                           media.type!,
                           style: TextStyle(
                             color: theme.colorScheme.onSurface.opaque(0.6),
@@ -486,7 +487,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             ),
           ),
           const SizedBox(height: 24),
-          Text(
+          AnymeXText(
             'No custom lists yet',
             style: TextStyle(
               color: theme.colorScheme.onSurface,
@@ -495,7 +496,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             'Create your first custom list to organize\nyour favorite content',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -520,7 +521,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
         borderRadius: BorderRadius.circular(20),
       ),
       icon: const Icon(Icons.add_rounded),
-      label: Text(
+      label: AnymeXText(
         'New List',
         style: TextStyle(
             fontWeight: FontWeight.w600, color: context.colors.onPrimary),
@@ -576,7 +577,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       builder: (context) => AlertDialog(
         backgroundColor: theme.colorScheme.surface.opaque(0.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(
+        title: AnymeXText(
           'Rename List',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
@@ -608,7 +609,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: AnymeXText(
               'Cancel',
               style: TextStyle(color: theme.colorScheme.onSurface.opaque(0.7)),
             ),
@@ -635,7 +636,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Rename'),
+            child: const AnymeXText('Rename'),
           ),
         ],
       ),
@@ -650,21 +651,21 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       builder: (context) => AlertDialog(
         backgroundColor: theme.colorScheme.surface.opaque(0.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(
+        title: AnymeXText(
           'Delete List',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
-        content: Text(
+        content: AnymeXText(
           'Are you sure you want to delete "${_lists[index].listName}"? This action cannot be undone.',
           style: TextStyle(color: theme.colorScheme.onSurface.opaque(0.8)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: AnymeXText(
               'Cancel',
               style: TextStyle(color: theme.colorScheme.onSurface.opaque(0.7)),
             ),
@@ -684,7 +685,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Delete'),
+            child: const AnymeXText('Delete'),
           ),
         ],
       ),
@@ -700,7 +701,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       builder: (context) => AlertDialog(
         backgroundColor: theme.colorScheme.surface.opaque(0.5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(
+        title: AnymeXText(
           'Create New List',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
@@ -732,7 +733,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: AnymeXText(
               'Cancel',
               style: TextStyle(color: theme.colorScheme.onSurface.opaque(0.7)),
             ),
@@ -761,7 +762,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
             ),
-            child: Text(
+            child: AnymeXText(
               'Create',
               style: TextStyle(color: context.colors.onPrimary),
             ),

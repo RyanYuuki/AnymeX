@@ -138,8 +138,7 @@ class ReaderTopControls extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: AnymeXText(
-                            text: controller.currentChapter.value?.title ??
+                          child: AnymeXText(controller.currentChapter.value?.title ??
                                 'Unknown Chapter',
                             size: 12,
                             variant: TextVariant.semiBold,
@@ -151,7 +150,7 @@ class ReaderTopControls extends StatelessWidget {
                         const Icon(Icons.arrow_drop_down, size: 16),
                       ],
                     ),
-                    Text(
+                    AnymeXText(
                       'Chapter ${_formatNumber(controller.currentChapter.value?.number)} of ${controller.chapterList.length}',
                       style: TextStyle(
                         color: context.colors.onSurface.withOpacity(0.7),
@@ -209,7 +208,7 @@ class ReaderTopControls extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: context.colors.onSurface.opaque(0.15)),
         ),
-        child: Text(
+        child: AnymeXText(
           controller.loadingState.value == LoadingState.loading
               ? 'Loading...'
               : controller.loadingState.value == LoadingState.error
@@ -303,8 +302,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
               children: [
                 Icon(Icons.menu_book_rounded, size: 20, color: colors.primary),
                 const SizedBox(width: 10),
-                const AnymeXText(
-                  text: 'Chapters',
+                const AnymeXText('Chapters',
                   size: 16,
                   variant: TextVariant.bold,
                 ),
@@ -316,7 +314,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     color: colors.primaryContainer.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     '${_cachedChapters.length}',
                     style: TextStyle(
                       fontSize: 11,
@@ -435,8 +433,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                               size: 40,
                               color: colors.onSurface.withOpacity(0.4)),
                           const SizedBox(height: 8),
-                          AnymeXText(
-                            text: 'No chapters found',
+                          AnymeXText('No chapters found',
                             color: colors.onSurface.withOpacity(0.6),
                           ),
                         ],
@@ -524,7 +521,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                         : colors.primaryContainer.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     'Ch. $formattedNum',
                     style: TextStyle(
                       fontSize: 11,
@@ -536,8 +533,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: AnymeXText.semiBold(
-                    text: displayTitle,
+                  child: AnymeXText.semiBold(displayTitle,
                     size: 13,
                     color: isCurrent ? colors.primary : colors.onSurface,
                     maxLines: 1,
@@ -586,7 +582,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              AnymeXText(
                 'Ch. $formattedNum',
                 style: TextStyle(
                   fontSize: 13,
@@ -600,7 +596,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                 const SizedBox(height: 2),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Text(
+                  child: AnymeXText(
                     chapter.title!.trim(),
                     style: TextStyle(
                       fontSize: 10,

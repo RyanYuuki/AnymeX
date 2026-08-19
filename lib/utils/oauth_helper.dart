@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class OauthHelper {
   static Future<String?> authenticate({
@@ -83,7 +84,7 @@ class _OauthWebViewPageState extends State<OauthWebViewPage> {
         child: Padding(
           padding: EdgeInsets.only(top: isWindows ? 40.0 : 0.0),
           child: AppBar(
-            title: const Text('Sign In'),
+            title: const AnymeXText('Sign In'),
             leading: IconButton(
               icon: const Icon(Icons.close),
               onPressed: () => Navigator.pop(context),

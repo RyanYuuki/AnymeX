@@ -5,6 +5,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class LogoAnimationPreviewDialog extends StatefulWidget {
   final LogoAnimationType initialAnimation;
@@ -74,13 +75,13 @@ class _LogoAnimationPreviewDialogState
             const SizedBox(height: 8),
             TextButton.icon(
               icon: const Icon(Icons.replay, size: 18),
-              label: const Text('Replay'),
+              label: const AnymeXText('Replay'),
               onPressed: _replayAnimation,
             ),
             const SizedBox(height: 16),
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: AnymeXText(
                 'Select Animation Style',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -128,7 +129,7 @@ class _LogoAnimationPreviewDialogState
                 const SizedBox(height: 8),
                 TextButton.icon(
                   icon: const Icon(Icons.replay, size: 18),
-                  label: const Text('Replay'),
+                  label: const AnymeXText('Replay'),
                   onPressed: _replayAnimation,
                 ),
               ],
@@ -140,7 +141,7 @@ class _LogoAnimationPreviewDialogState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                const AnymeXText(
                   'Select Animation Style',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,

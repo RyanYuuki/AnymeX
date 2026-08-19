@@ -7,6 +7,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 
 class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
@@ -59,7 +60,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: Obx(() => Text(
+                        child: Obx(() => AnymeXText(
                               buildNFTitle(controller),
                               textAlign: TextAlign.center,
                               maxLines: 2,
@@ -192,7 +193,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Row(
                             children: [
-                              Obx(() => Text(
+                              Obx(() => AnymeXText(
                                     controller.formattedCurrentPosition,
                                     style: const TextStyle(
                                       color: NFColors.white,
@@ -223,7 +224,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                                 final formatted = remaining.inHours > 0
                                     ? "${twoDigits(remaining.inHours)}:$mm:$ss"
                                     : "$mm:$ss";
-                                return Text(
+                                return AnymeXText(
                                   remaining.inSeconds > 0
                                       ? "-$formatted"
                                       : "00:00",

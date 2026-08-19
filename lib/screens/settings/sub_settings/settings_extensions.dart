@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsExtensions extends StatefulWidget {
   final Function()? onSave;
@@ -183,7 +184,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                   final displayList = _displayManagers;
                   if (displayList.isEmpty) {
                     return Center(
-                      child: Text('No extension managers found.',
+                      child: AnymeXText('No extension managers found.',
                           style: TextStyle(color: context.colors.onSurfaceVariant)),
                     );
                   }
@@ -287,7 +288,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                                       : colors.onSurfaceVariant),
                               const SizedBox(width: 5),
                               Flexible(
-                                child: Text(
+                                child: AnymeXText(
                                   e.value['name'] as String,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -410,7 +411,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                                             ? colors.onPrimary
                                             : colors.onSurfaceVariant,
                                       ),
-                                      child: Text(t.label,
+                                      child: AnymeXText(t.label,
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1),
                                     ),
@@ -452,7 +453,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     size: 48,
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  AnymeXText(
                     'Failed to Start Extension Runtime',
                     style: TextStyle(
                       fontSize: 16,
@@ -461,7 +462,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  AnymeXText(
                     AnymeXRuntimeBridge.controller.error.value,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -473,7 +474,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                   FilledButton.icon(
                     onPressed: () => AnymeXRuntimeBridge.checkAndInitialize(),
                     icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Retry'),
+                    label: const AnymeXText('Retry'),
                     style: FilledButton.styleFrom(
                       backgroundColor: context.colors.primary,
                       foregroundColor: context.colors.onPrimary,
@@ -494,7 +495,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             children: [
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
-              Text(
+              AnymeXText(
                 'Starting extension runtime...',
                 style: TextStyle(
                   fontSize: 15,
@@ -550,7 +551,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
+            AnymeXText(
               'Plugin Not Installed',
               style: TextStyle(
                 fontSize: 16,
@@ -559,7 +560,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               'To use the $managerName extension manager, you need to download and install the runtime plugin.',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -571,7 +572,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             FilledButton.icon(
               onPressed: () => navigate(() => const SettingsExtensionManager()),
               icon: const Icon(Icons.download_rounded),
-              label: const Text('Go to Plugin Downloader'),
+              label: const AnymeXText('Go to Plugin Downloader'),
               style: FilledButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: colors.onPrimary,
@@ -600,13 +601,13 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               size: 28, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 14),
-        Text('Not supported',
+        AnymeXText('Not supported',
             style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: colors.onSurface)),
         const SizedBox(height: 4),
-        Text('${_tab.name.capitalizeFirst} is not supported\nby this manager',
+        AnymeXText('${_tab.name.capitalizeFirst} is not supported\nby this manager',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant)),
       ]),
@@ -628,13 +629,13 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
           child: Icon(icon, size: 30, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
-        Text('No repositories yet',
+        AnymeXText('No repositories yet',
             style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: colors.onSurface)),
         const SizedBox(height: 5),
-        Text('Tap + to add a repository URL',
+        AnymeXText('Tap + to add a repository URL',
             style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant)),
       ]),
     );
@@ -684,7 +685,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       _path(repo.url),
                       style: TextStyle(
                           fontSize: 12.5,
@@ -696,7 +697,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     ),
                     if (host != null) ...[
                       const SizedBox(height: 2),
-                      Text(host,
+                      AnymeXText(host,
                           style: TextStyle(
                               fontSize: 11, color: colors.onSurfaceVariant)),
                     ],
@@ -771,7 +772,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     return FloatingActionButton.extended(
       onPressed: _openAddDialog,
       icon: const Icon(Icons.add, size: 20),
-      label: const Text('Add Repo',
+      label: const AnymeXText('Add Repo',
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
       backgroundColor: colors.primary,
       foregroundColor: colors.onPrimary,
@@ -854,7 +855,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       label,
                       style: TextStyle(fontSize: 12, color: c.onSurfaceVariant),
                     ),
@@ -864,7 +865,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
             ],
           ),
           const SizedBox(height: 18),
-          Text(
+          AnymeXText(
             'REPOSITORY URL',
             style: TextStyle(
                 fontSize: 10,

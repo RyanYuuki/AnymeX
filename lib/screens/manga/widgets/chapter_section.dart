@@ -119,8 +119,7 @@ class ChapterSection extends StatelessWidget {
             child: Row(
               children: [
                 const Expanded(
-                  child: AnymeXText(
-                    text: 'Chapters',
+                  child: AnymeXText('Chapters',
                     variant: TextVariant.bold,
                     size: 18,
                   ),
@@ -151,8 +150,7 @@ class ChapterSection extends StatelessWidget {
                             color: colors.primary,
                           ),
                           const SizedBox(width: 8),
-                          AnymeXText(
-                            text: 'Settings',
+                          AnymeXText('Settings',
                             size: 12,
                             color: colors.primary,
                             variant: TextVariant.bold,
@@ -179,7 +177,7 @@ class ChapterSection extends StatelessWidget {
           child: Center(
             child: Padding(
               padding: EdgeInsets.all(24),
-              child: AnymeXText(text: 'Error loading chapters from source'),
+              child: AnymeXText('Error loading chapters from source'),
             ),
           ),
         );
@@ -230,8 +228,7 @@ class ChapterSection extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText(
-                  text: 'Layout Style',
+                const AnymeXText('Layout Style',
                   variant: TextVariant.bold,
                   size: 14,
                 ),
@@ -321,14 +318,12 @@ class _ProviderOptionTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText(
-                      text: title,
+                    AnymeXText(title,
                       variant: TextVariant.semiBold,
                       size: 13,
                     ),
                     const SizedBox(height: 2),
-                    AnymeXText(
-                      text: subtitle,
+                    AnymeXText(subtitle,
                       size: 11,
                       color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                     ),

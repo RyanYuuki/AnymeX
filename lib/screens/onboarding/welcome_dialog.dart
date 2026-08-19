@@ -19,6 +19,7 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 const MethodChannel _utilsChannel = MethodChannel('com.ryan.anymex/utils');
 
@@ -171,7 +172,7 @@ void showWelcomeDialogg(BuildContext context) {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              AnymeXText(
                                 'Welcome to AnymeX',
                                 style: TextStyle(
                                   fontFamily: 'Poppins-SemiBold',
@@ -180,7 +181,7 @@ void showWelcomeDialogg(BuildContext context) {
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              Text(
+                              AnymeXText(
                                 'Set up your preferences for the best experience',
                                 style: TextStyle(
                                   fontSize: 12,
@@ -321,7 +322,7 @@ void showWelcomeDialogg(BuildContext context) {
                           General.isFirstTime.set(false);
                           Navigator.of(context).pop();
                         },
-                        label: const Text(
+                        label: const AnymeXText(
                           'Get Started',
                           style: TextStyle(
                             fontFamily: 'Poppins-SemiBold',

@@ -3,6 +3,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnymeXChip extends StatelessWidget {
   final String label;
@@ -43,7 +44,7 @@ class AnymeXChip extends StatelessWidget {
       child: FilterChip(
         selected: isSelected,
         onSelected: onSelected,
-        label: Text(label),
+        label: AnymeXText(label),
         labelStyle: TextStyle(
           color: isSelected
               ? context.colors.onPrimary

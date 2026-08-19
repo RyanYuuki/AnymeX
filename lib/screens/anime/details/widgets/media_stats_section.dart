@@ -47,15 +47,13 @@ Widget buildMediaStatsSection(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AnymeXText(
-              text: 'Synopsis',
+            const AnymeXText('Synopsis',
               size: 15,
               variant: TextVariant.bold,
               isMarquee: true,
             ),
             const SizedBox(height: 8),
-            AnymeXText(
-              text: cleanDesc,
+            AnymeXText(cleanDesc,
               size: 13,
               maxLines: 8,
               overflow: TextOverflow.ellipsis,
@@ -153,16 +151,14 @@ Widget buildAlternativeTitles(BuildContext context, Media media) {
                   children: [
                     SizedBox(
                       width: 80,
-                      child: AnymeXText(
-                        text: entry.key,
+                      child: AnymeXText(entry.key,
                         size: 12,
                         color:
                             colors.onSurface.opaque(0.5, iReallyMeanIt: true),
                       ),
                     ),
                     Expanded(
-                      child: AnymeXText(
-                        text: entry.value,
+                      child: AnymeXText(entry.value,
                         size: 12,
                         variant: TextVariant.semiBold,
                       ),
@@ -188,8 +184,7 @@ Widget _buildSection(String title, List<Widget> children, ColorScheme colors) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnymeXText(
-          text: title,
+        AnymeXText(title,
           size: 14,
           variant: TextVariant.bold,
         ),
@@ -252,8 +247,7 @@ Widget buildSeasonsSection(BuildContext context, Media mediaData) {
                     ),
                   ),
                   alignment: Alignment.center,
-                  child: AnymeXText(
-                    text: relation.relationType,
+                  child: AnymeXText(relation.relationType,
                     variant: TextVariant.bold,
                     size: 14,
                     color: Colors.white,
@@ -412,13 +406,11 @@ Widget buildAiringCountdownCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymeXText(
-                  text: 'Episode ${airing.episode} Airing In',
+                AnymeXText('Episode ${airing.episode} Airing In',
                   size: 11,
                   color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                 ),
-                AnymeXText(
-                  text: formattedTime,
+                AnymeXText(formattedTime,
                   size: 14,
                   variant: TextVariant.bold,
                   color: colors.primary,
@@ -459,14 +451,11 @@ Widget buildProgressContainer(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            AnymeXText(
-              text:
-                  controller.isAnime ? 'Watching Progress' : 'Reading Progress',
+            AnymeXText(controller.isAnime ? 'Watching Progress' : 'Reading Progress',
               size: 12,
               color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
             ),
-            AnymeXText(
-              text: '$currentProgress / ${totalCount > 0 ? totalCount : "?"}',
+            AnymeXText('$currentProgress / ${totalCount > 0 ? totalCount : "?"}',
               size: 13,
               variant: TextVariant.bold,
               color: colors.primary,
@@ -506,8 +495,7 @@ Widget buildGenreChip(BuildContext context, String genre) {
           color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
         ),
       ),
-      child: AnymeXText(
-        text: genre,
+      child: AnymeXText(genre,
         size: 11,
         variant: TextVariant.semiBold,
       ),
@@ -537,8 +525,7 @@ Widget buildTagChip(BuildContext context, MediaTag tag) {
           color: colors.primary.opaque(0.25, iReallyMeanIt: true),
         ),
       ),
-      child: AnymeXText(
-        text: labelText,
+      child: AnymeXText(labelText,
         size: 11,
         variant: TextVariant.semiBold,
         color: colors.primary,
@@ -603,14 +590,12 @@ Widget buildStatCard(BuildContext context, String label, String value) {
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: [
-      AnymeXText(
-        text: label,
+      AnymeXText(label,
         size: 11,
         color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
       ),
       const SizedBox(height: 2),
-      AnymeXText(
-        text: value,
+      AnymeXText(value,
         size: 13,
         variant: TextVariant.semiBold,
       ),

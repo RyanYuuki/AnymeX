@@ -159,7 +159,7 @@ class _CharacterStaffSheetContentState
               final dynamic fullItem = snapshot.data;
               if (snapshot.connectionState == ConnectionState.done &&
                   fullItem == null) {
-                return const Center(child: Text("Failed to load details"));
+                return const Center(child: AnymeXText("Failed to load details"));
               }
 
               final isLoading =
@@ -288,8 +288,7 @@ class _CharacterStaffSheetContentState
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: AnymeXText(
-                                        text: widget.item.name ?? 'Unknown',
+                                      child: AnymeXText(widget.item.name ?? 'Unknown',
                                         size: 22,
                                         variant: TextVariant.bold,
                                         maxLines: 2,
@@ -331,8 +330,7 @@ class _CharacterStaffSheetContentState
                                           CrossAxisAlignment.start,
                                       children: [
                                         const SizedBox(height: 4),
-                                        AnymeXText(
-                                          text: nativeName,
+                                        AnymeXText(nativeName,
                                           size: 16,
                                           color:
                                               theme.onSurface.withOpacity(0.7),
@@ -401,8 +399,7 @@ class _CharacterStaffSheetContentState
                                               size: 20,
                                             ),
                                             const SizedBox(width: 8),
-                                            AnymeXText(
-                                              text: "${() {
+                                            AnymeXText("${() {
                                                     if (fullItem is Character ||
                                                         fullItem is Staff) {
                                                       return (fullItem
@@ -441,8 +438,7 @@ class _CharacterStaffSheetContentState
                                       occupations != null) {
                                     return Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
-                                      child: AnymeXText(
-                                        text: occupations.join(", "),
+                                      child: AnymeXText(occupations.join(", "),
                                         size: 12,
                                         color: theme.primary,
                                         maxLines: 2,
@@ -685,8 +681,7 @@ class _CharacterStaffSheetContentState
                                 voiceActors.isNotEmpty) ...[
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: AnymeXText(
-                                  text: "Voice Actors",
+                                child: AnymeXText("Voice Actors",
                                   variant: TextVariant.bold,
                                   size: 16,
                                 ),
@@ -739,9 +734,7 @@ class _CharacterStaffSheetContentState
                                               SizedBox(
                                                 height: 32,
                                                 child: Center(
-                                                  child: AnymeXText(
-                                                    text:
-                                                        actor.name ?? 'Unknown',
+                                                  child: AnymeXText(actor.name ?? 'Unknown',
                                                     size: 12,
                                                     maxLines: 1,
                                                     textAlign: TextAlign.center,
@@ -766,8 +759,7 @@ class _CharacterStaffSheetContentState
                                                         BorderRadius.circular(
                                                             4),
                                                   ),
-                                                  child: AnymeXText(
-                                                    text: actor.language!,
+                                                  child: AnymeXText(actor.language!,
                                                     size: 10,
                                                     color: theme.primary,
                                                   ),
@@ -786,8 +778,7 @@ class _CharacterStaffSheetContentState
                             if (voicedCharacters.isNotEmpty) ...[
                               const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: AnymeXText(
-                                  text: "Voiced Characters",
+                                child: AnymeXText("Voiced Characters",
                                   variant: TextVariant.bold,
                                   size: 16,
                                 ),
@@ -810,8 +801,7 @@ class _CharacterStaffSheetContentState
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    AnymeXText(
-                                      text: widget.isCharacter
+                                    AnymeXText(widget.isCharacter
                                           ? "Appears In"
                                           : "Works & Roles",
                                       variant: TextVariant.bold,
@@ -854,8 +844,7 @@ class _CharacterStaffSheetContentState
                                                     : null,
                                               )),
                                           const SizedBox(width: 10),
-                                          AnymeXText(
-                                            text: "On My List",
+                                          AnymeXText("On My List",
                                             size: 14,
                                             color: theme.onSurface
                                                 .withOpacity(0.7),
@@ -880,8 +869,7 @@ class _CharacterStaffSheetContentState
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 20),
                                     child: Center(
-                                      child: AnymeXText(
-                                        text: showOnlyOnList.value
+                                      child: AnymeXText(showOnlyOnList.value
                                             ? "No media found on your list"
                                             : "No media found",
                                         variant: TextVariant.semiBold,
@@ -928,9 +916,7 @@ class _CharacterStaffSheetContentState
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 10),
-                                              child: AnymeXText(
-                                                text:
-                                                    "TBA (${unknownYearMedia.length})",
+                                              child: AnymeXText("TBA (${unknownYearMedia.length})",
                                                 variant: TextVariant.bold,
                                                 size: 18,
                                                 color: theme.primary,
@@ -965,9 +951,7 @@ class _CharacterStaffSheetContentState
                                                   padding: const EdgeInsets
                                                       .symmetric(
                                                       horizontal: 10),
-                                                  child: AnymeXText(
-                                                    text:
-                                                        "$year (${mediaList.length})",
+                                                  child: AnymeXText("$year (${mediaList.length})",
                                                     variant: TextVariant.bold,
                                                     size: 18,
                                                     color: theme.primary,
@@ -1065,8 +1049,7 @@ class _CharacterStaffSheetContentState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            AnymeXText(
-                              text: character.name ?? '?',
+                            AnymeXText(character.name ?? '?',
                               size: 12,
                               color: Colors.white,
                               maxLines: 1,
@@ -1075,8 +1058,7 @@ class _CharacterStaffSheetContentState
                               variant: TextVariant.bold,
                             ),
                             if (media != null)
-                              AnymeXText(
-                                text: media.title,
+                              AnymeXText(media.title,
                                 size: 10,
                                 color: theme.primary,
                                 maxLines: 1,
@@ -1230,7 +1212,7 @@ class _CharacterStaffSheetContentState
                                 Icon(Iconsax.star1,
                                     size: 10, color: theme.primary),
                                 const SizedBox(width: 2),
-                                Text(
+                                AnymeXText(
                                   item.rating.isNotEmpty ? item.rating : '?',
                                   style: const TextStyle(
                                     color: Colors.white,
@@ -1255,7 +1237,7 @@ class _CharacterStaffSheetContentState
                                 color: theme.primary,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Text(
+                              child: AnymeXText(
                                 item.type.toUpperCase(),
                                 style: const TextStyle(
                                   color: Colors.white,
@@ -1272,8 +1254,7 @@ class _CharacterStaffSheetContentState
                     ),
                   ),
                   const SizedBox(height: 5),
-                  AnymeXText(
-                    text: item.title,
+                  AnymeXText(item.title,
                     variant: TextVariant.bold,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -1421,7 +1402,7 @@ class _SpoilerWidgetState extends State<SpoilerWidget> {
                   Icon(Iconsax.eye_slash,
                       size: 16, color: theme.colorScheme.primary),
                   const SizedBox(width: 8),
-                  Text(
+                  AnymeXText(
                     "Spoiler",
                     style: TextStyle(
                       color: theme.colorScheme.primary,
@@ -1474,8 +1455,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
           children: [
             SizedBox(
               width: 140,
-              child: AnymeXText(
-                text: "$label:",
+              child: AnymeXText("$label:",
                 size: 14,
                 variant: TextVariant.bold,
                 color: Theme.of(context).colorScheme.primary,
@@ -1483,8 +1463,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: AnymeXText(
-                text: value,
+              child: AnymeXText(value,
                 size: 14,
                 maxLines: 10,
                 variant: TextVariant.semiBold,
@@ -1504,8 +1483,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
           children: [
             SizedBox(
               width: 140,
-              child: AnymeXText(
-                text: "$label:",
+              child: AnymeXText("$label:",
                 size: 14,
                 variant: TextVariant.bold,
                 color: Theme.of(context).colorScheme.primary,
@@ -1541,8 +1519,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
     for (final match in spoilerRegex.allMatches(value)) {
       final before = value.substring(lastEnd, match.start).trim();
       if (before.isNotEmpty) {
-        widgets.add(AnymeXText(
-          text: before,
+        widgets.add(AnymeXText(before,
           size: 14,
           variant: TextVariant.semiBold,
           color: Theme.of(context).colorScheme.onSurface,
@@ -1553,8 +1530,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
     }
     final remaining = value.substring(lastEnd).trim();
     if (remaining.isNotEmpty) {
-      widgets.add(AnymeXText(
-        text: remaining,
+      widgets.add(AnymeXText(remaining,
         size: 14,
         variant: TextVariant.semiBold,
         color: Theme.of(context).colorScheme.onSurface,
@@ -1568,8 +1544,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
         children: [
           SizedBox(
             width: 140,
-            child: AnymeXText(
-              text: "$label:",
+            child: AnymeXText("$label:",
               size: 14,
               variant: TextVariant.bold,
               color: Theme.of(context).colorScheme.primary,

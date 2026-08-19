@@ -1,5 +1,6 @@
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnymeXDropdown extends StatefulWidget {
   final List<DropdownItem> items;
@@ -279,7 +280,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text(
+                                            AnymeXText(
                                               item.text,
                                               style: TextStyle(
                                                 fontSize: 15,
@@ -297,7 +298,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                                             ),
                                             if (item.subtitle != null) ...[
                                               const SizedBox(height: 2),
-                                              Text(
+                                              AnymeXText(
                                                 item.subtitle!,
                                                 style: TextStyle(
                                                   fontSize: 12,
@@ -398,7 +399,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                     color: context.colors.primary,
                   ),
                   const SizedBox(width: 12),
-                  Text(
+                  AnymeXText(
                     widget.label,
                     style: TextStyle(
                       fontSize: 13,
@@ -444,7 +445,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              AnymeXText(
                                 widget.selectedItem?.text ?? "No item selected",
                                 style: TextStyle(
                                   fontSize: 16,
@@ -459,7 +460,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                               ),
                               if (widget.selectedItem?.subtitle != null) ...[
                                 const SizedBox(height: 2),
-                                Text(
+                                AnymeXText(
                                   widget.selectedItem!.subtitle!,
                                   style: TextStyle(
                                     fontSize: 12,

@@ -8,6 +8,7 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 /// Out-of-sync banner shown in Freedom Seek mode.
 /// Appears when the member's playback drifts from the host.
@@ -66,7 +67,7 @@ class WatchiumSyncBanner extends StatelessWidget {
                   size: 18,
                 ),
                 const SizedBox(width: 10),
-                Text(
+                AnymeXText(
                   'Out of sync with host',
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.9),
@@ -82,7 +83,7 @@ class WatchiumSyncBanner extends StatelessWidget {
                     color: Colors.orange.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     'Sync',
                     style: TextStyle(
                       color: Colors.orange.shade300,
@@ -256,7 +257,7 @@ class _CommentCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Flexible(
-                child: Text(
+                child: AnymeXText(
                   '${entry.data.username}: ${entry.data.text}',
                   style: const TextStyle(
                     color: Colors.white,
@@ -413,7 +414,7 @@ class _EmojiBubble extends StatelessWidget {
         color: Colors.black.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Text(
+      child: AnymeXText(
         emoji.emoji,
         style: const TextStyle(fontSize: 28, height: 1),
       ),

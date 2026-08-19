@@ -621,7 +621,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                     .withValues(alpha: 0.3),
               ),
             ),
-            child: Text(
+            child: AnymeXText(
               key,
               style: TextStyle(
                 fontFamily: 'monospace',
@@ -633,7 +633,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Text(
+            child: AnymeXText(
               description,
               style: TextStyle(
                 color: context.colors.onSurface,
@@ -1095,7 +1095,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                   children: [
                     if (widget.isModal) ...[
                       const Center(
-                        child: Text("Player Settings",
+                        child: AnymeXText("Player Settings",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
@@ -1181,7 +1181,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
+                                              AnymeXText(
                                                 'Anime 4K Enhancement',
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w600,
@@ -1191,7 +1191,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                       .onSurface,
                                                 ),
                                               ),
-                                              Text(
+                                              AnymeXText(
                                                 'Real-time 4K upscaling for anime content',
                                                 style: TextStyle(
                                                   color: Theme.of(context)
@@ -1252,7 +1252,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                         const SizedBox(
                                                             width: 8),
                                                         Expanded(
-                                                          child: Text(
+                                                          child: AnymeXText(
                                                             _currentStatus
                                                                 .value,
                                                             style: TextStyle(
@@ -1266,7 +1266,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                             ),
                                                           ),
                                                         ),
-                                                        Text(
+                                                        AnymeXText(
                                                           '${(_downloadProgress.value * 100).toInt()}%',
                                                           style: TextStyle(
                                                             color: Theme.of(
@@ -1346,7 +1346,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                 CrossAxisAlignment
                                                                     .start,
                                                             children: [
-                                                              Text(
+                                                              AnymeXText(
                                                                 'Enable Shaders',
                                                                 style:
                                                                     TextStyle(
@@ -1359,7 +1359,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                       .onSurface,
                                                                 ),
                                                               ),
-                                                              Text(
+                                                              AnymeXText(
                                                                 getResponsiveValue(
                                                                     context,
                                                                     mobileValue:
@@ -1442,7 +1442,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                     CrossAxisAlignment
                                                                         .start,
                                                                 children: [
-                                                                  Text(
+                                                                  AnymeXText(
                                                                     'Choose Shader Profile',
                                                                     style:
                                                                         TextStyle(
@@ -1455,7 +1455,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                           .onSurface,
                                                                     ),
                                                                   ),
-                                                                  Text(
+                                                                  AnymeXText(
                                                                     'Choose accordingly to your system specs.\nMid End = Eg. GTX 980, GTX 1060, RX 570\nHigh End = Eg. GTX 1080, RTX 2070, RTX 3060, RX 590, Vega 56',
                                                                     style:
                                                                         TextStyle(
@@ -1564,7 +1564,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                 CrossAxisAlignment
                                                                     .start,
                                                             children: [
-                                                              Text(
+                                                              AnymeXText(
                                                                 'Warning',
                                                                 style:
                                                                     TextStyle(
@@ -1577,7 +1577,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                       .onSurface,
                                                                 ),
                                                               ),
-                                                              Text(
+                                                              AnymeXText(
                                                                 getResponsiveValue(
                                                                     context,
                                                                     mobileValue:
@@ -1669,7 +1669,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                           CrossAxisAlignment
                                                                               .start,
                                                                       children: [
-                                                                        Text(
+                                                                        AnymeXText(
                                                                           'Shader Profiles Initialized',
                                                                           style:
                                                                               TextStyle(
@@ -1679,7 +1679,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                                 context.colors.onSurface,
                                                                           ),
                                                                         ),
-                                                                        Text(
+                                                                        AnymeXText(
                                                                           'Use keyboard shortcuts during playback to switch profiles',
                                                                           style:
                                                                               TextStyle(
@@ -1696,7 +1696,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                               ),
                                                               const SizedBox(
                                                                   height: 16),
-                                                              Text(
+                                                              AnymeXText(
                                                                 'Available Keybindings:',
                                                                 style:
                                                                     TextStyle(
@@ -1748,7 +1748,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                   onPressed: _downloadShaders,
                                                   icon: const Icon(Iconsax
                                                       .document_download),
-                                                  label: const Text(
+                                                  label: const AnymeXText(
                                                       'Download 4K Shaders'),
                                                   style: FilledButton.styleFrom(
                                                     backgroundColor:
@@ -1768,7 +1768,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                 ),
                                               ),
                                               const SizedBox(height: 8),
-                                              Text(
+                                              AnymeXText(
                                                 'Download size: ~4MB',
                                                 style: TextStyle(
                                                   color: Theme.of(context)
@@ -2354,7 +2354,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    const AnymeXText(
                                       'Subtitle Preview',
                                       style: TextStyle(
                                           fontSize: 14,
@@ -2494,8 +2494,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-        child: AnymeXText(
-          text: label,
+        child: AnymeXText(label,
           size: 13,
           variant: TextVariant.bold,
           color: colors.primary,
@@ -2522,7 +2521,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
               size: 18, color: context.colors.primary),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(
+            child: AnymeXText(
               text,
               style: TextStyle(
                 color: context.colors.onSurface,
@@ -2558,7 +2557,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(
+            child: AnymeXText(
               'If you are using a JSON theme, changes here will not affect player controls. Switch to a built-in theme to apply these settings.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurface,

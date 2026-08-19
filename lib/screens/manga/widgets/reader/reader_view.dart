@@ -16,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ReaderView extends StatefulWidget {
   final ReaderController controller;
@@ -106,7 +107,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
         children: [
           AnymeXProgressIndicator(),
           SizedBox(height: 16),
-          Text('Loading pages...'),
+          AnymeXText('Loading pages...'),
         ],
       ),
     );
@@ -125,13 +126,13 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
               color: Colors.red.opaque(0.7),
             ),
             const SizedBox(height: 16),
-            Text(
+            AnymeXText(
               'Failed to load chapter',
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               widget.controller.errorMessage.value.isNotEmpty
                   ? widget.controller.errorMessage.value
                   : 'Something went wrong while loading the pages',
@@ -147,13 +148,13 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
                 ElevatedButton.icon(
                   onPressed: widget.controller.retryFetchImages,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Retry'),
+                  label: const AnymeXText('Retry'),
                 ),
                 const SizedBox(width: 16),
                 OutlinedButton.icon(
                   onPressed: () => Get.back(),
                   icon: const Icon(Icons.arrow_back),
-                  label: const Text('Go Back'),
+                  label: const AnymeXText('Go Back'),
                 ),
               ],
             ),
@@ -395,7 +396,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           children: [
             AnymeXProgressIndicator(value: progress),
             const SizedBox(height: 8),
-            Text('Loading page ${pageIndex + 1}$progressText...'),
+            AnymeXText('Loading page ${pageIndex + 1}$progressText...'),
           ],
         ),
       ),

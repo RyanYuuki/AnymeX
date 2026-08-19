@@ -128,15 +128,13 @@ class MinimalExoticCard extends CarouselCard {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (variant == DataVariant.library) ...[
-            AnymeXText(
-              text: !type.isAnime ? 'Chapter ' : 'Episode ',
+            AnymeXText(!type.isAnime ? 'Chapter ' : 'Episode ',
               size: 12,
               color: context.colors.onPrimary,
               variant: TextVariant.bold,
             ),
             const SizedBox(width: 4),
-            AnymeXText(
-              text: itemData.source ?? '',
+            AnymeXText(itemData.source ?? '',
               color: context.colors.onPrimary,
               size: 12,
               variant: TextVariant.bold,
@@ -153,8 +151,7 @@ class MinimalExoticCard extends CarouselCard {
               color: context.colors.onPrimary,
             ),
             const SizedBox(width: 4),
-            AnymeXText(
-              text: (itemData.extraData ?? '').replaceAll('_', ' '),
+            AnymeXText((itemData.extraData ?? '').replaceAll('_', ' '),
               color: context.colors.onPrimary,
               size: 12,
               variant: TextVariant.bold,

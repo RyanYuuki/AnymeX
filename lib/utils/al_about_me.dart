@@ -18,6 +18,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 String preprocessAnilistAbout(String raw) {
   final source = raw.trim();
@@ -204,7 +205,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
   @override
   Widget build(BuildContext context) {
     if (_failed) {
-      return Text(
+      return AnymeXText(
         widget.about,
         style: TextStyle(
           fontSize: 13.5,
@@ -577,7 +578,7 @@ class _AnilistMediaCardState extends State<_AnilistMediaCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              AnymeXText(
                                 data.title?.isNotEmpty == true
                                     ? data.title
                                     : (data.romajiTitle ?? 'Unknown'),
@@ -590,7 +591,7 @@ class _AnilistMediaCardState extends State<_AnilistMediaCard> {
                                 ),
                               ),
                               const SizedBox(height: 6),
-                              Text(
+                              AnymeXText(
                                 '${widget.type.capitalizeFirst} \u2022 ${data.status ?? "Unknown"}',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,

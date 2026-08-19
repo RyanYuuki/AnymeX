@@ -16,6 +16,8 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
   final bool isRadio;
   final bool isSelection;
   final bool Function(T)? showChevron;
+  final TextStyle Function(T)? getTitleStyle;
+  final TextStyle Function(T)? getSubtitleStyle;
 
   const AnymeXTileBuilder({
     super.key,
@@ -33,6 +35,8 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     this.isSelection = true,
     this.showChevron,
     this.maxLines,
+    this.getTitleStyle,
+    this.getSubtitleStyle,
   });
 
   final int? maxLines;
@@ -56,6 +60,8 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
             onTap: () => onItemPressed(item),
             showChevron: showChevron?.call(item) ?? false,
             maxLines: maxLines,
+            titleStyle: getTitleStyle?.call(item),
+            subtitleStyle: getSubtitleStyle?.call(item),
           );
         }
 
@@ -70,6 +76,8 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
             icon: getIcon?.call(item),
             selected: checked,
             onTap: () => onItemPressed(item),
+            titleStyle: getTitleStyle?.call(item),
+            subtitleStyle: getSubtitleStyle?.call(item),
           );
         } else {
           return AnymeXTile.checkbox(
@@ -78,6 +86,8 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
             icon: getIcon?.call(item),
             value: checked,
             onChanged: (_) => onItemPressed(item),
+            titleStyle: getTitleStyle?.call(item),
+            subtitleStyle: getSubtitleStyle?.call(item),
           );
         }
       }).toList(),

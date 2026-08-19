@@ -4,6 +4,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class FutureReusableCarousel extends StatefulWidget {
   final Future<List<dynamic>> future;
@@ -75,7 +76,7 @@ class _FutureReusableCarouselState extends State<FutureReusableCarousel> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            AnymeXText(
                               widget.title,
                               style: TextStyle(
                                 fontFamily: 'Poppins-SemiBold',
@@ -84,7 +85,7 @@ class _FutureReusableCarouselState extends State<FutureReusableCarousel> {
                               ),
                             ),
                             const SizedBox(height: 2),
-                            Text(
+                            AnymeXText(
                               '${snapshot.error}',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,

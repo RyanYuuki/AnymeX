@@ -323,7 +323,7 @@ class _NovelReaderState extends State<NovelReader>
                   ),
                   child: Column(
                     children: [
-                      Text(
+                      AnymeXText(
                         displaySubtitle,
                         style: TextStyle(
                           fontSize: 12,
@@ -331,8 +331,7 @@ class _NovelReaderState extends State<NovelReader>
                         ),
                       ),
                       const SizedBox(height: 4),
-                      AnymeXText(
-                        text: displayTitle,
+                      AnymeXText(displayTitle,
                         size: 14,
                         variant: TextVariant.semiBold,
                         color: context.colors.onSurface,

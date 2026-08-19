@@ -131,8 +131,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
               ),
               const SizedBox(width: 8),
               Flexible(
-                child: AnymeXText(
-                  text: username,
+                child: AnymeXText(username,
                   variant: TextVariant.semiBold,
                   color: context.colors.primary,
                   maxLines: 1,
@@ -145,8 +144,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                     size: 16, color: context.colors.primary),
               ],
               const SizedBox(width: 4),
-              AnymeXText(
-                text: "'s Recs",
+              AnymeXText("'s Recs",
                 variant: TextVariant.semiBold,
                 color: context.colors.onSurfaceVariant,
               ),
@@ -178,8 +176,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
             ),
             const SizedBox(width: 8),
             Flexible(
-              child: AnymeXText(
-                text: username,
+              child: AnymeXText(username,
                 variant: TextVariant.semiBold,
                 color: context.colors.primary,
                 maxLines: 1,
@@ -192,8 +189,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                   size: 16, color: context.colors.primary),
             ],
             const SizedBox(width: 4),
-            AnymeXText(
-              text: "'s Recs",
+            AnymeXText("'s Recs",
               variant: TextVariant.semiBold,
               color: context.colors.onSurfaceVariant,
             ),
@@ -244,8 +240,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                 size: 48,
                 color: context.colors.onSurfaceVariant.withOpacity(0.5)),
             const SizedBox(height: 12),
-            AnymeXText(
-              text: 'No recommendations found',
+            AnymeXText('No recommendations found',
               color: context.colors.onSurfaceVariant.withOpacity(0.7),
               variant: TextVariant.semiBold,
             ),
@@ -320,8 +315,7 @@ class _RecCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      child: AnymeXText(
-                        text: item.media.rating.toString(),
+                      child: AnymeXText(item.media.rating.toString(),
                         size: 10,
                         color: Colors.white,
                         variant: TextVariant.semiBold,
@@ -333,16 +327,14 @@ class _RecCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          AnymeXText(
-            text: item.media.title,
+          AnymeXText(item.media.title,
             variant: TextVariant.semiBold,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             size: 11,
           ),
           const SizedBox(height: 2),
-          AnymeXText(
-            text: item.reason.displayText,
+          AnymeXText(item.reason.displayText,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             size: 10,
@@ -385,7 +377,7 @@ class _Avatar extends StatelessWidget {
               radius: size / 2,
             )
           : Center(
-              child: Text(
+              child: AnymeXText(
                 (fallbackLabel?.trim().isNotEmpty == true
                         ? fallbackLabel!.trim()[0]
                         : '?')

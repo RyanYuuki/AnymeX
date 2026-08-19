@@ -163,7 +163,7 @@ class SocialTabState extends State<SocialTab> {
                   segments: [
                     ButtonSegment(
                       value: 0,
-                      label: Text(
+                      label: AnymeXText(
                         'Following (${_following.length})',
                         style: TextStyle(
                           fontSize: 13,
@@ -176,7 +176,7 @@ class SocialTabState extends State<SocialTab> {
                     ),
                     ButtonSegment(
                       value: 1,
-                      label: Text(
+                      label: AnymeXText(
                         'Followers (${_followers.length})',
                         style: TextStyle(
                           fontSize: 13,
@@ -223,7 +223,7 @@ class SocialTabState extends State<SocialTab> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 40),
             child: Center(
-              child: Text(
+              child: AnymeXText(
                 _socialSubTab == 0 ? 'Not following anyone' : 'No followers',
                 style: TextStyle(
                   color: context.theme.colorScheme.onSurfaceVariant
@@ -330,8 +330,7 @@ class SocialTabState extends State<SocialTab> {
                                     ),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: AnymeXText(
-                                      text: user.name,
+                                    child: AnymeXText(user.name,
                                       size: 15,
                                       variant: TextVariant.bold,
                                       color:
@@ -426,8 +425,7 @@ class SocialTabState extends State<SocialTab> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 4),
-                              child: AnymeXText(
-                                text: user.name,
+                              child: AnymeXText(user.name,
                                 size: 11.5,
                                 variant: TextVariant.bold,
                                 color: context.theme.colorScheme.onSurface,
@@ -455,7 +453,7 @@ class SocialTabState extends State<SocialTab> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Center(
-              child: Text(
+              child: AnymeXText(
                 'No more users',
                 style: TextStyle(
                   fontSize: 12,

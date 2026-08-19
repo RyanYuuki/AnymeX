@@ -5,6 +5,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SyncSubsPopup extends StatelessWidget {
   final PlayerController controller;
@@ -105,7 +106,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                AnymeXText(
                   '${seconds.toStringAsFixed(1)}s',
                   style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -122,7 +123,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                         : cs.tertiary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     seconds == 0
                         ? 'In sync'
                         : (seconds > 0 ? 'Delayed' : 'Earlier'),
@@ -166,7 +167,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: cs.outline.withOpacity(0.15)),
         ),
-        child: Text(
+        child: AnymeXText(
           label,
           style: theme.textTheme.labelMedium?.copyWith(
             fontWeight: FontWeight.w600,
@@ -298,7 +299,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                                 : cs.surfaceContainerHighest.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             _formatDuration(cue.start),
                             style: theme.textTheme.labelSmall?.copyWith(
                               fontFamily: 'monospace',
@@ -312,7 +313,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Text(
+                          child: AnymeXText(
                             cue.text,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: isActive
@@ -374,7 +375,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
           Icon(Icons.subtitles_off_rounded,
               size: 48, color: cs.onSurface.withOpacity(0.3)),
           const SizedBox(height: 16),
-          Text(
+          AnymeXText(
             'No subtitle cues loaded',
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.withOpacity(0.5),
@@ -383,7 +384,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Text(
+            child: AnymeXText(
               'Cues are only available for external subtitles. Use the delay controls above to sync embedded tracks.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(

@@ -16,6 +16,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Future<void> showTrackSheet(
   BuildContext context, {
@@ -101,7 +102,7 @@ class _TrackSheetState extends State<_TrackSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Search failed: $e')),
+          SnackBar(content: AnymeXText('Search failed: $e')),
         );
       }
     } finally {
@@ -184,7 +185,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        AnymeXText(
                           _searchingTracker != null
                               ? 'Search on ${_searchingTracker!.label}'
                               : 'Track this media',
@@ -194,7 +195,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        Text(
+                        AnymeXText(
                           widget.title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -213,7 +214,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                         _searchResults = [];
                         _searchCtrl.clear();
                       }),
-                      child: const Text('Back'),
+                      child: const AnymeXText('Back'),
                     ),
                 ],
               ),
@@ -243,7 +244,7 @@ class _TrackSheetState extends State<_TrackSheet> {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
           shrinkWrap: true,
           children: [
-            Text(
+            AnymeXText(
               'Logged-in tracking services',
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.5),
@@ -264,7 +265,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                     ),
               ),
             const SizedBox(height: 12),
-            Text(
+            AnymeXText(
               'A single media can be tracked on all logged-in services at once. '
               'Progress is pushed to every bound service in parallel.',
               style: TextStyle(
@@ -312,7 +313,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                 height: 34,
                 color: Color(tracker.color),
                 child: Center(
-                  child: Text(
+                  child: AnymeXText(
                     tracker.label.substring(0, 1),
                     style: const TextStyle(
                         color: Colors.white, fontWeight: FontWeight.w800),
@@ -331,7 +332,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                       children: [
                         Row(
                           children: [
-                            Text(
+                            AnymeXText(
                               tracker.label,
                               style: TextStyle(
                                 color: theme.onSurface,
@@ -346,7 +347,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                           ],
                         ),
                         const SizedBox(height: 2),
-                        Text(
+                        AnymeXText(
                           _formatBindingSummary(b),
                           style: TextStyle(
                             color: theme.onSurface.withOpacity(0.55),
@@ -359,7 +360,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         tracker.label,
                         style: TextStyle(
                           color: theme.onSurface,
@@ -368,7 +369,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      AnymeXText(
                         'Not tracked',
                         style: TextStyle(
                           color: theme.onSurface.withOpacity(0.4),
@@ -408,7 +409,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               },
               icon: Icon(Icons.add_link_rounded,
                   size: 16, color: theme.primary),
-              label: Text('Track',
+              label: AnymeXText('Track',
                   style: TextStyle(color: theme.primary)),
             ),
         ],
@@ -553,7 +554,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                                     : theme.onSurface.withOpacity(0.5)),
                             const SizedBox(width: 5),
                             Flexible(
-                              child: Text(
+                              child: AnymeXText(
                                 label,
                                 style: TextStyle(
                                   fontSize: 11,
@@ -617,7 +618,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               child: Row(
                 children: [
                   FilterChip(
-                    label: const Text('18+',
+                    label: const AnymeXText('18+',
                         style: TextStyle(
                             fontSize: 11, fontWeight: FontWeight.w700)),
                     selected: _showAdult,
@@ -650,7 +651,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                     padding: EdgeInsets.zero,
                   ),
                   const SizedBox(width: 8),
-                  Text(
+                  AnymeXText(
                     _showAdult
                         ? 'Showing all titles (incl. 18+)'
                         : 'Hiding 18+ content',
@@ -672,7 +673,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                     ? Center(
                         child: Padding(
                           padding: const EdgeInsets.all(24),
-                          child: Text(
+                          child: AnymeXText(
                             'No results. Try searching by title.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -769,7 +770,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                       size: 20, color: theme.onSurface.withOpacity(0.3)),
                 ),
         ),
-        title: Text(
+        title: AnymeXText(
           r.title,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -779,7 +780,7 @@ class _TrackSheetState extends State<_TrackSheet> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        subtitle: Text(
+        subtitle: AnymeXText(
           _formatSearchResultSubtitle(r, tracker),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -794,7 +795,7 @@ class _TrackSheetState extends State<_TrackSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             minimumSize: const Size(0, 34),
           ),
-          child: const Text('Track', style: TextStyle(fontSize: 12)),
+          child: const AnymeXText('Track', style: TextStyle(fontSize: 12)),
         ),
       ),
     );
@@ -809,7 +810,7 @@ class _TrackSheetState extends State<_TrackSheet> {
           Icon(Icons.login_rounded,
               size: 36, color: theme.onSurface.withOpacity(0.3)),
           const SizedBox(height: 14),
-          Text(
+          AnymeXText(
             'No tracking service connected',
             style: TextStyle(
               color: theme.onSurface,
@@ -818,7 +819,7 @@ class _TrackSheetState extends State<_TrackSheet> {
             ),
           ),
           const SizedBox(height: 6),
-          Text(
+          AnymeXText(
             'Log in to AniList, MyAnimeList or Simkl from Settings → Accounts '
             'to track this media.',
             textAlign: TextAlign.center,
@@ -835,7 +836,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               navigate(() => const SettingsAccounts());
             },
             icon: const Icon(Icons.settings_rounded, size: 16),
-            label: const Text('Open Settings'),
+            label: const AnymeXText('Open Settings'),
           ),
         ],
       ),

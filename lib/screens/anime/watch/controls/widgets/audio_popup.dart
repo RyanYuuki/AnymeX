@@ -8,6 +8,7 @@ import 'package:anymex/utils/language.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 enum _AudioTab { source, inbuilt }
 
@@ -222,7 +223,7 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
             ),
             Padding(
               padding: const EdgeInsets.only(top: 20, bottom: 10, left: 4),
-              child: Text(
+              child: AnymeXText(
                 'AUDIO CHANNELS / LAYOUT',
                 style: theme.textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -256,7 +257,7 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
         children: [
           Icon(icon, size: 48, color: cs.onSurface.withOpacity(0.3)),
           const SizedBox(height: 16),
-          Text(
+          AnymeXText(
             message,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.withOpacity(0.5),

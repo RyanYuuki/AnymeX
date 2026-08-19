@@ -175,8 +175,7 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
                       constraints: BoxConstraints(
                         maxWidth: maxHeaderWidth,
                       ),
-                      child: AnymeXText(
-                        text: widget.title,
+                      child: AnymeXText(widget.title,
                         variant: TextVariant.bold,
                         size: 16.0,
                         maxLines: 1,
@@ -186,8 +185,7 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
                     if (widget.subtitle != null &&
                         widget.subtitle!.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      AnymeXText(
-                        text: widget.subtitle!,
+                      AnymeXText(widget.subtitle!,
                         variant: TextVariant.regular,
                         size: 11,
                         color: theme.colorScheme.onSurface.opaque(0.6),

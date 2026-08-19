@@ -1,6 +1,7 @@
 import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class MinimalMediaIndicatorTheme extends MediaIndicatorTheme {
   @override
@@ -112,7 +113,7 @@ class _TopLineBar extends StatelessWidget {
             builder: (context, animValue, _) {
               return SizedBox(
                 width: 34,
-                child: Text(
+                child: AnymeXText(
                   '${(animValue * 100).round()}%',
                   style: const TextStyle(
                     color: Colors.white,

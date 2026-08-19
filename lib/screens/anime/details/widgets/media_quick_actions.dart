@@ -6,6 +6,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Widget buildMediaQuickActions(
     BuildContext context, MediaDetailsController controller) {
@@ -137,7 +138,7 @@ Widget _buildQuickActionButton({
             ),
             const SizedBox(width: 8),
             Flexible(
-              child: Text(
+              child: AnymeXText(
                 label.toUpperCase(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

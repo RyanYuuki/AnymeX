@@ -83,8 +83,7 @@ class InlineSearchHistory extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    AnymeXText(
-                      text: 'Recent Searches',
+                    AnymeXText('Recent Searches',
                       variant: TextVariant.semiBold,
                       size: 15,
                       color: Theme.of(context)
@@ -116,8 +115,7 @@ class InlineSearchHistory extends StatelessWidget {
                               .opaque(0.8, iReallyMeanIt: true),
                         ),
                         const SizedBox(width: 4),
-                        AnymeXText(
-                          text: "Clear",
+                        AnymeXText("Clear",
                           size: 11,
                           color: Theme.of(context)
                               .colorScheme
@@ -174,8 +172,7 @@ class InlineSearchHistory extends StatelessWidget {
                             ),
                             const SizedBox(width: 16),
                             Expanded(
-                              child: AnymeXText(
-                                text: term,
+                              child: AnymeXText(term,
                                 variant: TextVariant.semiBold,
                                 size: 14,
                                 color: Theme.of(context)

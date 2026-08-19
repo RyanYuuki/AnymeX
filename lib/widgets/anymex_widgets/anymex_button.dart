@@ -5,6 +5,7 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 enum ButtonVariant { simple, outline }
 
@@ -227,7 +228,7 @@ class AnymeXButton2 extends StatelessWidget {
                 ),
               const SizedBox(width: 8),
               if (label != null)
-                Text(
+                AnymeXText(
                   label!,
                   style: TextStyle(
                     color: context.colors.onSurface,

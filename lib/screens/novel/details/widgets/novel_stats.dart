@@ -45,8 +45,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const AnymeXText(
-                text: "Statistics",
+              const AnymeXText("Statistics",
                 variant: TextVariant.bold,
                 size: 20,
               ),
@@ -81,8 +80,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const AnymeXText(
-                text: "Synopsis",
+              const AnymeXText("Synopsis",
                 variant: TextVariant.bold,
                 size: 16,
               ),
@@ -102,8 +100,7 @@ class NovelStats extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (data.genres.isNotEmpty) ...[
-          const AnymeXText(
-            text: "Genres",
+          const AnymeXText("Genres",
             variant: TextVariant.bold,
             size: 17,
           ),
@@ -150,14 +147,12 @@ class StateItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        AnymeXText(
-          text: label,
+        AnymeXText(label,
           variant: TextVariant.semiBold,
           color: context.colors.onSurface.opaque(0.9),
         ),
         Expanded(
-          child: AnymeXText(
-            text: value,
+          child: AnymeXText(value,
             variant: TextVariant.semiBold,
             color: context.colors.primary,
             maxLines: 1,
@@ -184,7 +179,7 @@ class AdaptationInfoColumn extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: chapters
-          .map((chapter) => Text(
+          .map((chapter) => AnymeXText(
                 chapter,
                 style: TextStyle(color: context.colors.primary),
               ))

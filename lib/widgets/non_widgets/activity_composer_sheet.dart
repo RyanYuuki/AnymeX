@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/markdown.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ActivityComposerSheet extends StatefulWidget {
   final Future<bool> Function(String text, {bool isPrivate}) onSubmit;
@@ -186,7 +187,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
       builder: (context) {
         return AlertDialog(
           backgroundColor: context.theme.colorScheme.surfaceContainer,
-          title: Text(
+          title: AnymeXText(
             'Insert $type',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
@@ -207,7 +208,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, null),
-              child: Text('Cancel',
+              child: AnymeXText('Cancel',
                   style: TextStyle(
                       color: context.theme.colorScheme.onSurfaceVariant)),
             ),
@@ -217,7 +218,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                 foregroundColor: context.theme.colorScheme.onPrimary,
               ),
               onPressed: () => Navigator.pop(context, inputUrl),
-              child: const Text('Insert'),
+              child: const AnymeXText('Insert'),
             ),
           ],
         );
@@ -246,7 +247,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                   segments: [
                     ButtonSegment(
                       value: 0,
-                      label: Text('Compose',
+                      label: AnymeXText('Compose',
                           style: TextStyle(
                               color: _previewMode
                                   ? context.theme.colorScheme.onSurfaceVariant
@@ -261,7 +262,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                     ),
                     ButtonSegment(
                       value: 1,
-                      label: Text('Preview',
+                      label: AnymeXText('Preview',
                           style: TextStyle(
                               color: !_previewMode
                                   ? context.theme.colorScheme.onSurfaceVariant
@@ -343,7 +344,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                       ),
                       child: SingleChildScrollView(
                         child: _textController.text.trim().isEmpty
-                            ? Text("Nothing to preview",
+                            ? AnymeXText("Nothing to preview",
                                 style: TextStyle(
                                     color: context
                                         .theme.colorScheme.onSurfaceVariant))

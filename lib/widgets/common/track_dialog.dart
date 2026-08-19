@@ -60,15 +60,13 @@ class _TrackingDialogState extends State<TrackingDialog> {
             ),
           ),
           const SizedBox(height: 16),
-          const AnymeXText(
-            text: 'Track your progress?',
+          const AnymeXText('Track your progress?',
             size: 18,
             variant: TextVariant.bold,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
-          AnymeXText(
-            text: widget.isManga
+          AnymeXText(widget.isManga
                 ? 'Sync your reading progress with AniList and MyAnimeList'
                 : 'Sync your watch progress with AniList and MyAnimeList',
             size: 13,

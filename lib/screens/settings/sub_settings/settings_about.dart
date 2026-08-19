@@ -16,6 +16,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Future<void> launchUrlHelper(String link) async {
   final url = Uri.parse(link);
@@ -381,21 +382,21 @@ class _ForksPage extends StatelessWidget {
                           CachedNetworkImageProvider(fork.devAvatarUrl),
                       backgroundColor: colors.primaryContainer,
                     ),
-                    title: Text(
+                    title: AnymeXText(
                       fork.name,
                       style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        AnymeXText(
                           fork.description,
                           style: TextStyle(
                             fontSize: 12,
                             color: colors.onSurface.withOpacity(0.6),
                           ),
                         ),
-                        Text(
+                        AnymeXText(
                           'by ${fork.devName}',
                           style: TextStyle(
                             fontSize: 11,

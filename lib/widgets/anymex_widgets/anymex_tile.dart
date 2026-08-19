@@ -19,6 +19,8 @@ class AnymeXTile extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool enabled;
   final Widget? customContent;
+  final TextStyle? titleStyle;
+  final TextStyle? subtitleStyle;
 
   const AnymeXTile({
     super.key,
@@ -36,6 +38,8 @@ class AnymeXTile extends StatelessWidget {
     this.enabled = true,
     this.customContent,
     this.maxLines,
+    this.titleStyle,
+    this.subtitleStyle,
   });
 
   final int? maxLines;
@@ -206,8 +210,7 @@ class AnymeXTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(10),
 
             ),
-            child: AnymeXText(
-              text: formatValue(value),
+            child: AnymeXText(formatValue(value),
               size: 12,
               variant: TextVariant.semiBold,
               color: primary,
@@ -250,6 +253,8 @@ class AnymeXTile extends StatelessWidget {
     BorderRadius? borderRadius,
     EdgeInsetsGeometry? padding,
     bool enabled = true,
+    TextStyle? titleStyle,
+    TextStyle? subtitleStyle,
   }) {
     return AnymeXTile(
       key: key,
@@ -264,6 +269,8 @@ class AnymeXTile extends StatelessWidget {
       enabled: enabled,
       showChevron: false,
       onTap: enabled ? onTap : null,
+      titleStyle: titleStyle,
+      subtitleStyle: subtitleStyle,
       trailing: Builder(
         builder: (context) {
           final colors = context.colors;
@@ -310,6 +317,8 @@ class AnymeXTile extends StatelessWidget {
     BorderRadius? borderRadius,
     EdgeInsetsGeometry? padding,
     bool enabled = true,
+    TextStyle? titleStyle,
+    TextStyle? subtitleStyle,
   }) {
     return AnymeXTile(
       key: key,
@@ -324,6 +333,8 @@ class AnymeXTile extends StatelessWidget {
       enabled: enabled,
       showChevron: false,
       onTap: enabled && onChanged != null ? () => onChanged(!value) : null,
+      titleStyle: titleStyle,
+      subtitleStyle: subtitleStyle,
       trailing: Builder(
         builder: (context) {
           final colors = context.colors;
@@ -477,25 +488,25 @@ class AnymeXTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AnymeXText(
-                      text: title,
+                    AnymeXText(title,
                       size: 14.5,
                       maxLines: maxLines ?? 2,
                       variant: TextVariant.semiBold,
                       color: enabled
                           ? colors.onSurface
                           : colors.onSurface.opaque(0.4, iReallyMeanIt: true),
+                      style: titleStyle,
                     ),
                     if (subtitle != null && subtitle!.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      AnymeXText(
-                        text: subtitle!,
+                      AnymeXText(subtitle!,
                         size: 12,
                         variant: TextVariant.regular,
                         color:
                             colors.onSurface.opaque(0.45, iReallyMeanIt: true),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
+                        style: subtitleStyle,
                       ),
                     ],
                   ],

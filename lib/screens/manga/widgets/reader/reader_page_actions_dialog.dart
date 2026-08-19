@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Future<void> showReaderPageActionsDialog(
   BuildContext context,
@@ -59,7 +60,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          Text(
+          AnymeXText(
             'Page Actions',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -240,7 +241,7 @@ class _ActionButton extends StatelessWidget {
           children: [
             Icon(icon, size: 28, color: context.colors.primary),
             const SizedBox(height: 6),
-            Text(label,
+            AnymeXText(label,
                 style: TextStyle(fontSize: 12, color: context.colors.onSurface)),
           ],
         ),

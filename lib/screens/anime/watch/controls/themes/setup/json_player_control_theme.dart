@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 
 class JsonThemeParseResult {
@@ -683,7 +684,7 @@ class ThemeRenderer {
       crossAxisAlignment: crossAxis,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        AnymeXText(
           topText,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -885,7 +886,7 @@ class ThemeRenderer {
         borderRadius: BorderRadius.circular(style.radius),
         border: Border.all(color: borderColor, width: style.borderWidth),
       ),
-      child: Text(
+      child: AnymeXText(
         text,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -947,7 +948,7 @@ class ThemeRenderer {
         style.backgroundColor!.trim().isNotEmpty &&
         style.backgroundColor!.trim().toLowerCase() != 'transparent';
 
-    Widget textWidget = Text(
+    Widget textWidget = AnymeXText(
       value,
       maxLines: maxLines,
       overflow: TextOverflow.ellipsis,

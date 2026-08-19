@@ -101,7 +101,7 @@ class BigCarouselClassicState extends State<BigCarouselClassic> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    const AnymeXText(
                       'Description',
                       style: TextStyle(
                         fontSize: 26,
@@ -121,7 +121,7 @@ class BigCarouselClassicState extends State<BigCarouselClassic> {
                   padding: const EdgeInsets.fromLTRB(24, 4, 24, 32),
                   child: cleanDescription.isEmpty
                       ? buildEmptyDescriptionState(colors)
-                      : Text(
+                      : AnymeXText(
                           cleanDescription,
                           style: TextStyle(
                             fontSize: 15.5,
@@ -283,7 +283,7 @@ Widget buildEmptyDescriptionState(ColorScheme colors) {
             ),
           ),
           const SizedBox(height: 16),
-          Text(
+          AnymeXText(
             'No Description Available',
             style: TextStyle(
               fontWeight: FontWeight.w700,
@@ -393,7 +393,7 @@ Widget buildCarouselCard({
                                       size: 14,
                                       color: colors.onTertiaryContainer),
                                   const SizedBox(width: 4),
-                                  Text(
+                                  AnymeXText(
                                     rating,
                                     style: TextStyle(
                                       fontSize: 12,
@@ -422,8 +422,7 @@ Widget buildCarouselCard({
                                 child: Row(
                                   children: [
                                     Expanded(
-                                      child: AnymeXText(
-                                        text: cleanDescription.isNotEmpty
+                                      child: AnymeXText(cleanDescription.isNotEmpty
                                             ? cleanDescription
                                             : 'Tap to read description',
                                         size: 12.5,

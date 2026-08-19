@@ -150,8 +150,7 @@ class MediaHeader extends StatelessWidget {
                           Clipboard.setData(ClipboardData(text: title));
                           snackBar('Title copied');
                         },
-                        child: AnymeXText(
-                          text: data?.title ?? 'Loading...',
+                        child: AnymeXText(data?.title ?? 'Loading...',
                           variant: TextVariant.bold,
                           size: isDesktop ? 28 : 20,
                           maxLines: 3,
@@ -289,8 +288,7 @@ class MediaHeader extends StatelessWidget {
           color: context.colors.onSurface.opaque(0.1, iReallyMeanIt: true),
         ),
       ),
-      child: AnymeXText(
-        text: val,
+      child: AnymeXText(val,
         variant: TextVariant.semiBold,
         size: 11,
       ),

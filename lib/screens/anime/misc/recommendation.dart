@@ -125,9 +125,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             icon: const Icon(Icons.arrow_back_ios_new),
           ),
           title: Obx(() {
-            return AnymeXText(
-              text:
-                  "AI Picks ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
+            return AnymeXText("AI Picks ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
               color: context.colors.primary,
             );
           }),
@@ -175,8 +173,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             decoration: BoxDecoration(
                 color: context.colors.primary,
                 borderRadius: BorderRadius.circular(12.multiplyRadius())),
-            child: AnymeXText(
-              text: "Search",
+            child: AnymeXText("Search",
               variant: TextVariant.semiBold,
               color: context.colors.onPrimary,
             ),
@@ -213,7 +210,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
-                          child: Text(
+                          child: AnymeXText(
                             'No more recommendations',
                             style: TextStyle(
                               color: Theme.of(context)
@@ -274,8 +271,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const AnymeXText(
-                  text: "Settings",
+                const AnymeXText("Settings",
                   variant: TextVariant.bold,
                   size: 20,
                 ),
@@ -284,8 +280,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AnymeXText(
-                        text: "Grid",
+                      AnymeXText("Grid",
                         variant: TextVariant.bold,
                         color: context.colors.primary,
                       ),
@@ -301,8 +296,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AnymeXText(
-                        text: "18+",
+                      AnymeXText("18+",
                         variant: TextVariant.bold,
                         color: context.colors.primary,
                       ),
@@ -352,8 +346,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnymeXText(
-                    text: data.title,
+                  AnymeXText(data.title,
                     variant: TextVariant.semiBold,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -361,8 +354,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   ),
                   const SizedBox(height: 5),
                   Flexible(
-                    child: AnymeXText(
-                      text: data.description,
+                    child: AnymeXText(data.description,
                       color: Colors.grey[300],
                       maxLines: 5,
                       overflow: TextOverflow.ellipsis,
@@ -382,8 +374,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                                 borderRadius:
                                     BorderRadius.circular(8.multiplyRadius()),
                               ),
-                              child: AnymeXText(
-                                text: e,
+                              child: AnymeXText(e,
                                 variant: TextVariant.semiBold,
                                 color: context.colors.onPrimary,
                               ),

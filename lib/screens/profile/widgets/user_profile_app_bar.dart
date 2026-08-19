@@ -12,6 +12,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class UserProfileAppBar extends StatefulWidget {
   final Profile user;
@@ -115,7 +116,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Text(
+                        AnymeXText(
                           'More Options',
                           style: TextStyle(
                             fontSize: 18,
@@ -155,7 +156,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Text(
+                                  content: const AnymeXText(
                                     'User ID copied to clipboard',
                                   ),
                                   backgroundColor: context.theme.colorScheme
@@ -377,7 +378,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                               : Colors.white,
                                         ),
                                       const SizedBox(width: 5),
-                                      Text(
+                                      AnymeXText(
                                         getFollowLabel(
                                             isFollowing: widget.isFollowingUser,
                                             isFollower:
@@ -455,7 +456,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                             MediaQuery.sizeOf(context).width *
                                                 0.55,
                                       ),
-                                      child: Text(
+                                      child: AnymeXText(
                                         badgeText,
                                         softWrap: true,
                                         style: TextStyle(
@@ -489,7 +490,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                         color: Colors.white70,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
+                                      AnymeXText(
                                         'Joined ${DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year}',
                                         style: const TextStyle(
                                           fontSize: 10,

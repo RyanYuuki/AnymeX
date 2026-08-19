@@ -14,6 +14,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class Ios26PlayerControlTheme extends PlayerControlTheme {
   Ios26PlayerControlTheme();
@@ -291,7 +292,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                           CrossAxisAlignment.start,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Text(
+                                        AnymeXText(
                                           _getSubtitleText(controller),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -307,7 +308,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                         Row(
                                           children: [
                                             Expanded(
-                                              child: Text(
+                                              child: AnymeXText(
                                                 _getTitleText(controller),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
@@ -340,7 +341,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                                   border: Border.all(
                                                       color: Colors.white.withOpacity(0.15)),
                                                 ),
-                                                child: Text(
+                                                child: AnymeXText(
                                                   '$pos / $dur',
                                                   style: const TextStyle(
                                                     color: Colors.white,
@@ -814,7 +815,7 @@ class _Ios26GlassPillButton extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Text(
+              child: AnymeXText(
                 label,
                 style: const TextStyle(
                   color: Colors.white,
@@ -884,7 +885,7 @@ class _Ios26GlassSkipChip extends StatelessWidget {
                     Icon(icon, size: 16, color: Colors.white),
                     const SizedBox(width: 6),
                   ],
-                  Text(
+                  AnymeXText(
                     label,
                     style: const TextStyle(
                       color: Colors.white,
@@ -991,7 +992,7 @@ class _Ios26UnlockButtonState extends State<_Ios26UnlockButton>
                     },
                   ),
                   const SizedBox(width: 10),
-                  const Text(
+                  const AnymeXText(
                     'Hold to Unlock',
                     style: TextStyle(
                       color: Colors.white,

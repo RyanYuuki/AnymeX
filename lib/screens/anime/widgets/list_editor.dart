@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ListEditorModal extends StatefulWidget {
   final RxString animeStatus;
@@ -528,7 +529,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              AnymeXText(
                 'Edit Media Entry',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
@@ -536,7 +537,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                     ),
               ),
               const SizedBox(height: 2),
-              Text(
+              AnymeXText(
                 widget.media.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -582,13 +583,13 @@ class _ListEditorModalState extends State<ListEditorModal> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              AnymeXText(
                 'Season',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
               ),
-              Text(
+              AnymeXText(
                 maxSeason != null ? '$_localSeason / $maxSeason' : _localSeason.toString(),
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: colors.onSurface,
@@ -681,7 +682,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              AnymeXText(
                 'Progress',
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: colors.onSurfaceVariant,
@@ -835,7 +836,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
               color: colors.surfaceContainerHighest,
               border: BorderSide.none,
               borderRadius: BorderRadius.circular(14),
-              child: Text(
+              child: AnymeXText(
                 'Delete',
                 style: TextStyle(
                   color: colors.error,
@@ -883,7 +884,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                   children: [
                     Opacity(
                       opacity: _isSaving ? 0 : 1,
-                      child: Text(
+                      child: AnymeXText(
                         'Save changes',
                         style: TextStyle(
                           color: colors.onPrimary,

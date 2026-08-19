@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnymeXSegmentedButton extends StatelessWidget {
   final VoidCallback? onTap;
@@ -50,7 +51,7 @@ class AnymeXSegmentedButton extends StatelessWidget {
                           isSelected ? context.colors.onPrimary : Colors.grey,
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    AnymeXText(
                       title ?? '',
                       style: TextStyle(
                         fontFamily: "Poppins-Bold",

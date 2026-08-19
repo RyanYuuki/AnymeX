@@ -71,8 +71,7 @@ class AnimeCard extends StatelessWidget {
                             color: context.colors.primary,
                           ),
                           const SizedBox(width: 3),
-                          AnymeXText(
-                            text: data.rating ?? '0.0',
+                          AnymeXText(data.rating ?? '0.0',
                             variant: TextVariant.bold,
                           ),
                           const SizedBox(width: 3),
@@ -103,8 +102,7 @@ class AnimeCard extends StatelessWidget {
                             color: context.colors.primary,
                           ),
                           const SizedBox(width: 3),
-                          AnymeXText(
-                            text: data.currentEpisode?.number ?? '??',
+                          AnymeXText(data.currentEpisode?.number ?? '??',
                             variant: TextVariant.bold,
                           ),
                           const SizedBox(width: 3),
@@ -118,8 +116,7 @@ class AnimeCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               width: double.infinity,
-              child: AnymeXText(
-                text: data.name ?? '??',
+              child: AnymeXText(data.name ?? '??',
                 size: 13,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

@@ -67,7 +67,7 @@ Future<void> snackString(
       final snackBar = SnackBar(
         content: GestureDetector(
           onTap: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-          child: Text(
+          child: AnymeXText(
             s,
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -728,8 +728,7 @@ Widget buildNewsSection(BuildContext context, List<NewsItem> news) {
             child: Row(
               children: [
                 Expanded(
-                  child: AnymeXText(
-                    text: decodedTitle,
+                  child: AnymeXText(decodedTitle,
                     size: 13,
                     maxLines: 2,
                     variant: TextVariant.semiBold,

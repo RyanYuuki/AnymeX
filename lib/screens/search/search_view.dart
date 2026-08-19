@@ -976,7 +976,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            AnymeXText(
               label,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: isActive
@@ -1049,7 +1049,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   isActive ? context.colors.primary : context.colors.onSurface,
             ),
             const SizedBox(width: 8),
-            Text(
+            AnymeXText(
               label,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: isActive
@@ -1223,7 +1223,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            AnymeXText(
               text,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: context.colors.primary,
@@ -1322,7 +1322,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             child: const ExpressiveLoadingIndicator(),
           ),
           const SizedBox(height: 24),
-          Text(
+          AnymeXText(
             'Searching...',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context)
@@ -1355,13 +1355,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 24),
-          const AnymeXText.bold(
-            text: 'Oops! Something went wrong',
+          const AnymeXText.bold('Oops! Something went wrong',
             size: 18,
           ),
           const SizedBox(height: 8),
-          AnymeXText.regular(
-            text: _errorMessage ?? 'Please try again later',
+          AnymeXText.regular(_errorMessage ?? 'Please try again later',
             textAlign: TextAlign.center,
             size: 14,
             color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -1370,7 +1368,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ElevatedButton.icon(
             onPressed: () => _performSearch(),
             icon: Icon(Iconsax.refresh, color: context.colors.onPrimary),
-            label: const AnymeXText.semiBold(text: 'Try Again', size: 14),
+            label: const AnymeXText.semiBold('Try Again', size: 14),
             style: ElevatedButton.styleFrom(
               backgroundColor: context.colors.primary,
               foregroundColor: context.colors.onPrimary,
@@ -1403,13 +1401,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 24),
-          const AnymeXText.bold(
-            text: 'No results found',
+          const AnymeXText.bold('No results found',
             size: 18,
           ),
           const SizedBox(height: 8),
-          AnymeXText.regular(
-            text: 'Try adjusting your search terms or filters',
+          AnymeXText.regular('Try adjusting your search terms or filters',
             textAlign: TextAlign.center,
             size: 14,
             color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -1529,8 +1525,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AnymeXText(
-                      text: media.title,
+                    AnymeXText(media.title,
                       maxLines: 2,
                       size: 16,
                       variant: TextVariant.semiBold,
@@ -1574,7 +1569,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             color: context.colors.primary,
           ),
           const SizedBox(width: 4),
-          Text(
+          AnymeXText(
             rating,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: context.colors.primary,
@@ -1723,7 +1718,7 @@ class _MoreOptionsPillContent extends StatelessWidget {
                   Icon(Icons.settings_outlined,
                       size: 18, color: colors.primary),
                   const SizedBox(width: 12),
-                  Text(
+                  AnymeXText(
                     'Extension Settings',
                     style: TextStyle(
                       fontSize: 13,
@@ -1742,7 +1737,7 @@ class _MoreOptionsPillContent extends StatelessWidget {
                 children: [
                   Icon(Icons.public_rounded, size: 18, color: colors.primary),
                   const SizedBox(width: 12),
-                  Text(
+                  AnymeXText(
                     'Open Webview',
                     style: TextStyle(
                       fontSize: 13,

@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    AnymeXText(
                       "Local History",
                       style: TextStyle(
                         fontFamily: "Poppins-SemiBold",
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                     GestureDetector(
                       onTap: () => _showClearAllHistoryDialog(
                           context, offlineStorageController, visibleHistory),
-                      child: Text(
+                      child: AnymeXText(
                         "Clear All",
                         style: TextStyle(
                           fontFamily: "Poppins-SemiBold",
@@ -165,7 +165,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (context) => AnymeXDialog(
         title: 'Clear All History',
-        contentWidget: const Text(
+        contentWidget: const AnymeXText(
           'Are you sure you want to clear all local watch history? This action cannot be undone.',
           style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
         ),
@@ -320,7 +320,7 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
+                        child: AnymeXText(
                           'Find your favourite anime or manga, manhwa or whatever you like!',
                           style: TextStyle(
                             color: Theme.of(context)
@@ -469,7 +469,7 @@ class ImageButton extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  AnymeXText(
                     buttonText.toUpperCase(),
                     style: textStyle ??
                         const TextStyle(

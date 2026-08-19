@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class WatchSettingsPane extends StatelessWidget {
   final String title;
@@ -32,7 +33,7 @@ class WatchSettingsPane extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: Text(
+                child: AnymeXText(
                   title,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontFamily: 'Poppins-SemiBold',

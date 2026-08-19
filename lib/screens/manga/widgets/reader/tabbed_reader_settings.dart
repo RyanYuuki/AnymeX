@@ -89,8 +89,7 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const AnymeXText(
-            text: 'Reader Settings',
+          const AnymeXText('Reader Settings',
             size: 18,
             variant: TextVariant.bold,
           ),
@@ -491,10 +490,10 @@ class _GeneralPage extends StatelessWidget {
                   children: [
                     const Icon(Icons.palette_rounded, size: 20),
                     const SizedBox(width: 10),
-                    const Text('Flash Color'),
+                    const AnymeXText('Flash Color'),
                     const Spacer(),
                     ChoiceChip(
-                      label: const Text('Black'),
+                      label: const AnymeXText('Black'),
                       selected: controller.displayRefreshColor.value == 'black',
                       onSelected: (_) {
                         controller.displayRefreshColor.value = 'black';
@@ -503,7 +502,7 @@ class _GeneralPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     ChoiceChip(
-                      label: const Text('White'),
+                      label: const AnymeXText('White'),
                       selected: controller.displayRefreshColor.value == 'white',
                       onSelected: (_) {
                         controller.displayRefreshColor.value = 'white';
@@ -608,12 +607,12 @@ class _GeneralPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Control Theme'),
+        title: const AnymeXText('Control Theme'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ReaderControlThemeRegistry.themes
               .map((t) => RadioListTile<String>(
-                    title: Text(t.name),
+                    title: AnymeXText(t.name),
                     value: t.id,
                     groupValue: settings.readerControlThemeRx.value,
                     onChanged: (id) {
@@ -631,27 +630,27 @@ class _GeneralPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Reader Background'),
+        title: const AnymeXText('Reader Background'),
         content: Obx(() => Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 RadioListTile<int>(
-                    title: const Text('White'),
+                    title: const AnymeXText('White'),
                     value: 0,
                     groupValue: controller.readerTheme.value,
                     onChanged: _setTheme),
                 RadioListTile<int>(
-                    title: const Text('Black'),
+                    title: const AnymeXText('Black'),
                     value: 1,
                     groupValue: controller.readerTheme.value,
                     onChanged: _setTheme),
                 RadioListTile<int>(
-                    title: const Text('Gray'),
+                    title: const AnymeXText('Gray'),
                     value: 2,
                     groupValue: controller.readerTheme.value,
                     onChanged: _setTheme),
                 RadioListTile<int>(
-                    title: const Text('Automatic'),
+                    title: const AnymeXText('Automatic'),
                     value: 3,
                     groupValue: controller.readerTheme.value,
                     onChanged: _setTheme),
@@ -673,33 +672,33 @@ class _GeneralPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Image Filter Quality'),
+        title: const AnymeXText('Image Filter Quality'),
         content: Obx(() => Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 RadioListTile<int>(
-                    title: const Text('None (Nearest-neighbor)'),
+                    title: const AnymeXText('None (Nearest-neighbor)'),
                     value: 0,
                     groupValue: controller.imageFilterQuality.value,
                     onChanged: _setFilterQuality),
                 RadioListTile<int>(
-                    title: const Text('Low (Bilinear)'),
+                    title: const AnymeXText('Low (Bilinear)'),
                     value: 1,
                     groupValue: controller.imageFilterQuality.value,
                     onChanged: _setFilterQuality),
                 RadioListTile<int>(
-                    title: const Text('Medium (Default)'),
+                    title: const AnymeXText('Medium (Default)'),
                     value: 2,
                     groupValue: controller.imageFilterQuality.value,
                     onChanged: _setFilterQuality),
                 RadioListTile<int>(
-                    title: const Text('High (Bicubic)'),
+                    title: const AnymeXText('High (Bicubic)'),
                     value: 3,
                     groupValue: controller.imageFilterQuality.value,
                     onChanged: _setFilterQuality),
                 RadioListTile<int>(
                     title:
-                        const Text('Lanczos Pre-scale (Best quality, slower)'),
+                        const AnymeXText('Lanczos Pre-scale (Best quality, slower)'),
                     value: 4,
                     groupValue: controller.imageFilterQuality.value,
                     onChanged: _setFilterQuality),

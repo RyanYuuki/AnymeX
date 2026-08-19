@@ -274,8 +274,7 @@ class _FloatingPillNavItem extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const SizedBox(height: 4),
-                        AnymeXText(
-                          text: item.label,
+                        AnymeXText(item.label,
                           size: 10,
                           variant: TextVariant.semiBold,
                           color: theme.colorScheme.onPrimary,
@@ -288,8 +287,7 @@ class _FloatingPillNavItem extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const SizedBox(width: 8),
-                        AnymeXText(
-                          text: item.label,
+                        AnymeXText(item.label,
                           size: 12,
                           variant: TextVariant.semiBold,
                           color: theme.colorScheme.onPrimary,

@@ -332,6 +332,12 @@ class Settings extends GetxController {
     UISettingsKeys.navBarStyle.set(value);
   }
 
+  String get appFontFamily => _getUISetting((s) => s.appFontFamily);
+  set appFontFamily(String value) {
+    uiSettings.update((s) => s?.appFontFamily = value);
+    UISettingsKeys.appFontFamily.set(value);
+  }
+
   double get glowDensity => _getUISetting((s) => s.glowDensity);
   set glowDensity(double value) {
     uiSettings.update((s) => s?.glowDensity = value);

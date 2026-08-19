@@ -44,8 +44,7 @@ void searchTypeSheet(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const AnymeXText(
-                text: "SEARCH",
+              const AnymeXText("SEARCH",
                 size: 20,
                 variant: TextVariant.semiBold,
               ),

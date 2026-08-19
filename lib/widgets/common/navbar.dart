@@ -5,6 +5,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/common/navbar/navbar_registry.dart';
 import 'package:anymex/widgets/common/navbar/navbar_styles.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class NavItem {
   final IconData selectedIcon;
@@ -344,7 +345,7 @@ class BlurredContainerItem extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             label,
             style: theme.textTheme.bodySmall?.copyWith(
               color: isSelected

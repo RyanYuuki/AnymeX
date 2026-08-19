@@ -5,6 +5,7 @@ import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DesktopStatsGrid extends StatelessWidget {
   final Profile user;
@@ -365,7 +366,7 @@ class ScoreCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(
+          AnymeXText(
             '$value%',
             style: TextStyle(
               fontSize: compact ? 14 : 16,
@@ -399,7 +400,7 @@ class SectionHeader extends StatelessWidget {
           size: 20,
         ),
         const SizedBox(width: 8),
-        Text(
+        AnymeXText(
           title,
           style: const TextStyle(
             fontSize: 16,
@@ -543,7 +544,7 @@ class _PressableHighlightCardState extends State<_PressableHighlightCard> {
                             size: widget.compact ? 18 : 28,
                           ),
                           SizedBox(height: widget.compact ? 4 : 10),
-                          Text(
+                          AnymeXText(
                             widget.value,
                             style: TextStyle(
                               fontSize: widget.compact ? 16 : 20,
@@ -556,7 +557,7 @@ class _PressableHighlightCardState extends State<_PressableHighlightCard> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Text(
+                          AnymeXText(
                             widget.label,
                             style: TextStyle(
                               fontSize: widget.compact ? 10 : 12,

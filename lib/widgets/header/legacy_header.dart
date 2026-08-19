@@ -4,6 +4,7 @@ import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -56,12 +57,12 @@ class Header extends StatelessWidget {
                   children: [
                     if (type == PageType.library) ...[
                       const AnymeXText(
-                        text: "Library",
+                        "Library",
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        text: "All your local shi",
+                        "All your local shi",
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -69,12 +70,12 @@ class Header extends StatelessWidget {
                       ),
                     ] else if (type == PageType.extensions) ...[
                       const AnymeXText(
-                        text: "Extensions",
+                        "Extensions",
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        text: "Manage plugins & sources",
+                        "Manage plugins & sources",
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -82,12 +83,12 @@ class Header extends StatelessWidget {
                       ),
                     ] else ...[
                       Obx(() => AnymeXText(
-                            text: "${greetingController.currentGreeting.value},",
+                            "${greetingController.currentGreeting.value},",
                             autoResize: true,
                             maxLines: 1,
                           )),
                       AnymeXText(
-                        text: profileData.profileData.value.name ?? 'Guest',
+                        profileData.profileData.value.name ?? 'Guest',
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -150,7 +151,8 @@ class Header extends StatelessWidget {
                             .secondaryContainer
                             .opaque(0.50),
                         child: IconButton(
-                          onPressed: () => navigate(() => const ExtensionTestPage()),
+                          onPressed: () =>
+                              navigate(() => const ExtensionTestPage()),
                           icon: Icon(
                             Icons.build_outlined,
                             color: context.colors.primary,
@@ -167,7 +169,8 @@ class Header extends StatelessWidget {
                             .secondaryContainer
                             .opaque(0.50),
                         child: IconButton(
-                          onPressed: () => navigate(() => const SettingsExtensions()),
+                          onPressed: () =>
+                              navigate(() => const SettingsExtensions()),
                           icon: Icon(
                             HugeIcons.strokeRoundedGithub,
                             color: context.colors.primary,
@@ -187,7 +190,8 @@ class Header extends StatelessWidget {
                         .opaque(0.50),
                     child: IconButton(
                       onPressed: () {
-                        if (profileData.serviceType.value == ServicesType.extensions) {
+                        if (profileData.serviceType.value ==
+                            ServicesType.extensions) {
                           final itemType = type == PageType.manga
                               ? ItemType.manga
                               : (type == PageType.novel
@@ -204,7 +208,10 @@ class Header extends StatelessWidget {
                           final isSimkl = profileData.serviceType.value ==
                               ServicesType.simkl;
                           if (type == PageType.novel) {
-                            navigate(() => const SearchPage(searchTerm: '', isManga: false, type: ItemType.novel));
+                            navigate(() => const SearchPage(
+                                searchTerm: '',
+                                isManga: false,
+                                type: ItemType.novel));
                             return;
                           }
                           if (type == PageType.manga) {
@@ -251,16 +258,16 @@ class Header extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 AnymexOnTap(
-                   onTap: () => SettingsSheet().showServiceSelector(context),
-                   child: SizedBox(
-                       width: 50,
-                       height: 70,
-                       child: AnymeXAnimatedLogo(
-                         size: 50,
-                         autoPlay: true,
-                         color: context.colors.inverseSurface,
-                       )),
-                 ),
+                  onTap: () => SettingsSheet().showServiceSelector(context),
+                  child: SizedBox(
+                      width: 50,
+                      height: 70,
+                      child: AnymeXAnimatedLogo(
+                        size: 50,
+                        autoPlay: true,
+                        color: context.colors.inverseSurface,
+                      )),
+                ),
                 const Spacer(),
                 _profileIcon(context, profileData)
               ],
@@ -292,7 +299,7 @@ class Header extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      AnymeXText(
                         "Find your favourite Anime, Manga, Manhwa or whatever you like!",
                         style: TextStyle(
                           fontSize: 12,
@@ -305,17 +312,17 @@ class Header extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 20),
-                 AnymexOnTap(
-                   onTap: () => SettingsSheet().showServiceSelector(context),
-                   child: CircleAvatar(
-                       radius: 28,
-                       backgroundColor: Colors.transparent,
-                       child: AnymeXAnimatedLogo(
-                         size: 56,
-                         autoPlay: true,
-                         color: context.colors.inverseSurface,
-                       )),
-                 ),
+                AnymexOnTap(
+                  onTap: () => SettingsSheet().showServiceSelector(context),
+                  child: CircleAvatar(
+                      radius: 28,
+                      backgroundColor: Colors.transparent,
+                      child: AnymeXAnimatedLogo(
+                        size: 56,
+                        autoPlay: true,
+                        color: context.colors.inverseSurface,
+                      )),
+                ),
               ],
             ),
           ),
@@ -357,8 +364,8 @@ class Header extends StatelessWidget {
                     color: context.colors.onSecondaryContainer),
           );
           if (count > 0) {
-            return Badge(
-              label: Text(count.toString()),
+            return AnymeXBadge(
+              label: count.toString(),
               backgroundColor: context.colors.primary,
               textColor: context.colors.onPrimary,
               child: avatar,

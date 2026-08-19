@@ -125,8 +125,7 @@ class ChapterListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
         boxShadow: [glowingShadow(context)],
       ),
-      child: AnymeXText(
-        text: chapter.formattedNumber,
+      child: AnymeXText(chapter.formattedNumber,
         variant: TextVariant.bold,
         color: context.colors.onPrimary,
       ),
@@ -188,8 +187,7 @@ class ChapterListItem extends StatelessWidget {
         SizedBox(
           width: getResponsiveSize(context,
               mobileSize: Get.width * 0.4, desktopSize: 200),
-          child: AnymeXText(
-            text: '${chapter.title}$progressText',
+          child: AnymeXText('${chapter.title}$progressText',
             variant: TextVariant.semiBold,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -199,8 +197,7 @@ class ChapterListItem extends StatelessWidget {
         SizedBox(
           width: getResponsiveSize(context,
               mobileSize: Get.width * 0.4, desktopSize: 200),
-          child: AnymeXText(
-            text: chapterMetaText.isNotEmpty
+          child: AnymeXText(chapterMetaText.isNotEmpty
                 ? chapterMetaText
                 : calcTime(chapter.releaseDate ?? '0'),
             color: context.colors.inverseSurface.opaque(0.9),
@@ -221,8 +218,7 @@ class ChapterListItem extends StatelessWidget {
         width: 100,
         height: 40,
         color: context.colors.primary,
-        child: AnymeXText(
-          text: "Read",
+        child: AnymeXText("Read",
           variant: TextVariant.semiBold,
           color: context.colors.onPrimary,
         ),

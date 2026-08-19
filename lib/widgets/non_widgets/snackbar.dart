@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 OverlayEntry? _currentSnackBar;
 
@@ -52,7 +53,7 @@ void snackBar(
           title == null || title.isEmpty ? message : '$title: $message';
       messenger.showSnackBar(
         SnackBar(
-          content: Text(fallbackMessage),
+          content: AnymeXText(fallbackMessage),
           duration: Duration(milliseconds: duration),
         ),
       );
@@ -376,7 +377,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.title != null) ...[
-                  Text(
+                  AnymeXText(
                     widget.title!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -388,7 +389,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
                   ),
                   const SizedBox(height: 3),
                 ],
-                Text(
+                AnymeXText(
                   widget.message,
                   maxLines: widget.maxLines,
                   overflow: TextOverflow.ellipsis,

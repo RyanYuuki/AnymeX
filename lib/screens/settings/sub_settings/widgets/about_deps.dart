@@ -5,6 +5,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ProfileInfo extends StatelessWidget {
   final String username;
@@ -23,7 +24,7 @@ class ProfileInfo extends StatelessWidget {
     final theme = Theme.of(context);
     return Column(
       children: [
-        Text(
+        AnymeXText(
           username,
           style: theme.textTheme.headlineSmall?.copyWith(
             color: theme.colorScheme.onSurface,
@@ -36,7 +37,7 @@ class ProfileInfo extends StatelessWidget {
             Clipboard.setData(ClipboardData(text: version));
             snackBar('Version copied');
           },
-          child: Text(
+          child: AnymeXText(
             version,
             style: theme.textTheme.bodyLarge?.copyWith(
               fontFamily: "Poppins-SemiBold",
@@ -44,7 +45,7 @@ class ProfileInfo extends StatelessWidget {
             ),
           ),
         ),
-        Text(
+        AnymeXText(
           subtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurface.opaque(0.5),
@@ -108,7 +109,7 @@ class ProfileSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          Text(
+          AnymeXText(
             username,
             style: theme.textTheme.headlineSmall?.copyWith(
               color: theme.colorScheme.onSurface,
@@ -121,14 +122,14 @@ class ProfileSection extends StatelessWidget {
               Clipboard.setData(ClipboardData(text: version));
               snackBar('Version copied');
             },
-            child: Text(
+            child: AnymeXText(
               version,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurface.opaque(0.7),
               ),
             ),
           ),
-          Text(
+          AnymeXText(
             subtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.opaque(0.5),
@@ -197,13 +198,13 @@ class InfoCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
-                    Text(
+                    AnymeXText(
                       subtitle,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.opaque(0.7),
@@ -259,13 +260,13 @@ class CustomSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         title,
                         style: const TextStyle(
                             fontSize: 16, fontFamily: 'Poppins-SemiBold'),
                       ),
                       if (subtitle != null)
-                        Text(
+                        AnymeXText(
                           subtitle!,
                           style: TextStyle(
                             fontSize: 12,
@@ -323,7 +324,7 @@ class CustomListTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       title,
                       style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface.opaque(0.9),
@@ -331,7 +332,7 @@ class CustomListTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 1),
                     if (subtitle != null)
-                      Text(
+                      AnymeXText(
                         subtitle!,
                         style: TextStyle(
                             fontSize: 12,

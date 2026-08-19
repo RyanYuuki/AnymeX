@@ -15,6 +15,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Widget _buildBottomSheetOption(
   BuildContext context, {
@@ -35,7 +36,7 @@ Widget _buildBottomSheetOption(
             color: context.theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: 14),
-          Text(
+          AnymeXText(
             label,
             style: const TextStyle(
               fontSize: 16,
@@ -226,7 +227,7 @@ class DesktopProfileHeader extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
+                              AnymeXText(
                                 name,
                                 style: TextStyle(
                                   fontSize: 28,
@@ -275,7 +276,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                             ),
                                             const SizedBox(width: 4),
                                           ],
-                                          Text(
+                                          AnymeXText(
                                             badgeText,
                                             style: TextStyle(
                                               fontSize: 10,
@@ -325,7 +326,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                                   color: Colors.white70,
                                                 ),
                                                 const SizedBox(width: 4),
-                                                Text(
+                                                AnymeXText(
                                                   countdownText,
                                                   style: const TextStyle(
                                                     fontSize: 10,
@@ -363,7 +364,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                               color: Colors.white70,
                                             ),
                                             const SizedBox(width: 4),
-                                            Text(
+                                            AnymeXText(
                                               'Joined ${DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year}',
                                               style: const TextStyle(
                                                 fontSize: 10,
@@ -427,7 +428,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                             ),
                                           ),
                                           const SizedBox(height: 16),
-                                          Text(
+                                          AnymeXText(
                                             'More Options',
                                             style: TextStyle(
                                               fontSize: 18,
@@ -476,7 +477,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                                   context,
                                                 ).showSnackBar(
                                                   SnackBar(
-                                                    content: const Text(
+                                                    content: const AnymeXText(
                                                       'User ID copied to clipboard',
                                                     ),
                                                     backgroundColor: context
@@ -627,7 +628,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Text(
+                        AnymeXText(
                           'More Options',
                           style: TextStyle(
                             fontSize: 18,
@@ -667,7 +668,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Text(
+                                  content: const AnymeXText(
                                     'User ID copied to clipboard',
                                   ),
                                   backgroundColor: context.theme.colorScheme
@@ -826,7 +827,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: Text(
+                            child: AnymeXText(
                               name,
                               maxLines: 1,
                               style: const TextStyle(
@@ -869,7 +870,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                       ),
                                       const SizedBox(width: 4),
                                     ],
-                                    Text(
+                                    AnymeXText(
                                       badgeText,
                                       style: TextStyle(
                                         fontSize: 10,
@@ -901,7 +902,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                         color: Colors.white70,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
+                                      AnymeXText(
                                         expiryText,
                                         style: const TextStyle(
                                           fontSize: 10,
@@ -931,7 +932,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                         color: Colors.white70,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
+                                      AnymeXText(
                                         'Joined ${DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year}',
                                         style: const TextStyle(
                                           fontSize: 10,

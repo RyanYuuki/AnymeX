@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:marquee/marquee.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class MarqueeText extends StatelessWidget {
   final String text;
@@ -43,7 +44,7 @@ class MarqueeText extends StatelessWidget {
           constraints.hasBoundedWidth && constraints.maxWidth > 0;
 
         if (!hasBoundedWidth || effectiveMaxLines != 1 || displayText.isEmpty) {
-          return Text(
+          return AnymeXText(
             displayText,
             style: effectiveStyle,
             textAlign: textAlign,
@@ -92,7 +93,7 @@ class MarqueeText extends StatelessWidget {
           width: availableWidth,
           child: Align(
             alignment: _alignmentForTextAlign(textAlign),
-            child: Text(
+            child: AnymeXText(
               displayText,
               style: effectiveStyle,
               textAlign: textAlign,

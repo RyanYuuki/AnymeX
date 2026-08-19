@@ -9,6 +9,7 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -63,6 +64,7 @@ class SettingsSheet extends StatelessWidget {
       },
     ];
 
+
     AnymeXSheet.custom(
       ConstrainedBox(
         constraints: BoxConstraints(
@@ -90,14 +92,12 @@ class SettingsSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const AnymeXText(
-                  text: "Choose Provider",
+                const AnymeXText("Choose Provider",
                   size: 20,
                   variant: TextVariant.bold,
                 ),
                 const SizedBox(height: 5),
-                AnymeXText(
-                  text: "Select your preferred content source",
+                AnymeXText("Select your preferred content source",
                   size: 14,
                   color: theme.colorScheme.onSurface
                       .opaque(0.5, iReallyMeanIt: true),
@@ -172,16 +172,14 @@ class SettingsSheet extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    AnymeXText(
-                                      text: service['name'] as String,
+                                    AnymeXText(service['name'] as String,
                                       size: 16,
                                       variant: TextVariant.semiBold,
                                       color: isSelected ? primaryColor : null,
                                     ),
                                     if (service['desc'] != null) ...[
                                       const SizedBox(height: 2),
-                                      AnymeXText(
-                                        text: service['desc'] as String,
+                                      AnymeXText(service['desc'] as String,
                                         size: 12,
                                         color: theme.colorScheme.onSurface
                                             .opaque(0.6),
@@ -294,8 +292,7 @@ class SettingsSheet extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymeXText(
-                  text: serviceHandler.profileData.value.name ?? 'Guest',
+                AnymeXText(serviceHandler.profileData.value.name ?? 'Guest',
                   variant: TextVariant.semiBold,
                   size: 14,
                 ),
@@ -312,8 +309,7 @@ class SettingsSheet extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        AnymeXText(
-                          text: serviceHandler.isLoggedIn.value
+                        AnymeXText(serviceHandler.isLoggedIn.value
                               ? 'Tap to logout'
                               : 'Tap to login',
                           size: 12,
@@ -466,10 +462,11 @@ class SettingsSheet extends StatelessWidget {
             final count =
                 Get.find<SourceController>().extensionUpdatesCount.value;
             if (count > 0) {
-              return Badge(
-                label: Text(count.toString()),
+              return AnymeXBadge(
+                label: count.toString(),
                 backgroundColor: theme.primary,
                 textColor: theme.onPrimary,
+                offset: const Offset(-3, -3),
                 child: iconWidget,
               );
             }
@@ -496,8 +493,7 @@ class SettingsSheet extends StatelessWidget {
             finalIcon,
             const SizedBox(width: 12),
             Expanded(
-              child: AnymeXText(
-                text: item.label,
+              child: AnymeXText(item.label,
                 size: 13.5,
                 variant: TextVariant.semiBold,
               ),

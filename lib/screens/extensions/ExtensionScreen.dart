@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ExtensionScreen extends StatefulWidget {
   const ExtensionScreen({
@@ -371,7 +372,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
+                        child: AnymeXText(
                           'Select Language',
                           style: TextStyle(
                             fontFamily: 'Poppins',
@@ -450,7 +451,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(
-                                    child: Text(
+                                    child: AnymeXText(
                                       label,
                                       style: TextStyle(
                                         fontFamily: 'Poppins',
@@ -626,7 +627,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
               ),
               const SizedBox(width: 6),
             ],
-            Text(
+            AnymeXText(
               label,
               style: TextStyle(
                 fontFamily: 'Poppins',

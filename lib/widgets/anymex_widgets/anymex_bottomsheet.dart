@@ -77,13 +77,12 @@ class AnymeXSheet extends StatelessWidget {
                 customWidget!
               else ...[
                 if (title != null) ...[
-                  AnymeXText(text: title!, size: 18, variant: TextVariant.bold),
+                  AnymeXText(title!, size: 18, variant: TextVariant.bold),
                   const SizedBox(height: 10),
                 ],
                 contentWidget ??
                     (message != null
-                        ? AnymeXText(
-                            text: message!,
+                        ? AnymeXText(message!,
                             textAlign: TextAlign.center,
                             size: 14)
                         : const SizedBox.shrink()),
@@ -120,7 +119,7 @@ Widget loginSheetHelper({
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
+              child: AnymeXText(
                 title,
                 style: const TextStyle(
                   fontFamily: 'Poppins',
@@ -163,7 +162,7 @@ Widget loginSheetHelper({
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    const AnymeXText(
                       'Internal Browser',
                       style: TextStyle(
                         fontSize: 14,
@@ -171,7 +170,7 @@ Widget loginSheetHelper({
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Text(
+                    AnymeXText(
                       'Login inside the app (Recommended)',
                       style: TextStyle(
                         fontSize: 11,
@@ -213,7 +212,7 @@ Widget loginSheetHelper({
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    const AnymeXText(
                       'External Browser',
                       style: TextStyle(
                         fontSize: 14,
@@ -221,7 +220,7 @@ Widget loginSheetHelper({
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Text(
+                    AnymeXText(
                       'Login using your default browser',
                       style: TextStyle(
                         fontSize: 11,
@@ -264,7 +263,7 @@ Widget loginSheetHelper({
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      const AnymeXText(
                         'Login with Token',
                         style: TextStyle(
                           fontSize: 14,
@@ -272,7 +271,7 @@ Widget loginSheetHelper({
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      AnymeXText(
                         'Manually paste OAuth access token',
                         style: TextStyle(
                           fontSize: 11,

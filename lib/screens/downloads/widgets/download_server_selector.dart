@@ -213,12 +213,10 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText(
-                    text: 'Choose Quality',
+                const AnymeXText('Choose Quality',
                     variant: TextVariant.bold,
                     size: 16),
-                AnymeXText(
-                  text: 'Fetching from first episode · auto-matched for batch',
+                AnymeXText('Fetching from first episode · auto-matched for batch',
                   size: 12,
                   color: theme.onSurface.opaque(0.5),
                 ),
@@ -245,10 +243,10 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             children: [
               ExpressiveLoadingIndicator(),
               SizedBox(height: 16),
-              Text('Fetching available servers...',
+              AnymeXText('Fetching available servers...',
                   style: TextStyle(fontSize: 14, color: Colors.grey)),
               SizedBox(height: 6),
-              Text('This may take up to 30 seconds',
+              AnymeXText('This may take up to 30 seconds',
                   style: TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
@@ -264,12 +262,11 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
               Icon(Icons.error_outline_rounded,
                   size: 48, color: theme.error.opaque(0.6)),
               const SizedBox(height: 12),
-              const AnymeXText(
-                  text: 'Failed to fetch servers',
+              const AnymeXText('Failed to fetch servers',
                   variant: TextVariant.semiBold,
                   size: 15),
               const SizedBox(height: 6),
-              Text(_errorMsg.value!,
+              AnymeXText(_errorMsg.value!,
                   style: TextStyle(color: theme.error, fontSize: 12),
                   textAlign: TextAlign.center),
               const SizedBox(height: 16),
@@ -284,7 +281,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                     border: Border.all(color: theme.primary.opaque(0.4)),
                   ),
                   child:
-                      AnymeXText(text: 'Retry', size: 14, color: theme.primary),
+                      AnymeXText('Retry', size: 14, color: theme.primary),
                 ),
               ),
             ],
@@ -301,8 +298,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
               Icon(Icons.cloud_off_rounded,
                   size: 48, color: theme.onSurface.opaque(0.2)),
               const SizedBox(height: 12),
-              AnymeXText(
-                  text: 'No servers available',
+              AnymeXText('No servers available',
                   variant: TextVariant.semiBold,
                   size: 15,
                   color: theme.onSurface.opaque(0.4)),
@@ -331,8 +327,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                         height: 16,
                         child: ExpressiveLoadingIndicator()),
                     const SizedBox(width: 8),
-                    AnymeXText(
-                        text: 'Scanning for more servers...',
+                    AnymeXText('Scanning for more servers...',
                         size: 12,
                         color: theme.onSurface.opaque(0.5)),
                   ],
@@ -394,8 +389,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(
-                                    child: AnymeXText(
-                                      text: quality,
+                                    child: AnymeXText(quality,
                                       variant: TextVariant.semiBold,
                                       size: 14,
                                       color: isSelected ? theme.primary : theme.onSurface,
@@ -420,7 +414,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                             Icon(Icons.subtitles,
                                                 size: 11, color: theme.primary),
                                             const SizedBox(width: 3),
-                                            Text(
+                                            AnymeXText(
                                               '$subCount',
                                               style: TextStyle(
                                                   fontSize: 10,
@@ -452,7 +446,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                             const Icon(Icons.audiotrack,
                                                 size: 11, color: Colors.purple),
                                             const SizedBox(width: 3),
-                                            Text(
+                                            AnymeXText(
                                               '$audioCount',
                                               style: const TextStyle(
                                                   fontSize: 10,
@@ -489,7 +483,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                         border: Border.all(
                                             color: Colors.orange.withOpacity(0.3)),
                                       ),
-                                      child: const Text('HLS',
+                                      child: const AnymeXText('HLS',
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: Colors.orange,
@@ -505,7 +499,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                         border: Border.all(
                                             color: Colors.green.withOpacity(0.3)),
                                       ),
-                                      child: const Text('Direct',
+                                      child: const AnymeXText('Direct',
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: Colors.green,
@@ -547,8 +541,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                           : theme.onSurface.opaque(0.4)),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: AnymeXText(
-                      text: canDownload
+                    child: AnymeXText(canDownload
                           ? 'Download (${widget.episodes.length} ep${widget.episodes.length != 1 ? 's' : ''}) · ${_selectedQuality.value}'
                           : 'Loading servers...',
                       size: 14,
@@ -592,7 +585,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                       color: theme.primary, size: 22),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
+                    child: AnymeXText(
                       video.quality ?? 'Server Tracks',
                       style: TextStyle(
                         fontSize: 16,
@@ -614,7 +607,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         'Subtitles (${subtitles.length})',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -624,7 +617,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                       ),
                       const SizedBox(height: 8),
                       if (subtitles.isEmpty)
-                        Text(
+                        AnymeXText(
                           'No subtitle tracks available',
                           style: TextStyle(
                               fontSize: 12, color: theme.onSurface.opaque(0.5)),
@@ -644,7 +637,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                       size: 16, color: theme.primary),
                                   const SizedBox(width: 8),
                                   Expanded(
-                                    child: Text(
+                                    child: AnymeXText(
                                       s.label ?? s.file ?? 'Unknown',
                                       style: TextStyle(
                                           fontSize: 13,
@@ -655,7 +648,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                               ),
                             )),
                       const SizedBox(height: 16),
-                      Text(
+                      AnymeXText(
                         'Audio Tracks (${audios.length})',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -665,7 +658,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                       ),
                       const SizedBox(height: 8),
                       if (audios.isEmpty)
-                        Text(
+                        AnymeXText(
                           'No audio tracks available',
                           style: TextStyle(
                               fontSize: 12, color: theme.onSurface.opaque(0.5)),
@@ -685,7 +678,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                                       size: 16, color: theme.primary),
                                   const SizedBox(width: 8),
                                   Expanded(
-                                    child: Text(
+                                    child: AnymeXText(
                                       a.label ?? a.file ?? 'Unknown',
                                       style: TextStyle(
                                           fontSize: 13,

@@ -211,8 +211,7 @@ class BottomControls extends StatelessWidget {
                             size: 20,
                           ),
                         ),
-                      AnymeXText(
-                        text: controller.skipButtonLabel,
+                      AnymeXText(controller.skipButtonLabel,
                         variant: TextVariant.semiBold,
                         color: controller.isLocked.value
                             ? theme.colorScheme.onSurface.opaque(0.4)
@@ -468,7 +467,7 @@ class BottomControls extends StatelessWidget {
                       width: 0.5,
                     ),
                   ),
-                  child: Obx(() => Text(
+                  child: Obx(() => AnymeXText(
                         controller.formattedCurrentPosition,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface,
@@ -492,7 +491,7 @@ class BottomControls extends StatelessWidget {
                       width: 0.5,
                     ),
                   ),
-                  child: Obx(() => Text(
+                  child: Obx(() => AnymeXText(
                         controller.formattedEpisodeDuration,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface,
@@ -559,7 +558,7 @@ class BottomControls extends StatelessWidget {
                         width: 0.5,
                       ),
                     ),
-                    child: Obx(() => Text(
+                    child: Obx(() => AnymeXText(
                           controller.formattedCurrentPosition,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurface,
@@ -592,7 +591,7 @@ class BottomControls extends StatelessWidget {
                         width: 0.5,
                       ),
                     ),
-                    child: Obx(() => Text(
+                    child: Obx(() => AnymeXText(
                           controller.formattedEpisodeDuration,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurface,

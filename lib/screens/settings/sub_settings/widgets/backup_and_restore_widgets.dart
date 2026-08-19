@@ -4,6 +4,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class PasswordInputDialog extends StatefulWidget {
   final TextEditingController controller;
@@ -35,7 +36,7 @@ class PasswordInputDialogState extends State<PasswordInputDialog> {
             color: theme.colorScheme.primary,
           ),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             "This backup is encrypted. Please enter the password to continue.",
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -94,7 +95,7 @@ class LoadingDialog extends StatelessWidget {
             children: [
               CircularProgressIndicator(color: theme.colorScheme.primary),
               const SizedBox(height: 24),
-              Obx(() => Text(
+              Obx(() => AnymeXText(
                     statusObs.value,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -102,7 +103,7 @@ class LoadingDialog extends StatelessWidget {
                         fontWeight: FontWeight.w600),
                   )),
               const SizedBox(height: 8),
-              Obx(() => Text(
+              Obx(() => AnymeXText(
                     "${(progressObs.value * 100).toInt()}%",
                     style: TextStyle(
                         color: theme.colorScheme.primary, fontSize: 12),
@@ -165,7 +166,7 @@ class RestorePreviewSheet extends StatelessWidget {
                 controller: scrollController,
                 padding: const EdgeInsets.all(24),
                 children: [
-                  Text(
+                  AnymeXText(
                     "Restore Preview",
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -181,7 +182,7 @@ class RestorePreviewSheet extends StatelessWidget {
                           color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 4),
-                        Text(
+                        AnymeXText(
                           "Encrypted • ",
                           style: TextStyle(
                             color: theme.colorScheme.primary,
@@ -196,7 +197,7 @@ class RestorePreviewSheet extends StatelessWidget {
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
+                      AnymeXText(
                         date,
                         style: TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -238,7 +239,7 @@ class RestorePreviewSheet extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Text(
+                          child: AnymeXText(
                             "This will completely replace your current library. All existing data will be overwritten.",
                             style: TextStyle(
                               color: theme.colorScheme.error,
@@ -252,7 +253,7 @@ class RestorePreviewSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   if (hasSettings || hasAuthTokens) ...[
-                    Text(
+                    AnymeXText(
                       "RESTORE OPTIONS",
                       style: TextStyle(
                         color: theme.colorScheme.primary,
@@ -266,8 +267,8 @@ class RestorePreviewSheet extends StatelessWidget {
                       Obx(() => CheckboxListTile(
                             value: restoreSettings.value,
                             onChanged: (v) => restoreSettings.value = v ?? true,
-                            title: const Text("Restore Settings"),
-                            subtitle: const Text(
+                            title: const AnymeXText("Restore Settings"),
+                            subtitle: const AnymeXText(
                                 "UI, Player, and general app settings"),
                             controlAffinity: ListTileControlAffinity.trailing,
                             contentPadding: EdgeInsets.zero,
@@ -277,8 +278,8 @@ class RestorePreviewSheet extends StatelessWidget {
                             value: restoreAuthTokens.value,
                             onChanged: (v) =>
                                 restoreAuthTokens.value = v ?? false,
-                            title: const Text("Restore Login Tokens"),
-                            subtitle: const Text(
+                            title: const AnymeXText("Restore Login Tokens"),
+                            subtitle: const AnymeXText(
                                 "Login sessions for MAL, Simkl, etc."),
                             controlAffinity: ListTileControlAffinity.trailing,
                             contentPadding: EdgeInsets.zero,
@@ -296,7 +297,7 @@ class RestorePreviewSheet extends StatelessWidget {
                         borderRadius: BorderRadius.circular(18),
                       ),
                     ),
-                    child: const Text(
+                    child: const AnymeXText(
                       "CONFIRM & RESTORE",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -361,7 +362,7 @@ class UserInfoCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AnymeXText(
                     "Backup Owner",
                     style: TextStyle(
                       color: theme.colorScheme.onSurfaceVariant,
@@ -370,7 +371,7 @@ class UserInfoCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  AnymeXText(
                     username,
                     style: TextStyle(
                       color: theme.colorScheme.onSurface,
@@ -387,7 +388,7 @@ class UserInfoCard extends StatelessWidget {
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
+                      AnymeXText(
                         "v$appVersion",
                         style: TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -462,7 +463,7 @@ class LibraryStatsCard extends StatelessWidget {
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                AnymeXText(
                   "Library Statistics",
                   style: TextStyle(
                     fontSize: 16,
@@ -544,7 +545,7 @@ class TotalStat extends StatelessWidget {
     final theme = Theme.of(context);
     return Column(
       children: [
-        Text(
+        AnymeXText(
           value,
           style: TextStyle(
             fontSize: 24,
@@ -552,7 +553,7 @@ class TotalStat extends StatelessWidget {
             color: theme.colorScheme.primary,
           ),
         ),
-        Text(
+        AnymeXText(
           label,
           style: TextStyle(
             fontSize: 12,
@@ -601,7 +602,7 @@ class CategoryRow extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
+            child: AnymeXText(
               label,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
@@ -612,7 +613,7 @@ class CategoryRow extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
+              AnymeXText(
                 itemCount.toString(),
                 style: TextStyle(
                   fontSize: 18,
@@ -620,7 +621,7 @@ class CategoryRow extends StatelessWidget {
                   color: color,
                 ),
               ),
-              Text(
+              AnymeXText(
                 "$listCount lists",
                 style: TextStyle(
                   fontSize: 11,
@@ -668,10 +669,10 @@ class LibraryDashboard extends StatelessWidget {
             children: [
               Icon(icon, color: color, size: 20),
               const SizedBox(height: 12),
-              Text(count.toString(),
+              AnymeXText(count.toString(),
                   style: const TextStyle(
                       fontSize: 22, fontWeight: FontWeight.bold)),
-              Text(label,
+              AnymeXText(label,
                   style: TextStyle(
                       color: context.colors.onSurfaceVariant,
                       fontSize: 12)),
@@ -737,7 +738,7 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       "Protect your backup",
                       style: TextStyle(
                         color: theme.colorScheme.onSurfaceVariant,
@@ -750,7 +751,7 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
             ],
           ),
           const SizedBox(height: 24),
-          Text(
+          AnymeXText(
             "BACKUP CONTENT",
             style: TextStyle(
               color: theme.colorScheme.primary,
@@ -773,7 +774,7 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
             onChanged: (v) => setState(() => _backupAuthTokens = v),
           ),
           const SizedBox(height: 24),
-          Text(
+          AnymeXText(
             "SECURITY",
             style: TextStyle(
               color: theme.colorScheme.primary,

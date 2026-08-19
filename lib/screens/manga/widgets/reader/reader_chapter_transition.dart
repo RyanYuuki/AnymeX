@@ -180,23 +180,20 @@ class ReaderChapterTransition extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymeXText.semiBold(
-                  text: label.toUpperCase(),
+                AnymeXText.semiBold(label.toUpperCase(),
                   size: 11,
                   color: isTarget ? scheme.primary : scheme.onSurfaceVariant,
                   maxLines: 1,
                 ),
                 const SizedBox(height: 6),
-                AnymeXText.bold(
-                  text: title,
+                AnymeXText.bold(title,
                   size: 18,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (chapter.scanlator?.isNotEmpty ?? false) ...[
                   const SizedBox(height: 4),
-                  AnymeXText(
-                    text: chapter.scanlator!,
+                  AnymeXText(chapter.scanlator!,
                     size: 12,
                     color: scheme.onSurface.withOpacity(0.58),
                     maxLines: 1,
@@ -242,8 +239,7 @@ class ReaderChapterTransition extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: AnymeXText(
-              text: text,
+            child: AnymeXText(text,
               color: context.colors.onSurface.withOpacity(0.82),
               maxLines: 2,
             ),
@@ -270,8 +266,7 @@ class ReaderChapterTransition extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: AnymeXText.semiBold(
-              text: '$gap missing chapter${gap == 1 ? '' : 's'} between these',
+            child: AnymeXText.semiBold('$gap missing chapter${gap == 1 ? '' : 's'} between these',
               color: context.colors.error,
               maxLines: 2,
             ),

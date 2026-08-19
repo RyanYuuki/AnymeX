@@ -76,8 +76,7 @@ class GridNovelCard extends StatelessWidget {
               children: [
                 const Icon(Iconsax.book, color: Colors.grey, size: 16),
                 const SizedBox(width: 2),
-                AnymeXText(
-                  text: media.title.toUpperCase(),
+                AnymeXText(media.title.toUpperCase(),
                   maxLines: 1,
                   variant: TextVariant.regular,
                   fontStyle: FontStyle.italic,
@@ -89,8 +88,7 @@ class GridNovelCard extends StatelessWidget {
             const SizedBox(height: 5),
             SizedBox(
               width: cardWidth,
-              child: AnymeXText(
-                text: media.title,
+              child: AnymeXText(media.title,
                 maxLines: 2,
                 size: 14,
                 variant: TextVariant.semiBold,
@@ -121,8 +119,7 @@ class GridNovelCard extends StatelessWidget {
             color: context.colors.onPrimary,
           ),
           const SizedBox(width: 4),
-          AnymeXText(
-            text: media.rating,
+          AnymeXText(media.rating,
             color: context.colors.onPrimary,
             size: 12,
             variant: TextVariant.bold,

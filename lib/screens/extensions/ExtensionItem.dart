@@ -16,6 +16,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ExtensionListTileWidget extends StatefulWidget {
   final Source source;
@@ -213,7 +214,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  AnymeXText(
                     widget.source.name!,
                     style: TextStyle(
                       color: theme.onSurface,
@@ -245,7 +246,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                                 right: Radius.circular(5),
                               ),
                             ),
-                            child: Text(
+                            child: AnymeXText(
                               completeLanguageName(
                                       widget.source.lang?.toLowerCase() ?? '')
                                   .toUpperCase(),
@@ -268,7 +269,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                                 right: Radius.circular(8),
                               ),
                             ),
-                            child: Text(
+                            child: AnymeXText(
                               version.toUpperCase(),
                               style: TextStyle(
                                 fontFamily: 'Poppins-SemiBold',
@@ -289,7 +290,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                             color: theme.error,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             '18+',
                             style: TextStyle(
                               fontFamily: 'Poppins',

@@ -6,6 +6,7 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class TapZoneSettingsScreen extends StatefulWidget {
   const TapZoneSettingsScreen({super.key});
@@ -168,7 +169,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text(
+          child: AnymeXText(
             "Tap a zone to change its action",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey,
@@ -251,7 +252,7 @@ class VisualZoneEditor extends StatelessWidget {
                   children: [
                     Icon(Icons.touch_app_rounded, color: theme.colorScheme.primary, size: 22),
                     const SizedBox(width: 12),
-                    Text(
+                    AnymeXText(
                       "Tap Action",
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -281,7 +282,7 @@ class VisualZoneEditor extends StatelessWidget {
                         _getActionIcon(action),
                         color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                       ),
-                      title: Text(
+                      title: AnymeXText(
                         action.displayName,
                         style: TextStyle(
                           color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
@@ -396,7 +397,7 @@ class VisualZoneEditor extends StatelessWidget {
                           const SizedBox(height: 10),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
+                            child: AnymeXText(
                               zone.action.displayName,
                               textAlign: TextAlign.center,
                               style: TextStyle(
@@ -523,7 +524,7 @@ class _ElegantSegmentedControl extends StatelessWidget {
                                     ? Theme.of(context).colorScheme.onPrimary 
                                     : Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
                               ),
-                              child: Text(item.title),
+                              child: AnymeXText(item.title),
                             ),
                           ],
                         ),

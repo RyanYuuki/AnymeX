@@ -29,7 +29,7 @@ class CharactersCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: Text("Characters",
+          child: AnymeXText("Characters",
               style: TextStyle(
                   fontFamily: "Poppins-SemiBold",
                   fontSize: isDesktop ? 20 : 17,
@@ -103,7 +103,7 @@ class CharactersCarousel extends StatelessWidget {
                                       color: context.colors.primary,
                                     ),
                                     const SizedBox(width: 3),
-                                    Text(
+                                    AnymeXText(
                                       itemData.favourites.toString(),
                                       style: TextStyle(
                                           fontSize: 12,
@@ -124,8 +124,7 @@ class CharactersCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymeXText(
-                            text: itemData.name ?? '??',
+                          child: AnymeXText(itemData.name ?? '??',
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
@@ -144,7 +143,7 @@ class CharactersCarousel extends StatelessWidget {
         if (!isManga) ...[
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: Text("Voice Actors",
+            child: AnymeXText("Voice Actors",
                 style: TextStyle(
                     fontFamily: "Poppins-SemiBold",
                     fontSize: 18,
@@ -261,8 +260,7 @@ class CharactersCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymeXText(
-                            text: itemData?.name ?? 'No Voice Actor',
+                          child: AnymeXText(itemData?.name ?? 'No Voice Actor',
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
@@ -297,7 +295,7 @@ class StaffCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: Text("Staff",
+          child: AnymeXText("Staff",
               style: TextStyle(
                   fontFamily: "Poppins-SemiBold",
                   fontSize: 18,
@@ -386,8 +384,7 @@ class StaffCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymeXText(
-                            text: itemData.name ?? '??',
+                          child: AnymeXText(itemData.name ?? '??',
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
@@ -397,8 +394,7 @@ class StaffCarousel extends StatelessWidget {
                         ),
                         if (itemData.primaryOccupations != null &&
                             itemData.primaryOccupations!.isNotEmpty)
-                          AnymeXText(
-                            text: itemData.primaryOccupations!.join(", "),
+                          AnymeXText(itemData.primaryOccupations!.join(", "),
                             maxLines: 1,
                             size: 10,
                             color: context.colors.onSurface.withOpacity(0.7),

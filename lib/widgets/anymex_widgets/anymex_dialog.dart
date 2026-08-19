@@ -133,8 +133,7 @@ class AnymeXDialog extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 if (title != null) ...[
-                                  AnymeXText(
-                                    text: title!,
+                                  AnymeXText(title!,
                                     size: 20,
                                     variant: TextVariant.semiBold,
                                     color: context.colors.onSurface,
@@ -149,8 +148,7 @@ class AnymeXDialog extends StatelessWidget {
                                         ? Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 4.0),
-                                            child: AnymeXText(
-                                              text: message!,
+                                            child: AnymeXText(message!,
                                               size: 14,
                                               color:
                                                   context.colors.onSurfaceVariant,
@@ -190,8 +188,7 @@ class AnymeXDialog extends StatelessWidget {
                                                 width: 1,
                                               ),
                                             ),
-                                            child: AnymeXText(
-                                              text: cancelText,
+                                            child: AnymeXText(cancelText,
                                               size: 14,
                                               color: context.colors.onSurface,
                                               variant: TextVariant.bold,
@@ -236,8 +233,7 @@ class AnymeXDialog extends StatelessWidget {
                                                   ]
                                                 : null,
                                           ),
-                                          child: AnymeXText(
-                                            text: confirmText,
+                                          child: AnymeXText(confirmText,
                                             size: 14,
                                             color: isConfirmEnabled
                                                 ? context.colors.onPrimary

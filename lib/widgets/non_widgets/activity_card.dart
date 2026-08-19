@@ -24,6 +24,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     show ItemType;
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ActivityCard extends StatefulWidget {
   final AnilistActivity activity;
@@ -120,7 +121,7 @@ class _ActivityCardState extends State<ActivityCard> {
     if (!anilistAuth.isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please login first'),
+          content: AnymeXText('Please login first'),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -181,7 +182,7 @@ class _ActivityCardState extends State<ActivityCard> {
                   leading: Icon(
                     activity.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
                   ),
-                  title: Text(activity.isPinned ? "Unpin" : "Pin Activity"),
+                  title: AnymeXText(activity.isPinned ? "Unpin" : "Pin Activity"),
                   onTap: () async {
                     Navigator.pop(sheetContext);
                     final auth = Get.find<AnilistAuth>();
@@ -191,7 +192,7 @@ class _ActivityCardState extends State<ActivityCard> {
                     if (error != null && mounted) {
                       setState(() => activity.isPinned = !activity.isPinned);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(error)),
+                        SnackBar(content: AnymeXText(error)),
                       );
                     }
                   },
@@ -202,7 +203,7 @@ class _ActivityCardState extends State<ActivityCard> {
                       ? Icons.notifications_off_outlined
                       : Icons.notifications_active_outlined,
                 ),
-                title: Text(activity.isSubscribed
+                title: AnymeXText(activity.isSubscribed
                     ? "Unsubscribe"
                     : "Subscribe to thread"),
                 onTap: () async {
@@ -220,7 +221,7 @@ class _ActivityCardState extends State<ActivityCard> {
               ),
               ListTile(
                 leading: const Icon(Icons.open_in_browser),
-                title: const Text("Open in Browser"),
+                title: const AnymeXText("Open in Browser"),
                 onTap: () {
                   Navigator.pop(sheetContext);
                   launchUrlString('https://anilist.co/activity/${activity.id}');
@@ -230,7 +231,7 @@ class _ActivityCardState extends State<ActivityCard> {
                   (activity.type == 'TEXT' || activity.type == 'MESSAGE'))
                 ListTile(
                   leading: const Icon(Icons.edit_outlined),
-                  title: const Text("Edit Activity"),
+                  title: const AnymeXText("Edit Activity"),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     _showEditSheet();
@@ -239,7 +240,7 @@ class _ActivityCardState extends State<ActivityCard> {
               if (isOwner)
                 ListTile(
                   leading: const Icon(Icons.delete_outline, color: Colors.red),
-                  title: const Text("Delete Activity",
+                  title: const AnymeXText("Delete Activity",
                       style: TextStyle(color: Colors.red)),
                   onTap: () async {
                     Navigator.pop(sheetContext);
@@ -307,7 +308,7 @@ class _ActivityCardState extends State<ActivityCard> {
                         const Icon(Icons.favorite,
                             color: Colors.red, size: 20),
                         const SizedBox(width: 8),
-                        Text(
+                        AnymeXText(
                           'Liked by',
                           style: TextStyle(
                             fontSize: 18,
@@ -316,7 +317,7 @@ class _ActivityCardState extends State<ActivityCard> {
                           ),
                         ),
                         const Spacer(),
-                        Text(
+                        AnymeXText(
                           '${activity.likeCount}',
                           style: TextStyle(
                             fontSize: 14,
@@ -420,7 +421,7 @@ class _ActivityCardState extends State<ActivityCard> {
                         _buildFallbackAvatar(context, 24),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
+                        child: AnymeXText(
                           liker.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -468,7 +469,7 @@ class _ActivityCardState extends State<ActivityCard> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  AnymeXText(
                     "Edit Activity",
                     style: TextStyle(
                       fontSize: 18,
@@ -669,7 +670,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                       }
                                     }
                                   },
-                                  child: Text(
+                                  child: AnymeXText(
                                     activity.authorName ?? 'User',
                                     style: TextStyle(
                                       fontSize: 14,
@@ -689,7 +690,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                   const SizedBox(width: 6),
                                   Icon(Icons.lock, size: 10, color: subtleText),
                                   const SizedBox(width: 4),
-                                  Text(
+                                  AnymeXText(
                                     'Private',
                                     style: TextStyle(
                                       fontSize: 11,
@@ -700,7 +701,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                 ],
                               ],
                             ),
-                            Text(
+                            AnymeXText(
                               activity.timeAgo,
                               style: TextStyle(
                                 fontSize: 11,
@@ -788,7 +789,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                               .theme.colorScheme.onPrimary,
                                         ),
                                         const SizedBox(width: 4),
-                                        Text(
+                                        AnymeXText(
                                           activity.status
                                                   ?.replaceAll(' episode', '')
                                                   .replaceAll(' chapter', '')
@@ -807,7 +808,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                   if (_formatListStatus(activity)
                                       .isNotEmpty) ...[
                                     const SizedBox(height: 8),
-                                    Text(
+                                    AnymeXText(
                                       _formatListStatus(activity),
                                       style: TextStyle(
                                         fontSize: 14,
@@ -921,7 +922,7 @@ class _ActivityCardState extends State<ActivityCard> {
       try {
         return _buildHtmlWithInlineCards(parseMarkdown(raw));
       } catch (_) {
-        return Text(
+        return AnymeXText(
           activity.displayText,
           style: TextStyle(
             fontSize: 14,
@@ -1038,7 +1039,7 @@ class _ActivityActionChip extends StatelessWidget {
                 children: [
                   Icon(icon, size: 18, color: foreground),
                   const SizedBox(width: 6),
-                  Text(
+                  AnymeXText(
                     count,
                     style: TextStyle(
                       fontSize: 13,
@@ -1156,7 +1157,7 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      AnymeXText(
                         title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -1168,7 +1169,7 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
                       ),
                       if (format.isNotEmpty) ...[
                         const SizedBox(height: 4),
-                        Text(
+                        AnymeXText(
                           format,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

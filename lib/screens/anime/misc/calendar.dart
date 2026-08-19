@@ -210,16 +210,14 @@ class _CalendarState extends State<Calendar>
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnymeXText(
-                text: "Calendar",
+              AnymeXText("Calendar",
                 color: context.colors.primary,
                 variant: TextVariant.semiBold,
                 size: 16,
               ),
               Obx(() {
                 if (isDubMode.value && isAnilist) {
-                  return AnymeXText(
-                    text: isFetching.value ? "Fetching..." : "Dubbed Only",
+                  return AnymeXText(isFetching.value ? "Fetching..." : "Dubbed Only",
                     variant: TextVariant.regular,
                     size: 10,
                     color: Colors.grey,
@@ -245,9 +243,8 @@ class _CalendarState extends State<Calendar>
 
                 return Tab(
                   child: AnymeXText(
+                    '${DateFormat('EEEE, MMM d').format(date)} (${list.length})',
                     variant: TextVariant.bold,
-                    text:
-                        '${DateFormat('EEEE, MMM d').format(date)} (${list.length})',
                   ),
                 );
               });
@@ -274,7 +271,7 @@ class _CalendarState extends State<Calendar>
               if (isLoading) {
                 return const Center(child: AnymeXProgressIndicator());
               } else if (filteredList.isEmpty) {
-                return const Center(child: Text("No Anime found"));
+                return const Center(child: AnymeXText("No Anime found"));
               }
 
               return GridView.builder(
@@ -415,8 +412,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                   Icon(Icons.schedule,
                       color: context.colors.primary, size: 14),
                   const SizedBox(width: 4),
-                  AnymeXText(
-                    text: 'EP ${widget.dubInfo!.episode}',
+                  AnymeXText('EP ${widget.dubInfo!.episode}',
                     size: 11,
                     variant: TextVariant.bold,
                     color: context.colors.primary,
@@ -438,16 +434,14 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                         if (widget.data.nextAiringEpisode != null) {
                            final nextEp = widget.data.nextAiringEpisode!;
                            final airDate = DateTime.fromMillisecondsSinceEpoch(nextEp.airingAt * 1000);
-                           return AnymeXText(
-                              text: _formatAirTime(airDate),
+                           return AnymeXText(_formatAirTime(airDate),
                               size: 10,
                               color: context.colors.primary,
                            );
                         }
                         
                         
-                        return AnymeXText(
-                          text: _formatAirTime(widget.dubInfo!.airDateTime),
+                        return AnymeXText(_formatAirTime(widget.dubInfo!.airDateTime),
                           size: 10,
                           color: context.colors.primary,
                         );
@@ -551,8 +545,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                 ),
                 if (isAnilist && widget.data.nextAiringEpisode?.episode != null) ...[
                   const SizedBox(width: 5),
-                  AnymeXText(
-                    text: 'EPISODE ${widget.data.nextAiringEpisode!.episode}',
+                  AnymeXText('EPISODE ${widget.data.nextAiringEpisode!.episode}',
                     maxLines: 1,
                     variant: TextVariant.regular,
                     fontStyle: FontStyle.italic,
@@ -566,8 +559,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
           const SizedBox(height: 5),
           SizedBox(
             width: cardWidth,
-            child: AnymeXText(
-              text: widget.data.title,
+            child: AnymeXText(widget.data.title,
               maxLines: 2,
               size: 14,
               textAlign: TextAlign.center,
@@ -577,8 +569,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
               widget.data.nextAiringEpisode?.episode != null)
             SizedBox(
               width: cardWidth,
-              child: AnymeXText(
-                text: '~ | ${widget.data.nextAiringEpisode!.episode - 1} |  ~',
+              child: AnymeXText('~ | ${widget.data.nextAiringEpisode!.episode - 1} |  ~',
                 maxLines: 1,
                 size: 12,
                 color: Colors.grey,
@@ -609,8 +600,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
             color: context.colors.onPrimary,
           ),
           const SizedBox(width: 4),
-          AnymeXText(
-            text: media.rating,
+          AnymeXText(media.rating,
             color: context.colors.onPrimary,
             size: 12,
             variant: TextVariant.bold,
@@ -748,8 +738,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
                         if (isAnilist && widget.data.nextAiringEpisode != null) ...[
-                          AnymeXText(
-                            text: "Episode ${widget.data.nextAiringEpisode!.episode}",
+                          AnymeXText("Episode ${widget.data.nextAiringEpisode!.episode}",
                             size: 14,
                             maxLines: 2,
                             color: context.colors.primary,
@@ -758,8 +747,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                           ),
                           const SizedBox(height: 10),
                         ],
-                        AnymeXText(
-                          text: widget.data.title,
+                        AnymeXText(widget.data.title,
                           size: 14,
                           maxLines: 2,
                           variant: TextVariant.bold,
@@ -782,8 +770,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                     borderRadius: BorderRadius.circular((8.multiplyRadius())),
                     color: context.colors.primary,
                   ),
-                  child: AnymeXText(
-                    text: formatTime(timeLeft.value),
+                  child: AnymeXText(formatTime(timeLeft.value),
                     size: 12,
                     color: context.colors.onPrimary,
                     variant: TextVariant.bold,

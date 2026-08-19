@@ -259,8 +259,7 @@ class BlurAnimeCard extends StatelessWidget {
                         SizedBox(
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
-                        AnymeXText(
-                          text: "Episode ${data.nextAiringEpisode!.episode}",
+                        AnymeXText("Episode ${data.nextAiringEpisode!.episode}",
                           size: 14,
                           maxLines: 2,
                           color: context.colors.primary,
@@ -268,8 +267,7 @@ class BlurAnimeCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 10),
-                        AnymeXText(
-                          text: data.title,
+                        AnymeXText(data.title,
                           size: 14,
                           maxLines: 2,
                           variant: TextVariant.bold,
@@ -292,8 +290,7 @@ class BlurAnimeCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular((8.multiplyRadius())),
                     color: context.colors.primary,
                   ),
-                  child: AnymeXText(
-                    text: '',
+                  child: AnymeXText('',
                     size: 12,
                     color: context.colors.onPrimary,
                     variant: TextVariant.bold,

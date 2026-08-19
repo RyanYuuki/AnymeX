@@ -70,8 +70,7 @@ class AnymeXToast {
                   ),
                   12.width(),
                   Flexible(
-                    child: AnymeXText(
-                      text: message,
+                    child: AnymeXText(message,
                       size: 13,
                       color: colorScheme.onSurface,
                       maxLines: 2,

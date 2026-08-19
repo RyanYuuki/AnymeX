@@ -11,6 +11,7 @@ import 'dart:async';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DoubleTapSeekWidget extends StatefulWidget {
   final PlayerController controller;
@@ -435,7 +436,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                           const SizedBox(width: 10),
                           SizedBox(
                             width: 42,
-                            child: Text(
+                            child: AnymeXText(
                               '${_currentSpeed.toStringAsFixed(_currentSpeed == _currentSpeed.toInt() ? 0 : 1)}x',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 color: colorScheme.onSurface,
@@ -584,7 +585,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
+                                AnymeXText(
                                   PlayerUtils.formatDuration(
                                       _dragCurrentPosition),
                                   maxLines: 1,
@@ -595,7 +596,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                                   ),
                                 ),
                                 const SizedBox(height: 1),
-                                Text(
+                                AnymeXText(
                                   '/ ${PlayerUtils.formatDuration(widget.controller.episodeDuration.value)}',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -706,7 +707,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                           color: colorScheme.onSurface,
                         ),
                         const SizedBox(width: 4),
-                        Text(
+                        AnymeXText(
                           '${totalSeekSeconds}s',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurface,

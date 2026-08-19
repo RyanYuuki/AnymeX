@@ -11,6 +11,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class IOSReaderControlTheme extends ReaderControlTheme {
   @override
@@ -149,7 +150,7 @@ class _ChapterPill extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       chapter?.title ?? 'Unknown Chapter',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -160,7 +161,7 @@ class _ChapterPill extends StatelessWidget {
                         letterSpacing: -0.1,
                       ),
                     ),
-                    Text(
+                    AnymeXText(
                       'Ch. ${_fmt(chapter?.number)} · ${controller.chapterList.length} total',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.6),
@@ -215,7 +216,7 @@ class _PagePill extends StatelessWidget {
       return _LiquidSurface(
         radius: 20,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        child: Text(
+        child: AnymeXText(
           label,
           style: const TextStyle(
             color: Colors.white,
@@ -317,7 +318,7 @@ class _SliderSection extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Obx(() => Text(
+                  Obx(() => AnymeXText(
                         'Page ${controller.currentPageIndex.value}',
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.75),
@@ -326,7 +327,7 @@ class _SliderSection extends StatelessWidget {
                           letterSpacing: 0.1,
                         ),
                       )),
-                  Text(
+                  AnymeXText(
                     '${controller.pageList.length} pages',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.45),

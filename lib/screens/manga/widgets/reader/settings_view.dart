@@ -10,6 +10,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ReaderSettings {
   final ReaderController controller;
@@ -55,7 +56,7 @@ class ReaderSettings {
                     padding:
                         EdgeInsets.symmetric(vertical: 16.0, horizontal: 10),
                     child: Center(
-                      child: Text(
+                      child: AnymeXText(
                         'Reader Settings',
                         style: TextStyle(
                             fontSize: 18, fontFamily: 'Poppins-SemiBold'),

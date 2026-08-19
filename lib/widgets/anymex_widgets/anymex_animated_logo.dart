@@ -5,6 +5,7 @@ import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnymeXAnimatedLogo extends StatefulWidget {
   final double size;
@@ -939,7 +940,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
                     ],
                   ),
                   child: Center(
-                    child: Text(
+                    child: AnymeXText(
                       String.fromCharCode(33 + random.nextInt(94)),
                       style: TextStyle(
                         color: Colors.white

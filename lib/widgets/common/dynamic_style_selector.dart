@@ -1,5 +1,6 @@
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DynamicStyleSelector<T> extends StatefulWidget {
   final List<T> values;
@@ -63,7 +64,7 @@ class _DynamicStyleSelectorState<T> extends State<DynamicStyleSelector<T>> {
             ),
             child: Column(
               children: [
-                Text(
+                AnymeXText(
                   'LIVE PREVIEW',
                   style: TextStyle(
                     fontFamily: 'Poppins',

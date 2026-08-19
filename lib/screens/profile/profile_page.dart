@@ -19,6 +19,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:anymex/screens/profile/widgets/widgets.dart';
 import 'dart:developer';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -161,7 +162,7 @@ class _ProfilePageState extends State<ProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Activity refreshed'),
+        content: AnymeXText('Activity refreshed'),
         duration: Duration(milliseconds: 1200),
       ),
     );
@@ -412,7 +413,7 @@ class _ProfilePageState extends State<ProfilePage>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    AnymeXText(
                       "Create Status",
                       style: TextStyle(
                         fontSize: 18,
@@ -460,7 +461,7 @@ class _ProfilePageState extends State<ProfilePage>
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Status posted successfully!'),
+                              content: AnymeXText('Status posted successfully!'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -477,7 +478,7 @@ class _ProfilePageState extends State<ProfilePage>
                           }
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(errorMessage),
+                              content: AnymeXText(errorMessage),
                               backgroundColor: context.theme.colorScheme.error,
                             ),
                           );
@@ -705,7 +706,7 @@ class _ProfilePageState extends State<ProfilePage>
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Center(
-                        child: Text(
+                        child: AnymeXText(
                           'No more activities',
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
@@ -741,7 +742,7 @@ class _ProfilePageState extends State<ProfilePage>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Activity deleted'),
+        content: AnymeXText('Activity deleted'),
         duration: Duration(milliseconds: 1200),
       ),
     );

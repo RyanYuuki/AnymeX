@@ -334,14 +334,12 @@ class _ListExporterPageState extends State<ListExporterPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnymeXText(
-                text: title,
+              AnymeXText(title,
                 variant: TextVariant.semiBold,
                 size: 15,
               ),
               const SizedBox(height: 3),
-              AnymeXText(
-                text: subtitle,
+              AnymeXText(subtitle,
                 size: 12,
                 color: Colors.grey,
               ),
@@ -373,8 +371,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
               onPressed: () => Get.back(),
               icon: const Icon(Icons.arrow_back_ios_new),
             ),
-            title: AnymeXText(
-              text: "${widget.isManga ? "Manga" : "Anime"} List Exporter",
+            title: AnymeXText("${widget.isManga ? "Manga" : "Anime"} List Exporter",
               variant: TextVariant.bold,
               size: 18,
               color: colorScheme.primary,
@@ -398,8 +395,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymeXText(
-                        text: isLoggedIn
+                      AnymeXText(isLoggedIn
                             ? "Ready to export your $serviceName ${widget.isManga ? 'Manga' : 'Anime'} list?"
                             : "Please login to export your list",
                         variant: TextVariant.bold,
@@ -420,7 +416,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                               radius: 25,
                               child: serviceHandler.profileData.value.avatar ==
                                       null
-                                  ? Text(serviceHandler
+                                  ? AnymeXText(serviceHandler
                                           .profileData.value.name?[0]
                                           .toUpperCase() ??
                                       '?')
@@ -431,17 +427,13 @@ class _ListExporterPageState extends State<ListExporterPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AnymeXText(
-                                    text:
-                                        serviceHandler.profileData.value.name ??
+                                  AnymeXText(serviceHandler.profileData.value.name ??
                                             'User',
                                     variant: TextVariant.bold,
                                     size: 16,
                                   ),
                                   const SizedBox(height: 5),
-                                  AnymeXText(
-                                    text:
-                                        "Exporting your ${widget.isManga ? 'manga' : 'anime'} list...",
+                                  AnymeXText("Exporting your ${widget.isManga ? 'manga' : 'anime'} list...",
                                     size: 14,
                                     color: Colors.grey,
                                   ),
@@ -467,8 +459,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymeXText(
-                        text: "Export Settings",
+                      AnymeXText("Export Settings",
                         variant: TextVariant.bold,
                         size: 16,
                         color: colorScheme.primary,
@@ -521,9 +512,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                               const Icon(HugeIcons.strokeRoundedDownload01,
                                   color: Colors.white),
                               const SizedBox(width: 10),
-                              AnymeXText(
-                                text:
-                                    "Export ${serviceType == ServicesType.mal ? 'MAL' : 'AniList'} XML",
+                              AnymeXText("Export ${serviceType == ServicesType.mal ? 'MAL' : 'AniList'} XML",
                                 variant: TextVariant.bold,
                                 color: Colors.white,
                                 size: 16,

@@ -8,6 +8,7 @@ import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 enum _QualityTab { servers, inbuilt }
 
@@ -170,7 +171,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
         children: [
           Icon(icon, size: 48, color: cs.onSurface.withOpacity(0.3)),
           const SizedBox(height: 16),
-          Text(
+          AnymeXText(
             message,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.withOpacity(0.5),

@@ -100,7 +100,7 @@ class _BigCarouselPortraitState extends State<BigCarouselPortrait> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    const AnymeXText(
                       'Description',
                       style: TextStyle(
                         fontSize: 26,
@@ -120,7 +120,7 @@ class _BigCarouselPortraitState extends State<BigCarouselPortrait> {
                   padding: const EdgeInsets.fromLTRB(24, 4, 24, 32),
                   child: cleanDescription.isEmpty
                       ? buildEmptyDescriptionState(colors)
-                      : Text(
+                      : AnymeXText(
                           cleanDescription,
                           style: TextStyle(
                             fontSize: 15.5,
@@ -156,7 +156,7 @@ class _BigCarouselPortraitState extends State<BigCarouselPortrait> {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
+            AnymeXText(
               'No Description Available',
               style: TextStyle(
                 fontWeight: FontWeight.w700,
@@ -428,7 +428,7 @@ class _BigCarouselPortraitState extends State<BigCarouselPortrait> {
                                         size: 13,
                                         color: colors.onTertiaryContainer),
                                     const SizedBox(width: 3),
-                                    Text(
+                                    AnymeXText(
                                       rating,
                                       style: TextStyle(
                                         fontSize: 11.5,
@@ -457,8 +457,7 @@ class _BigCarouselPortraitState extends State<BigCarouselPortrait> {
                                   child: Row(
                                     children: [
                                       Expanded(
-                                        child: AnymeXText(
-                                          text: cleanDescription.isNotEmpty
+                                        child: AnymeXText(cleanDescription.isNotEmpty
                                               ? cleanDescription
                                               : 'Tap to read description',
                                           size: 11.5,

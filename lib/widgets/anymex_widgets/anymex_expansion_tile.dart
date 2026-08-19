@@ -43,8 +43,7 @@ class AnymeXExpansionTile extends StatelessWidget {
           iconColor: context.colors.primary,
           collapsedIconColor: context.colors.onSurfaceVariant,
           leading: leading,
-          title: AnymeXText(
-            text: title,
+          title: AnymeXText(title,
             size: 15,
             variant: TextVariant.semiBold,
             color: context.colors.onSurface,

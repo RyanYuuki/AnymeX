@@ -8,6 +8,7 @@ import 'package:anymex/utils/language.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 enum _SubtitleTab { source, embedded, online }
 
@@ -153,7 +154,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
             child: SwitchListTile(
               value: _showAllStreams.value,
               contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-              title: const Text('Show all streams'),
+              title: const AnymeXText('Show all streams'),
               onChanged: (val) {
                 _showAllStreams.value = val;
                 widget.controller.showAllStreamSubtitles.value = val;
@@ -205,7 +206,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
         children: [
           Icon(icon, size: 48, color: cs.onSurface.withOpacity(0.3)),
           const SizedBox(height: 16),
-          Text(
+          AnymeXText(
             message,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.withOpacity(0.5),

@@ -67,7 +67,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please login first'),
+          content: AnymeXText('Please login first'),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -106,7 +106,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please login first'),
+          content: AnymeXText('Please login first'),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -134,17 +134,17 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: context.theme.colorScheme.surfaceContainerHigh,
-        title: const Text('Delete Reply'),
-        content: const Text('Are you sure you want to delete this reply?'),
+        title: const AnymeXText('Delete Reply'),
+        content: const AnymeXText('Are you sure you want to delete this reply?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel',
+            child: AnymeXText('Cancel',
                 style: TextStyle(color: context.theme.colorScheme.primary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('Delete',
+            child: AnymeXText('Delete',
                 style: TextStyle(color: context.theme.colorScheme.error)),
           ),
         ],
@@ -283,7 +283,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                           const Padding(
                             padding: EdgeInsets.all(32.0),
                             child: Center(
-                              child: Text("No replies yet. Be the first!"),
+                              child: AnymeXText("No replies yet. Be the first!"),
                             ),
                           )
                         else
@@ -399,7 +399,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                             }
                           }
                         },
-                        child: Text(
+                        child: AnymeXText(
                           reply.authorName ?? 'User',
                           style: const TextStyle(
                             fontSize: 13,
@@ -407,7 +407,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                           ),
                         ),
                       ),
-                      Text(
+                      AnymeXText(
                         reply.timeAgo,
                         style: TextStyle(
                           fontSize: 11,
@@ -437,7 +437,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0, vertical: 4.0),
-                              child: Text(
+                              child: AnymeXText(
                                 'reply',
                                 style: TextStyle(
                                   fontSize: 12,
@@ -454,7 +454,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8.0, vertical: 4.0),
-                                child: Text(
+                                child: AnymeXText(
                                   'delete',
                                   style: TextStyle(
                                     fontSize: 12,
@@ -470,7 +470,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8.0, vertical: 4.0),
-                                child: Text(
+                                child: AnymeXText(
                                   'edit',
                                   style: TextStyle(
                                     fontSize: 12,
@@ -501,7 +501,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                                 color: reply.isLiked ? Colors.red : subtleText,
                               ),
                               const SizedBox(width: 4),
-                              Text(
+                              AnymeXText(
                                 '${reply.likeCount}',
                                 style: TextStyle(
                                   fontSize: 11,
@@ -570,7 +570,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                       children: [
                         const Icon(Icons.favorite, color: Colors.red, size: 20),
                         const SizedBox(width: 8),
-                        Text(
+                        AnymeXText(
                           'Liked by',
                           style: TextStyle(
                             fontSize: 18,
@@ -579,7 +579,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                           ),
                         ),
                         const Spacer(),
-                        Text(
+                        AnymeXText(
                           '${reply.likeCount}',
                           style: TextStyle(
                             fontSize: 14,
@@ -689,8 +689,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                         ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: AnymeXText(
-                          text: liker.name,
+                        child: AnymeXText(liker.name,
                           size: 16,
                           variant: TextVariant.bold,
                           color: context.theme.colorScheme.onSurface,

@@ -496,8 +496,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnymeXText(
-                text: widget.media.title,
+              AnymeXText(widget.media.title,
                 variant: TextVariant.bold,
                 size: 15,
                 maxLines: 1,
@@ -508,8 +507,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   widget.media.romajiTitle != widget.media.title &&
                   widget.media.romajiTitle != '?') ...[
                 const SizedBox(height: 4),
-                AnymeXText(
-                  text: widget.media.romajiTitle,
+                AnymeXText(widget.media.romajiTitle,
                   variant: TextVariant.regular,
                   size: 12,
                   color: colors.onSurfaceVariant,
@@ -601,8 +599,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         children: [
           Icon(icon, size: 11, color: color),
           const SizedBox(width: 4),
-          AnymeXText(
-              text: label,
+          AnymeXText(label,
               size: 11,
               color: color,
               variant: TextVariant.semiBold),
@@ -653,7 +650,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                         ),
                         const SizedBox(width: 8),
                         Flexible(
-                          child: Text(
+                          child: AnymeXText(
                             widget.type == ItemType.anime ? 'Watch' : 'Read',
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -680,8 +677,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                             color: colors.primary, size: 20),
                         const SizedBox(width: 8),
                         Flexible(
-                          child: AnymeXText(
-                            text: convertAniListStatus(
+                          child: AnymeXText(convertAniListStatus(
                               _animeStatus.value,
                               isManga: widget.type == ItemType.manga,
                             ),
@@ -777,8 +773,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                     Icon(Icons.forum_rounded,
                         size: 16, color: colors.onSecondaryContainer),
                     const SizedBox(width: 8),
-                    AnymeXText(
-                      text: widget.reasons!.length == 1
+                    AnymeXText(widget.reasons!.length == 1
                           ? 'View recommendation'
                           : 'View all ${widget.reasons!.length} recommendations',
                       variant: TextVariant.semiBold,
@@ -837,8 +832,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 
   Widget _sectionLabel(String label, ColorScheme colors) {
-    return AnymeXText(
-        text: label,
+    return AnymeXText(label,
         variant: TextVariant.bold,
         size: 13,
         color: colors.primary);
@@ -857,8 +851,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AnymeXText(
-            text: text,
+          AnymeXText(text,
             size: 13,
             maxLines: _synopsisExpanded ? null : _synopsisMaxLines,
             overflow: _synopsisExpanded
@@ -871,8 +864,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             GestureDetector(
               onTap: () =>
                   setState(() => _synopsisExpanded = !_synopsisExpanded),
-              child: AnymeXText(
-                text: _synopsisExpanded ? 'Show Less' : 'Read More',
+              child: AnymeXText(_synopsisExpanded ? 'Show Less' : 'Read More',
                 size: 12,
                 color: colors.primary,
                 variant: TextVariant.semiBold,
@@ -913,8 +905,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration:
           BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: AnymeXText(
-          text: label, size: 12, color: fg, variant: TextVariant.semiBold),
+      child: AnymeXText(label, size: 12, color: fg, variant: TextVariant.semiBold),
     );
 
     if (onTap == null) return chip;
@@ -953,8 +944,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             )
           : Row(
               children: [
-                AnymeXText(
-                  text: 'Was this helpful?',
+                AnymeXText('Was this helpful?',
                   size: 13,
                   color: colors.onSurfaceVariant,
                   variant: TextVariant.semiBold,
@@ -1015,8 +1005,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText(
-                      text: 'Recommended by',
+                    AnymeXText('Recommended by',
                       size: 11,
                       color: colors.onSurfaceVariant,
                     ),
@@ -1031,8 +1020,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Flexible(
-                              child: AnymeXText(
-                                text: username,
+                              child: AnymeXText(username,
                                 variant: TextVariant.semiBold,
                                 size: 14,
                                 color: colors.primary,
@@ -1050,8 +1038,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                         ),
                       )
                     else
-                      AnymeXText(
-                        text: widget.author ?? 'Unknown',
+                      AnymeXText(widget.author ?? 'Unknown',
                         variant: TextVariant.semiBold,
                         size: 14,
                         color: colors.primary,
@@ -1065,7 +1052,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           ),
           if (widget.reason != null && widget.reason!.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               '"${widget.reason}"',
               style: TextStyle(
                 fontSize: 13,
@@ -1076,9 +1063,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           ],
           if (widget.reasons != null && widget.reasons!.length > 1) ...[
             const SizedBox(height: 6),
-            AnymeXText(
-              text:
-                  '+ ${widget.reasons!.length - 1} more recommendation${widget.reasons!.length > 2 ? 's' : ''}',
+            AnymeXText('+ ${widget.reasons!.length - 1} more recommendation${widget.reasons!.length > 2 ? 's' : ''}',
               size: 11,
               color: colors.onSurfaceVariant,
               variant: TextVariant.regular,
@@ -1167,7 +1152,7 @@ class _PeekAuthorAvatar extends StatelessWidget {
               radius: size / 2,
             )
           : Center(
-              child: Text(
+              child: AnymeXText(
                 (fallbackLabel?.trim().isNotEmpty == true
                         ? fallbackLabel!.trim()[0]
                         : '?')
@@ -1270,8 +1255,7 @@ class _PopupVoteButton extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              AnymeXText(
-                text: '$count',
+              AnymeXText('$count',
                 size: 13,
                 color: active ? activeColor : colors.onSurfaceVariant,
                 variant: TextVariant.semiBold,

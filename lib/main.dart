@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex/widgets/common/fps_meter.dart';
 import 'package:rhttp/rhttp.dart';
 
@@ -423,7 +424,10 @@ class _FilterScreenState extends State<FilterScreen> {
       settings.checkForUpdates(context);
       settings.showWelcomeDialog(context);
 
-      final launchCount = KvHelper.get<int>('anymex_discord_notice_launch_count', defaultVal: 0) + 1;
+      final launchCount = KvHelper.get<int>(
+              'anymex_discord_notice_launch_count',
+              defaultVal: 0) +
+          1;
       KvHelper.set('anymex_discord_notice_launch_count', launchCount);
 
       void checkAndShowDiscord() {
@@ -443,7 +447,8 @@ class _FilterScreenState extends State<FilterScreen> {
 
   void _showDiscordNoticeDialog(BuildContext context) {
     final settings = Get.find<Settings>();
-    bool isUnlocked = KvHelper.get<bool>('anymex_discord_notice_unlocked', defaultVal: false);
+    bool isUnlocked =
+        KvHelper.get<bool>('anymex_discord_notice_unlocked', defaultVal: false);
 
     showDialog(
       context: context,
@@ -464,7 +469,7 @@ class _FilterScreenState extends State<FilterScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     AnymeXText(
-                      text: isUnlocked
+                      isUnlocked
                           ? 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nYou have already visited our social links, so the Okay button is unlocked.'
                           : 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nOnce you click to join one of them, the Okay button below will unlock.',
                       size: 14,
@@ -476,7 +481,8 @@ class _FilterScreenState extends State<FilterScreen> {
                     AnymexOnTap(
                       onTap: () async {
                         final url = settings.discordUrl.value;
-                        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                        await launchUrl(Uri.parse(url),
+                            mode: LaunchMode.externalApplication);
                         KvHelper.set('anymex_discord_notice_unlocked', true);
                         setDialogState(() {
                           isUnlocked = true;
@@ -484,7 +490,8 @@ class _FilterScreenState extends State<FilterScreen> {
                       },
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
                         decoration: BoxDecoration(
                           color: const Color(0xFF5865F2),
                           borderRadius: BorderRadius.circular(12),
@@ -492,10 +499,11 @@ class _FilterScreenState extends State<FilterScreen> {
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(HugeIcons.strokeRoundedDiscord, color: Colors.white, size: 20),
+                            Icon(HugeIcons.strokeRoundedDiscord,
+                                color: Colors.white, size: 20),
                             SizedBox(width: 8),
                             AnymeXText(
-                              text: 'Join New Discord',
+                              'Join New Discord',
                               color: Colors.white,
                               variant: TextVariant.bold,
                               size: 13,
@@ -508,7 +516,8 @@ class _FilterScreenState extends State<FilterScreen> {
                     AnymexOnTap(
                       onTap: () async {
                         final url = settings.telegramUrl.value;
-                        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                        await launchUrl(Uri.parse(url),
+                            mode: LaunchMode.externalApplication);
                         KvHelper.set('anymex_discord_notice_unlocked', true);
                         setDialogState(() {
                           isUnlocked = true;
@@ -516,7 +525,8 @@ class _FilterScreenState extends State<FilterScreen> {
                       },
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
                         decoration: BoxDecoration(
                           color: const Color(0xFF0088CC),
                           borderRadius: BorderRadius.circular(12),
@@ -524,10 +534,11 @@ class _FilterScreenState extends State<FilterScreen> {
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(HugeIcons.strokeRoundedTelegram, color: Colors.white, size: 20),
+                            Icon(HugeIcons.strokeRoundedTelegram,
+                                color: Colors.white, size: 20),
                             SizedBox(width: 8),
                             AnymeXText(
-                              text: 'Join Telegram Channel',
+                              'Join Telegram Channel',
                               color: Colors.white,
                               variant: TextVariant.bold,
                               size: 13,
@@ -636,7 +647,6 @@ class _FilterScreenState extends State<FilterScreen> {
     }
   }
 
-
   @override
   void dispose() {
     Logger.dispose();
@@ -647,12 +657,11 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget build(BuildContext context) {
     final authService = Get.put(ServiceHandler());
     return AnymeXScaffold(
-  body: PlatformBuilder(
-        strictMode: false,
-        desktopBuilder: _buildDesktopLayout(context, authService),
-        androidBuilder: _buildAndroidLayout(authService),
-      )
-);
+        body: PlatformBuilder(
+      strictMode: false,
+      desktopBuilder: _buildDesktopLayout(context, authService),
+      androidBuilder: _buildAndroidLayout(authService),
+    ));
   }
 
   Widget _buildDesktopLayout(BuildContext context, ServiceHandler authService) {
@@ -711,12 +720,9 @@ class _FilterScreenState extends State<FilterScreen> {
                                         )
                                       : const Icon((IconlyBold.profile)));
                               if (count > 0) {
-                                return Badge(
-                                  label: Text(count.toString()),
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.primary,
-                                  textColor:
-                                      Theme.of(context).colorScheme.onPrimary,
+                                return AnymeXBadge(
+                                  label: count.toString(),
+                                  offset: const Offset(0, 0),
                                   child: avatar,
                                 );
                               }
@@ -769,7 +775,8 @@ class _FilterScreenState extends State<FilterScreen> {
               _mobileSelectedIndex = homeIndex;
             });
           } else {
-            const MethodChannel("com.ryan.anymex/utils").invokeMethod("exitApp");
+            const MethodChannel("com.ryan.anymex/utils")
+                .invokeMethod("exitApp");
           }
         },
         child: Scaffold(

@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SauceFinderView extends StatefulWidget {
   const SauceFinderView({super.key});
@@ -128,7 +129,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   'Sauce Searcher',
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
@@ -137,7 +138,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
+                AnymeXText(
                   'Find anime sauce by screenshots',
                   style: TextStyle(
                     color: theme.colorScheme.onSurface.opaque(0.7),
@@ -191,7 +192,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           'Upload Image',
           style: TextStyle(
             fontSize: 20,
@@ -245,7 +246,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+            AnymeXText(
               'Choose Image',
               style: TextStyle(
                 fontSize: 18,
@@ -255,7 +256,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               'Select an anime screenshot to find its source',
               style: TextStyle(
                 fontSize: 14,
@@ -353,7 +354,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                             size: 24,
                           ),
                           const SizedBox(width: 12),
-                          Text(
+                          AnymeXText(
                             'Find Source',
                             style: TextStyle(
                               fontSize: 16,
@@ -392,7 +393,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                       size: 20,
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    AnymeXText(
                       'Choose Different Image',
                       style: TextStyle(
                         fontSize: 14,
@@ -414,7 +415,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           'Results',
           style: TextStyle(
             fontSize: 20,
@@ -452,7 +453,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             child: ExpressiveLoadingIndicator(),
           ),
           const SizedBox(height: 24),
-          Text(
+          AnymeXText(
             'Searching database...',
             style: TextStyle(
               fontSize: 16,
@@ -462,7 +463,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             'This might take a few seconds',
             style: TextStyle(
               fontSize: 14,
@@ -502,7 +503,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             ),
           ),
           const SizedBox(height: 20),
-          Text(
+          AnymeXText(
             'Search Failed',
             style: TextStyle(
               fontSize: 18,
@@ -512,7 +513,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             _errorMessage!,
             style: TextStyle(
               fontSize: 14,
@@ -543,7 +544,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                         size: 20,
                       ),
                       const SizedBox(width: 8),
-                      Text(
+                      AnymeXText(
                         'Try Again',
                         style: TextStyle(
                           fontSize: 14,
@@ -587,7 +588,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             ),
           ),
           const SizedBox(height: 24),
-          Text(
+          AnymeXText(
             'No results yet',
             style: TextStyle(
               fontSize: 16,
@@ -596,7 +597,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             'Upload an image to get started',
             style: TextStyle(
               fontSize: 14,
@@ -640,7 +641,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   _result!.name,
                   style: TextStyle(
                     fontSize: 20,
@@ -705,7 +706,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                               size: 24,
                             ),
                             const SizedBox(width: 12),
-                            Text(
+                            AnymeXText(
                               'Watch Anime',
                               style: TextStyle(
                                 fontSize: 16,
@@ -745,7 +746,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
             color: textColor,
           ),
           const SizedBox(width: 6),
-          Text(
+          AnymeXText(
             label,
             style: TextStyle(
               fontSize: 13,

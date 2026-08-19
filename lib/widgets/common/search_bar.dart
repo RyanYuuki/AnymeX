@@ -7,6 +7,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class CustomSearchBar extends StatefulWidget {
   final TextEditingController? controller;
@@ -206,7 +207,7 @@ class TappableSearchBar extends StatelessWidget {
                 buildChip(chipLabel),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(
+                  child: AnymeXText(
                     hintText,
                     style: TextStyle(
                       color: theme.colorScheme.onSurface

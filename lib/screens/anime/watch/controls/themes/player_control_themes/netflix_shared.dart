@@ -4,6 +4,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 
 class NFColors {
@@ -126,7 +127,7 @@ class NFLabeledButton extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 28),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             label,
             style: TextStyle(
               color: color,
@@ -252,7 +253,7 @@ class _NFUnlockButtonState extends State<NFUnlockButton> {
                 color: NFColors.white, size: 22),
             if (_confirm) ...[
               const SizedBox(width: 12),
-              const Text(
+              const AnymeXText(
                 'Tap again to unlock',
                 style: TextStyle(
                   color: NFColors.white,
@@ -401,7 +402,7 @@ class NFSheetTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: NFColors.white70, size: 26),
-      title: Text(
+      title: AnymeXText(
         label,
         style: const TextStyle(
           color: NFColors.white,

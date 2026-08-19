@@ -197,8 +197,7 @@ class _DefaultPillContent extends StatelessWidget {
           ),
           const SizedBox(width: 6),
         ],
-        AnymeXText.semiBold(
-          text: item.label,
+        AnymeXText.semiBold(item.label,
           size: 12,
           color: item.isSelected ? colors.primary : colors.onSurface,
         ),

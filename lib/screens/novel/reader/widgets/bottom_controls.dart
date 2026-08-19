@@ -105,7 +105,7 @@ class NovelBottomControls extends StatelessWidget {
               color: context.colors.onSurface.opaque(0.7),
             ),
             const SizedBox(width: 4),
-            Text(
+            AnymeXText(
               DateFormat('HH:mm').format(DateTime.now()),
               style: TextStyle(
                 color: context.colors.onSurface.opaque(0.9),
@@ -129,7 +129,7 @@ class NovelBottomControls extends StatelessWidget {
           color: context.colors.onSurface.opaque(0.7),
         ),
         const SizedBox(width: 4),
-        Text(
+        AnymeXText(
           '100%',
           style: TextStyle(
             color: context.colors.onSurface.opaque(0.9),
@@ -175,7 +175,7 @@ class NovelBottomControls extends StatelessWidget {
                       color: Theme.of(context).colorScheme.primary.opaque(0.1),
                       borderRadius: BorderRadius.circular(isDesktop ? 8 : 6),
                     ),
-                    child: Text(
+                    child: AnymeXText(
                       'Ch. ${controller.currentChapter.value.number?.toStringAsFixed(0) ?? '?'}',
                       style: TextStyle(
                         color: context.colors.primary,
@@ -187,8 +187,7 @@ class NovelBottomControls extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: AnymeXText(
-                      text: controller.currentChapter.value.title ??
+                    child: AnymeXText(controller.currentChapter.value.title ??
                           'Unknown Chapter',
                       size: isDesktop ? 14 : 12,
                       variant: TextVariant.regular,
@@ -199,7 +198,7 @@ class NovelBottomControls extends StatelessWidget {
                     ),
                   ),
                   if (controller.showReadingProgress.value)
-                    Text(
+                    AnymeXText(
                       '${(controller.progress.value * 100).toInt()}%',
                       style: TextStyle(
                         color:
@@ -257,7 +256,7 @@ class NovelBottomControls extends StatelessWidget {
                       color: Theme.of(context).colorScheme.primary.opaque(0.1),
                       borderRadius: BorderRadius.circular(isDesktop ? 8 : 6),
                     ),
-                    child: Text(
+                    child: AnymeXText(
                       'Ch. ${controller.currentChapter.value.number?.toStringAsFixed(0) ?? '?'}',
                       style: TextStyle(
                         color: context.colors.primary,
@@ -269,8 +268,7 @@ class NovelBottomControls extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: AnymeXText(
-                      text: controller.currentChapter.value.title ??
+                    child: AnymeXText(controller.currentChapter.value.title ??
                           'Unknown Chapter',
                       size: isDesktop ? 14 : 12,
                       variant: TextVariant.regular,
@@ -281,7 +279,7 @@ class NovelBottomControls extends StatelessWidget {
                     ),
                   ),
                   if (controller.showReadingProgress.value)
-                    Text(
+                    AnymeXText(
                       '${controller.currentPage.value}/${controller.totalPages.value}',
                       style: TextStyle(
                         color:
@@ -371,7 +369,7 @@ class NovelBottomControls extends StatelessWidget {
                   color: context.colors.primary,
                   borderRadius: BorderRadius.circular(isDesktop ? 8 : 6),
                 ),
-                child: Text(
+                child: AnymeXText(
                   '${controller.fontSize.value.toInt()}',
                   style: TextStyle(
                     color: context.colors.onPrimary,

@@ -115,7 +115,7 @@ class SourceSelectorWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    AnymeXText(
                       hasSource
                           ? (activeSource!.name?.toUpperCase() ??
                               'UNKNOWN SOURCE')
@@ -146,7 +146,7 @@ class SourceSelectorWidget extends StatelessWidget {
                         ],
                       )
                     else
-                      Text(
+                      AnymeXText(
                         'Tap to choose a source',
                         style: TextStyle(
                           fontSize: 11,
@@ -292,7 +292,7 @@ class _Badge extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(6),
       ),
-      child: Text(
+      child: AnymeXText(
         label,
         style: TextStyle(
           fontSize: 10,
@@ -359,7 +359,7 @@ class _EmptySourceState extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                AnymeXText(
                   label ??
                       (isManga
                           ? 'No Manga Sources Installed'
@@ -372,7 +372,7 @@ class _EmptySourceState extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Text(
+                AnymeXText(
                   'Go to Extensions to get started',
                   style: TextStyle(
                     fontSize: 11,
@@ -465,8 +465,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
             children: [
               Icon(Icons.extension_rounded, size: 20, color: colors.primary),
               const SizedBox(width: 10),
-              AnymeXText(
-                text: widget.label ??
+              AnymeXText(widget.label ??
                     (widget.isManga
                         ? 'Select Manga Source'
                         : 'Select Anime Source'),
@@ -480,7 +479,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                   color: colors.primaryContainer.withOpacity(0.4),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text(
+                child: AnymeXText(
                   '${widget.installedSources.length} installed',
                   style: TextStyle(
                     fontSize: 11,
@@ -581,7 +580,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                         color: colors.onSurfaceVariant.withOpacity(0.35),
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      AnymeXText(
                         'No sources found',
                         style: TextStyle(
                           fontSize: 14,
@@ -700,7 +699,7 @@ class _SourceTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    AnymeXText(
                       source.name?.toUpperCase() ?? 'UNKNOWN',
                       style: TextStyle(
                         fontSize: 13,
@@ -781,7 +780,7 @@ class _LangSubPicker extends StatelessWidget {
                 color: colors.onSurfaceVariant.withOpacity(0.7),
               ),
               const SizedBox(width: 6),
-              Text(
+              AnymeXText(
                 'Language Variant',
                 style: TextStyle(
                   fontSize: 12,
@@ -821,7 +820,7 @@ class _LangSubPicker extends StatelessWidget {
                             : colors.outline.withOpacity(0.2),
                       ),
                     ),
-                    child: Text(
+                    child: AnymeXText(
                       extensionLanguageName(lang.lang),
                       style: TextStyle(
                         fontSize: 12,

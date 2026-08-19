@@ -18,6 +18,7 @@ import 'package:get/get.dart';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ProgressController extends GetxController {
   var currentStep = ''.obs;
@@ -159,7 +160,7 @@ class Liquid {
                               : null,
                         ),
                         const SizedBox(height: 20),
-                        Text(
+                        AnymeXText(
                           progressController.currentStep.value.isEmpty
                               ? 'Initializing...'
                               : progressController.currentStep.value,
@@ -172,7 +173,7 @@ class Liquid {
                         if (progressController.progress.value > 0)
                           Padding(
                             padding: const EdgeInsets.only(top: 12),
-                            child: Text(
+                            child: AnymeXText(
                               '${(progressController.progress.value * 100).toInt()}%',
                               style: Theme.of(context)
                                   .textTheme
@@ -582,12 +583,12 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                           Icon(Icons.blur_on,
                               size: 20, color: colorScheme.primary),
                           const SizedBox(width: 8),
-                          const Text(
+                          const AnymeXText(
                             "Blur Radius",
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                           const Spacer(),
-                          Text(
+                          AnymeXText(
                             "${blur.toInt()}px",
                             style: TextStyle(
                               color: colorScheme.primary,
@@ -614,12 +615,12 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                           Icon(Icons.brightness_medium,
                               size: 20, color: colorScheme.primary),
                           const SizedBox(width: 8),
-                          const Text(
+                          const AnymeXText(
                             "Brightness",
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                           const Spacer(),
-                          Text(
+                          AnymeXText(
                             "${(brightness * 100).toInt()}%",
                             style: TextStyle(
                               color: colorScheme.primary,
@@ -651,7 +652,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: const Text("Cancel"),
+                              child: const AnymeXText("Cancel"),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -670,7 +671,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              child: const Text("Apply"),
+                              child: const AnymeXText("Apply"),
                             ),
                           ),
                         ],

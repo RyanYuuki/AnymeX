@@ -34,6 +34,7 @@ class UISettings {
   double grainIntensity;
   bool enableImmersiveMode;
   int navBarStyle;
+  String appFontFamily;
 
   UISettings({
     this.glowMultiplier = 1.0,
@@ -67,6 +68,7 @@ class UISettings {
     this.grainIntensity = 0.05,
     this.enableImmersiveMode = false,
     this.navBarStyle = 0,
+    this.appFontFamily = '',
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -202,6 +204,8 @@ class UISettings {
       enableImmersiveMode: UISettingsKeys.enableImmersiveMode
           .get<bool>(uiDefaults.enableImmersiveMode),
       navBarStyle: UISettingsKeys.navBarStyle.get<int>(uiDefaults.navBarStyle),
+      appFontFamily:
+          UISettingsKeys.appFontFamily.get<String>(uiDefaults.appFontFamily),
     );
   }
 }

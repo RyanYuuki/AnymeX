@@ -17,8 +17,7 @@ Widget buildCharactersSection(BuildContext context, Media media) {
     children: [
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: AnymeXText(
-          text: 'Characters${media.mediaType.isManga ? '' : ' & Voice Actors'}',
+        child: AnymeXText('Characters${media.mediaType.isManga ? '' : ' & Voice Actors'}',
           size: 16,
           variant: TextVariant.bold,
           color: context.colors.primary,
@@ -94,8 +93,7 @@ Widget buildCharacterCard(BuildContext context, Character character) {
                           color: context.colors.primary,
                         ),
                         const SizedBox(width: 2),
-                        AnymeXText(
-                          text: character.favourites.toString(),
+                        AnymeXText(character.favourites.toString(),
                           size: 8,
                           color: Colors.white,
                           variant: TextVariant.bold,
@@ -112,16 +110,14 @@ Widget buildCharacterCard(BuildContext context, Character character) {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AnymeXText(
-                  text: character.name ?? 'Unknown',
+                AnymeXText(character.name ?? 'Unknown',
                   size: 13,
                   variant: TextVariant.bold,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
-                AnymeXText(
-                  text: character.role ?? 'Main',
+                AnymeXText(character.role ?? 'Main',
                   size: 11,
                   color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                 ),
@@ -132,8 +128,7 @@ Widget buildCharacterCard(BuildContext context, Character character) {
                       Icon(Icons.mic_rounded, size: 12, color: colors.primary),
                       const SizedBox(width: 4),
                       Expanded(
-                        child: AnymeXText(
-                          text: va.name ?? 'Unknown VA',
+                        child: AnymeXText(va.name ?? 'Unknown VA',
                           size: 11,
                           variant: TextVariant.semiBold,
                           color: colors.primary,

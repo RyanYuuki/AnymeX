@@ -6,6 +6,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsStorageManager extends StatefulWidget {
   const SettingsStorageManager({super.key});
@@ -203,7 +204,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      AnymeXText(
                                         'Temporary App Cache',
                                         style: TextStyle(
                                           fontSize: 16,
@@ -212,7 +213,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                         ),
                                       ),
                                       const SizedBox(height: 8),
-                                      Text(
+                                      AnymeXText(
                                         _service.formatBytes(_imageCacheBytes),
                                         style: TextStyle(
                                           fontSize: 24,
@@ -229,7 +230,7 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                                         ),
                                       ),
                                       const SizedBox(height: 8),
-                                      Text(
+                                      AnymeXText(
                                         'Threshold: ${_thresholdGb.toStringAsFixed(1)} GB',
                                         style: TextStyle(
                                           color: context.colors.onSurfaceVariant,

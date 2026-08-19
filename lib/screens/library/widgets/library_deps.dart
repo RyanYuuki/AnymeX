@@ -167,7 +167,7 @@ class CustomSliderTile extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         title,
                         style: TextStyle(
                           fontSize: 16,
@@ -176,7 +176,7 @@ class CustomSliderTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      Text(
+                      AnymeXText(
                         description,
                         style: TextStyle(
                           fontSize: 14,
@@ -196,8 +196,7 @@ class CustomSliderTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
                 children: [
-                  AnymeXText(
-                    text: sliderValue.toInt() == 0
+                  AnymeXText(sliderValue.toInt() == 0
                         ? 'Auto'
                         : (sliderValue % 1 == 0
                             ? sliderValue.toInt().toString()
@@ -219,8 +218,7 @@ class CustomSliderTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  AnymeXText(
-                    text: max % 1 == 0
+                  AnymeXText(max % 1 == 0
                         ? max.toInt().toString()
                         : max.toStringAsFixed(1),
                     variant: TextVariant.semiBold,
@@ -278,7 +276,7 @@ class ChipTabs extends StatelessWidget {
                   icon,
                   const SizedBox(width: 6),
                 ],
-                Text(
+                AnymeXText(
                   label,
                   style: TextStyle(
                     color: isSelected

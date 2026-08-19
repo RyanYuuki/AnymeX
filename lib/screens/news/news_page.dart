@@ -27,8 +27,7 @@ class NewsPage extends StatelessWidget {
               floating: true,
               pinned: false,
               snap: true,
-              title: AnymeXText(
-                text: '${media.title} News',
+              title: AnymeXText('${media.title} News',
                 variant: TextVariant.bold,
                 size: 20,
               ),
@@ -91,8 +90,7 @@ class NewsPage extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      AnymeXText(
-                                        text: decodedTitle,
+                                      AnymeXText(decodedTitle,
                                         variant: TextVariant.semiBold,
                                         size: 15,
                                         maxLines: 1,
@@ -109,8 +107,7 @@ class NewsPage extends StatelessWidget {
                                               color: colorScheme.onSurface.opaque(0.5),
                                             ),
                                             const SizedBox(width: 4),
-                                            AnymeXText(
-                                              text: formatTimeAgo(item.date!.millisecondsSinceEpoch),
+                                            AnymeXText(formatTimeAgo(item.date!.millisecondsSinceEpoch),
                                               variant: TextVariant.regular,
                                               size: 12,
                                               color: colorScheme.onSurface.opaque(0.6),
@@ -121,8 +118,7 @@ class NewsPage extends StatelessWidget {
                                       const SizedBox(height: 8),
                                       Row(
                                         children: [
-                                          AnymeXText(
-                                            text: "Read Article",
+                                          AnymeXText("Read Article",
                                             variant: TextVariant.bold,
                                             size: 12,
                                             color: colorScheme.primary,

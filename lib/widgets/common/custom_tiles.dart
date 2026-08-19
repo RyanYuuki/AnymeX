@@ -153,7 +153,7 @@ class CustomSwitchTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   title,
                   style: TextStyle(
                     fontSize: 16,
@@ -162,7 +162,7 @@ class CustomSwitchTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 5),
-                Text(
+                AnymeXText(
                   description,
                   style: TextStyle(
                     fontSize: 14,
@@ -247,7 +247,7 @@ class CustomTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        AnymeXText(
                           title,
                           style: TextStyle(
                             fontSize: 16,
@@ -256,7 +256,7 @@ class CustomTile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
+                        AnymeXText(
                           description,
                           style: TextStyle(
                             fontSize: 14,
@@ -347,7 +347,7 @@ class CustomSliderTile extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          AnymeXText(
                             title,
                             style: TextStyle(
                               fontSize: 16,
@@ -356,7 +356,7 @@ class CustomSliderTile extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 5),
-                          Text(
+                          AnymeXText(
                             description,
                             style: TextStyle(
                               fontSize: 14,
@@ -376,8 +376,7 @@ class CustomSliderTile extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Row(
                     children: [
-                      AnymeXText(
-                        text: sliderValue % 1 == 0
+                      AnymeXText(sliderValue % 1 == 0
                             ? sliderValue.toInt().toString()
                             : sliderValue.toStringAsFixed(1),
                         variant: TextVariant.semiBold,
@@ -404,8 +403,7 @@ class CustomSliderTile extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      AnymeXText(
-                        text: max % 1 == 0
+                      AnymeXText(max % 1 == 0
                             ? max.toInt().toString()
                             : max.toStringAsFixed(1),
                         variant: TextVariant.semiBold,

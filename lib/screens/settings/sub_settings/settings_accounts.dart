@@ -124,8 +124,7 @@ class DiscordTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AnymeXText(
-                          text: isDesktop
+                        AnymeXText(isDesktop
                               ? 'Discord Desktop'
                               : (isLoggedIn
                                   ? (userData?.displayName ?? 'Discord User')
@@ -148,8 +147,7 @@ class DiscordTile extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 6),
-                            AnymeXText(
-                              text: isDesktop
+                            AnymeXText(isDesktop
                                   ? (rpc.isConnected
                                       ? 'Connected'
                                       : 'Disconnected')
@@ -196,8 +194,7 @@ class DiscordTile extends StatelessWidget {
                           color: const Color(0xFF5865F2),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const AnymeXText(
-                          text: 'Login',
+                        child: const AnymeXText('Login',
                           variant: TextVariant.bold,
                           size: 13,
                           color: Colors.white,
@@ -219,14 +216,12 @@ class DiscordTile extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const AnymeXText(
-                            text: 'Discord Rich Presence',
+                          const AnymeXText('Discord Rich Presence',
                             variant: TextVariant.semiBold,
                             size: 14,
                           ),
                           const SizedBox(height: 2),
-                          AnymeXText(
-                            text: 'Share your activity on Discord',
+                          AnymeXText('Share your activity on Discord',
                             size: 11,
                             color: colors.onSurfaceVariant,
                           ),
@@ -291,21 +286,19 @@ class DiscordTile extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: context.colors.surfaceContainer,
-        title: const AnymeXText(
-            text: "Disconnect Discord?", variant: TextVariant.bold),
-        content: const AnymeXText(
-            text: "Your rich presence activity will stop updating."),
+        title: const AnymeXText("Disconnect Discord?", variant: TextVariant.bold),
+        content: const AnymeXText("Your rich presence activity will stop updating."),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            child: const AnymeXText("Cancel"),
           ),
           TextButton(
             onPressed: () {
               rpc.logout();
               Navigator.pop(context);
             },
-            child: Text("Disconnect",
+            child: AnymeXText("Disconnect",
                 style: TextStyle(color: context.colors.error)),
           ),
         ],
@@ -373,14 +366,12 @@ class TrackingServiceCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText(
-                            text: title,
+                          AnymeXText(title,
                             variant: TextVariant.semiBold,
                             size: 16,
                           ),
                           const SizedBox(height: 2),
-                          AnymeXText(
-                            text: isLogged
+                          AnymeXText(isLogged
                                 ? 'Connected as $username'
                                 : 'Not connected',
                             size: 12,
@@ -401,8 +392,7 @@ class TrackingServiceCard extends StatelessWidget {
                             : (colors.primary).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: AnymeXText(
-                        text: isLogged ? "Manage" : "Connect",
+                      child: AnymeXText(isLogged ? "Manage" : "Connect",
                         variant: TextVariant.bold,
                         size: 12,
                         color: isLogged ? colors.onSurface : (colors.primary),
@@ -458,8 +448,7 @@ class TrackingServiceCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AnymeXText(
-                text: "Manage $title", variant: TextVariant.bold, size: 18),
+            AnymeXText("Manage $title", variant: TextVariant.bold, size: 18),
             const SizedBox(height: 20),
             if (title.toLowerCase() == 'anilist')
               Padding(
@@ -474,7 +463,7 @@ class TrackingServiceCard extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  title: const Text('Anilist Settings'),
+                  title: const AnymeXText('Anilist Settings'),
                   onTap: () {
                     Navigator.pop(context);
                     navigate(() => const SettingsAnilistApi());
@@ -486,7 +475,7 @@ class TrackingServiceCard extends StatelessWidget {
               ),
             ListTile(
               leading: const Icon(IconlyLight.logout),
-              title: const Text("Log Out"),
+              title: const AnymeXText("Log Out"),
               onTap: () {
                 service.logout();
                 Navigator.pop(context);

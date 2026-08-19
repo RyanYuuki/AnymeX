@@ -19,6 +19,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 typedef _LogFn = void Function(String message);
 
@@ -645,7 +646,7 @@ class _LoaderLogSession {
                     const AnymeXProgressIndicator(),
                     const SizedBox(width: 12),
                     const Expanded(
-                      child: Text(
+                      child: AnymeXText(
                         'Preparing stream',
                         style: TextStyle(
                           fontSize: 16,
@@ -669,7 +670,7 @@ class _LoaderLogSession {
                       itemBuilder: (_, index) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 6),
-                          child: Text(
+                          child: AnymeXText(
                             _logs[index],
                             style: const TextStyle(fontSize: 13),
                           ),
@@ -686,7 +687,7 @@ class _LoaderLogSession {
                       onPressed: () {
                         cancel();
                       },
-                      child: const Text('Cancel'),
+                      child: const AnymeXText('Cancel'),
                     ),
                   ],
                 ),

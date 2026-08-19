@@ -81,13 +81,11 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymeXText(
-                      text: 'Start Manga Download',
+                    const AnymeXText('Start Manga Download',
                       variant: TextVariant.bold,
                       size: 16,
                     ),
-                    AnymeXText(
-                      text: media.name ?? '',
+                    AnymeXText(media.name ?? '',
                       size: 13,
                       maxLines: 1,
                       color: theme.onSurface.opaque(0.6),
@@ -144,9 +142,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                     size: 16, color: theme.primary),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: AnymeXText(
-                    text:
-                        'Images will be downloaded in full quality. Each chapter is stored in its own folder.',
+                  child: AnymeXText('Images will be downloaded in full quality. Each chapter is stored in its own folder.',
                     size: 12,
                     color: theme.primary.opaque(0.8),
                   ),
@@ -167,9 +163,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                   Icon(HugeIcons.strokeRoundedDownload04,
                       size: 20, color: theme.onPrimary),
                   const SizedBox(width: 8),
-                  AnymeXText(
-                    text:
-                        'Download $count Chapter${count != 1 ? 's' : ''}',
+                  AnymeXText('Download $count Chapter${count != 1 ? 's' : ''}',
                     size: 15,
                     variant: TextVariant.semiBold,
                     color: theme.onPrimary,
@@ -210,15 +204,13 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: theme.primary),
         const SizedBox(width: 10),
-        AnymeXText(
-          text: label,
+        AnymeXText(label,
           size: 13,
           color: theme.onSurface.opaque(0.6),
         ),
         const Spacer(),
         Flexible(
-          child: AnymeXText(
-            text: value,
+          child: AnymeXText(value,
             size: 13,
             variant: TextVariant.semiBold,
             maxLines: 1,

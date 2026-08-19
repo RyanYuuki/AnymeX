@@ -100,13 +100,11 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText(
-                  text: 'Watch Together',
+                const AnymeXText('Watch Together',
                   variant: TextVariant.bold,
                   size: 16,
                 ),
-                AnymeXText(
-                  text: animeTitle,
+                AnymeXText(animeTitle,
                   size: 12,
                   color: cs.onSurface.opaque(0.5),
                   maxLines: 1,
@@ -187,8 +185,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                     ),
                   )
                 : const Icon(Icons.login_rounded, size: 18),
-            label: AnymeXText(
-              text: _isCreating ? 'Joining...' : 'Join Room',
+            label: AnymeXText(_isCreating ? 'Joining...' : 'Join Room',
               variant: TextVariant.semiBold,
               size: 14,
               color: cs.onPrimary,
@@ -208,8 +205,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
             Icon(Icons.people_alt_rounded,
                 size: 18, color: cs.onSurface.opaque(0.7)),
             const SizedBox(width: 8),
-            const AnymeXText(
-              text: 'Max Members',
+            const AnymeXText('Max Members',
               variant: TextVariant.semiBold,
               size: 13,
             ),
@@ -221,8 +217,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                 color: cs.primary.opaque(0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: AnymeXText(
-                text: '${_maxMembers.toInt()}',
+              child: AnymeXText('${_maxMembers.toInt()}',
                 variant: TextVariant.bold,
                 size: 12,
                 color: cs.primary,
@@ -270,13 +265,11 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AnymeXText(
-                        text: 'Private Room',
+                      const AnymeXText('Private Room',
                         variant: TextVariant.semiBold,
                         size: 13,
                       ),
-                      AnymeXText(
-                        text: 'Friends need a password to join',
+                      AnymeXText('Friends need a password to join',
                         size: 11,
                         color: cs.onSurface.opaque(0.4),
                       ),
@@ -325,8 +318,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   size: 16, color: cs.primary),
               const SizedBox(width: 10),
               Expanded(
-                child: AnymeXText(
-                  text: 'Share the code or invite link with friends.',
+                child: AnymeXText('Share the code or invite link with friends.',
                   size: 12,
                   color: cs.onSurface.opaque(0.6),
                 ),
@@ -355,8 +347,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                     ),
                   )
                 : const Icon(Icons.add_rounded, size: 18),
-            label: AnymeXText(
-              text: _isCreating ? 'Creating...' : 'Create Room',
+            label: AnymeXText(_isCreating ? 'Creating...' : 'Create Room',
               variant: TextVariant.semiBold,
               size: 14,
               color: cs.onPrimary,
@@ -455,8 +446,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
           Icon(Icons.error_outline_rounded, size: 16, color: cs.error),
           const SizedBox(width: 8),
           Expanded(
-            child: AnymeXText(
-              text: message,
+            child: AnymeXText(message,
               size: 12,
               color: cs.error,
               maxLines: 3,
@@ -600,8 +590,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                 ),
                 const SizedBox(width: 12),
                 const Expanded(
-                  child: AnymeXText(
-                    text: 'Room Created!',
+                  child: AnymeXText('Room Created!',
                     variant: TextVariant.bold,
                     size: 16,
                   ),
@@ -622,7 +611,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                         Icon(Icons.lock_rounded,
                             size: 12, color: Colors.orange),
                         SizedBox(width: 4),
-                        Text(
+                        AnymeXText(
                           'Private',
                           style: TextStyle(
                             fontSize: 10,
@@ -636,8 +625,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
               ],
             ),
             const SizedBox(height: 14),
-            AnymeXText(
-              text: 'Share this code with friends:',
+            AnymeXText('Share this code with friends:',
               size: 12,
               color: cs.onSurface.opaque(0.5),
             ),
@@ -679,8 +667,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                       ),
                     ),
                     icon: const Icon(Icons.copy_rounded, size: 16),
-                    label: const AnymeXText(
-                      text: 'Copy Code',
+                    label: const AnymeXText('Copy Code',
                       variant: TextVariant.semiBold,
                       size: 13,
                     ),
@@ -700,8 +687,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                       ),
                     ),
                     icon: const Icon(Icons.link_rounded, size: 16),
-                    label: const AnymeXText(
-                      text: 'Copy Link',
+                    label: const AnymeXText('Copy Link',
                       variant: TextVariant.semiBold,
                       size: 13,
                       color: Colors.white,

@@ -135,7 +135,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                   }
                   if (preference.value!.isEmpty) {
                     return const Center(
-                      child: Text("Source doesn't have any settings"),
+                      child: AnymeXText("Source doesn't have any settings"),
                     );
                   }
                   return ListView.separated(
@@ -304,8 +304,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       if (p.dialogMessage != null) ...[
-                                        AnymeXText(
-                                          text: p.dialogMessage!,
+                                        AnymeXText(p.dialogMessage!,
                                           size: 14,
                                           color: theme.onSurfaceVariant,
                                         ),
@@ -402,14 +401,12 @@ class _PreferenceTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText(
-                      text: title,
+                    AnymeXText(title,
                       variant: TextVariant.semiBold,
                       color: isSelected ? context.colors.primary : null,
                     ),
                     const SizedBox(height: 4),
-                    AnymeXText(
-                      text: subtitle,
+                    AnymeXText(subtitle,
                       size: 11,
                       color: context.colors.onSurface.opaque(0.7),
                     ),

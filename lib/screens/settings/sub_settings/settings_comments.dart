@@ -11,6 +11,7 @@ import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:anymex/screens/other_features.dart';
 
 import 'settings_moderation.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsComments extends StatefulWidget {
   const SettingsComments({super.key});
@@ -39,7 +40,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
                 children: [
                   CustomBackButton(),
                   SizedBox(width: 10),
-                  Text("Comment System",
+                  AnymeXText("Comment System",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                 ],
@@ -65,7 +66,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
                         icon: Icons.person_outline,
                         title: "User Role",
                         description: _getCurrentRoleDescription(),
-                        postFix: Obx(() => Text(
+                        postFix: Obx(() => AnymeXText(
                               commentumService.currentUserRole.value
                                   .toUpperCase(),
                               style: TextStyle(
@@ -164,12 +165,12 @@ class _SettingsCommentsState extends State<SettingsComments> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('About Commentum v2'),
+        title: const AnymeXText('About Commentum v2'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Commentum v2 is an advanced comment system that provides:'),
+            AnymeXText('Commentum v2 is an advanced comment system that provides:'),
             SizedBox(height: 8),
             BulletPoint(text: 'Real-time commenting with nested replies'),
             BulletPoint(text: 'Advanced moderation tools'),
@@ -181,13 +182,13 @@ class _SettingsCommentsState extends State<SettingsComments> {
             BulletPoint(
                 text: 'Cross-platform support (AniList, MyAnimeList, SIMKL)'),
             SizedBox(height: 8),
-            Text('Base URL: https://whzwmfxngelicmjyxwmr.supabase.co'),
+            AnymeXText('Base URL: https://whzwmfxngelicmjyxwmr.supabase.co'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -198,12 +199,12 @@ class _SettingsCommentsState extends State<SettingsComments> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('User Roles & Permissions'),
+        title: const AnymeXText('User Roles & Permissions'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your current role and permissions:',
+            AnymeXText('Your current role and permissions:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 12),
             RoleDescription(
@@ -254,7 +255,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -287,14 +288,14 @@ class _SettingsCommentsState extends State<SettingsComments> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Comment Preferences'),
+        title: const AnymeXText('Comment Preferences'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            AnymeXText(
                 'Comment display preferences will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:',
+            AnymeXText('Planned features:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Default sorting order'),
             BulletPoint(text: 'Comment density settings'),
@@ -306,7 +307,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -317,14 +318,14 @@ class _SettingsCommentsState extends State<SettingsComments> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Notification Settings'),
+        title: const AnymeXText('Notification Settings'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            AnymeXText(
                 'Comment notification preferences will be available in future updates.'),
             SizedBox(height: 8),
-            Text('Planned features:',
+            AnymeXText('Planned features:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Replies to your comments'),
             BulletPoint(text: 'Mentions in comments'),
@@ -335,7 +336,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -346,12 +347,12 @@ class _SettingsCommentsState extends State<SettingsComments> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Help & Support'),
+        title: const AnymeXText('Help & Support'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('How to use the comment system:',
+            AnymeXText('How to use the comment system:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             BulletPoint(
@@ -363,15 +364,15 @@ class _SettingsCommentsState extends State<SettingsComments> {
             BulletPoint(text: 'Vote on comments you like or dislike'),
             BulletPoint(text: 'Report inappropriate content to moderators'),
             SizedBox(height: 12),
-            Text('Need help?', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(
+            AnymeXText('Need help?', style: TextStyle(fontWeight: FontWeight.bold)),
+            AnymeXText(
                 '• Contact moderators for content issues\n• Report bugs through the app settings\n• Join our Discord community for support'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -382,12 +383,12 @@ class _SettingsCommentsState extends State<SettingsComments> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Privacy & Safety'),
+        title: const AnymeXText('Privacy & Safety'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Your privacy is important:',
+            AnymeXText('Your privacy is important:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             BulletPoint(
@@ -398,7 +399,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
                     'Comments can be deleted but may be retained for moderation'),
             BulletPoint(text: 'Reported content is reviewed by moderators'),
             SizedBox(height: 12),
-            Text('Safety features:',
+            AnymeXText('Safety features:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             BulletPoint(text: 'Content filtering and moderation'),
             BulletPoint(text: 'User reporting system'),
@@ -409,7 +410,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const AnymeXText('Close'),
           ),
         ],
       ),
@@ -429,8 +430,8 @@ class BulletPoint extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('• '),
-          Expanded(child: Text(text)),
+          const AnymeXText('• '),
+          Expanded(child: AnymeXText(text)),
         ],
       ),
     );
@@ -455,16 +456,16 @@ class RoleDescription extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(role, style: const TextStyle(fontWeight: FontWeight.bold)),
+          AnymeXText(role, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           ...permissions.map((permission) => Padding(
                 padding: const EdgeInsets.only(left: 8.0, top: 2.0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('• '),
+                    const AnymeXText('• '),
                     Expanded(
-                        child: Text(permission,
+                        child: AnymeXText(permission,
                             style: const TextStyle(fontSize: 12))),
                   ],
                 ),

@@ -7,6 +7,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class WatchiumOverlay extends StatelessWidget {
   const WatchiumOverlay({super.key});
@@ -41,7 +42,7 @@ class WatchiumOverlay extends StatelessWidget {
                   children: [
                     const Icon(Icons.live_tv, color: Colors.red, size: 16),
                     const SizedBox(width: 6),
-                    Text(
+                    AnymeXText(
                       'Room ${state.code}',
                       style: const TextStyle(
                         color: Colors.white,
@@ -55,7 +56,7 @@ class WatchiumOverlay extends StatelessWidget {
                       color: Colors.white70,
                       size: 14,
                     ),
-                    Text(
+                    AnymeXText(
                       '${state.members.where((m) => m.online).length}',
                       style:
                           const TextStyle(color: Colors.white70, fontSize: 12),
@@ -76,7 +77,7 @@ class WatchiumOverlay extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
+                        child: const AnymeXText(
                           'Party',
                           style: TextStyle(color: Colors.white, fontSize: 11),
                         ),
@@ -126,7 +127,7 @@ class _SyncToHostButton extends StatelessWidget {
             children: [
               Icon(Icons.sync_problem, color: Colors.orange, size: 14),
               SizedBox(width: 4),
-              Text(
+              AnymeXText(
                 'Sync',
                 style: TextStyle(color: Colors.orange, fontSize: 11),
               ),

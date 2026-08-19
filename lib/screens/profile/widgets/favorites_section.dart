@@ -16,6 +16,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class FavoritesSection extends StatelessWidget {
   static const double _firstSectionTopGap = 20;
@@ -148,7 +149,7 @@ class FavoritesSection extends StatelessWidget {
                                 .withOpacity(0.3),
                           ),
                         ),
-                        child: Text(
+                        child: AnymeXText(
                           studio.name ?? '',
                           style: TextStyle(
                             fontSize: 12,

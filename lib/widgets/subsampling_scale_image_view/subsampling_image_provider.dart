@@ -6,6 +6,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:extended_image/extended_image.dart' as ext;
 import 'package:anymex/utils/image_cropper.dart';
 import 'subsampling_scale_image_view.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SubsamplingImageProvider extends StatefulWidget {
   final PageUrl page;
@@ -178,7 +179,7 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
         }
         return widget.placeholder ??
             const Center(
-              child: Text(
+              child: AnymeXText(
                 'Failed to load page',
                 style: TextStyle(color: Colors.white),
               ),

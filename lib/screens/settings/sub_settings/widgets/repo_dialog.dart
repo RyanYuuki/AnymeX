@@ -7,6 +7,7 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class GitHubRepoDialog extends StatefulWidget {
   final ItemType type;
@@ -152,7 +153,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        AnymeXText(
                           'Add ${widget.type.name.toUpperCase()} Repository',
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
@@ -160,7 +161,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
+                        AnymeXText(
                           'Enter GitHub repository URL',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
@@ -179,7 +180,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AnymeXText(
                     'Repository URL',
                     style: theme.textTheme.labelMedium?.copyWith(
                       fontWeight: FontWeight.w500,
@@ -250,7 +251,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text(
+                          child: AnymeXText(
                             _errorMessage!,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.error,
@@ -273,7 +274,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text(
+                          child: AnymeXText(
                             'Note: Adding Kotatsu repository will take at least 1-2 minutes because it needs to download and convert the extension plugin on first load.',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.primary,
@@ -300,7 +301,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             'Cancel',
                             style: theme.textTheme.labelLarge?.copyWith(
                               color: colorScheme.onSurfaceVariant,
@@ -330,7 +331,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                                     color: colorScheme.onPrimary,
                                   ),
                                 )
-                              : Text(
+                              : AnymeXText(
                                   'Add Repository',
                                   style: theme.textTheme.labelLarge?.copyWith(
                                     fontWeight: FontWeight.w600,

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class WatchiumPartyPopup extends StatelessWidget {
   const WatchiumPartyPopup({super.key});
@@ -191,7 +192,7 @@ class _WatchiumPartyPopupContentState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   'Watch Party',
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontFamily: 'Poppins-SemiBold',
@@ -199,7 +200,7 @@ class _WatchiumPartyPopupContentState
                   ),
                 ),
                 if (state != null)
-                  Text(
+                  AnymeXText(
                     'Room ${state.code}  ·  ${state.members.where((m) => m.online).length} online',
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontFamily: 'Poppins',
@@ -264,16 +265,16 @@ class _WatchiumPartyPopupContentState
     final result = await showDialog<bool>(
       context: ctx,
       builder: (ctx) => AlertDialog(
-        title: const Text('Leave Watch Together?'),
-        content: const Text('You will leave the room and stop watching with everyone.'),
+        title: const AnymeXText('Leave Watch Together?'),
+        content: const AnymeXText('You will leave the room and stop watching with everyone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Leave'),
+            child: const AnymeXText('Leave'),
           ),
         ],
       ),
@@ -385,7 +386,7 @@ class _WatchiumPartyPopupContentState
                                             ? cs.onPrimary
                                             : cs.onSurfaceVariant,
                                       ),
-                                      child: Text(
+                                      child: AnymeXText(
                                         t.label,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -438,7 +439,7 @@ class _WatchiumPartyPopupContentState
                       Icon(Icons.chat_bubble_outline_rounded,
                           size: 48, color: cs.onSurface.withValues(alpha: 0.3)),
                       const SizedBox(height: 16),
-                      Text(
+                      AnymeXText(
                         'No messages yet',
                         style: TextStyle(
                           fontFamily: 'Poppins',
@@ -447,7 +448,7 @@ class _WatchiumPartyPopupContentState
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      AnymeXText(
                         'Be the first to say something!',
                         style: TextStyle(
                           fontFamily: 'Poppins',
@@ -521,7 +522,7 @@ class _WatchiumPartyPopupContentState
                                             : null,
                                       ),
                                       const SizedBox(width: 6),
-                                      Text(
+                                      AnymeXText(
                                         msg.username,
                                         style: TextStyle(
                                           fontFamily: 'Poppins-SemiBold',
@@ -558,7 +559,7 @@ class _WatchiumPartyPopupContentState
                                     width: 0.5,
                                   ),
                                 ),
-                                child: Text(
+                                child: AnymeXText(
                                   msg.text,
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
@@ -628,7 +629,7 @@ class _WatchiumPartyPopupContentState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           'QUICK REACTIONS',
           style: TextStyle(
             fontFamily: 'Poppins-SemiBold',
@@ -660,7 +661,7 @@ class _WatchiumPartyPopupContentState
                         color: cs.outline.withValues(alpha: 0.3)),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
+                  child: AnymeXText(
                     emoji,
                     style: const TextStyle(fontSize: 18),
                   ),
@@ -688,7 +689,7 @@ class _WatchiumPartyPopupContentState
             Icon(Icons.voice_over_off, size: 14, color: Colors.red.withValues(alpha: 0.8)),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
+              child: AnymeXText(
                 'Chat has been disabled by the host',
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -712,7 +713,7 @@ class _WatchiumPartyPopupContentState
             Icon(Icons.campaign_outlined, size: 14, color: Colors.amber.withValues(alpha: 0.8)),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
+              child: AnymeXText(
                 'Announcement mode — only host and co-hosts can send messages',
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -736,7 +737,7 @@ class _WatchiumPartyPopupContentState
             Icon(Icons.campaign_outlined, size: 14, color: Colors.amber.withValues(alpha: 0.6)),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
+              child: AnymeXText(
                 'Announcement mode active — members can only read',
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -851,9 +852,9 @@ class _WatchiumPartyPopupContentState
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(r.emoji, style: const TextStyle(fontSize: 18)),
+              AnymeXText(r.emoji, style: const TextStyle(fontSize: 18)),
               const SizedBox(width: 6),
-              Text(
+              AnymeXText(
                 r.username,
                 style: TextStyle(
                   fontFamily: 'Poppins-SemiBold',
@@ -985,7 +986,7 @@ class _WatchiumPartyPopupContentState
                               const SizedBox(width: 6),
                             ],
                             Flexible(
-                              child: Text(
+                              child: AnymeXText(
                                 isSelf
                                     ? '${member.username} (You)'
                                     : member.username,
@@ -1006,7 +1007,7 @@ class _WatchiumPartyPopupContentState
                                   color: Colors.orange,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: const Text(
+                                child: const AnymeXText(
                                   'CO-HOST',
                                   style: TextStyle(
                                     fontFamily: 'Poppins-SemiBold',
@@ -1019,7 +1020,7 @@ class _WatchiumPartyPopupContentState
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Text(
+                        AnymeXText(
                           member.online ? 'Online' : 'Offline',
                           style: TextStyle(
                             fontFamily: 'Poppins',
@@ -1050,7 +1051,7 @@ class _WatchiumPartyPopupContentState
                             children: [
                               Icon(Icons.person_remove_rounded, color: Colors.red, size: 18),
                               SizedBox(width: 10),
-                              Text('Remove Member'),
+                              AnymeXText('Remove Member'),
                             ],
                           ),
                         ),
@@ -1060,7 +1061,7 @@ class _WatchiumPartyPopupContentState
                             children: [
                               Icon(Icons.workspace_premium, color: Colors.amber, size: 18),
                               SizedBox(width: 10),
-                              Text('Transfer Host'),
+                              AnymeXText('Transfer Host'),
                             ],
                           ),
                         ),
@@ -1076,7 +1077,7 @@ class _WatchiumPartyPopupContentState
                                 size: 18,
                               ),
                               const SizedBox(width: 10),
-                              Text(
+                              AnymeXText(
                                 member.role == 'cohost' ? 'Remove Co-host' : 'Make Co-host',
                               ),
                             ],
@@ -1128,19 +1129,19 @@ class _WatchiumPartyPopupContentState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Transfer host'),
-        content: Text('Make ${member.username} the new host? You\'ll become a regular member.'),
+        title: const AnymeXText('Transfer host'),
+        content: AnymeXText('Make ${member.username} the new host? You\'ll become a regular member.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: Colors.amber.shade700,
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Transfer'),
+            child: const AnymeXText('Transfer'),
           ),
         ],
       ),
@@ -1154,19 +1155,19 @@ class _WatchiumPartyPopupContentState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Remove member'),
-        content: Text('Remove ${member.username} from this watch party?'),
+        title: const AnymeXText('Remove member'),
+        content: AnymeXText('Remove ${member.username} from this watch party?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: ctx.theme.colorScheme.error,
             ),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Remove'),
+            child: const AnymeXText('Remove'),
           ),
         ],
       ),
@@ -1191,7 +1192,7 @@ class _WatchiumPartyPopupContentState
           value: emoji,
           height: 40,
           child: Center(
-            child: Text(emoji, style: const TextStyle(fontSize: 24)),
+            child: AnymeXText(emoji, style: const TextStyle(fontSize: 24)),
           ),
         );
       }).toList(),
@@ -1223,7 +1224,7 @@ class _WatchiumPartyPopupContentState
           icon: Icons.vpn_key_rounded,
           iconColor: cs.primary,
           children: [
-            Text('Room Code', style: TextStyle(color: cs.outline, fontSize: 12)),
+            AnymeXText('Room Code', style: TextStyle(color: cs.outline, fontSize: 12)),
             const SizedBox(height: 6),
             _CopyableRow(
               label: code,
@@ -1239,7 +1240,7 @@ class _WatchiumPartyPopupContentState
           icon: Icons.link_rounded,
           iconColor: cs.tertiary,
           children: [
-            Text('Invite Link', style: TextStyle(color: cs.outline, fontSize: 12)),
+            AnymeXText('Invite Link', style: TextStyle(color: cs.outline, fontSize: 12)),
             const SizedBox(height: 6),
             _CopyableRow(
               label: inviteUrl,
@@ -1256,9 +1257,9 @@ class _WatchiumPartyPopupContentState
           icon: Icons.schedule_rounded,
           iconColor: cs.secondary,
           children: [
-            Text('Room Duration', style: TextStyle(color: cs.outline, fontSize: 12)),
+            AnymeXText('Room Duration', style: TextStyle(color: cs.outline, fontSize: 12)),
             const SizedBox(height: 6),
-            Text(
+            AnymeXText(
               durationStr,
               style: TextStyle(
                 color: cs.onSurface,
@@ -1275,9 +1276,9 @@ class _WatchiumPartyPopupContentState
           icon: Icons.people_rounded,
           iconColor: cs.primaryContainer,
           children: [
-            Text('Watching Now', style: TextStyle(color: cs.outline, fontSize: 12)),
+            AnymeXText('Watching Now', style: TextStyle(color: cs.outline, fontSize: 12)),
             const SizedBox(height: 6),
-            Text(
+            AnymeXText(
               '$memberCount / ${state.maxMembers} members',
               style: TextStyle(
                 color: cs.onSurface,
@@ -1294,9 +1295,9 @@ class _WatchiumPartyPopupContentState
           icon: Icons.calendar_today_rounded,
           iconColor: cs.outline,
           children: [
-            Text('Created', style: TextStyle(color: cs.outline, fontSize: 12)),
+            AnymeXText('Created', style: TextStyle(color: cs.outline, fontSize: 12)),
             const SizedBox(height: 6),
-            Text(
+            AnymeXText(
               _formatDateTime(createdAt),
               style: TextStyle(
                 color: cs.onSurface,
@@ -1326,7 +1327,7 @@ class _WatchiumPartyPopupContentState
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$label copied'),
+        content: AnymeXText('$label copied'),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
@@ -1393,7 +1394,7 @@ class _CopyableRow extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Text(
+              child: AnymeXText(
                 label,
                 style: TextStyle(
                   color: isLink ? cs.primary : cs.onSurface,

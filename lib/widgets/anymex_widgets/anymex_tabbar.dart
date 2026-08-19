@@ -110,8 +110,7 @@ class AnymeXTabBar extends StatelessWidget {
                                 const SizedBox(width: 6),
                               ],
                               Flexible(
-                                child: AnymeXText(
-                                  text: e.value,
+                                child: AnymeXText(e.value,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   size: 13,

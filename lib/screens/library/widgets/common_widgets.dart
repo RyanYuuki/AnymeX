@@ -75,8 +75,7 @@ class MediaCard extends StatelessWidget {
                             color: context.colors.onPrimary,
                           ),
                           const SizedBox(width: 3),
-                          AnymeXText(
-                            text: data.rating ?? '0.0',
+                          AnymeXText(data.rating ?? '0.0',
                             variant: TextVariant.bold,
                             color: context.colors.onPrimary,
                           ),
@@ -107,8 +106,7 @@ class MediaCard extends StatelessWidget {
               height: 50,
               padding: const EdgeInsets.fromLTRB(6, 8, 0, 0),
               width: double.infinity,
-              child: AnymeXText(
-                text: data.name ?? '??',
+              child: AnymeXText(data.name ?? '??',
                 size: 13,
                 variant: TextVariant.semiBold,
                 maxLines: 2,
@@ -146,8 +144,7 @@ class MediaCard extends StatelessWidget {
             color: context.colors.onPrimary,
           ),
           const SizedBox(width: 3),
-          AnymeXText(
-            text: data.currentChapter?.number.toString() ?? '??',
+          AnymeXText(data.currentChapter?.number.toString() ?? '??',
             variant: TextVariant.bold,
             color: context.colors.onPrimary,
           ),
@@ -165,8 +162,7 @@ class MediaCard extends StatelessWidget {
             color: context.colors.onPrimary,
           ),
           const SizedBox(width: 3),
-          AnymeXText(
-            text: data.currentEpisode?.number ?? '??',
+          AnymeXText(data.currentEpisode?.number ?? '??',
             variant: TextVariant.bold,
             color: context.colors.onPrimary,
           ),

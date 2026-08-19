@@ -46,8 +46,7 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
           children: [
             Icon(Icons.cast_rounded, color: theme.colorScheme.primary, size: 22),
             const SizedBox(width: 10),
-            const AnymeXText(
-              text: 'Cast to Device',
+            const AnymeXText('Cast to Device',
               variant: TextVariant.bold,
               size: 18,
             ),
@@ -84,13 +83,11 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AnymeXText(
-                          text: active.name,
+                        AnymeXText(active.name,
                           variant: TextVariant.bold,
                           size: 14,
                         ),
-                        AnymeXText(
-                          text: 'Connected (${active.host})',
+                        AnymeXText('Connected (${active.host})',
                           size: 12,
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -102,7 +99,7 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
                       await castService.stopCasting();
                       Get.back();
                     },
-                    child: const Text('Disconnect'),
+                    child: const AnymeXText('Disconnect'),
                   ),
                 ],
               ),
@@ -123,8 +120,7 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
             return const SizedBox(
               height: 120,
               child: Center(
-                child: AnymeXText(
-                  text: 'No casting devices found on local network.',
+                child: AnymeXText('No casting devices found on local network.',
                   size: 14,
                 ),
               ),
@@ -145,11 +141,11 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
                         : Icons.tv_rounded,
                     color: theme.colorScheme.primary,
                   ),
-                  title: Text(
+                  title: AnymeXText(
                     device.name,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
-                  subtitle: Text(
+                  subtitle: AnymeXText(
                     '${device.protocol.name.toUpperCase()} • ${device.host}',
                     style: TextStyle(
                       fontSize: 12,

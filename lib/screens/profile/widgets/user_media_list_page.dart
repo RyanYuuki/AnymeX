@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 const _animeStandardOrder = [
   'Watching',
@@ -318,7 +319,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                   children: [
                     Icon(Icons.sort_rounded, color: colors.primary, size: 20),
                     const SizedBox(width: 10),
-                    Text('Sort By',
+                    AnymeXText('Sort By',
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Poppins-Bold',
@@ -337,7 +338,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                             : Icons.arrow_downward_rounded,
                         size: 16,
                       ),
-                      label: Text(_sortAscending ? 'Ascending' : 'Descending',
+                      label: AnymeXText(_sortAscending ? 'Ascending' : 'Descending',
                           style: const TextStyle(fontSize: 12)),
                     ),
                   ],
@@ -362,7 +363,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                   leading: Icon(icon,
                       color:
                           selected ? colors.primary : colors.onSurfaceVariant),
-                  title: Text(label,
+                  title: AnymeXText(label,
                       style: TextStyle(
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
@@ -423,7 +424,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                     children: [
                       Icon(Iconsax.filter, color: colors.primary, size: 20),
                       const SizedBox(width: 10),
-                      Text('Filter by Genre',
+                      AnymeXText('Filter by Genre',
                           style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'Poppins-Bold',
@@ -435,7 +436,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                         TextButton(
                           onPressed: () =>
                               setSheetState(() => tempSelected.clear()),
-                          child: const Text('Clear',
+                          child: const AnymeXText('Clear',
                               style: TextStyle(fontSize: 12)),
                         ),
                     ],
@@ -450,7 +451,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                       children: sortedGenres.map((genre) {
                         final isSelected = tempSelected.contains(genre);
                         return FilterChip(
-                          label: Text(genre,
+                          label: AnymeXText(genre,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -501,7 +502,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(14))),
-                      child: Text(
+                      child: AnymeXText(
                         tempSelected.isEmpty
                             ? 'Show All'
                             : 'Apply (${tempSelected.length})',
@@ -530,7 +531,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
             ),
-            title: Text(
+            title: AnymeXText(
               "${widget.userName}'s $typeLabel List",
               style: TextStyle(fontSize: 16, color: colors.primary),
             ),
@@ -546,12 +547,12 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
             ),
-            title: Text(
+            title: AnymeXText(
               "${widget.userName}'s $typeLabel List",
               style: TextStyle(fontSize: 16, color: colors.primary),
             ),
           ),
-  body: const Center(child: Text('No entries found'))
+  body: const Center(child: AnymeXText('No entries found'))
 );
     }
 
@@ -569,7 +570,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
             onPressed: () => Navigator.pop(context),
             icon: Icon(Icons.arrow_back_ios_new, color: colors.primary),
           ),
-          title: Text(
+          title: AnymeXText(
             "${widget.userName}'s $typeLabel List",
             style: TextStyle(fontSize: 16, color: colors.primary),
           ),
@@ -599,7 +600,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               onPressed: () => _showGenreFilter(context),
               icon: Badge(
                 isLabelVisible: _selectedGenres.isNotEmpty,
-                label: Text('${_selectedGenres.length}',
+                label: AnymeXText('${_selectedGenres.length}',
                     style: const TextStyle(fontSize: 9)),
                 child: const Icon(Iconsax.filter, size: 20),
               ),
@@ -630,7 +631,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                       Icon(Icons.sort_rounded,
                           size: 20, color: colors.onSurfaceVariant),
                       const SizedBox(width: 12),
-                      const Text('Sort'),
+                      const AnymeXText('Sort'),
                     ],
                   ),
                 ),
@@ -641,7 +642,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                       Icon(Iconsax.arrow_swap_horizontal,
                           size: 20, color: colors.onSurfaceVariant),
                       const SizedBox(width: 12),
-                      Text(_isReversed ? 'Default tab order' : 'Reverse tabs'),
+                      AnymeXText(_isReversed ? 'Default tab order' : 'Reverse tabs'),
                     ],
                   ),
                 ),
@@ -722,7 +723,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                     return Tab(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 300),
-                        child: Text(
+                        child: AnymeXText(
                           label,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
@@ -752,7 +753,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                         size: 40,
                         color: colors.onSurfaceVariant.withOpacity(0.3)),
                     const SizedBox(height: 12),
-                    Text(
+                    AnymeXText(
                       _searchQuery.isNotEmpty || _selectedGenres.isNotEmpty
                           ? 'No matches found'
                           : 'No entries in $name',

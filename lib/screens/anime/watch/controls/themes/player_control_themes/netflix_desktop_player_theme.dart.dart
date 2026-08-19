@@ -8,6 +8,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 
 class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
@@ -44,7 +45,7 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: Obx(() => Text(
+                        child: Obx(() => AnymeXText(
                               buildNFTitle(controller),
                               textAlign: TextAlign.center,
                               maxLines: 2,
@@ -143,7 +144,7 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
                           },
                         ),
                         const SizedBox(width: 24),
-                        Obx(() => Text(
+                        Obx(() => AnymeXText(
                               '${controller.formattedCurrentPosition} / ${controller.formattedEpisodeDuration}',
                               style: const TextStyle(
                                 color: NFColors.white,

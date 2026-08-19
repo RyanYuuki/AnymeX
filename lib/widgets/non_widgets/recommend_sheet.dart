@@ -6,6 +6,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class RecommendSheet extends StatefulWidget {
   final Media media;
@@ -192,7 +193,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
             Icon(Icons.link_off_rounded,
                 size: 40, color: colors.onSurfaceVariant),
             const SizedBox(height: 12),
-            Text(
+            AnymeXText(
               'Bot URL not configured',
               style: TextStyle(color: colors.onSurfaceVariant, fontSize: 14),
             ),
@@ -384,7 +385,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 Row(children: [
                   Icon(Icons.edit_rounded, color: colors.primary, size: 20),
                   const SizedBox(width: 8),
-                  Text('Edit Reason',
+                  AnymeXText('Edit Reason',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -443,7 +444,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       }
                     },
                     icon: const Icon(Icons.save_rounded, size: 18),
-                    label: const Text('Save Changes'),
+                    label: const AnymeXText('Save Changes'),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -466,8 +467,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Recommendation?'),
-        content: Text(
+        title: const AnymeXText('Delete Recommendation?'),
+        content: AnymeXText(
           _isAdmin
               ? 'This entry will be deleted immediately.'
               : 'Your deletion request will be sent to admins for review.',
@@ -475,12 +476,12 @@ class _RecommendSheetState extends State<RecommendSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: colors.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
+            child: const AnymeXText('Delete'),
           ),
         ],
       ),
@@ -513,8 +514,8 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Remove Your Reason?'),
-        content: Text(
+        title: const AnymeXText('Remove Your Reason?'),
+        content: AnymeXText(
           _isAdmin
               ? 'This reason will be removed immediately.'
               : 'Your removal request will be sent to admins for review.',
@@ -522,12 +523,12 @@ class _RecommendSheetState extends State<RecommendSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: colors.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Remove'),
+            child: const AnymeXText('Remove'),
           ),
         ],
       ),
@@ -590,7 +591,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 Row(children: [
                   Icon(Icons.edit_rounded, color: colors.primary, size: 20),
                   const SizedBox(width: 8),
-                  Text('Edit Reason',
+                  AnymeXText('Edit Reason',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -649,7 +650,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       }
                     },
                     icon: const Icon(Icons.save_rounded, size: 18),
-                    label: const Text('Save Changes'),
+                    label: const AnymeXText('Save Changes'),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -670,18 +671,18 @@ class _RecommendSheetState extends State<RecommendSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Reason?'),
-        content: const Text('This reason will be deleted immediately.'),
+        title: const AnymeXText('Delete Reason?'),
+        content: const AnymeXText('This reason will be deleted immediately.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
                 backgroundColor: Theme.of(ctx).colorScheme.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
+            child: const AnymeXText('Delete'),
           ),
         ],
       ),
@@ -797,7 +798,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title,
+                    AnymeXText(title,
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
@@ -810,7 +811,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                         Icon(Icons.check_circle_rounded,
                             size: 14, color: colors.primary),
                         const SizedBox(width: 4),
-                        Text('Already recommended',
+                        AnymeXText('Already recommended',
                             style:
                                 TextStyle(fontSize: 12, color: colors.primary)),
                       ],
@@ -850,7 +851,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             : null,
                       ),
                       const SizedBox(width: 8),
-                      Text('Your Recommendation',
+                      AnymeXText('Your Recommendation',
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -859,7 +860,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                   ),
                   if (userReason['text']?.toString().isNotEmpty == true) ...[
                     const SizedBox(height: 8),
-                    Text(
+                    AnymeXText(
                       '"${userReason['text']}"',
                       style: TextStyle(
                           fontSize: 13,
@@ -877,7 +878,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             onPressed: () => _editReason(
                                 userReason['text']?.toString() ?? ''),
                             icon: const Icon(Icons.edit_rounded, size: 16),
-                            label: const Text('Edit Reason'),
+                            label: const AnymeXText('Edit Reason'),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(
@@ -891,7 +892,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                             onPressed: _deleteReason,
                             icon: const Icon(Icons.delete_outline_rounded,
                                 size: 16),
-                            label: const Text('Remove'),
+                            label: const AnymeXText('Remove'),
                             style: FilledButton.styleFrom(
                               backgroundColor: colors.error,
                               foregroundColor: colors.onError,
@@ -915,7 +916,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
           // Other users' recommendations
           if (otherReasons.isNotEmpty) ...[
             const SizedBox(height: 16),
-            Text('Other Recommendations',
+            AnymeXText('Other Recommendations',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -966,7 +967,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                                 : null,
                           ),
                           const SizedBox(width: 6),
-                          Text(rUsername,
+                          AnymeXText(rUsername,
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -993,7 +994,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                                           size: 13,
                                           color: colors.onSurfaceVariant),
                                       const SizedBox(width: 2),
-                                      Text('Edit',
+                                      AnymeXText('Edit',
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: colors.onSurfaceVariant,
@@ -1018,7 +1019,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                                       Icon(Icons.delete_outline_rounded,
                                           size: 13, color: colors.error),
                                       const SizedBox(width: 2),
-                                      Text('Delete',
+                                      AnymeXText('Delete',
                                           style: TextStyle(
                                               fontSize: 10,
                                               color: colors.error,
@@ -1033,7 +1034,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       ),
                       if (rText.isNotEmpty) ...[
                         const SizedBox(height: 6),
-                        Text(
+                        AnymeXText(
                           '"$rText"',
                           style: TextStyle(
                               fontSize: 12,
@@ -1071,7 +1072,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
             children: [
               Icon(Icons.add_comment_rounded, color: colors.primary, size: 18),
               const SizedBox(width: 8),
-              Text('Add Your Recommendation',
+              AnymeXText('Add Your Recommendation',
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -1119,7 +1120,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: colors.onPrimary))
                   : const Icon(Icons.send_rounded, size: 16),
-              label: Text(_submitting ? 'Submitting…' : 'Add Recommendation'),
+              label: AnymeXText(_submitting ? 'Submitting…' : 'Add Recommendation'),
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -1141,7 +1142,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
             Icon(Icons.recommend_rounded, color: colors.primary, size: 20),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
+              child: AnymeXText(
                 'Recommend "${widget.media.title}"',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
@@ -1154,7 +1155,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
           ],
         ),
         const SizedBox(height: 4),
-        Text(
+        AnymeXText(
           'Tell the community why this deserves more attention.',
           style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
         ),
@@ -1198,7 +1199,7 @@ class _RecommendSheetState extends State<RecommendSheet> {
                     child: CircularProgressIndicator(
                         strokeWidth: 2, color: colors.onPrimary))
                 : const Icon(Icons.send_rounded, size: 18),
-            label: Text(_submitting ? 'Submitting…' : 'Submit Recommendation'),
+            label: AnymeXText(_submitting ? 'Submitting…' : 'Submit Recommendation'),
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(

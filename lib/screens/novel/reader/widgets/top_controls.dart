@@ -104,8 +104,7 @@ class NovelTopControls extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText(
-                            text: controller.currentChapter.value.title ??
+                          AnymeXText(controller.currentChapter.value.title ??
                                 'Unknown Chapter',
                             size: 12,
                             variant: TextVariant.semiBold,
@@ -114,7 +113,7 @@ class NovelTopControls extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             isMarquee: true,
                           ),
-                          Text(
+                          AnymeXText(
                             'Chapter ${controller.currentChapter.value.number?.round() ?? '-'} of ${controller.chapters.last.number?.round() ?? '-'}',
                             style: TextStyle(
                               color: context.colors.onSurface.opaque(0.7),
@@ -283,7 +282,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            AnymeXText(
                               'Chapters (${_cachedChapters.length})',
                               style: Theme.of(context)
                                   .textTheme
@@ -391,7 +390,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
         dense: true,
-        title: Text(
+        title: AnymeXText(
           displayTitle,
           style: TextStyle(
             fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,

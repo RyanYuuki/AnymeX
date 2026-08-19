@@ -353,7 +353,7 @@ class _ExtensionListState extends State<ExtensionList>
                           child: Center(
                             child: Padding(
                               padding: EdgeInsets.all(20.0),
-                              child: Text(
+                              child: AnymeXText(
                                 'No extensions found',
                                 style:
                                     TextStyle(fontSize: 16, color: Colors.grey),
@@ -384,7 +384,7 @@ class _ExtensionListState extends State<ExtensionList>
       return const Center(
         child: Padding(
           padding: EdgeInsets.all(20.0),
-          child: Text(
+          child: AnymeXText(
             'No extensions found',
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
@@ -422,7 +422,7 @@ class _ExtensionListState extends State<ExtensionList>
   Widget _buildInstalledHeader() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      child: Text(
+      child: AnymeXText(
         'Hold and drag any item to reorder',
         style: TextStyle(
           fontSize: 11,
@@ -508,8 +508,7 @@ class _ExtensionListState extends State<ExtensionList>
                       color: context.colors.tertiary,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: AnymeXText(
-                      text: 'Update All',
+                    child: AnymeXText('Update All',
                       size: 12,
                       variant: TextVariant.semiBold,
                       color: context.colors.onTertiary,
@@ -572,7 +571,7 @@ class _ExtensionListState extends State<ExtensionList>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          AnymeXText(
             title,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           ),

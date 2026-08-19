@@ -84,8 +84,7 @@ Container buildChip(String label) {
     ),
     child: FittedBox(
       fit: BoxFit.scaleDown,
-      child: AnymeXText(
-        text: label,
+      child: AnymeXText(label,
         variant: TextVariant.bold,
         color: Get.theme.colorScheme.onPrimary,
         size: 14,
@@ -173,7 +172,7 @@ class _UnderratedCarousel extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                AnymeXText(
                   title,
                   style: TextStyle(
                     fontFamily: "Poppins-SemiBold",
@@ -187,7 +186,7 @@ class _UnderratedCarousel extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
+                        AnymeXText(
                           'See All',
                           style: TextStyle(
                             fontFamily: "Poppins-SemiBold",
@@ -443,7 +442,7 @@ class _AuthorAvatar extends StatelessWidget {
               radius: size / 2,
             )
           : Center(
-              child: Text(
+              child: AnymeXText(
                 (fallbackLabel?.trim().isNotEmpty == true
                         ? fallbackLabel!.trim()[0]
                         : '?')

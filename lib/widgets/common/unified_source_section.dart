@@ -77,8 +77,7 @@ class UnifiedSourceSection extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: AnymeXText(
-                  text: searchedTitle,
+                child: AnymeXText(searchedTitle,
                   variant: TextVariant.semiBold,
                   size: 13,
                   color: searchedTitle.contains('No Match Found')
@@ -120,8 +119,7 @@ class UnifiedSourceSection extends StatelessWidget {
                         color: colors.primary,
                       ),
                       const SizedBox(width: 6),
-                      AnymeXText(
-                        text: "Wrong Title?",
+                      AnymeXText("Wrong Title?",
                         size: 11,
                         color: colors.primary,
                         variant: TextVariant.bold,

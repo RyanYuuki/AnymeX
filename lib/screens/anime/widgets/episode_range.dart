@@ -2,6 +2,7 @@ import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class EpisodeChunkSelector extends StatelessWidget {
   final RxInt selectedChunkIndex;
@@ -59,7 +60,7 @@ class EpisodeSortKeySelector extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10, bottom: 4),
-          child: Text(
+          child: AnymeXText(
             title,
             style: TextStyle(
               fontFamily: 'Poppins',

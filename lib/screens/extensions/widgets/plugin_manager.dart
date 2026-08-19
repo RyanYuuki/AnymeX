@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class PluginManager {
   static const String _latestReleaseUrl =
@@ -457,7 +458,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
               strokeWidth: 3,
             ),
             const SizedBox(height: 16),
-            Text(
+            AnymeXText(
               'Fetching latest release details...',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colors.onSurfaceVariant,
@@ -489,7 +490,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             const SizedBox(height: 14),
             _buildVersionCard(colors, bridge, isBusy, isComplete),
             const SizedBox(height: 14),
-            Text(
+            AnymeXText(
               'CHANGELOG',
               style: TextStyle(
                 fontSize: 11,
@@ -524,7 +525,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             _buildFooter(colors, theme, isBusy, isComplete),
             if (bridge.error.value.isNotEmpty) ...[
               const SizedBox(height: 10),
-              Text(
+              AnymeXText(
                 bridge.error.value,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colors.error,
@@ -569,7 +570,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              AnymeXText(
                 widget.mode == _PluginSheetMode.install
                     ? 'Plugin Setup'
                     : 'Plugin Update Available',
@@ -579,7 +580,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
                 ),
               ),
               const SizedBox(height: 2),
-              Text(
+              AnymeXText(
                 _release!.title,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.primary,
@@ -665,7 +666,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: Text(
+            child: AnymeXText(
               isComplete ? 'Close' : 'Later',
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
@@ -688,7 +689,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
               isComplete ? Icons.check_rounded : Icons.download_rounded,
               size: 20,
             ),
-            label: Text(
+            label: AnymeXText(
               isComplete
                   ? 'Done'
                   : (widget.mode == _PluginSheetMode.install
@@ -710,7 +711,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Text(
+          child: AnymeXText(
             label,
             style: TextStyle(
               color: colors.onSurfaceVariant,
@@ -720,7 +721,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         ),
         const SizedBox(width: 12),
         Flexible(
-          child: Text(
+          child: AnymeXText(
             value,
             textAlign: TextAlign.end,
             style: TextStyle(
@@ -740,7 +741,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         color: colors.surfaceContainerHighest.withOpacity(0.7),
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Text(
+      child: AnymeXText(
         label,
         style: TextStyle(
           color: colors.onSurfaceVariant,

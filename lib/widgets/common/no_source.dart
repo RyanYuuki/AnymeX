@@ -42,15 +42,13 @@ class NoSourceSelectedWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const AnymeXText(
-            text: 'No Source Installed',
+          const AnymeXText('No Source Installed',
             variant: TextVariant.bold,
             size: 16,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 6),
-          AnymeXText(
-            text: isMobile
+          AnymeXText(isMobile
                 ? 'Install a source extension to start browsing content.'
                 : 'Go back to the home page and install a source extension.',
             size: 13,
@@ -81,8 +79,7 @@ class NoSourceSelectedWidget extends StatelessWidget {
                   color: colors.onPrimary,
                 ),
                 const SizedBox(width: 8),
-                AnymeXText(
-                  text: isMobile ? 'Browse Extensions' : 'Go to Home',
+                AnymeXText(isMobile ? 'Browse Extensions' : 'Go to Home',
                   variant: TextVariant.semiBold,
                   size: 14,
                   color: colors.onPrimary,

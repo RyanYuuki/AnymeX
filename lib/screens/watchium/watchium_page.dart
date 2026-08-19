@@ -104,7 +104,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
             children: [
               const Icon(Icons.lock, size: 40),
               const SizedBox(height: 12),
-              const Text('This room requires a password',
+              const AnymeXText('This room requires a password',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
               const SizedBox(height: 16),
               TextField(
@@ -126,7 +126,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                   Expanded(
                     child: TextButton(
                       onPressed: () => Get.back(),
-                      child: const Text('Cancel'),
+                      child: const AnymeXText('Cancel'),
                     ),
                   ),
                   Expanded(
@@ -135,7 +135,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                         Get.back();
                         _joinByCode(password: pwController.text);
                       },
-                      child: const Text('Join'),
+                      child: const AnymeXText('Join'),
                     ),
                   ),
                 ],
@@ -179,8 +179,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        const AnymeXText(
-                          text: 'Active Rooms',
+                        const AnymeXText('Active Rooms',
                           size: 16,
                           variant: TextVariant.semiBold,
                         ),
@@ -194,8 +193,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                               color: theme.colorScheme.primaryContainer,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: AnymeXText(
-                              text: '$count',
+                            child: AnymeXText('$count',
                               size: 12,
                               color: theme.colorScheme.onPrimaryContainer,
                             ),
@@ -227,14 +225,12 @@ class _WatchiumPageState extends State<WatchiumPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AnymeXText(
-            text: 'Join with Code',
+          const AnymeXText('Join with Code',
             size: 14,
             variant: TextVariant.semiBold,
           ),
           const SizedBox(height: 8),
-          AnymeXText(
-            text: 'Enter a 6-character room code to join a watch party',
+          AnymeXText('Enter a 6-character room code to join a watch party',
             size: 12,
             color: theme.colorScheme.onSurface.opaque(0.6),
           ),
@@ -276,13 +272,13 @@ class _WatchiumPageState extends State<WatchiumPage> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('Join'),
+                    : const AnymeXText('Join'),
               ),
             ],
           ),
           if (_error != null) ...[
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               _error!,
               style: TextStyle(color: theme.colorScheme.error, fontSize: 12),
             ),
@@ -320,8 +316,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       color: theme.colorScheme.error, size: 18),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: AnymeXText(
-                      text: isJoining
+                    child: AnymeXText(isJoining
                           ? 'Joining room $roomCode...'
                           : 'Failed to join room $roomCode',
                       size: 14,
@@ -333,8 +328,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
               ),
               if (errorMsg.isNotEmpty && !isJoining) ...[
                 const SizedBox(height: 4),
-                AnymeXText(
-                  text: errorMsg,
+                AnymeXText(errorMsg,
                   size: 12,
                   color: theme.colorScheme.error.opaque(0.8),
                 ),
@@ -350,7 +344,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                     snackBar('Left room');
                   },
                   icon: const Icon(Icons.exit_to_app, size: 16),
-                  label: Text(isJoining ? 'Cancel' : 'Leave / Reset'),
+                  label: AnymeXText(isJoining ? 'Cancel' : 'Leave / Reset'),
                   style: FilledButton.styleFrom(
                     backgroundColor: theme.colorScheme.error,
                   ),
@@ -380,8 +374,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                 Icon(Icons.people_rounded,
                     color: theme.colorScheme.primary, size: 18),
                 const SizedBox(width: 8),
-                AnymeXText(
-                  text: 'In Room: ${roomState.code}',
+                AnymeXText('In Room: ${roomState.code}',
                   size: 14,
                   variant: TextVariant.semiBold,
                   color: theme.colorScheme.primary,
@@ -395,8 +388,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       color: theme.colorScheme.primary,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: AnymeXText(
-                      text: 'HOST',
+                    child: AnymeXText('HOST',
                       size: 10,
                       color: theme.colorScheme.onPrimary,
                     ),
@@ -405,9 +397,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
             ),
             if (roomState.content != null) ...[
               const SizedBox(height: 8),
-              AnymeXText(
-                text:
-                    '${roomState.content!.animeTitle} - Episode ${roomState.content!.episodeNumber}',
+              AnymeXText('${roomState.content!.animeTitle} - Episode ${roomState.content!.episodeNumber}',
                 size: 12,
               ),
             ],
@@ -428,13 +418,13 @@ class _WatchiumPageState extends State<WatchiumPage> {
                             ? NetworkImage(m.avatarUrl!)
                             : null,
                         child: m.avatarUrl == null
-                            ? Text(m.username[0].toUpperCase(),
+                            ? AnymeXText(m.username[0].toUpperCase(),
                                 style: const TextStyle(fontSize: 12))
                             : null,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(m.username,
+                        child: AnymeXText(m.username,
                             style: const TextStyle(fontSize: 12),
                             overflow: TextOverflow.ellipsis),
                       ),
@@ -445,7 +435,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                             color: theme.colorScheme.primary,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Text('HOST',
+                          child: AnymeXText('HOST',
                               style: TextStyle(
                                   fontSize: 9,
                                   color: theme.colorScheme.onPrimary,
@@ -469,8 +459,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
             const SizedBox(height: 4),
             Row(
               children: [
-                AnymeXText(
-                  text: '${roomState.members.length}/${roomState.maxMembers} members',
+                AnymeXText('${roomState.members.length}/${roomState.maxMembers} members',
                   size: 12,
                   color: theme.colorScheme.onSurface.opaque(0.6),
                 ),
@@ -489,7 +478,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                           content: roomState.content!);
                     },
                     icon: const Icon(Icons.play_arrow, size: 16),
-                    label: const Text('Play'),
+                    label: const AnymeXText('Play'),
                     style: TextButton.styleFrom(
                       foregroundColor: theme.colorScheme.primary,
                     ),
@@ -500,7 +489,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                     snackBar('Left the room');
                   },
                   icon: const Icon(Icons.logout, size: 16),
-                  label: const Text('Leave'),
+                  label: const AnymeXText('Leave'),
                   style: TextButton.styleFrom(
                     foregroundColor: theme.colorScheme.error,
                   ),
@@ -533,14 +522,12 @@ class _WatchiumPageState extends State<WatchiumPage> {
                 Icon(Icons.tv_off_rounded,
                     size: 48, color: theme.colorScheme.onSurface.opaque(0.2)),
                 const SizedBox(height: 12),
-                AnymeXText(
-                  text: 'No active rooms',
+                AnymeXText('No active rooms',
                   size: 14,
                   color: theme.colorScheme.onSurface.opaque(0.5),
                 ),
                 const SizedBox(height: 4),
-                AnymeXText(
-                  text: 'Rooms will appear here when someone creates one',
+                AnymeXText('Rooms will appear here when someone creates one',
                   size: 12,
                   color: theme.colorScheme.onSurface.opaque(0.3),
                 ),
@@ -676,7 +663,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       children: [
                         const Icon(Iconsax.eye, size: 14, color: Colors.white70),
                         const SizedBox(width: 4),
-                        Text(
+                        AnymeXText(
                           '$onlineCount',
                           style: const TextStyle(
                             color: Colors.white,
@@ -748,7 +735,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (content != null)
-                              Text(
+                              AnymeXText(
                                 content.animeTitle,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -760,7 +747,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                 ),
                               )
                             else
-                              Text(
+                              AnymeXText(
                                 'Room ${room.code}',
                                 style: TextStyle(
                                   color: Colors.white.opaque(0.8),
@@ -770,7 +757,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                               ),
                             if (content != null) ...[
                               const SizedBox(height: 4),
-                              Text(
+                              AnymeXText(
                                 'EP ${content.episodeNumber}${content.totalEpisodes != null ? ' / ${content.totalEpisodes}' : ''}',
                                 style: TextStyle(
                                   color: Colors.white.opaque(0.6),
@@ -804,7 +791,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                 : null,
                             backgroundColor: cs.surfaceContainerHighest,
                             child: hostMember.avatarUrl == null
-                                ? Text(
+                                ? AnymeXText(
                                     hostMember.username[0].toUpperCase(),
                                     style: const TextStyle(
                                         fontSize: 12,
@@ -824,15 +811,13 @@ class _WatchiumPageState extends State<WatchiumPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AnymeXText(
-                                text: hostMember?.username ?? 'Unknown',
+                              AnymeXText(hostMember?.username ?? 'Unknown',
                                 size: 13,
                                 variant: TextVariant.semiBold,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              AnymeXText(
-                                text: 'Created · ${_timeAgo(room.createdAt)}',
+                              AnymeXText('Created · ${_timeAgo(room.createdAt)}',
                                 size: 11,
                                 color: cs.onSurfaceVariant,
                               ),
@@ -865,7 +850,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                             visibleMembers[i].avatarUrl!)
                                         : null,
                                 child: visibleMembers[i].avatarUrl == null
-                                    ? Text(
+                                    ? AnymeXText(
                                         visibleMembers[i]
                                             .username[0]
                                             .toUpperCase(),
@@ -887,7 +872,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                   borderRadius: BorderRadius.circular(11),
                                 ),
                                 alignment: Alignment.center,
-                                child: Text(
+                                child: AnymeXText(
                                   '+$remainingCount',
                                   style: TextStyle(
                                     fontSize: 9,
@@ -905,8 +890,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
 
                   // Join button
                   if (isJoinable)
-                    AnymeXText(
-                      text: 'Join →',
+                    AnymeXText('Join →',
                       size: 13,
                       variant: TextVariant.semiBold,
                       color: cs.primary,
@@ -919,8 +903,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                         color: cs.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: AnymeXText(
-                        text: 'Full',
+                      child: AnymeXText('Full',
                         size: 11,
                         color: cs.onSurfaceVariant,
                       ),

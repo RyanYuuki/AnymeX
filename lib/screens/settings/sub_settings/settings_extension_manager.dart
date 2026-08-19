@@ -16,6 +16,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsExtensionManager extends StatefulWidget {
   const SettingsExtensionManager({super.key});
@@ -257,7 +258,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            AnymeXText(
                               release.title,
                               style: TextStyle(
                                 fontFamily: 'Poppins',
@@ -269,7 +270,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                               ),
                             ),
                             const SizedBox(height: 2),
-                            Text(
+                            AnymeXText(
                               release.tagName,
                               style: TextStyle(
                                 fontFamily: 'Poppins',
@@ -329,7 +330,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             NestedHeader(title: 'Extension Manager'),
             Expanded(
               child: Center(
-                child: Text('Extension Manager is not supported on iOS.'),
+                child: AnymeXText('Extension Manager is not supported on iOS.'),
               ),
             ),
           ],
@@ -496,7 +497,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         isBusy
                             ? 'Downloading Plugin...'
                             : isActive
@@ -511,7 +512,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         ),
                       ),
                       const SizedBox(height: 3),
-                      Text(
+                      AnymeXText(
                         isBusy
                             ? status
                             : isActive
@@ -548,7 +549,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   ),
                   if (sizeInfo.isNotEmpty) ...[
                     const SizedBox(width: 12),
-                    Text(
+                    AnymeXText(
                       sizeInfo,
                       style: TextStyle(
                         fontSize: 12,
@@ -562,7 +563,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             ],
             if (hasError) ...[
               const SizedBox(height: 12),
-              Text(
+              AnymeXText(
                 bridge.error.value,
                 style: TextStyle(
                   fontSize: 12,
@@ -612,7 +613,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         size: 16, color: colors.onTertiaryContainer),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
+                      child: AnymeXText(
                         'Please restart the app to apply changes.',
                         style: TextStyle(
                           fontSize: 12,
@@ -635,7 +636,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
+        AnymeXText(
           label,
           style: TextStyle(
             fontSize: 13,
@@ -648,7 +649,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             color: colors.surfaceContainerHighest.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(
+          child: AnymeXText(
             value,
             style: TextStyle(
               fontSize: 12,
@@ -733,7 +734,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(title),
+          title: AnymeXText(title),
           content: TextField(
             controller: controller,
             decoration: const InputDecoration(
@@ -744,14 +745,14 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const AnymeXText('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 onSave(controller.text);
                 Navigator.of(context).pop();
               },
-              child: const Text('Save'),
+              child: const AnymeXText('Save'),
             ),
           ],
         );

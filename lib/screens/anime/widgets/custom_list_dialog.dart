@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
 
 import '../../../database/isar_models/custom_list.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class CustomListDialog extends StatefulWidget {
   final Media original;
@@ -203,7 +204,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
                             color: colorScheme.onSurfaceVariant.opaque(0.5),
                           ),
                           const SizedBox(height: 16),
-                          Text(
+                          AnymeXText(
                             _searchQuery.isNotEmpty
                                 ? 'No collections found'
                                 : 'No collections yet',
@@ -239,7 +240,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
           OutlinedButton.icon(
             onPressed: _showCreateListDialog,
             icon: const Icon(Icons.add, size: 18),
-            label: const Text('New Collection'),
+            label: const AnymeXText('New Collection'),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(

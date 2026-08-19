@@ -120,8 +120,7 @@ class SocialSection extends StatelessWidget {
                           Icon(Icons.star_rounded,
                               size: 12, color: theme.onPrimary),
                           const SizedBox(width: 4),
-                          AnymeXText(
-                            text: Get.find<AnilistAuth>().isLoggedIn.value
+                          AnymeXText(Get.find<AnilistAuth>().isLoggedIn.value
                                 ? Get.find<AnilistAuth>().formatScore(user.userScore)
                                 : (user.userScore! > 10.0 ? user.userScore! / 10.0 : user.userScore!).toStringAsFixed(1),
                             size: 11,
@@ -136,16 +135,14 @@ class SocialSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             if (status.isNotEmpty)
-              AnymeXText(
-                text: status,
+              AnymeXText(status,
                 size: 12,
                 color: theme.onSurface.withOpacity(0.7),
                 fontStyle: FontStyle.italic,
                 textAlign: TextAlign.center,
               ),
             const SizedBox(height: 2),
-            AnymeXText(
-              text: user.userName ?? 'Unknown',
+            AnymeXText(user.userName ?? 'Unknown',
               size: 13,
               maxLines: 1,
               textAlign: TextAlign.center,

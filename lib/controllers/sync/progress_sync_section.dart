@@ -96,8 +96,7 @@ class _GistSyncCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 14),
                       const Expanded(
-                        child: AnymeXText(
-                          text: 'GitHub Gist Sync',
+                        child: AnymeXText('GitHub Gist Sync',
                           variant: TextVariant.semiBold,
                           size: 16,
                         ),
@@ -135,7 +134,7 @@ class _GistSyncCard extends StatelessWidget {
                               ),
                             )
                           : const Icon(Icons.login_rounded),
-                      label: Text(primaryActionLabel),
+                      label: AnymeXText(primaryActionLabel),
                     ),
                   ),
                 if (isLogged)
@@ -165,7 +164,7 @@ class _GistSyncCard extends StatelessWidget {
                                           ? Icons.cloud_upload_rounded
                                           : Icons.sync_rounded,
                                     ),
-                              label: Text(primaryActionLabel),
+                              label: AnymeXText(primaryActionLabel),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -179,7 +178,7 @@ class _GistSyncCard extends StatelessWidget {
                                       _showManageSheet(context, ctrl);
                                     },
                               icon: const Icon(Icons.tune_rounded),
-                              label: const Text('Manage'),
+                              label: const AnymeXText('Manage'),
                             ),
                           ),
                         ],
@@ -245,8 +244,7 @@ class _GistSyncCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: AnymeXText(
-                                  text: hasCloudGist == null
+                                child: AnymeXText(hasCloudGist == null
                                       ? 'Checking cloud gist status. Sync now to create one if needed.'
                                       : 'Create your cloud gist first to unlock sync preferences.',
                                   size: 12,
@@ -434,8 +432,7 @@ class _GistSyncCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const AnymeXText(
-                    text: 'Manage GitHub Gist Sync',
+                  const AnymeXText('Manage GitHub Gist Sync',
                     variant: TextVariant.bold,
                     size: 18,
                   ),
@@ -483,16 +480,14 @@ class _GistSyncCard extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    AnymeXText(
-                                      text: displayName ?? username,
+                                    AnymeXText(displayName ?? username,
                                       variant: TextVariant.semiBold,
                                       size: 14,
                                     ),
                                     if (displayName != null &&
                                         username.isNotEmpty &&
                                         username != 'GitHub User')
-                                      AnymeXText(
-                                        text: '@$username',
+                                      AnymeXText('@$username',
                                         size: 11,
                                         color: ctx.colors.onSurfaceVariant,
                                       ),
@@ -512,8 +507,7 @@ class _GistSyncCard extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 6),
-                          AnymeXText(
-                            text: _statusText(
+                          AnymeXText(_statusText(
                               isLogged: isLogged,
                               isSyncing: isSyncing,
                               hasCloudGist: hasCloudGist,
@@ -552,7 +546,7 @@ class _GistSyncCard extends StatelessWidget {
                                   ? Icons.cloud_upload_rounded
                                   : Icons.sync_rounded,
                             ),
-                      label: Text(
+                      label: AnymeXText(
                         _primaryActionLabel(
                           isLogged: ctrl.isLoggedIn.value,
                           isAuthenticating: ctrl.isAuthenticating.value,
@@ -820,8 +814,7 @@ class _StatusPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: color.withOpacity(0.35)),
       ),
-      child: AnymeXText(
-        text: label,
+      child: AnymeXText(label,
         size: 10,
         variant: TextVariant.semiBold,
         color: color,

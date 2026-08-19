@@ -98,8 +98,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                                   BorderRadius.circular(8.multiplyRadius()),
                               color: colorScheme.primary,
                             ),
-                            child: AnymeXText(
-                              text: media.formattedEpisodeTitle.toString(),
+                            child: AnymeXText(media.formattedEpisodeTitle.toString(),
                               size: 12,
                               variant: TextVariant.bold,
                               color: colorScheme.onPrimary,
@@ -107,8 +106,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           // Episode title
-                          AnymeXText(
-                            text: media.progressTitle ?? media.title!,
+                          AnymeXText(media.progressTitle ?? media.title!,
                             size: 15,
                             maxLines: getResponsiveValue(context,
                                 mobileValue: 1, desktopValue: 2),
@@ -119,8 +117,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           if (media.title != null &&
                               media.title != media.progressTitle)
-                            AnymeXText(
-                              text: media.title!,
+                            AnymeXText(media.title!,
                               size: 14,
                               maxLines: 1,
                               variant: TextVariant.regular,
@@ -136,14 +133,12 @@ class UnifiedHistoryCard extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  AnymeXText(
-                                    text: media.date!,
+                                  AnymeXText(media.date!,
                                     size: 12,
                                     color:
                                         colorScheme.onSurface.opaque(0.7),
                                   ),
-                                  AnymeXText(
-                                    text: media.progressText ?? '??',
+                                  AnymeXText(media.progressText ?? '??',
                                     size: 12,
                                     color: colorScheme.primary,
                                     variant: TextVariant.bold,
@@ -227,8 +222,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                               BorderRadius.circular(8.multiplyRadius()),
                           color: colorScheme.primary,
                         ),
-                        child: AnymeXText(
-                          text: media.formattedEpisodeTitle ?? '',
+                        child: AnymeXText(media.formattedEpisodeTitle ?? '',
                           size: 12,
                           variant: TextVariant.bold,
                           color: colorScheme.onPrimary,
@@ -242,8 +236,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                               BorderRadius.circular(8.multiplyRadius()),
                           color: colorScheme.surfaceVariant,
                         ),
-                        child: AnymeXText(
-                          text: media.date!,
+                        child: AnymeXText(media.date!,
                           size: 12,
                           variant: TextVariant.regular,
                           color: colorScheme.onSurfaceVariant,
@@ -252,8 +245,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  AnymeXText(
-                    text: media.progressTitle ?? media.title!,
+                  AnymeXText(media.progressTitle ?? media.title!,
                     size: 15,
                     maxLines: 1,
                     variant: TextVariant.bold,
@@ -261,8 +253,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   if (media.title != null && media.title != media.progressTitle)
-                    AnymeXText(
-                      text: media.title!,
+                    AnymeXText(media.title!,
                       size: 13,
                       maxLines: 1,
                       variant: TextVariant.regular,
@@ -287,8 +278,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      AnymeXText(
-                        text: media.progressText!,
+                      AnymeXText(media.progressText!,
                         size: 12,
                         color: colorScheme.primary,
                         variant: TextVariant.bold,
@@ -361,16 +351,14 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                               BorderRadius.circular(8.multiplyRadius()),
                           color: colorScheme.primary,
                         ),
-                        child: AnymeXText(
-                          text: media.formattedEpisodeTitle ?? 'Episode ??',
+                        child: AnymeXText(media.formattedEpisodeTitle ?? 'Episode ??',
                           size: 12,
                           variant: TextVariant.bold,
                           color: colorScheme.onPrimary,
                         ),
                       ),
                       const SizedBox(height: 8),
-                      AnymeXText(
-                        text: media.progressTitle ?? media.title!,
+                      AnymeXText(media.progressTitle ?? media.title!,
                         size: 15,
                         maxLines: getResponsiveValue(context,
                             mobileValue: 1, desktopValue: 2),
@@ -381,8 +369,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                       const SizedBox(height: 4),
                       if (media.title != null &&
                           media.title != media.progressTitle)
-                        AnymeXText(
-                          text: media.title!,
+                        AnymeXText(media.title!,
                           size: 14,
                           maxLines: 1,
                           variant: TextVariant.regular,
@@ -398,13 +385,11 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              AnymeXText(
-                                text: media.date!,
+                              AnymeXText(media.date!,
                                 size: 12,
                                 color: colorScheme.onSurface.opaque(0.7),
                               ),
-                              AnymeXText(
-                                text: media.progressText!,
+                              AnymeXText(media.progressText!,
                                 size: 12,
                                 color: colorScheme.primary,
                                 variant: TextVariant.bold,

@@ -11,6 +11,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class WatchiumService extends GetxController {
   static const _joinTimeout = Duration(seconds: 10);
@@ -76,17 +77,17 @@ class WatchiumService extends GetxController {
         final result = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Leave Watch Together?'),
-            content: const Text(
+            title: const AnymeXText('Leave Watch Together?'),
+            content: const AnymeXText(
                 'You will leave the room and stop watching with everyone.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Cancel'),
+                child: const AnymeXText('Cancel'),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Leave'),
+                child: const AnymeXText('Leave'),
               ),
             ],
           ),

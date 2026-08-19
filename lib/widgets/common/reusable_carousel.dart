@@ -77,8 +77,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   Widget _buildHeaderTitle() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
-      child: AnymeXText(
-        text: widget.title,
+      child: AnymeXText(widget.title,
         variant: TextVariant.semiBold,
         size: 17,
         color: context.colors.primary,
@@ -104,8 +103,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
                   ? Iconsax.book
                   : Icons.movie_filter_rounded),
               const SizedBox(height: 10, width: double.infinity),
-              AnymeXText(
-                text: widget.type != ItemType.anime
+              AnymeXText(widget.type != ItemType.anime
                     ? "For real, why aren't you reading yet? 📚"
                     : "Lowkey time for a binge sesh 🎬",
                 variant: TextVariant.semiBold,
