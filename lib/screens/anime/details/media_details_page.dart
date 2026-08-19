@@ -178,11 +178,13 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildContinueButton(context),
-          ResponsiveNavBar(
-            isDesktop: false,
-            currentIndex: selected,
-            margin: const EdgeInsets.fromLTRB(32, 0, 32, 30),
-            items: navItems,
+          SafeArea(
+            child: ResponsiveNavBar(
+              isDesktop: false,
+              currentIndex: selected,
+              margin: const EdgeInsets.fromLTRB(32, 0, 32, 10),
+              items: navItems,
+            ),
           ),
         ],
       );
@@ -602,15 +604,13 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AnymeXText(
-                                text: playButtonText,
+                              AnymeXText(playButtonText,
                                 variant: TextVariant.bold,
                                 size: 13,
                                 color: context.colors.onSurface,
                               ),
                               const SizedBox(height: 1),
-                              AnymeXText(
-                                text: clampedProgress > 0
+                              AnymeXText(clampedProgress > 0
                                     ? '$subtitleText • ${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}'
                                     : subtitleText,
                                 size: 11,
@@ -661,8 +661,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AnymeXText(
-                              text: titleText,
+                            AnymeXText(titleText,
                               variant: TextVariant.bold,
                               size: 13,
                               maxLines: 1,
@@ -671,8 +670,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                             const SizedBox(height: 2),
                             Row(
                               children: [
-                                AnymeXText(
-                                  text: subtitleText,
+                                AnymeXText(subtitleText,
                                   size: 11,
                                   color: context.colors.onSurface
                                       .opaque(0.6, iReallyMeanIt: true),
@@ -689,9 +687,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 6),
-                                  AnymeXText(
-                                    text:
-                                        '${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}',
+                                  AnymeXText('${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}',
                                     size: 11,
                                     color: context.colors.primary,
                                     variant: TextVariant.semiBold,
@@ -747,8 +743,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                                       color: context.colors.primary,
                                     ),
                                     const SizedBox(width: 6),
-                                    AnymeXText(
-                                      text: playButtonText,
+                                    AnymeXText(playButtonText,
                                       variant: TextVariant.bold,
                                       size: 13,
                                       color: context.colors.primary,

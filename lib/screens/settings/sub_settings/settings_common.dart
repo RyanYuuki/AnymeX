@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
@@ -363,13 +364,15 @@ class _SettingsCommonState extends State<SettingsCommon> {
               targetCards.clear();
               targetCards.addAll(localState);
               if (type.isMal) {
-                settings.homePageCardsMal;
+                settings.uiSettings.update((s) => s?.homePageCardsMal = Map<String, bool>.from(localState));
+                UISettingsKeys.homePageCardsMal.set(jsonEncode(localState));
               } else if (type.isAL) {
-                settings.homePageCards;
+                settings.uiSettings.update((s) => s?.homePageCards = Map<String, bool>.from(localState));
+                UISettingsKeys.homePageCards.set(jsonEncode(localState));
               } else {
-                settings.homePageCardsSimkl;
+                settings.uiSettings.update((s) => s?.homePageCardsSimkl = Map<String, bool>.from(localState));
+                UISettingsKeys.homePageCardsSimkl.set(jsonEncode(localState));
               }
-              Navigator.pop(context);
             },
           );
         },
