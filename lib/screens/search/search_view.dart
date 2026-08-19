@@ -113,7 +113,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
   bool get isExtensionMode =>
       _serviceHandler.serviceType.value == ServicesType.extensions ||
-      _selectedSource != null;
+      _selectedSource != null ||
+      effectiveType == ItemType.novel;
 
   @override
   void initState() {
@@ -1472,7 +1473,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 ? _buildListItem(media)
                 : GridAnimeCard(
                     data: media,
-                    isManga: widget.isManga,
+                    isManga: isManga,
                     type: effectiveType,
                     variant: CardVariant.search),
           ),

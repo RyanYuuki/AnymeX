@@ -107,11 +107,15 @@ final List<_BottomControl> _bottomControls = [
       defaultPosition: 'left'),
   const _BottomControl(
       id: 'shaders', name: 'Shaders', icon: Icons.tune_rounded),
-  const _BottomControl(id: 'source', name: 'Source', icon: Icons.cloud_rounded),
+  const _BottomControl(id: 'source', name: 'Quality', icon: Icons.high_quality_rounded),
   const _BottomControl(
       id: 'tracks',
-      name: 'Tracks (Audio/Subs)',
-      icon: Icons.library_music_rounded),
+      name: 'Subtitles',
+      icon: Icons.subtitles_rounded),
+  const _BottomControl(
+      id: 'audio',
+      name: 'Audio',
+      icon: Icons.volume_up_rounded),
   const _BottomControl(
       id: 'sync_subs', name: 'Sync Subs', icon: Icons.sync_rounded),
   const _BottomControl(id: 'speed', name: 'Speed', icon: Icons.speed_rounded),
@@ -205,7 +209,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     final legacyToNew = {
       'server': 'source',
       'subtitles': 'tracks',
-      'audio_track': 'tracks',
+      'audio_track': 'audio',
       'quality': 'source',
     };
 
@@ -240,7 +244,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     deduplicate(_rightButtonIds);
     deduplicate(_hiddenButtonIds);
 
-    final essential = ['source', 'tracks', 'sync_subs', 'external_player'];
+    final essential = ['source', 'tracks', 'audio', 'sync_subs', 'external_player'];
     for (final id in essential) {
       if (!seen.contains(id)) {
         _rightButtonIds.add(id);
@@ -1077,7 +1081,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
-      showHeader: true,
+      showHeader: !widget.isModal,
       headerTitle: 'Player Settings',
       body: Builder(
           builder: (ctx) => SingleChildScrollView(

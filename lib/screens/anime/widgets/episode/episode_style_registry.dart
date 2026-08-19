@@ -78,12 +78,12 @@ class EpisodeStyleRegistry {
   static List<EpisodeStyle> get styles => List.unmodifiable(_styles);
 
   static EpisodeStyle getStyle(String? id) {
-    if (id == null || id.isEmpty) {
-      return _styles[1];
+    if (id == null || id.isEmpty || id == 'default') {
+      return _styles.firstWhere((s) => s.id == 'detailed');
     }
     return _styles.firstWhere(
       (s) => s.id == id,
-      orElse: () => _styles[1],
+      orElse: () => _styles.firstWhere((s) => s.id == 'detailed'),
     );
   }
 }

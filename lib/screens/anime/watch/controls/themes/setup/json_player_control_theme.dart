@@ -1231,9 +1231,13 @@ class ThemeRenderer {
             !controller.isSyncSubsPaneOpened.value;
         break;
       case 'tracks':
-      case 'audio_track':
         controller.isTracksPaneOpened.value =
             !controller.isTracksPaneOpened.value;
+        break;
+      case 'audio':
+      case 'audio_track':
+        controller.isAudioPaneOpened.value =
+            !controller.isAudioPaneOpened.value;
         break;
       case 'quality':
         if (!controller.isOffline.value) {

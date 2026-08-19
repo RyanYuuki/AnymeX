@@ -414,17 +414,17 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
         compact: true,
       ),
       'source': ControlButton(
-        icon: Icons.cloud_rounded,
+        icon: Icons.high_quality_rounded,
         onPressed: () => controller.isSourcePaneOpened.value =
             !controller.isSourcePaneOpened.value,
-        tooltip: 'Source',
+        tooltip: 'Quality',
         compact: true,
       ),
       'tracks': ControlButton(
-        icon: Icons.library_music_rounded,
+        icon: Icons.subtitles_rounded,
         onPressed: () => controller.isTracksPaneOpened.value =
             !controller.isTracksPaneOpened.value,
-        tooltip: 'Tracks',
+        tooltip: 'Subtitles',
         compact: true,
       ),
       'sync_subs': ControlButton(
@@ -449,10 +449,10 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
         compact: true,
       ),
       'audio': ControlButton(
-        icon: Icons.audiotrack_rounded,
-        onPressed: () =>
-            PlayerBottomSheets.showAudioTracks(context, controller),
-        tooltip: 'Audio Tracks',
+        icon: Icons.volume_up_rounded,
+        onPressed: () => controller.isAudioPaneOpened.value =
+            !controller.isAudioPaneOpened.value,
+        tooltip: 'Audio',
         compact: true,
       ),
       'orientation': ControlButton(

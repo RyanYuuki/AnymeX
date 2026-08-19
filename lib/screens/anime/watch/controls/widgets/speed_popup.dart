@@ -1,5 +1,7 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 
 import 'dart:io' show Platform;
 
@@ -156,76 +158,27 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
     final cs = theme.colorScheme;
     final sliderVal = _currentSpeed.clamp(_min, _max);
 
-    return Column(
-      children: [
-        _buildHeader(cs, theme),
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSpeedDisplay(cs, theme),
-                const SizedBox(height: 20),
-                _buildSlider(cs, theme, sliderVal),
-                const SizedBox(height: 8),
-                _buildSliderLabels(cs, theme),
-                const SizedBox(height: 24),
-                _buildPresetsHeader(cs, theme),
-                const SizedBox(height: 12),
-                _buildSpeedChips(cs, theme),
-                const SizedBox(height: 20),
-                _buildMakeDefaultButton(cs, theme),
-              ],
-            ),
-          ),
+    return WatchSettingsPane(
+      title: 'Playback Speed',
+      onClose: widget.onClose,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSpeedDisplay(cs, theme),
+            const SizedBox(height: 20),
+            _buildSlider(cs, theme, sliderVal),
+            const SizedBox(height: 8),
+            _buildSliderLabels(cs, theme),
+            const SizedBox(height: 24),
+            _buildPresetsHeader(cs, theme),
+            const SizedBox(height: 12),
+            _buildSpeedChips(cs, theme),
+            const SizedBox(height: 20),
+            _buildMakeDefaultButton(cs, theme),
+          ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildHeader(ColorScheme cs, ThemeData theme) {
-    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
-    return Container(
-      padding: EdgeInsets.fromLTRB(16, isDesktop ? 16 + 40 : 16, 16, 16),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.withOpacity(0.3),
-        border: Border(
-          bottom: BorderSide(color: cs.outline.withOpacity(0.15)),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: cs.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.speed_rounded, color: cs.primary, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Playback Speed',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: widget.onClose,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: cs.surfaceContainerHighest.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.close,
-                  size: 20, color: cs.onSurface.withOpacity(0.7)),
-            ),
-          ),
-        ],
       ),
     );
   }

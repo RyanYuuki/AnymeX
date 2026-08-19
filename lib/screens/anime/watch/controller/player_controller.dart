@@ -217,6 +217,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool showAllStreamSubtitles = false.obs;
   final Rx<bool> isSourcePaneOpened = false.obs;
   final Rx<bool> isTracksPaneOpened = false.obs;
+  final Rx<bool> isAudioPaneOpened = false.obs;
   final Rx<bool> isSyncSubsPaneOpened = false.obs;
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
@@ -434,6 +435,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'shaders',
           'source',
           'tracks',
+          'audio',
           'cast',
           'sync_subs',
           'speed',
@@ -447,6 +449,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'shaders': {'visible': true},
           'source': {'visible': true},
           'tracks': {'visible': true},
+          'audio': {'visible': true},
           'cast': {'visible': true},
           'sync_subs': {'visible': true},
           'speed': {'visible': true},
@@ -476,10 +479,29 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         updated = true;
       }
 
+      if (!rightIds.contains('audio') &&
+          !hiddenIds.contains('audio') &&
+          !leftIds.contains('audio')) {
+        final tracksIdx = rightIds.indexOf('tracks');
+        if (tracksIdx != -1) {
+          rightIds.insert(tracksIdx + 1, 'audio');
+        } else {
+          rightIds.add('audio');
+        }
+        decodedConfig['rightButtonIds'] = rightIds;
+        updated = true;
+      }
+
       final buttonConfigs =
           (decodedConfig['buttonConfigs'] as Map<String, dynamic>?) ?? {};
       if (!buttonConfigs.containsKey('cast')) {
         buttonConfigs['cast'] = {'visible': true};
+        decodedConfig['buttonConfigs'] = buttonConfigs;
+        updated = true;
+      }
+
+      if (!buttonConfigs.containsKey('audio')) {
+        buttonConfigs['audio'] = {'visible': true};
         decodedConfig['buttonConfigs'] = buttonConfigs;
         updated = true;
       }
@@ -1462,6 +1484,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _autoHideTimer = Timer(_autoHideDuration, () {
         if (!isMouseHovering.value &&
             !isSourcePaneOpened.value &&
+            !isTracksPaneOpened.value &&
+            !isAudioPaneOpened.value &&
+            !isSyncSubsPaneOpened.value &&
             !isEpisodePaneOpened.value) {
           showControls.value = false;
         }
@@ -1532,6 +1557,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
       resetListeners();
       isEpisodePaneOpened.value = false;
+      isSourcePaneOpened.value = false;
+      isTracksPaneOpened.value = false;
+      isAudioPaneOpened.value = false;
+      isSyncSubsPaneOpened.value = false;
+      isSpeedPaneOpened.value = false;
       currentEpisode.value = episode;
       final stamp = DynamicKeys.offlineVideoProgress.get<int?>(videoPath, null);
       await _basePlayer.open(
@@ -2259,7 +2289,18 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       String content;
       if (uri.scheme == 'http' || uri.scheme == 'https') {
         final client = HttpClient();
+        client.connectionTimeout = const Duration(seconds: 10);
         final request = await client.getUrl(uri);
+        
+        request.headers.add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+        
+        final videoHeaders = selectedVideo.value?.headers;
+        if (videoHeaders != null) {
+          videoHeaders.forEach((key, val) {
+            request.headers.add(key, val);
+          });
+        }
+        
         final response = await request.close();
         content = await response.transform(utf8.decoder).join();
         client.close();
@@ -2491,6 +2532,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _basePlayer.pause();
     unawaited(_basePlayer.stop());
     isEpisodePaneOpened.value = false;
+    isSourcePaneOpened.value = false;
+    isTracksPaneOpened.value = false;
+    isAudioPaneOpened.value = false;
+    isSyncSubsPaneOpened.value = false;
+    isSpeedPaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
     _updateMediaSessionMetadata();

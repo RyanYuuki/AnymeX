@@ -264,21 +264,30 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'source': ControlButton(
-        icon: Icons.cloud_rounded,
+        icon: Icons.high_quality_rounded,
         onPressed: () {
           controller.isSourcePaneOpened.value =
               !controller.isSourcePaneOpened.value;
         },
-        tooltip: 'Source',
+        tooltip: 'Quality',
         compact: true,
       ),
       'tracks': ControlButton(
-        icon: Icons.library_music_rounded,
+        icon: Icons.subtitles_rounded,
         onPressed: () {
           controller.isTracksPaneOpened.value =
               !controller.isTracksPaneOpened.value;
         },
-        tooltip: 'Tracks',
+        tooltip: 'Subtitles',
+        compact: true,
+      ),
+      'audio': ControlButton(
+        icon: Icons.volume_up_rounded,
+        onPressed: () {
+          controller.isAudioPaneOpened.value =
+              !controller.isAudioPaneOpened.value;
+        },
+        tooltip: 'Audio',
         compact: true,
       ),
       'sync_subs': ControlButton(
@@ -364,12 +373,19 @@ class BottomControls extends StatelessWidget {
 
       for (var id in ids) {
         if (!isVisible(id)) continue;
-        if (id == 'source' && controller.isOffline.value) {
+        if (id == 'source' &&
+            controller.episodeTracks.isEmpty &&
+            controller.embeddedQuality.value.isEmpty) {
           continue;
         }
         if (id == 'tracks' &&
-            (controller.embeddedAudioTracks.value.isEmpty &&
-                controller.embeddedSubs.value.isEmpty)) {
+            controller.getAllStreamSubtitleOptions().isEmpty &&
+            controller.embeddedSubs.value.isEmpty) {
+          continue;
+        }
+        if (id == 'audio' &&
+            (controller.selectedVideo.value?.audios?.isEmpty ?? true) &&
+            controller.embeddedAudioTracks.value.length <= 1) {
           continue;
         }
         if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {

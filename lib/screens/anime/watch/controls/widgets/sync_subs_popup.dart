@@ -1,6 +1,7 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
-import 'dart:io' show Platform;
+import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -75,88 +76,14 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
   Widget build(BuildContext context) {
     final theme = context.theme;
     final cs = theme.colorScheme;
-    // final isBetterPlayer = widget.controller.basePlayer is BetterPlayerImpl;
 
-    return Column(
-      children: [
-        _buildHeader(cs, theme),
-        // if (isBetterPlayer)
-        //   _buildUnsupportedBanner(cs, theme)
-        // else
-        _buildDelayControls(cs, theme),
-        Expanded(child: _buildCueViewer(cs, theme)),
-      ],
-    );
-  }
-
-  Widget _buildHeader(ColorScheme cs, ThemeData theme) {
-    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
-    return Container(
-      padding: EdgeInsets.fromLTRB(16, isDesktop ? 16 + 40 : 16, 16, 16),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.withOpacity(0.3),
-        border: Border(
-          bottom: BorderSide(color: cs.outline.withOpacity(0.15)),
-        ),
-      ),
-      child: Row(
+    return WatchSettingsPane(
+      title: 'Sync Subtitles',
+      onClose: widget.onClose,
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: cs.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.sync_rounded, color: cs.primary, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Sync Subtitles',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: widget.onClose,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: cs.surfaceContainerHighest.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.close,
-                  size: 20, color: cs.onSurface.withOpacity(0.7)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUnsupportedBanner(ColorScheme cs, ThemeData theme) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cs.errorContainer.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: cs.error.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.warning_amber_rounded, color: cs.error, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Subtitle delay not supported with BetterPlayer. Use Libmpv.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: cs.onErrorContainer,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
+          _buildDelayControls(cs, theme),
+          Expanded(child: _buildCueViewer(cs, theme)),
         ],
       ),
     );
@@ -324,68 +251,111 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
             final isActive = index == activeIndex;
             final isPast = adjustedPos > cue.end;
 
+            double progress = 0.0;
+            if (isActive) {
+              final cueDuration = cue.end.inMilliseconds - cue.start.inMilliseconds;
+              if (cueDuration > 0) {
+                progress = ((adjustedPos.inMilliseconds - cue.start.inMilliseconds) / cueDuration).clamp(0.0, 1.0);
+              }
+            }
+
             return GestureDetector(
               onTap: () {
                 final currentPos = widget.controller.currentPosition.value;
-                final newDelay = currentPos - cue.start;
+                final newDelay = currentPos - cue.start - const Duration(milliseconds: 150);
                 widget.controller.setSubtitleDelay(newDelay);
                 _userScrolling = false;
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.symmetric(vertical: 3),
+                margin: const EdgeInsets.symmetric(vertical: 4),
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? cs.primary.withOpacity(0.15)
+                      ? cs.primary.withOpacity(0.12)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isActive
-                        ? cs.primary.withOpacity(0.4)
+                        ? cs.primary.withOpacity(0.3)
                         : Colors.transparent,
                     width: 1.5,
                   ),
                 ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: isActive
-                            ? cs.primary.withOpacity(0.15)
-                            : cs.surfaceContainerHighest.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        _formatDuration(cue.start),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          fontFamily: 'monospace',
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: isActive
-                              ? cs.primary
-                              : cs.onSurface.withOpacity(isPast ? 0.35 : 0.5),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? cs.primary.withOpacity(0.15)
+                                : cs.surfaceContainerHighest.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            _formatDuration(cue.start),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontFamily: 'monospace',
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: isActive
+                                  ? cs.primary
+                                  : cs.onSurface.withOpacity(isPast ? 0.35 : 0.5),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            cue.text,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: isActive
+                                  ? cs.primary
+                                  : cs.onSurface.withOpacity(isPast ? 0.4 : 0.85),
+                              fontWeight:
+                                  isActive ? FontWeight.w600 : FontWeight.w400,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (isActive) ...[
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: () {},
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            trackHeight: 6,
+                            thumbShape: SliderComponentShape.noThumb,
+                            overlayShape: SliderComponentShape.noOverlay,
+                            activeTrackColor: cs.primary,
+                            inactiveTrackColor: cs.primary.withOpacity(0.2),
+                            trackShape: const RoundedRectSliderTrackShape(),
+                          ),
+                          child: Slider(
+                            value: progress,
+                            min: 0.0,
+                            max: 1.0,
+                            onChanged: (val) {
+                              final currentPos = widget.controller.currentPosition.value;
+                              final cueDuration = cue.end.inMilliseconds - cue.start.inMilliseconds;
+                              // Clamp away from edges so adjustedPos stays inside the cue
+                              // and doesn't trigger a jump to the previous/next cue.
+                              final safeVal = val.clamp(0.02, 0.98);
+                              final newDelay = currentPos - cue.start - Duration(milliseconds: (cueDuration * safeVal).toInt());
+                              widget.controller.setSubtitleDelay(newDelay);
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        cue.text,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: isActive
-                              ? cs.primary
-                              : cs.onSurface.withOpacity(isPast ? 0.4 : 0.85),
-                          fontWeight:
-                              isActive ? FontWeight.w600 : FontWeight.w400,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
+                    ],
                   ],
                 ),
               ),
