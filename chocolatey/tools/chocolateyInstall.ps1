@@ -2,8 +2,8 @@ $ErrorActionPreference = 'Stop'
 
 $packageName = 'com.ryan.anymex'
 $toolsDir = "$(Split-Path -Parent $MyInvocation.MyCommand.Definition)"
-$url = 'https://github.com/RyanYuuki/AnymeX/releases/download/v3.1.5/AnymeX-Windows.zip'
-$checksum = 'F22121F46945090BBB3A685073DA75A56B00B3150C9D61AEBE77A108B7B1DEC1'
+$url = 'https://github.com/RyanYuuki/AnymeX/releases/download/v3.1.6/AnymeX-Windows.zip'
+$checksum = 'B36F684B69582480E190E2B15C4ECABBA18E9044708DDE31CD71DF20FCCCE41A'
 
 Install-ChocolateyZipPackage -PackageName $packageName `
   -Url $url -UnzipLocation $toolsDir `
@@ -17,6 +17,7 @@ $targetPath = Join-Path $toolsDir 'anymex.exe'
 Install-ChocolateyShortcut -ShortcutFilePath $shortcutPath `
   -TargetPath $targetPath `
   -Description 'An open-source, cross-platform desktop app for streaming and tracking anime, manga, and novels across multiple services (AL, MAL, SIMKL).'
+
 
 
 
