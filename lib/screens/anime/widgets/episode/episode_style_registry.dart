@@ -1,5 +1,6 @@
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/episode/styles/compact_style.dart';
 import 'package:anymex/screens/anime/widgets/episode/styles/detailed_style.dart';
 import 'package:anymex/screens/anime/widgets/episode/styles/minimal_style.dart';
@@ -23,8 +24,7 @@ class EpisodeStyle {
     bool isSelected,
     bool isWatched,
     double progress,
-    String? mediaTitle,
-    List<Episode>? offlineEpisodes,
+    Media? media,
     VoidCallback? onTap,
     VoidCallback? onLongPress,
   ) builder;
@@ -52,21 +52,21 @@ class EpisodeStyleRegistry {
   static EpisodeStyle get activeStyle => getStyle(currentStyleId.value);
 
   static final List<EpisodeStyle> _styles = [
-    const EpisodeStyle(
+    EpisodeStyle(
       id: 'minimal',
       name: 'Minimal',
       description: 'Simple layout displaying episode number, title, and progress without thumbnail',
       styleType: EpisodeStyleType.minimal,
       builder: buildMinimalEpisodeStyle,
     ),
-    const EpisodeStyle(
+    EpisodeStyle(
       id: 'compact',
       name: 'Compact',
       description: 'Compact card with episode thumbnail and title',
       styleType: EpisodeStyleType.compact,
       builder: buildCompactEpisodeStyle,
     ),
-    const EpisodeStyle(
+    EpisodeStyle(
       id: 'detailed',
       name: 'Detailed',
       description: 'Full-width detailed card with large thumbnail and episode metadata',
