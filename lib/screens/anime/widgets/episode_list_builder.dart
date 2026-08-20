@@ -1359,7 +1359,9 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                     Get.find<TrackBindingController>().hasAnyBinding(mediaData.id);
 
                 bool? shouldTrack;
-                if (isExtension) {
+                if (General.shouldAskForTrack.get(true) == false) {
+                  shouldTrack = true;
+                } else if (isExtension) {
                   shouldTrack = hasTrackBinding;
                 } else {
                   shouldTrack = await showTrackingDialog(context, dbId: dbId);

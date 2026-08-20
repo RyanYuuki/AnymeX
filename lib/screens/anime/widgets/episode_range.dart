@@ -24,8 +24,8 @@ class EpisodeChunkSelector extends StatelessWidget {
         scrollPadding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
         items: List.generate(chunks.length, (index) {
           final label = index == 0
-              ? 'All'
-              : '${formatEpisodeNumberLabel(chunks[index].first.number)} - ${formatEpisodeNumberLabel(chunks[index].last.number)}';
+              ? 'All (${chunks[0].length})'
+              : '${formatEpisodeNumberLabel(chunks[index].first.number)} - ${formatEpisodeNumberLabel(chunks[index].last.number)} (${chunks[index].length})';
           return PillItem(
             label: label,
             isSelected: selected == index,

@@ -206,6 +206,8 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
         if (savedTracking != null) {
           shouldTrackValue = savedTracking;
+        } else if (General.shouldAskForTrack.get(true) == false) {
+          shouldTrackValue = true;
         } else {
           final isExtension = mediaData.serviceType == ServicesType.extensions;
           final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&

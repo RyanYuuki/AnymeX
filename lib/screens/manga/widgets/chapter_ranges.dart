@@ -23,8 +23,8 @@ class ChapterRanges extends StatelessWidget {
         scrollPadding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
         items: List.generate(chunks.length, (index) {
           final label = index == 0
-              ? 'All'
-              : '${chunks[index].first.formattedNumber} - ${chunks[index].last.formattedNumber}';
+              ? 'All (${chunks[0].length})'
+              : '${chunks[index].first.formattedNumber} - ${chunks[index].last.formattedNumber} (${chunks[index].length})';
           return PillItem(
             label: label,
             isSelected: selected == index,
