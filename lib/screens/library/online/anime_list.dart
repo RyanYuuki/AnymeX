@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
@@ -67,9 +68,9 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
     if (anilistAuth.serviceType.value == ServicesType.simkl && widget.data == null) {
       final combined = [...anilistAuth.animeList, ...anilistAuth.mangaList];
       final seen = <String>{};
-      return combined.where((e) => e.id != null && seen.add(e.id!)).toList();
+      return combined.where((e) => e.id != null && seen.add(e.id!)).toList().removeDupes();
     }
-    return base;
+    return base.removeDupes();
   }
 
   List<String> get tabs {

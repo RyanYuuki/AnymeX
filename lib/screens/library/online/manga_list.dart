@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
@@ -65,8 +66,13 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   final anilistAuth = Get.find<ServiceHandler>();
   late final List<String> _allTabs;
 
+  List<TrackedMedia> get activeMediaList {
+    final base = widget.data ?? anilistAuth.mangaList;
+    return base.removeDupes();
+  }
+
   List<String> get tabs {
-    final mangaList = widget.data ?? anilistAuth.mangaList;
+    final mangaList = activeMediaList;
     return _allTabs.where((tab) {
       if (tab == 'ALL') return true;
       return _getFilteredList(mangaList, tab).isNotEmpty;
@@ -180,8 +186,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   }
 
   void _collectGenres() {
-    final anilistAuth = Get.find<ServiceHandler>();
-    final mangaList = widget.data ?? anilistAuth.mangaList;
+    final mangaList = activeMediaList;
     final genres = <String>{..._mangaAnilistGenres};
     for (final entry in mangaList) {
       genres.addAll(entry.genres);
@@ -252,8 +257,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   }
 
   void _openRandom() {
-    final anilistAuth = Get.find<ServiceHandler>();
-    final mangaList = widget.data ?? anilistAuth.mangaList;
+    final mangaList = activeMediaList;
     final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
     final currentTabName = orderedTabs[_tabController?.index ?? 0];
     final items = _applyFilters(_getFilteredList(mangaList, currentTabName));
@@ -474,7 +478,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
     final colors = Theme.of(context).colorScheme;
     final anilistAuth = Get.find<ServiceHandler>();
     final userName = widget.userName ?? anilistAuth.profileData.value.name;
-    final mangaList = widget.data ?? anilistAuth.mangaList;
+    final mangaList = activeMediaList;
     final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
 
     if (_tabController == null ||
