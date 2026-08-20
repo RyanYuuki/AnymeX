@@ -424,24 +424,24 @@ class _FilterScreenState extends State<FilterScreen> {
       settings.checkForUpdates(context);
       settings.showWelcomeDialog(context);
 
-      final launchCount = KvHelper.get<int>(
-              'anymex_discord_notice_launch_count',
-              defaultVal: 0) +
-          1;
-      KvHelper.set('anymex_discord_notice_launch_count', launchCount);
+      // final launchCount = KvHelper.get<int>(
+      //         'anymex_discord_notice_launch_count',
+      //         defaultVal: 0) +
+      //     1;
+      // KvHelper.set('anymex_discord_notice_launch_count', launchCount);
 
-      void checkAndShowDiscord() {
-        if (!mounted) return;
-        if (launchCount <= 3 || settings.showJoinDialog.value) {
-          _showDiscordNoticeDialog(context);
-        }
-      }
+      // void checkAndShowDiscord() {
+      //   if (!mounted) return;
+      //   if (launchCount <= 3 || settings.showJoinDialog.value) {
+      //     _showDiscordNoticeDialog(context);
+      //   }
+      // }
 
-      if (settings.linksFetched) {
-        checkAndShowDiscord();
-      } else {
-        settings.onLinksReady = checkAndShowDiscord;
-      }
+      // if (settings.linksFetched) {
+      //   checkAndShowDiscord();
+      // } else {
+      //   settings.onLinksReady = checkAndShowDiscord;
+      // }
     });
   }
 
