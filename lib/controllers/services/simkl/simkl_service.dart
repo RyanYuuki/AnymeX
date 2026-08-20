@@ -217,7 +217,7 @@ class SimklService extends GetxController
                     onPressed: () {
                       navigate(() => AnimeList(
                             title: "Movies",
-                            data: animeList.value,
+                            data: animeList.value.removeDupes(),
                           ));
                     },
                   ),
@@ -238,7 +238,7 @@ class SimklService extends GetxController
                     onPressed: () {
                       navigate(() => AnimeList(
                             title: "Shows",
-                            data: mangaList.value,
+                            data: mangaList.value.removeDupes(),
                           ));
                     },
                   ),

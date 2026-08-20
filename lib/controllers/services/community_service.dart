@@ -429,7 +429,7 @@ class CommunityService extends GetxController {
       poster: entry.poster ?? '',
       largePoster: entry.poster ?? '',
       rating: entry.score ?? '?',
-      mediaType: isMovie ? ItemType.anime : ItemType.manga,
+      mediaType: ItemType.anime,
       type: isMovie ? 'MOVIE' : 'SERIES',
       serviceType: ServicesType.simkl,
     );

@@ -67,7 +67,7 @@ class UISettings {
     this.useGrainTexture = false,
     this.grainIntensity = 0.05,
     this.enableImmersiveMode = false,
-    this.navBarStyle = 0,
+    this.navBarStyle = 1,
     this.appFontFamily = '',
   })  : homePageCards = homePageCards ??
             {

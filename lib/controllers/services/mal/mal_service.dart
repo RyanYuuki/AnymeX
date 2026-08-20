@@ -345,7 +345,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   backgroundImage: animeButtonMedia?.cover ?? '',
                   borderRadius: 16.multiplyRadius(),
                   onPressed: () {
-                    navigate(() => const AnimeList());
+                    navigate(() => AnimeList(data: animeList.value.removeDupes()));
                   },
                   onLongPress: animeButtonMedia == null
                       ? null
@@ -360,7 +360,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: mangaButtonMedia?.cover ?? '',
                     onPressed: () {
-                      navigate(() => const AnilistMangaList());
+                      navigate(() => AnilistMangaList(data: mangaList.value.removeDupes()));
                     },
                     onLongPress: mangaButtonMedia == null
                         ? null

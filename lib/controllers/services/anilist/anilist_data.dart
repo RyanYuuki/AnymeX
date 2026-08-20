@@ -154,7 +154,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                             buttonText: "ANIME LIST",
                             backgroundImage: animeButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
-                            onPressed: () => navigate(() => const AnimeList()),
+                            onPressed: () => navigate(() => AnimeList(data: anilistAuth.animeList.removeDupes())),
                             onLongPress: animeButtonMedia == null
                                 ? null
                                 : () => _openHomeButtonMedia(animeButtonMedia),
@@ -168,7 +168,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                             backgroundImage: mangaButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
                             onPressed: () =>
-                                navigate(() => const AnilistMangaList()),
+                                navigate(() => AnilistMangaList(data: anilistAuth.mangaList.removeDupes())),
                             onLongPress: mangaButtonMedia == null
                                 ? null
                                 : () => _openHomeButtonMedia(mangaButtonMedia),
