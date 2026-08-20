@@ -684,6 +684,26 @@ class MediaDetailsController extends GetxController {
     }
   }
 
+  Future<void> deleteListEntry() async {
+    if (!serviceHandler.isLoggedIn.value) return;
+    try {
+      final listId = trackedMedia.value?.id ?? media.value.id;
+      if (listId == null) return;
+      await serviceHandler.onlineService.deleteListEntry(
+        listId,
+        isAnime: isAnime,
+      );
+      mediaStatus.value = '';
+      mediaProgress.value = 0;
+      mediaScore.value = 0.0;
+      isListedMedia.value = false;
+      trackedMedia.value = null;
+      snackBar('List entry deleted successfully!');
+    } catch (e) {
+      errorSnackBar('Failed to delete list entry');
+    }
+  }
+
   Episode? getContinueEpisode() {
     if (episodeList.isEmpty) return null;
     final progress = mediaProgress.value;

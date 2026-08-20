@@ -59,7 +59,9 @@ Widget buildMediaQuickActions(
                               score: score,
                             );
                           },
-                          onDelete: (id) {},
+                          onDelete: (id) {
+                            controller.deleteListEntry();
+                          },
                         ),
                         context);
                   },
