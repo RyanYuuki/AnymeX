@@ -107,15 +107,12 @@ final List<_BottomControl> _bottomControls = [
       defaultPosition: 'left'),
   const _BottomControl(
       id: 'shaders', name: 'Shaders', icon: Icons.tune_rounded),
-  const _BottomControl(id: 'source', name: 'Quality', icon: Icons.high_quality_rounded),
   const _BottomControl(
-      id: 'tracks',
-      name: 'Subtitles',
-      icon: Icons.subtitles_rounded),
+      id: 'source', name: 'Quality', icon: Icons.high_quality_rounded),
   const _BottomControl(
-      id: 'audio',
-      name: 'Audio',
-      icon: Icons.volume_up_rounded),
+      id: 'tracks', name: 'Subtitles', icon: Icons.subtitles_rounded),
+  const _BottomControl(
+      id: 'audio', name: 'Audio', icon: Icons.volume_up_rounded),
   const _BottomControl(
       id: 'sync_subs', name: 'Sync Subs', icon: Icons.sync_rounded),
   const _BottomControl(id: 'speed', name: 'Speed', icon: Icons.speed_rounded),
@@ -129,11 +126,11 @@ final List<_BottomControl> _bottomControls = [
       id: 'external_player',
       name: 'External Player',
       icon: Icons.launch_rounded),
-  // const _BottomControl(
-  //     id: 'watch_together',
-  //     name: 'Watch Together',
-  //     icon: Icons.people_outline_rounded,
-  //     defaultPosition: 'right'),
+  const _BottomControl(
+      id: 'watch_together',
+      name: 'Watch Together',
+      icon: Icons.people_outline_rounded,
+      defaultPosition: 'right'),
 ];
 
 class _SettingsPlayerState extends State<SettingsPlayer>
@@ -244,7 +241,13 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     deduplicate(_rightButtonIds);
     deduplicate(_hiddenButtonIds);
 
-    final essential = ['source', 'tracks', 'audio', 'sync_subs', 'external_player'];
+    final essential = [
+      'source',
+      'tracks',
+      'audio',
+      'sync_subs',
+      'external_player'
+    ];
     for (final id in essential) {
       if (!seen.contains(id)) {
         _rightButtonIds.add(id);
@@ -2494,7 +2497,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-        child: AnymeXText(label,
+        child: AnymeXText(
+          label,
           size: 13,
           variant: TextVariant.bold,
           color: colors.primary,

@@ -64,7 +64,6 @@ class SettingsSheet extends StatelessWidget {
       },
     ];
 
-
     AnymeXSheet.custom(
       ConstrainedBox(
         constraints: BoxConstraints(
@@ -92,12 +91,14 @@ class SettingsSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const AnymeXText("Choose Provider",
+                const AnymeXText(
+                  "Choose Provider",
                   size: 20,
                   variant: TextVariant.bold,
                 ),
                 const SizedBox(height: 5),
-                AnymeXText("Select your preferred content source",
+                AnymeXText(
+                  "Select your preferred content source",
                   size: 14,
                   color: theme.colorScheme.onSurface
                       .opaque(0.5, iReallyMeanIt: true),
@@ -172,14 +173,16 @@ class SettingsSheet extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    AnymeXText(service['name'] as String,
+                                    AnymeXText(
+                                      service['name'] as String,
                                       size: 16,
                                       variant: TextVariant.semiBold,
                                       color: isSelected ? primaryColor : null,
                                     ),
                                     if (service['desc'] != null) ...[
                                       const SizedBox(height: 2),
-                                      AnymeXText(service['desc'] as String,
+                                      AnymeXText(
+                                        service['desc'] as String,
                                         size: 12,
                                         color: theme.colorScheme.onSurface
                                             .opaque(0.6),
@@ -292,7 +295,8 @@ class SettingsSheet extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymeXText(serviceHandler.profileData.value.name ?? 'Guest',
+                AnymeXText(
+                  serviceHandler.profileData.value.name ?? 'Guest',
                   variant: TextVariant.semiBold,
                   size: 14,
                 ),
@@ -309,7 +313,8 @@ class SettingsSheet extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        AnymeXText(serviceHandler.isLoggedIn.value
+                        AnymeXText(
+                          serviceHandler.isLoggedIn.value
                               ? 'Tap to logout'
                               : 'Tap to login',
                           size: 12,
@@ -393,14 +398,14 @@ class SettingsSheet extends StatelessWidget {
           navigate(() => const WatchOffline());
         },
       ),
-      // _SheetMenuItem(
-      //   icon: Icons.people_rounded,
-      //   label: 'Watch Together',
-      //   onTap: () {
-      //     Get.back();
-      //     navigate(() => const WatchiumPage());
-      //   },
-      // ),
+      _SheetMenuItem(
+        icon: Icons.people_rounded,
+        label: 'Watch Together',
+        onTap: () {
+          Get.back();
+          navigate(() => const WatchiumPage());
+        },
+      ),
       _SheetMenuItem(
         icon: Iconsax.setting,
         label: 'Settings',
@@ -493,7 +498,8 @@ class SettingsSheet extends StatelessWidget {
             finalIcon,
             const SizedBox(width: 12),
             Expanded(
-              child: AnymeXText(item.label,
+              child: AnymeXText(
+                item.label,
                 size: 13.5,
                 variant: TextVariant.semiBold,
               ),

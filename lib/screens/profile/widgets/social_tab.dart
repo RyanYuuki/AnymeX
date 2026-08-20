@@ -36,6 +36,8 @@ class SocialTabState extends State<SocialTab> {
   int _followersPage = 1;
   bool _followingHasMore = true;
   bool _followersHasMore = true;
+  int _followingTotal = 0;
+  int _followersTotal = 0;
 
   bool get _activeSocialHasMore =>
       _socialSubTab == 0 ? _followingHasMore : _followersHasMore;
@@ -63,6 +65,8 @@ class SocialTabState extends State<SocialTab> {
         setState(() {
           _following = followingUsers;
           _followers = followerUsers;
+          _followingTotal = followingTotal;
+          _followersTotal = followersTotal;
           _followingPage = 1;
           _followersPage = 1;
           _followingHasMore = followingHasMore;
@@ -100,6 +104,7 @@ class SocialTabState extends State<SocialTab> {
             for (final u in users) u.id: u,
           };
           _following = merged.values.toList();
+          _followingTotal = totalCount;
           _followingPage = nextPage;
           _followingHasMore = hasMore;
           _socialLoadingMore = false;
@@ -115,6 +120,7 @@ class SocialTabState extends State<SocialTab> {
             for (final u in users) u.id: u,
           };
           _followers = merged.values.toList();
+          _followersTotal = totalCount;
           _followersPage = nextPage;
           _followersHasMore = hasMore;
           _socialLoadingMore = false;
@@ -164,7 +170,7 @@ class SocialTabState extends State<SocialTab> {
                     ButtonSegment(
                       value: 0,
                       label: AnymeXText(
-                        'Following (${_following.length})',
+                        'Following ($_followingTotal)',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -177,7 +183,7 @@ class SocialTabState extends State<SocialTab> {
                     ButtonSegment(
                       value: 1,
                       label: AnymeXText(
-                        'Followers (${_followers.length})',
+                        'Followers ($_followersTotal)',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
