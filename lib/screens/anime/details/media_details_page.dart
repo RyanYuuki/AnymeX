@@ -30,6 +30,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -83,11 +84,13 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
     if (controller.selectedPage.value == index) return;
     controller.selectedPage.value = index;
     _isAnimatingPage = true;
-    pageController.animateToPage(
+    pageController
+        .animateToPage(
       index,
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
-    ).then((_) {
+    )
+        .then((_) {
       _isAnimatingPage = false;
     });
   }
@@ -174,7 +177,9 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
 
     return Obx(() {
       final selected = controller.selectedPage.value;
-      return Column(
+      final isDesktop =
+          getResponsiveValue(context, mobileValue: false, desktopValue: true);
+      final child = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildContinueButton(context),
@@ -182,12 +187,22 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
             child: ResponsiveNavBar(
               isDesktop: false,
               currentIndex: selected,
-              margin: const EdgeInsets.fromLTRB(32, 0, 32, 10),
+              margin: EdgeInsets.fromLTRB(32, 0, 32, isDesktop ? 32 : 10),
               items: navItems,
             ),
           ),
         ],
       );
+      if (isDesktop) {
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 450),
+            child: child,
+          ),
+        );
+      }
+      return child;
     });
   }
 
@@ -491,21 +506,28 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
             controller.refreshProgress();
           } else {
             final mediaData = controller.media.value;
-            final dbId = '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
-            
+            final dbId =
+                '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
+
             bool shouldTrackValue = false;
             final auth = Get.find<ServiceHandler>();
             final isLoggedInOnline = auth.isLoggedIn.value &&
                 auth.serviceType.value != ServicesType.extensions;
 
             if (isLoggedInOnline) {
-              final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+              final savedTracking =
+                  DynamicKeys.trackingPermission.get<bool?>(dbId);
               if (savedTracking != null) {
                 shouldTrackValue = savedTracking;
+              } else if (General.shouldAskForTrack.get(true) == false) {
+                shouldTrackValue = true;
               } else {
-                final isExtension = mediaData.serviceType == ServicesType.extensions;
-                final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&
-                    Get.find<TrackBindingController>().hasAnyBinding(mediaData.id);
+                final isExtension =
+                    mediaData.serviceType == ServicesType.extensions;
+                final hasTrackBinding =
+                    Get.isRegistered<TrackBindingController>() &&
+                        Get.find<TrackBindingController>()
+                            .hasAnyBinding(mediaData.id);
 
                 if (isExtension) {
                   shouldTrackValue = hasTrackBinding;
@@ -600,17 +622,20 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                         },
                         borderRadius: BorderRadius.circular(8),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 4.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AnymeXText(playButtonText,
+                              AnymeXText(
+                                playButtonText,
                                 variant: TextVariant.bold,
                                 size: 13,
                                 color: context.colors.onSurface,
                               ),
                               const SizedBox(height: 1),
-                              AnymeXText(clampedProgress > 0
+                              AnymeXText(
+                                clampedProgress > 0
                                     ? '$subtitleText • ${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}'
                                     : subtitleText,
                                 size: 11,
@@ -661,7 +686,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AnymeXText(titleText,
+                            AnymeXText(
+                              titleText,
                               variant: TextVariant.bold,
                               size: 13,
                               maxLines: 1,
@@ -670,7 +696,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                             const SizedBox(height: 2),
                             Row(
                               children: [
-                                AnymeXText(subtitleText,
+                                AnymeXText(
+                                  subtitleText,
                                   size: 11,
                                   color: context.colors.onSurface
                                       .opaque(0.6, iReallyMeanIt: true),
@@ -687,7 +714,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 6),
-                                  AnymeXText('${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}',
+                                  AnymeXText(
+                                    '${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}',
                                     size: 11,
                                     color: context.colors.primary,
                                     variant: TextVariant.semiBold,
@@ -731,7 +759,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                                   ),
                                 ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 10),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -743,7 +772,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                                       color: context.colors.primary,
                                     ),
                                     const SizedBox(width: 6),
-                                    AnymeXText(playButtonText,
+                                    AnymeXText(
+                                      playButtonText,
                                       variant: TextVariant.bold,
                                       size: 13,
                                       color: context.colors.primary,
