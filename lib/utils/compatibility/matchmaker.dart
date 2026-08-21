@@ -7,6 +7,8 @@ class Matchmaker {
   // ============================================================
   // Anime weights
   // ============================================================
+  static CompatibilitySection _toSection(_SectionResult r) => r.toSection();
+
   static const _watchStatsWeight = 0.25;
   static const _releaseYearWeight = 0.80;
   static const _genreWeight = 1.50;
@@ -78,8 +80,8 @@ class Matchmaker {
       percentage: clampedPct,
       rank: overallRank.name,
       rankDescription: overallRank.description,
-      animeSection: animeResult,
-      mangaSection: mangaResult,
+      animeSection: _toSection(animeResult),
+      mangaSection: _toSection(mangaResult),
       breakdown: allBreakdown,
       commonFavouriteAnimeIds: animeResult._favAnimeIds,
       commonFavouriteMangaIds: mangaResult._favMangaIds,
@@ -191,13 +193,13 @@ class Matchmaker {
       rank: rank.name,
       rankDescription: rank.description,
       breakdown: breakdown,
-      _favAnimeIds: favAnimeIds,
-      _favCharIds: favCharIds,
-      _staffIds: staffNames,
-      _genreNames: commonGenresList,
-      _tagNames: commonTagsList,
-      _studioNames: studioNames,
-      _vaNames: vaNames,
+      favAnimeIds: favAnimeIds,
+      favCharIds: favCharIds,
+      staffIds: staffNames,
+      genreNames: commonGenresList,
+      tagNames: commonTagsList,
+      studioNames: studioNames,
+      vaNames: vaNames,
     );
   }
 
@@ -258,9 +260,9 @@ class Matchmaker {
       rank: rank.name,
       rankDescription: rank.description,
       breakdown: breakdown,
-      _favMangaIds: favMangaIds,
-      _genreNames: commonGenresList,
-      _tagNames: commonTagsList,
+      favMangaIds: favMangaIds,
+      genreNames: commonGenresList,
+      tagNames: commonTagsList,
     );
   }
 
@@ -675,15 +677,30 @@ class _SectionResult {
     this.rankDescription = '',
     this.breakdown = const [],
     this.hasData = true,
-    this._favAnimeIds = const [],
-    this._favMangaIds = const [],
-    this._favCharIds = const [],
-    this._staffIds = const [],
-    this._genreNames = const [],
-    this._tagNames = const [],
-    this._studioNames = const [],
-    this._vaNames = const [],
-  });
+    List<int> favAnimeIds = const [],
+    List<int> favMangaIds = const [],
+    List<int> favCharIds = const [],
+    List<String> staffIds = const [],
+    List<String> genreNames = const [],
+    List<String> tagNames = const [],
+    List<String> studioNames = const [],
+    List<String> vaNames = const [],
+  })  : _favAnimeIds = favAnimeIds,
+        _favMangaIds = favMangaIds,
+        _favCharIds = favCharIds,
+        _staffIds = staffIds,
+        _genreNames = genreNames,
+        _tagNames = tagNames,
+        _studioNames = studioNames,
+        _vaNames = vaNames;
 
   factory _SectionResult.noData() => _SectionResult(hasData: false);
+
+  CompatibilitySection toSection() => CompatibilitySection(
+        percentage: percentage,
+        rank: rank,
+        rankDescription: rankDescription,
+        breakdown: breakdown,
+        hasData: hasData,
+      );
 }

@@ -266,7 +266,7 @@ class CompatibilityResultPage extends StatelessWidget {
         children: [
           Text(
             icon,
-            fontSize: 24,
+            style: const TextStyle(fontSize: 24),
           ),
           const SizedBox(height: 6),
           Text(
@@ -776,10 +776,10 @@ class CompatibilityResultPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Compatibility is calculated by comparing signals from both users\' AniList profiles across two sections:\n
-\uD83D\uDCFA Anime (10 signals): watch stats, release years, genres, tags, perfect anime, favourite anime, characters, voice actors, studios, staff.\n
-\uD83D\uDCD6 Manga & Novels (5 signals): read stats, release years, genres, tags, favourite manga. Novels and light novels are included under manga data.\n
-Each signal is weighted differently — favourites carry the highest weight. Sections without data are excluded from the overall score.',
+            'Compatibility is calculated by comparing signals from both users\' AniList profiles across two sections:\n'
+            '\uD83D\uDCFA Anime (10 signals): watch stats, release years, genres, tags, perfect anime, favourite anime, characters, voice actors, studios, staff.\n'
+            '\uD83D\uDCD6 Manga & Novels (5 signals): read stats, release years, genres, tags, favourite manga. Novels and light novels are included under manga data.\n'
+            'Each signal is weighted differently - favourites carry the highest weight. Sections without data are excluded from the overall score.',
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 12,
