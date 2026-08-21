@@ -14,7 +14,7 @@ import 'package:anymex/screens/anime/widgets/social_section.dart';
 import 'package:anymex/utils/anime_adaptation_util.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 
-import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';

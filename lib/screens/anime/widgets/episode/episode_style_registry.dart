@@ -37,7 +37,7 @@ class EpisodeStyle {
     required this.builder,
   });
 
-  bool get isGrid => styleType != EpisodeStyleType.detailed;
+  bool get isGrid => styleType == EpisodeStyleType.minimal;
 }
 
 class EpisodeStyleRegistry {
@@ -52,24 +52,26 @@ class EpisodeStyleRegistry {
   static EpisodeStyle get activeStyle => getStyle(currentStyleId.value);
 
   static final List<EpisodeStyle> _styles = [
-    EpisodeStyle(
+    const EpisodeStyle(
       id: 'minimal',
       name: 'Minimal',
-      description: 'Simple layout displaying episode number, title, and progress without thumbnail',
+      description:
+          'Simple layout displaying episode number, title, and progress without thumbnail',
       styleType: EpisodeStyleType.minimal,
       builder: buildMinimalEpisodeStyle,
     ),
-    EpisodeStyle(
+    const EpisodeStyle(
       id: 'compact',
       name: 'Compact',
       description: 'Compact card with episode thumbnail and title',
       styleType: EpisodeStyleType.compact,
       builder: buildCompactEpisodeStyle,
     ),
-    EpisodeStyle(
+    const EpisodeStyle(
       id: 'detailed',
       name: 'Detailed',
-      description: 'Full-width detailed card with large thumbnail and episode metadata',
+      description:
+          'Full-width detailed card with large thumbnail and episode metadata',
       styleType: EpisodeStyleType.detailed,
       builder: buildDetailedEpisodeStyle,
     ),

@@ -15,13 +15,14 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/header/header.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ExtensionScreen extends StatefulWidget {
@@ -336,145 +337,35 @@ class _ExtensionScreenState extends State<ExtensionScreen>
 
   void _showLanguageSelector(BuildContext context) {
     final languages = sortedLanguagesMap.keys.toList();
-    final theme = Theme.of(context);
+
+    String tempLang = _selectedLanguage.value;
 
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.6),
-      builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          child: Container(
-            width: double.infinity,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AnymeXDialog(
+          title: 'Select Language',
+          onConfirm: () {
+            _selectedLanguage.value = tempLang;
+          },
+          contentWidget: ConstrainedBox(
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(context).height * 0.75,
-              maxWidth: 400,
+              maxHeight: MediaQuery.sizeOf(context).height * 0.45,
             ),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(
-                color: theme.colorScheme.outline.withOpacity(0.12),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.language_rounded,
-                        color: theme.colorScheme.primary,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: AnymeXText(
-                          'Select Language',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close_rounded),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1),
-                Expanded(
-                  child: Obx(() {
-                    final selLang = _selectedLanguage.value;
-                    return ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      itemCount: languages.length,
-                      itemBuilder: (context, index) {
-                        final lang = languages[index];
-                        final label = lang == 'all' ? 'All Languages' : lang;
-                        final isSelected = selLang == lang;
-
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: AnymexOnTap(
-                            onTap: () {
-                              _selectedLanguage.value = lang;
-                              Navigator.pop(context);
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 180),
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? theme.colorScheme.primaryContainer.opaque(0.35, iReallyMeanIt: true)
-                                    : theme.colorScheme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(
-                                  color: isSelected
-                                      ? theme.colorScheme.primary.opaque(0.5, iReallyMeanIt: true)
-                                      : theme.colorScheme.outline.opaque(0.15, iReallyMeanIt: true),
-                                  width: isSelected ? 1.5 : 1,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 180),
-                                    width: 22,
-                                    height: 22,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: isSelected
-                                          ? theme.colorScheme.primary
-                                          : Colors.transparent,
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? theme.colorScheme.primary
-                                            : theme.colorScheme.outline.opaque(0.4, iReallyMeanIt: true),
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: isSelected
-                                        ? Icon(Icons.check_rounded,
-                                            size: 14, color: theme.colorScheme.onPrimary)
-                                        : null,
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: AnymeXText(
-                                      label,
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontSize: 14,
-                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                        color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }),
-                ),
-              ],
+            child: AnymeXTileBuilder<String>(
+              items: languages,
+              selectedItem: tempLang,
+              getTitle: (lang) => lang == 'all' ? 'All Languages' : lang,
+              lazy: true,
+              onItemPressed: (lang) {
+                setDialogState(() {
+                  tempLang = lang;
+                });
+              },
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
