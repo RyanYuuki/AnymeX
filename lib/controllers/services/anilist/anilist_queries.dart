@@ -28,6 +28,8 @@ const detailsPrimaryQuery = '''
         chapters
         format
         popularity
+        countryOfOrigin
+        source
         startDate {
           year
           month

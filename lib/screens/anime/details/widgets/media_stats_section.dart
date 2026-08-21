@@ -16,6 +16,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
 import 'package:flutter/material.dart';
@@ -196,15 +197,16 @@ Widget _buildSection(String title, List<Widget> children, ColorScheme colors) {
 }
 
 Widget buildSeasonsSection(BuildContext context, Media mediaData) {
-  final filteredRelations = mediaData.relations
-          ?.where((element) =>
-              element.relationType == 'SEQUEL' ||
-              element.relationType == 'PREQUEL')
-          .take(2)
-          .toList() ??
-      [];
+  final prequels = mediaData.relations?.where((element) => element.relationType == 'PREQUEL').toList() ?? [];
+  final sequels = mediaData.relations?.where((element) => element.relationType == 'SEQUEL').toList() ?? [];
+  final filteredRelations = [
+    if (prequels.isNotEmpty) prequels.first,
+    if (sequels.isNotEmpty) sequels.first,
+  ];
 
   if (filteredRelations.isEmpty) return const SizedBox.shrink();
+
+  final colors = context.colors;
 
   return _buildSection(
       'Seasons',
@@ -223,42 +225,27 @@ Widget buildSeasonsSection(BuildContext context, Media mediaData) {
             );
 
             return Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  navigate(() => MediaDetailsPage(
-                        media: media,
-                        tag: relation.id.toString(),
-                      ));
-                },
-                child: Container(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: ImageButton(
+                  buttonText: relation.relationType,
+                  backgroundImage: relation.cover.isNotEmpty ? relation.cover : relation.poster,
+                  width: double.infinity,
                   height: 70,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
-                      image: NetworkImage(relation.cover.isNotEmpty
-                          ? relation.cover
-                          : relation.poster),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.55),
-                        BlendMode.darken,
-                      ),
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: AnymeXText(relation.relationType,
-                    variant: TextVariant.bold,
-                    size: 14,
-                    color: Colors.white,
-                  ),
+                  borderRadius: 12,
+                  onPressed: () {
+                    navigate(() => MediaDetailsPage(
+                          media: media,
+                          tag: relation.id.toString(),
+                        ));
+                  },
                 ),
               ),
             );
           }).toList(),
         )
       ],
-      context.colors);
+      colors);
 }
 
 Widget buildExtrasSection(BuildContext context, Media mediaData) {
@@ -540,25 +527,28 @@ Widget buildStatsGrid(BuildContext context, Media media) {
   final yearStr = media.seasonYear?.toString() ?? '';
 
   final seasonText = [
-    if (media.season.isNotEmpty) media.season,
+    if (media.season.isNotEmpty && media.season != '?') media.season,
     if (yearStr.isNotEmpty) yearStr,
   ].join(' ');
 
   final stats = [
     if ((media.studios ?? []).isNotEmpty)
       MapEntry('Studio', (media.studios ?? []).join(', ')),
-    if (isAnime && media.totalEpisodes.isNotEmpty && media.totalEpisodes != '0')
+    if (isAnime && media.totalEpisodes.isNotEmpty && media.totalEpisodes != '0' && media.totalEpisodes != '?')
       MapEntry('Episodes', media.totalEpisodes),
     if (!isAnime &&
         (media.totalChapters ?? '').isNotEmpty &&
-        media.totalChapters != '0')
+        media.totalChapters != '0' &&
+        media.totalChapters != '?')
       MapEntry('Chapters', media.totalChapters!),
-    if (media.duration.isNotEmpty) MapEntry('Duration', media.duration),
-    if (seasonText.isNotEmpty) MapEntry('Season', seasonText),
-    if (media.status.isNotEmpty) MapEntry('Status', media.status),
-    if (media.format.isNotEmpty) MapEntry('Format', media.format),
-    if (media.rating.isNotEmpty) MapEntry('Score', '★ ${media.rating}'),
-    if (media.popularity.isNotEmpty) MapEntry('Popularity', media.popularity),
+    if (isAnime && media.duration.isNotEmpty && media.duration != '?') MapEntry('Duration', media.duration),
+    if (seasonText.trim().isNotEmpty) MapEntry('Season', seasonText.trim()),
+    if (media.status.isNotEmpty && media.status != '?') MapEntry('Status', media.status),
+    if (media.format.isNotEmpty && media.format != '?') MapEntry('Format', media.format),
+    if (media.sourceMaterial != null && media.sourceMaterial!.isNotEmpty && media.sourceMaterial != '?')
+      MapEntry('Source', formatSourceMaterial(media.sourceMaterial)),
+    if (media.rating.isNotEmpty && media.rating != '?') MapEntry('Score', '★ ${media.rating}'),
+    if (media.popularity.isNotEmpty && media.popularity != '?') MapEntry('Popularity', media.popularity),
   ];
 
   if (stats.isEmpty) return const SizedBox.shrink();
