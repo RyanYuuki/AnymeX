@@ -25,6 +25,8 @@ class CompatibilityResultPage extends StatelessWidget {
     }
 
     final rank = getRankForScore(result.percentage);
+    final animeRank = getRankForScore(result.animeSection.percentage);
+    final mangaRank = getRankForScore(result.mangaSection.percentage);
 
     return Scaffold(
       appBar: AppBar(
@@ -44,12 +46,39 @@ class CompatibilityResultPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           children: [
-            _buildHeader(context, user1, user2, result, rank),
-            const SizedBox(height: 24),
-            _buildBreakdownSection(context, result),
+            // Overall header with user avatars
+            _buildOverallHeader(context, user1, user2, result, rank),
             const SizedBox(height: 20),
+
+            // Anime & Manga section cards side by side
+            _buildSectionCards(context, result, animeRank, mangaRank),
+            const SizedBox(height: 24),
+
+            // Anime breakdown
+            if (result.animeSection.hasData) ...[
+              _buildSectionBreakdown(
+                context,
+                title: '📺 Anime Breakdown',
+                breakdown: result.animeSection.breakdown,
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // Manga breakdown
+            if (result.mangaSection.hasData) ...[
+              _buildSectionBreakdown(
+                context,
+                title: '📖 Manga & Novels Breakdown',
+                breakdown: result.mangaSection.breakdown,
+              ),
+              const SizedBox(height: 20),
+            ],
+
+            // Shared interests
             _buildSharedItemsSection(context, result, user1, user2),
             const SizedBox(height: 24),
+
+            // How it works
             _buildHowItWorksCard(context),
             const SizedBox(height: 32),
           ],
@@ -58,7 +87,11 @@ class CompatibilityResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(
+  // ============================================================
+  // OVERALL HEADER
+  // ============================================================
+
+  Widget _buildOverallHeader(
     BuildContext context,
     dynamic user1,
     dynamic user2,
@@ -72,7 +105,7 @@ class CompatibilityResultPage extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -86,11 +119,10 @@ class CompatibilityResultPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // User avatars and names
+          // User avatars
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // User 1
               _buildUserChip(context, name1, avatar1),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -100,11 +132,21 @@ class CompatibilityResultPage extends StatelessWidget {
                   size: 28,
                 ),
               ),
-              // User 2
               _buildUserChip(context, name2, avatar2),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+
+          // "Overall" label
+          Text(
+            'Overall Compatibility',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              color: context.theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 4),
 
           // Big percentage
           Text(
@@ -122,7 +164,7 @@ class CompatibilityResultPage extends StatelessWidget {
                 ).createShader(const Rect.fromLTWH(0, 0, 200, 60)),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
           // Rank badge
           Container(
@@ -135,21 +177,16 @@ class CompatibilityResultPage extends StatelessWidget {
                 width: 1.5,
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Rank ${rank.name}',
-                  style: TextStyle(
-                    fontFamily: 'Poppins-Bold',
-                    fontSize: 16,
-                    color: _parseColor(rank.colorHex),
-                  ),
-                ),
-              ],
+            child: Text(
+              'Rank ${rank.name}',
+              style: TextStyle(
+                fontFamily: 'Poppins-Bold',
+                fontSize: 16,
+                color: _parseColor(rank.colorHex),
+              ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             rank.description,
             style: TextStyle(
@@ -163,59 +200,169 @@ class CompatibilityResultPage extends StatelessWidget {
     );
   }
 
-  Widget _buildUserChip(BuildContext context, String name, String avatar) {
-    return Column(
+  // ============================================================
+  // SECTION CARDS (Anime / Manga side by side)
+  // ============================================================
+
+  Widget _buildSectionCards(
+    BuildContext context,
+    CompatibilityResult result,
+    RankInfo animeRank,
+    RankInfo mangaRank,
+  ) {
+    return Row(
       children: [
-        CircleAvatar(
-          radius: 30,
-          backgroundImage: avatar.isNotEmpty ? NetworkImage(avatar) : null,
-          backgroundColor: context.theme.colorScheme.surfaceContainerHigh,
-          child: avatar.isEmpty
-              ? Text(
-                  name.isNotEmpty ? name[0].toUpperCase() : '?',
-                  style: const TextStyle(
-                    fontFamily: 'Poppins-Bold',
-                    fontSize: 20,
-                  ),
-                )
-              : null,
+        // Anime card
+        Expanded(
+          child: _buildSectionCard(
+            context,
+            icon: '📺',
+            label: 'Anime',
+            section: result.animeSection,
+            rank: animeRank,
+            formatSplit: null,
+          ),
         ),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: 80,
-          child: Text(
-            name,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-            style: const TextStyle(
-              fontFamily: 'Poppins-SemiBold',
-              fontSize: 13,
-            ),
+        const SizedBox(width: 12),
+        // Manga card
+        Expanded(
+          child: _buildSectionCard(
+            context,
+            icon: '📖',
+            label: 'Manga & LN',
+            section: result.mangaSection,
+            rank: mangaRank,
+            formatSplit1: result.user1FormatSplit,
+            formatSplit2: result.user2FormatSplit,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBreakdownSection(
-    BuildContext context,
-    CompatibilityResult result,
-  ) {
+  Widget _buildSectionCard(
+    BuildContext context, {
+    required String icon,
+    required String label,
+    required CompatibilitySection section,
+    required RankInfo rank,
+    MangaFormatSplit? formatSplit,
+    MangaFormatSplit? formatSplit1,
+    MangaFormatSplit? formatSplit2,
+  }) {
+    final hasData = section.hasData;
+    final color = hasData ? _parseColor(rank.colorHex) : context.theme.colorScheme.onSurfaceVariant.withOpacity(0.5);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
+      decoration: BoxDecoration(
+        color: context.theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(16),
+        border: hasData
+            ? Border.all(color: color.withOpacity(0.3), width: 1)
+            : null,
+      ),
+      child: Column(
+        children: [
+          Text(
+            icon,
+            fontSize: 24,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 10),
+          if (!hasData)
+            Text(
+              'No data',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+              ),
+            )
+          else ...[
+            Text(
+              '${section.percentage.toStringAsFixed(1)}%',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                fontFamily: 'Poppins-Bold',
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${rank.name} Rank',
+                style: TextStyle(
+                  fontFamily: 'Poppins-Bold',
+                  fontSize: 12,
+                  color: color,
+                ),
+              ),
+            ),
+            // Format split for manga
+            if (formatSplit1 != null || formatSplit2 != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                _formatSplitText(formatSplit1, formatSplit2),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 10,
+                  color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                ),
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _formatSplitText(MangaFormatSplit? s1, MangaFormatSplit? s2) {
+    final parts = <String>[];
+    if (s1 != null && s1.displayLabel != 'No data') {
+      parts.add('User1: ${s1.displayLabel}');
+    }
+    if (s2 != null && s2.displayLabel != 'No data') {
+      parts.add('User2: ${s2.displayLabel}');
+    }
+    return parts.join('\n');
+  }
+
+  // ============================================================
+  // SECTION BREAKDOWN (heuristic bars)
+  // ============================================================
+
+  Widget _buildSectionBreakdown(
+    BuildContext context, {
+    required String title,
+    required List<HeuristicScore> breakdown,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Score Breakdown',
-          style: TextStyle(
+        Text(
+          title,
+          style: const TextStyle(
             fontFamily: 'Poppins-Bold',
             fontSize: 18,
           ),
         ),
         const SizedBox(height: 12),
-        ...result.breakdown.map(
-          (h) => _buildHeuristicRow(context, h),
-        ),
+        ...breakdown.map((h) => _buildHeuristicRow(context, h)),
       ],
     );
   }
@@ -262,7 +409,6 @@ class CompatibilityResultPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          // Progress bar
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
@@ -291,6 +437,10 @@ class CompatibilityResultPage extends StatelessWidget {
     );
   }
 
+  // ============================================================
+  // SHARED ITEMS
+  // ============================================================
+
   Widget _buildSharedItemsSection(
     BuildContext context,
     CompatibilityResult result,
@@ -300,8 +450,12 @@ class CompatibilityResultPage extends StatelessWidget {
     final hasSharedItems = result.commonGenres.isNotEmpty ||
         result.commonTags.isNotEmpty ||
         result.commonFavouriteAnimeIds.isNotEmpty ||
+        result.commonFavouriteMangaIds.isNotEmpty ||
         result.commonStudios.isNotEmpty ||
-        result.commonVoiceActors.isNotEmpty;
+        result.commonVoiceActors.isNotEmpty ||
+        result.commonStaffIds.isNotEmpty ||
+        result.commonMangaGenres.isNotEmpty ||
+        result.commonMangaTags.isNotEmpty;
 
     if (!hasSharedItems) return const SizedBox.shrink();
 
@@ -317,26 +471,49 @@ class CompatibilityResultPage extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // Shared favourite anime (with covers)
+        // Shared favourite anime
         if (result.commonFavouriteAnimeIds.isNotEmpty)
           _buildSharedFavAnimeSection(context, user1, result),
 
-        // Shared genres
+        // Shared favourite manga
+        if (result.commonFavouriteMangaIds.isNotEmpty)
+          _buildSharedFavMangaSection(context, user1, result),
+
+        // Shared genres (anime)
         if (result.commonGenres.isNotEmpty)
           _buildChipList(
             context,
-            title: 'Shared Genres',
+            title: 'Shared Anime Genres',
             items: result.commonGenres,
             icon: Icons.category,
           ),
 
-        // Shared tags
+        // Shared genres (manga)
+        if (result.commonMangaGenres.isNotEmpty)
+          _buildChipList(
+            context,
+            title: 'Shared Manga Genres',
+            items: result.commonMangaGenres,
+            icon: Icons.category_outlined,
+          ),
+
+        // Shared tags (anime)
         if (result.commonTags.isNotEmpty)
           _buildChipList(
             context,
-            title: 'Shared Tags',
+            title: 'Shared Anime Tags',
             items: result.commonTags.map((t) => _capitalizeFirst(t)).toList(),
             icon: Icons.label_outline,
+            maxItems: 10,
+          ),
+
+        // Shared tags (manga)
+        if (result.commonMangaTags.isNotEmpty)
+          _buildChipList(
+            context,
+            title: 'Shared Manga Tags',
+            items: result.commonMangaTags.map((t) => _capitalizeFirst(t)).toList(),
+            icon: Icons.label,
             maxItems: 10,
           ),
 
@@ -357,6 +534,15 @@ class CompatibilityResultPage extends StatelessWidget {
             items: result.commonVoiceActors,
             icon: Icons.mic,
           ),
+
+        // Shared staff
+        if (result.commonStaffIds.isNotEmpty)
+          _buildChipList(
+            context,
+            title: 'Shared Favourite Staff',
+            items: result.commonStaffIds,
+            icon: Icons.person_outline,
+          ),
       ],
     );
   }
@@ -374,11 +560,43 @@ class CompatibilityResultPage extends StatelessWidget {
 
     if (shared.isEmpty) return const SizedBox.shrink();
 
+    return _buildHorizontalMediaList(
+      context,
+      title: 'Shared Favourite Anime',
+      items: shared.map((a) => (a.title ?? '', a.cover ?? '')).toList(),
+    );
+  }
+
+  Widget _buildSharedFavMangaSection(
+    BuildContext context,
+    dynamic user1,
+    CompatibilityResult result,
+  ) {
+    final favManga = user1.favourites?.manga ?? [];
+    final shared = favManga
+        .where((m) => result.commonFavouriteMangaIds
+            .contains(int.tryParse(m.id ?? '')))
+        .toList();
+
+    if (shared.isEmpty) return const SizedBox.shrink();
+
+    return _buildHorizontalMediaList(
+      context,
+      title: 'Shared Favourite Manga & Novels',
+      items: shared.map((m) => (m.title ?? '', m.cover ?? '')).toList(),
+    );
+  }
+
+  Widget _buildHorizontalMediaList(
+    BuildContext context, {
+    required String title,
+    required List<(String, String)> items,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Shared Favourite Anime',
+          title,
           style: TextStyle(
             fontFamily: 'Poppins-SemiBold',
             fontSize: 14,
@@ -390,10 +608,10 @@ class CompatibilityResultPage extends StatelessWidget {
           height: 160,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: shared.length,
+            itemCount: items.length,
             separatorBuilder: (_, __) => const SizedBox(width: 10),
             itemBuilder: (context, index) {
-              final anime = shared[index];
+              final (title, cover) = items[index];
               return SizedBox(
                 width: 100,
                 child: Column(
@@ -402,7 +620,7 @@ class CompatibilityResultPage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: AnymeXImage(
-                        imageUrl: anime.cover ?? '',
+                        imageUrl: cover,
                         width: 100,
                         height: 140,
                         fit: BoxFit.cover,
@@ -410,7 +628,7 @@ class CompatibilityResultPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      anime.title ?? '',
+                      title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -484,6 +702,49 @@ class CompatibilityResultPage extends StatelessWidget {
     );
   }
 
+  // ============================================================
+  // USER CHIP
+  // ============================================================
+
+  Widget _buildUserChip(BuildContext context, String name, String avatar) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 30,
+          backgroundImage: avatar.isNotEmpty ? NetworkImage(avatar) : null,
+          backgroundColor: context.theme.colorScheme.surfaceContainerHigh,
+          child: avatar.isEmpty
+              ? Text(
+                  name.isNotEmpty ? name[0].toUpperCase() : '?',
+                  style: const TextStyle(
+                    fontFamily: 'Poppins-Bold',
+                    fontSize: 20,
+                  ),
+                )
+              : null,
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          width: 80,
+          child: Text(
+            name,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            style: const TextStyle(
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 13,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ============================================================
+  // HOW IT WORKS
+  // ============================================================
+
   Widget _buildHowItWorksCard(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -515,7 +776,10 @@ class CompatibilityResultPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Compatibility is calculated by comparing 9 different signals from both users\' AniList profiles: watch stats, release year preferences, genre/tag overlap, favourite anime, characters, voice actors, and studios. Each signal is weighted differently. Favourite anime has the highest weight because they reflect deliberate picks.',
+            'Compatibility is calculated by comparing signals from both users\' AniList profiles across two sections:\n
+\uD83D\uDCFA Anime (10 signals): watch stats, release years, genres, tags, perfect anime, favourite anime, characters, voice actors, studios, staff.\n
+\uD83D\uDCD6 Manga & Novels (5 signals): read stats, release years, genres, tags, favourite manga. Novels and light novels are included under manga data.\n
+Each signal is weighted differently — favourites carry the highest weight. Sections without data are excluded from the overall score.',
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 12,
@@ -537,6 +801,10 @@ class CompatibilityResultPage extends StatelessWidget {
     );
   }
 
+  // ============================================================
+  // UTILITIES
+  // ============================================================
+
   Color _scoreColor(double score) {
     if (score >= 0.85) return Colors.amber;
     if (score >= 0.65) return Colors.purpleAccent;
@@ -557,13 +825,20 @@ class CompatibilityResultPage extends StatelessWidget {
   }
 
   void _shareResult(String name1, String name2, CompatibilityResult result) {
+    final anime = result.animeSection.hasData
+        ? 'Anime: ${result.animeSection.percentage.toStringAsFixed(1)}%'
+        : 'Anime: N/A';
+    final manga = result.mangaSection.hasData
+        ? 'Manga & LN: ${result.mangaSection.percentage.toStringAsFixed(1)}%'
+        : 'Manga & LN: N/A';
+
     final text =
         '$name1 \u2764 $name2\n\n'
-        'Anime Compatibility: ${result.percentage.toStringAsFixed(1)}% (${result.rank})\n'
+        'Overall: ${result.percentage.toStringAsFixed(1)}% (${result.rank})\n'
+        '$anime\n'
+        '$manga\n\n'
         '${result.rankDescription}\n\n'
         'Calculated with AnymeX';
     Share.share(text);
   }
 }
-
-
