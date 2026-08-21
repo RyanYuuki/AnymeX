@@ -1,6 +1,10 @@
 import 'package:anymex/controllers/services/anilist/compatibility_controller.dart';
 import 'package:anymex/utils/compatibility/compatibility_models.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -18,9 +22,12 @@ class CompatibilityResultPage extends StatelessWidget {
     final user2 = controller.user2.value;
 
     if (result == null || user1 == null || user2 == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Compatibility')),
-        body: const Center(child: Text('No result')),
+      return AnymeXScaffold(
+        showHeader: true,
+        headerTitle: 'Compatibility',
+        body: const Center(
+          child: AnymeXText('No result', size: 16),
+        ),
       );
     }
 
@@ -28,57 +35,45 @@ class CompatibilityResultPage extends StatelessWidget {
     final animeRank = getRankForScore(result.animeSection.percentage);
     final mangaRank = getRankForScore(result.mangaSection.percentage);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Compatibility Result',
-          style: TextStyle(fontFamily: 'Poppins-SemiBold'),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () => _shareResult(user1.name ?? '', user2.name ?? '', result),
-            tooltip: 'Share',
-          ),
-        ],
+    return AnymeXScaffold(
+      showHeader: true,
+      headerTitle: 'Compatibility Result',
+      headerAction: IconButton(
+        icon: const Icon(Icons.share),
+        onPressed: () =>
+            _shareResult(user1.name ?? '', user2.name ?? '', result),
+        tooltip: 'Share',
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
+      body: Builder(
+        builder: (ctx) => ScrollWrapper(
+          comfortPadding: false,
+          customPadding: EdgeInsets.fromLTRB(
+            16,
+            AnymeXHeaderScope.of(ctx),
+            16,
+            28,
+          ),
           children: [
-            // Overall header with user avatars
             _buildOverallHeader(context, user1, user2, result, rank),
             const SizedBox(height: 20),
-
-            // Anime & Manga section cards side by side
             _buildSectionCards(context, result, animeRank, mangaRank),
             const SizedBox(height: 24),
-
-            // Anime breakdown
-            if (result.animeSection.hasData) ...[
+            if (result.animeSection.hasData)
               _buildSectionBreakdown(
                 context,
                 title: '📺 Anime Breakdown',
                 breakdown: result.animeSection.breakdown,
               ),
-              const SizedBox(height: 20),
-            ],
-
-            // Manga breakdown
-            if (result.mangaSection.hasData) ...[
+            if (result.animeSection.hasData) const SizedBox(height: 20),
+            if (result.mangaSection.hasData)
               _buildSectionBreakdown(
                 context,
                 title: '📖 Manga & Novels Breakdown',
                 breakdown: result.mangaSection.breakdown,
               ),
-              const SizedBox(height: 20),
-            ],
-
-            // Shared interests
+            if (result.mangaSection.hasData) const SizedBox(height: 20),
             _buildSharedItemsSection(context, result, user1, user2),
             const SizedBox(height: 24),
-
-            // How it works
             _buildHowItWorksCard(context),
             const SizedBox(height: 32),
           ],
@@ -86,10 +81,6 @@ class CompatibilityResultPage extends StatelessWidget {
       ),
     );
   }
-
-  // ============================================================
-  // OVERALL HEADER
-  // ============================================================
 
   Widget _buildOverallHeader(
     BuildContext context,
@@ -102,6 +93,7 @@ class CompatibilityResultPage extends StatelessWidget {
     final name2 = user2.name ?? 'User 2';
     final avatar1 = user1.avatar ?? '';
     final avatar2 = user2.avatar ?? '';
+    final rankColor = _parseColor(rank.colorHex);
 
     return Container(
       width: double.infinity,
@@ -119,36 +111,24 @@ class CompatibilityResultPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // User avatars
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildUserChip(context, name1, avatar1),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Icon(
-                  Iconsax.heart4,
-                  color: _parseColor(rank.colorHex),
-                  size: 28,
-                ),
+                child: Icon(Iconsax.heart4, color: rankColor, size: 28),
               ),
               _buildUserChip(context, name2, avatar2),
             ],
           ),
           const SizedBox(height: 16),
-
-          // "Overall" label
-          Text(
+          AnymeXText(
             'Overall Compatibility',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 13,
-              color: context.theme.colorScheme.onSurfaceVariant,
-            ),
+            size: 13,
+            color: context.theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 4),
-
-          // Big percentage
           Text(
             '${result.percentage.toStringAsFixed(1)}%',
             style: TextStyle(
@@ -157,52 +137,38 @@ class CompatibilityResultPage extends StatelessWidget {
               fontFamily: 'Poppins-Bold',
               foreground: Paint()
                 ..shader = LinearGradient(
-                  colors: [
-                    _parseColor(rank.colorHex),
-                    _parseColor(rank.colorHex).withOpacity(0.6),
-                  ],
+                  colors: [rankColor, rankColor.withOpacity(0.6)],
                 ).createShader(const Rect.fromLTWH(0, 0, 200, 60)),
             ),
           ),
           const SizedBox(height: 6),
-
-          // Rank badge
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
             decoration: BoxDecoration(
-              color: _parseColor(rank.colorHex).withOpacity(0.15),
+              color: rankColor.withOpacity(0.15),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: _parseColor(rank.colorHex).withOpacity(0.4),
+                color: rankColor.withOpacity(0.4),
                 width: 1.5,
               ),
             ),
-            child: Text(
+            child: AnymeXText(
               'Rank ${rank.name}',
-              style: TextStyle(
-                fontFamily: 'Poppins-Bold',
-                fontSize: 16,
-                color: _parseColor(rank.colorHex),
-              ),
+              variant: TextVariant.bold,
+              size: 16,
+              color: rankColor,
             ),
           ),
           const SizedBox(height: 6),
-          Text(
+          AnymeXText(
             rank.description,
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 13,
-              color: context.theme.colorScheme.onSurfaceVariant,
-            ),
+            size: 13,
+            color: context.theme.colorScheme.onSurfaceVariant,
           ),
         ],
       ),
     );
   }
-
-  // ============================================================
-  // SECTION CARDS (Anime / Manga side by side)
-  // ============================================================
 
   Widget _buildSectionCards(
     BuildContext context,
@@ -212,7 +178,6 @@ class CompatibilityResultPage extends StatelessWidget {
   ) {
     return Row(
       children: [
-        // Anime card
         Expanded(
           child: _buildSectionCard(
             context,
@@ -220,11 +185,9 @@ class CompatibilityResultPage extends StatelessWidget {
             label: 'Anime',
             section: result.animeSection,
             rank: animeRank,
-            formatSplit: null,
           ),
         ),
         const SizedBox(width: 12),
-        // Manga card
         Expanded(
           child: _buildSectionCard(
             context,
@@ -246,12 +209,13 @@ class CompatibilityResultPage extends StatelessWidget {
     required String label,
     required CompatibilitySection section,
     required RankInfo rank,
-    MangaFormatSplit? formatSplit,
     MangaFormatSplit? formatSplit1,
     MangaFormatSplit? formatSplit2,
   }) {
     final hasData = section.hasData;
-    final color = hasData ? _parseColor(rank.colorHex) : context.theme.colorScheme.onSurfaceVariant.withOpacity(0.5);
+    final color = hasData
+        ? _parseColor(rank.colorHex)
+        : context.theme.colorScheme.onSurfaceVariant.withOpacity(0.5);
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 14),
@@ -264,27 +228,15 @@ class CompatibilityResultPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
-            icon,
-            style: const TextStyle(fontSize: 24),
-          ),
+          AnymeXText(icon, size: 24),
           const SizedBox(height: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: 'Poppins-SemiBold',
-              fontSize: 14,
-            ),
-          ),
+          AnymeXText(label, variant: TextVariant.semiBold, size: 14),
           const SizedBox(height: 10),
           if (!hasData)
-            Text(
+            AnymeXText(
               'No data',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13,
-                color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
-              ),
+              size: 13,
+              color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
             )
           else ...[
             Text(
@@ -303,26 +255,21 @@ class CompatibilityResultPage extends StatelessWidget {
                 color: color.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
+              child: AnymeXText(
                 '${rank.name} Rank',
-                style: TextStyle(
-                  fontFamily: 'Poppins-Bold',
-                  fontSize: 12,
-                  color: color,
-                ),
+                variant: TextVariant.bold,
+                size: 12,
+                color: color,
               ),
             ),
-            // Format split for manga
             if (formatSplit1 != null || formatSplit2 != null) ...[
               const SizedBox(height: 8),
-              Text(
+              AnymeXText(
                 _formatSplitText(formatSplit1, formatSplit2),
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 10,
-                  color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
-                ),
+                size: 10,
+                color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                maxLines: 3,
               ),
             ],
           ],
@@ -342,10 +289,6 @@ class CompatibilityResultPage extends StatelessWidget {
     return parts.join('\n');
   }
 
-  // ============================================================
-  // SECTION BREAKDOWN (heuristic bars)
-  // ============================================================
-
   Widget _buildSectionBreakdown(
     BuildContext context, {
     required String title,
@@ -354,13 +297,7 @@ class CompatibilityResultPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontFamily: 'Poppins-Bold',
-            fontSize: 18,
-          ),
-        ),
+        AnymeXText(title, variant: TextVariant.bold, size: 18),
         const SizedBox(height: 12),
         ...breakdown.map((h) => _buildHeuristicRow(context, h)),
       ],
@@ -379,67 +316,52 @@ class CompatibilityResultPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       h.label,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins-SemiBold',
-                        fontSize: 14,
-                      ),
+                      variant: TextVariant.semiBold,
+                      size: 14,
+                      maxLines: 2,
                     ),
                     const SizedBox(height: 2),
-                    Text(
+                    AnymeXText(
                       h.description,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        color: context.theme.colorScheme.onSurfaceVariant,
-                      ),
+                      size: 12,
+                      color: context.theme.colorScheme.onSurfaceVariant,
+                      maxLines: 2,
                     ),
                   ],
                 ),
               ),
-              Text(
+              AnymeXText(
                 '${(h.score * 100).toStringAsFixed(0)}%',
-                style: TextStyle(
-                  fontFamily: 'Poppins-Bold',
-                  fontSize: 15,
-                  color: _scoreColor(h.score),
-                ),
+                variant: TextVariant.bold,
+                size: 15,
+                color: _scoreColor(h.score),
               ),
             ],
           ),
           const SizedBox(height: 6),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
+            child: AnymeXLinearIndicator(
               value: h.score.clamp(0.0, 1.0),
               minHeight: 6,
-              backgroundColor: context.theme.colorScheme.surfaceContainerHighest,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                _scoreColor(h.score),
-              ),
+              color: _scoreColor(h.score),
             ),
           ),
           const SizedBox(height: 2),
           Align(
             alignment: Alignment.centerRight,
-            child: Text(
+            child: AnymeXText(
               'Weight: \u00d7${h.weight.toStringAsFixed(2)}',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 11,
-                color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
-              ),
+              size: 11,
+              color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
             ),
           ),
         ],
       ),
     );
   }
-
-  // ============================================================
-  // SHARED ITEMS
-  // ============================================================
 
   Widget _buildSharedItemsSection(
     BuildContext context,
@@ -462,24 +384,12 @@ class CompatibilityResultPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Shared Interests',
-          style: TextStyle(
-            fontFamily: 'Poppins-Bold',
-            fontSize: 18,
-          ),
-        ),
+        AnymeXText('Shared Interests', variant: TextVariant.bold, size: 18),
         const SizedBox(height: 12),
-
-        // Shared favourite anime
         if (result.commonFavouriteAnimeIds.isNotEmpty)
           _buildSharedFavAnimeSection(context, user1, result),
-
-        // Shared favourite manga
         if (result.commonFavouriteMangaIds.isNotEmpty)
           _buildSharedFavMangaSection(context, user1, result),
-
-        // Shared genres (anime)
         if (result.commonGenres.isNotEmpty)
           _buildChipList(
             context,
@@ -487,8 +397,6 @@ class CompatibilityResultPage extends StatelessWidget {
             items: result.commonGenres,
             icon: Icons.category,
           ),
-
-        // Shared genres (manga)
         if (result.commonMangaGenres.isNotEmpty)
           _buildChipList(
             context,
@@ -496,8 +404,6 @@ class CompatibilityResultPage extends StatelessWidget {
             items: result.commonMangaGenres,
             icon: Icons.category_outlined,
           ),
-
-        // Shared tags (anime)
         if (result.commonTags.isNotEmpty)
           _buildChipList(
             context,
@@ -506,8 +412,6 @@ class CompatibilityResultPage extends StatelessWidget {
             icon: Icons.label_outline,
             maxItems: 10,
           ),
-
-        // Shared tags (manga)
         if (result.commonMangaTags.isNotEmpty)
           _buildChipList(
             context,
@@ -516,8 +420,6 @@ class CompatibilityResultPage extends StatelessWidget {
             icon: Icons.label,
             maxItems: 10,
           ),
-
-        // Shared studios
         if (result.commonStudios.isNotEmpty)
           _buildChipList(
             context,
@@ -525,8 +427,6 @@ class CompatibilityResultPage extends StatelessWidget {
             items: result.commonStudios,
             icon: Icons.business,
           ),
-
-        // Shared VAs
         if (result.commonVoiceActors.isNotEmpty)
           _buildChipList(
             context,
@@ -534,8 +434,6 @@ class CompatibilityResultPage extends StatelessWidget {
             items: result.commonVoiceActors,
             icon: Icons.mic,
           ),
-
-        // Shared staff
         if (result.commonStaffIds.isNotEmpty)
           _buildChipList(
             context,
@@ -554,8 +452,8 @@ class CompatibilityResultPage extends StatelessWidget {
   ) {
     final favAnime = user1.favourites?.anime ?? [];
     final shared = favAnime
-        .where((a) => result.commonFavouriteAnimeIds
-            .contains(int.tryParse(a.id ?? '')))
+        .where((a) =>
+            result.commonFavouriteAnimeIds.contains(int.tryParse(a.id ?? '')))
         .toList();
 
     if (shared.isEmpty) return const SizedBox.shrink();
@@ -574,8 +472,8 @@ class CompatibilityResultPage extends StatelessWidget {
   ) {
     final favManga = user1.favourites?.manga ?? [];
     final shared = favManga
-        .where((m) => result.commonFavouriteMangaIds
-            .contains(int.tryParse(m.id ?? '')))
+        .where((m) =>
+            result.commonFavouriteMangaIds.contains(int.tryParse(m.id ?? '')))
         .toList();
 
     if (shared.isEmpty) return const SizedBox.shrink();
@@ -595,13 +493,11 @@ class CompatibilityResultPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           title,
-          style: TextStyle(
-            fontFamily: 'Poppins-SemiBold',
-            fontSize: 14,
-            color: context.theme.colorScheme.onSurfaceVariant,
-          ),
+          variant: TextVariant.semiBold,
+          size: 14,
+          color: context.theme.colorScheme.onSurfaceVariant,
         ),
         const SizedBox(height: 8),
         SizedBox(
@@ -627,14 +523,10 @@ class CompatibilityResultPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    AnymeXText(
                       title,
+                      size: 11,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 11,
-                      ),
                     ),
                   ],
                 ),
@@ -660,13 +552,11 @@ class CompatibilityResultPage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          AnymeXText(
             title,
-            style: TextStyle(
-              fontFamily: 'Poppins-SemiBold',
-              fontSize: 14,
-              color: context.theme.colorScheme.onSurfaceVariant,
-            ),
+            variant: TextVariant.semiBold,
+            size: 14,
+            color: context.theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -684,13 +574,9 @@ class CompatibilityResultPage extends StatelessWidget {
                   children: [
                     Icon(icon, size: 13, color: context.theme.colorScheme.primary),
                     const SizedBox(width: 5),
-                    Text(
+                    AnymeXText(
                       item,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                        color: context.theme.colorScheme.onSurface,
-                      ),
+                      size: 12,
                     ),
                   ],
                 ),
@@ -701,10 +587,6 @@ class CompatibilityResultPage extends StatelessWidget {
       ),
     );
   }
-
-  // ============================================================
-  // USER CHIP
-  // ============================================================
 
   Widget _buildUserChip(BuildContext context, String name, String avatar) {
     return Column(
@@ -726,24 +608,16 @@ class CompatibilityResultPage extends StatelessWidget {
         const SizedBox(height: 8),
         SizedBox(
           width: 80,
-          child: Text(
+          child: AnymeXText(
             name,
             textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
+            size: 13,
             maxLines: 1,
-            style: const TextStyle(
-              fontFamily: 'Poppins-SemiBold',
-              fontSize: 13,
-            ),
           ),
         ),
       ],
     );
   }
-
-  // ============================================================
-  // HOW IT WORKS
-  // ============================================================
 
   Widget _buildHowItWorksCard(BuildContext context) {
     return Container(
@@ -764,46 +638,33 @@ class CompatibilityResultPage extends StatelessWidget {
                 color: context.theme.colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 8),
-              Text(
+              AnymeXText(
                 'How it works',
-                style: TextStyle(
-                  fontFamily: 'Poppins-SemiBold',
-                  fontSize: 14,
-                  color: context.theme.colorScheme.onSurfaceVariant,
-                ),
+                variant: TextVariant.semiBold,
+                size: 14,
+                color: context.theme.colorScheme.onSurfaceVariant,
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             'Compatibility is calculated by comparing signals from both users\' AniList profiles across two sections:\n'
             '\uD83D\uDCFA Anime (10 signals): watch stats, release years, genres, tags, perfect anime, favourite anime, characters, voice actors, studios, staff.\n'
             '\uD83D\uDCD6 Manga & Novels (5 signals): read stats, release years, genres, tags, favourite manga. Novels and light novels are included under manga data.\n'
             'Each signal is weighted differently - favourites carry the highest weight. Sections without data are excluded from the overall score.',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 12,
-              color: context.theme.colorScheme.onSurfaceVariant,
-              height: 1.5,
-            ),
+            size: 12,
+            color: context.theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 6),
-          Text(
+          AnymeXText(
             'Algorithm inspired by animatch.raiku.dev',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 11,
-              color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
-            ),
+            size: 11,
+            color: context.theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
           ),
         ],
       ),
     );
   }
-
-  // ============================================================
-  // UTILITIES
-  // ============================================================
 
   Color _scoreColor(double score) {
     if (score >= 0.85) return Colors.amber;
