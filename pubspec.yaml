@@ -103,7 +103,7 @@ dependencies:
     isar_community: 3.3.0-dev.3
     isar_community_flutter_libs: 3.3.0-dev.3
     sensors_plus: ^7.0.0
-    flutter_discord_rpc: 1.1.0
+    dart_discord_presence: ^1.2.0
     firebase_core: ^4.4.0
     firebase_analytics: ^12.1.1
     background_downloader: ^9.5.2

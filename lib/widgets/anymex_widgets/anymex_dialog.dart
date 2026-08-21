@@ -63,8 +63,8 @@ class AnymeXDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = 24.multiplyRadius();
-    final buttonRadius = 16.multiplyRadius();
+    final radius = 50.multiplyRadius();
+    final buttonRadius = 30.multiplyRadius();
 
     final isLandscape = MediaQuery.orientationOf(context) == Orientation.landscape;
 
