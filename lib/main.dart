@@ -18,6 +18,7 @@ import 'package:anymex/controllers/services/mal/mal_service.dart';
 import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/controllers/services/storage/storage_manager_service.dart';
 import 'package:anymex/controllers/services/community_service.dart';
+import 'package:anymex/controllers/services/sequel_detector/missing_sequel_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
@@ -268,6 +269,7 @@ void _initializeGetxController() async {
     Get.put(GreetingController());
     Get.put(CommentumService());
     Get.put(CommentPreloader());
+    Get.put(MissingSequelController());
     Get.put(WatchiumService(), permanent: true);
     Get.put(GistSyncController(), permanent: true);
     Get.put(DownloadController(), permanent: true);
