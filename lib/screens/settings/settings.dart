@@ -1,6 +1,7 @@
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_comments.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
@@ -229,6 +230,12 @@ class _SettingsPageState extends State<SettingsPage> {
         _buildCategorySection(
           title: "Extensions & Diagnostics",
           tiles: [
+            _buildTile(
+              icon: Icons.chat_bubble_outline_rounded,
+              title: "Comment System",
+              description: "Commentum v2 settings, moderation & preferences",
+              destination: SettingsComments.new,
+            ),
             _buildTile(
               icon: Icons.extension_rounded,
               title: "Extensions",
