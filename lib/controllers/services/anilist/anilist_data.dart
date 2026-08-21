@@ -10,6 +10,7 @@ import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex/controllers/services/community_service.dart';
+import 'package:anymex/controllers/services/sequel_detector/missing_sequel_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -267,6 +268,15 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildSection('Popular Anime', popularAnimes),
       buildSection('Recently Completed', latestAnimes),
       buildSection('Upcoming Anime', upcomingAnimes),
+      Obx(() {
+        final controller = Get.find<MissingSequelController>();
+        controller.ensureAnimeDetection();
+        final sequels = controller.missingAnimeSequels;
+        if (sequels.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return buildSection('Missing Sequels', sequels);
+      }),
       // Underrated Anime section at the bottom (filtered for logged-in users)
       Obx(() {
         final filteredList = communityService.getFilteredCommunityAnimes();
@@ -291,6 +301,15 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildMangaSection('Popular Manga', popularMangas),
       buildMangaSection('More Popular Manga', morePopularMangas),
       ...sourceController.novelSections,
+      Obx(() {
+        final controller = Get.find<MissingSequelController>();
+        controller.ensureMangaDetection();
+        final sequels = controller.missingMangaSequels;
+        if (sequels.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return buildMangaSection('Missing Sequels', sequels);
+      }),
       Obx(() {
         final filteredList = communityService.getFilteredCommunityMangas();
         if (filteredList.isEmpty) {
