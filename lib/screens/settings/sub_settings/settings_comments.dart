@@ -36,14 +36,21 @@ class _SettingsCommentsState extends State<SettingsComments> {
                 desktopValue:
                     const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
             children: [
-              const Row(
-                children: [
-                  CustomBackButton(),
-                  SizedBox(width: 10),
-                  AnymeXText("Comment System",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                ],
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                behavior: HitTestBehavior.opaque,
+                child: const MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Row(
+                    children: [
+                      CustomBackButton(),
+                      SizedBox(width: 10),
+                      AnymeXText("Comment System",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20)),
+                    ],
+                  ),
+                ),
               ),
               Container(
                 decoration: BoxDecoration(
