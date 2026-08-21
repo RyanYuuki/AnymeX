@@ -64,7 +64,7 @@ class SubParser {
     final blocks = content.split(RegExp(r'\n\s*\n'));
 
     final timestampPattern = RegExp(
-      r'(\d{1,2}:\d{2}:\d{2}[,.]\d{3})\s*-->\s*(\d{1,2}:\d{2}:\d{2}[,.]\d{3})',
+      r'((?:\d{1,2}:)?\d{2}:\d{2}[,.]\d{3})\s*-->\s*((?:\d{1,2}:)?\d{2}:\d{2}[,.]\d{3})',
     );
 
     for (var block in blocks) {

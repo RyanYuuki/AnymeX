@@ -1,20 +1,19 @@
-import 'dart:convert';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/big_carousel.dart';
+import 'package:anymex/widgets/common/big_carousel_gate.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/future_reusable_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
@@ -22,7 +21,6 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
 
 Widget buildSection(String title, dynamic data,
     {DataVariant variant = DataVariant.regular,
@@ -86,8 +84,7 @@ Container buildChip(String label) {
     ),
     child: FittedBox(
       fit: BoxFit.scaleDown,
-      child: AnymexText(
-        text: label,
+      child: AnymeXText(label,
         variant: TextVariant.bold,
         color: Get.theme.colorScheme.onPrimary,
         size: 14,
@@ -175,7 +172,7 @@ class _UnderratedCarousel extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                AnymeXText(
                   title,
                   style: TextStyle(
                     fontFamily: "Poppins-SemiBold",
@@ -189,7 +186,7 @@ class _UnderratedCarousel extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
+                        AnymeXText(
                           'See All',
                           style: TextStyle(
                             fontFamily: "Poppins-SemiBold",
@@ -255,10 +252,10 @@ class _UnderratedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final cardWidth = isDesktop ? 160.0 : 118.0;
     final carouselData = item.toCarouselData(isManga: type == ItemType.manga);
-    final tag = 'underrated-${carouselData.id}-${item.media.hashCode}';
+    final tag = 'underrated-${carouselData.id}';
 
     return GestureDetector(
       onTap: () => _navigateToDetails(context),
@@ -404,20 +401,12 @@ class _UnderratedCard extends StatelessWidget {
   void _navigateToDetails(BuildContext context) {
     final media = item.media;
     final tag = 'underrated-${media.id}';
-    if (type == ItemType.manga) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MangaDetailsPage(media: media, tag: tag),
-        ),
-      );
+    if (type == ItemType.novel) {
+      navigateWithAnimation(() => NovelDetailsPage(media: media));
+    } else if (type == ItemType.manga) {
+      navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AnimeDetailsPage(media: media, tag: tag),
-        ),
-      );
+      navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));
     }
   }
 }
@@ -453,7 +442,7 @@ class _AuthorAvatar extends StatelessWidget {
               radius: size / 2,
             )
           : Center(
-              child: Text(
+              child: AnymeXText(
                 (fallbackLabel?.trim().isNotEmpty == true
                         ? fallbackLabel!.trim()[0]
                         : '?')

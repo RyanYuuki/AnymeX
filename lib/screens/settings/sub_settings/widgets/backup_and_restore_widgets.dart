@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class PasswordInputDialog extends StatefulWidget {
   final TextEditingController controller;
@@ -20,101 +22,53 @@ class PasswordInputDialogState extends State<PasswordInputDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Dialog(
-      backgroundColor: theme.colorScheme.surfaceContainer,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.lock_outline,
-              size: 48,
-              color: theme.colorScheme.primary,
+    return AnymeXDialog(
+      title: "Password Required",
+      confirmText: "Unlock",
+      onConfirm: () {},
+      confirmResultGetter: () => widget.controller.text.isNotEmpty ? widget.controller.text : null,
+      contentWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.lock_outline,
+            size: 48,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(height: 8),
+          AnymeXText(
+            "This backup is encrypted. Please enter the password to continue.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: theme.colorScheme.onSurfaceVariant,
+              fontSize: 13,
             ),
-            const SizedBox(height: 16),
-            Text(
-              "Password Required",
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+          ),
+          const SizedBox(height: 24),
+          TextField(
+            controller: widget.controller,
+            obscureText: _obscurePassword,
+            autofocus: true,
+            decoration: InputDecoration(
+              labelText: "Password",
+              hintText: "Enter password",
+              prefixIcon: const Icon(Icons.lock_outline),
+              suffixIcon: IconButton(
+                icon: Icon(_obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined),
+                onPressed: () {
+                  setState(() => _obscurePassword = !_obscurePassword);
+                },
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "This backup is encrypted. Please enter the password to continue.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontSize: 13,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
+              filled: true,
+              fillColor: theme.colorScheme.surfaceContainerHighest.opaque(0.3),
             ),
-            const SizedBox(height: 24),
-            TextField(
-              controller: widget.controller,
-              obscureText: _obscurePassword,
-              autofocus: true,
-              decoration: InputDecoration(
-                labelText: "Password",
-                hintText: "Enter password",
-                prefixIcon: const Icon(Icons.lock_outline),
-                suffixIcon: IconButton(
-                  icon: Icon(_obscurePassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined),
-                  onPressed: () {
-                    setState(() => _obscurePassword = !_obscurePassword);
-                  },
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                filled: true,
-                fillColor:
-                    theme.colorScheme.surfaceContainerHighest.opaque(0.3),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.of(context).pop(null),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text("Cancel"),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (widget.controller.text.isNotEmpty) {
-                        Navigator.of(context).pop(widget.controller.text);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      "Unlock",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -141,7 +95,7 @@ class LoadingDialog extends StatelessWidget {
             children: [
               CircularProgressIndicator(color: theme.colorScheme.primary),
               const SizedBox(height: 24),
-              Obx(() => Text(
+              Obx(() => AnymeXText(
                     statusObs.value,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -149,7 +103,7 @@ class LoadingDialog extends StatelessWidget {
                         fontWeight: FontWeight.w600),
                   )),
               const SizedBox(height: 8),
-              Obx(() => Text(
+              Obx(() => AnymeXText(
                     "${(progressObs.value * 100).toInt()}%",
                     style: TextStyle(
                         color: theme.colorScheme.primary, fontSize: 12),
@@ -212,7 +166,7 @@ class RestorePreviewSheet extends StatelessWidget {
                 controller: scrollController,
                 padding: const EdgeInsets.all(24),
                 children: [
-                  Text(
+                  AnymeXText(
                     "Restore Preview",
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -228,7 +182,7 @@ class RestorePreviewSheet extends StatelessWidget {
                           color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 4),
-                        Text(
+                        AnymeXText(
                           "Encrypted • ",
                           style: TextStyle(
                             color: theme.colorScheme.primary,
@@ -243,7 +197,7 @@ class RestorePreviewSheet extends StatelessWidget {
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
+                      AnymeXText(
                         date,
                         style: TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -285,7 +239,7 @@ class RestorePreviewSheet extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Text(
+                          child: AnymeXText(
                             "This will completely replace your current library. All existing data will be overwritten.",
                             style: TextStyle(
                               color: theme.colorScheme.error,
@@ -299,7 +253,7 @@ class RestorePreviewSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   if (hasSettings || hasAuthTokens) ...[
-                    Text(
+                    AnymeXText(
                       "RESTORE OPTIONS",
                       style: TextStyle(
                         color: theme.colorScheme.primary,
@@ -313,8 +267,8 @@ class RestorePreviewSheet extends StatelessWidget {
                       Obx(() => CheckboxListTile(
                             value: restoreSettings.value,
                             onChanged: (v) => restoreSettings.value = v ?? true,
-                            title: const Text("Restore Settings"),
-                            subtitle: const Text(
+                            title: const AnymeXText("Restore Settings"),
+                            subtitle: const AnymeXText(
                                 "UI, Player, and general app settings"),
                             controlAffinity: ListTileControlAffinity.trailing,
                             contentPadding: EdgeInsets.zero,
@@ -324,8 +278,8 @@ class RestorePreviewSheet extends StatelessWidget {
                             value: restoreAuthTokens.value,
                             onChanged: (v) =>
                                 restoreAuthTokens.value = v ?? false,
-                            title: const Text("Restore Login Tokens"),
-                            subtitle: const Text(
+                            title: const AnymeXText("Restore Login Tokens"),
+                            subtitle: const AnymeXText(
                                 "Login sessions for MAL, Simkl, etc."),
                             controlAffinity: ListTileControlAffinity.trailing,
                             contentPadding: EdgeInsets.zero,
@@ -343,7 +297,7 @@ class RestorePreviewSheet extends StatelessWidget {
                         borderRadius: BorderRadius.circular(18),
                       ),
                     ),
-                    child: const Text(
+                    child: const AnymeXText(
                       "CONFIRM & RESTORE",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -400,7 +354,7 @@ class UserInfoCard extends StatelessWidget {
                         fit: BoxFit.cover,
                         radius: 0,
                       )
-                    : DefaultAvatar(),
+                    : const DefaultAvatar(),
               ),
             ),
             const SizedBox(width: 16),
@@ -408,7 +362,7 @@ class UserInfoCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AnymeXText(
                     "Backup Owner",
                     style: TextStyle(
                       color: theme.colorScheme.onSurfaceVariant,
@@ -417,7 +371,7 @@ class UserInfoCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  AnymeXText(
                     username,
                     style: TextStyle(
                       color: theme.colorScheme.onSurface,
@@ -434,7 +388,7 @@ class UserInfoCard extends StatelessWidget {
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
+                      AnymeXText(
                         "v$appVersion",
                         style: TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -509,7 +463,7 @@ class LibraryStatsCard extends StatelessWidget {
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                AnymeXText(
                   "Library Statistics",
                   style: TextStyle(
                     fontSize: 16,
@@ -591,7 +545,7 @@ class TotalStat extends StatelessWidget {
     final theme = Theme.of(context);
     return Column(
       children: [
-        Text(
+        AnymeXText(
           value,
           style: TextStyle(
             fontSize: 24,
@@ -599,7 +553,7 @@ class TotalStat extends StatelessWidget {
             color: theme.colorScheme.primary,
           ),
         ),
-        Text(
+        AnymeXText(
           label,
           style: TextStyle(
             fontSize: 12,
@@ -648,7 +602,7 @@ class CategoryRow extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
+            child: AnymeXText(
               label,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
@@ -659,7 +613,7 @@ class CategoryRow extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
+              AnymeXText(
                 itemCount.toString(),
                 style: TextStyle(
                   fontSize: 18,
@@ -667,7 +621,7 @@ class CategoryRow extends StatelessWidget {
                   color: color,
                 ),
               ),
-              Text(
+              AnymeXText(
                 "$listCount lists",
                 style: TextStyle(
                   fontSize: 11,
@@ -682,52 +636,6 @@ class CategoryRow extends StatelessWidget {
   }
 }
 
-class ActionCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const ActionCard({
-    super.key,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return HighlightDecorator(
-      title: title,
-      child: GlassContainer(
-        child: ListTile(
-          onTap: onTap,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          leading: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.opaque(0.1),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: color),
-          ),
-          title:
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(subtitle,
-              style: TextStyle(
-                  color: theme.colorScheme.onSurfaceVariant, fontSize: 12)),
-          trailing:
-              Icon(Icons.chevron_right, color: theme.colorScheme.outline),
-        ),
-      ),
-    );
-  }
-}
 
 class LibraryDashboard extends StatelessWidget {
   final Map<String, dynamic> stats;
@@ -761,10 +669,10 @@ class LibraryDashboard extends StatelessWidget {
             children: [
               Icon(icon, color: color, size: 20),
               const SizedBox(height: 12),
-              Text(count.toString(),
+              AnymeXText(count.toString(),
                   style: const TextStyle(
                       fontSize: 22, fontWeight: FontWeight.bold)),
-              Text(label,
+              AnymeXText(label,
                   style: TextStyle(
                       color: context.colors.onSurfaceVariant,
                       fontSize: 12)),
@@ -804,207 +712,137 @@ class BackupPasswordDialogState extends State<BackupPasswordDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Dialog(
-      backgroundColor: theme.colorScheme.surfaceContainer,
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.opaque(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(Icons.backup_rounded,
-                      color: theme.colorScheme.primary, size: 24),
+    return AnymeXDialog(
+      title: "Backup Options",
+      confirmText: "Create Backup",
+      onConfirm: () {
+        widget.onConfirm(_usePassword, _backupSettings, _backupAuthTokens);
+      },
+      contentWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.opaque(0.1),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Backup Options",
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                child: Icon(Icons.backup_rounded,
+                    color: theme.colorScheme.primary, size: 24),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymeXText(
+                      "Protect your backup",
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontSize: 13,
                       ),
-                      Text(
-                        "Protect your backup",
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Text(
-              "BACKUP CONTENT",
-              style: TextStyle(
-                color: theme.colorScheme.primary,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 12),
-            CheckboxListTile(
-              value: _backupSettings,
-              onChanged: (v) => setState(() => _backupSettings = v ?? true),
-              title: const Text("Include Settings"),
-              subtitle: const Text("UI, Player, and general app settings"),
-              controlAffinity: ListTileControlAffinity.trailing,
-              contentPadding: EdgeInsets.zero,
-            ),
-            CheckboxListTile(
-              value: _backupAuthTokens,
-              onChanged: (v) => setState(() => _backupAuthTokens = v ?? false),
-              title: const Text("Include Login Tokens"),
-              subtitle: const Text("Login sessions (Sensitive data)"),
-              controlAffinity: ListTileControlAffinity.trailing,
-              contentPadding: EdgeInsets.zero,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              "SECURITY",
-              style: TextStyle(
-                color: theme.colorScheme.primary,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.5,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.opaque(0.3),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: CheckboxListTile(
-                value: _usePassword,
-                onChanged: (value) {
-                  setState(() {
-                    _usePassword = value ?? false;
-                  });
-                },
-                title: Text(
-                  "Password Protect",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                subtitle: Text(
-                  "Add extra security to your backup",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                controlAffinity: ListTileControlAffinity.trailing,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-            ),
-            if (_usePassword) ...[
-              const SizedBox(height: 20),
-              TextField(
-                controller: widget.passwordController,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  hintText: "Enter password",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
-                    onPressed: () {
-                      setState(() => _obscurePassword = !_obscurePassword);
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest
-                      .opaque(0.3),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: widget.confirmPasswordController,
-                obscureText: _obscureConfirm,
-                decoration: InputDecoration(
-                  labelText: "Confirm Password",
-                  hintText: "Re-enter password",
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscureConfirm
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
-                    onPressed: () {
-                      setState(() => _obscureConfirm = !_obscureConfirm);
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceContainerHighest
-                      .opaque(0.3),
+                    ),
+                  ],
                 ),
               ),
             ],
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.of(context).pop(false),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text("Cancel"),
-                  ),
+          ),
+          const SizedBox(height: 24),
+          AnymeXText(
+            "BACKUP CONTENT",
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          AnymeXTile.checkbox(
+            title: "Include Settings",
+            subtitle: "UI, Player, and general app settings",
+            value: _backupSettings,
+            onChanged: (v) => setState(() => _backupSettings = v),
+          ),
+          AnymeXTile.checkbox(
+            title: "Include Login Tokens",
+            subtitle: "Login sessions (Sensitive data)",
+            value: _backupAuthTokens,
+            onChanged: (v) => setState(() => _backupAuthTokens = v),
+          ),
+          const SizedBox(height: 24),
+          AnymeXText(
+            "SECURITY",
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 12),
+          AnymeXTile.checkbox(
+            title: "Password Protect",
+            subtitle: "Add extra security to your backup",
+            value: _usePassword,
+            onChanged: (value) {
+              setState(() {
+                _usePassword = value;
+              });
+            },
+          ),
+          if (_usePassword) ...[
+            const SizedBox(height: 20),
+            TextField(
+              controller: widget.passwordController,
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
+                labelText: "Password",
+                hintText: "Enter password",
+                prefixIcon: const Icon(Icons.lock_outline),
+                suffixIcon: IconButton(
+                  icon: Icon(_obscurePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined),
+                  onPressed: () {
+                    setState(() => _obscurePassword = !_obscurePassword);
+                  },
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 2,
-                  child: ElevatedButton(
-                    onPressed: () => widget.onConfirm(
-                        _usePassword, _backupSettings, _backupAuthTokens),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text(
-                      "Create Backup",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-              ],
+                filled: true,
+                fillColor: theme.colorScheme.surfaceContainerHighest.opaque(0.3),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: widget.confirmPasswordController,
+              obscureText: _obscureConfirm,
+              decoration: InputDecoration(
+                labelText: "Confirm Password",
+                hintText: "Re-enter password",
+                prefixIcon: const Icon(Icons.lock_outline),
+                suffixIcon: IconButton(
+                  icon: Icon(_obscureConfirm
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined),
+                  onPressed: () {
+                    setState(() => _obscureConfirm = !_obscureConfirm);
+                  },
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                filled: true,
+                fillColor: theme.colorScheme.surfaceContainerHighest.opaque(0.3),
+              ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }

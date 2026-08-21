@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 OverlayEntry? _currentSnackBar;
 
@@ -26,6 +28,7 @@ void snackBar(
   Color? iconColor,
   bool showCloseButton = false,
   bool showDurationAnimation = true,
+  VoidCallback? onTap,
 }) {
   final navigatorContext = Get.key.currentContext ?? Get.context;
   final theme = navigatorContext != null
@@ -50,7 +53,7 @@ void snackBar(
           title == null || title.isEmpty ? message : '$title: $message';
       messenger.showSnackBar(
         SnackBar(
-          content: Text(fallbackMessage),
+          content: AnymeXText(fallbackMessage),
           duration: Duration(milliseconds: duration),
         ),
       );
@@ -85,6 +88,7 @@ void snackBar(
       onDismiss: () {
         _removeSnackBarEntry(entry);
       },
+      onTap: onTap,
     ),
   );
   _currentSnackBar = entry;
@@ -106,6 +110,7 @@ class _SnackBarWidget extends StatefulWidget {
     required this.duration,
     required this.theme,
     required this.onDismiss,
+    this.onTap,
   });
 
   final String message;
@@ -120,6 +125,7 @@ class _SnackBarWidget extends StatefulWidget {
   final Duration duration;
   final ThemeData theme;
   final VoidCallback onDismiss;
+  final VoidCallback? onTap;
 
   @override
   State<_SnackBarWidget> createState() => _SnackBarWidgetState();
@@ -198,7 +204,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
   void _dismissWithSwipe(double direction) {
     if (!mounted || _hasDismissed) return;
     _hasDismissed = true;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.sizeOf(context).width;
 
     setState(() {
       _dragOffset = direction >= 0 ? screenWidth * 1.5 : -screenWidth * 1.5;
@@ -223,18 +229,20 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
 
   double get _swipeFadeOpacity {
     if (_dragOffset == 0.0) return 1.0;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.sizeOf(context).width;
     final ratio = (_dragOffset.abs() / (screenWidth * 0.45)).clamp(0.0, 1.0);
     return 1.0 - ratio;
   }
 
   @override
   Widget build(BuildContext context) {
-    final topPad = MediaQuery.of(context).padding.top;
-    final bottomPad = MediaQuery.of(context).padding.bottom;
-    final w = MediaQuery.of(context).size.width;
+    final topPad = MediaQuery.paddingOf(context).top;
+    final bottomPad = MediaQuery.paddingOf(context).bottom;
+    final w = MediaQuery.sizeOf(context).width;
     final maxWidth =
         getResponsiveSize(context, mobileSize: w - 32.0, desktopSize: w * 0.38);
+
+    final windowsTopOffset = (_isTop && Platform.isWindows) ? 40.0 : 0.0;
 
     return Positioned.fill(
       child: AnimatedBuilder(
@@ -247,7 +255,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
               alignment: _isTop ? Alignment.topCenter : Alignment.bottomCenter,
               child: Padding(
                 padding: EdgeInsets.only(
-                  top: _isTop ? topPad + 16 : 0,
+                  top: _isTop ? topPad + 16 + windowsTopOffset : 0,
                   bottom: _isTop ? 0 : bottomPad + 24,
                   left: 16,
                   right: 16,
@@ -283,7 +291,12 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
     final cs = widget.theme.colorScheme;
 
     return GestureDetector(
-      onTap: _dismiss,
+      onTap: () {
+        if (widget.onTap != null) {
+          widget.onTap!();
+        }
+        _dismiss();
+      },
       onHorizontalDragStart: (_) {
         _isDragging = true;
         _progressController.stop();
@@ -364,7 +377,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.title != null) ...[
-                  Text(
+                  AnymeXText(
                     widget.title!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -376,7 +389,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
                   ),
                   const SizedBox(height: 3),
                 ],
-                Text(
+                AnymeXText(
                   widget.message,
                   maxLines: widget.maxLines,
                   overflow: TextOverflow.ellipsis,
@@ -589,6 +602,7 @@ void infoSnackBar(
   String? title,
   int duration = 2500,
   bool showDurationAnimation = true,
+  VoidCallback? onTap,
 }) {
   snackBar(
     message,
@@ -597,6 +611,7 @@ void infoSnackBar(
     icon: Icons.info_outline_rounded,
     iconColor: const Color(0xFF42A5F5),
     showDurationAnimation: showDurationAnimation,
+    onTap: onTap,
   );
 }
 

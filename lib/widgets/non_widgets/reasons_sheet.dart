@@ -1,11 +1,10 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
-import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/recommend_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
@@ -237,7 +236,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                     const Icon(Icons.edit_rounded,
                         color: Colors.amber, size: 20),
                     const SizedBox(width: 8),
-                    Text('Edit Reason',
+                    AnymeXText('Edit Reason',
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 15,
@@ -299,7 +298,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                       }
                     },
                     icon: const Icon(Icons.save_rounded, size: 18),
-                    label: const Text('Save Changes'),
+                    label: const AnymeXText('Save Changes'),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -323,8 +322,8 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Reason?'),
-        content: Text(
+        title: const AnymeXText('Delete Reason?'),
+        content: AnymeXText(
           _isAdmin
               ? 'This reason will be deleted immediately.'
               : 'Your deletion request will be sent to admins for review.',
@@ -332,12 +331,12 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: colors.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
+            child: const AnymeXText('Delete'),
           ),
         ],
       ),
@@ -373,7 +372,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final reasons = widget.item.reasons;
     final showVoteBar = CommunityService.votingEnabled &&
         widget.voteMediaType != null &&
@@ -475,17 +474,14 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnymexText(
-                text: title,
+              AnymeXText(title,
                 variant: TextVariant.bold,
                 size: 14,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
-              AnymexText(
-                text:
-                    count == 1 ? '1 Recommendation' : '$count Recommendations',
+              AnymeXText(count == 1 ? '1 Recommendation' : '$count Recommendations',
                 size: 12,
                 color: colors.onSurfaceVariant,
                 variant: TextVariant.semiBold,
@@ -507,14 +503,12 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
             Icon(Icons.rate_review_outlined,
                 size: 48, color: colors.onSurfaceVariant.withOpacity(0.4)),
             const SizedBox(height: 16),
-            AnymexText(
-              text: 'No recommendations yet',
+            AnymeXText('No recommendations yet',
               size: 14,
               color: colors.onSurfaceVariant,
             ),
             const SizedBox(height: 6),
-            AnymexText(
-              text: 'Be the first to recommend this title!',
+            AnymeXText('Be the first to recommend this title!',
               size: 12,
               color: colors.onSurfaceVariant.withOpacity(0.7),
             ),
@@ -584,8 +578,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Flexible(
-                            child: AnymexText(
-                              text: username,
+                            child: AnymeXText(username,
                               variant: TextVariant.semiBold,
                               size: 13,
                               color:
@@ -606,8 +599,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                     Row(
                       children: [
                         if (reason.addedAt != null) ...[
-                          AnymexText(
-                            text: _formatDate(reason.addedAt!),
+                          AnymeXText(_formatDate(reason.addedAt!),
                             size: 11,
                             color: colors.onSurfaceVariant,
                           ),
@@ -622,8 +614,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                                   color: colors.outlineVariant, width: 0.5),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: AnymexText(
-                              text: 'Edited',
+                            child: AnymeXText('Edited',
                               size: 9,
                               color: colors.onSurfaceVariant,
                               variant: TextVariant.semiBold,
@@ -639,8 +630,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                               color: colors.primaryContainer.withOpacity(0.4),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: AnymexText(
-                              text: 'You',
+                            child: AnymeXText('You',
                               size: 9,
                               color: colors.primary,
                               variant: TextVariant.semiBold,
@@ -657,7 +647,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
           // Reason text
           if (reason.text.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(
+            AnymeXText(
               reason.text,
               style: TextStyle(
                 fontSize: 13,
@@ -687,8 +677,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                           Icon(Icons.edit_rounded,
                               size: 14, color: colors.onSurfaceVariant),
                           const SizedBox(width: 3),
-                          AnymexText(
-                            text: 'Edit',
+                          AnymeXText('Edit',
                             size: 11,
                             color: colors.onSurfaceVariant,
                             variant: TextVariant.semiBold,
@@ -713,8 +702,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                           Icon(Icons.delete_outline_rounded,
                               size: 14, color: colors.error),
                           const SizedBox(width: 3),
-                          AnymexText(
-                            text: 'Delete',
+                          AnymeXText('Delete',
                             size: 11,
                             color: colors.error,
                             variant: TextVariant.semiBold,
@@ -765,7 +753,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                   );
                 },
                 icon: const Icon(Icons.add_rounded, size: 18),
-                label: const Text('Add Your Recommendation'),
+                label: const AnymeXText('Add Your Recommendation'),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -803,8 +791,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
             )
           : Row(
               children: [
-                AnymexText(
-                  text: 'Was this helpful?',
+                AnymeXText('Was this helpful?',
                   size: 13,
                   color: colors.onSurfaceVariant,
                   variant: TextVariant.semiBold,
@@ -880,7 +867,7 @@ class _ReasonAvatar extends StatelessWidget {
               radius: size / 2,
             )
           : Center(
-              child: Text(
+              child: AnymeXText(
                 fallbackLetter.toUpperCase(),
                 style: TextStyle(
                   fontSize: size * 0.44,
@@ -946,8 +933,7 @@ class _ReasonsVoteButton extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              AnymexText(
-                text: '$count',
+              AnymeXText('$count',
                 size: 13,
                 color: active ? activeColor : colors.onSurfaceVariant,
                 variant: TextVariant.semiBold,

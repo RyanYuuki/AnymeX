@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'dart:ui';
 
 class AnimatedAppBar extends StatelessWidget {
   final bool isVisible;
@@ -34,8 +32,9 @@ class AnimatedAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusBarHeight = MediaQuery.of(context).padding.top;
-    final appBarContentHeight = kToolbarHeight + topPadding + bottomPadding;
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
+    final appBarHeight = height ?? kToolbarHeight;
+    final appBarContentHeight = appBarHeight + topPadding + bottomPadding;
 
     return AnimatedPositioned(
       duration: animationDuration,
@@ -43,31 +42,19 @@ class AnimatedAppBar extends StatelessWidget {
       top: isVisible ? 0 : -(appBarContentHeight + statusBarHeight + offset),
       left: 0,
       right: 0,
-      child: AnimatedContainer(
-        duration: animationDuration,
-        curve: animationCurve,
-        child: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: isAtTop ? 0 : blurSigma,
-              sigmaY: isAtTop ? 0 : blurSigma,
+      child: Material(
+        color: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: statusBarHeight),
+            if (topPadding > 0) SizedBox(height: topPadding),
+            SizedBox(
+              height: height ?? kToolbarHeight,
+              child: content,
             ),
-            child: Container(
-              color: Colors.transparent,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: statusBarHeight),
-                  if (topPadding > 0) SizedBox(height: topPadding),
-                  SizedBox(
-                    height: height ?? kToolbarHeight,
-                    child: content,
-                  ),
-                  if (bottomPadding > 0) SizedBox(height: bottomPadding),
-                ],
-              ),
-            ),
-          ),
+            if (bottomPadding > 0) SizedBox(height: bottomPadding),
+          ],
         ),
       ),
     );

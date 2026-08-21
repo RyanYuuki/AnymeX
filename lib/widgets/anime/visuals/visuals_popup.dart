@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -189,41 +189,50 @@ class _VisualsPopupState extends State<VisualsPopup> {
           "anymex_${DateTime.now().millisecondsSinceEpoch}.$extension";
 
       if (Platform.isAndroid) {
-        Future<bool> check(Permission p) async {
-          var status = await p.status;
-          if (!status.isGranted) {
-            status = await p.request();
-          }
-          return status.isGranted;
-        }
-
-        await check(Permission.storage);
-        await check(Permission.photos);
-        await check(Permission.manageExternalStorage);
-
         try {
-          final directory = Directory('/storage/emulated/0/Download/AnymeX');
-          if (!await directory.exists()) {
-            await directory.create(recursive: true);
+          const platform = MethodChannel('com.ryan.anymex/utils');
+          await platform.invokeMethod('saveImageToGallery', {
+            'bytes': bytes,
+            'name': fileName,
+          });
+          if (!mounted) return;
+          snackBar("Saved to Pictures/AnymeX/$fileName");
+        } catch (_) {
+          Future<bool> check(Permission p) async {
+            var status = await p.status;
+            if (!status.isGranted) {
+              status = await p.request();
+            }
+            return status.isGranted;
           }
 
-          final file = File('${directory.path}/$fileName');
-          await file.writeAsBytes(bytes);
+          await check(Permission.storage);
+          await check(Permission.photos);
+          await check(Permission.manageExternalStorage);
 
           try {
-            const platform = MethodChannel('com.ryan.anymex/utils');
-            await platform.invokeMethod('scanFile', {'path': file.path});
-          } catch (_) {}
+            final directory = Directory('/storage/emulated/0/Download/AnymeX');
+            if (!await directory.exists()) {
+              await directory.create(recursive: true);
+            }
 
-          if (!mounted) return;
-          snackBar("Saved to Downloads/AnymeX/$fileName");
-        } catch (e) {
-          // Fallback
-          final tempDir = await getTemporaryDirectory();
-          final file = File('${tempDir.path}/$fileName');
-          await file.writeAsBytes(bytes);
-          await Share.shareXFiles([XFile(file.path)],
-              text: "Visual from AnymeX");
+            final file = File('${directory.path}/$fileName');
+            await file.writeAsBytes(bytes);
+
+            try {
+              const platform = MethodChannel('com.ryan.anymex/utils');
+              await platform.invokeMethod('scanFile', {'path': file.path});
+            } catch (_) {}
+
+            if (!mounted) return;
+            snackBar("Saved to Downloads/AnymeX/$fileName");
+          } catch (e) {
+            final tempDir = await getTemporaryDirectory();
+            final file = File('${tempDir.path}/$fileName');
+            await file.writeAsBytes(bytes);
+            await Share.shareXFiles([XFile(file.path)],
+                text: "Visual from AnymeX");
+          }
         }
       } else if (Platform.isIOS) {
         final tempDir = await getTemporaryDirectory();
@@ -325,7 +334,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
             child: currentList.isNotEmpty
                 ? GestureDetector(
                     onTapUp: (details) {
-                      final width = MediaQuery.of(context).size.width;
+                      final width = MediaQuery.sizeOf(context).width;
                       if (width > 0) {
                         if (details.localPosition.dx < width / 3) {
                           _prevImage();
@@ -365,8 +374,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
                     ),
                   )
                 : const Center(
-                    child: AnymexText(
-                      text: "No Visuals found for this Anime (╥﹏╥)",
+                    child: AnymeXText("No Visuals found for this Anime (╥﹏╥)",
                       color: Colors.white,
                     ),
                   ),
@@ -379,7 +387,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
             right: 0,
             child: Container(
               padding: EdgeInsets.fromLTRB(
-                  10, MediaQuery.of(context).padding.top + 10, 10, 20),
+                  10, MediaQuery.paddingOf(context).top + 10, 10, 20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Colors.black.withOpacity(0.8), Colors.transparent],
@@ -409,8 +417,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
                               blurRadius: 10,
                             )
                           ]),
-                      child: AnymexText(
-                        text: "${effectiveIndex + 1} / ${currentList.length}",
+                      child: AnymeXText("${effectiveIndex + 1} / ${currentList.length}",
                         color: Colors.white,
                         variant: TextVariant.bold,
                       ),
@@ -537,8 +544,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
             ),
             if (isSelected) ...[
               const SizedBox(width: 10),
-              AnymexText(
-                text: label,
+              AnymeXText(label,
                 color: Colors.white,
                 variant: TextVariant.bold,
                 size: 14,

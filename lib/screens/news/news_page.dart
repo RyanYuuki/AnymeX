@@ -2,8 +2,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart';
@@ -19,18 +19,15 @@ class NewsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
 
-    return Glow(
-      color: media.color,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: CustomScrollView(
+    return AnymeXScaffold(
+  color: media.color,
+  body: CustomScrollView(
           slivers: [
             SliverAppBar(
               floating: true,
               pinned: false,
               snap: true,
-              title: AnymexText(
-                text: '${media.title} News',
+              title: AnymeXText('${media.title} News',
                 variant: TextVariant.bold,
                 size: 20,
               ),
@@ -93,8 +90,7 @@ class NewsPage extends StatelessWidget {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      AnymexText(
-                                        text: decodedTitle,
+                                      AnymeXText(decodedTitle,
                                         variant: TextVariant.semiBold,
                                         size: 15,
                                         maxLines: 1,
@@ -111,8 +107,7 @@ class NewsPage extends StatelessWidget {
                                               color: colorScheme.onSurface.opaque(0.5),
                                             ),
                                             const SizedBox(width: 4),
-                                            AnymexText(
-                                              text: formatTimeAgo(item.date!.millisecondsSinceEpoch),
+                                            AnymeXText(formatTimeAgo(item.date!.millisecondsSinceEpoch),
                                               variant: TextVariant.regular,
                                               size: 12,
                                               color: colorScheme.onSurface.opaque(0.6),
@@ -123,8 +118,7 @@ class NewsPage extends StatelessWidget {
                                       const SizedBox(height: 8),
                                       Row(
                                         children: [
-                                          AnymexText(
-                                            text: "Read Article",
+                                          AnymeXText("Read Article",
                                             variant: TextVariant.bold,
                                             size: 12,
                                             color: colorScheme.primary,
@@ -153,8 +147,7 @@ class NewsPage extends StatelessWidget {
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }

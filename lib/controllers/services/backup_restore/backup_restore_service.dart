@@ -87,7 +87,7 @@ class BackupRestoreService extends GetxController {
           .where()
           .findAllSync()
           .where((e) {
-            final isAuth = e.key?.startsWith('AuthKeys_') ?? false;
+            final isAuth = e.key.startsWith('AuthKeys_') ?? false;
             if (isAuth) return backupAuthTokens;
             return backupSettings;
           })

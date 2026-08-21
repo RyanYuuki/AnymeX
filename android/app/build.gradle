@@ -11,8 +11,7 @@ plugins {
 android {
     namespace = "com.ryan.anymex"
     compileSdk = 36
-    // ndkVersion = flutter.ndkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = flutter.ndkVersion
 
     dependenciesInfo {
         includeInApk = false
@@ -40,8 +39,11 @@ android {
     packagingOptions {
         jniLibs {
             useLegacyPackaging true
+            excludes += "**/libtorrent_flutter.so"
         }
-        // exclude 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
+        resources {
+            exclude 'META-INF/versions/9/OSGI-INF/MANIFEST.MF'
+        }
     }
 
     signingConfigs {
@@ -61,14 +63,18 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.release
-            minifyEnabled false
-            shrinkResources false
-            // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         debug {
-            minifyEnabled false
-            shrinkResources false
+            // minifyEnabled false
+            // shrinkResources false
+            signingConfig = signingConfigs.debug
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -79,4 +85,10 @@ dependencies {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // TESTING - CS SETTINGS
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.fragment:fragment-ktx:1.7.1"
 }

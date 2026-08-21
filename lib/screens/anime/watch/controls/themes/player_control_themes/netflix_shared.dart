@@ -1,9 +1,11 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
+import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+
 
 class NFColors {
   static const white = Color(0xFFFFFFFF);
@@ -125,7 +127,7 @@ class NFLabeledButton extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 28),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             label,
             style: TextStyle(
               color: color,
@@ -251,7 +253,7 @@ class _NFUnlockButtonState extends State<NFUnlockButton> {
                 color: NFColors.white, size: 22),
             if (_confirm) ...[
               const SizedBox(width: 12),
-              const Text(
+              const AnymeXText(
                 'Tap again to unlock',
                 style: TextStyle(
                   color: NFColors.white,
@@ -294,7 +296,7 @@ class NFMoreSheet extends StatelessWidget {
               ),
             ),
             NFSheetTile(
-              icon: Symbols.high_quality_rounded,
+              icon: Icons.high_quality_rounded,
               label: 'Quality',
               onTap: () {
                 Get.back();
@@ -302,7 +304,7 @@ class NFMoreSheet extends StatelessWidget {
               },
             ),
             NFSheetTile(
-              icon: Symbols.speed_rounded,
+              icon: Icons.speed_rounded,
               label: 'Playback speed',
               onTap: () {
                 Get.back();
@@ -310,7 +312,7 @@ class NFMoreSheet extends StatelessWidget {
               },
             ),
             NFSheetTile(
-              icon: Symbols.music_note_rounded,
+              icon: Icons.music_note_rounded,
               label: 'Audio track',
               onTap: () {
                 Get.back();
@@ -318,16 +320,24 @@ class NFMoreSheet extends StatelessWidget {
               },
             ),
             NFSheetTile(
-              icon: Symbols.tune_rounded,
+              icon: Icons.tune_rounded,
               label: 'Picture & shaders',
               onTap: () {
                 Get.back();
                 controller.openColorProfileBottomSheet(ctx);
               },
             ),
+            NFSheetTile(
+              icon: Icons.cast_rounded,
+              label: 'Cast to device',
+              onTap: () {
+                Get.back();
+                CastDeviceDialog.show(ctx, controller);
+              },
+            ),
             if (!controller.isOffline.value)
               NFSheetTile(
-                icon: Symbols.cloud_rounded,
+                icon: Icons.cloud_rounded,
                 label: 'Server',
                 onTap: () {
                   Get.back();
@@ -392,7 +402,7 @@ class NFSheetTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: NFColors.white70, size: 26),
-      title: Text(
+      title: AnymeXText(
         label,
         style: const TextStyle(
           color: NFColors.white,

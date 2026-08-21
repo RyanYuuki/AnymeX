@@ -3,6 +3,7 @@ import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/isar_models/video.dart' as hive;
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/themed_controls.dart';
@@ -46,10 +47,45 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
     super.initState();
     _currentEpMeta = widget.episode;
     _initPlayer(_currentEpMeta);
+
+    _controller.currentEpisode.listen((episode) {
+      if (_currentEpMeta.number != episode.number) {
+        _saveProgress();
+      }
+      final matchingMeta = widget.allEpisodes.firstWhereOrNull(
+        (e) => e.episode.number == episode.number,
+      );
+      if (matchingMeta != null) {
+        setState(() {
+          _currentEpMeta = matchingMeta;
+        });
+      }
+    });
   }
 
-  List<Episode> get _episodeList =>
-      widget.allEpisodes.map((e) => e.episode).toList();
+  List<Episode> get _episodeList => widget.allEpisodes.map((e) {
+        final ep = e.episode;
+        ep.link = e.filePath;
+        if (e.subtitles != null) {
+          ep.videoTracks = [
+            hive.Video(
+              url: e.filePath,
+              quality: 'Offline',
+              originalUrl: e.filePath,
+              subtitles: e.subtitles,
+            )
+          ];
+        } else {
+          ep.videoTracks = [
+            hive.Video(
+              url: e.filePath,
+              quality: 'Offline',
+              originalUrl: e.filePath,
+            )
+          ];
+        }
+        return ep;
+      }).toList();
 
   void _initPlayer(DownloadedEpisodeMeta epMeta) {
     if (Get.isRegistered<PlayerController>()) {
@@ -59,12 +95,14 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
     final savedTs = epMeta.episode.timeStampInMilliseconds ?? 0;
 
     _controller = Get.put(PlayerController.offline(
-      folderName: widget.summary.extensionName,
+      folderName: widget.summary.title,
       itemName: widget.summary.folderName,
       videoPath: epMeta.filePath,
       episode: epMeta.episode..timeStampInMilliseconds = savedTs,
       episodeList: _episodeList,
-      anilistData: anymex.Media(serviceType: ServicesType.simkl),
+      anilistData: anymex.Media(serviceType: ServicesType.simkl)
+        ..title = widget.summary.title,
+      subtitles: epMeta.subtitles,
     ));
   }
 

@@ -3,8 +3,9 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -146,8 +147,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: AnymexText(
-                          text: widget.studioName,
+                        child: AnymeXText(widget.studioName,
                           variant: TextVariant.bold,
                           size: 20,
                           maxLines: 1,
@@ -220,8 +220,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
-                                  AnymexText(
-                                    text: "$_favouritesCount",
+                                  AnymeXText("$_favouritesCount",
                                     size: 14,
                                     variant: TextVariant.bold,
                                     color: isFav.value
@@ -250,8 +249,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                   Padding(
                     padding: const EdgeInsets.all(40),
                     child: Center(
-                      child: AnymexText(
-                        text: 'No media found for this studio',
+                      child: AnymeXText('No media found for this studio',
                         variant: TextVariant.regular,
                         size: 16,
                         color: theme.onSurface.withValues(alpha: 0.6),
@@ -324,8 +322,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           : null,
                     ),
                     const SizedBox(width: 10),
-                    AnymexText(
-                      text: "On My List",
+                    AnymeXText("On My List",
                       size: 14,
                       color: theme.onSurface.withOpacity(0.7),
                       variant: TextVariant.bold,
@@ -340,8 +337,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
             Padding(
               padding: const EdgeInsets.only(top: 40),
               child: Center(
-                child: AnymexText(
-                  text: showOnlyOnList.value
+                child: AnymeXText(showOnlyOnList.value
                       ? "No media found on your list"
                       : "No media found",
                   variant: TextVariant.semiBold,
@@ -367,8 +363,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                 Divider(color: theme.primary.withOpacity(0.3))),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: AnymexText(
-                            text: "$year (${mediaList.length})",
+                          child: AnymeXText("$year (${mediaList.length})",
                             variant: TextVariant.bold,
                             size: 18,
                             color: theme.primary,
@@ -439,6 +434,8 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
               aspectRatio: 0.7,
               child: Hero(
                 tag: media.id.toString(),
+                transitionOnUserGestures: true,
+                flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -449,18 +446,12 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Image.network(
-                          media.poster,
+                        AnymeXImage(
+                          imageUrl: media.poster,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                            color: colorScheme.surfaceContainerHighest,
-                            child: Icon(
-                              Icons.movie_outlined,
-                              color:
-                                  colorScheme.onSurface.withValues(alpha: 0.3),
-                              size: 40,
-                            ),
-                          ),
+                          radius: 12,
+                          fadeInDuration: Duration.zero,
+                          fadeOutDuration: Duration.zero,
                         ),
                         // Rating badge
                         if (media.rating != '0.0' && media.rating != '0')
@@ -485,8 +476,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                     color: colorScheme.primary,
                                   ),
                                   const SizedBox(width: 2),
-                                  AnymexText(
-                                    text: media.rating,
+                                  AnymeXText(media.rating,
                                     variant: TextVariant.bold,
                                     size: 10,
                                     color: Colors.white,
@@ -503,8 +493,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
             ),
             const SizedBox(height: 6),
             // Title
-            AnymexText(
-              text: media.title,
+            AnymeXText(media.title,
               variant: TextVariant.semiBold,
               size: 12,
               maxLines: 2,

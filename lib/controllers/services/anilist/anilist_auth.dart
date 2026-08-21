@@ -1,6 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'package:anymex/utils/oauth_helper.dart';
 import 'dart:convert';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -20,10 +22,10 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnilistAuth extends GetxController {
   RxBool isLoggedIn = false.obs;
@@ -40,6 +42,52 @@ class AnilistAuth extends GetxController {
   DateTime? _rateLimitUntil;
   AnilistUserSettings? cachedSettings;
   AnilistSettingsMetadata? cachedMetadata;
+
+  String formatScore(double? rawScore) {
+    if (rawScore == null || rawScore == 0) return '0.0';
+    final format = (isLoggedIn.value ? cachedSettings?.scoreFormat : null) ?? 'POINT_10_DECIMAL';
+    switch (format) {
+      case 'POINT_100':
+        final val = rawScore <= 10.0 ? rawScore * 10.0 : rawScore;
+        return val.round().toString();
+      case 'POINT_10_DECIMAL':
+        final val = rawScore > 10.0 ? rawScore / 10.0 : rawScore;
+        return val.toStringAsFixed(1);
+      case 'POINT_10':
+        final val = rawScore > 10.0 ? rawScore / 10.0 : rawScore;
+        return val.round().toString();
+      case 'POINT_5':
+        final val = rawScore > 10.0 ? rawScore / 20.0 : rawScore / 2.0;
+        return val.round().toString();
+      case 'POINT_3':
+        final val = rawScore > 10.0 ? rawScore : rawScore * 10.0;
+        if (val >= 75) return ':)';
+        if (val >= 35) return ':|';
+        return ':(';
+      default:
+        final val = rawScore > 10.0 ? rawScore / 10.0 : rawScore;
+        return val.toStringAsFixed(1);
+    }
+  }
+
+  double convertNormalizedToFormat(double normalizedScore) {
+    final format = (isLoggedIn.value ? cachedSettings?.scoreFormat : null) ?? 'POINT_10_DECIMAL';
+    switch (format) {
+      case 'POINT_100':
+        return normalizedScore;
+      case 'POINT_10_DECIMAL':
+      case 'POINT_10':
+        return normalizedScore / 10.0;
+      case 'POINT_5':
+        return normalizedScore / 20.0;
+      case 'POINT_3':
+        if (normalizedScore >= 75.0) return 3.0;
+        if (normalizedScore >= 35.0) return 2.0;
+        return 1.0;
+      default:
+        return normalizedScore / 10.0;
+    }
+  }
 
   void _handle403(http.Response response) {
     dynamic errorJson;
@@ -148,30 +196,39 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-    final selectedMethod = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => _buildLoginBottomSheet(context),
+    final selectedMethod = await AnymeXSheet.custom<String>(
+      loginSheetHelper(
+        context: context,
+        title: 'Login to AniList',
+        serviceName: 'AniList',
+        showTokenOption: true,
+      ),
+      context,
+      showDragHandle: true,
     );
 
-    if (selectedMethod == null) return;
+    if (selectedMethod == null || !context.mounted) return;
 
     String clientId = dotenv.env['AL_CLIENT_ID'] ?? '';
     String clientSecret = dotenv.env['AL_CLIENT_SECRET'] ?? '';
 
-    if (selectedMethod == 'browser') {
+    if (selectedMethod.startsWith('browser')) {
+      final forceWebAuth = selectedMethod == 'browser_external';
       final url =
           'https://anilist.co/api/v2/oauth/authorize?client_id=$clientId&redirect_uri=anymex://callback&response_type=code';
       try {
-        final result = await FlutterWebAuth2.authenticate(
+        final result = await OauthHelper.authenticate(
+          context: context,
           url: url,
           callbackUrlScheme: 'anymex',
+          forceWebAuth: forceWebAuth,
         );
-        final code = Uri.parse(result).queryParameters['code'];
-        if (code != null) {
-          Logger.i("token found");
-          await _exchangeCodeForToken(code, clientId, clientSecret);
+        if (result != null) {
+          final code = Uri.parse(result).queryParameters['code'];
+          if (code != null) {
+            Logger.i("token found");
+            await _exchangeCodeForToken(code, clientId, clientSecret);
+          }
         }
       } catch (e) {
         Logger.i('Error during login: $e');
@@ -179,124 +236,6 @@ class AnilistAuth extends GetxController {
     } else if (selectedMethod == 'token') {
       _showTokenInputDialog(context);
     }
-  }
-
-  Widget _buildLoginBottomSheet(BuildContext context) {
-    final theme = context.colors;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.surface,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(28),
-          topRight: Radius.circular(28),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: theme.onSurface.opaque(0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Login to AniList',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: theme.onSurface,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 38),
-          _buildButton(
-            context,
-            onPressed: () => Navigator.pop(context, 'browser'),
-            icon: Icons.language,
-            label: 'Login from Browser',
-          ),
-          const SizedBox(height: 16),
-          _buildButton(
-            context,
-            onPressed: () => Navigator.pop(context, 'token'),
-            icon: Icons.vpn_key,
-            label: 'Login with Token',
-          ),
-          const SizedBox(height: 24),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildButton(
-    BuildContext context, {
-    required VoidCallback onPressed,
-    required IconData icon,
-    required String label,
-  }) {
-    final theme = context.colors;
-
-    return Material(
-      color: theme.surfaceContainer,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: theme.primary.opaque(0.2),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: theme.primary.opaque(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  size: 24,
-                  color: theme.primary,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: theme.onPrimaryContainer,
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 18,
-                color: theme.onPrimaryContainer.opaque(0.5),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   void _showTokenInputDialog(BuildContext context) async {
@@ -315,7 +254,7 @@ class AnilistAuth extends GetxController {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: Text(
+        title: AnymeXText(
           'Login with Token',
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -327,7 +266,7 @@ class AnilistAuth extends GetxController {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            AnymeXText(
               'Please paste the token from the browser',
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -365,7 +304,7 @@ class AnilistAuth extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: AnymeXText(
               'Cancel',
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -400,7 +339,7 @@ class AnilistAuth extends GetxController {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: Text(
+            child: AnymeXText(
               'Login',
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -738,8 +677,7 @@ class AnilistAuth extends GetxController {
     $animeSectionOrder: [String],
     $mangaSectionOrder: [String],
     $animeTheme: String,
-    $mangaTheme: String,
-    $timezone: String
+    $mangaTheme: String
   ) {
     UpdateUser(
       about: $about,
@@ -751,7 +689,6 @@ class AnilistAuth extends GetxController {
       restrictMessagesToFollowing: $restrictMessagesToFollowing,
       scoreFormat: $scoreFormat,
       rowOrder: $rowOrder,
-      timezone: $timezone,
       animeListOptions: {
         splitCompletedSectionByFormat: $splitCompletedAnime,
         sectionOrder: $animeSectionOrder,
@@ -802,11 +739,14 @@ class AnilistAuth extends GetxController {
     try {
       final token = _requireAuthToken();
 
+      final variables = settings.toGraphQlVariables();
+      Logger.i('updateUserSettings variables: $variables');
+
       final response = await _anilistPost(
         headers: _anilistAuthHeaders(token),
         body: {
           'query': mutation,
-          'variables': settings.toGraphQlVariables(),
+          'variables': variables,
         },
       );
 
@@ -816,7 +756,9 @@ class AnilistAuth extends GetxController {
 
         final updated = data['data']?['UpdateUser'] as Map<String, dynamic>?;
         if (updated == null) return null;
-        return AnilistUserSettings.fromJson(updated);
+        final saved = AnilistUserSettings.fromJson(updated);
+        cachedSettings = saved;
+        return saved;
       }
 
       if (response.statusCode == 403) {
@@ -824,7 +766,7 @@ class AnilistAuth extends GetxController {
       }
 
       throw Exception(
-          'Failed to update AniList settings (${response.statusCode})');
+          'Failed to update AniList settings (${response.statusCode} : ${response.body})');
     } catch (e) {
       Logger.e('Error updating AniList settings: $e');
       rethrow;
@@ -1942,7 +1884,7 @@ class AnilistAuth extends GetxController {
           }
           progress
           status
-          score
+          score(format: POINT_100)
           updatedAt
           startedAt { year month day }
           completedAt { year month day }
@@ -2101,7 +2043,7 @@ class AnilistAuth extends GetxController {
       id
       status
       progress
-      score
+      score(format: POINT_100)
       startedAt { year month day }
       completedAt { year month day }
     }
@@ -2124,7 +2066,7 @@ class AnilistAuth extends GetxController {
       };
 
       if (score != null) {
-        variables['score'] = score;
+        variables['score'] = convertNormalizedToFormat(score);
       }
       if (status != null) {
         variables['status'] = status;
@@ -2166,12 +2108,23 @@ class AnilistAuth extends GetxController {
       if (malId != null) {
         serviceHandler.malService.updateListEntry(UpdateListEntryParams(
             listId: malId,
-            score: score,
+            score: score != null ? score / 10.0 : null,
             status: status,
             progress: progress,
             isAnime: isAnime,
             startedAt: startedAt,
             completedAt: completedAt));
+      }
+
+      if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
+        serviceHandler.simklService.updateListEntryFromExternalId(
+          anilistId: listId,
+          malId: malId,
+          score: score != null ? score / 10.0 : null,
+          status: status,
+          progress: progress,
+          isAnime: isAnime,
+        );
       }
 
       if (response.statusCode == 200) {
@@ -2236,7 +2189,7 @@ class AnilistAuth extends GetxController {
             }
             progress
             status
-            score
+            score(format: POINT_100)
             updatedAt
           }
         }
@@ -2328,7 +2281,7 @@ class AnilistAuth extends GetxController {
       id
       status
       progress
-      score
+      score(format: POINT_100)
     }
   }
   ''';
@@ -2347,7 +2300,7 @@ class AnilistAuth extends GetxController {
             'mediaId': animeId.toInt(),
             'status': status,
             'progress': progress,
-            'score': score,
+            'score': convertNormalizedToFormat(score),
           },
         }),
       );
@@ -2383,7 +2336,7 @@ class AnilistAuth extends GetxController {
       id
       status
       progress
-      score
+      score(format: POINT_100)
     }
   }
   ''';
@@ -2402,7 +2355,7 @@ class AnilistAuth extends GetxController {
             'mediaId': mangaId,
             'status': status,
             'progress': progress,
-            'score': score,
+            'score': score != null ? convertNormalizedToFormat(score) : null,
           },
         }),
       );
@@ -2510,3 +2463,4 @@ class AnilistAuth extends GetxController {
     isLoggedIn.value = false;
   }
 }
+

@@ -1,8 +1,8 @@
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,8 +17,7 @@ class NovelTopControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final mediaQuery = MediaQuery.of(context);
-      final statusBarHeight = mediaQuery.padding.top;
+      final statusBarHeight = MediaQuery.paddingOf(context).top;
       const topControlsHeight = 50.0;
       const gapBetweenControls = 8.0;
 
@@ -88,7 +87,7 @@ class NovelTopControls extends StatelessWidget {
               SizedBox(
                 width: 30,
                 height: 30,
-                child: AnymexProgressIndicator(
+                child: AnymeXProgressIndicator(
                   value: controller.novelContent.isEmpty
                       ? 0
                       : controller.progress.value,
@@ -105,8 +104,7 @@ class NovelTopControls extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymexText(
-                            text: controller.currentChapter.value.title ??
+                          AnymeXText(controller.currentChapter.value.title ??
                                 'Unknown Chapter',
                             size: 12,
                             variant: TextVariant.semiBold,
@@ -115,7 +113,7 @@ class NovelTopControls extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             isMarquee: true,
                           ),
-                          Text(
+                          AnymeXText(
                             'Chapter ${controller.currentChapter.value.number?.round() ?? '-'} of ${controller.chapters.last.number?.round() ?? '-'}',
                             style: TextStyle(
                               color: context.colors.onSurface.opaque(0.7),
@@ -230,7 +228,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
   }
 
   void _scrollToCurrentChapter() {
-    final currentNumber = widget.controller.currentChapter.value?.number;
+    final currentNumber = widget.controller.currentChapter.value.number;
     if (currentNumber == null) return;
     final index =
         _cachedChapters.indexWhere((c) => c.number == currentNumber);
@@ -284,7 +282,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            AnymeXText(
                               'Chapters (${_cachedChapters.length})',
                               style: Theme.of(context)
                                   .textTheme
@@ -359,7 +357,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                 (context, index) {
                   final chapter = _cachedChapters[index];
                   final isCurrent =
-                      widget.controller.currentChapter.value?.number ==
+                      widget.controller.currentChapter.value.number ==
                           chapter.number;
                   return _buildListItem(chapter, isCurrent);
                 },
@@ -392,7 +390,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
         dense: true,
-        title: Text(
+        title: AnymeXText(
           displayTitle,
           style: TextStyle(
             fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,

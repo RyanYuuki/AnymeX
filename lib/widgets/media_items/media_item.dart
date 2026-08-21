@@ -3,11 +3,12 @@ import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
@@ -15,7 +16,11 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
+import 'package:anymex/widgets/common/cards/base_card.dart';
+import 'package:anymex/widgets/common/cards/card_gate.dart';
+import 'package:anymex/widgets/common/cards/media_cards.dart';
 
 class CardData {
   String id;
@@ -59,6 +64,7 @@ class CardData {
           id: data.id!,
           title: data.title ?? '??',
           poster: data.poster ?? '',
+          mediaType: data.type == 'MANGA' ? ItemType.manga : ItemType.anime,
           serviceType: data.servicesType),
     );
   }
@@ -66,7 +72,7 @@ class CardData {
   factory CardData.fromMedia(Media data) {
     return CardData(
       id: data.id,
-      title: data.title,
+      title: data.displayTitle,
       poster: data.poster,
       rating: data.rating,
       episodeCount: 'N/A',
@@ -90,19 +96,51 @@ class GridAnimeCard extends StatelessWidget {
     required this.data,
     required this.isManga,
     this.variant,
+    this.type,
   });
   final dynamic data;
   final bool isManga;
   final CardVariant? variant;
+  final ItemType? type;
 
   @override
   Widget build(BuildContext context) {
-    const double cardWidth = 108;
-    const double cardHeight = 270;
+    registerBuiltInMediaCardStyles();
+    
     final media = data is Media
         ? CardData.fromMedia(data)
         : CardData.fromTrackedMedia(data);
-    final itemType = isManga ? ItemType.manga : ItemType.anime;
+    final itemType = type ?? (isManga ? ItemType.manga : ItemType.anime);
+    final cardStyle = CardStyle.values[settingsController.cardStyle];
+
+    final isOnlineList = variant == CardVariant.onlinelist;
+    final extraData = isOnlineList
+        ? "${media.episodeCount ?? '??'} | ${media.totalEpisodes ?? '??'}"
+        : (media.score ?? media.rating ?? '');
+
+    final carouselData = CarouselData(
+      id: media.id,
+      title: media.title,
+      poster: media.poster,
+      extraData: extraData,
+      source: (media.data.sourceId != null && media.data.sourceId != 'N/A')
+          ? media.data.sourceId
+          : (media.episodeCount ?? '?'),
+      releasing: media.mediaStatus == "RELEASING",
+      servicesType: media.data.serviceType,
+    );
+
+    final heroTag = '${media.id}-${itemType.name}-grid-card';
+
+    final cardWidget = MediaCardGate(
+      cardStyle: cardStyle,
+      itemData: carouselData,
+      tag: heroTag,
+      variant: variant == CardVariant.search
+          ? DataVariant.regular
+          : (isOnlineList ? DataVariant.anilist : DataVariant.library),
+      type: itemType,
+    );
 
     return GestureDetector(
       onSecondaryTap: () {
@@ -121,150 +159,29 @@ class GridAnimeCard extends StatelessWidget {
           media.title,
         );
       },
-      child: SizedBox(
-        width: cardWidth,
-        height: cardHeight,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Stack(
-              children: [
-                AnymexOnTap(
-                  margin: 0,
-                  onTap: () {
-                    navigate(() => isManga
-                        ? MangaDetailsPage(media: media.data, tag: media.title)
-                        : AnimeDetailsPage(
-                            media: media.data, tag: media.title));
-                  },
-                  child: Hero(
-                    tag: media.title,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: AnymeXImage(
-                        radius: 12,
-                        imageUrl: media.poster,
-                        width: cardWidth,
-                        height: 160,
-                        errorImage:
-                            'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: _buildEpisodeChip(context, media),
-                ),
-              ],
-            ),
-            const SizedBox(height: 5),
-            if (data is Media &&
-                ((variant ?? CardVariant.onlinelist) != CardVariant.search))
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(isManga ? Iconsax.book : Icons.movie_filter_rounded,
-                      color: Colors.grey, size: 16),
-                  const SizedBox(width: 2),
-                  AnymexText(
-                    text: isManga ? "MANGA" : 'ANIME',
-                    maxLines: 1,
-                    variant: TextVariant.regular,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.grey,
-                    size: 12,
-                  ),
-                ],
-              ),
-            const SizedBox(height: 5),
-            SizedBox(
-              width: cardWidth,
-              child: AnymexText(
-                text: media.title,
-                maxLines: 2,
-                size: 14,
-                variant: TextVariant.semiBold,
-                isMarquee: true,
-              ),
-            ),
-            const SizedBox(height: 3),
-            if (media.episodeCount != 'N/A' && media.episodeCount != null)
-              SizedBox(
-                width: cardWidth,
-                child: AnymexTextSpans(
-                  text: '  |  ~',
-                  maxLines: 1,
-                  fontSize: 14,
-                  spans: [
-                    AnymexTextSpan(
-                        text: "${media.episodeCount} ",
-                        color: context.colors.primary,
-                        variant: TextVariant.semiBold),
-                    if (media.nextEpisode != null)
-                      AnymexTextSpan(
-                          text: "| ${media.nextEpisode} ",
-                          color: Colors.grey,
-                          variant: TextVariant.semiBold),
-                    AnymexTextSpan(
-                        text:
-                            "| ${media.totalEpisodes == '0' ? '?' : media.totalEpisodes} ",
-                        color: Colors.grey,
-                        variant: TextVariant.semiBold),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEpisodeChip(BuildContext context, CardData media) {
-    String displayScore = '0.0';
-    if (media.score != null && media.score != '0' && media.score != '0.0') {
-      final parsedScore = double.tryParse(media.score!);
-      if (parsedScore != null) {
-        if (parsedScore > 10) {
-          displayScore = (parsedScore / 10).toStringAsFixed(1);
-        } else {
-          displayScore = parsedScore.toStringAsFixed(1);
-        }
-      } else {
-        displayScore = media.score!;
-      }
-    } else if (media.rating != null &&
-        media.rating != '0' &&
-        media.rating != '0.0') {
-      displayScore = media.rating!;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: context.colors.primary,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8),
-          bottomRight: Radius.circular(8),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Iconsax.star5,
-            size: 16,
-            color: context.colors.onPrimary,
-          ),
-          const SizedBox(width: 4),
-          AnymexText(
-            text: displayScore,
-            color: context.colors.onPrimary,
-            size: 12,
-            variant: TextVariant.bold,
-          ),
-        ],
+      child: AnymexOnTap(
+        margin: 0,
+        onTap: () {
+          if (itemType == ItemType.novel) {
+            final sourceController = Get.find<SourceController>();
+            var novSource = sourceController.getNovelExtensionByName(media.data.season);
+            novSource ??= sourceController.activeNovelSource.value ??
+                sourceController.installedNovelExtensions.firstOrNull;
+            if (novSource != null) {
+              final Source activeSource = novSource;
+              navigate(() => NovelDetailsPage(
+                    media: media.data,
+                    tag: heroTag,
+                    source: activeSource,
+                  ));
+            }
+          } else if (itemType == ItemType.manga) {
+            navigate(() => MangaDetailsPage(media: media.data, tag: heroTag));
+          } else {
+            navigate(() => AnimeDetailsPage(media: media.data, tag: heroTag));
+          }
+        },
+        child: cardWidget,
       ),
     );
   }
@@ -342,8 +259,7 @@ class BlurAnimeCard extends StatelessWidget {
                         SizedBox(
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
-                        AnymexText(
-                          text: "Episode ${data.nextAiringEpisode!.episode}",
+                        AnymeXText("Episode ${data.nextAiringEpisode!.episode}",
                           size: 14,
                           maxLines: 2,
                           color: context.colors.primary,
@@ -351,8 +267,7 @@ class BlurAnimeCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 10),
-                        AnymexText(
-                          text: data.title,
+                        AnymeXText(data.title,
                           size: 14,
                           maxLines: 2,
                           variant: TextVariant.bold,
@@ -375,8 +290,7 @@ class BlurAnimeCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular((8.multiplyRadius())),
                     color: context.colors.primary,
                   ),
-                  child: AnymexText(
-                    text: '',
+                  child: AnymeXText('',
                     size: 12,
                     color: context.colors.onPrimary,
                     variant: TextVariant.bold,

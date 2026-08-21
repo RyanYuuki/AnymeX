@@ -4,8 +4,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +19,14 @@ class AnimeCard extends StatelessWidget {
   const AnimeCard({super.key, required this.data, required this.cardtype});
   @override
   Widget build(BuildContext context) {
+    final tag = 'library-${data.id}';
     return AnymexOnTap(
       margin: 0,
       scale: 1,
       onTap: () {
-        navigate(() => AnimeDetailsPage(
+        navigateWithAnimation(() => AnimeDetailsPage(
             media: Media.fromOfflineMedia(data, ItemType.anime),
-            tag: '${data.id!}${UniqueKey().toString()}'));
+            tag: tag));
       },
       child: Container(
         clipBehavior: Clip.antiAlias,
@@ -37,11 +38,16 @@ class AnimeCard extends StatelessWidget {
             Expanded(
               child: Stack(
                 children: [
-                  AnymeXImage(
-                    imageUrl: data.poster ?? '',
-                    radius: 12.multiplyRadius(),
-                    width: double.infinity,
-                    height: double.infinity,
+                  Hero(
+                    tag: tag,
+                    transitionOnUserGestures: true,
+                    flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
+                    child: AnymeXImage(
+                      imageUrl: data.poster ?? '',
+                      radius: 12.multiplyRadius(),
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
                   ),
                   Positioned(
                     top: 0,
@@ -65,8 +71,7 @@ class AnimeCard extends StatelessWidget {
                             color: context.colors.primary,
                           ),
                           const SizedBox(width: 3),
-                          AnymexText(
-                            text: data.rating ?? '0.0',
+                          AnymeXText(data.rating ?? '0.0',
                             variant: TextVariant.bold,
                           ),
                           const SizedBox(width: 3),
@@ -97,8 +102,7 @@ class AnimeCard extends StatelessWidget {
                             color: context.colors.primary,
                           ),
                           const SizedBox(width: 3),
-                          AnymexText(
-                            text: data.currentEpisode?.number ?? '??',
+                          AnymeXText(data.currentEpisode?.number ?? '??',
                             variant: TextVariant.bold,
                           ),
                           const SizedBox(width: 3),
@@ -112,8 +116,7 @@ class AnimeCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               width: double.infinity,
-              child: AnymexText(
-                text: data.name ?? '??',
+              child: AnymeXText(data.name ?? '??',
                 size: 13,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

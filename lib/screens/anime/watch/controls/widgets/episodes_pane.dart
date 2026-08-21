@@ -1,11 +1,12 @@
+import 'dart:ui';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
-import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
+import 'package:anymex/screens/anime/widgets/episode/episode_style_registry.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class EpisodeSidePane extends StatefulWidget {
   final Widget child;
@@ -127,7 +128,17 @@ class _EpisodeSidePaneState extends State<EpisodeSidePane>
                       height: double.infinity,
                       decoration: BoxDecoration(
                         color: widget.backgroundColor ??
-                            context.theme.colorScheme.surface,
+                            context.theme.colorScheme.surfaceContainer.withOpacity(0.75),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          bottomLeft: Radius.circular(24),
+                        ),
+                        border: Border(
+                          left: BorderSide(
+                            color: context.theme.colorScheme.onSurface.withOpacity(0.08),
+                            width: 1.0,
+                          ),
+                        ),
                         boxShadow: [
                           BoxShadow(
                             color:
@@ -143,7 +154,21 @@ class _EpisodeSidePaneState extends State<EpisodeSidePane>
                           ),
                         ],
                       ),
-                      child: widget.child,
+                       child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          bottomLeft: Radius.circular(24),
+                        ),
+                        child: _controller.value > 0.95
+                            ? BackdropFilter(
+                                filter: ImageFilter.blur(
+                                  sigmaX: 8.0 * ((_controller.value - 0.95) / 0.05),
+                                  sigmaY: 8.0 * ((_controller.value - 0.95) / 0.05),
+                                ),
+                                child: widget.child,
+                              )
+                            : widget.child,
+                      ),
                     ),
                   ),
                 ),
@@ -173,91 +198,150 @@ class EpisodesPane extends StatelessWidget {
     return Obx(() => EpisodeSidePane(
           isVisible: controller.isEpisodePaneOpened.value,
           onOverlayTap: _closePane,
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: context.theme.colorScheme.surfaceVariant.opaque(0.3),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: context.theme.colorScheme.outline.opaque(0.2),
-                    ),
+          child: WatchSettingsPane(
+            title: 'Episodes',
+            onClose: _closePane,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  final styles = EpisodeStyleRegistry.styles;
+                  final currentId = EpisodeStyleRegistry.currentStyleId.value;
+                  final currentIndex = styles.indexWhere((s) => s.id == currentId);
+                  final nextIndex = (currentIndex + 1) % styles.length;
+                  EpisodeStyleRegistry.setStyle(styles[nextIndex].id);
+                },
+                style: IconButton.styleFrom(
+                  backgroundColor: context.theme.colorScheme.surfaceContainerHigh,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Episodes',
-                        style: context.theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: _closePane,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: context.theme.colorScheme.surfaceVariant
-                              .opaque(0.3),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          Icons.close,
-                          size: 20,
-                          color:
-                              context.theme.colorScheme.onSurface.opaque(0.7),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                icon: Obx(() {
+                  final currentId = EpisodeStyleRegistry.currentStyleId.value;
+                  final icon = currentId == 'minimal'
+                      ? Icons.list_rounded
+                      : currentId == 'compact'
+                          ? Icons.grid_view_rounded
+                          : Icons.view_stream_rounded;
+                  return Icon(icon, color: context.theme.colorScheme.onSurface);
+                }),
               ),
-              if (controller.episodeList.isNotEmpty)
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: ScrollablePositionedList.separated(
-                      initialScrollIndex: (() {
-                        if (controller.isOffline.value) {
-                          final idx = controller.episodeList.indexWhere(
-                              (e) => e.link == controller.selectedVideo.value?.url);
-                          return idx >= 0 ? idx : 0;
-                        }
-                        final numIdx =
-                            controller.currentEpisode.value.number.toInt() - 1;
-                        return numIdx.clamp(
-                            0, controller.episodeList.length - 1);
-                      })(),
-                      separatorBuilder: (context, i) =>
-                          const SizedBox(height: 8),
-                      itemCount: controller.episodeList.length,
-                      itemBuilder: (context, index) {
-                        final episode = controller.episodeList[index];
-                        final isSelected = controller.isOffline.value
-                            ? episode.link ==
-                                controller.selectedVideo.value?.url
-                            : episode == controller.currentEpisode.value;
-                        final offlineEpisode = controller.offlineStorage
-                            .getAnimeById(controller.anilistData.id)
-                            ?.episodes;
-
-                        return BetterEpisode(
-                          episode: episode,
-                          isSelected: isSelected,
-                          onTap: () => controller.changeEpisode(episode),
-                          layoutType: EpisodeLayoutType.detailed,
-                          offlineEpisodes: offlineEpisode,
-                          fallbackImageUrl: controller.anilistData.cover ??
-                              controller.anilistData.poster,
-                        );
-                      },
-                    ),
-                  ),
-                ),
             ],
+            child: controller.episodeList.isEmpty
+                ? const SizedBox.shrink()
+                : Obx(() {
+                    final currentStyle = EpisodeStyleRegistry.activeStyle;
+                    final episodes = controller.episodeList;
+                    final initialIndex = (() {
+                      if (controller.isOffline.value) {
+                        final idx = episodes.indexWhere(
+                            (e) => e.link == controller.selectedVideo.value?.url);
+                        return idx >= 0 ? idx : 0;
+                      }
+                      final numIdx =
+                          controller.currentEpisode.value.number.toInt() - 1;
+                      return numIdx.clamp(0, episodes.length - 1);
+                    })();
+
+                    final double itemHeight = currentStyle.id == 'minimal'
+                        ? 75.0
+                        : currentStyle.id == 'compact'
+                            ? 110.0
+                            : 120.0;
+                    
+                    final double initialOffset = (initialIndex * itemHeight).clamp(0.0, double.infinity);
+                    final scrollController = ScrollController(initialScrollOffset: initialOffset);
+
+                    if (currentStyle.isGrid) {
+                      return GridView.builder(
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(16),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: getResponsiveCrossAxisCount(
+                            context,
+                            baseColumns: 1,
+                            maxColumns: 2,
+                            mobileItemWidth: 200,
+                            tabletItemWidth: 200,
+                            desktopItemWidth: 200,
+                          ),
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          mainAxisExtent: currentStyle.id == 'minimal' ? 65 : 100,
+                        ),
+                        itemCount: episodes.length,
+                        itemBuilder: (context, index) {
+                          final episode = episodes[index];
+                          final isSelected = controller.isOffline.value
+                              ? episode.link ==
+                                  controller.selectedVideo.value?.url
+                              : episode.number == controller.currentEpisode.value.number;
+                          final offlineEpisodes = controller.offlineStorage
+                              .getAnimeById(controller.anilistData.id)
+                              ?.episodes;
+                          final isWatched = (offlineEpisodes ?? []).any((e) => e.number == episode.number);
+                          
+                          double progress = 0.0;
+                          if (offlineEpisodes != null) {
+                            final matching = offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
+                            if (matching != null && matching.durationInMilliseconds != null && matching.durationInMilliseconds! > 0) {
+                              progress = (matching.timeStampInMilliseconds ?? 0) / matching.durationInMilliseconds!;
+                            }
+                          }
+
+                          return currentStyle.builder(
+                            context,
+                            episode,
+                            isSelected,
+                            isWatched,
+                            progress,
+                            controller.anilistData,
+                            () => controller.changeEpisode(episode),
+                            null,
+                          );
+                        },
+                      );
+                    } else {
+                      return ListView.builder(
+                        controller: scrollController,
+                        padding: const EdgeInsets.all(16),
+                        itemCount: episodes.length,
+                        itemBuilder: (context, index) {
+                          final episode = episodes[index];
+                          final isSelected = controller.isOffline.value
+                              ? episode.link ==
+                                  controller.selectedVideo.value?.url
+                              : episode.number == controller.currentEpisode.value.number;
+                          final offlineEpisodes = controller.offlineStorage
+                              .getAnimeById(controller.anilistData.id)
+                              ?.episodes;
+                          final isWatched = (offlineEpisodes ?? []).any((e) => e.number == episode.number);
+                          
+                          double progress = 0.0;
+                          if (offlineEpisodes != null) {
+                            final matching = offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
+                            if (matching != null && matching.durationInMilliseconds != null && matching.durationInMilliseconds! > 0) {
+                              progress = (matching.timeStampInMilliseconds ?? 0) / matching.durationInMilliseconds!;
+                            }
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: currentStyle.builder(
+                              context,
+                              episode,
+                              isSelected,
+                              isWatched,
+                              progress,
+                              controller.anilistData,
+                              () => controller.changeEpisode(episode),
+                              null,
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  }),
           ),
         ));
   }

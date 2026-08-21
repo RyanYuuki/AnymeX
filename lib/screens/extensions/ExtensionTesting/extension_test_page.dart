@@ -1,15 +1,14 @@
-import 'dart:io';
-
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 import 'extension_test_controller.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ExtensionTestPage extends StatefulWidget {
   const ExtensionTestPage({super.key});
@@ -42,10 +41,8 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
     final theme = context.colors;
     final sourceController = Get.find<SourceController>();
 
-    return Glow(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Extension Testing'),
             Expanded(
@@ -70,16 +67,15 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildExtensionTypeSection(ColorScheme theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           'Extension Type',
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -145,7 +141,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
           ),
         ),
         child: Center(
-          child: Text(
+          child: AnymeXText(
             label,
             style: TextStyle(
               fontFamily: 'Poppins',
@@ -163,7 +159,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           'Test Type',
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -211,7 +207,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
           ),
         ),
         child: Center(
-          child: Text(
+          child: AnymeXText(
             label,
             style: TextStyle(
               fontFamily: 'Poppins',
@@ -229,7 +225,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           'Search Query',
           style: TextStyle(
             fontFamily: 'Poppins',
@@ -278,7 +274,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            AnymeXText(
               'Select Extensions',
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -297,7 +293,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                   names.every((n) => controller.selectedExtensions.contains(n));
               return TextButton(
                 onPressed: () => controller.toggleSelectAll(names),
-                child: Text(
+                child: AnymeXText(
                   allSelected ? 'Deselect all' : 'Select all',
                   style: TextStyle(
                     fontFamily: 'Poppins',
@@ -320,7 +316,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
-                child: Text(
+                child: AnymeXText(
                   'No extensions installed',
                   style: TextStyle(
                     color: theme.onSurface.withValues(alpha: 0.6),
@@ -358,7 +354,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
             _buildExtensionIcon(source, theme),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
+              child: AnymeXText(
                 source.name ?? 'Unknown',
                 style: TextStyle(
                   fontFamily: 'Poppins',
@@ -405,35 +401,14 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
       );
     }
 
-    if (source.iconUrl!.startsWith('http')) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: AnymeXImage(
-          imageUrl: source.iconUrl!,
-          width: 40,
-          height: 40,
-          fit: BoxFit.cover,
-          radius: 0,
-        ),
-      );
-    }
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Image.file(
-        File(source.iconUrl!),
+      child: AnymeXImage(
+        imageUrl: source.iconUrl!,
         width: 40,
         height: 40,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: theme.primary.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(Icons.extension, color: theme.primary, size: 24),
-        ),
+        radius: 0,
       ),
     );
   }
@@ -457,7 +432,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               ),
               elevation: 0,
             ),
-            child: const Text(
+            child: const AnymeXText(
               'Start Test',
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -487,7 +462,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                   color: theme.onSurface.withValues(alpha: 0.3),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                AnymeXText(
                   'No tests running',
                   style: TextStyle(
                     color: theme.onSurface.withValues(alpha: 0.6),
@@ -504,7 +479,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          AnymeXText(
             'Test Results',
             style: TextStyle(
               fontFamily: 'Poppins',

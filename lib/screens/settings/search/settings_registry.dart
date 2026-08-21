@@ -79,7 +79,7 @@ String settingsEntryId({
   final cat = _normalizeIdPart(category);
   final sec = section == null ? '' : '_${_normalizeIdPart(section)}';
   final k = _normalizeIdPart(key);
-  return '${cat}${sec}_$k';
+  return '$cat${sec}_$k';
 }
 
 // Category config

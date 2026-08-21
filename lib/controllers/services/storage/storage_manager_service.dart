@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:anymex/main.dart';
 import 'package:flutter/painting.dart';
 
@@ -32,12 +33,94 @@ class StorageManagerService {
     return total;
   }
 
+  Future<int> getImageCacheSize() async {
+    final dirs = [
+      await AnymeXCacheManager.getCacheDirectory(),
+      await AnymeXCacheManager.getResizedCacheDirectory(),
+      await AnymeXCacheManager.getLegacyCacheDirectory(),
+      await AnymeXCacheManager.getLegacyResizedCacheDirectory(),
+    ];
+    int total = 0;
+    for (final dir in dirs) {
+      total += await _computeDirectorySize(dir);
+    }
+    return total;
+  }
+
+  Future<int> getTorrentCacheSize() async {
+    final docsDir = await getApplicationDocumentsDirectory();
+    final torrentDir = Directory('${docsDir.path}/torrent_cache');
+    return await _computeDirectorySize(torrentDir);
+  }
+
+  Future<int> getSnapshotsCacheSize() async {
+    final supportDir = await getApplicationSupportDirectory();
+    final snapshotsDir = Directory('${supportDir.path}/snapshots');
+    return await _computeDirectorySize(snapshotsDir);
+  }
+
+  Future<int> getOtherTempCacheSize() async {
+    final tempDir = await getTemporaryDirectory();
+    final totalTemp = await _computeDirectorySize(tempDir);
+    final imageCache = await getImageCacheSize();
+    final other = totalTemp - imageCache;
+    return other < 0 ? 0 : other;
+  }
+
+  Future<void> clearImageCacheOnly() async {
+    await AnymeXCacheManager.instance.emptyCache();
+    final dirs = [
+      await AnymeXCacheManager.getCacheDirectory(),
+      await AnymeXCacheManager.getResizedCacheDirectory(),
+      await AnymeXCacheManager.getLegacyCacheDirectory(),
+      await AnymeXCacheManager.getLegacyResizedCacheDirectory(),
+    ];
+    for (final dir in dirs) {
+      await _clearDirectoryContents(dir);
+    }
+    PaintingBinding.instance.imageCache.clear();
+    PaintingBinding.instance.imageCache.clearLiveImages();
+  }
+
+  Future<void> clearTorrentCacheOnly() async {
+    final docsDir = await getApplicationDocumentsDirectory();
+    final torrentDir = Directory('${docsDir.path}/torrent_cache');
+    await _clearDirectoryContents(torrentDir);
+  }
+
+  Future<void> clearSnapshotsOnly() async {
+    final supportDir = await getApplicationSupportDirectory();
+    final snapshotsDir = Directory('${supportDir.path}/snapshots');
+    await _clearDirectoryContents(snapshotsDir);
+  }
+
+  Future<void> clearOtherTempOnly() async {
+    final tempDir = await getTemporaryDirectory();
+    final imageDirs = [
+      (await AnymeXCacheManager.getCacheDirectory()).path,
+      (await AnymeXCacheManager.getResizedCacheDirectory()).path,
+      (await AnymeXCacheManager.getLegacyCacheDirectory()).path,
+      (await AnymeXCacheManager.getLegacyResizedCacheDirectory()).path,
+    ];
+    if (await tempDir.exists()) {
+      try {
+        final entities = tempDir.listSync(recursive: false, followLinks: false);
+        for (final entity in entities) {
+          if (imageDirs.contains(entity.path)) continue;
+          try {
+            await entity.delete(recursive: true);
+          } catch (_) {}
+        }
+      } catch (_) {}
+    }
+  }
+
   Future<void> clearImageCache() async {
     await AnymeXCacheManager.instance.emptyCache();
 
     final dirs = await _getAllKnownCacheDirectories();
     for (final dir in dirs) {
-      await _deleteDirectoryIfExists(dir);
+      await _clearDirectoryContents(dir);
     }
 
     PaintingBinding.instance.imageCache.clear();
@@ -74,28 +157,40 @@ class StorageManagerService {
 
   Future<int> _computeDirectorySize(Directory directory) async {
     int total = 0;
-    await for (final entity
-        in directory.list(recursive: true, followLinks: false)) {
-      if (entity is File) {
-        total += await entity.length();
+    try {
+      if (await directory.exists()) {
+        await for (final entity
+            in directory.list(recursive: true, followLinks: false)) {
+          if (entity is File) {
+            try {
+              total += await entity.length();
+            } catch (_) {}
+          }
+        }
       }
-    }
+    } catch (_) {}
     return total;
   }
 
   Future<List<Directory>> _getAllKnownCacheDirectories() async {
+    final tempDir = await getTemporaryDirectory();
+    final docsDir = await getApplicationDocumentsDirectory();
+    final torrentDir = Directory('${docsDir.path}/torrent_cache');
     return [
-      await AnymeXCacheManager.getCacheDirectory(),
-      await AnymeXCacheManager.getResizedCacheDirectory(),
-      await AnymeXCacheManager.getLegacyCacheDirectory(),
-      await AnymeXCacheManager.getLegacyResizedCacheDirectory(),
+      tempDir,
+      if (await torrentDir.exists()) torrentDir,
     ];
   }
 
-  Future<void> _deleteDirectoryIfExists(Directory directory) async {
+  Future<void> _clearDirectoryContents(Directory directory) async {
     if (!await directory.exists()) return;
     try {
-      await directory.delete(recursive: true);
+      final entities = directory.listSync(recursive: false, followLinks: false);
+      for (final entity in entities) {
+        try {
+          await entity.delete(recursive: true);
+        } catch (_) {}
+      }
     } catch (_) {}
   }
 }

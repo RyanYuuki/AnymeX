@@ -1,7 +1,12 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/isar_models/track.dart';
 import 'package:anymex/database/isar_models/video.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:isar_community/isar.dart';
 
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:get/get.dart';
 import 'chapter.dart';
 import 'episode.dart';
 
@@ -20,6 +25,32 @@ class OfflineMedia {
   String? name;
   String? english;
   String? japanese;
+
+  @ignore
+  String get displayTitle {
+    if (Get.isRegistered<Settings>() &&
+        Get.find<Settings>().useAlternateTitle.value) {
+      final alt = (jname?.isNotEmpty ?? false)
+          ? jname
+          : ((japanese?.isNotEmpty ?? false)
+              ? japanese
+              : english);
+      if (alt != null && alt.trim().isNotEmpty && alt != '?') {
+        return alt;
+      }
+    }
+    return name ?? '?';
+  }
+
+  @ignore
+  ItemType get itemType => ItemType.values[mediaTypeIndex ?? 0];
+
+  @ignore
+  int get episodeCountInt => int.tryParse(totalEpisodes ?? '') ?? 0;
+
+  @ignore
+  int get chapterCountInt => int.tryParse(totalChapters ?? '') ?? 0;
+
   String? description;
   String? poster;
   String? cover;
@@ -48,6 +79,8 @@ class OfflineMedia {
   List<Chapter>? readChapters;
 
   int? serviceIndex;
+
+  @Index(composite: [CompositeIndex('mediaId')])
   int? mediaTypeIndex;
 
   OfflineMedia({
@@ -162,6 +195,45 @@ class OfflineMedia {
           .toList(),
       serviceIndex: json['serviceIndex'] as int? ?? 0,
       mediaTypeIndex: json['mediaTypeIndex'] as int? ?? 0,
+    );
+  }
+
+  Media toMedia() {
+    return Media(
+      id: mediaId ?? '',
+      idMal: idMal ?? '',
+      title: name ?? '',
+      romajiTitle: jname ?? japanese ?? '',
+      description: description ?? '',
+      poster: poster ?? '',
+      cover: cover,
+      totalEpisodes: totalEpisodes ?? '0',
+      type: type ?? '',
+      season: season ?? '',
+      premiered: premiered ?? '',
+      duration: duration ?? '',
+      status: status ?? '',
+      rating: rating ?? '',
+      popularity: popularity ?? '',
+      format: format ?? '',
+      aired: aired ?? '',
+      totalChapters: totalChapters ?? '0',
+      genres: genres ?? [],
+      studios: studios ?? [],
+      mediaType: itemType,
+      mediaContent: (episodes ?? [])
+          .map((e) => DEpisode(
+                episodeNumber: e.number,
+                url: e.link,
+                name: e.title,
+                description: e.desc,
+                thumbnail: e.thumbnail,
+                filler: e.filler,
+                dateUpload: e.dateUpload,
+              ))
+          .toList(),
+      altMediaContent: chapters,
+      serviceType: ServicesType.values[serviceIndex ?? 0],
     );
   }
 }

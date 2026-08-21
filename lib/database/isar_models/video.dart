@@ -28,6 +28,26 @@ class Video {
     this.audios,
   });
 
+  @ignore
+  Map<String, String>? get headers {
+    if (headerKeys == null || headerValues == null) return null;
+    final map = <String, String>{};
+    for (int i = 0; i < headerKeys!.length && i < headerValues!.length; i++) {
+      map[headerKeys![i]] = headerValues![i];
+    }
+    return map;
+  }
+
+  set headers(Map<String, String>? map) {
+    if (map == null) {
+      headerKeys = null;
+      headerValues = null;
+    } else {
+      headerKeys = map.keys.toList();
+      headerValues = map.values.toList();
+    }
+  }
+
   factory Video.fromVideo(d.Video episode) {
     final video = Video(
       url: episode.url,

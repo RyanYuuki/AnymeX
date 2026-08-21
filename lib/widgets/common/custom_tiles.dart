@@ -1,12 +1,12 @@
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/common/slider_semantics.dart';
-import 'package:anymex/widgets/custom_widgets/custom_icon_wrapper.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_slider_m3.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_icon_wrapper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 
 class SettingsHighlightProvider extends InheritedWidget {
   final String highlightTitle;
@@ -147,13 +147,13 @@ class CustomSwitchTile extends StatelessWidget {
       padding: padding,
       child: Row(
         children: [
-          AnymexIcon(icon, size: 30, color: context.colors.primary),
+          AnymeXIcon(icon, size: 30, color: context.colors.primary),
           const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   title,
                   style: TextStyle(
                     fontSize: 16,
@@ -162,7 +162,7 @@ class CustomSwitchTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 5),
-                Text(
+                AnymeXText(
                   description,
                   style: TextStyle(
                     fontSize: 14,
@@ -239,7 +239,7 @@ class CustomTile extends StatelessWidget {
               child: Row(
                 children: [
                   if (prefix == null)
-                    AnymexIcon(icon, size: 30, color: context.colors.primary)
+                    AnymeXIcon(icon, size: 30, color: context.colors.primary)
                   else
                     prefix!,
                   const SizedBox(width: 20),
@@ -247,7 +247,7 @@ class CustomTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        AnymeXText(
                           title,
                           style: TextStyle(
                             fontSize: 16,
@@ -256,7 +256,7 @@ class CustomTile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
+                        AnymeXText(
                           description,
                           style: TextStyle(
                             fontSize: 14,
@@ -274,8 +274,7 @@ class CustomTile extends StatelessWidget {
                     ),
                   ),
                   if (postFix == null)
-                    Icon(IconlyLight.arrow_right_2,
-                        color: context.colors.primary)
+                    Icon(IconlyLight.arrowRight2, color: context.colors.primary)
                   else
                     postFix!
                 ],
@@ -342,13 +341,13 @@ class CustomSliderTile extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    AnymexIcon(icon, size: 30, color: context.colors.primary),
+                    AnymeXIcon(icon, size: 30, color: context.colors.primary),
                     const SizedBox(width: 20),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          AnymeXText(
                             title,
                             style: TextStyle(
                               fontSize: 16,
@@ -357,7 +356,7 @@ class CustomSliderTile extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 5),
-                          Text(
+                          AnymeXText(
                             description,
                             style: TextStyle(
                               fontSize: 14,
@@ -377,15 +376,14 @@ class CustomSliderTile extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: Row(
                     children: [
-                      AnymexText(
-                        text: sliderValue % 1 == 0
+                      AnymeXText(sliderValue % 1 == 0
                             ? sliderValue.toInt().toString()
                             : sliderValue.toStringAsFixed(1),
                         variant: TextVariant.semiBold,
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: CustomSlider(
+                        child: AnymeXSliderM3(
                           focusNode: FocusNode(
                               canRequestFocus: false, skipTraversal: true),
                           value: double.parse(sliderValue.toStringAsFixed(1)),
@@ -393,20 +391,19 @@ class CustomSliderTile extends StatelessWidget {
                           max: max,
                           min: min,
                           label: label ?? sliderValue.toStringAsFixed(1),
-                          onDragEnd: onChangedEnd,
-                          glowBlurMultiplier: 1,
-                          glowSpreadMultiplier: 1,
-                          divisions: divisions?.toInt() ?? (max * 10).toInt(),
-                          customValueIndicatorSize: RoundedSliderValueIndicator(
-                              context.colors,
-                              width: 40,
-                              height: 40,
-                              radius: 50),
+                          onChangeEnd: onChangedEnd,
+                          // glowBlurMultiplier: 1,
+                          // glowSpreadMultiplier: 1,
+                          // divisions: divisions?.toInt() ?? (max * 10).toInt(),
+                          // customValueIndicatorSize: RoundedSliderValueIndicator(
+                          //     context.colors,
+                          //     width: 40,
+                          //     height: 40,
+                          //     radius: 50),
                         ),
                       ),
                       const SizedBox(width: 10),
-                      AnymexText(
-                        text: max % 1 == 0
+                      AnymeXText(max % 1 == 0
                             ? max.toInt().toString()
                             : max.toStringAsFixed(1),
                         variant: TextVariant.semiBold,

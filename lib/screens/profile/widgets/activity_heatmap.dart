@@ -1,6 +1,7 @@
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ActivityHeatmap extends StatefulWidget {
   final List<ActivityHistory> history;
@@ -168,7 +169,7 @@ class _ActivityHeatmapState extends State<ActivityHeatmap> {
                     return SizedBox(
                       height: cellStep,
                       child: Center(
-                        child: Text(dayLabels[row], style: dayLabelStyle),
+                        child: AnymeXText(dayLabels[row], style: dayLabelStyle),
                       ),
                     );
                   }),
@@ -192,7 +193,7 @@ class _ActivityHeatmapState extends State<ActivityHeatmap> {
                         children: List.generate(monthLabels.length, (i) {
                           return Positioned(
                             left: monthOffsets[i],
-                            child: Text(
+                            child: AnymeXText(
                               monthLabels[i],
                               style: TextStyle(fontSize: 9, color: subtleText),
                             ),

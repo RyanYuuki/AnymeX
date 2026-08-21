@@ -1,6 +1,5 @@
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/utils/logger.dart';
 
 class Staff {
   final String? id;
@@ -68,7 +67,7 @@ class Staff {
         if (edge['node'] == null) continue;
         
         var charNode = edge['node'];
-        var character = Character.fromSmallJson(charNode);
+        var character = Character.fromJson(charNode);
         
         
         if (charNode['media'] != null && charNode['media']['nodes'] != null && (charNode['media']['nodes'] as List).isNotEmpty) {

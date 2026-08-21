@@ -1,12 +1,11 @@
-import 'dart:math' show Random;
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:iconsax/iconsax.dart';
@@ -19,7 +18,7 @@ class CharactersCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
     if (characters.isEmpty) {
       return const SizedBox.shrink();
@@ -30,7 +29,7 @@ class CharactersCarousel extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: Text("Characters",
+          child: AnymeXText("Characters",
               style: TextStyle(
                   fontFamily: "Poppins-SemiBold",
                   fontSize: isDesktop ? 20 : 17,
@@ -40,6 +39,7 @@ class CharactersCarousel extends StatelessWidget {
         SizedBox(
           height: isDesktop ? 290 : 210,
           child: ListView.builder(
+            key: ObjectKey(characters),
             itemCount: characters.length,
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -66,12 +66,16 @@ class CharactersCarousel extends StatelessWidget {
                           children: [
                             Hero(
                               tag: tag,
+                              transitionOnUserGestures: true,
+                              flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                               child: AnymeXImage(
                                 imageUrl: itemData.image ??
                                     'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
                                 radius: 12.multiplyRoundness(),
                                 height: isDesktop ? 210 : 160,
                                 width: double.infinity,
+                                fadeInDuration: Duration.zero,
+                                fadeOutDuration: Duration.zero,
                               ),
                             ),
                             Positioned(
@@ -99,7 +103,7 @@ class CharactersCarousel extends StatelessWidget {
                                       color: context.colors.primary,
                                     ),
                                     const SizedBox(width: 3),
-                                    Text(
+                                    AnymeXText(
                                       itemData.favourites.toString(),
                                       style: TextStyle(
                                           fontSize: 12,
@@ -120,8 +124,7 @@ class CharactersCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymexText(
-                            text: itemData.name ?? '??',
+                          child: AnymeXText(itemData.name ?? '??',
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
@@ -140,7 +143,7 @@ class CharactersCarousel extends StatelessWidget {
         if (!isManga) ...[
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: Text("Voice Actors",
+            child: AnymeXText("Voice Actors",
                 style: TextStyle(
                     fontFamily: "Poppins-SemiBold",
                     fontSize: 18,
@@ -150,6 +153,7 @@ class CharactersCarousel extends StatelessWidget {
           SizedBox(
             height: isDesktop ? 290 : 230,
             child: ListView.builder(
+              key: ValueKey('VoiceActors-${characters.hashCode}'),
               itemCount: characters.length,
               scrollDirection: Axis.horizontal,
               physics: const BouncingScrollPhysics(),
@@ -184,12 +188,16 @@ class CharactersCarousel extends StatelessWidget {
                             children: [
                               Hero(
                                 tag: tag,
+                                transitionOnUserGestures: true,
+                                flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                                 child: AnymeXImage(
                                   imageUrl: itemData?.image ??
                                       'https://s4.anilist.co/file/anilistcdn/character/large/default.jpg',
                                   radius: 0,
                                   height: isDesktop ? 210 : 160,
                                   width: double.infinity,
+                                  fadeInDuration: Duration.zero,
+                                  fadeOutDuration: Duration.zero,
                                 ),
                               ),
                               if (itemData != null)
@@ -252,8 +260,7 @@ class CharactersCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymexText(
-                            text: itemData?.name ?? 'No Voice Actor',
+                          child: AnymeXText(itemData?.name ?? 'No Voice Actor',
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
@@ -281,14 +288,14 @@ class StaffCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (staff.isEmpty) return const SizedBox.shrink();
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0),
-          child: Text("Staff",
+          child: AnymeXText("Staff",
               style: TextStyle(
                   fontFamily: "Poppins-SemiBold",
                   fontSize: 18,
@@ -298,6 +305,7 @@ class StaffCarousel extends StatelessWidget {
         SizedBox(
           height: isDesktop ? 290 : 210,
           child: ListView.builder(
+            key: ObjectKey(staff),
             itemCount: staff.length,
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -324,12 +332,16 @@ class StaffCarousel extends StatelessWidget {
                           children: [
                             Hero(
                               tag: tag,
+                              transitionOnUserGestures: true,
+                              flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                               child: AnymeXImage(
                                 imageUrl: itemData.image ??
                                     'https://s4.anilist.co/file/anilistcdn/staff/large/default.jpg',
                                 radius: 12.multiplyRoundness(),
                                 height: isDesktop ? 210 : 160,
                                 width: double.infinity,
+                                fadeInDuration: Duration.zero,
+                                fadeOutDuration: Duration.zero,
                               ),
                             ),
                             if (itemData.role != null)
@@ -372,8 +384,7 @@ class StaffCarousel extends StatelessWidget {
                         const SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
-                          child: AnymexText(
-                            text: itemData.name ?? '??',
+                          child: AnymeXText(itemData.name ?? '??',
                             maxLines: 1,
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
@@ -383,8 +394,7 @@ class StaffCarousel extends StatelessWidget {
                         ),
                         if (itemData.primaryOccupations != null &&
                             itemData.primaryOccupations!.isNotEmpty)
-                          AnymexText(
-                            text: itemData.primaryOccupations!.join(", "),
+                          AnymeXText(itemData.primaryOccupations!.join(", "),
                             maxLines: 1,
                             size: 10,
                             color: context.colors.onSurface.withOpacity(0.7),
@@ -405,6 +415,5 @@ class StaffCarousel extends StatelessWidget {
 }
 
 String generateTag(String url) {
-  final randomNum = Random().nextInt(10000);
-  return '$url-$randomNum';
+  return url;
 }

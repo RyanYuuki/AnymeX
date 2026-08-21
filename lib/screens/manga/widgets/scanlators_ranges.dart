@@ -1,6 +1,5 @@
-import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 class ScanlatorsRanges extends StatelessWidget {
@@ -17,42 +16,32 @@ class ScanlatorsRanges extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          Obx(() => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: AnymexChip(
-                  label: ('All'),
-                  isSelected: selectedScanIndex.value == 0,
-                  onSelected: (bool selected) {
-                    if (selected) {
-                      selectedScanIndex.value = 0;
-                      onScanIndexChanged?.call();
-                    }
-                  },
-                ),
-              )),
+    return Obx(() {
+      final selected = selectedScanIndex.value;
+      return AnymeXPills(
+        scrollPadding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
+        items: [
+          PillItem(
+            label: 'All',
+            isSelected: selected == 0,
+            onTap: () {
+              selectedScanIndex.value = 0;
+              onScanIndexChanged?.call();
+            },
+          ),
           ...List.generate(scanlators.length, (index) {
             final uiIndex = index + 1;
-            final scanlator = scanlators[index];
-
-            return Obx(() => Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: AnymexChip(
-                    label: (scanlator),
-                    isSelected: selectedScanIndex.value == uiIndex,
-                    onSelected: (bool selected) {
-                      if (selected) {
-                        selectedScanIndex.value = uiIndex;
-                      }
-                    },
-                  ),
-                ));
+            return PillItem(
+              label: scanlators[index],
+              isSelected: selected == uiIndex,
+              onTap: () {
+                selectedScanIndex.value = uiIndex;
+                onScanIndexChanged?.call();
+              },
+            );
           }),
         ],
-      ),
-    );
+      );
+    });
   }
 }

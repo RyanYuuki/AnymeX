@@ -179,7 +179,6 @@ class AnilistUserSettings {
       'mangaSectionOrder': mangaSectionOrder,
       'animeTheme': animeTheme,
       'mangaTheme': mangaTheme,
-      'timezone': timezone,
     };
   }
 }

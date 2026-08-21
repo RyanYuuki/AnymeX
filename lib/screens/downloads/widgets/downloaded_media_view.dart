@@ -1,16 +1,20 @@
-import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'dart:io';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/screens/downloads/widgets/downloaded_watch_page.dart';
+import 'package:anymex/screens/downloads/widgets/track_sheet.dart';
 import 'package:anymex/screens/downloads/widgets/video_thumbnail_widget.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +34,12 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   DownloadedMangaMeta? _mangaMeta;
   final downloadController = Get.find<DownloadController>();
 
-  bool get _isManga => widget.summary.mediaType == 'Manga';
+  DownloadedMediaSummary get _currentSummary =>
+      downloadController.downloadedMedia
+          .firstWhereOrNull((s) => s.folderName == widget.summary.folderName) ??
+      widget.summary;
+
+  bool get _isManga => _currentSummary.mediaType == 'Manga';
 
   @override
   void initState() {
@@ -41,14 +50,14 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   Future<void> _refresh() async {
     if (_isManga) {
       final fresh = await downloadController.getMangaMeta(
-        widget.summary.extensionName,
-        widget.summary.folderName,
+        _currentSummary.extensionName,
+        _currentSummary.folderName,
       );
       if (mounted) setState(() => _mangaMeta = fresh);
     } else {
       final fresh = await downloadController.getMediaMeta(
-        widget.summary.extensionName,
-        widget.summary.folderName,
+        _currentSummary.extensionName,
+        _currentSummary.folderName,
       );
       if (mounted) setState(() => _meta = fresh);
     }
@@ -68,7 +77,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
 
   void _showDeleteEpisodeDialog(
       BuildContext context, DownloadedEpisodeMeta ep) {
-    AnymexDialog(
+    AnymeXDialog(
       title: 'Delete episode?',
       message:
           'Episode ${ep.number} will be permanently removed from your downloads.',
@@ -87,7 +96,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   void _showDeleteChapterDialog(
       BuildContext context, DownloadedChapterMeta ch) {
     final display = ch.displayTitle;
-    AnymexDialog(
+    AnymeXDialog(
       title: 'Delete chapter?',
       message: '$display will be permanently removed from your downloads.',
       onConfirm: () async {
@@ -105,7 +114,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     final count = _isManga
         ? (_mangaMeta?.chapters.length ?? 0)
         : (_meta?.episodes.length ?? 0);
-    AnymexDialog(
+    AnymeXDialog(
       title: _isManga ? 'Delete all chapters?' : 'Delete all episodes?',
       message:
           '"${widget.summary.title}" — $count ${_isManga ? 'chapters' : 'episodes'} will be permanently removed.',
@@ -126,9 +135,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         ? (_mangaMeta?.chapters.isEmpty ?? true)
         : (_meta?.episodes.isEmpty ?? true);
 
-    return Glow(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
+    return AnymeXScaffold(
         floatingActionButton: _buildContinueFab(),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -157,9 +164,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               ],
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget? _buildContinueFab() {
@@ -225,7 +230,9 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           meta: _meta!,
           summary: widget.summary,
         ));
+    await Future.delayed(const Duration(milliseconds: 300));
     await _refresh();
+    await _syncBoundTrackersAfterPlay();
   }
 
   Future<void> _playChapter(DownloadedChapterMeta ch) async {
@@ -253,7 +260,47 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           currentChapter: currentChapter,
           shouldTrack: false,
         ));
+    await Future.delayed(const Duration(milliseconds: 300));
     await _refresh();
+    await _syncBoundTrackersAfterPlay();
+  }
+
+  Future<void> _syncBoundTrackersAfterPlay() async {
+    try {
+      final trackCtrl = Get.find<TrackBindingController>();
+      final mediaId = widget.summary.folderName;
+      if (!trackCtrl.hasAnyBinding(mediaId)) return;
+
+      int progress = 0;
+      final threshold =
+          settingsController.markAsCompleted; // user-configured % (default 90)
+      if (!_isManga && _meta != null) {
+        for (final e in _meta!.episodes) {
+          final n = int.tryParse(e.number) ?? 0;
+          if (n == 0) continue;
+          final ts = e.episode.timeStampInMilliseconds ?? 0;
+          final dur = e.episode.durationInMilliseconds ?? 0;
+          final watched = dur > 0 && ts >= dur * (threshold / 100);
+          if (watched && n > progress) progress = n;
+        }
+      } else if (_isManga && _mangaMeta != null) {
+        for (final c in _mangaMeta!.chapters) {
+          final num = c.chapter.number;
+          if (num == null) continue;
+          final isRead = (c.chapter.lastReadTime ?? 0) > 0 ||
+              (c.chapter.totalPages != null &&
+                  c.chapter.pageNumber != null &&
+                  c.chapter.totalPages! > 0 &&
+                  c.chapter.pageNumber! >= c.chapter.totalPages!);
+          if (isRead && num.toInt() > progress) progress = num.toInt();
+        }
+      }
+
+      if (progress <= 0) return;
+      await trackCtrl.pushProgress(mediaId, progress, isAnime: !_isManga);
+    } catch (e) {
+      debugPrint('post-play track sync skipped: $e');
+    }
   }
 
   List<Widget> _buildEpisodeList(ColorScheme theme) {
@@ -305,8 +352,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   }
 
   Widget _buildHero(BuildContext context, ColorScheme theme) {
-    final hasPoster =
-        widget.summary.poster != null && widget.summary.poster!.isNotEmpty;
+    final summary = _currentSummary;
+    final hasPoster = summary.poster != null && summary.poster!.isNotEmpty;
     final count = _isManga
         ? (_mangaMeta?.chapters.length ?? '-')
         : (_meta?.episodes.length ?? '-');
@@ -329,6 +376,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 onTap: () => Navigator.pop(context),
               ),
               const Spacer(),
+              _buildTrackBtn(context: context, theme: theme),
+              const SizedBox(width: 8),
               _buildNavBtn(
                 context: context,
                 theme: theme,
@@ -353,7 +402,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 borderRadius: BorderRadius.circular(14),
                 child: hasPoster
                     ? AnymeXImage(
-                        imageUrl: widget.summary.poster!,
+                        imageUrl: summary.poster!,
                         width: 88,
                         height: 124,
                         fit: BoxFit.cover,
@@ -384,8 +433,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                         color: theme.primaryContainer.withOpacity(0.4),
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Text(
-                        widget.summary.extensionName.toUpperCase(),
+                      child: AnymeXText(
+                        summary.extensionName.toUpperCase(),
                         style: TextStyle(
                           color: theme.primary,
                           fontSize: 9.5,
@@ -395,8 +444,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      widget.summary.title,
+                    AnymeXText(
+                      summary.title,
                       style: TextStyle(
                         color: theme.onSurface,
                         fontSize: 20,
@@ -408,18 +457,52 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 12),
-                    Row(
+                    Wrap(
+                      spacing: 2,
+                      runSpacing: 2,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        _buildInfoChip(
-                          theme: theme,
-                          label: '$count ${_isManga ? 'Ch' : 'Eps'}',
-                          useSecondary: false,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: theme.secondary,
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(8),
+                              right: Radius.circular(5),
+                            ),
+                          ),
+                          child: AnymeXText(
+                            '$count ${_isManga ? 'CH' : 'EPS'}',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-SemiBold',
+                              fontSize: 10.0,
+                              color: theme.secondary.computeLuminance() > 0.5
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 6),
-                        _buildInfoChip(
-                          theme: theme,
-                          label: 'Downloaded',
-                          useSecondary: true,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: theme.tertiary,
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(5),
+                              right: Radius.circular(8),
+                            ),
+                          ),
+                          child: AnymeXText(
+                            'DOWNLOADED',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-SemiBold',
+                              fontSize: 10.0,
+                              color: theme.tertiary.computeLuminance() > 0.5
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -452,7 +535,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             color: theme.primary.withOpacity(0.7),
           ),
           const SizedBox(width: 8),
-          Text(
+          AnymeXText(
             _isManga ? 'Downloaded Chapters' : 'Downloaded Episodes',
             style: TextStyle(
               color: theme.onSurface.withOpacity(0.7),
@@ -469,7 +552,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 color: theme.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
+              child: AnymeXText(
                 '$count',
                 style: TextStyle(
                   color: theme.primary.withOpacity(0.8),
@@ -512,6 +595,70 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     );
   }
 
+  Widget _buildTrackBtn({
+    required BuildContext context,
+    required ColorScheme theme,
+  }) {
+    final trackCtrl = Get.find<TrackBindingController>();
+    final mediaId = _currentSummary.folderName;
+
+    return AnymexOnTap(
+      onTap: () async {
+        await showTrackSheet(context, summary: _currentSummary);
+        if (mounted) setState(() {});
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        decoration: BoxDecoration(
+          color: theme.primary.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: theme.primary.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.track_changes_rounded, size: 15, color: theme.primary),
+            const SizedBox(width: 6),
+            AnymeXText(
+              'Track',
+              style: TextStyle(
+                color: theme.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Obx(() {
+              trackCtrl.bindingsVersion.value;
+              trackCtrl.loggedInTrackers();
+              final bound = trackCtrl.bindingCount(mediaId);
+              final total = trackCtrl.loggedInTrackers().length;
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: bound > 0
+                      ? theme.primary.withOpacity(0.25)
+                      : theme.surfaceContainer.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: AnymeXText(
+                  total == 0 ? '0' : '$bound/$total',
+                  style: TextStyle(
+                    color: bound > 0
+                        ? theme.primary
+                        : theme.onSurface.withOpacity(0.5),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildInfoChip({
     required ColorScheme theme,
     required String label,
@@ -525,7 +672,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: color.withOpacity(0.2)),
       ),
-      child: Text(
+      child: AnymeXText(
         label,
         style: TextStyle(
           color: color.withOpacity(0.85),
@@ -545,7 +692,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: color.withOpacity(0.15), width: 0.5),
       ),
-      child: Text(
+      child: AnymeXText(
         text,
         style: TextStyle(
           color: color.withOpacity(0.85),
@@ -576,199 +723,267 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         (ts != null && dur != null && dur > 0) && ts >= (dur * 0.9);
     final hasProgress = progress > 0 && !isWatched;
 
-    String? timeLeft;
-    if (ts != null && dur != null && dur > 0) {
-      final leftMs = (dur - ts).clamp(0, dur);
-      final minutes = leftMs ~/ 60000;
-      if (minutes > 0) timeLeft = '${minutes}m left';
-    }
-
-    return AnymexOnTap(
-      onTap: onPlay,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.surfaceContainer.withOpacity(0.4),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Stack(
-              children: [
-                hasThumbnail
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: AnymeXImage(
-                          imageUrl: episode.thumbnail!,
-                          width: 120,
-                          height: 68,
-                          fit: BoxFit.cover,
-                          radius: 10,
-                        ),
-                      )
-                    : VideoThumbnailWidget(
-                        videoPath: episode.filePath,
-                        width: 120,
-                        height: 68,
-                        borderRadius: BorderRadius.circular(10),
-                        fallback: Container(
-                          width: 120,
-                          height: 68,
-                          decoration: BoxDecoration(
-                            color: theme.surfaceContainer.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
-                              episode.number,
-                              style: TextStyle(
-                                color: theme.onSurface.withOpacity(0.3),
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.surfaceContainer.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: AnymexOnTap(
+                  onTap: onPlay,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Stack(
+                        children: [
+                          hasThumbnail
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: AnymeXImage(
+                                    imageUrl: episode.thumbnail!,
+                                    width: 120,
+                                    height: 68,
+                                    fit: BoxFit.cover,
+                                    radius: 10,
+                                  ),
+                                )
+                              : VideoThumbnailWidget(
+                                  videoPath: episode.filePath,
+                                  width: 120,
+                                  height: 68,
+                                  borderRadius: BorderRadius.circular(10),
+                                  fallback: Container(
+                                    width: 120,
+                                    height: 68,
+                                    decoration: BoxDecoration(
+                                      color: theme.surfaceContainer
+                                          .withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: AnymeXText(
+                                        episode.number,
+                                        style: TextStyle(
+                                          color:
+                                              theme.onSurface.withOpacity(0.3),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.45),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.play_arrow_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
+                          Positioned(
+                            left: 6,
+                            top: 6,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.75),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: AnymeXText(
+                                'EP ${episode.number}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8.5,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (hasProgress)
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  bottomLeft: Radius.circular(10),
+                                  bottomRight: Radius.circular(10),
+                                ),
+                                child: LinearProgressIndicator(
+                                  value: progress,
+                                  minHeight: 3,
+                                  backgroundColor:
+                                      Colors.white.withOpacity(0.2),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      theme.primary),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AnymeXText(
+                              episode.title != null && episode.title!.isNotEmpty
+                                  ? episode.title!
+                                  : 'Episode ${episode.number}',
+                              style: TextStyle(
+                                color: isWatched
+                                    ? theme.onSurface.withOpacity(0.4)
+                                    : theme.onSurface,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: -0.2,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: theme.secondary,
+                                          borderRadius:
+                                              const BorderRadius.horizontal(
+                                            left: Radius.circular(8),
+                                            right: Radius.circular(5),
+                                          ),
+                                        ),
+                                        child: AnymeXText.semiBold(relativeTime.toUpperCase(),
+                                          size: 9.0,
+                                          color: theme.secondary
+                                                      .computeLuminance() >
+                                                  0.5
+                                              ? Colors.black
+                                              : Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 2),
+                                      Flexible(
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: theme.tertiary,
+                                            borderRadius:
+                                                const BorderRadius.horizontal(
+                                              left: Radius.circular(5),
+                                              right: Radius.circular(8),
+                                            ),
+                                          ),
+                                          child: AnymeXText.semiBold((episode.quality ?? 'VIDEO')
+                                                .toUpperCase(),
+                                            maxLines: 1,
+                                            size: 9.0,
+                                            color: theme.tertiary
+                                                        .computeLuminance() >
+                                                    0.5
+                                                ? Colors.black
+                                                : Colors.white,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                if (episode.episode.filler == true) ...[
+                                  const SizedBox(width: 6),
+                                  _buildInfoBadge(
+                                      theme, 'Filler', theme.secondary),
+                                ],
+                                if (isWatched) ...[
+                                  const SizedBox(width: 6),
+                                  _buildInfoBadge(
+                                      theme, 'Watched', theme.primary),
+                                ],
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.45),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.play_arrow_rounded,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 6,
-                  top: 6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.75),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      'EP ${episode.number}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                ),
-                if (hasProgress)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                      ),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 3,
-                        backgroundColor: Colors.white.withOpacity(0.2),
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(theme.primary),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    episode.title != null && episode.title!.isNotEmpty
-                        ? episode.title!
-                        : 'Episode ${episode.number}',
-                    style: TextStyle(
-                      color: isWatched
-                          ? theme.onSurface.withOpacity(0.4)
-                          : theme.onSurface,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.2,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      Text(
-                        relativeTime,
-                        style: TextStyle(
-                          color: theme.onSurface.withOpacity(0.35),
-                          fontSize: 11,
-                        ),
-                      ),
-                      if (episode.quality != null)
-                        _buildInfoBadge(theme, episode.quality!, theme.tertiary),
-                      if (episode.episode.filler == true)
-                        _buildInfoBadge(theme, 'Filler', theme.secondary),
-                      if (isWatched)
-                        _buildInfoBadge(theme, 'Watched', theme.primary),
-                      if (timeLeft != null)
-                        _buildInfoBadge(theme, timeLeft, theme.primary),
                     ],
                   ),
-                  if (episode.episode.desc != null &&
-                      episode.episode.desc!.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      episode.episode.desc!,
-                      style: TextStyle(
-                        color: theme.onSurface.withOpacity(0.45),
-                        fontSize: 11.5,
-                        height: 1.3,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.delete_outline_rounded),
-              color: theme.error.withOpacity(0.7),
-              onPressed: onDelete,
-              style: IconButton.styleFrom(
-                backgroundColor: theme.error.withOpacity(0.06),
-                padding: const EdgeInsets.all(8),
-                minimumSize: const Size(36, 36),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.delete_rounded, size: 16),
+                color: theme.error.withOpacity(0.85),
+                onPressed: onDelete,
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.error.withOpacity(0.06),
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size(36, 36),
+                  side: BorderSide(
+                    color: theme.error.withOpacity(0.18),
+                    width: 1,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (episode.episode.desc != null &&
+              episode.episode.desc!.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: theme.onSurface.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: AnymeXText(
+                episode.episode.desc!,
+                style: TextStyle(
+                  color: theme.onSurface.withOpacity(0.55),
+                  fontSize: 11.5,
+                  height: 1.3,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -781,125 +996,168 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     required VoidCallback onPlay,
     required VoidCallback onDelete,
   }) {
-    return AnymexOnTap(
-      onTap: onPlay,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.surfaceContainer.withOpacity(0.4),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 76,
-              height: 52,
-              decoration: BoxDecoration(
-                color: theme.surfaceContainer.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Icon(
-                  HugeIcons.strokeRoundedBook02,
-                  size: 24,
-                  color: theme.primary.withOpacity(0.4),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    chapter.displayTitle,
-                    style: TextStyle(
-                      color: theme.onSurface,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: -0.2,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 3),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
+    File? firstImageFile;
+    if (chapter.imageDir.isNotEmpty) {
+      try {
+        final dir = Directory(chapter.imageDir);
+        if (dir.existsSync()) {
+          final files = dir
+              .listSync()
+              .whereType<File>()
+              .where((f) =>
+                  f.path.endsWith('.jpg') ||
+                  f.path.endsWith('.jpeg') ||
+                  f.path.endsWith('.png') ||
+                  f.path.endsWith('.webp'))
+              .toList();
+          if (files.isNotEmpty) {
+            files.sort((a, b) => a.path.compareTo(b.path));
+            firstImageFile = files.first;
+          }
+        }
+      } catch (_) {}
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.surfaceContainer.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: AnymexOnTap(
+                  onTap: onPlay,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        relativeTime,
-                        style: TextStyle(
-                          color: theme.onSurface.withOpacity(0.28),
-                          fontSize: 11,
+                      Container(
+                        width: 52,
+                        height: 76,
+                        decoration: BoxDecoration(
+                          color: theme.surfaceContainer.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(10),
+                          image: firstImageFile != null
+                              ? DecorationImage(
+                                  image: FileImage(firstImageFile),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
+                        child: firstImageFile == null
+                            ? Center(
+                                child: Icon(
+                                  HugeIcons.strokeRoundedBook02,
+                                  size: 24,
+                                  color: theme.primary.withOpacity(0.4),
+                                ),
+                              )
+                            : null,
                       ),
-                      _buildDot(theme),
-                      Text(
-                        '${chapter.pageCount} pages',
-                        style: TextStyle(
-                          color: theme.tertiary.withOpacity(0.7),
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AnymeXText(
+                              chapter.displayTitle,
+                              style: TextStyle(
+                                color: theme.onSurface,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: -0.2,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 6),
+                            Wrap(
+                              spacing: 2,
+                              runSpacing: 2,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: theme.secondary,
+                                    borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(8),
+                                      right: Radius.circular(5),
+                                    ),
+                                  ),
+                                  child: AnymeXText(
+                                    relativeTime.toUpperCase(),
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-SemiBold',
+                                      fontSize: 9.0,
+                                      color:
+                                          theme.secondary.computeLuminance() >
+                                                  0.5
+                                              ? Colors.black
+                                              : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: theme.tertiary,
+                                    borderRadius: const BorderRadius.horizontal(
+                                      left: Radius.circular(5),
+                                      right: Radius.circular(8),
+                                    ),
+                                  ),
+                                  child: AnymeXText(
+                                    '${chapter.pageCount} PAGES',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-SemiBold',
+                                      fontSize: 9.0,
+                                      color: theme.tertiary.computeLuminance() >
+                                              0.5
+                                          ? Colors.black
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildTinyBtn(
-                  theme: theme,
-                  icon: HugeIcons.strokeRoundedBookOpen01,
-                  color: theme.primary,
-                  onTap: onPlay,
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.delete_rounded, size: 16),
+                color: theme.error.withOpacity(0.85),
+                onPressed: onDelete,
+                style: IconButton.styleFrom(
+                  backgroundColor: theme.error.withOpacity(0.06),
+                  padding: const EdgeInsets.all(8),
+                  minimumSize: const Size(36, 36),
+                  side: BorderSide(
+                    color: theme.error.withOpacity(0.18),
+                    width: 1,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                const SizedBox(height: 5),
-                _buildTinyBtn(
-                  theme: theme,
-                  icon: Icons.delete_outline_rounded,
-                  color: theme.error.withOpacity(0.7),
-                  onTap: onDelete,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDot(ColorScheme theme) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 3),
-        child: Text(
-          '·',
-          style: TextStyle(
-            color: theme.onSurface.withOpacity(0.25),
-            fontSize: 13,
+              ),
+            ],
           ),
-        ),
-      );
-
-  Widget _buildTinyBtn({
-    required ColorScheme theme,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return AnymexOnTap(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, size: 15, color: color),
+        ],
       ),
     );
   }
@@ -917,7 +1175,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               color: theme.onSurface.withOpacity(0.12),
             ),
             const SizedBox(height: 14),
-            Text(
+            AnymeXText(
               'Nothing downloaded yet',
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.5),
@@ -927,7 +1185,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
+            AnymeXText(
               'Media you download will appear here.',
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.28),
@@ -971,7 +1229,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   label,
                   style: TextStyle(
                     color: theme.onPrimary,
@@ -980,7 +1238,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                     letterSpacing: -0.2,
                   ),
                 ),
-                Text(
+                AnymeXText(
                   subtitle,
                   style: TextStyle(
                     color: theme.onPrimary.withOpacity(0.7),

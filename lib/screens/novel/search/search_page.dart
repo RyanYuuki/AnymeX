@@ -11,7 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 enum SearchState { initial, loading, success, error, empty }
 
@@ -70,11 +71,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
     _initializeData();
   }
 
-  void _initializeAnimations() {
-    _searchFocusNode.addListener(() {
-      setState(() {});
-    });
-  }
+  void _initializeAnimations() {}
 
   void _initializeData() {
     _searchController.text = '';
@@ -115,7 +112,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
     });
 
     try {
-      final novelExtensions = sourceController.installedNovelExtensions.value;
+      final novelExtensions = sourceController.installedNovelExtensions;
 
       if (novelExtensions.isEmpty) {
         setState(() {
@@ -309,14 +306,14 @@ class _NovelSearchPageState extends State<NovelSearchPage>
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+            AnymeXText(
               'Search to get started',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               'Enter a novel title to start searching',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -344,7 +341,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
               child: const ExpressiveLoadingIndicator(),
             ),
             const SizedBox(height: 24),
-            Text(
+            AnymeXText(
               'Searching...',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -376,14 +373,14 @@ class _NovelSearchPageState extends State<NovelSearchPage>
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+            AnymeXText(
               'Oops! Something went wrong',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               _errorMessage ?? 'Please try again later',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -394,7 +391,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
             ElevatedButton.icon(
               onPressed: () => _performSearch(),
               icon: Icon(Iconsax.refresh, color: context.colors.onPrimary),
-              label: const Text('Try Again'),
+              label: const AnymeXText('Try Again'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: context.colors.primary,
                 foregroundColor: context.colors.onPrimary,
@@ -430,14 +427,14 @@ class _NovelSearchPageState extends State<NovelSearchPage>
               ),
             ),
             const SizedBox(height: 24),
-            Text(
+            AnymeXText(
               'No results found',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               'Try adjusting your search terms or filters',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -483,9 +480,10 @@ class _NovelSearchPageState extends State<NovelSearchPage>
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: SafeArea(
+    return AnymeXScaffold(
+  body: SafeArea(
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           body: Column(
             children: [
               Container(
@@ -521,7 +519,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                   child: Row(
                     children: [
-                      Text(
+                      AnymeXText(
                         'Search Results',
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -537,7 +535,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                               Theme.of(context).colorScheme.primary.opaque(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
+                        child: AnymeXText(
                           '${_extensionResults.length} sources',
                           style:
                               Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -558,7 +556,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
                                 Theme.of(context).colorScheme.error.opaque(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             '${_extensionResults.where((r) => !r.isLoading && (r.data?.isEmpty ?? true)).length} failed',
                             style: Theme.of(context)
                                 .textTheme
@@ -578,7 +576,7 @@ class _NovelSearchPageState extends State<NovelSearchPage>
             ],
           ),
         ),
-      ),
-    );
+      )
+);
   }
 }

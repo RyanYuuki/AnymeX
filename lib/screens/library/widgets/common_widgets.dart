@@ -3,10 +3,12 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +27,7 @@ class MediaCard extends StatelessWidget {
       required this.isManga});
   @override
   Widget build(BuildContext context) {
-    final tag = getRandomTag();
+    final tag = '${data.mediaId ?? data.id}-library-card';
     return AnymexOnTap(
       onTap: () => navGate(tag),
       child: Container(
@@ -40,11 +42,15 @@ class MediaCard extends StatelessWidget {
                 children: [
                   Hero(
                     tag: tag,
+                    transitionOnUserGestures: true,
+                    flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                     child: AnymeXImage(
                       imageUrl: data.poster ?? '',
                       radius: 12.multiplyRadius(),
                       width: double.infinity,
                       height: double.infinity,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
                     ),
                   ),
                   Positioned(
@@ -69,8 +75,7 @@ class MediaCard extends StatelessWidget {
                             color: context.colors.onPrimary,
                           ),
                           const SizedBox(width: 3),
-                          AnymexText(
-                            text: data.rating ?? '0.0',
+                          AnymeXText(data.rating ?? '0.0',
                             variant: TextVariant.bold,
                             color: context.colors.onPrimary,
                           ),
@@ -101,8 +106,7 @@ class MediaCard extends StatelessWidget {
               height: 50,
               padding: const EdgeInsets.fromLTRB(6, 8, 0, 0),
               width: double.infinity,
-              child: AnymexText(
-                text: data.name ?? '??',
+              child: AnymeXText(data.name ?? '??',
                 size: 13,
                 variant: TextVariant.semiBold,
                 maxLines: 2,
@@ -116,12 +120,15 @@ class MediaCard extends StatelessWidget {
   }
 
   void navGate(tag) {
-    if (isManga) {
-      navigate(() => MangaDetailsPage(
-          media: Media.fromOfflineMedia(data, ItemType.manga), tag: tag));
+    final mediaTypeIndex = data.mediaTypeIndex ?? (isManga ? 0 : 1);
+    final mediaType = ItemType.values[mediaTypeIndex];
+    final m = Media.fromOfflineMedia(data, mediaType);
+    if (mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: m));
+    } else if (mediaType == ItemType.manga) {
+      navigate(() => MangaDetailsPage(media: m, tag: tag));
     } else {
-      navigate(() => AnimeDetailsPage(
-          media: Media.fromOfflineMedia(data, ItemType.anime), tag: tag));
+      navigate(() => AnimeDetailsPage(media: m, tag: tag));
     }
   }
 
@@ -137,8 +144,7 @@ class MediaCard extends StatelessWidget {
             color: context.colors.onPrimary,
           ),
           const SizedBox(width: 3),
-          AnymexText(
-            text: data.currentChapter?.number.toString() ?? '??',
+          AnymeXText(data.currentChapter?.number.toString() ?? '??',
             variant: TextVariant.bold,
             color: context.colors.onPrimary,
           ),
@@ -156,8 +162,7 @@ class MediaCard extends StatelessWidget {
             color: context.colors.onPrimary,
           ),
           const SizedBox(width: 3),
-          AnymexText(
-            text: data.currentEpisode?.number ?? '??',
+          AnymeXText(data.currentEpisode?.number ?? '??',
             variant: TextVariant.bold,
             color: context.colors.onPrimary,
           ),

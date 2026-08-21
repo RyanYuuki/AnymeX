@@ -7,7 +7,7 @@ double getResponsiveSize(context,
     {required double mobileSize,
     required double desktopSize,
     bool isStrict = false}) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   if (isStrict) {
     if (Platform.isAndroid || Platform.isIOS) {
       return mobileSize;
@@ -30,7 +30,7 @@ dynamic getResponsiveValueWithTablet(
   required dynamic desktopValue,
   bool strictMode = false,
 }) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   const double maxMobileWidth = 600;
   const double maxTabletWidth = 1024;
   final bool isMobilePlatform = Platform.isAndroid || Platform.isIOS;
@@ -56,7 +56,7 @@ dynamic getResponsiveValue(context,
     {required dynamic mobileValue,
     required dynamic desktopValue,
     bool strictMode = false}) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   final isMobile = Platform.isAndroid || Platform.isIOS;
   if (strictMode) {
     if (!isMobile) {
@@ -74,7 +74,7 @@ dynamic getResponsiveValue(context,
 }
 
 dynamic getPlatform(context, {bool strictMode = false}) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   final isMobile = Platform.isAndroid || Platform.isIOS;
   if (strictMode) {
     if (!isMobile) {
@@ -101,7 +101,7 @@ int getResponsiveCrossAxisCount(
   int tabletItemWidth = 200,
   int desktopItemWidth = 200,
 }) {
-  final currentWidth = MediaQuery.of(context).size.width;
+  final currentWidth = MediaQuery.sizeOf(context).width;
   const mobileBreakpoint = 600;
   const tabletBreakpoint = 1200;
 
@@ -118,48 +118,60 @@ int getResponsiveCrossAxisCount(
 }
 
 class PlatformBuilder extends StatelessWidget {
-  final Widget androidBuilder;
-  final Widget desktopBuilder;
+  final Widget? androidBuilder;
+  final Widget? desktopBuilder;
+  final WidgetBuilder? androidWidgetBuilder;
+  final WidgetBuilder? desktopWidgetBuilder;
   final bool strictMode;
-  const PlatformBuilder(
-      {super.key,
-      required this.androidBuilder,
-      required this.desktopBuilder,
-      this.strictMode = false});
+
+  const PlatformBuilder({
+    super.key,
+    this.androidBuilder,
+    this.desktopBuilder,
+    this.androidWidgetBuilder,
+    this.desktopWidgetBuilder,
+    this.strictMode = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      if (strictMode) {
-        if (!Platform.isAndroid && !Platform.isIOS) {
-          return desktopBuilder;
-        } else {
-          return androidBuilder;
-        }
+      final isDesktop = strictMode
+          ? (!Platform.isAndroid && !Platform.isIOS)
+          : (constraints.maxWidth > maxMobileWidth);
+
+      if (isDesktop) {
+        return desktopWidgetBuilder != null
+            ? desktopWidgetBuilder!(context)
+            : (desktopBuilder ?? const SizedBox.shrink());
       } else {
-        if (constraints.maxWidth > maxMobileWidth) {
-          return desktopBuilder;
-        } else {
-          return androidBuilder;
-        }
+        return androidWidgetBuilder != null
+            ? androidWidgetBuilder!(context)
+            : (androidBuilder ?? const SizedBox.shrink());
       }
     });
   }
 }
 
 class PlatformBuilderWithTablet extends StatelessWidget {
-  final Widget androidBuilder;
-  final Widget tabletBuilder;
-  final Widget desktopBuilder;
+  final Widget? androidBuilder;
+  final Widget? tabletBuilder;
+  final Widget? desktopBuilder;
+  final WidgetBuilder? androidWidgetBuilder;
+  final WidgetBuilder? tabletWidgetBuilder;
+  final WidgetBuilder? desktopWidgetBuilder;
   final bool strictMode;
   static const double maxMobileWidth = 500;
   static const double maxTabletWidth = 1024;
 
   const PlatformBuilderWithTablet({
     super.key,
-    required this.androidBuilder,
-    required this.tabletBuilder,
-    required this.desktopBuilder,
+    this.androidBuilder,
+    this.tabletBuilder,
+    this.desktopBuilder,
+    this.androidWidgetBuilder,
+    this.tabletWidgetBuilder,
+    this.desktopWidgetBuilder,
     this.strictMode = false,
   });
 
@@ -169,19 +181,31 @@ class PlatformBuilderWithTablet extends StatelessWidget {
       builder: (context, constraints) {
         if (strictMode) {
           if (!Platform.isAndroid && !Platform.isIOS) {
-            return desktopBuilder;
+            return desktopWidgetBuilder != null
+                ? desktopWidgetBuilder!(context)
+                : (desktopBuilder ?? const SizedBox.shrink());
           } else if (constraints.maxWidth > maxMobileWidth) {
-            return tabletBuilder;
+            return tabletWidgetBuilder != null
+                ? tabletWidgetBuilder!(context)
+                : (tabletBuilder ?? const SizedBox.shrink());
           } else {
-            return androidBuilder;
+            return androidWidgetBuilder != null
+                ? androidWidgetBuilder!(context)
+                : (androidBuilder ?? const SizedBox.shrink());
           }
         } else {
           if (constraints.maxWidth > maxTabletWidth) {
-            return desktopBuilder;
+            return desktopWidgetBuilder != null
+                ? desktopWidgetBuilder!(context)
+                : (desktopBuilder ?? const SizedBox.shrink());
           } else if (constraints.maxWidth > maxMobileWidth) {
-            return tabletBuilder;
+            return tabletWidgetBuilder != null
+                ? tabletWidgetBuilder!(context)
+                : (tabletBuilder ?? const SizedBox.shrink());
           } else {
-            return androidBuilder;
+            return androidWidgetBuilder != null
+                ? androidWidgetBuilder!(context)
+                : (androidBuilder ?? const SizedBox.shrink());
           }
         }
       },

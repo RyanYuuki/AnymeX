@@ -10,7 +10,7 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/utils/al_about_me_helpers.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/markdown.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +18,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 String preprocessAnilistAbout(String raw) {
   final source = raw.trim();
@@ -204,7 +205,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
   @override
   Widget build(BuildContext context) {
     if (_failed) {
-      return Text(
+      return AnymeXText(
         widget.about,
         style: TextStyle(
           fontSize: 13.5,
@@ -217,7 +218,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
       builder: (context, constraints) {
         final viewportWidth = constraints.maxWidth.isFinite
             ? constraints.maxWidth
-            : MediaQuery.of(context).size.width;
+            : MediaQuery.sizeOf(context).width;
         final contentMaxWidth = viewportWidth >= 1200
             ? 760.0
             : viewportWidth >= 900
@@ -527,7 +528,7 @@ class _AnilistMediaCardState extends State<_AnilistMediaCard> {
         }
 
         final data = snapshot.data;
-        final isDesktop = MediaQuery.of(context).size.width > 600;
+        final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
         return GestureDetector(
           onTap: () {
@@ -577,7 +578,7 @@ class _AnilistMediaCardState extends State<_AnilistMediaCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              AnymeXText(
                                 data.title?.isNotEmpty == true
                                     ? data.title
                                     : (data.romajiTitle ?? 'Unknown'),
@@ -590,7 +591,7 @@ class _AnilistMediaCardState extends State<_AnilistMediaCard> {
                                 ),
                               ),
                               const SizedBox(height: 6),
-                              Text(
+                              AnymeXText(
                                 '${widget.type.capitalizeFirst} \u2022 ${data.status ?? "Unknown"}',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -708,6 +709,7 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
 ''',
         ),
         initialSettings: InAppWebViewSettings(
+          useHybridComposition: false,
           transparentBackground: true,
           disableVerticalScroll: true,
           disableHorizontalScroll: true,

@@ -11,6 +11,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/track.dart' as hive;
 import 'package:anymex/screens/downloads/model/download_models.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/media_downloader.dart';
 import 'package:anymex/utils/download_isolate_pool.dart' as dl;
 import 'package:anymex/database/data_keys/keys.dart';
@@ -64,6 +65,14 @@ class DownloadController extends GetxController {
     ever(Get.find<Settings>().concurrentDownloads, (val) {
       _processScrapeQueue();
       _processMangaScrapeQueue();
+    });
+
+    ever(Get.find<Settings>().downloadPath, (val) async {
+      await _loadIndex();
+      activeTasks.clear();
+      await _loadActiveTasks();
+      activeMangaTasks.clear();
+      await _loadMangaActiveTasks();
     });
 
     final sourceController = Get.find<SourceController>();
@@ -251,7 +260,7 @@ class DownloadController extends GetxController {
   void _handleNotificationTap() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (Get.currentRoute != '/ActiveDownloads') {
-        Get.to(() => const ActiveDownloads());
+        navigate(() => const ActiveDownloads());
       }
     });
   }
@@ -641,10 +650,13 @@ class DownloadController extends GetxController {
       );
 
       final subFolder = p.join(fullDirPath, 'Episode_${task.episode.number}_subs');
-      final localSubs = task.subtitles?.map((s) => hive.Track(
-        file: p.join(subFolder, '${s.label}.srt'),
-        label: s.label,
-      )).toList();
+      final localSubs = task.subtitles?.map((s) {
+        final ext = MediaDownloader.getSubtitleExtension(s.file ?? '');
+        return hive.Track(
+          file: p.join(subFolder, '${s.label}$ext'),
+          label: s.label,
+        );
+      }).toList();
       task.subtitles = localSubs;
 
       _activeFileTasks.add(task.taskId);
@@ -811,9 +823,13 @@ class DownloadController extends GetxController {
         final ext = _imageExtension(page.url);
         final idx = pages.indexOf(page);
         final fileName = 'page_${(idx + 1).toString().padLeft(3, '0')}$ext';
+        final Map<String, String> headers = page.headers?.map((k, v) => MapEntry(k, v.toString())) ?? {};
+        if (!headers.containsKey('Referer') && source.baseUrl != null) {
+          headers['Referer'] = source.baseUrl!;
+        }
         return dl.PageUrl(
           url: page.url,
-          headers: page.headers?.map((k, v) => MapEntry(k, v.toString())),
+          headers: headers,
           fileName: p.join(chapterDir.path, fileName),
         );
       }).toList();
@@ -927,6 +943,12 @@ class DownloadController extends GetxController {
 
   Future<DownloadedMangaMeta?> getMangaMeta(String ext, String title) async {
     final mediaDir = await _getMangaMediaDirPath(title, ext);
+    await _syncMediaFolderMeta(
+      mediaDir: mediaDir,
+      ext: ext,
+      title: title,
+      mediaType: 'Manga',
+    );
     final metaFile = File(p.join(mediaDir, 'metadata.json'));
     if (!await metaFile.exists()) return null;
     final raw =
@@ -1194,28 +1216,368 @@ class DownloadController extends GetxController {
     );
   }
 
+  Future<DownloadedMediaSummary?> updateDownloadedMediaMetadata(
+    String folderName, {
+    String? newTitle,
+    String? newPoster,
+  }) async {
+    final root = await _getRootDir();
+    if (!await root.exists()) return null;
+    final indexFile = File(p.join(root.path, 'metadata.json'));
+    if (!await indexFile.exists()) return null;
+
+    try {
+      final raw =
+          jsonDecode(await indexFile.readAsString()) as Map<String, dynamic>;
+      final itemsRaw = raw['items'] as List<dynamic>? ?? [];
+      final items = itemsRaw
+          .map((e) =>
+              DownloadedMediaSummary.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+      final index = items.indexWhere((i) => i.folderName == folderName);
+      if (index != -1) {
+        final existing = items[index];
+        final updated = DownloadedMediaSummary(
+          title: (newTitle != null && newTitle.trim().isNotEmpty)
+              ? newTitle.trim()
+              : existing.title,
+          poster: (newPoster != null && newPoster.trim().isNotEmpty)
+              ? newPoster.trim()
+              : existing.poster,
+          extensionName: existing.extensionName,
+          folderName: existing.folderName,
+          mediaType: existing.mediaType,
+        );
+        items[index] = updated;
+
+        await indexFile.writeAsString(
+          jsonEncode({'items': items.map((i) => i.toJson()).toList()}),
+          flush: true,
+        );
+
+        final rxIndex =
+            downloadedMedia.indexWhere((i) => i.folderName == folderName);
+        if (rxIndex != -1) {
+          downloadedMedia[rxIndex] = updated;
+          downloadedMedia.refresh();
+        }
+        return updated;
+      }
+    } catch (e) {
+      debugPrint('DownloadController: error updating metadata: $e');
+    }
+    return null;
+  }
+
+  Future<void> _ensureNoMediaInTempDirs(String dirPath) async {
+    try {
+      final dir = Directory(dirPath);
+      if (!await dir.exists()) return;
+      await for (final entity in dir.list(recursive: true, followLinks: false)) {
+        if (entity is Directory) {
+          final isTemp = p.basename(entity.path).startsWith('temp_');
+          bool hasTs = false;
+          if (!isTemp) {
+            try {
+              hasTs = await entity.list().any((e) => e.path.endsWith('.ts'));
+            } catch (_) {}
+          }
+          if (isTemp || hasTs) {
+            final nomedia = File(p.join(entity.path, '.nomedia'));
+            if (!await nomedia.exists()) {
+              await nomedia.create();
+            }
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
   Future<void> _loadIndex() async {
     try {
       final root = await _getRootDir();
-      final indexFile = File(p.join(root.path, 'metadata.json'));
-      if (!await indexFile.exists()) {
+      _ensureNoMediaInTempDirs(root.path);
+      await resyncDownloads();
+    } catch (e) {
+      debugPrint('DownloadController: error loading index: $e');
+    }
+  }
+
+  Future<void> resyncDownloads() async {
+    try {
+      final root = await _getRootDir();
+      if (!await root.exists()) {
         downloadedMedia.clear();
         return;
       }
 
-      final raw =
-          jsonDecode(await indexFile.readAsString()) as Map<String, dynamic>;
-      final itemsRaw = raw['items'] as List<dynamic>? ?? [];
+      final Map<String, DownloadedMediaSummary> summaryMap = {};
+      final indexFile = File(p.join(root.path, 'metadata.json'));
+      if (await indexFile.exists()) {
+        try {
+          final raw =
+              jsonDecode(await indexFile.readAsString()) as Map<String, dynamic>;
+          final itemsRaw = raw['items'] as List<dynamic>? ?? [];
+          for (final item in itemsRaw) {
+            final summary =
+                DownloadedMediaSummary.fromJson(item as Map<String, dynamic>);
+            summaryMap[
+                '${summary.mediaType}_${summary.extensionName}_${summary.folderName}'] = summary;
+          }
+        } catch (_) {}
+      }
 
-      final summaries = itemsRaw
-          .map(
-              (e) => DownloadedMediaSummary.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final List<DownloadedMediaSummary> verifiedSummaries = [];
 
-      downloadedMedia.value = summaries;
+      for (final type in ['Anime', 'Manga']) {
+        final typeDir = Directory(p.join(root.path, type));
+        if (!await typeDir.exists()) continue;
+
+        await for (final extEntity in typeDir.list()) {
+          if (extEntity is! Directory) continue;
+          final extName = p.basename(extEntity.path);
+
+          await for (final mediaEntity in extEntity.list()) {
+            if (mediaEntity is! Directory) continue;
+            final folderName = p.basename(mediaEntity.path);
+
+            final key = '${type}_${extName}_$folderName';
+            final existingSummary = summaryMap[key];
+            final title = existingSummary?.title.isNotEmpty == true
+                ? existingSummary!.title
+                : folderName;
+            final poster = existingSummary?.poster;
+
+            final hasContent = await _syncMediaFolderMeta(
+              mediaDir: mediaEntity.path,
+              ext: extName,
+              title: title,
+              mediaType: type,
+            );
+
+            if (hasContent) {
+              final summary = DownloadedMediaSummary(
+                title: title,
+                poster: poster,
+                extensionName: extName,
+                folderName: folderName,
+                mediaType: type,
+              );
+              verifiedSummaries.add(summary);
+            }
+          }
+        }
+      }
+
+      await indexFile.writeAsString(
+        jsonEncode({'items': verifiedSummaries.map((i) => i.toJson()).toList()}),
+        flush: true,
+      );
+
+      downloadedMedia.value = verifiedSummaries;
     } catch (e) {
-      debugPrint('DownloadController: error loading index: $e');
+      debugPrint('DownloadController: error resyncing downloads: $e');
     }
+  }
+
+  Future<bool> _syncMediaFolderMeta({
+    required String mediaDir,
+    required String ext,
+    required String title,
+    required String mediaType,
+  }) async {
+    final metaFile = File(p.join(mediaDir, 'metadata.json'));
+
+    if (mediaType == 'Anime') {
+      DownloadedMediaMeta meta = const DownloadedMediaMeta(episodes: []);
+      if (await metaFile.exists()) {
+        try {
+          final raw =
+              jsonDecode(await metaFile.readAsString()) as Map<String, dynamic>;
+          meta = DownloadedMediaMeta.fromJson(raw);
+        } catch (_) {}
+      }
+
+      final verifiedEpisodes = <DownloadedEpisodeMeta>[];
+      final existingFileNames = <String>{};
+      final existingFilePaths = <String>{};
+
+      for (final epMeta in meta.episodes) {
+        final epFilePath = epMeta.filePath.isNotEmpty
+            ? epMeta.filePath
+            : p.join(mediaDir, epMeta.fileName);
+        final file = File(epFilePath);
+        if (await file.exists() && await file.length() > 0) {
+          verifiedEpisodes.add(epMeta);
+          if (epMeta.fileName.isNotEmpty) existingFileNames.add(epMeta.fileName);
+          existingFilePaths.add(epFilePath);
+        }
+      }
+
+      final dir = Directory(mediaDir);
+      if (await dir.exists()) {
+        await for (final entity in dir.list()) {
+          if (entity is File) {
+            final fileName = p.basename(entity.path);
+            final extName = p.extension(fileName).toLowerCase();
+            if (['.mp4', '.mkv', '.avi', '.webm', '.mov', '.ts', '.m3u8']
+                    .contains(extName) &&
+                !fileName.startsWith('.')) {
+              if (!existingFileNames.contains(fileName) &&
+                  !existingFilePaths.contains(entity.path) &&
+                  await entity.length() > 0) {
+                final epNum = _parseEpisodeNumberFromFileName(fileName);
+                final season = _parseSeasonFromFileName(fileName);
+                final sortMap = <String, String>{};
+                if (season != null) sortMap['season'] = season;
+
+                final newEp = DownloadedEpisodeMeta(
+                  episode: Episode(
+                    number: epNum,
+                    title: 'Episode $epNum',
+                    sortKeys: sortMap.keys.toList(),
+                    sortVals: sortMap.values.toList(),
+                  ),
+                  fileName: fileName,
+                  downloadedAt: entity.lastModifiedSync().millisecondsSinceEpoch,
+                  filePath: entity.path,
+                );
+                verifiedEpisodes.add(newEp);
+                existingFileNames.add(fileName);
+                existingFilePaths.add(entity.path);
+              }
+            }
+          }
+        }
+      }
+
+      verifiedEpisodes.sort((a, b) {
+        final aNum = double.tryParse(a.number) ?? 0.0;
+        final bNum = double.tryParse(b.number) ?? 0.0;
+        return aNum.compareTo(bNum);
+      });
+
+      final updatedMeta = DownloadedMediaMeta(
+        episodes: verifiedEpisodes,
+        watchedProgress: meta.watchedProgress,
+      );
+
+      if (verifiedEpisodes.isNotEmpty) {
+        await metaFile.writeAsString(jsonEncode(updatedMeta.toJson()), flush: true);
+        return true;
+      } else {
+        if (await metaFile.exists()) await metaFile.delete();
+        return false;
+      }
+    } else {
+      DownloadedMangaMeta meta = const DownloadedMangaMeta(chapters: []);
+      if (await metaFile.exists()) {
+        try {
+          final raw =
+              jsonDecode(await metaFile.readAsString()) as Map<String, dynamic>;
+          meta = DownloadedMangaMeta.fromJson(raw);
+        } catch (_) {}
+      }
+
+      final verifiedChapters = <DownloadedChapterMeta>[];
+      final existingDirs = <String>{};
+
+      for (final chMeta in meta.chapters) {
+        final chDir = Directory(chMeta.imageDir);
+        if (await chDir.exists()) {
+          final hasImages = await chDir.list().any((e) =>
+              e is File &&
+              ['.png', '.jpg', '.jpeg', '.webp']
+                  .contains(p.extension(e.path).toLowerCase()));
+          if (hasImages) {
+            verifiedChapters.add(chMeta);
+            existingDirs.add(chDir.path);
+          }
+        }
+      }
+
+      final dir = Directory(mediaDir);
+      if (await dir.exists()) {
+        await for (final entity in dir.list()) {
+          if (entity is Directory &&
+              !p.basename(entity.path).startsWith('temp_')) {
+            if (!existingDirs.contains(entity.path)) {
+              final imageCount = await entity
+                  .list()
+                  .where((e) =>
+                      e is File &&
+                      ['.png', '.jpg', '.jpeg', '.webp']
+                          .contains(p.extension(e.path).toLowerCase()))
+                  .length;
+              if (imageCount > 0) {
+                final chNum =
+                    _parseChapterNumberFromDir(p.basename(entity.path));
+                final newCh = DownloadedChapterMeta(
+                  chapter: Chapter(
+                    number: chNum,
+                    title:
+                        'Chapter ${chNum != null && chNum % 1 == 0 ? chNum.toInt() : chNum}',
+                  ),
+                  imageDir: entity.path,
+                  pageCount: imageCount,
+                  downloadedAt:
+                      entity.statSync().modified.millisecondsSinceEpoch,
+                );
+                verifiedChapters.add(newCh);
+                existingDirs.add(entity.path);
+              }
+            }
+          }
+        }
+      }
+
+      verifiedChapters.sort((a, b) {
+        final aNum = a.chapter.number ?? 0.0;
+        final bNum = b.chapter.number ?? 0.0;
+        return aNum.compareTo(bNum);
+      });
+
+      final updatedMeta = DownloadedMangaMeta(chapters: verifiedChapters);
+
+      if (verifiedChapters.isNotEmpty) {
+        await metaFile.writeAsString(jsonEncode(updatedMeta.toJson()), flush: true);
+        return true;
+      } else {
+        if (await metaFile.exists()) await metaFile.delete();
+        return false;
+      }
+    }
+  }
+
+  String _parseEpisodeNumberFromFileName(String fileName) {
+    final nameWithoutExt = p.basenameWithoutExtension(fileName);
+    final matchEp = RegExp(r'(?:EP|Episode[_\s]*)(\d+(?:\.\d+)?)',
+            caseSensitive: false)
+        .firstMatch(nameWithoutExt);
+    if (matchEp != null) {
+      return matchEp.group(1)!;
+    }
+    final numberMatch = RegExp(r'(\d+(?:\.\d+)?)').firstMatch(nameWithoutExt);
+    if (numberMatch != null) {
+      return numberMatch.group(1)!;
+    }
+    return '1';
+  }
+
+  String? _parseSeasonFromFileName(String fileName) {
+    final nameWithoutExt = p.basenameWithoutExtension(fileName);
+    final match =
+        RegExp(r'S(\d+)_', caseSensitive: false).firstMatch(nameWithoutExt);
+    return match?.group(1);
+  }
+
+  double? _parseChapterNumberFromDir(String dirName) {
+    final match = RegExp(r'(\d+(?:\.\d+)?)').firstMatch(dirName);
+    if (match != null) {
+      return double.tryParse(match.group(1)!);
+    }
+    return 1.0;
   }
 
   Future<void> updateEpisodeProgress(
@@ -1253,6 +1615,12 @@ class DownloadController extends GetxController {
 
   Future<DownloadedMediaMeta?> getMediaMeta(String ext, String title) async {
     final mediaDir = await _getMediaDirPath(title, ext, mediaType: 'Anime');
+    await _syncMediaFolderMeta(
+      mediaDir: mediaDir,
+      ext: ext,
+      title: title,
+      mediaType: 'Anime',
+    );
     final metaFile = File(p.join(mediaDir, 'metadata.json'));
     if (!await metaFile.exists()) return null;
     final raw =

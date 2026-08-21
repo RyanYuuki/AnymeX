@@ -3,10 +3,9 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/manga/reading_page.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -40,7 +39,7 @@ class MangaHistoryCard extends StatelessWidget {
       context.colors.primaryContainer.opaque(0.8),
     ];
 
-    return AnymexCard(
+    return AnymeXCard(
       shape: RoundedRectangleBorder(
           side: BorderSide(
             color: context.colors.primary.opaque(0.3),
@@ -137,8 +136,7 @@ class MangaHistoryCard extends StatelessWidget {
                                   BorderRadius.circular(8.multiplyRadius()),
                               color: colorScheme.primary,
                             ),
-                            child: AnymexText(
-                              text: _formatEpisodeNumber(),
+                            child: AnymeXText(_formatEpisodeNumber(),
                               size: 12,
                               variant: TextVariant.bold,
                               color: colorScheme.onPrimary,
@@ -146,9 +144,7 @@ class MangaHistoryCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           // Episode title
-                          AnymexText(
-                            text:
-                                data.currentChapter?.title ?? data.name ?? '??',
+                          AnymeXText(data.currentChapter?.title ?? data.name ?? '??',
                             size: 15,
                             maxLines: getResponsiveValue(context,
                                 mobileValue: 1, desktopValue: 2),
@@ -159,8 +155,7 @@ class MangaHistoryCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           if (data.name != null &&
                               data.name != data.currentChapter?.title)
-                            AnymexText(
-                              text: data.name!,
+                            AnymeXText(data.name!,
                               size: 14,
                               maxLines: 1,
                               variant: TextVariant.regular,
@@ -173,9 +168,7 @@ class MangaHistoryCard extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AnymexText(
-                                text:
-                                    'PAGE ${data.currentChapter?.pageNumber} / ${data.currentChapter?.totalPages}',
+                              AnymeXText('PAGE ${data.currentChapter?.pageNumber} / ${data.currentChapter?.totalPages}',
                                 size: 12,
                                 color: colorScheme.primary,
                                 variant: TextVariant.bold,
@@ -307,7 +300,7 @@ class MangaHistoryCard extends StatelessWidget {
 //                         SizedBox(
 //                             height: getResponsiveSize(context,
 //                                 mobileSize: 05, desktopSize: 30)),
-//                         AnymexText(
+//                         AnymeXText(
 //                           text: _formatEpisodeNumber().toUpperCase(),
 //                           size: getResponsiveSize(context,
 //                               mobileSize: 18, desktopSize: 20),
@@ -317,7 +310,7 @@ class MangaHistoryCard extends StatelessWidget {
 //                           overflow: TextOverflow.ellipsis,
 //                         ),
 //                         const SizedBox(height: 4),
-//                         AnymexText(
+//                         AnymeXText(
 //                           text: data.currentChapter?.title ?? '??',
 //                           size: 14,
 //                           maxLines: 2,
@@ -342,7 +335,7 @@ class MangaHistoryCard extends StatelessWidget {
 //                       borderRadius: BorderRadius.circular((8.multiplyRadius())),
 //                       color: context.colors.primaryContainer,
 //                     ),
-//                     child: AnymexText(
+//                     child: AnymeXText(
 //                       text:
 //                           formatTimeAgo(data.currentChapter?.lastReadTime ?? 0),
 //                       size: 12,
@@ -358,7 +351,7 @@ class MangaHistoryCard extends StatelessWidget {
 //                       borderRadius: BorderRadius.circular((8.multiplyRadius())),
 //                       color: context.colors.primary,
 //                     ),
-//                     child: AnymexText(
+//                     child: AnymeXText(
 //                       text:
 //                           'PAGE ${data.currentChapter?.pageNumber} / ${data.currentChapter?.totalPages}',
 //                       size: 12,

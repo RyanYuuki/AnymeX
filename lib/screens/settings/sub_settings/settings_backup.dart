@@ -1,9 +1,9 @@
 import 'package:anymex/controllers/services/backup_restore/backup_restore_service.dart';
 import 'package:anymex/controllers/sync/progress_sync_section.dart';
-import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -42,12 +42,15 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
           backupSettings = backSettings;
           backupAuthTokens = backAuthTokens;
           hasSelected = true;
-          Navigator.of(context).pop();
         },
       ),
     );
 
     if (!hasSelected) return;
+
+    setState(() {
+      controller.isBackingUp.value = true;
+    });
 
     try {
       String? password;
@@ -71,6 +74,10 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       if (mounted) {
         snackBar("Backup failed: ${e.toString()}");
       }
+    } finally {
+      setState(() {
+        controller.isBackingUp.value = false;
+      });
     }
   }
 
@@ -100,6 +107,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
           isEncrypted: isEncrypted,
           onConfirm: (restoreSettings, restoreAuthTokens) async {
             Get.back();
+            setState(() {
+              controller.isRestoring.value = true;
+            });
             try {
               await controller.restoreBackup(
                 path,
@@ -109,12 +119,17 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 restoreAuthTokens: restoreAuthTokens,
               );
               if (mounted) {
-                snackBar("Backup restored successfully!");
+                snackBar(
+                    "Backup restored successfully! Please restart the app.");
               }
             } catch (e) {
               if (mounted) {
                 snackBar("Restore failed: ${e.toString()}");
               }
+            } finally {
+              setState(() {
+                controller.isRestoring.value = false;
+              });
             }
           },
         ),
@@ -138,84 +153,74 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Glow(
-      child: Scaffold(
-        body: Column(
-          children: [
-            const NestedHeader(title: 'Data Management'),
-            Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+    return AnymeXScaffold(
+      showHeader: true,
+      headerTitle: 'Data Management',
+      body: Builder(
+          builder: (ctx) => SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                    16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const _SectionHeader(title: "Current Library"),
-                    const SizedBox(height: 16),
-                    Obx(() {
-                      controller.isRestoring.value;
-                      return FutureBuilder(
-                        future: controller.getLibraryStats(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                                  ConnectionState.done &&
-                              snapshot.data != null) {
-                            return LibraryDashboard(stats: snapshot.data!);
-                          } else {
-                            return const CircularProgressIndicator();
-                          }
-                        },
-                      );
-                    }),
-                    const SizedBox(height: 32),
-                    const _SectionHeader(title: "Actions"),
-                    const SizedBox(height: 16),
-                    ActionCard(
-                      title: "Create Backup",
-                      subtitle: "Secure your library to local storage",
-                      icon: Icons.backup_rounded,
-                      color: theme.colorScheme.primary,
-                      onTap: _handleBackup,
+                    AnymeXSectionBuilder(
+                      title: 'Current Library',
+                      borderSide: Border.all(color: Colors.transparent),
+                      children: [
+                        Obx(() {
+                          controller.isRestoring.value;
+                          return FutureBuilder(
+                            future: controller.getLibraryStats(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                      ConnectionState.done &&
+                                  snapshot.data != null) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child:
+                                      LibraryDashboard(stats: snapshot.data!),
+                                );
+                              } else {
+                                return const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        }),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    ActionCard(
-                      title: "Restore Data",
-                      subtitle: "Import your .anymex backup file",
-                      icon: Icons.settings_backup_restore_rounded,
-                      color: theme.colorScheme.tertiary,
-                      onTap: () => _handleRestore(context),
+                    AnymeXSectionBuilder(
+                      title: 'Actions',
+                      children: [
+                        AnymeXTile(
+                          title: "Create Backup",
+                          subtitle: "Secure your library to local storage",
+                          icon: Icons.backup_rounded,
+                          onTap: _handleBackup,
+                        ),
+                        AnymeXTile(
+                          title: "Restore Data",
+                          subtitle: "Import your .anymex backup file",
+                          icon: Icons.settings_backup_restore_rounded,
+                          onTap: () => _handleRestore(context),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 32),
-                    const _SectionHeader(title: "Cloud Sync"),
-                    const SizedBox(height: 16),
-                    const ProgressSyncSection(),
+                    AnymeXSectionBuilder(
+                      borderSide:
+                          Border.all(color: Colors.transparent, width: 0),
+                      title: 'Cloud Sync',
+                      children: const [
+                        ProgressSyncSection(),
+                      ],
+                    ),
                   ],
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title.toUpperCase(),
-      style: TextStyle(
-        color: context.colors.primary,
-        fontSize: 11,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 1.5,
-      ),
+              )),
     );
   }
 }

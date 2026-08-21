@@ -2,16 +2,20 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/scheduler.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
-import 'package:anymex/utils/torrent/torrent_url_detector.dart';
-import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
 
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
@@ -19,11 +23,17 @@ import 'package:anymex/database/isar_models/video.dart' as model;
 import 'package:anymex/models/Media/media.dart' as anymex;
 import 'package:anymex/models/player/player_adaptor.dart';
 import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
+import 'package:anymex/utils/external_player.dart';
+import 'package:anymex/utils/pip_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_media_session/flutter_media_session.dart';
+import 'package:flutter_media_session/flutter_media_session_platform_interface.dart';
 
 import 'package:anymex/utils/aniskip.dart' as aniskip;
+import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/color_profiler.dart';
 import 'package:anymex/utils/sub_parser.dart';
@@ -33,11 +43,10 @@ import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/subtitle_pre_translator.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
-import 'package:anymex/widgets/non_widgets/anymex_toast.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_toast.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
-import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart' as d;
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' as d;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -86,6 +95,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   static final _newlineRx = RegExp(r'\\[nN]');
 
   Rx<Episode> currentEpisode = Rx<Episode>(Episode(number: '1'));
+  final _mediaSession = FlutterMediaSession();
+  bool _isMediaSessionActive = false;
+  DateTime? _lastMediaSessionPositionUpdate;
   final List<Episode> episodeList;
   final anymex.Media anilistData;
   RxList<model.Video> episodeTracks = RxList();
@@ -142,9 +154,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   BasePlayer get basePlayer => _basePlayer;
 
   late BasePlayer _basePlayer;
+  final RxBool _isPlayerInitialized = false.obs;
+  final RxBool isPipMode = false.obs;
 
   Widget get videoWidget {
-    if (_isReloadingPlayer.value) {
+    if (_isReloadingPlayer.value || !_isPlayerInitialized.value) {
       return Container(
         color: Colors.black,
         child: const Center(
@@ -172,7 +186,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   final Rx<Duration> bufferred = Rx<Duration>(Duration.zero);
   final RxDouble playbackSpeed = 1.0.obs;
+  double _sessionSpeed = 1.0;
   final RxBool isBuffering = false.obs;
+  bool _isTorrentBuffering = false;
   final RxBool isPlaying = false.obs;
   final RxBool showControls = true.obs;
   final RxBool isSeeking = false.obs;
@@ -191,15 +207,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<List<SubtitleTrack>> embeddedSubs = Rx([]);
   final Rx<List<VideoTrack>> embeddedQuality = Rx([]);
   final Rx<AudioTrack?> selectedAudioTrack = Rx(null);
+  final RxString selectedAudioChannelLayout = 'auto'.obs;
   final Rx<SubtitleTrack?> selectedSubsTrack = Rx(null);
   final Rx<VideoTrack?> selectedQualityTrack = Rx(null);
   final Rx<model.Track> selectedExternalSub = Rx(model.Track());
-  final Rx<model.Track> selectedExternalAudio = Rx(model.Track());
+  final Rxn<model.Track> selectedExternalAudio = Rxn();
   final Rxn<model.Video> selectedVideo = Rxn();
   final Rx<List<model.Track>> externalSubs = Rx([]);
   final RxBool showAllStreamSubtitles = false.obs;
   final Rx<bool> isSourcePaneOpened = false.obs;
   final Rx<bool> isTracksPaneOpened = false.obs;
+  final Rx<bool> isAudioPaneOpened = false.obs;
   final Rx<bool> isSyncSubsPaneOpened = false.obs;
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
@@ -316,6 +334,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
   }
 
+  void setAudioChannelLayout(String layout) {
+    selectedAudioChannelLayout.value = layout;
+    PlayerKeys.audioChannelLayout.set(layout);
+    _basePlayer.setAudioChannelLayout(layout);
+  }
+
   void applyShaderByIndex(int index) {
     final shaders = PlayerShaders.getShaders();
     if (index >= 0 && index < shaders.length) {
@@ -335,6 +359,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   bool isLeftLandscaped = true;
   final Rx<DeviceOrientation> currentOrientation =
       DeviceOrientation.landscapeLeft.obs;
+  final Rx<DeviceOrientation> physicalOrientation =
+      DeviceOrientation.portraitUp.obs;
+  StreamSubscription? _accelerometerSub;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
   final RxBool isLocked = false.obs;
@@ -353,6 +380,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
     _initOrientations();
+    selectedAudioChannelLayout.value = PlayerKeys.audioChannelLayout.get<String>('auto');
     _activeUseLibass = PlayerKeys.useLibass.get<bool>(false);
     _initializePlayer();
     _updateRpc();
@@ -360,6 +388,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _initializeAniSkip();
     }
     _initializePersistentListeners();
+    _initMediaSession();
     if (!isOffline.value) {
       _extractSubtitles();
     }
@@ -369,12 +398,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (isOffline.value) {
       _loadLocalSubtitles();
     }
-    ever(selectedVideo, (_) {
-      final audios = selectedVideo.value?.audios ?? [];
-      embeddedAudioTracks.value = audios
-          .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
-          .toList();
-    });
+    ever(selectedVideo, (_) => _autoSelectAudioTrack());
+    _autoSelectAudioTrack();
     if (PlayerKeys.useLibass.get(false)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         snackBar(
@@ -382,6 +407,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             duration: 3000);
       });
     }
+    if (Platform.isAndroid) {
+      try {
+        FlutterDisplayMode.setPreferredMode(DisplayMode.auto);
+      } catch (e) {
+        Logger.e("Error setting auto display mode in player: $e");
+      }
+    }
+    PipController.setAutoEnter(enabled: true);
+    PipController.onPlay = () => play();
+    PipController.onPause = () => pause();
+    PipController.onForward = () => megaSeek(30);
+    PipController.onBackward = () => megaSeek(-30);
+    PipController.onPipModeChanged = (active) => isPipMode.value = active;
+    PipController.initialize();
   }
 
   static void initializePlayerControlsIfNeeded(Settings settings) {
@@ -396,10 +435,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'shaders',
           'source',
           'tracks',
+          'audio',
+          'cast',
           'sync_subs',
           'speed',
           'orientation',
-          'aspect_ratio'
+          'aspect_ratio',
+          'external_player'
         ],
         'hiddenButtonIds': [],
         'buttonConfigs': {
@@ -407,13 +449,66 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           'shaders': {'visible': true},
           'source': {'visible': true},
           'tracks': {'visible': true},
+          'audio': {'visible': true},
+          'cast': {'visible': true},
           'sync_subs': {'visible': true},
           'speed': {'visible': true},
           'orientation': {'visible': true},
           'aspect_ratio': {'visible': true},
+          'external_player': {'visible': true},
         },
       };
       PlayerUiKeys.bottomControlsSettings.set(json.encode(defaultConfig));
+    } else {
+      bool updated = false;
+      final rightIds =
+          (decodedConfig['rightButtonIds'] as List<dynamic>?)?.cast<String>() ??
+              [];
+      final hiddenIds =
+          (decodedConfig['hiddenButtonIds'] as List<dynamic>?)?.cast<String>() ??
+              [];
+      final leftIds =
+          (decodedConfig['leftButtonIds'] as List<dynamic>?)?.cast<String>() ??
+              [];
+
+      if (!rightIds.contains('cast') &&
+          !hiddenIds.contains('cast') &&
+          !leftIds.contains('cast')) {
+        rightIds.add('cast');
+        decodedConfig['rightButtonIds'] = rightIds;
+        updated = true;
+      }
+
+      if (!rightIds.contains('audio') &&
+          !hiddenIds.contains('audio') &&
+          !leftIds.contains('audio')) {
+        final tracksIdx = rightIds.indexOf('tracks');
+        if (tracksIdx != -1) {
+          rightIds.insert(tracksIdx + 1, 'audio');
+        } else {
+          rightIds.add('audio');
+        }
+        decodedConfig['rightButtonIds'] = rightIds;
+        updated = true;
+      }
+
+      final buttonConfigs =
+          (decodedConfig['buttonConfigs'] as Map<String, dynamic>?) ?? {};
+      if (!buttonConfigs.containsKey('cast')) {
+        buttonConfigs['cast'] = {'visible': true};
+        decodedConfig['buttonConfigs'] = buttonConfigs;
+        updated = true;
+      }
+
+      if (!buttonConfigs.containsKey('audio')) {
+        buttonConfigs['audio'] = {'visible': true};
+        decodedConfig['buttonConfigs'] = buttonConfigs;
+        updated = true;
+      }
+
+      if (updated) {
+        PlayerUiKeys.bottomControlsSettings.set(json.encode(decodedConfig));
+      }
     }
   }
 
@@ -432,8 +527,97 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     );
   }
 
+  Future<void> _initMediaSession() async {
+    if (!playerSettings.useMediaSession) return;
+    try {
+      await _mediaSession.activate();
+      _isMediaSessionActive = true;
+      _mediaSession.setActionHandler(
+        onPlay: () {
+          play();
+        },
+        onPause: () {
+          pause();
+        },
+        onSkipToNext: () {
+          if (hasNextEpisode) {
+            changeEpisode(nextEpisode!);
+          }
+        },
+        onSkipToPrevious: () {
+          if (hasPreviousEpisode) {
+            changeEpisode(previousEpisode!);
+          }
+        },
+        onSeekTo: (pos) {
+          seekTo(pos);
+        },
+      );
+      await _updateMediaSessionMetadata();
+    } catch (e) {
+      Logger.e('Failed to initialize media session: $e');
+    }
+  }
+
+  Future<void> _deactivateMediaSession() async {
+    if (!_isMediaSessionActive) return;
+    _isMediaSessionActive = false;
+    try {
+      await _mediaSession.deactivate();
+    } catch (e) {
+      Logger.e('Failed to deactivate media session: $e');
+    }
+  }
+
+  Future<void> _updateMediaSessionMetadata() async {
+    if (!_isMediaSessionActive) return;
+    try {
+      final epTitle = currentEpisode.value.title ?? '';
+      final epNum = currentEpisode.value.number;
+      final showName = itemName ?? anilistData.title;
+      final title = epTitle.isNotEmpty ? 'Ep $epNum: $epTitle' : 'Episode $epNum';
+      final artworkUrl = isOffline.value ? 'https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/assets/images/logo.png' : (anilistData.cover ?? anilistData.poster);
+
+      await FlutterMediaSessionPlatform.instance.updateMetadata(
+        MediaMetadata(
+          title: title,
+          artist: showName,
+          album: showName,
+          artworkUri: artworkUrl,
+          duration: episodeDuration.value,
+        ),
+      );
+    } catch (e) {
+      Logger.e('Failed to update media session metadata: $e');
+    }
+  }
+
+  Future<void> _updateMediaSessionState(bool playing, {Duration? position}) async {
+    if (!_isMediaSessionActive) return;
+    try {
+      await FlutterMediaSessionPlatform.instance.updatePlaybackState(
+        PlaybackState(
+          status: playing ? PlaybackStatus.playing : PlaybackStatus.paused,
+          position: position ?? currentPosition.value,
+        ),
+      );
+    } catch (e) {
+      Logger.e('Failed to update media session state: $e');
+    }
+  }
+
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+    PipController.setAutoEnter(enabled: false);
+    _accelerometerSub?.cancel();
+    if (Platform.isAndroid) {
+      try {
+        settingsController.applyDisplayRefreshMode();
+      } catch (e) {
+        Logger.e("Error restoring display mode from player: $e");
+      }
+    }
     delete();
     super.onClose();
   }
@@ -442,12 +626,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
+    if (state == AppLifecycleState.resumed) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      isPipMode.value = false;
+    }
+
     if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive) {
+      isPipMode.value = true;
       if (!kDebugMode) {
         _trackLocally();
       }
+    }
+
+    if (state == AppLifecycleState.detached) {
+      _deactivateMediaSession();
     }
   }
 
@@ -458,6 +651,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     seekDuration.value = settings.seekDuration;
     skipDuration.value = settings.skipDuration;
     playbackSpeed.value = settings.speed;
+    _sessionSpeed = settings.speed;
     final savedProfile =
         PlayerUiKeys.currentVisualProfile.get<String>('natural').toLowerCase();
     currentVisualProfile.value =
@@ -499,6 +693,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _initOrientations() async {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    _initPhysicalOrientationListener();
 
     if (Platform.isAndroid || Platform.isIOS) {
       if (playerSettings.defaultPortraitMode) {
@@ -508,6 +703,31 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _applyOrientation(orientation);
       }
     }
+  }
+
+  void _initPhysicalOrientationListener() {
+    if (!Platform.isAndroid && !Platform.isIOS) return;
+    try {
+      _accelerometerSub = accelerometerEvents
+          .throttleTime(const Duration(milliseconds: 250))
+          .listen((event) {
+        final x = event.x;
+        final y = event.y;
+        if (x.abs() > y.abs()) {
+          if (x > 5.0) {
+            physicalOrientation.value = DeviceOrientation.landscapeLeft;
+          } else if (x < -5.0) {
+            physicalOrientation.value = DeviceOrientation.landscapeRight;
+          }
+        } else {
+          if (y > 5.0) {
+            physicalOrientation.value = DeviceOrientation.portraitUp;
+          } else if (y < -5.0) {
+            physicalOrientation.value = DeviceOrientation.portraitDown;
+          }
+        }
+      });
+    } catch (_) {}
   }
 
   Future<DeviceOrientation> _getClosestLandscapeOrientation() async {
@@ -543,6 +763,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     SystemChrome.setPreferredOrientations([orientation]);
     currentOrientation.value = orientation;
     isLeftLandscaped = orientation != DeviceOrientation.landscapeRight;
+    Future.delayed(const Duration(milliseconds: 300), () {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    });
   }
 
   Duration overlayAnimationDuration(int milliseconds) {
@@ -552,6 +775,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleOrientation() {
+    if (currentOrientation.value != physicalOrientation.value) {
+      _applyOrientation(physicalOrientation.value);
+      return;
+    }
     DeviceOrientation next;
     if (currentOrientation.value == DeviceOrientation.landscapeLeft) {
       next = DeviceOrientation.portraitUp;
@@ -701,6 +928,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       useLibass: PlayerKeys.useLibass.get<bool>(false),
       hwdec: decoderHwdec,
       videoOutput: settings.videoOutput,
+      audioOutput: settings.audioOutput,
       playerType: useMediaKit ? PlayerType.mediaKit : PlayerType.betterPlayer,
       autoPlay: (betterCore['autoPlay'] as bool?) ?? true,
       useBuffering: (betterCore['useBuffering'] as bool?) ?? true,
@@ -712,9 +940,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     );
 
     await _basePlayer.initialize();
+    _isPlayerInitialized.value = true;
     _bindPlayerStreams();
     playerReloadVersion.value++;
     refresh();
+
+    if (PlayerKeys.useExternalPlayer.get<bool>(false)) {
+      await launchExternalPlayer();
+      return;
+    }
 
     if (isOffline.value && offlineVideoPath != null) {
       final stamp =
@@ -724,6 +958,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         startPosition:
             startPositionOverride ?? Duration(milliseconds: stamp ?? 0),
       );
+      await _basePlayer.setRate(_sessionSpeed);
       snackBar('If you see black screen, use external player for watching');
     } else {
       await _openWithCloudFallback(
@@ -798,12 +1033,16 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } catch (_) {}
 
     if (isTorrentUrl(url)) {
+      _isTorrentBuffering = true;
+      isBuffering.value = true;
       try {
         Logger.i('Torrent URL detected from extension, resolving stream...');
-        final resolved = await TorrentStreamResolver.resolve(url);
+        final resolved = await TorrentStreamResolver.resolve(url, episode: episodeNum);
         url = resolved.streamUrl;
         Logger.i('Torrent stream resolved: $url');
       } catch (e) {
+        _isTorrentBuffering = false;
+        isBuffering.value = false;
         Logger.e('Failed to resolve torrent stream: $e');
         snackBar('Failed to start torrent stream: $e');
         return;
@@ -811,21 +1050,39 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
+    await _basePlayer.setRate(_sessionSpeed);
   }
 
-  void _initializeAniSkip() {
+  void _initializeAniSkip() async {
     isOPSkippedOnce.value = false;
     isEDSkippedOnce.value = false;
     isRecapSkippedOnce.value = false;
     currentSkipInterval.value = null;
     _cancelAutoSkipTimer();
     _autoSkipCancelledForCurrentSegment = false;
+    String malId = anilistData.idMal;
+    final serviceType = anilistData.serviceType;
+
+    if (serviceType.isMal) {
+      malId = anilistData.id;
+    } else if (malId.isEmpty || malId == '0') {
+      final aniId = anilistData.id;
+      if (aniId.isNotEmpty && aniId != '0' && serviceType.isAL && int.tryParse(aniId) != null) {
+        try {
+          final mappedId = await MediaSyncer.getMappedAnimeId(aniId, MappingType.anilist);
+          if (mappedId != null && mappedId.isNotEmpty) {
+            malId = mappedId;
+            anilistData.idMal = mappedId;
+          }
+        } catch (_) {}
+      }
+    }
 
     final episodeLengthSec =
         (currentEpisode.value.durationInMilliseconds ?? 0) ~/ 1000;
 
     final skipQuery = aniskip.SkipSearchQuery(
-      idMAL: anilistData.idMal,
+      idMAL: malId,
       episodeNumber: currentEpisode.value.number,
       episodeLength: episodeLengthSec,
     );
@@ -868,8 +1125,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     bool? lastAutoTranslate;
     String? lastTranslateTo;
+    bool? lastUseMediaSession;
 
     _subscriptions.add(settingsController.playerSettings.listen((settings) {
+      final bool useMediaSession = settings.useMediaSession;
+      if (lastUseMediaSession != null &&
+          lastUseMediaSession != useMediaSession) {
+        if (useMediaSession) {
+          _initMediaSession();
+        } else {
+          _deactivateMediaSession();
+        }
+      }
+      lastUseMediaSession = useMediaSession;
+
       final bool autoTranslate = settings.autoTranslate;
       final String? translateTo = (settings as dynamic).translateTo;
 
@@ -918,6 +1187,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       currentEpisode.value.durationInMilliseconds =
           episodeDuration.value.inMilliseconds;
 
+      if (_isTorrentBuffering && pos.inMilliseconds > 500) {
+        _isTorrentBuffering = false;
+        isBuffering.value = _basePlayer.state.isBuffering;
+      }
+
       if (_shouldMarkAsCompleted && !isOffline.value) {
         _trackOnline(true);
       }
@@ -926,6 +1200,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         _updateSkipUiState();
         _handleAutoSkip();
       }
+      final now = DateTime.now();
+      if (_lastMediaSessionPositionUpdate == null ||
+          now.difference(_lastMediaSessionPositionUpdate!) >=
+              const Duration(seconds: 3)) {
+        _lastMediaSessionPositionUpdate = now;
+        _updateMediaSessionState(isPlaying.value, position: pos);
+      }
     }));
 
     _playerSubscriptions.add(_basePlayer.durationStream.listen((dur) {
@@ -933,6 +1214,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       episodeDuration.value = dur;
       currentEpisode.value.durationInMilliseconds = dur.inMilliseconds;
       _updateRpc();
+      _updateMediaSessionMetadata();
+      _updateMediaSessionState(isPlaying.value);
     }));
 
     _playerSubscriptions.add(_basePlayer.bufferStream
@@ -945,8 +1228,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _playerSubscriptions.add(_basePlayer.playingStream.listen((e) {
       if (_isReloadingPlayer.value) return;
       isPlaying.value = e;
+      PipController.updatePlaybackState(e);
+      _updateMediaSessionState(e);
       if (e) {
         _resetAutoHideTimer();
+        if (playbackSpeed.value != _sessionSpeed) {
+          _basePlayer.setRate(_sessionSpeed);
+        }
       }
       if (isOffline.value) return;
       if (!e) {
@@ -961,7 +1249,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.bufferingStream.listen((e) {
       if (_isReloadingPlayer.value) return;
-      isBuffering.value = e;
+      if (_isTorrentBuffering) {
+        isBuffering.value = true;
+      } else {
+        isBuffering.value = e;
+      }
     }));
 
     _playerSubscriptions.add(_basePlayer.tracksStream.listen((e) {
@@ -997,7 +1289,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     _playerSubscriptions.add(_basePlayer.errorStream.listen((e) {
       if (_isReloadingPlayer.value) return;
-      Logger.i('${e} => ${selectedVideo.value?.headers}');
+      Logger.i('$e => ${selectedVideo.value?.headers}');
       final errorStr = e.toString();
       if (errorStr.contains('Failed to open') &&
           !errorStr.contains('.glsl') &&
@@ -1007,9 +1299,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }));
 
     int subtitleTranslateRequestId = 0;
+    Timer? subtitleTranslateDebounce;
 
-    _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) async {
+    _playerSubscriptions.add(_basePlayer.subtitleStream.listen((e) {
       if (_isReloadingPlayer.value) return;
+      if (kDebugMode && e.isEmpty && subtitleText.isNotEmpty) {
+        return;
+      }
       subtitleText.value = e;
       if (!playerSettings.autoTranslate) {
         if (translatedSubtitle.value.isNotEmpty) {
@@ -1018,24 +1314,25 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
-      final sanitizedLines = e
-          .map((line) => line
-              .replaceAll(_htmlRx, '')
-              .replaceAll(_assRx, '')
-              .replaceAll(_newlineRx, '\n')
-              .trim())
-          .where((line) => line.isNotEmpty)
-          .toList();
-      final int currentRequestId = ++subtitleTranslateRequestId;
+      subtitleTranslateDebounce?.cancel();
+      subtitleTranslateDebounce = Timer(const Duration(milliseconds: 800), () async {
+        final sanitizedLines = e
+            .map((line) => line
+                .replaceAll(_htmlRx, '')
+                .replaceAll(_assRx, '')
+                .replaceAll(_newlineRx, '\n')
+                .trim())
+            .where((line) => line.isNotEmpty)
+            .toList();
+        final int currentRequestId = ++subtitleTranslateRequestId;
 
-      final cleanedText = sanitizedLines.join('\n');
+        final cleanedText = sanitizedLines.join('\n');
 
-      if (cleanedText.isEmpty && playerSettings.autoTranslate) {
-        translatedSubtitle.value = "";
-        return;
-      }
+        if (cleanedText.isEmpty) {
+          translatedSubtitle.value = '';
+          return;
+        }
 
-      if (playerSettings.autoTranslate && cleanedText.isNotEmpty) {
         final lookupKey = cleanedText
             .replaceAll(_htmlRx, '')
             .replaceAll(_assRx, '')
@@ -1070,7 +1367,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             SubtitlePreTranslator.manualAdd(lookupKey, sanitizedTranslated);
           }
         } catch (_) {}
-      }
+      });
     }));
 
     _playerSubscriptions.add(_basePlayer.heightStream.listen((height) {
@@ -1087,7 +1384,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void _loadLocalSubtitles() async {
-    if (offlineVideoPath == null) return;
+    externalSubs.value = [];
+    embeddedSubs.value = [];
+    final videoPath = selectedVideo.value?.url ?? offlineVideoPath;
+    if (videoPath == null) return;
 
     if (selectedVideo.value?.subtitles != null &&
         selectedVideo.value!.subtitles!.isNotEmpty) {
@@ -1116,7 +1416,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     try {
-      final videoFile = File(offlineVideoPath!);
+      final videoFile = File(videoPath);
       final parentDir = videoFile.parent;
       final dirs = await parentDir.list().whereType<Directory>().toList();
       final expectedSubsDirName = 'Episode_${currentEpisode.value.number}_subs';
@@ -1187,6 +1487,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       _autoHideTimer = Timer(_autoHideDuration, () {
         if (!isMouseHovering.value &&
             !isSourcePaneOpened.value &&
+            !isTracksPaneOpened.value &&
+            !isAudioPaneOpened.value &&
+            !isSyncSubsPaneOpened.value &&
             !isEpisodePaneOpened.value) {
           showControls.value = false;
         }
@@ -1250,24 +1553,39 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final videoPath = episode.link;
       if (videoPath == null || videoPath.isEmpty) return;
       _basePlayer.pause();
-      DynamicKeys.offlineVideoProgress
-          .set(offlineVideoPath, currentPosition.value.inMilliseconds);
+      final oldPath = selectedVideo.value?.url ?? offlineVideoPath;
+      if (oldPath != null) {
+        DynamicKeys.offlineVideoProgress
+            .set(oldPath, currentPosition.value.inMilliseconds);
+      }
       resetListeners();
       isEpisodePaneOpened.value = false;
+      isSourcePaneOpened.value = false;
+      isTracksPaneOpened.value = false;
+      isAudioPaneOpened.value = false;
+      isSyncSubsPaneOpened.value = false;
+      isSpeedPaneOpened.value = false;
       currentEpisode.value = episode;
       final stamp = DynamicKeys.offlineVideoProgress.get<int?>(videoPath, null);
       await _basePlayer.open(
         videoPath,
         startPosition: Duration(milliseconds: stamp ?? 0),
       );
+      await _basePlayer.setRate(_sessionSpeed);
       // Update the selected video and offline path tracking
-      selectedVideo.value = model.Video(
-        url: videoPath,
-        quality: 'Offline',
-        originalUrl: videoPath,
-        headerKeys: [],
-        headerValues: [],
-      );
+      final offlineVideo = episode.videoTracks?.firstWhereOrNull((v) => v.url == videoPath) ??
+          model.Video(
+            url: videoPath,
+            quality: 'Offline',
+            originalUrl: videoPath,
+            headerKeys: [],
+            headerValues: [],
+            subtitles: episode.videoTracks?.firstOrNull?.subtitles,
+          );
+      episodeTracks.value = [offlineVideo];
+      selectedVideo.value = offlineVideo;
+      
+      _loadLocalSubtitles();
       applySavedProfile();
       return;
     }
@@ -1447,8 +1765,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   bool _matchesPreferredLanguage(String? label, String preferredLangCode) {
-    if (label == null || label.isEmpty || preferredLangCode == 'none')
+    if (label == null || label.isEmpty || preferredLangCode == 'none') {
       return false;
+    }
     final normLabel = label.toLowerCase();
     final normCode = preferredLangCode.toLowerCase();
     final fullName =
@@ -1518,17 +1837,27 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _switchMedia(String url, Map<String, String>? headers,
       {Duration? startPosition}) async {
+    if (PlayerKeys.useExternalPlayer.get<bool>(false)) {
+      await launchExternalPlayer();
+      return;
+    }
+
     if (_basePlayer is MediaKitPlayer) {
       await _basePlayer.open("");
     }
 
     if (isTorrentUrl(url)) {
+      _isTorrentBuffering = true;
+      isBuffering.value = true;
       try {
         Logger.i('Torrent URL detected (switch), resolving stream...');
-        final resolved = await TorrentStreamResolver.resolve(url);
+        final episodeNum = currentEpisode.value.number;
+        final resolved = await TorrentStreamResolver.resolve(url, episode: episodeNum.toString());
         url = resolved.streamUrl;
         Logger.i('Torrent stream resolved: $url');
       } catch (e) {
+        _isTorrentBuffering = false;
+        isBuffering.value = false;
         Logger.e('Failed to resolve torrent stream: $e');
         snackBar('Failed to start torrent stream: $e');
         return;
@@ -1536,9 +1865,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
+    await _basePlayer.setRate(_sessionSpeed);
   }
 
   Future<void> delete() async {
+    for (final subscription in _playerSubscriptions) {
+      subscription.cancel();
+    }
+    _playerSubscriptions.clear();
+
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    _subscriptions.clear();
+
+    await _deactivateMediaSession();
     await _basePlayer.pause();
     _subSyncWorker?.dispose();
     _seekDebounce?.cancel();
@@ -1564,20 +1905,18 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     _revertOrientations();
-    WidgetsBinding.instance.removeObserver(this);
     if (!isOffline.value) {
       DiscordRPCController.instance.updateMediaPresence(media: anilistData);
     }
 
-    for (final subscription in _subscriptions) {
-      subscription.cancel();
+    final active = sourceController.activeSource.value;
+    if (active != null && active is ASource) {
+      try {
+        await active.methods.stopHttpServer();
+      } catch (e) {
+        Logger.e('Error stopping http server: $e');
+      }
     }
-    _subscriptions.clear();
-
-    for (final subscription in _playerSubscriptions) {
-      subscription.cancel();
-    }
-    _playerSubscriptions.clear();
 
     await _basePlayer.dispose();
 
@@ -1589,7 +1928,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   void _revertOrientations() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     if (!Platform.isAndroid && !Platform.isIOS) {
-      AnymexTitleBar.setFullScreen(false);
+      AnymeXTitleBar.setFullScreen(false);
     }
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -1630,7 +1969,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void setRate(double rate) {
+  void setRate(double rate, {bool updateSession = true}) {
+    if (updateSession) {
+      _sessionSpeed = rate;
+    }
     playbackSpeed.value = rate;
     _basePlayer.setRate(rate);
   }
@@ -1685,7 +2027,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleFullScreen() {
-    AnymexTitleBar.toggleFullScreen();
+    AnymeXTitleBar.toggleFullScreen();
     onUserInteraction();
   }
 
@@ -1707,7 +2049,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (isLocked.value) return;
     if (!settings.enableSwipeControls) return;
 
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery.sizeOf(context);
     final position = e.localPosition;
     if (position.dy < size.height * 0.2 || position.dy > size.height * 0.8) {
       return;
@@ -1761,6 +2103,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     volumeIndicator.value = true;
     _volumeTimer?.cancel();
 
+    brightnessIndicator.value = false;
+    _brightnessTimer?.cancel();
+
     if (!isDragging) {
       _hideVolumeIndicatorAfterDelay();
     }
@@ -1769,6 +2114,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   Future<void> setBrightness(double value, {bool isDragging = false}) async {
     brightness.value = value;
     brightnessIndicator.value = true;
+    _brightnessTimer?.cancel();
+
+    volumeIndicator.value = false;
+    _volumeTimer?.cancel();
 
     unawaited(
       ScreenBrightness.instance
@@ -1778,8 +2127,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }),
     );
 
-    _brightnessTimer?.cancel();
-
     if (!isDragging) {
       _hideBrightnessIndicatorAfterDelay();
     }
@@ -1788,14 +2135,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _hideVolumeIndicatorAfterDelay() {
     _volumeTimer?.cancel();
-    _volumeTimer = Timer(const Duration(milliseconds: 500), () {
+    _volumeTimer = Timer(const Duration(milliseconds: 1500), () {
       volumeIndicator.value = false;
     });
   }
 
   void _hideBrightnessIndicatorAfterDelay() {
     _brightnessTimer?.cancel();
-    _brightnessTimer = Timer(const Duration(milliseconds: 500), () {
+    _brightnessTimer = Timer(const Duration(milliseconds: 1500), () {
       brightnessIndicator.value = false;
     });
   }
@@ -1832,6 +2179,31 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (playerSettings.autoTranslate && track.file != null) {
       startPreTranslation(subtitleUrl);
     }
+  }
+
+  void _autoSelectAudioTrack() {
+    final audios = selectedVideo.value?.audios ?? [];
+    embeddedAudioTracks.value = audios
+        .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
+        .toList();
+    if (audios.isNotEmpty) {
+      final firstAudio = audios.first;
+      if (firstAudio.file != null && firstAudio.file!.isNotEmpty) {
+        setExternalAudio(firstAudio);
+      }
+    } else {
+      selectedExternalAudio.value = null;
+    }
+  }
+
+  void setExternalAudio(model.Track? track) {
+    if (track == null || (track.file?.isEmpty ?? true)) {
+      selectedExternalAudio.value = null;
+      setAudioTrack(AudioTrack.auto());
+      return;
+    }
+    selectedExternalAudio.value = track;
+    setAudioTrack(AudioTrack.uri(track.file!, title: track.label));
   }
 
   String _resolveSubtitleUrl(String subtitlePath) {
@@ -1904,19 +2276,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     selectedVideo.value = track;
+    selectedExternalAudio.value = null;
     _extractSubtitles();
     await _switchMedia(track.url.toString(), track.headers,
         startPosition: _basePlayer.state.position);
   }
 
-  void setExternalAudio(model.Track track) {
-    if (track.file?.isEmpty ?? true) {
-      snackBar('Corrupted Audio!');
-      return;
-    }
-    selectedExternalAudio.value = track;
-    setAudioTrack(AudioTrack.uri(track.file!));
-  }
 
   Future<void> loadSubtitleCuesFromUrl(String url) async {
     try {
@@ -1927,11 +2292,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       String content;
       if (uri.scheme == 'http' || uri.scheme == 'https') {
         final client = HttpClient();
+        client.connectionTimeout = const Duration(seconds: 10);
         final request = await client.getUrl(uri);
+        
+        request.headers.add('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+        
+        final videoHeaders = selectedVideo.value?.headers;
+        if (videoHeaders != null) {
+          videoHeaders.forEach((key, val) {
+            request.headers.add(key, val);
+          });
+        }
+        
         final response = await request.close();
-        content = await response
-            .transform(const Utf8Decoder(allowMalformed: true))
-            .join();
+        content = await response.transform(utf8.decoder).join();
         client.close();
       } else {
         print('[SUBS] Attempting to load local subtitle from path: $url');
@@ -1997,7 +2371,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _waitForPlayerToBeReady(BasePlayer player, Duration targetPosition) async {
+  Future<void> _waitForPlayerToBeReady(
+      BasePlayer player, Duration targetPosition) async {
     final completer = Completer<void>();
     StreamSubscription? durationSub;
     StreamSubscription? positionSub;
@@ -2050,14 +2425,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       durationReady = true;
     }
     if (targetPosition == Duration.zero ||
-        player.state.position.inMilliseconds >= targetPosition.inMilliseconds - 2000) {
+        player.state.position.inMilliseconds >=
+            targetPosition.inMilliseconds - 2000) {
       positionReady = true;
     }
     checkReady();
 
     await completer.future;
   }
-
 
   Future<void> _applySubtitleTrack(
     SubtitleTrack track, {
@@ -2160,8 +2535,14 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _basePlayer.pause();
     unawaited(_basePlayer.stop());
     isEpisodePaneOpened.value = false;
+    isSourcePaneOpened.value = false;
+    isTracksPaneOpened.value = false;
+    isAudioPaneOpened.value = false;
+    isSyncSubsPaneOpened.value = false;
+    isSpeedPaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
+    _updateMediaSessionMetadata();
     onUserInteraction();
   }
 
@@ -2211,8 +2592,41 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _showVideoFitToast(videoFit.value);
   }
 
+  Future<void> enterPip() async {
+    isPipMode.value = true;
+    await Future.delayed(const Duration(milliseconds: 100));
+    await PipController.enter();
+  }
+
+  Future<void> launchExternalPlayer() async {
+    final url = selectedVideo.value?.url;
+    if (url == null || url.isEmpty) {
+      AnymeXToast.show(
+        message: 'No stream URL available',
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    pause();
+
+    final headers = selectedVideo.value?.headers;
+    AnymeXToast.show(
+      message: 'Opening in external player...',
+      duration: const Duration(seconds: 2),
+    );
+
+    final success = await ExternalPlayer.launch(url, headers: headers);
+    if (!success) {
+      AnymeXToast.show(
+        message: 'Failed to launch external player',
+        duration: const Duration(seconds: 2),
+      );
+    }
+  }
+
   void _showVideoFitToast(BoxFit fit) {
-    AnymexToast.show(
+    AnymeXToast.show(
         message: fit.name.capitalizeFirst ?? '',
         duration: const Duration(milliseconds: 700));
   }
@@ -2226,14 +2640,17 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     try {
       final episode = currentEpisode.value;
-      final currentTimestamp = episode.timeStampInMilliseconds;
-      final totalDuration = episodeDuration.value.inMilliseconds;
+      final currentTimestamp = currentPosition.value.inMilliseconds > 0
+          ? currentPosition.value.inMilliseconds
+          : (episode.timeStampInMilliseconds ?? 0);
+      final totalDuration = episodeDuration.value.inMilliseconds > 0
+          ? episodeDuration.value.inMilliseconds
+          : (episode.durationInMilliseconds ?? 0);
 
-      if (currentTimestamp == null) return;
-      if (episodeDuration.value.inMinutes < 1) return;
+      if (totalDuration < 1000) return;
 
       Uint8List? screenshot;
-      String? thumbnailBase64;
+      String? thumbnailPath;
 
       if (settings.enableScreenshot) {
         screenshot = await _basePlayer.screenshot(
@@ -2241,7 +2658,22 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           format: 'image/png',
         );
 
-        thumbnailBase64 = screenshot != null ? base64Encode(screenshot) : null;
+        if (screenshot != null) {
+          try {
+            final appSupportDir = await getApplicationSupportDirectory();
+            final snapshotsDir = Directory('${appSupportDir.path}/snapshots');
+            if (!await snapshotsDir.exists()) {
+              await snapshotsDir.create(recursive: true);
+            }
+            final cleanTitle = anilistData.title.replaceAll(RegExp(r'[^\w\s\-]'), '').replaceAll(RegExp(r'\s+'), '_');
+            final cleanEpNumber = episode.number.replaceAll(RegExp(r'[^\w\s\-]'), '').replaceAll(RegExp(r'\s+'), '_');
+            final file = File('${snapshotsDir.path}/${cleanTitle}_$cleanEpNumber.png');
+            await file.writeAsBytes(screenshot);
+            thumbnailPath = file.path;
+          } catch (_) {
+            thumbnailPath = base64Encode(screenshot);
+          }
+        }
       }
 
       final episodeToSave = Episode(
@@ -2249,10 +2681,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         title: episode.title,
         link: episode.link,
         timeStampInMilliseconds: currentTimestamp.clamp(0, totalDuration),
-        thumbnail: thumbnailBase64 ?? episode.thumbnail,
+        thumbnail: thumbnailPath ?? episode.thumbnail,
         currentTrack: selectedVideo.value,
         videoTracks: episodeTracks,
-        durationInMilliseconds: episode.durationInMilliseconds,
+        durationInMilliseconds: totalDuration,
         lastWatchedTime: DateTime.now().millisecondsSinceEpoch,
         source: episode.source,
         desc: episode.desc,
@@ -2283,6 +2715,33 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     if (!shouldTrack) return;
     if (isOffline.value) {
       Logger.i('Offline mode: skipping online tracking');
+      return;
+    }
+
+    final isExtension =
+        anilistData.serviceType == ServicesType.extensions;
+    if (isExtension) {
+      try {
+        if (!Get.isRegistered<TrackBindingController>()) return;
+        final trackCtrl = Get.find<TrackBindingController>();
+        final mediaId = anilistData.id;
+        if (!trackCtrl.hasAnyBinding(mediaId)) return;
+
+        final currEpisodeNum = currentEpisode.value.number.toInt();
+        final newProgress =
+            hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
+        if (newProgress <= 0) return;
+
+        await trackCtrl.pushProgress(mediaId, newProgress,
+            isAnime: true,
+            status: hasCrossedLimit && !hasNextEpisode
+                ? 'COMPLETED'
+                : null);
+        Logger.i(
+            'Extension tracking completed for episode $currEpisodeNum, progress: $newProgress');
+      } catch (e) {
+        Logger.i('Failed to track extension media: $e');
+      }
       return;
     }
 

@@ -1,24 +1,35 @@
+import 'dart:ui' as ui;
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DecoderQuickButton extends StatelessWidget {
   final bool isMobile;
   final bool _glass;
   final bool _netflix;
+  final bool _ios26;
 
   const DecoderQuickButton({super.key, this.isMobile = false})
       : _glass = false,
-        _netflix = false;
+        _netflix = false,
+        _ios26 = false;
 
   const DecoderQuickButton.glass({super.key, this.isMobile = false})
       : _glass = true,
-        _netflix = false;
+        _netflix = false,
+        _ios26 = false;
 
   const DecoderQuickButton.netflix({super.key, this.isMobile = false})
       : _glass = false,
-        _netflix = true;
+        _netflix = true,
+        _ios26 = false;
+
+  const DecoderQuickButton.ios26({super.key, this.isMobile = false})
+      : _glass = false,
+        _netflix = false,
+        _ios26 = true;
 
   String _next(String current) {
     return switch (current) {
@@ -43,6 +54,52 @@ class DecoderQuickButton extends StatelessWidget {
 
     return Obx(() {
       final current = settings.hardwareDecoder;
+
+      if (_ios26) {
+        return Tooltip(
+          message: '${_label(current)} → ${_label(_next(current))}',
+          child: GestureDetector(
+            onTap: () {
+              HapticFeedback.lightImpact();
+              settings.hardwareDecoder = _next(current);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: BackdropFilter(
+                filter: ui.ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                  decoration: BoxDecoration(
+                    color: const Color(0x66181818),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.18),
+                      width: 1.0,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.25),
+                        blurRadius: 14,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: AnymeXText(
+                    _label(current),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
 
       final Color bg;
       final Border? border;
@@ -100,7 +157,7 @@ class DecoderQuickButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(radius),
               border: border,
             ),
-            child: Text(_label(current), style: style),
+            child: AnymeXText(_label(current), style: style),
           ),
         ),
       );

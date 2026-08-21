@@ -27,6 +27,7 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
@@ -41,11 +42,14 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
 
+import 'package:anymex/controllers/services/anilist/anilist_api.dart';
+
 Map<String, dynamic> _parseJson(String body) {
   return jsonDecode(body) as Map<String, dynamic>;
 }
 
 class AnilistData extends GetxController implements BaseService, OnlineService {
+  final api = AnilistApi();
   final anilistAuth = Get.find<AnilistAuth>();
   final communityService = Get.find<CommunityService>();
 
@@ -93,6 +97,10 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
 
   void _openHomeButtonMedia(Media media) {
     final tag = 'home-button-${media.serviceType.name}-${media.id}';
+    if (media.mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: media));
+      return;
+    }
     if (media.mediaType == ItemType.manga) {
       navigate(() => MangaDetailsPage(media: media, tag: tag));
       return;
@@ -107,21 +115,18 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         .where((entry) => entry.value)
         .map<String>((entry) => entry.key)
         .toList();
-    final recAnimes =
-        (popularAnimes + trendingAnimes + latestAnimes).removeDupes();
-    final recMangas =
-        (popularMangas + topOngoingMangas + topRatedMangas).removeDupes();
-    final ids = [
-      animeList.map((e) => e.id).toSet(),
-      mangaList.map((e) => e.id).toSet()
-    ];
     return [
       if (anilistAuth.isLoggedIn.value) ...[
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final isDesktop = constraints.maxWidth > 600;
-            final buttonHeight = !isDesktop ? 70.0 : 90.0;
-            final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
+        Obx(() {
+          trendingAnimes.length;
+          trendingMangas.length;
+          popularAnimes.length;
+          popularMangas.length;
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth > 600;
+              final buttonHeight = !isDesktop ? 70.0 : 90.0;
+              final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
             final mangaButtonMedia = _firstMediaWithCover(trendingMangas);
             final otherButtonMedia = _lastMediaWithCover([
               ...popularAnimes,
@@ -149,7 +154,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                             buttonText: "ANIME LIST",
                             backgroundImage: animeButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
-                            onPressed: () => navigate(() => const AnimeList()),
+                            onPressed: () => navigate(() => AnimeList(data: anilistAuth.animeList.removeDupes())),
                             onLongPress: animeButtonMedia == null
                                 ? null
                                 : () => _openHomeButtonMedia(animeButtonMedia),
@@ -163,7 +168,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                             backgroundImage: mangaButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
                             onPressed: () =>
-                                navigate(() => const AnilistMangaList()),
+                                navigate(() => AnilistMangaList(data: anilistAuth.mangaList.removeDupes())),
                             onLongPress: mangaButtonMedia == null
                                 ? null
                                 : () => _openHomeButtonMedia(mangaButtonMedia),
@@ -191,50 +196,63 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                 ],
               ),
             );
-          },
-        ),
-        const SizedBox(height: 10),
-        Obx(() {
-          anilistAuth.isLoggedIn.value;
-          if (acceptedLists.isEmpty) return const SizedBox.shrink();
-          return Column(
-            children: acceptedLists.map((e) {
-              return ReusableCarousel(
-                data: filterListByLabel(
-                    e.contains("Manga") || e.contains("Reading")
-                        ? anilistAuth.mangaList.removeDupes()
-                        : anilistAuth.animeList.removeDupes(),
-                    e),
-                title: e,
-                variant: DataVariant.anilist,
-                type: e.contains("Manga") || e.contains("Reading")
-                    ? ItemType.manga
-                    : ItemType.anime,
-              );
-            }).toList(),
+          }
           );
         }),
+        const SizedBox(height: 10),
+        if (acceptedLists.isNotEmpty)
+          Obx(() {
+            anilistAuth.isLoggedIn.value;
+            return Column(
+              children: acceptedLists.map((e) {
+                return ReusableCarousel(
+                  data: filterListByLabel(
+                      e.contains("Manga") || e.contains("Reading")
+                          ? anilistAuth.mangaList.removeDupes()
+                          : anilistAuth.animeList.removeDupes(),
+                      e),
+                  title: e,
+                  variant: DataVariant.anilist,
+                  type: e.contains("Manga") || e.contains("Reading")
+                      ? ItemType.manga
+                      : ItemType.anime,
+                );
+              }).toList(),
+            );
+          }),
       ],
       Column(
         children: [
           if (acceptedLists.contains("Recommended Animes") &&
               settings.homePageCards.keys.contains('Recommended Animes'))
-            ReusableCarousel(
-              title: "Recommended Anime",
-              data: isLoggedIn.value
-                  ? recAnimes.where((e) => !ids[0].contains(e.id)).toList()
-                  : recAnimes,
-              type: ItemType.anime,
-            ),
+            Obx(() {
+              final recAnimes =
+                  [...popularAnimes, ...trendingAnimes, ...latestAnimes].removeDupes();
+              final ids = animeList.map((e) => e.id).toSet();
+              final data = isLoggedIn.value
+                  ? recAnimes.where((e) => !ids.contains(e.id)).toList()
+                  : recAnimes;
+              return ReusableCarousel(
+                title: "Recommended Anime",
+                data: data,
+                type: ItemType.anime,
+              );
+            }),
           if (acceptedLists.contains("Recommended Mangas") &&
               settings.homePageCards.keys.contains('Recommended Mangas'))
-            ReusableCarousel(
-              title: "Recommended Manga",
-              data: isLoggedIn.value
-                  ? recMangas.where((e) => !ids[1].contains(e.id)).toList()
-                  : recMangas,
-              type: ItemType.manga,
-            )
+            Obx(() {
+              final recMangas =
+                  [...popularMangas, ...topOngoingMangas, ...topRatedMangas].removeDupes();
+              final ids = mangaList.map((e) => e.id).toSet();
+              final data = isLoggedIn.value
+                  ? recMangas.where((e) => !ids.contains(e.id)).toList()
+                  : recMangas;
+              return ReusableCarousel(
+                title: "Recommended Manga",
+                data: data,
+                type: ItemType.manga,
+              );
+            }),
         ],
       )
     ].obs;
@@ -272,10 +290,6 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       buildMangaSection('Latest Manga', latestMangas),
       buildMangaSection('Popular Manga', popularMangas),
       buildMangaSection('More Popular Manga', morePopularMangas),
-
-      // buildMangaSection('Most Favorite Mangas', mostFavoriteMangas),
-      // buildMangaSection('Top Rated Mangas', topRatedMangas),
-      // buildMangaSection('Top Ongoing Mangas', topOngoingMangas),
       ...sourceController.novelSections,
       Obx(() {
         final filteredList = communityService.getFilteredCommunityMangas();
@@ -290,6 +304,33 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                 )));
       }),
     ].obs;
+  }
+
+  @override
+  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+
+  @override
+  bool get isDataLoaded =>
+      trendingAnimes.isNotEmpty ||
+      popularAnimes.isNotEmpty ||
+      trendingMangas.isNotEmpty;
+
+  @override
+  void clearState() {
+    upcomingAnimes.clear();
+    popularAnimes.clear();
+    trendingAnimes.clear();
+    latestAnimes.clear();
+    recentlyUpdatedAnimes.clear();
+    popularMangas.clear();
+    morePopularMangas.clear();
+    latestMangas.clear();
+    mostFavoriteMangas.clear();
+    topRatedMangas.clear();
+    topUpdatedMangas.clear();
+    topOngoingMangas.clear();
+    trendingMangas.clear();
+    novelData.clear();
   }
 
   @override
@@ -874,7 +915,7 @@ averageScore
 
     final Map<String, dynamic> variables = {
       if (query != null && query.isNotEmpty) 'search': query,
-      'isAdult': isAdult,
+      if (!isAdult) 'isAdult': false,
     };
 
     if (filters != null) {
@@ -1375,141 +1416,12 @@ averageScore
     return result;
   }
 
-  Future<dynamic> getCharacterDetails(String id) async {
-    const String url = 'https://graphql.anilist.co';
-    final Map<String, dynamic> variables = {'id': int.tryParse(id)};
-
-    final token = AuthKeys.authToken.get<String?>();
-    final headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-
-    if (token != null) {
-      headers['Authorization'] = 'Bearer $token';
-    }
-
-    try {
-      final response = await post(
-        Uri.parse(url),
-        headers: headers,
-        body: json.encode({
-          'query': characterDetailsQuery,
-          'variables': variables,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return Character.fromDetailJson(data['data']['Character']);
-      }
-    } catch (e) {
-      Logger.i('Error fetching character details: $e');
-    }
-    return null;
+  Future<Character?> getCharacterDetails(String id) async {
+    return api.getCharacterDetails(id);
   }
 
   Future<Staff?> getStaffDetails(String id) async {
-    const String url = 'https://graphql.anilist.co';
-    int charPage = 1;
-    int staffPage = 1;
-    bool charHasNext = true;
-    bool staffHasNext = true;
-    List<dynamic> allCharacterEdges = [];
-    List<dynamic> allStaffEdges = [];
-    final token = AuthKeys.authToken.get<String?>();
-    final headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-
-    if (token != null) {
-      headers['Authorization'] = 'Bearer $token';
-    }
-
-    try {
-      Map<String, dynamic>? initialData;
-      int loopCount = 0;
-      while (staffHasNext && loopCount < 20) {
-        Logger.i("Loop $loopCount: charPage=$charPage, staffPage=$staffPage");
-        final variables = {
-          'id': int.tryParse(id),
-          'characterPage': charPage,
-          'staffPage': staffPage,
-        };
-
-        final response = await post(
-          Uri.parse(url),
-          headers: headers,
-          body: json.encode({
-            'query': staffDetailsQuery,
-            'variables': variables,
-          }),
-        );
-
-        if (response.statusCode == 200) {
-          final data = json.decode(response.body);
-          final staffData = data['data']['Staff'];
-
-          if (loopCount == 0) {
-            initialData = staffData;
-          }
-
-          // Character
-          if (charHasNext) {
-            final charData = staffData['characters'];
-            if (charData != null) {
-              final edges = charData['edges'] as List?;
-              if (edges != null) {
-                Logger.i("Fetched ${edges.length} character edges");
-                allCharacterEdges.addAll(edges);
-              }
-
-              final pageInfo = charData['pageInfo'];
-              charHasNext = pageInfo?['hasNextPage'] ?? false;
-              if (charHasNext) charPage++;
-            } else {
-              charHasNext = false;
-            }
-          }
-
-          // Staff
-          if (staffHasNext) {
-            final stfMedia = staffData['staffMedia'];
-            if (stfMedia != null) {
-              final edges = stfMedia['edges'] as List?;
-              if (edges != null) allStaffEdges.addAll(edges);
-
-              final pageInfo = stfMedia['pageInfo'];
-              staffHasNext = pageInfo?['hasNextPage'] ?? false;
-              if (staffHasNext) staffPage++;
-            } else {
-              staffHasNext = false;
-            }
-          }
-        } else {
-          Logger.i(
-              'Error fetching staff details page $loopCount: ${response.statusCode}');
-          break;
-        }
-        loopCount++;
-      }
-
-      if (initialData != null) {
-        final finalData = Map<String, dynamic>.from(initialData);
-
-        if (finalData['characters'] == null) finalData['characters'] = {};
-        finalData['characters']['edges'] = allCharacterEdges;
-
-        if (finalData['staffMedia'] == null) finalData['staffMedia'] = {};
-        finalData['staffMedia']['edges'] = allStaffEdges;
-
-        return Staff.fromDetailJson(finalData);
-      }
-    } catch (e) {
-      Logger.i('Error fetching staff details: $e');
-    }
-    return null;
+    return api.getStaffDetails(id);
   }
 
   @override

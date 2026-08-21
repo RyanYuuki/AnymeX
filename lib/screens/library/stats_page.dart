@@ -4,6 +4,7 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});
@@ -15,7 +16,7 @@ class StatisticsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Library Statistics'),
+        title: const AnymeXText('Library Statistics'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
@@ -24,7 +25,7 @@ class StatisticsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Anime Library Section
-            const Text(
+            const AnymeXText(
               'Anime Library',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -43,7 +44,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Manga Library Section
-            const Text(
+            const AnymeXText(
               'Manga Library',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -62,7 +63,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Novel Library Section
-            const Text(
+            const AnymeXText(
               'Novel Library',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -81,7 +82,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Anime Custom Lists Section
-            const Text(
+            const AnymeXText(
               'Anime Custom Lists',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -99,7 +100,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Manga Custom Lists Section
-            const Text(
+            const AnymeXText(
               'Manga Custom Lists',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -117,7 +118,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Novel Custom Lists Section
-            const Text(
+            const AnymeXText(
               'Novel Custom Lists',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -143,13 +144,13 @@ class StatisticsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         library.isEmpty
-            ? const Text(
+            ? const AnymeXText(
                 'No items in this library.',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
@@ -162,15 +163,15 @@ class StatisticsPage extends StatelessWidget {
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     child: ListTile(
-                      title: Text(media.name ?? 'Unnamed Media'),
+                      title: AnymeXText(media.name ?? 'Unnamed Media'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('ID: ${media.mediaId}'),
-                          if (media.type != null) Text('Type: ${media.type}'),
+                          AnymeXText('ID: ${media.mediaId}'),
+                          if (media.type != null) AnymeXText('Type: ${media.type}'),
                           if (media.genres != null && media.genres!.isNotEmpty)
-                            Text('Genres: ${media.genres!.join(', ')}'),
-                          Text(
+                            AnymeXText('Genres: ${media.genres!.join(', ')}'),
+                          AnymeXText(
                               'Episodes/Chapters: ${media.totalEpisodes ?? media.totalChapters ?? 'N/A'}'),
                         ],
                       ),
@@ -190,13 +191,13 @@ class StatisticsPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AnymeXText(
           'Total Lists: ${customLists.length}',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         customLists.isEmpty
-            ? const Text(
+            ? const AnymeXText(
                 'No custom lists available.',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
@@ -217,19 +218,19 @@ class StatisticsPage extends StatelessWidget {
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         child: ExpansionTile(
-                          title: Text(listName),
-                          subtitle: Text('Items: ${listData.length}'),
+                          title: AnymeXText(listName),
+                          subtitle: AnymeXText('Items: ${listData.length}'),
                           children: listData.isEmpty
                               ? [
                                   const Padding(
                                     padding: EdgeInsets.all(16.0),
-                                    child: Text('No media in this list.'),
+                                    child: AnymeXText('No media in this list.'),
                                   )
                                 ]
                               : listData.map((media) {
                                   return ListTile(
-                                    title: Text(media.name ?? 'Unnamed Media'),
-                                    subtitle: Text('ID: ${media.mediaId}'),
+                                    title: AnymeXText(media.name ?? 'Unnamed Media'),
+                                    subtitle: AnymeXText('ID: ${media.mediaId}'),
                                   );
                                 }).toList(),
                         ),

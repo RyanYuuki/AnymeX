@@ -1,16 +1,22 @@
+import 'dart:io';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsExtensionManager extends StatefulWidget {
   const SettingsExtensionManager({super.key});
@@ -23,19 +29,39 @@ class SettingsExtensionManager extends StatefulWidget {
 class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   final _pluginManager = PluginManager();
   bool _isCheckingUpdate = false;
-
-  String get _installedVersion =>
-      AnymeXRuntimeBridge.installedVersion;
+  bool _isSyncingLocalApk = false;
+  bool _needsRestart = false;
+  final RxBool _isLoadedFromStorage = false.obs;
+  String get _installedVersion => AnymeXRuntimeBridge.installedVersion;
 
   String get _installedReleaseTitle =>
       AnymeXRuntimeBridge.installedReleaseTitle;
 
-  bool get _isPluginInstalled =>
-      AnymeXRuntimeBridge.isPluginInstalled;
+  bool get _isPluginInstalled => AnymeXRuntimeBridge.isPluginInstalled;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkStorageStatus();
+  }
+
+  void _checkStorageStatus() async {
+    final status = await AnymeXRuntimeBridge.isLoadedFromStorage();
+    _isLoadedFromStorage.value = status;
+  }
 
   void _showInstallPopup() async {
+    final oldVersion = _installedVersion;
     await _pluginManager.showInstallSheet(context);
-    if (mounted) setState(() {});
+    if (mounted) {
+      if (_installedVersion != oldVersion) {
+        setState(() {
+          _needsRestart = true;
+        });
+      } else {
+        setState(() {});
+      }
+    }
   }
 
   void _showUpdatePopup() async {
@@ -51,12 +77,21 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       return;
     }
     if (_pluginManager.isNewerVersion(currentVersion, release.tagName)) {
+      final oldVersion = _installedVersion;
       await _pluginManager.showUpdateSheet(
         context,
         release: release,
         installedVersion: currentVersion,
       );
-      if (mounted) setState(() {});
+      if (mounted) {
+        if (_installedVersion != oldVersion) {
+          setState(() {
+            _needsRestart = true;
+          });
+        } else {
+          setState(() {});
+        }
+      }
     } else {
       successSnackBar('Plugin is already up to date.');
     }
@@ -86,6 +121,39 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     }
   }
 
+  void _syncLocalApk() async {
+    if (_isSyncingLocalApk) return;
+
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: Platform.isAndroid ? const ['apk'] : const ['jar'],
+      allowMultiple: false,
+      withData: false,
+    );
+
+    final apkPath = result?.files.single.path;
+    if (apkPath == null || apkPath.isEmpty) return;
+    if (!mounted) return;
+
+    setState(() => _isSyncingLocalApk = true);
+    try {
+      final oldVersion = _installedVersion;
+      final synced = await _pluginManager.syncLocalApk(apkPath);
+      if (mounted && synced) {
+        _checkStorageStatus();
+        if (_installedVersion != oldVersion) {
+          setState(() {
+            _needsRestart = true;
+          });
+        } else {
+          setState(() {});
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _isSyncingLocalApk = false);
+    }
+  }
+
   void _forceReDownload() async {
     final bridge = AnymeXRuntimeBridge.controller;
     if (bridge.isDownloading.value) return;
@@ -94,9 +162,13 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       if (bridge.isReady.value) {
         await Get.find<ExtensionManager>()
             .onRuntimeBridgeInitialization(force: true);
+        _checkStorageStatus();
         if (mounted) {
-          setState(() {});
-          successSnackBar('Plugin re-downloaded successfully.');
+          setState(() {
+            _needsRestart = true;
+          });
+          successSnackBar(
+              'Plugin re-downloaded successfully. Please restart to apply.');
         }
       }
     } catch (error) {
@@ -104,32 +176,109 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Column(
-          children: [
-            const NestedHeader(title: 'Extension Manager'),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: getResponsiveValue(context,
-                      mobileValue:
-                          const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
-                      desktopValue:
-                          const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+  void _showRollbackDialog() async {
+    setState(() => _isCheckingUpdate = true);
+    final releases = await _pluginManager.fetchReleases();
+    setState(() => _isCheckingUpdate = false);
+    if (releases.isEmpty) {
+      errorSnackBar('No releases found.');
+      return;
+    }
+    if (!mounted) return;
+    final theme = Theme.of(context);
+    AnymeXSheet(
+      title: 'Select Version to Rollback',
+      showDragHandle: true,
+      contentWidget: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * 0.5,
+        ),
+        child: ListView.builder(
+          physics: const BouncingScrollPhysics(),
+          shrinkWrap: true,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          itemCount: releases.length,
+          itemBuilder: (context, index) {
+            final release = releases[index];
+            final isCurrent = release.tagName == _installedVersion;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: AnymexOnTap(
+                onTap: isCurrent
+                    ? null
+                    : () {
+                        Navigator.pop(context);
+                        _performRollback(release);
+                      },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: isCurrent
+                        ? theme.colorScheme.primaryContainer
+                            .opaque(0.35, iReallyMeanIt: true)
+                        : theme.colorScheme.surfaceContainer
+                            .opaque(0.3, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: isCurrent
+                          ? theme.colorScheme.primary
+                              .opaque(0.5, iReallyMeanIt: true)
+                          : theme.colorScheme.outline
+                              .opaque(0.15, iReallyMeanIt: true),
+                      width: isCurrent ? 1.5 : 1,
+                    ),
+                  ),
+                  child: Row(
                     children: [
-                      AnymexExpansionTile(
-                        initialExpanded: true,
-                        title: 'Plugin Status',
-                        content: Column(
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        width: 22,
+                        height: 22,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isCurrent
+                              ? theme.colorScheme.primary
+                              : Colors.transparent,
+                          border: Border.all(
+                            color: isCurrent
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.outline
+                                    .opaque(0.4, iReallyMeanIt: true),
+                            width: 2,
+                          ),
+                        ),
+                        child: isCurrent
+                            ? Icon(Icons.check_rounded,
+                                size: 14, color: theme.colorScheme.onPrimary)
+                            : null,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildPluginStatusCard(context),
-                            const SizedBox(height: 10),
-                            _buildPluginActions(context),
+                            AnymeXText(
+                              release.title,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                                fontWeight: isCurrent
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: theme.colorScheme.onSurface,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            AnymeXText(
+                              release.tagName,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 12,
+                                color: theme.colorScheme.onSurface
+                                    .withOpacity(0.6),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -137,10 +286,149 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   ),
                 ),
               ),
+            );
+          },
+        ),
+      ),
+    ).show(context);
+  }
+
+  void _performRollback(PluginRelease release) async {
+    final bridge = AnymeXRuntimeBridge.controller;
+    if (bridge.isDownloading.value) return;
+    try {
+      await AnymeXRuntimeBridge.setupRuntime(
+        customDownloadUrl: release.asset.downloadUrl,
+        force: true,
+      );
+      if (bridge.isReady.value) {
+        await Get.find<ExtensionManager>()
+            .onRuntimeBridgeInitialization(force: true);
+        _pluginManager.persistInstalledRelease(release);
+        _checkStorageStatus();
+        if (mounted) {
+          setState(() {
+            _needsRestart = true;
+          });
+          successSnackBar(
+              'Rollback to ${release.tagName} successful. Restart app to apply.');
+        }
+      }
+    } catch (error) {
+      if (mounted) errorSnackBar('Rollback failed: $error');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final bridge = AnymeXRuntimeBridge.controller;
+    if (Platform.isIOS) {
+      return const Scaffold(
+        body: Column(
+          children: [
+            NestedHeader(title: 'Extension Manager'),
+            Expanded(
+              child: Center(
+                child: AnymeXText('Extension Manager is not supported on iOS.'),
+              ),
             ),
           ],
         ),
-      ),
+      );
+    }
+
+    return AnymeXScaffold(
+      showHeader: true,
+      headerTitle: 'Extension Manager',
+      body: Builder(
+          builder: (ctx) => SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                    16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildPluginStatusCard(context),
+                    8.height(),
+                    ..._buildExtensionSettings(context),
+                    8.height(),
+                    AnymeXSectionBuilder(
+                      title: 'Plugin Installation & Sync',
+                      children: [
+                        Obx(() {
+                          final _ = bridge.isReady.value;
+                          final isInstalled = bridge.isReady.value ||
+                              _isLoadedFromStorage.value;
+                          return Column(
+                            children: [
+                              AnymeXTile(
+                                icon: Icons.cloud_download_rounded,
+                                title: isInstalled
+                                    ? 'Update Plugin'
+                                    : 'Download the Plugin',
+                                subtitle: isInstalled
+                                    ? 'Check and install the latest plugin update from Github'
+                                    : 'Automatically download and install the latest plugin version',
+                                onTap: isInstalled
+                                    ? (_isCheckingUpdate
+                                        ? null
+                                        : _checkForUpdates)
+                                    : _showInstallPopup,
+                                trailing: _isCheckingUpdate
+                                    ? SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: colors.primary,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              if (Platform.isAndroid)
+                                AnymeXTile(
+                                  icon: Icons.install_mobile_rounded,
+                                  title: 'Load Plugin APK from Storage',
+                                  subtitle: Platform.isAndroid
+                                      ? 'Select a runtime APK from local storage to manually install'
+                                      : 'Select a runtime JAR from local storage to manually install',
+                                  onTap:
+                                      _isSyncingLocalApk ? null : _syncLocalApk,
+                                  trailing: _isSyncingLocalApk
+                                      ? SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: colors.primary,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              if (isInstalled) ...[
+                                AnymeXTile(
+                                  icon: Icons.refresh_rounded,
+                                  title: 'Force Re-download',
+                                  subtitle:
+                                      'Re-download and reinstall the plugin from scratch',
+                                  onTap: _forceReDownload,
+                                ),
+                                AnymeXTile(
+                                  icon: Icons.history_rounded,
+                                  title: 'Rollback Version',
+                                  subtitle:
+                                      'Downgrade or switch to a specific plugin version',
+                                  onTap: _showRollbackDialog,
+                                ),
+                              ],
+                            ],
+                          );
+                        }),
+                      ],
+                    ),
+                  ],
+                ),
+              )),
     );
   }
 
@@ -157,8 +445,9 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       final isBusy = isDownloading ||
           (status != "Idle" &&
               !isReady &&
-              (status.contains("Extracting") ||
-                  status.contains("Finalizing")));
+              (status.contains("Extracting") || status.contains("Finalizing")));
+      final isActive =
+          isReady || _isPluginInstalled || _isLoadedFromStorage.value;
 
       return Container(
         width: double.infinity,
@@ -180,7 +469,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   decoration: BoxDecoration(
                     color: isBusy
                         ? colors.tertiaryContainer
-                        : _isPluginInstalled
+                        : isActive
                             ? colors.primaryContainer
                             : colors.errorContainer,
                     borderRadius: BorderRadius.circular(12),
@@ -194,11 +483,11 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           ),
                         )
                       : Icon(
-                          _isPluginInstalled
+                          isActive
                               ? Icons.check_circle_rounded
                               : Icons.warning_amber_rounded,
                           size: 22,
-                          color: _isPluginInstalled
+                          color: isActive
                               ? colors.onPrimaryContainer
                               : colors.onErrorContainer,
                         ),
@@ -208,11 +497,13 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         isBusy
                             ? 'Downloading Plugin...'
-                            : _isPluginInstalled
-                                ? 'Plugin Installed'
+                            : isActive
+                                ? (_isLoadedFromStorage.value
+                                    ? 'Loaded from Storage'
+                                    : 'Plugin Installed')
                                 : 'Plugin Not Installed',
                         style: TextStyle(
                           fontSize: 16,
@@ -221,12 +512,14 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         ),
                       ),
                       const SizedBox(height: 3),
-                      Text(
+                      AnymeXText(
                         isBusy
                             ? status
-                            : _isPluginInstalled
-                                ? 'Aniyomi & Cloudstream ready'
-                                : 'Download plugin to unlock Aniyomi & Cloudstream',
+                            : isActive
+                                ? (_isLoadedFromStorage.value
+                                    ? 'Using local storage APK'
+                                    : 'Aniyomi & Cloudstream ready')
+                                : 'Install runtime plugin to unlock Aniyomi & Cloudstream',
                         style: TextStyle(
                           fontSize: 13,
                           color: colors.onSurfaceVariant,
@@ -256,7 +549,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   ),
                   if (sizeInfo.isNotEmpty) ...[
                     const SizedBox(width: 12),
-                    Text(
+                    AnymeXText(
                       sizeInfo,
                       style: TextStyle(
                         fontSize: 12,
@@ -270,7 +563,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             ],
             if (hasError) ...[
               const SizedBox(height: 12),
-              Text(
+              AnymeXText(
                 bridge.error.value,
                 style: TextStyle(
                   fontSize: 12,
@@ -278,23 +571,59 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                 ),
               ),
             ],
-            if (_isPluginInstalled && !isBusy) ...[
-              const SizedBox(height: 16),
-              const Divider(height: 1),
-              const SizedBox(height: 14),
-              _buildMetaRow(colors, 'Version', _installedVersion),
-              const SizedBox(height: 8),
-              _buildMetaRow(
+            if (isActive && !isBusy) ...[
+              if (!_isLoadedFromStorage.value) ...[
+                const SizedBox(height: 16),
+                const Divider(height: 1),
+                const SizedBox(height: 14),
+                _buildMetaRow(colors, 'Version', _installedVersion),
+                const SizedBox(height: 8),
+                _buildMetaRow(
+                    colors,
+                    'Release',
+                    _installedReleaseTitle.isNotEmpty
+                        ? _installedReleaseTitle
+                        : 'Unknown'),
+                const SizedBox(height: 8),
+              ],
+              if (!Platform.isAndroid) ...[
+                const SizedBox(height: 16),
+                const Divider(height: 1),
+                const SizedBox(height: 14),
+                _buildMetaRow(
                   colors,
-                  'Release',
-                  _installedReleaseTitle.isNotEmpty
-                      ? _installedReleaseTitle
-                      : 'Unknown'),
-              const SizedBox(height: 8),
-              _buildMetaRow(
-                colors,
-                'Bridge Mode',
-                PluginKeys.bridgeMode.get<String>('sidecar'),
+                  'Bridge Mode',
+                  PluginKeys.bridgeMode.get<String>('sidecar'),
+                ),
+              ],
+            ],
+            if (isActive && !isBusy && _needsRestart) ...[
+              const SizedBox(height: 14),
+              Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: colors.tertiaryContainer.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.restart_alt_rounded,
+                        size: 16, color: colors.onTertiaryContainer),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: AnymeXText(
+                        'Please restart the app to apply changes.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onTertiaryContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ],
@@ -307,7 +636,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
+        AnymeXText(
           label,
           style: TextStyle(
             fontSize: 13,
@@ -320,7 +649,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             color: colors.surfaceContainerHighest.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Text(
+          child: AnymeXText(
             value,
             style: TextStyle(
               fontSize: 12,
@@ -334,48 +663,100 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     );
   }
 
-  Widget _buildPluginActions(BuildContext context) {
-    final colors = context.colors;
-    final bridge = AnymeXRuntimeBridge.controller;
-    return Obx(() {
-      final isBusy = bridge.isDownloading.value ||
-          (bridge.status.value != "Idle" && !bridge.isReady.value);
-      if (isBusy) return const SizedBox.shrink();
-      if (!_isPluginInstalled) {
-        return CustomTile(
-          icon: Icons.download_rounded,
-          title: 'Download Plugin',
-          description: 'Install the runtime plugin to enable Aniyomi & Cloudstream',
-          onTap: _showInstallPopup,
+  List<Widget> _buildExtensionSettings(BuildContext context) {
+    final em = Get.find<ExtensionManager>();
+    final settingsList = <Widget>[];
+
+    for (final manager in em.managers) {
+      final managerSettings = manager.settings;
+      if (managerSettings == null || managerSettings.isEmpty) continue;
+
+      final children = <Widget>[];
+      for (final entry in managerSettings.entries) {
+        final setting = entry.value;
+
+        if (setting.type == 'bool') {
+          children.add(
+            AnymeXTile.toggle(
+              icon: Icons.settings_input_component_rounded,
+              title: setting.label,
+              subtitle: setting.description,
+              value: setting.value as bool,
+              onChanged: (val) {
+                setting.onChanged(val);
+                setState(() {});
+              },
+            ),
+          );
+        } else if (setting.type == 'string') {
+          children.add(
+            AnymeXTile(
+              icon: Icons.folder_open_rounded,
+              title: setting.label,
+              subtitle: (setting.value as String).isNotEmpty
+                  ? setting.value as String
+                  : setting.description,
+              onTap: () => _showTextInputDialog(
+                context,
+                title: setting.label,
+                initialValue: setting.value as String,
+                onSave: (val) {
+                  setting.onChanged(val);
+                  setState(() {});
+                },
+              ),
+            ),
+          );
+        }
+      }
+
+      if (children.isNotEmpty) {
+        settingsList.add(
+          AnymeXSectionBuilder(
+            title: '${manager.name} Settings',
+            children: children,
+          ),
         );
       }
-      return Column(
-        children: [
-          CustomTile(
-            icon: Icons.system_update_alt_rounded,
-            title: 'Check for Updates',
-            description: 'Check if a newer plugin version is available',
-            onTap: _isCheckingUpdate ? null : _checkForUpdates,
-            postFix: _isCheckingUpdate
-                ? SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: colors.primary,
-                    ),
-                  )
-                : null,
+    }
+
+    return settingsList;
+  }
+
+  void _showTextInputDialog(
+    BuildContext context, {
+    required String title,
+    required String initialValue,
+    required ValueChanged<String> onSave,
+  }) {
+    final controller = TextEditingController(text: initialValue);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: AnymeXText(title),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Enter value',
+            ),
           ),
-          const SizedBox(height: 8),
-          CustomTile(
-            icon: Icons.refresh_rounded,
-            title: 'Force Re-download',
-            description: 'Re-download and reinstall the plugin from scratch',
-            onTap: _forceReDownload,
-          ),
-        ],
-      );
-    });
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const AnymeXText('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                onSave(controller.text);
+                Navigator.of(context).pop();
+              },
+              child: const AnymeXText('Save'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

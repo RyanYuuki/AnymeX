@@ -20,6 +20,39 @@ class Chapter {
   List<String>? headerKeys;
   List<String>? headerValues;
 
+  @ignore
+  Map<String, String> get headers {
+    if (headerKeys == null || headerValues == null) return {};
+    if (headerKeys!.isEmpty || headerValues!.isEmpty) return {};
+    final result = <String, String>{};
+    final len = headerKeys!.length < headerValues!.length
+        ? headerKeys!.length
+        : headerValues!.length;
+    for (int i = 0; i < len; i++) {
+      final k = headerKeys![i].trim();
+      final v = headerValues![i].trim();
+      if (k.isNotEmpty && v.isNotEmpty) {
+        result[k] = v;
+      }
+    }
+    return result;
+  }
+
+  set headers(Map<String, String> map) {
+    headerKeys = map.keys.toList();
+    headerValues = map.values.toList();
+  }
+
+  String get formattedNumber {
+    if (number == null) return '-';
+    if (number! % 1 == 0) return number!.toInt().toString();
+    final rounded = double.parse(number!.toStringAsFixed(2));
+    if (rounded == rounded.toInt()) {
+      return rounded.toInt().toString();
+    }
+    return rounded.toString().replaceAll(RegExp(r'\.?0+$'), '');
+  }
+
   Chapter(
       {this.link,
       this.title,
@@ -69,8 +102,20 @@ class Chapter {
       maxOffset: (json['maxOffset'] as num?)?.toDouble(),
       sourceName: json['sourceName'] as String?,
       localPath: json['localPath'] as String?,
-      headerKeys: json['headerKeys'] as List<String>?,
-      headerValues: json['headerValues'] as List<String>?,
+      headerKeys: (json['headerKeys'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      headerValues: (json['headerValues'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Chapter &&
+        other.link == link &&
+        other.number == number &&
+        other.title == title;
+  }
+
+  @override
+  int get hashCode => Object.hash(link, number, title);
 }

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 const List<String> subtitleOutlineTypes = [
   'Hard Anime',
@@ -56,7 +57,7 @@ Widget buildStyledSubtitleText({
     ),
   );
 
-  return Text(
+  return AnymeXText(
     text,
     key: key,
     textAlign: TextAlign.center,

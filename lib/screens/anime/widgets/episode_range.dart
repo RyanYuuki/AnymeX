@@ -1,7 +1,8 @@
 import 'package:anymex/database/isar_models/episode.dart';
-import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class EpisodeChunkSelector extends StatelessWidget {
   final RxInt selectedChunkIndex;
@@ -17,65 +18,22 @@ class EpisodeChunkSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colors;
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: List.generate(
-          chunks.length,
-          (index) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(0, 10, 10, 5),
-              child: Obx(() {
-                final isSelected = selectedChunkIndex.value == index;
-
-                return InkWell(
-                  onTap: () {
-                    onChunkSelected(index);
-                  },
-                  borderRadius: BorderRadius.circular(12),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                          : colorScheme.surfaceContainerHigh
-                              .opaque(0.4, iReallyMeanIt: true),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected
-                            ? colorScheme.primary.opaque(0.4)
-                            : colorScheme.outline.opaque(0.4),
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Text(
-                      index == 0
-                          ? "All"
-                          : '${formatEpisodeNumberLabel(chunks[index].first.number)} - ${formatEpisodeNumberLabel(chunks[index].last.number)}',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
-                        color: isSelected
-                            ? colorScheme.primary
-                            : colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            );
-          },
-        ),
-      ),
-    );
+    return Obx(() {
+      final selected = selectedChunkIndex.value;
+      return AnymeXPills(
+        scrollPadding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
+        items: List.generate(chunks.length, (index) {
+          final label = index == 0
+              ? 'All (${chunks[0].length})'
+              : '${formatEpisodeNumberLabel(chunks[index].first.number)} - ${formatEpisodeNumberLabel(chunks[index].last.number)} (${chunks[index].length})';
+          return PillItem(
+            label: label,
+            isSelected: selected == index,
+            onTap: () => onChunkSelected(index),
+          );
+        }),
+      );
+    });
   }
 }
 
@@ -97,79 +55,33 @@ class EpisodeSortKeySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colors;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 10, bottom: 4),
-          child: Text(
+          child: AnymeXText(
             title,
             style: TextStyle(
               fontFamily: 'Poppins',
               fontWeight: FontWeight.w700,
-              color: colorScheme.onSurface,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
-            children: List.generate(
-              sortKeys.length,
-              (index) {
-                final sortKey = sortKeys[index];
-                return Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 6, 10, 5),
-                  child: Obx(() {
-                    final isSelected = selectedSortKey.value == sortKey;
-
-                    return InkWell(
-                      onTap: () {
-                        onSortKeySelected(sortKey);
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? colorScheme.primary
-                                  .opaque(0.4, iReallyMeanIt: true)
-                              : colorScheme.surfaceContainerHigh
-                                  .opaque(0.4, iReallyMeanIt: true),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSelected
-                                ? colorScheme.primary.opaque(0.4)
-                                : colorScheme.outline.opaque(0.4),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Text(
-                          '$labelPrefix $sortKey',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.bold,
-                            color: isSelected
-                                ? colorScheme.primary
-                                : colorScheme.onSurface,
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                );
-              },
-            ),
-          ),
-        ),
+        Obx(() {
+          final selected = selectedSortKey.value;
+          return AnymeXPills(
+            scrollPadding: const EdgeInsets.fromLTRB(0, 6, 0, 5),
+            items: sortKeys.map((sortKey) {
+              return PillItem(
+                label: '$labelPrefix $sortKey',
+                isSelected: selected == sortKey,
+                onTap: () => onSortKeySelected(sortKey),
+              );
+            }).toList(),
+          );
+        }),
       ],
     );
   }
@@ -243,15 +155,19 @@ int compareEpisodeSortValues(String first, String second) {
   return first.compareTo(second);
 }
 
-String formatEpisodeNumberLabel(String number) {
-  final parsedNumber = double.tryParse(number.trim());
-  if (parsedNumber == null) {
-    return number;
+String formatEpisodeNumberLabel(dynamic rawNumber) {
+  if (rawNumber == null) return '';
+  final parsed = double.tryParse(rawNumber.toString().trim());
+  if (parsed == null) return rawNumber.toString();
+
+  if (parsed == parsed.toInt()) {
+    return parsed.toInt().toString();
   }
 
-  if (parsedNumber == parsedNumber.toInt()) {
-    return parsedNumber.toInt().toString();
+  final rounded = double.parse(parsed.toStringAsFixed(2));
+  if (rounded == rounded.toInt()) {
+    return rounded.toInt().toString();
   }
 
-  return parsedNumber.toString();
+  return rounded.toString().replaceAll(RegExp(r'\.?0+$'), '');
 }

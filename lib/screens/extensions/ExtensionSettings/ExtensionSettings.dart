@@ -1,8 +1,8 @@
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +18,7 @@ class SourcePreferenceScreen extends StatefulWidget {
 
 class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
   Rx<List<SourcePreference>?> preference = Rx(null);
+
   @override
   void initState() {
     super.initState();
@@ -28,13 +29,98 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     preference.value = await widget.source.methods.getPreference();
   }
 
+  Future<void> _savePreference(SourcePreference pref, dynamic value) async {
+    await widget.source.methods.setPreference(pref, value);
+    final currentPreferences = preference.value;
+    if (currentPreferences != null) {
+      preference.value = List<SourcePreference>.from(currentPreferences);
+    }
+    if (mounted) setState(() {});
+  }
+
+  String _listPreferenceSubtitle(ListPreference pref) {
+    final entry = _listPreferenceSelectedEntry(pref);
+    if (entry != null && entry.isNotEmpty) return entry;
+    if (pref.summary != null && pref.summary!.isNotEmpty) return pref.summary!;
+    return 'Select option';
+  }
+
+  String? _listPreferenceSelectedEntry(ListPreference pref) {
+    final entries = pref.entries ?? [];
+    if (entries.isEmpty) return null;
+
+    final valueIndex = pref.valueIndex;
+    if (valueIndex != null && valueIndex >= 0 && valueIndex < entries.length) {
+      return entries[valueIndex];
+    }
+
+    final value = pref.value;
+    final entryValues = pref.entryValues ?? [];
+    final index = value == null ? -1 : entryValues.indexOf(value);
+    if (index >= 0 && index < entries.length) return entries[index];
+
+    return null;
+  }
+
+  int _initialListPreferenceIndex(ListPreference pref) {
+    final entries = pref.entries ?? [];
+    final valueIndex = pref.valueIndex;
+    if (valueIndex != null && valueIndex >= 0 && valueIndex < entries.length) {
+      return valueIndex;
+    }
+
+    final value = pref.value;
+    final entryValues = pref.entryValues ?? [];
+    final index = value == null ? -1 : entryValues.indexOf(value);
+    if (index >= 0 && index < entries.length) return index;
+
+    return 0;
+  }
+
+  String? _listPreferenceValueAt(ListPreference pref, int index) {
+    final entryValues = pref.entryValues ?? [];
+    if (index >= 0 && index < entryValues.length) return entryValues[index];
+    return null;
+  }
+
+  String _multiSelectPreferenceSubtitle(MultiSelectListPreference pref) {
+    final selectedEntries = _multiSelectPreferenceSelectedEntries(pref);
+    if (selectedEntries.isNotEmpty) return selectedEntries.join(', ');
+    if (pref.summary != null && pref.summary!.isNotEmpty) return pref.summary!;
+    return 'Select multiple';
+  }
+
+  List<String> _multiSelectPreferenceSelectedEntries(
+    MultiSelectListPreference pref,
+  ) {
+    final selectedValues = (pref.values ?? []).toSet();
+    final entries = pref.entries ?? [];
+    final entryValues = pref.entryValues ?? [];
+
+    return entries
+        .asMap()
+        .entries
+        .where((entry) =>
+            entry.key < entryValues.length &&
+            selectedValues.contains(entryValues[entry.key]))
+        .map((entry) => entry.value)
+        .toList();
+  }
+
+  String _multiSelectPreferenceValueAt(
+    MultiSelectListPreference pref,
+    int index,
+  ) {
+    final entryValues = pref.entryValues ?? [];
+    if (index >= 0 && index < entryValues.length) return entryValues[index];
+    return (pref.entries ?? [])[index];
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = context.colors;
-    return Glow(
-      child: Scaffold(
-        
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             NestedHeader(
               title: "${widget.source.name} Settings",
@@ -49,13 +135,14 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                   }
                   if (preference.value!.isEmpty) {
                     return const Center(
-                      child: Text("Source doesn't have any settings"),
+                      child: AnymeXText("Source doesn't have any settings"),
                     );
                   }
                   return ListView.separated(
                     padding: const EdgeInsets.all(16),
                     itemCount: preference.value!.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final pref = preference.value![index];
                       switch (pref.type) {
@@ -68,8 +155,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                             onTap: () {
                               final newVal = !(p.value ?? false);
                               p.value = newVal;
-                              widget.source.methods.setPreference(pref, newVal);
-                              setState(() {});
+                              _savePreference(pref, newVal);
                             },
                             type: _PreferenceType.toggle,
                           );
@@ -82,8 +168,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                             onTap: () {
                               final newVal = !(p.value ?? false);
                               p.value = newVal;
-                              widget.source.methods.setPreference(pref, newVal);
-                              setState(() {});
+                              _savePreference(pref, newVal);
                             },
                             type: _PreferenceType.toggle,
                           );
@@ -91,23 +176,22 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                           final p = pref.listPreference!;
                           return _PreferenceTile(
                             title: p.title ?? '',
-                            subtitle: p.summary != null && p.summary!.isNotEmpty
-                                ? p.summary!
-                                : p.entries?[p.valueIndex ?? 0] ?? 'Select option',
+                            subtitle: _listPreferenceSubtitle(p),
                             isSelected: false,
                             onTap: () {
-                              int tempIndex = p.valueIndex ?? 0;
+                              int tempIndex = _initialListPreferenceIndex(p);
                               showDialog(
                                 context: context,
                                 builder: (context) => StatefulBuilder(
-                                  builder: (context, setDialogState) => AnymexDialog(
+                                  builder: (context, setDialogState) =>
+                                      AnymeXDialog(
                                     title: p.title ?? 'Select Option',
                                     onConfirm: () {
                                       p.valueIndex = tempIndex;
-                                      final newValue = p.entryValues?[tempIndex];
+                                      final newValue =
+                                          _listPreferenceValueAt(p, tempIndex);
                                       p.value = newValue;
-                                      widget.source.methods.setPreference(pref, newValue);
-                                      setState(() {});
+                                      _savePreference(pref, newValue);
                                     },
                                     contentWidget: SizedBox(
                                       height: 300,
@@ -116,7 +200,8 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                                         shrinkWrap: true,
                                         itemCount: p.entries?.length ?? 0,
                                         itemBuilder: (context, i) => Padding(
-                                          padding: const EdgeInsets.only(bottom: 8.0),
+                                          padding: const EdgeInsets.only(
+                                              bottom: 8.0),
                                           child: _PreferenceTile(
                                             title: p.entries![i],
                                             subtitle: 'Option ${i + 1}',
@@ -139,32 +224,22 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                           );
                         case 'multi_select':
                           final p = pref.multiSelectListPreference!;
-                          final selectedOptions = (p.values ?? []);
-                          final subtitle = (p.entries ?? [])
-                              .asMap()
-                              .entries
-                              .where((e) => selectedOptions.contains(p.entryValues?[e.key]))
-                              .map((e) => e.value)
-                              .join(", ");
                           return _PreferenceTile(
                             title: p.title ?? '',
-                            subtitle: p.summary != null && p.summary!.isNotEmpty
-                                ? p.summary!
-                                : subtitle.isEmpty
-                                    ? 'Select multiple'
-                                    : subtitle,
+                            subtitle: _multiSelectPreferenceSubtitle(p),
                             isSelected: false,
                             onTap: () {
-                              final tempSelectedValues = (p.values ?? []).toSet();
+                              final tempSelectedValues =
+                                  (p.values ?? []).toSet();
                               showDialog(
                                 context: context,
                                 builder: (context) => StatefulBuilder(
-                                  builder: (context, setDialogState) => AnymexDialog(
+                                  builder: (context, setDialogState) =>
+                                      AnymeXDialog(
                                     title: p.title ?? 'Select Options',
                                     onConfirm: () {
                                       p.values = tempSelectedValues.toList();
-                                      widget.source.methods.setPreference(pref, p.values);
-                                      setState(() {});
+                                      _savePreference(pref, p.values);
                                     },
                                     contentWidget: SizedBox(
                                       height: 300,
@@ -173,10 +248,14 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                                         shrinkWrap: true,
                                         itemCount: p.entries?.length ?? 0,
                                         itemBuilder: (context, i) {
-                                          final val = p.entryValues![i];
-                                          final isCurrentlySelected = tempSelectedValues.contains(val);
+                                          final val =
+                                              _multiSelectPreferenceValueAt(
+                                                  p, i);
+                                          final isCurrentlySelected =
+                                              tempSelectedValues.contains(val);
                                           return Padding(
-                                            padding: const EdgeInsets.only(bottom: 8.0),
+                                            padding: const EdgeInsets.only(
+                                                bottom: 8.0),
                                             child: _PreferenceTile(
                                               title: p.entries![i],
                                               subtitle: 'Option ${i + 1}',
@@ -184,7 +263,8 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                                               onTap: () {
                                                 setDialogState(() {
                                                   if (isCurrentlySelected) {
-                                                    tempSelectedValues.remove(val);
+                                                    tempSelectedValues
+                                                        .remove(val);
                                                   } else {
                                                     tempSelectedValues.add(val);
                                                   }
@@ -212,34 +292,40 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                               String tempValue = p.value ?? p.text ?? '';
                               showDialog(
                                 context: context,
-                                builder: (context) => AnymexDialog(
-                                  title: p.dialogTitle ?? p.title ?? 'Edit Text',
+                                builder: (context) => AnymeXDialog(
+                                  title:
+                                      p.dialogTitle ?? p.title ?? 'Edit Text',
                                   onConfirm: () {
                                     p.value = tempValue;
-                                    widget.source.methods.setPreference(pref, tempValue);
-                                    setState(() {});
+                                    p.text = tempValue;
+                                    _savePreference(pref, tempValue);
                                   },
                                   contentWidget: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       if (p.dialogMessage != null) ...[
-                                        AnymexText(
-                                          text: p.dialogMessage!,
+                                        AnymeXText(p.dialogMessage!,
                                           size: 14,
                                           color: theme.onSurfaceVariant,
                                         ),
                                         const SizedBox(height: 12),
                                       ],
                                       TextField(
-                                        controller: TextEditingController(text: tempValue),
+                                        controller: TextEditingController(
+                                            text: tempValue),
                                         onChanged: (val) => tempValue = val,
-                                        style: TextStyle(color: theme.onSurface),
+                                        style:
+                                            TextStyle(color: theme.onSurface),
                                         decoration: InputDecoration(
                                           filled: true,
-                                          fillColor: theme.surfaceContainerHighest.opaque(0.3),
+                                          fillColor: theme
+                                              .surfaceContainerHighest
+                                              .opaque(0.3),
                                           border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                            borderSide: BorderSide(color: theme.outline),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            borderSide: BorderSide(
+                                                color: theme.outline),
                                           ),
                                         ),
                                       ),
@@ -250,7 +336,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                             },
                             type: _PreferenceType.text,
                           );
-              
+
                         default:
                           return _PreferenceTile(
                             title: pref.key ?? 'Unknown Preference',
@@ -266,9 +352,8 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 }
 
@@ -316,14 +401,12 @@ class _PreferenceTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymexText(
-                      text: title,
+                    AnymeXText(title,
                       variant: TextVariant.semiBold,
                       color: isSelected ? context.colors.primary : null,
                     ),
                     const SizedBox(height: 4),
-                    AnymexText(
-                      text: subtitle,
+                    AnymeXText(subtitle,
                       size: 11,
                       color: context.colors.onSurface.opaque(0.7),
                     ),

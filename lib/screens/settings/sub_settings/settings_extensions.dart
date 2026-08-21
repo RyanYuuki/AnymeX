@@ -1,8 +1,10 @@
+import 'dart:io';
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Extensions/Extensions.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsExtensions extends StatefulWidget {
   final Function()? onSave;
@@ -30,7 +33,9 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   final em = Get.find<ExtensionManager>();
   final controller = Get.find<SourceController>();
 
-  bool get _isPluginInstalled => AnymeXRuntimeBridge.isPluginInstalled;
+  bool get _isPluginInstalled =>
+      AnymeXRuntimeBridge.isPluginInstalled ||
+      AnymeXRuntimeBridge.controller.isReady.value;
 
   int _managerIndex = 0;
   ItemType _tab = ItemType.anime;
@@ -48,6 +53,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     final activeManagers = em.managers;
 
     for (final m in activeManagers) {
+      if (Platform.isIOS && m.requiresPlugin) continue;
       list.add({
         'name': m.name,
         'manager': m,
@@ -55,22 +61,24 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       });
     }
 
-    final hasAniyomi = activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
-    final hasCloudStream = activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
+    if (!Platform.isIOS) {
+      final hasAniyomi = activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
+      final hasCloudStream = activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
 
-    if (!hasAniyomi) {
-      list.add({
-        'name': 'Aniyomi',
-        'manager': null,
-        'isMock': true,
-      });
-    }
-    if (!hasCloudStream) {
-      list.add({
-        'name': 'CloudStream',
-        'manager': null,
-        'isMock': true,
-      });
+      if (!hasAniyomi) {
+        list.add({
+          'name': 'Aniyomi',
+          'manager': null,
+          'isMock': true,
+        });
+      }
+      if (!hasCloudStream) {
+        list.add({
+          'name': 'CloudStream',
+          'manager': null,
+          'isMock': true,
+        });
+      }
     }
 
     list.sort((a, b) {
@@ -159,62 +167,47 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     }
   }
 
-  @override
+
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Obx(() {
-          final displayList = _displayManagers;
-          if (displayList.isEmpty) {
-            return Column(children: [
-              NestedHeader(
-                title: 'Extensions',
-                action: IconButton(
-                  onPressed: () => Get.to(() => const SettingsExtensionManager()),
-                  icon: const Icon(Icons.settings_suggest_rounded),
-                  tooltip: 'Extension Manager',
-                ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text('No extension managers found.',
-                      style: TextStyle(color: context.colors.onSurfaceVariant)),
-                ),
-              ),
-            ]);
-          }
-
-          if (_managerIndex >= displayList.length) {
-            _managerIndex = 0;
-          }
-
-          return Column(children: [
-            NestedHeader(
-              title: 'Extensions',
-              action: IconButton(
-                onPressed: () => Get.to(() => const SettingsExtensionManager()),
-                icon: const Icon(Icons.settings_suggest_rounded),
-                tooltip: 'Extension Manager',
-              ),
-            ),
-            const SizedBox(height: 10),
-            if (displayList.length > 1) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildManagerBar(),
-              ),
-              const SizedBox(height: 8),
-            ],
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _buildTypeBar(),
-            ),
-            const SizedBox(height: 4),
-            Expanded(child: _buildBody()),
-          ]);
-        }),
-        floatingActionButton: Obx(() => _buildFab() ?? const SizedBox.shrink()),
+    return AnymeXScaffold(
+      showHeader: true,
+      headerTitle: 'Extensions',
+      headerAction: IconButton(
+        onPressed: () => navigate(() => const SettingsExtensionManager()),
+        icon: const Icon(Icons.settings_rounded),
+        tooltip: 'Extension Manager',
+      ),
+      floatingActionButton: _buildFab(),
+      body: Builder(
+        builder: (ctx) => Obx(() {
+                  final displayList = _displayManagers;
+                  if (displayList.isEmpty) {
+                    return Center(
+                      child: AnymeXText('No extension managers found.',
+                          style: TextStyle(color: context.colors.onSurfaceVariant)),
+                    );
+                  }
+                  if (_managerIndex >= displayList.length) {
+                    _managerIndex = 0;
+                  }
+                  return Column(children: [
+                    SizedBox(height: AnymeXHeaderScope.of(ctx)),
+                    if (displayList.length > 1) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _buildManagerBar(),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: _buildTypeBar(),
+                    ),
+                    const SizedBox(height: 4),
+                    Expanded(child: _buildBody()),
+                  ]);
+                })
       ),
     );
   }
@@ -295,7 +288,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                                       : colors.onSurfaceVariant),
                               const SizedBox(width: 5),
                               Flexible(
-                                child: Text(
+                                child: AnymeXText(
                                   e.value['name'] as String,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -418,7 +411,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                                             ? colors.onPrimary
                                             : colors.onSurfaceVariant,
                                       ),
-                                      child: Text(t.label,
+                                      child: AnymeXText(t.label,
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1),
                                     ),
@@ -460,7 +453,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     size: 48,
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  AnymeXText(
                     'Failed to Start Extension Runtime',
                     style: TextStyle(
                       fontSize: 16,
@@ -469,7 +462,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  AnymeXText(
                     AnymeXRuntimeBridge.controller.error.value,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -481,7 +474,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                   FilledButton.icon(
                     onPressed: () => AnymeXRuntimeBridge.checkAndInitialize(),
                     icon: const Icon(Icons.refresh_rounded),
-                    label: const Text('Retry'),
+                    label: const AnymeXText('Retry'),
                     style: FilledButton.styleFrom(
                       backgroundColor: context.colors.primary,
                       foregroundColor: context.colors.onPrimary,
@@ -502,7 +495,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             children: [
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
-              Text(
+              AnymeXText(
                 'Starting extension runtime...',
                 style: TextStyle(
                   fontSize: 15,
@@ -558,7 +551,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
+            AnymeXText(
               'Plugin Not Installed',
               style: TextStyle(
                 fontSize: 16,
@@ -567,7 +560,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               'To use the $managerName extension manager, you need to download and install the runtime plugin.',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -577,9 +570,9 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             ),
             const SizedBox(height: 20),
             FilledButton.icon(
-              onPressed: () => Get.to(() => const SettingsExtensionManager()),
+              onPressed: () => navigate(() => const SettingsExtensionManager()),
               icon: const Icon(Icons.download_rounded),
-              label: const Text('Go to Plugin Downloader'),
+              label: const AnymeXText('Go to Plugin Downloader'),
               style: FilledButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: colors.onPrimary,
@@ -608,13 +601,13 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               size: 28, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 14),
-        Text('Not supported',
+        AnymeXText('Not supported',
             style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: colors.onSurface)),
         const SizedBox(height: 4),
-        Text('${_tab.name.capitalizeFirst} is not supported\nby this manager',
+        AnymeXText('${_tab.name.capitalizeFirst} is not supported\nby this manager',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant)),
       ]),
@@ -636,13 +629,13 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
           child: Icon(icon, size: 30, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
-        Text('No repositories yet',
+        AnymeXText('No repositories yet',
             style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: colors.onSurface)),
         const SizedBox(height: 5),
-        Text('Tap + to add a repository URL',
+        AnymeXText('Tap + to add a repository URL',
             style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant)),
       ]),
     );
@@ -651,7 +644,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   Widget _buildRepoList(List<Repo> repos, {Key? key}) {
     return ListView.separated(
       key: key,
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+      padding: EdgeInsets.fromLTRB(16, AnymeXHeaderScope.of(context), 16, 100),
       itemCount: repos.length,
       separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder: (_, i) {
@@ -692,7 +685,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       _path(repo.url),
                       style: TextStyle(
                           fontSize: 12.5,
@@ -704,7 +697,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     ),
                     if (host != null) ...[
                       const SizedBox(height: 2),
-                      Text(host,
+                      AnymeXText(host,
                           style: TextStyle(
                               fontSize: 11, color: colors.onSurfaceVariant)),
                     ],
@@ -730,31 +723,6 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
           ]),
         ),
       ),
-    );
-  }
-
-  Widget? _buildFab() {
-    if (_managerIndex >= _displayManagers.length) return null;
-    final selectedManagerData = _displayManagers[_managerIndex];
-    if (selectedManagerData['isMock'] == true) return null;
-
-    final manager = selectedManagerData['manager'] as Extension;
-    final supported = _tab == ItemType.anime
-        ? manager.supportsAnime
-        : _tab == ItemType.manga
-            ? manager.supportsManga
-            : manager.supportsNovel;
-    if (!supported) return null;
-    final colors = context.colors;
-    return FloatingActionButton.extended(
-      onPressed: _openAddDialog,
-      icon: const Icon(Icons.add, size: 20),
-      label: const Text('Add Repo',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-      backgroundColor: colors.primary,
-      foregroundColor: colors.onPrimary,
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     );
   }
 
@@ -787,6 +755,30 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     } catch (_) {
       return null;
     }
+  }
+  Widget? _buildFab() {
+    if (_managerIndex >= _displayManagers.length) return null;
+    final selectedManagerData = _displayManagers[_managerIndex];
+    if (selectedManagerData['isMock'] == true) return null;
+
+    final manager = selectedManagerData['manager'] as Extension;
+    final supported = _tab == ItemType.anime
+        ? manager.supportsAnime
+        : _tab == ItemType.manga
+            ? manager.supportsManga
+            : manager.supportsNovel;
+    if (!supported) return null;
+    final colors = context.colors;
+    return FloatingActionButton.extended(
+      onPressed: _openAddDialog,
+      icon: const Icon(Icons.add, size: 20),
+      label: const AnymeXText('Add Repo',
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+      backgroundColor: colors.primary,
+      foregroundColor: colors.onPrimary,
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    );
   }
 }
 
@@ -840,156 +832,79 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
     };
     final label = widget.type.name.capitalizeFirst!;
 
-    return Dialog(
-      backgroundColor: c.surface,
-      surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return AnymeXDialog(
+      title: 'Add Repository',
+      confirmText: _loading ? 'Adding...' : 'Add Repository',
+      onConfirm: _loading ? () {} : _submit,
+      contentWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(children: [
-                Container(
-                  width: 38,
-                  height: 38,
-                  decoration: BoxDecoration(
-                      color: c.primaryContainer,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Icon(icon, size: 18, color: c.onPrimaryContainer),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Add Repository',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: c.onSurface)),
-                        Text(label,
-                            style: TextStyle(
-                                fontSize: 12, color: c.onSurfaceVariant)),
-                      ]),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(Icons.close_rounded,
-                      size: 20, color: c.onSurfaceVariant),
-                  style: IconButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(32, 32),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                ),
-              ]),
-              const SizedBox(height: 18),
-              Text('REPOSITORY URL',
-                  style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.1,
-                      color: c.onSurfaceVariant)),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _ctrl,
-                autofocus: true,
-                maxLines: 2,
-                minLines: 1,
-                style: TextStyle(
-                    fontSize: 12.5,
-                    fontFamily: 'monospace',
-                    color: c.onSurface,
-                    height: 1.5),
-                decoration: InputDecoration(
-                  hintText: 'https://raw.githubusercontent.com/...',
-                  hintStyle: TextStyle(
-                      fontSize: 12,
-                      color: c.onSurfaceVariant.withOpacity(0.6),
-                      height: 1.5),
-                  contentPadding: const EdgeInsets.all(14),
-                  filled: true,
-                  fillColor: c.surfaceContainer,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          BorderSide(color: c.outlineVariant.withOpacity(0.6))),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: c.primary, width: 1.5)),
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                    color: c.primaryContainer,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Icon(icon, size: 18, color: c.onPrimaryContainer),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymeXText(
+                      label,
+                      style: TextStyle(fontSize: 12, color: c.onSurfaceVariant),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 6),
-              Row(children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed:
-                        _loading ? null : () => Navigator.of(context).pop(),
-                    style: TextButton.styleFrom(
-                      foregroundColor: c.onSurfaceVariant,
-                      padding: const EdgeInsets.symmetric(vertical: 13),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: c.outlineVariant)),
-                    ),
-                    child: const Text('Cancel',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 14)),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 2,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: _loading
-                        ? Container(
-                            key: const ValueKey('loading'),
-                            height: 48,
-                            decoration: BoxDecoration(
-                                color: c.primary.withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(12)),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2, color: c.primary)),
-                                  const SizedBox(width: 10),
-                                  Text('Adding…',
-                                      style: TextStyle(
-                                          color: c.primary,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 14)),
-                                ]),
-                          )
-                        : ElevatedButton.icon(
-                            key: const ValueKey('add'),
-                            onPressed: _submit,
-                            icon: const Icon(Icons.add, size: 18),
-                            label: const Text('Add Repository',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 14)),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: c.primary,
-                              foregroundColor: c.onPrimary,
-                              elevation: 0,
-                              minimumSize: const Size(double.infinity, 48),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                          ),
-                  ),
-                ),
-              ]),
-            ]),
+            ],
+          ),
+          const SizedBox(height: 18),
+          AnymeXText(
+            'REPOSITORY URL',
+            style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.1,
+                color: c.onSurfaceVariant),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _ctrl,
+            autofocus: true,
+            maxLines: 2,
+            minLines: 1,
+            style: TextStyle(
+                fontSize: 12.5,
+                fontFamily: 'monospace',
+                color: c.onSurface,
+                height: 1.5),
+            decoration: InputDecoration(
+              hintText: 'https://raw.githubusercontent.com/...',
+              hintStyle: TextStyle(
+                  fontSize: 12,
+                  color: c.onSurfaceVariant.withOpacity(0.6),
+                  height: 1.5),
+              contentPadding: const EdgeInsets.all(14),
+              filled: true,
+              fillColor: c.surfaceContainer,
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none),
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: c.outlineVariant.withOpacity(0.6))),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: c.primary, width: 1.5)),
+            ),
+          ),
+        ],
       ),
     );
   }

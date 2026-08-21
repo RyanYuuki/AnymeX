@@ -68,12 +68,18 @@ class SourceMapper {
   }
 
   static Media createMediaFromExtension(DMedia data, ItemType type) {
+    final activeSource = type == ItemType.manga
+        ? sourceController.activeMangaSource.value
+        : type == ItemType.novel
+            ? sourceController.activeNovelSource.value
+            : sourceController.activeSource.value;
     return Media(
       id: data.url ?? '',
       title: data.title ?? '',
       poster: data.cover ?? '',
       mediaType: type,
       serviceType: ServicesType.extensions,
+      sourceId: activeSource?.id,
     );
   }
 

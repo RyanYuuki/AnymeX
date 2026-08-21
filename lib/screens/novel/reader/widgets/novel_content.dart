@@ -2,13 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:anymex/screens/novel/reader/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class NovelContentWidget extends StatefulWidget {
   final NovelReaderController controller;
@@ -116,7 +117,7 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
         children: [
           ExpressiveLoadingIndicator(color: context.colors.primary),
           const SizedBox(height: 16),
-          Text('Loading chapter...',
+          AnymeXText('Loading chapter...',
               style: TextStyle(
                   color: context.colors.onSurface.opaque(0.7), fontSize: 16)),
         ],
@@ -132,7 +133,7 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
           Icon(Icons.book_outlined,
               size: 48, color: context.colors.onSurface.opaque(0.5)),
           const SizedBox(height: 16),
-          Text('No content available',
+          AnymeXText('No content available',
               style: TextStyle(
                   fontSize: 18,
                   color: context.colors.onSurface.opaque(0.7),
@@ -337,7 +338,7 @@ class _DictionarySheetState extends State<_DictionarySheet> {
           color: colors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20))),
       padding: EdgeInsets.fromLTRB(
-          20, 16, 20, MediaQuery.of(context).viewInsets.bottom + 24),
+          20, 16, 20, MediaQuery.viewInsetsOf(context).bottom + 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,7 +351,7 @@ class _DictionarySheetState extends State<_DictionarySheet> {
                       color: colors.onSurface.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(2)))),
           const SizedBox(height: 16),
-          Text(widget.word,
+          AnymeXText(widget.word,
               style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -359,11 +360,11 @@ class _DictionarySheetState extends State<_DictionarySheet> {
           if (_loading)
             const Center(child: CircularProgressIndicator())
           else if (_error != null)
-            Text(_error!, style: TextStyle(color: colors.error))
+            AnymeXText(_error!, style: TextStyle(color: colors.error))
           else
             ConstrainedBox(
               constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.45),
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.45),
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: _entries.length,
@@ -373,16 +374,16 @@ class _DictionarySheetState extends State<_DictionarySheet> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(e.partOfSpeech,
+                      AnymeXText(e.partOfSpeech,
                           style: TextStyle(
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
                               color: colors.onSurface.withOpacity(0.6))),
                       const SizedBox(height: 4),
-                      Text(e.definition, style: const TextStyle(fontSize: 15)),
+                      AnymeXText(e.definition, style: const TextStyle(fontSize: 15)),
                       if (e.example != null) ...[
                         const SizedBox(height: 4),
-                        Text('"${e.example}"',
+                        AnymeXText('"${e.example}"',
                             style: TextStyle(
                                 fontSize: 13,
                                 fontStyle: FontStyle.italic,

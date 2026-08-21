@@ -1,11 +1,15 @@
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/watchium/watchium_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/widgets/watchium/watchium_server_sheet.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:get/get.dart';
@@ -13,6 +17,12 @@ import 'package:get/get.dart';
 class Deeplink {
   static Future<void> handleDeepLink(Uri uri) async {
     print("HANDLING DEEEPLIINK => ${uri.toString()}");
+
+    if (uri.host == 'callback' ||
+        uri.path.contains('callback') ||
+        uri.queryParameters.containsKey('code')) {
+      return;
+    }
 
     final extensionManager = Get.find<ExtensionManager>();
     int attempts = 0;
@@ -29,6 +39,11 @@ class Deeplink {
       return;
     }
 
+    if (_isWatchiumDeepLink(uri)) {
+      _handleWatchiumDeepLink(uri);
+      return;
+    }
+
     final mediaTarget = _parseMediaTarget(uri);
     if (mediaTarget != null) {
       _openMediaTarget(mediaTarget);
@@ -40,7 +55,11 @@ class Deeplink {
     }
 
     bool isRepoAdded = false;
-    snackBar("Adding repo... please wait.");
+    if (uri.scheme.toLowerCase() == 'kotatsu') {
+      snackBar("Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
+    } else {
+      snackBar("Adding repo... please wait.");
+    }
     final manager = extensionManager.managers;
     for (final handler in manager) {
       print('Matching ${uri.scheme} with ${handler.schemes.toString()}');
@@ -346,6 +365,102 @@ class Deeplink {
 
   static String? _extractNumericId(String raw) {
     return RegExp(r'\d+').firstMatch(raw)?.group(0);
+  }
+
+  // ---- Watchium Deep Link ----
+
+  static bool _isWatchiumDeepLink(Uri uri) {
+    if (uri.host.toLowerCase() != 'watchium') return false;
+    final segments = _compactSegments(uri.pathSegments);
+    return segments.isNotEmpty && segments.first.toLowerCase() == 'join';
+  }
+
+  static Future<void> _handleWatchiumDeepLink(Uri uri) async {
+    final segments = _compactSegments(uri.pathSegments);
+    Logger.i('Watchium deep link: $uri', 'DEEPLINK');
+    // URI: anymex://watchium/join/ABC123
+    if (segments.length < 2) {
+      Logger.w('Watchium deep link: invalid segments $segments', 'DEEPLINK');
+      errorSnackBar('Invalid Watch Together link');
+      return;
+    }
+
+    final code = segments[1].toUpperCase();
+    if (code.length != 6) {
+      Logger.w('Watchium deep link: invalid code length ${code.length}', 'DEEPLINK');
+      errorSnackBar('Invalid room code in link');
+      return;
+    }
+
+    Logger.d('Watchium deep link: parsed code=$code', 'DEEPLINK');
+
+    // Wait for WatchiumService to be registered
+    int attempts = 0;
+    while (!Get.isRegistered<WatchiumService>() && attempts < 50) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      attempts++;
+    }
+
+    if (!Get.isRegistered<WatchiumService>()) {
+      Logger.w('Watchium deep link: WatchiumService not registered after waiting', 'DEEPLINK');
+      errorSnackBar('App is still loading, try again shortly.');
+      return;
+    }
+
+    // On cold start, auth services may not have loaded saved login state yet.
+    // Wait for the user to be authenticated before attempting login/join.
+    if (!Get.isRegistered<ServiceHandler>()) {
+      Logger.w('Watchium deep link: ServiceHandler not registered', 'DEEPLINK');
+      errorSnackBar('App is still loading, try again shortly.');
+      return;
+    }
+
+    final serviceHandler = Get.find<ServiceHandler>();
+    attempts = 0;
+    while (!serviceHandler.isLoggedIn.value && attempts < 75) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      attempts++;
+    }
+
+    if (!serviceHandler.isLoggedIn.value) {
+      Logger.w('Watchium deep link: user not logged in after waiting', 'DEEPLINK');
+      errorSnackBar('Please log in first, then try the link again.');
+      return;
+    }
+
+    final watchium = Get.find<WatchiumService>();
+    successSnackBar('Joining room $code...');
+
+    // First get room info to navigate to the anime
+    final roomInfo = await watchium.getRoomInfo(code);
+    Logger.d('Watchium deep link: roomInfo=${roomInfo != null ? "found" : "null"}', 'DEEPLINK');
+
+    if (roomInfo == null) {
+      Logger.w('Watchium deep link: room not found or expired', 'DEEPLINK');
+      errorSnackBar('Room not found or expired');
+      return;
+    }
+
+    // Navigate to Watch Together page which shows the joined room
+    navigate(() => const WatchiumPage());
+
+    // Join the room
+    final ok = await watchium.handleDeepLinkJoin(code);
+    if (!ok) {
+      final err = watchium.error.value;
+      Logger.w('Watchium deep link: join failed: $err', 'DEEPLINK');
+      errorSnackBar('Failed to join room: $err');
+    } else {
+      Logger.i('Watchium deep link: joined room $code successfully', 'DEEPLINK');
+      successSnackBar('Joined room $code!');
+      // Wait for room state to populate from socket
+      await Future.delayed(const Duration(milliseconds: 1500));
+      final rs = watchium.roomState.value;
+      final content = rs?.content;
+      if (content != null && content.availableServers.isNotEmpty && Get.context != null) {
+        showWatchiumServerSheet(context: Get.context!, content: content);
+      }
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ListTileChapterFilter extends StatelessWidget {
   final String label;
@@ -22,7 +22,7 @@ class ListTileChapterFilter extends StatelessWidget {
           : type == 1
               ? true
               : null,
-      title: Text(
+      title: AnymeXText(
         label,
         style: const TextStyle(fontSize: 14),
       ),

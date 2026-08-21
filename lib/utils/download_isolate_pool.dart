@@ -145,6 +145,7 @@ class DownloadIsolatePool {
       taskId: taskId,
       type: _TaskType.m3u8Download,
       params: M3u8DownloadParams(
+        taskId: taskId,
         segments: segments,
         tempDir: tempDir,
         key: key,
@@ -247,6 +248,7 @@ class FileDownloadParams {
 }
 
 class M3u8DownloadParams {
+  final String taskId;
   final List<TsInfo> segments;
   final String tempDir;
   final Uint8List? key;
@@ -257,6 +259,7 @@ class M3u8DownloadParams {
   final ItemType itemType;
 
   M3u8DownloadParams({
+    required this.taskId,
     required this.segments,
     required this.tempDir,
     required this.key,
@@ -448,7 +451,7 @@ Future<void> _downloadFile(
   try {
     if (itemType != ItemType.anime) {
       final response = await _withRetry(
-        () => client.get(Uri.parse(pageUrl.url), headers: pageUrl.headers),
+        (_) => client.get(Uri.parse(pageUrl.url), headers: pageUrl.headers),
         3,
       );
       if (response.statusCode != 200) {
@@ -461,7 +464,7 @@ Future<void> _downloadFile(
       await file.parent.create(recursive: true);
       await file.writeAsBytes(response.bodyBytes);
     } else {
-      await _withRetry(() async {
+      await _withRetry((_) async {
         var request = http.Request('GET', Uri.parse(pageUrl.url));
         request.headers.addAll(pageUrl.headers ?? {});
         http.StreamedResponse response = await client.send(request);
@@ -512,41 +515,66 @@ Future<void> _processM3u8Download(
 ) async {
   int completed = 0;
   final total = params.segments.length;
-  final queue = Queue<TsInfo>.from(params.segments);
-  final List<Future<void>> activeTasks = [];
+  final Queue<TsInfo> queue = Queue<TsInfo>.from(params.segments);
+  final List<TsInfo> failedSegments = [];
+  int maxPasses = 5;
 
   try {
-    while (queue.isNotEmpty || activeTasks.isNotEmpty) {
-      while (
-          queue.isNotEmpty && activeTasks.length < params.concurrentDownloads) {
-        final segment = queue.removeFirst();
-        final task = _downloadSegment(segment, params, client).then((_) {
-          completed++;
-          replyPort.send(
-            DownloadProgress(
-              completed,
-              total,
-              params.itemType,
-              segment: segment,
-            ),
-          );
-        }).catchError((error) {
-          replyPort.send(
-            DownloadPoolException(
-              'Error downloading segment ${segment.name}',
-              error,
-            ),
-          );
-          throw error;
-        });
+    for (int pass = 1; pass <= maxPasses; pass++) {
+      if (queue.isEmpty && failedSegments.isEmpty) break;
 
-        activeTasks.add(task);
+      if (pass > 1) {
+        if (kDebugMode) {
+          print('[DownloadIsolate] Pass ${pass - 1} finished with ${failedSegments.length} failed segments. Cooling down 2s before Pass $pass...');
+        }
+        await Future.delayed(const Duration(seconds: 2));
+        queue.addAll(failedSegments);
+        failedSegments.clear();
       }
 
-      if (activeTasks.isNotEmpty) {
-        await Future.wait(activeTasks.toList(), eagerError: true);
-        activeTasks.clear();
+      final List<Future<void>> activeTasks = [];
+
+      while (queue.isNotEmpty || activeTasks.isNotEmpty) {
+        if (downloadTaskCancellation[params.taskId] == true) {
+          throw DownloadPoolException('M3U8 download cancelled');
+        }
+        while (queue.isNotEmpty && activeTasks.length < params.concurrentDownloads) {
+          if (downloadTaskCancellation[params.taskId] == true) break;
+          final segment = queue.removeFirst();
+          final task = _downloadSegment(segment, params, client).then((_) {
+            completed++;
+            replyPort.send(
+              DownloadProgress(
+                completed,
+                total,
+                params.itemType,
+                segment: segment,
+              ),
+            );
+          }).catchError((error) {
+            if (kDebugMode) {
+              print('[DownloadIsolate] Segment ${segment.name} deferred to retry queue (Pass $pass): $error');
+            }
+            failedSegments.add(segment);
+          });
+
+          activeTasks.add(task);
+        }
+
+        if (activeTasks.isNotEmpty) {
+          await Future.wait(activeTasks.toList());
+          activeTasks.clear();
+        }
       }
+
+      if (failedSegments.isEmpty) {
+        break;
+      }
+    }
+
+    if (failedSegments.isNotEmpty) {
+      final names = failedSegments.map((s) => s.name).join(', ');
+      throw DownloadPoolException('Failed segments after $maxPasses passes: $names');
     }
 
     replyPort.send(DownloadComplete());
@@ -561,29 +589,48 @@ Future<void> _downloadSegment(
   http.Client client,
 ) async {
   try {
+    if (downloadTaskCancellation[params.taskId] == true) {
+      throw DownloadPoolException('Cancelled');
+    }
     final file = File(path.join(params.tempDir, '${ts.name}.ts'));
+    if (file.existsSync() && file.lengthSync() > 0) {
+      if (kDebugMode) {
+        print('[DownloadIsolate] Skipped ${ts.name} (already downloaded)');
+      }
+      return;
+    }
     await file.parent.create(recursive: true);
 
-    var request = http.Request('GET', Uri.parse(ts.url));
-    if (params.headers != null) {
-      request.headers.addAll(params.headers!);
-    }
-    http.StreamedResponse response =
-        await _withRetry(() => client.send(request), 3);
-
-    if (response.statusCode != 200) {
-      throw DownloadPoolException('Failed to download segment: ${ts.name}');
-    }
-
-    final sink = file.openWrite();
-    try {
-      await for (var chunk in response.stream) {
-        sink.add(chunk);
+    await _withRetry((attempt) async {
+      if (downloadTaskCancellation[params.taskId] == true) {
+        throw DownloadPoolException('Cancelled');
       }
-    } finally {
-      await sink.flush();
-      await sink.close();
-    }
+      if (kDebugMode) {
+        print('[DownloadIsolate] Downloading ${ts.name} (attempt $attempt) -> ${ts.url}');
+      }
+      final request = http.Request('GET', Uri.parse(ts.url));
+      if (params.headers != null) {
+        request.headers.addAll(params.headers!);
+      }
+      final response = await client.send(request);
+      if (response.statusCode != 200) {
+        throw DownloadPoolException('HTTP ${response.statusCode} downloading ${ts.name}');
+      }
+      final sink = file.openWrite();
+      try {
+        await for (var chunk in response.stream) {
+          if (downloadTaskCancellation[params.taskId] == true) {
+            await sink.close();
+            if (file.existsSync()) await file.delete();
+            throw DownloadPoolException('Cancelled');
+          }
+          sink.add(chunk);
+        }
+      } finally {
+        await sink.flush();
+        await sink.close();
+      }
+    }, 2, tag: ts.name);
 
     if (params.key != null) {
       final bytes = await file.readAsBytes();
@@ -597,7 +644,13 @@ Future<void> _downloadSegment(
       );
       await file.writeAsBytes(decrypted);
     }
+    if (kDebugMode) {
+      print('[DownloadIsolate] Successfully downloaded ${ts.name}');
+    }
   } catch (e) {
+    if (kDebugMode) {
+      print('[DownloadIsolate] Error downloading segment ${ts.name}: $e');
+    }
     throw DownloadPoolException('Failed to process segment: ${ts.name}', e);
   }
 }
@@ -632,19 +685,27 @@ Uint8List _aesDecrypt(
   }
 }
 
-Future<T> _withRetry<T>(Future<T> Function() operation, int maxRetries) async {
+Future<T> _withRetry<T>(
+  Future<T> Function(int attempt) operation,
+  int maxRetries, {
+  String? tag,
+}) async {
   int attempts = 0;
   while (true) {
     try {
       attempts++;
-      return await operation();
+      return await operation(attempts);
     } catch (e) {
+      if (kDebugMode && tag != null) {
+        print('[DownloadIsolate] Attempt $attempts/$maxRetries failed for $tag: $e');
+      }
       if (attempts >= maxRetries) {
         throw DownloadPoolException(
-          'Operation failed after $maxRetries attempts',
+          'Operation failed after $maxRetries attempts for ${tag ?? "task"}',
           e,
         );
       }
+      await Future.delayed(Duration(milliseconds: 500 * (1 << (attempts - 1))));
     }
   }
 }

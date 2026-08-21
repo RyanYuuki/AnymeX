@@ -1,11 +1,12 @@
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:get/get.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -119,8 +120,9 @@ class SocialSection extends StatelessWidget {
                           Icon(Icons.star_rounded,
                               size: 12, color: theme.onPrimary),
                           const SizedBox(width: 4),
-                          AnymexText(
-                            text: (user.userScore!).toStringAsFixed(1),
+                          AnymeXText(Get.find<AnilistAuth>().isLoggedIn.value
+                                ? Get.find<AnilistAuth>().formatScore(user.userScore)
+                                : (user.userScore! > 10.0 ? user.userScore! / 10.0 : user.userScore!).toStringAsFixed(1),
                             size: 11,
                             color: theme.onPrimary,
                             variant: TextVariant.bold,
@@ -133,16 +135,14 @@ class SocialSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             if (status.isNotEmpty)
-              AnymexText(
-                text: status,
+              AnymeXText(status,
                 size: 12,
                 color: theme.onSurface.withOpacity(0.7),
                 fontStyle: FontStyle.italic,
                 textAlign: TextAlign.center,
               ),
             const SizedBox(height: 2),
-            AnymexText(
-              text: user.userName ?? 'Unknown',
+            AnymeXText(user.userName ?? 'Unknown',
               size: 13,
               maxLines: 1,
               textAlign: TextAlign.center,

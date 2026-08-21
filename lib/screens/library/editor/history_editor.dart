@@ -3,9 +3,9 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
@@ -151,10 +151,8 @@ class _HistoryEditorState extends State<HistoryEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: StreamBuilder<List<OfflineMedia>>(
+    return AnymeXScaffold(
+  body: StreamBuilder<List<OfflineMedia>>(
           stream: _historyStream(),
           builder: (context, snapshot) {
             final historyItems = snapshot.data ?? [];
@@ -169,15 +167,14 @@ class _HistoryEditorState extends State<HistoryEditor> {
             );
           },
         ),
-        floatingActionButton: StreamBuilder<List<OfflineMedia>>(
+  floatingActionButton: StreamBuilder<List<OfflineMedia>>(
           stream: _historyStream(),
           builder: (context, snapshot) {
             final historyItems = snapshot.data ?? [];
             return _buildFAB(historyItems);
           },
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildAppBar(List<OfflineMedia> historyItems) {
@@ -231,7 +228,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   _historyTitle,
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
@@ -240,7 +237,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                     letterSpacing: -0.5,
                   ),
                 ),
-                Text(
+                AnymeXText(
                   _isSelecting
                       ? '${_selectedMediaIds.length} selected'
                       : '${historyItems.length} items',
@@ -437,8 +434,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymexText(
-                        text: item.name ?? item.jname ?? 'Unknown',
+                      AnymeXText(item.name ?? item.jname ?? 'Unknown',
                         size: 16,
                         variant: TextVariant.semiBold,
                         maxLines: 1,
@@ -446,8 +442,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                         isMarquee: true,
                       ),
                       const SizedBox(height: 4),
-                      AnymexText(
-                        text: subtitle,
+                      AnymeXText(subtitle,
                         size: 14,
                         variant: TextVariant.regular,
                         color: theme.colorScheme.onSurface.opaque(0.7),
@@ -456,7 +451,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                         isMarquee: true,
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      AnymeXText(
                         subMeta,
                         style: TextStyle(
                           color: theme.colorScheme.onSurface.opaque(0.6),
@@ -510,7 +505,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
       children: [
         Row(
           children: [
-            Text(
+            AnymeXText(
               _formatDuration(currentTrack),
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.6),
@@ -518,7 +513,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Text(
+            AnymeXText(
               ' / ${_formatDuration(totalDuration)}',
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.4),
@@ -554,7 +549,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
       children: [
         Row(
           children: [
-            Text(
+            AnymeXText(
               '$currentPage',
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.6),
@@ -562,7 +557,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Text(
+            AnymeXText(
               ' / $totalPages pages',
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.4),
@@ -623,7 +618,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
             ),
           ),
           const SizedBox(height: 24),
-          Text(
+          AnymeXText(
             _isAnime ? 'No watch history' : 'No read history',
             style: TextStyle(
               color: theme.colorScheme.onSurface,
@@ -632,7 +627,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          AnymeXText(
             _isAnime
                 ? 'Your watch history will appear here\nonce you start watching'
                 : 'Your read history will appear here\nonce you start reading',
@@ -662,7 +657,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
           borderRadius: BorderRadius.circular(20),
         ),
         icon: const Icon(Icons.delete_rounded),
-        label: Text(
+        label: AnymeXText(
           'Delete Selected',
           style: TextStyle(
             fontWeight: FontWeight.w600,
@@ -681,7 +676,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
         borderRadius: BorderRadius.circular(20),
       ),
       icon: const Icon(Icons.delete_sweep_rounded),
-      label: Text(
+      label: AnymeXText(
         'Clear All',
         style: TextStyle(
           fontWeight: FontWeight.w600,
@@ -706,21 +701,21 @@ class _HistoryEditorState extends State<HistoryEditor> {
       builder: (context) => AlertDialog(
         backgroundColor: theme.colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(
+        title: AnymeXText(
           'Delete History Item',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
-        content: Text(
+        content: AnymeXText(
           'Remove "$itemName" from your $_historyLabel?',
           style: TextStyle(color: theme.colorScheme.onSurface),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: AnymeXText(
               'Cancel',
               style: TextStyle(color: theme.colorScheme.onSurface),
             ),
@@ -736,7 +731,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text('Delete'),
+            child: const AnymeXText('Delete'),
           ),
         ],
       ),
@@ -751,21 +746,21 @@ class _HistoryEditorState extends State<HistoryEditor> {
       builder: (context) => AlertDialog(
         backgroundColor: theme.colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(
+        title: AnymeXText(
           'Clear All History',
           style: TextStyle(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
-        content: Text(
+        content: AnymeXText(
           'Are you sure you want to clear all $_historyLabel? This action cannot be undone.',
           style: TextStyle(color: theme.colorScheme.onSurface),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(
+            child: AnymeXText(
               'Cancel',
               style: TextStyle(color: theme.colorScheme.onSurface),
             ),
@@ -781,7 +776,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text('Clear All'),
+            child: const AnymeXText('Clear All'),
           ),
         ],
       ),

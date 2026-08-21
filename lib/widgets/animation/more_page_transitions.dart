@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 // Main page animation wrapper - perfect for entire screens
 class PageAnimationWrapper extends StatefulWidget {
@@ -297,7 +298,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
-                Text(
+                AnymeXText(
                   'Page Animation Demo',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -305,7 +306,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                       ),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                AnymeXText(
                   'Try different animation styles for page entrances',
                   style: TextStyle(color: Colors.grey[600], fontSize: 16),
                 ),
@@ -365,7 +366,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         'Usage:',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -373,7 +374,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      AnymeXText(
                         'Wrap your Scaffold or main page widget:\n\nSmoothPageEntrance(\n  style: PageEntranceStyle.slideUpGentle,\n  child: YourPageContent(),\n)',
                         style: TextStyle(
                           fontFamily: 'monospace',
@@ -424,7 +425,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AnymeXText(
                     title,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -432,7 +433,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  AnymeXText(
                     subtitle,
                     style: TextStyle(
                       color: Colors.grey[600],

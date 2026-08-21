@@ -1,6 +1,7 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ShaderOsd extends StatelessWidget {
   final PlayerController controller;
@@ -48,7 +49,7 @@ class ShaderOsd extends StatelessWidget {
                   size: 20,
                 ),
                 const SizedBox(width: 10),
-                Text(
+                AnymeXText(
                   isCleared ? 'Shaders Disabled' : shaderName,
                   style: const TextStyle(
                     color: Colors.white,

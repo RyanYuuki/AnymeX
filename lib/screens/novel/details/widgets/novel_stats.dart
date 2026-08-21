@@ -3,9 +3,8 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -22,7 +21,7 @@ class NovelStats extends StatelessWidget {
     final covers = [...trendingAnimes, ...trendingMangas]
         .where((e) => e.cover != null && (e.cover?.isNotEmpty ?? false))
         .toList();
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final colorScheme = context.colors;
 
     return Column(
@@ -46,8 +45,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const AnymexText(
-                text: "Statistics",
+              const AnymeXText("Statistics",
                 variant: TextVariant.bold,
                 size: 20,
               ),
@@ -82,8 +80,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const AnymexText(
-                text: "Synopsis",
+              const AnymeXText("Synopsis",
                 variant: TextVariant.bold,
                 size: 16,
               ),
@@ -103,8 +100,7 @@ class NovelStats extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (data.genres.isNotEmpty) ...[
-          const AnymexText(
-            text: "Genres",
+          const AnymeXText("Genres",
             variant: TextVariant.bold,
             size: 17,
           ),
@@ -151,14 +147,12 @@ class StateItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        AnymexText(
-          text: label,
+        AnymeXText(label,
           variant: TextVariant.semiBold,
           color: context.colors.onSurface.opaque(0.9),
         ),
         Expanded(
-          child: AnymexText(
-            text: value,
+          child: AnymeXText(value,
             variant: TextVariant.semiBold,
             color: context.colors.primary,
             maxLines: 1,
@@ -185,7 +179,7 @@ class AdaptationInfoColumn extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: chapters
-          .map((chapter) => Text(
+          .map((chapter) => AnymeXText(
                 chapter,
                 style: TextStyle(color: context.colors.primary),
               ))

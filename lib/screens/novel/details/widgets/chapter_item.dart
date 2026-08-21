@@ -2,12 +2,13 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/animation/animations.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -37,23 +38,41 @@ class ChapterListItem extends StatelessWidget {
 
     final savedChaps =
         offlineStorage.getReadChapter(anilistData.id, chapter.number!);
-    final currentChapterLink = continueChapter?.link ?? '';
-    final isSelected = chapter.link == currentChapterLink;
-    final _novSavedPage = savedChaps?.pageNumber;
-    final _novSavedTotal = savedChaps?.totalPages;
-    final _isPageComplete = _novSavedPage != null &&
-        _novSavedTotal != null &&
-        _novSavedTotal > 0 &&
-        (_novSavedPage >= _novSavedTotal ||
-            _novSavedPage >= _novSavedTotal - 1 ||
-            (_novSavedPage / _novSavedTotal) >= 0.95);
-    final alreadyRead = chapter.number! < (readChapter?.number ?? 0.0) ||
-        _isPageComplete ||
-        (savedChaps != null &&
-            savedChaps.currentOffset != null &&
-            savedChaps.maxOffset != null &&
-            savedChaps.maxOffset! > 0 &&
-            (savedChaps.currentOffset! / savedChaps.maxOffset!) >= 0.95);
+    final isSelected = (chapter.link != null &&
+            chapter.link!.isNotEmpty &&
+            continueChapter?.link != null &&
+            continueChapter!.link!.isNotEmpty)
+        ? chapter.link == continueChapter!.link
+        : (chapter.number == continueChapter?.number &&
+            chapter.scanlator == continueChapter?.scanlator);
+    final novSavedPage = savedChaps?.pageNumber;
+    final novSavedTotal = savedChaps?.totalPages;
+    final isPageComplete = novSavedPage != null &&
+        novSavedTotal != null &&
+        novSavedTotal > 0 &&
+        (novSavedPage >= novSavedTotal ||
+            novSavedPage >= novSavedTotal - 1 ||
+            (novSavedPage / novSavedTotal) >= 0.95);
+    final isOffsetComplete = savedChaps != null &&
+        savedChaps.currentOffset != null &&
+        savedChaps.maxOffset != null &&
+        savedChaps.maxOffset! > 0 &&
+        (savedChaps.currentOffset! / savedChaps.maxOffset!) >= 0.95;
+
+    final bool alreadyRead;
+    final auth = Get.find<ServiceHandler>();
+    if (auth.isLoggedIn.value &&
+        auth.serviceType.value != ServicesType.extensions) {
+      final userProgress = auth.onlineService.mangaList
+          .firstWhereOrNull((e) => e.id == anilistData.id)
+          ?.episodeCount;
+      final progressNum = double.tryParse(userProgress ?? '')?.toInt() ?? 0;
+      alreadyRead = (chapter.number != null && chapter.number! <= progressNum) ||
+          isPageComplete ||
+          isOffsetComplete;
+    } else {
+      alreadyRead = isPageComplete || isOffsetComplete;
+    }
 
     return StaggeredAnimatedItemWrapper(
       child: AnymexOnTap(
@@ -106,8 +125,7 @@ class ChapterListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
         boxShadow: [glowingShadow(context)],
       ),
-      child: AnymexText(
-        text: chapter.number?.toStringAsFixed(0) ?? '',
+      child: AnymeXText(chapter.formattedNumber,
         variant: TextVariant.bold,
         color: context.colors.onPrimary,
       ),
@@ -140,7 +158,7 @@ class ChapterListItem extends StatelessWidget {
           SizedBox(
             width: 40,
             height: 40,
-            child: AnymexProgressIndicator(
+            child: AnymeXProgressIndicator(
               value: progress,
               strokeWidth: 4,
               backgroundColor: context.colors.surfaceContainerHighest,
@@ -169,8 +187,7 @@ class ChapterListItem extends StatelessWidget {
         SizedBox(
           width: getResponsiveSize(context,
               mobileSize: Get.width * 0.4, desktopSize: 200),
-          child: AnymexText(
-            text: '${chapter.title}$progressText',
+          child: AnymeXText('${chapter.title}$progressText',
             variant: TextVariant.semiBold,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -180,8 +197,7 @@ class ChapterListItem extends StatelessWidget {
         SizedBox(
           width: getResponsiveSize(context,
               mobileSize: Get.width * 0.4, desktopSize: 200),
-          child: AnymexText(
-            text: chapterMetaText.isNotEmpty
+          child: AnymeXText(chapterMetaText.isNotEmpty
                 ? chapterMetaText
                 : calcTime(chapter.releaseDate ?? '0'),
             color: context.colors.inverseSurface.opaque(0.9),
@@ -196,14 +212,13 @@ class ChapterListItem extends StatelessWidget {
   Widget _buildReadButton(BuildContext context) {
     return Container(
       decoration: BoxDecoration(boxShadow: [glowingShadow(context)]),
-      child: AnymexButton(
+      child: AnymeXContainerButton(
         onTap: onTap,
         radius: 12,
         width: 100,
         height: 40,
         color: context.colors.primary,
-        child: AnymexText(
-          text: "Read",
+        child: AnymeXText("Read",
           variant: TextVariant.semiBold,
           color: context.colors.onPrimary,
         ),

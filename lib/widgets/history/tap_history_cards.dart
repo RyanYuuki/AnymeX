@@ -3,11 +3,12 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -39,28 +40,31 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
+    final heroTag = '${media.id}-recent-${media.createdAt?.millisecondsSinceEpoch ?? ''}';
 
     return AnymexOnTap(
       onTap: () {
         if (serviceHandler.serviceType.value == ServicesType.simkl) {
           navigate(() =>
-              AnimeDetailsPage(media: media, tag: media.createdAt.toString()));
+              AnimeDetailsPage(media: media, tag: heroTag));
           return;
         }
         if (media.type == "ANIME") {
           navigate(() =>
-              AnimeDetailsPage(media: media, tag: media.createdAt.toString()));
+              AnimeDetailsPage(media: media, tag: heroTag));
         } else {
           navigate(() =>
-              MangaDetailsPage(media: media, tag: media.createdAt.toString()));
+              media.mediaType == ItemType.novel
+              ? NovelDetailsPage(media: media)
+              : MangaDetailsPage(media: media, tag: heroTag));
         }
       },
       child: Container(
         margin: const EdgeInsets.only(left: 15),
         width: getResponsiveSize(context,
-            mobileSize: MediaQuery.of(context).size.width / 1.5,
-            desktopSize: MediaQuery.of(context).size.width / 3),
-        child: AnymexCard(
+          mobileSize: MediaQuery.sizeOf(context).width / 1.5,
+          desktopSize: MediaQuery.sizeOf(context).width / 3),
+        child: AnymeXCard(
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             side: BorderSide(
@@ -76,7 +80,9 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
               children: [
                 // Poster image
                 Hero(
-                  tag: media.createdAt.toString(),
+                  tag: heroTag,
+                  transitionOnUserGestures: true,
+                  flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
                   child: ClipRRect(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(12.multiplyRadius()),
@@ -87,6 +93,8 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                       width: 80,
                       height: 100,
                       radius: 0,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
                     ),
                   ),
                 ),
@@ -107,8 +115,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: AnymexText(
-                                        text: media.title,
+                                      child: AnymeXText(media.title,
                                         size: 14,
                                         variant: TextVariant.bold,
                                         maxLines: 1,
@@ -135,8 +142,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                               size: 12,
                                             ),
                                             const SizedBox(width: 2),
-                                            AnymexText(
-                                              text: media.rating,
+                                            AnymeXText(media.rating,
                                               color: colorScheme.onPrimary,
                                               size: 11,
                                               variant: TextVariant.bold,
@@ -155,8 +161,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                   children: [
                                     // Time opened text
                                     Expanded(
-                                      child: AnymexText(
-                                        text: 'Opened ${_getTimeAgo()}',
+                                      child: AnymeXText('Opened ${_getTimeAgo()}',
                                         size: 11,
                                         color: colorScheme.onSurfaceVariant,
                                         variant: TextVariant.regular,
@@ -174,8 +179,7 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                                           borderRadius: BorderRadius.circular(
                                               4.multiplyRadius()),
                                         ),
-                                        child: AnymexText(
-                                          text: media.format.toUpperCase(),
+                                        child: AnymeXText(media.format.toUpperCase(),
                                           size: 10,
                                           color: colorScheme.onSurfaceVariant,
                                         ),

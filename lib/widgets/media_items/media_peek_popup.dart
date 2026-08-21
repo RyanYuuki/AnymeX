@@ -13,21 +13,22 @@ import 'package:anymex/screens/anime/widgets/custom_list_dialog.dart';
 import 'package:anymex/screens/anime/widgets/list_editor.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/non_widgets/recommend_button.dart';
 import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 class MediaPeekPopup extends StatefulWidget {
   final Media media;
@@ -331,12 +332,8 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
 
     Navigator.of(context).pop();
 
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: rootContext,
-      isScrollControlled: true,
-      showDragHandle: false,
-      builder: (ctx) => ListEditorModal(
+    AnymeXSheet.custom(
+      ListEditorModal(
         animeStatus: _animeStatus,
         isManga: isManga,
         animeScore: _animeScore,
@@ -376,13 +373,18 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           _animeStatus.value = '';
         },
       ),
+      rootContext,
     );
   }
 
   void _openFullView() {
     Navigator.of(context).pop();
     if (widget.type == ItemType.manga) {
+      if (widget.media.mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: widget.media));
+    } else {
       navigate(() => MangaDetailsPage(media: widget.media, tag: widget.tag));
+    }
     } else {
       navigate(() => AnimeDetailsPage(media: widget.media, tag: widget.tag));
     }
@@ -494,8 +496,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnymexText(
-                text: widget.media.title,
+              AnymeXText(widget.media.title,
                 variant: TextVariant.bold,
                 size: 15,
                 maxLines: 1,
@@ -506,8 +507,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   widget.media.romajiTitle != widget.media.title &&
                   widget.media.romajiTitle != '?') ...[
                 const SizedBox(height: 4),
-                AnymexText(
-                  text: widget.media.romajiTitle,
+                AnymeXText(widget.media.romajiTitle,
                   variant: TextVariant.regular,
                   size: 12,
                   color: colors.onSurfaceVariant,
@@ -599,8 +599,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
         children: [
           Icon(icon, size: 11, color: color),
           const SizedBox(width: 4),
-          AnymexText(
-              text: label,
+          AnymeXText(label,
               size: 11,
               color: color,
               variant: TextVariant.semiBold),
@@ -651,7 +650,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                         ),
                         const SizedBox(width: 8),
                         Flexible(
-                          child: Text(
+                          child: AnymeXText(
                             widget.type == ItemType.anime ? 'Watch' : 'Read',
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -678,8 +677,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                             color: colors.primary, size: 20),
                         const SizedBox(width: 8),
                         Flexible(
-                          child: AnymexText(
-                            text: convertAniListStatus(
+                          child: AnymeXText(convertAniListStatus(
                               _animeStatus.value,
                               isManga: widget.type == ItemType.manga,
                             ),
@@ -775,8 +773,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                     Icon(Icons.forum_rounded,
                         size: 16, color: colors.onSecondaryContainer),
                     const SizedBox(width: 8),
-                    AnymexText(
-                      text: widget.reasons!.length == 1
+                    AnymeXText(widget.reasons!.length == 1
                           ? 'View recommendation'
                           : 'View all ${widget.reasons!.length} recommendations',
                       variant: TextVariant.semiBold,
@@ -835,8 +832,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
   }
 
   Widget _sectionLabel(String label, ColorScheme colors) {
-    return AnymexText(
-        text: label,
+    return AnymeXText(label,
         variant: TextVariant.bold,
         size: 13,
         color: colors.primary);
@@ -855,8 +851,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AnymexText(
-            text: text,
+          AnymeXText(text,
             size: 13,
             maxLines: _synopsisExpanded ? null : _synopsisMaxLines,
             overflow: _synopsisExpanded
@@ -869,8 +864,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             GestureDetector(
               onTap: () =>
                   setState(() => _synopsisExpanded = !_synopsisExpanded),
-              child: AnymexText(
-                text: _synopsisExpanded ? 'Show Less' : 'Read More',
+              child: AnymeXText(_synopsisExpanded ? 'Show Less' : 'Read More',
                 size: 12,
                 color: colors.primary,
                 variant: TextVariant.semiBold,
@@ -911,8 +905,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration:
           BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: AnymexText(
-          text: label, size: 12, color: fg, variant: TextVariant.semiBold),
+      child: AnymeXText(label, size: 12, color: fg, variant: TextVariant.semiBold),
     );
 
     if (onTap == null) return chip;
@@ -951,8 +944,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             )
           : Row(
               children: [
-                AnymexText(
-                  text: 'Was this helpful?',
+                AnymeXText('Was this helpful?',
                   size: 13,
                   color: colors.onSurfaceVariant,
                   variant: TextVariant.semiBold,
@@ -1013,8 +1005,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymexText(
-                      text: 'Recommended by',
+                    AnymeXText('Recommended by',
                       size: 11,
                       color: colors.onSurfaceVariant,
                     ),
@@ -1029,8 +1020,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Flexible(
-                              child: AnymexText(
-                                text: username!,
+                              child: AnymeXText(username,
                                 variant: TextVariant.semiBold,
                                 size: 14,
                                 color: colors.primary,
@@ -1048,8 +1038,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                         ),
                       )
                     else
-                      AnymexText(
-                        text: widget.author ?? 'Unknown',
+                      AnymeXText(widget.author ?? 'Unknown',
                         variant: TextVariant.semiBold,
                         size: 14,
                         color: colors.primary,
@@ -1063,7 +1052,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           ),
           if (widget.reason != null && widget.reason!.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               '"${widget.reason}"',
               style: TextStyle(
                 fontSize: 13,
@@ -1074,9 +1063,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           ],
           if (widget.reasons != null && widget.reasons!.length > 1) ...[
             const SizedBox(height: 6),
-            AnymexText(
-              text:
-                  '+ ${widget.reasons!.length - 1} more recommendation${widget.reasons!.length > 2 ? 's' : ''}',
+            AnymeXText('+ ${widget.reasons!.length - 1} more recommendation${widget.reasons!.length > 2 ? 's' : ''}',
               size: 11,
               color: colors.onSurfaceVariant,
               variant: TextVariant.regular,
@@ -1165,7 +1152,7 @@ class _PeekAuthorAvatar extends StatelessWidget {
               radius: size / 2,
             )
           : Center(
-              child: Text(
+              child: AnymeXText(
                 (fallbackLabel?.trim().isNotEmpty == true
                         ? fallbackLabel!.trim()[0]
                         : '?')
@@ -1268,8 +1255,7 @@ class _PopupVoteButton extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              AnymexText(
-                text: '$count',
+              AnymeXText('$count',
                 size: 13,
                 color: active ? activeColor : colors.onSurfaceVariant,
                 variant: TextVariant.semiBold,

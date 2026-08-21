@@ -4,9 +4,9 @@ import 'package:anymex/screens/settings/sub_settings/contributors/contributors.d
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +16,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Future<void> launchUrlHelper(String link) async {
   final url = Uri.parse(link);
@@ -58,274 +59,288 @@ const List<_ForkInfo> _forks = [
   ),
 ];
 
-class AboutPage extends StatelessWidget {
+class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
+
+  @override
+  State<AboutPage> createState() => _AboutPageState();
+}
+
+class _AboutPageState extends State<AboutPage> {
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Glow(
-      child: Scaffold(
-        body: Column(
-          children: [
-            const NestedHeader(title: 'About'),
-            Expanded(
-              child: SuperListView(
-                padding: const EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 20.0),
-                children: [
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Column(
-                        children: [
-                          const SizedBox(height: 40),
-                          Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainer
-                                  .opaque(0.5),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black
-                                      .opaque(0.1, iReallyMeanIt: true),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 50),
-                                FutureBuilder<PackageInfo>(
-                                  future: PackageInfo.fromPlatform(),
-                                  builder: (context, snapshot) {
-                                    final version = snapshot.hasData
-                                        ? snapshot.data!.version
-                                        : '';
-                                    return ProfileInfo(
-                                      username: "AnymeX",
-                                      version: "v$version",
-                                      subtitle: "",
-                                    );
-                                  },
-                                ),
-                                InfoCard(
-                                  onTap: () async {
-                                    await launchUrlHelper(
-                                        'https://github.com/RyanYuuki');
-                                  },
-                                  leading: const CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                        'https://avatars.githubusercontent.com/u/108048963?s=400&u=7f67531c27c5ebbbcde943f9576a0bfdb98909c8&v=4'),
-                                  ),
-                                  title: "Developer",
-                                  subtitle: "RyanYuuki",
-                                  trailing: IconButton(
-                                    onPressed: () async {
-                                      await launchUrlHelper(
-                                          'https://github.com/RyanYuuki');
-                                    },
-                                    icon: const Icon(Iconsax.code5),
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Positioned(
-                        top: -5,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Container(
-                              width: 90,
-                              height: 90,
+    return AnymeXScaffold(
+      showHeader: true,
+      headerTitle: 'About',
+      body: Builder(
+        builder: (ctx) => SuperListView(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
+                  children: [
+                    SizedBox(height: AnymeXHeaderScope.of(ctx)),
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Column(
+                          children: [
+                            const SizedBox(height: 40),
+                            Container(
+                              width: double.infinity,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 10),
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: theme.colorScheme.primary,
-                                  width: 3,
-                                ),
+                                color: theme.colorScheme.surfaceContainer
+                                    .opaque(0.5),
+                                borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black
-                                        .opaque(0.2, iReallyMeanIt: true),
+                                        .opaque(0.1, iReallyMeanIt: true),
                                     blurRadius: 10,
                                     offset: const Offset(0, 2),
                                   ),
                                 ],
                               ),
-                              child: const AnymeXAnimatedLogo(
-                                size: 70,
-                                autoPlay: true,
-                              )),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                        color: context.colors.surfaceContainer.opaque(0.5),
-                        borderRadius: BorderRadius.circular(12)),
-                    child: CustomSection(
-                      icon: Iconsax.link_circle,
-                      title: "Social",
-                      subtitle:
-                          "Join us for dropping feedback or feature requests",
-                      items: [
-                        CustomListTile(
-                          onTap: () async {
-                            await launchUrlHelper(
-                                Get.find<Settings>().telegramUrl.value);
-                          },
-                          leading: const Icon(HugeIcons.strokeRoundedTelegram),
-                          title: "Telegram",
-                        ),
-                        CustomListTile(
-                          onTap: () async {
-                            await launchUrlHelper(
-                                Get.find<Settings>().discordUrl.value);
-                          },
-                          leading: const Icon(HugeIcons.strokeRoundedDiscord),
-                          title: "Discord",
-                        ),
-                        CustomListTile(
-                          onTap: () async {
-                            await launchUrlHelper(
-                                'https://www.reddit.com/r/AnymeX_/');
-                          },
-                          leading: const Icon(HugeIcons.strokeRoundedReddit),
-                          title: "Reddit",
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainer.opaque(0.5),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: CustomSection(
-                      icon: Iconsax.code_circle,
-                      title: "Development",
-                      subtitle: "Explore the project and contribute",
-                      items: [
-                        CustomListTile(
-                          onTap: () async {
-                            await launchUrlHelper(
-                                'https://github.com/RyanYuuki/AnymeX');
-                          },
-                          leading: const Icon(HugeIcons.strokeRoundedGithub),
-                          title: "GitHub",
-                          subtitle: 'View Source code on github.',
-                        ),
-                        CustomListTile(
-                          onTap: () {
-                            navigate(() => const ContributorsPage());
-                          },
-                          leading: const Icon(Icons.group_rounded),
-                          title: "Contributors",
-                          subtitle: "See people who contributed to AnymeX",
-                        ),
-                        CustomListTile(
-                          onTap: () async {
-                            await launchUrlHelper(
-                                'https://ko-fi.com/ryanyuuki7');
-                          },
-                          leading: const Icon(HugeIcons.strokeRoundedCoffee01),
-                          title: "Ko-fi",
-                          subtitle:
-                              "Consider donating to support the maintainer of AnymeX",
-                        ),
-                        CustomListTile(
-                          onTap: () async {
-                            await launchUrlHelper(
-                                'https://github.com/RyanYuuki/AnymeX/issues');
-                          },
-                          leading: const Icon(Icons.bug_report),
-                          title: "Features/Issues",
-                          subtitle:
-                              'if you have an issue or any suggestion please make an issue at github.',
-                        ),
-                        CustomListTile(
-                          onTap: () {
-                            navigate(() => const _ForksPage());
-                          },
-                          leading: const Icon(Icons.call_split_rounded),
-                          title: "Forks",
-                          subtitle: "Community forks of AnymeX",
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainer.opaque(0.5),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: CustomSection(
-                      icon: Iconsax.info_circle,
-                      title: "Others",
-                      subtitle: "Other Stuffs",
-                      items: [
-                        CustomListTile(
-                          onTap: () async {
-                            await showPolicySheet(context, PolicyType.tos);
-                          },
-                          leading: const Icon(HugeIcons.strokeRoundedPolicy),
-                          title: "Terms of Service/Privacy Policy",
-                        ),
-                        CustomListTile(
-                          onTap: () async {
-                            await showPolicySheet(
-                                context, PolicyType.commentPolicy);
-                          },
-                          leading:
-                              const Icon(HugeIcons.strokeRoundedAlertSquare),
-                          title: "Comment Policy",
-                        ),
-                        CustomListTile(
-                          onTap: () async {
-                            snackBar('Checking for updates!');
-                            Get.find<Settings>().checkForUpdates(context);
-                          },
-                          leading: const Icon(Icons.system_update),
-                          title: "Check for Updates",
-                        ),
-                        CustomListTile(
-                          leading: const Icon(Iconsax.toggle_on),
-                          title: "Enable Beta Updates",
-                          subtitle: "Check updates from beta channel",
-                          trailing: Obx(
-                            () => Switch(
-                              value:
-                                  Get.find<Settings>().enableBetaUpdates.value,
-                              onChanged: (value) {
-                                Get.find<Settings>()
-                                    .saveBetaUpdateToggle(value);
-                              },
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 50),
+                                  FutureBuilder<PackageInfo>(
+                                    future: PackageInfo.fromPlatform(),
+                                    builder: (context, snapshot) {
+                                      final version = snapshot.hasData
+                                          ? snapshot.data!.version
+                                          : '';
+                                      return ProfileInfo(
+                                        username: "AnymeX",
+                                        version: "v$version",
+                                        subtitle: "",
+                                      );
+                                    },
+                                  ),
+                                  InfoCard(
+                                    onTap: () async {
+                                      await launchUrlHelper(
+                                          'https://github.com/RyanYuuki');
+                                    },
+                                    leading: const CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          'https://avatars.githubusercontent.com/u/108048963?s=400&u=7f67531c27c5ebbbcde943f9576a0bfdb98909c8&v=4'),
+                                    ),
+                                    title: "Developer",
+                                    subtitle: "RyanYuuki",
+                                    trailing: IconButton(
+                                      onPressed: () async {
+                                        await launchUrlHelper(
+                                            'https://github.com/RyanYuuki');
+                                      },
+                                      icon: const Icon(Iconsax.code5),
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                          ],
+                        ),
+                        Positioned(
+                          top: -5,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: Container(
+                                width: 90,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: theme.colorScheme.primary,
+                                    width: 3,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black
+                                          .opaque(0.2, iReallyMeanIt: true),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: const AnymeXAnimatedLogo(
+                                  size: 70,
+                                  autoPlay: true,
+                                )),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-              ),
-            ),
-          ],
-        ),
+                    const SizedBox(height: 16),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                          color: context.colors.surfaceContainer.opaque(0.5),
+                          borderRadius: BorderRadius.circular(12)),
+                      child: CustomSection(
+                        icon: Iconsax.link_circle,
+                        title: "Social",
+                        subtitle:
+                            "Join us for dropping feedback or feature requests",
+                        items: [
+                          CustomListTile(
+                            onTap: () async {
+                              await launchUrlHelper(
+                                  Get.find<Settings>().telegramUrl.value);
+                            },
+                            leading:
+                                const Icon(HugeIcons.strokeRoundedTelegram),
+                            title: "Telegram",
+                          ),
+                          CustomListTile(
+                            onTap: () async {
+                              await launchUrlHelper(
+                                  Get.find<Settings>().discordUrl.value);
+                            },
+                            leading: const Icon(HugeIcons.strokeRoundedDiscord),
+                            title: "Discord",
+                          ),
+                          CustomListTile(
+                            onTap: () async {
+                              await launchUrlHelper(
+                                  'https://www.reddit.com/r/AnymeX_/');
+                            },
+                            leading: const Icon(HugeIcons.strokeRoundedReddit),
+                            title: "Reddit",
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainer.opaque(0.5),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: CustomSection(
+                        icon: Iconsax.code_circle,
+                        title: "Development",
+                        subtitle: "Explore the project and contribute",
+                        items: [
+                          CustomListTile(
+                            onTap: () async {
+                              await launchUrlHelper(
+                                  'https://github.com/RyanYuuki/AnymeX');
+                            },
+                            leading: const Icon(HugeIcons.strokeRoundedGithub),
+                            title: "GitHub",
+                            subtitle: 'View Source code on github.',
+                          ),
+                          CustomListTile(
+                            onTap: () {
+                              navigate(() => const ContributorsPage());
+                            },
+                            leading: const Icon(Icons.group_rounded),
+                            title: "Contributors",
+                            subtitle: "See people who contributed to AnymeX",
+                          ),
+                          CustomListTile(
+                            onTap: () async {
+                              await launchUrlHelper(
+                                  'https://ko-fi.com/ryanyuuki7');
+                            },
+                            leading:
+                                const Icon(HugeIcons.strokeRoundedCoffee01),
+                            title: "Ko-fi",
+                            subtitle:
+                                "Consider donating to support the maintainer of AnymeX",
+                          ),
+                          CustomListTile(
+                            onTap: () async {
+                              await launchUrlHelper(
+                                  'https://github.com/RyanYuuki/AnymeX/issues');
+                            },
+                            leading: const Icon(Icons.bug_report),
+                            title: "Features/Issues",
+                            subtitle:
+                                'if you have an issue or any suggestion please make an issue at github.',
+                          ),
+                          CustomListTile(
+                            onTap: () {
+                              navigate(() => const _ForksPage());
+                            },
+                            leading: const Icon(Icons.call_split_rounded),
+                            title: "Forks",
+                            subtitle: "Community forks of AnymeX",
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainer.opaque(0.5),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: CustomSection(
+                        icon: Iconsax.info_circle,
+                        title: "Others",
+                        subtitle: "Other Stuffs",
+                        items: [
+                          CustomListTile(
+                            onTap: () async {
+                              await showPolicySheet(context, PolicyType.tos);
+                            },
+                            leading: const Icon(HugeIcons.strokeRoundedPolicy),
+                            title: "Terms of Service/Privacy Policy",
+                          ),
+                          CustomListTile(
+                            onTap: () async {
+                              await showPolicySheet(
+                                  context, PolicyType.commentPolicy);
+                            },
+                            leading:
+                                const Icon(HugeIcons.strokeRoundedAlertSquare),
+                            title: "Comment Policy",
+                          ),
+                          CustomListTile(
+                            onTap: () async {
+                              await showPolicySheet(
+                                  context, PolicyType.watchTogetherPolicy);
+                            },
+                            leading: const Icon(Icons.people_rounded),
+                            title: "Watch Together Policy",
+                          ),
+                          CustomListTile(
+                            onTap: () async {
+                              snackBar('Checking for updates!');
+                              Get.find<Settings>().checkForUpdates(context);
+                            },
+                            leading: const Icon(Icons.system_update),
+                            title: "Check for Updates",
+                          ),
+                          CustomListTile(
+                            leading: const Icon(Iconsax.toggle_on),
+                            title: "Enable Beta Updates",
+                            subtitle: "Check updates from beta channel",
+                            trailing: Obx(
+                              () => Switch(
+                                value: Get.find<Settings>()
+                                    .enableBetaUpdates
+                                    .value,
+                                onChanged: (value) {
+                                  Get.find<Settings>()
+                                      .saveBetaUpdateToggle(value);
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                )
       ),
     );
   }
@@ -338,83 +353,79 @@ class _ForksPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = context.colors;
-    return Glow(
-      child: Scaffold(
-        body: Column(
-          children: [
-            const NestedHeader(title: 'Forks'),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: _forks.length,
-                itemBuilder: (context, index) {
-                  final fork = _forks[index];
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainer.opaque(0.5),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: colors.outlineVariant.withOpacity(0.35),
-                        width: 1,
-                      ),
+    return AnymeXScaffold(
+      body: Column(
+        children: [
+          const NestedHeader(title: 'Forks'),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _forks.length,
+              itemBuilder: (context, index) {
+                final fork = _forks[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainer.opaque(0.5),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: colors.outlineVariant.withOpacity(0.35),
+                      width: 1,
                     ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      onTap: () async => launchUrlHelper(fork.repoUrl),
-                      leading: CircleAvatar(
-                        backgroundImage:
-                            CachedNetworkImageProvider(fork.devAvatarUrl),
-                        backgroundColor: colors.primaryContainer,
-                      ),
-                      title: Text(
-                        fork.name,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            fork.description,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: colors.onSurface.withOpacity(0.6),
-                            ),
+                  ),
+                  child: ListTile(
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    onTap: () async => launchUrlHelper(fork.repoUrl),
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          CachedNetworkImageProvider(fork.devAvatarUrl),
+                      backgroundColor: colors.primaryContainer,
+                    ),
+                    title: AnymeXText(
+                      fork.name,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AnymeXText(
+                          fork.description,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colors.onSurface.withOpacity(0.6),
                           ),
-                          Text(
-                            'by ${fork.devName}',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: colors.primary,
-                            ),
+                        ),
+                        AnymeXText(
+                          'by ${fork.devName}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: colors.primary,
                           ),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
+                        ),
+                      ],
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(HugeIcons.strokeRoundedGithub),
+                          onPressed: () async => launchUrlHelper(fork.repoUrl),
+                        ),
+                        if (fork.discordUrl != null)
                           IconButton(
-                            icon: const Icon(HugeIcons.strokeRoundedGithub),
+                            icon: const Icon(HugeIcons.strokeRoundedDiscord),
                             onPressed: () async =>
-                                launchUrlHelper(fork.repoUrl),
+                                launchUrlHelper(fork.discordUrl!),
                           ),
-                          if (fork.discordUrl != null)
-                            IconButton(
-                              icon:
-                                  const Icon(HugeIcons.strokeRoundedDiscord),
-                              onPressed: () async =>
-                                  launchUrlHelper(fork.discordUrl!),
-                            ),
-                        ],
-                      ),
+                      ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

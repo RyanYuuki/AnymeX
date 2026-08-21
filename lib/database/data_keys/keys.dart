@@ -1,9 +1,11 @@
 import 'package:anymex/database/kv_helper.dart';
 export 'package:anymex/database/kv_helper.dart';
+export 'watchium_keys.dart';
 
 enum General {
   shouldAskForTrack,
   hideAdultContent,
+  searchIsAdult,
   uiScaler,
   isFirstTime,
   hasAcceptedCommentRules,
@@ -25,6 +27,11 @@ enum General {
   communityListViewIsGrid,
   hasJoinedNewDiscord,
   discordRpcEnabled,
+  useHighRefreshRate,
+  preferredDisplayMode,
+  navigationTabOrder,
+  useAlternateTitle,
+  unifiedLibrary,
 }
 
 enum ThemeKeys {
@@ -35,9 +42,10 @@ enum ThemeKeys {
   themeMode,
   customColorIndex,
   logoAnimationType,
+  customHexColor,
 }
 
-enum PlayerKeys { useLibass, useMediaKit }
+enum PlayerKeys { useLibass, useMediaKit, useExternalPlayer, audioChannelLayout }
 
 enum PlayerUiKeys {
   playerExperimentalEnabled,
@@ -59,6 +67,7 @@ enum PlayerUiKeys {
 
 enum ReaderKeys {
   readerControlTheme,
+  chapterStyle,
   readingLayout,
   readingDirection,
   imageWidth,
@@ -90,6 +99,8 @@ enum ReaderKeys {
   displayRefreshInterval,
   displayRefreshColor,
   imageFilterQuality,
+  fitToScreen,
+  navigateByNumber,
 }
 
 enum NovelReaderKeys {
@@ -158,6 +169,7 @@ enum PluginKeys {
   runtimeHostInstalledVersion,
   runtimeHostInstalledReleaseTitle,
   bridgeMode,
+  useInternalExtensionLoading,
 }
 
 enum AuthKeys {
@@ -166,6 +178,7 @@ enum AuthKeys {
   malRefreshToken,
   simklAuthToken,
   malSessionId,
+  mangaBakaAuthToken,
 }
 
 enum SearchKeys { novelSearchedQueries }
@@ -193,7 +206,8 @@ enum DynamicKeys {
   libraryGridSize,
   mappedMediaTitle,
   offlineVideoProgress,
-  stickySource;
+  stickySource,
+  trackBindings;
 
   T get<T>(dynamic id, [T? defaultValue]) {
     return KvHelper.get<T>('${name}_$id', defaultVal: defaultValue);
@@ -242,6 +256,10 @@ enum PlayerSettingsKeys {
   hardwareDecoder,
   preferredSubtitleLanguage,
   videoOutput,
+  audioOutput,
+  enableHoldToSeek,
+  enableSlideToSeek,
+  useMediaSession,
 }
 
 enum UISettingsKeys {
@@ -261,6 +279,7 @@ enum UISettingsKeys {
   enableAnimation,
   disableGradient,
   homePageCardsMal,
+  homePageCardsSimkl,
   cardStyle,
   historyCardStyle,
   liquidMode,
@@ -270,6 +289,12 @@ enum UISettingsKeys {
   enablePosterKenBurns,
   carouselStyle,
   showContinueWatchingCard,
+  useLegacyHeader,
+  useGrainTexture,
+  grainIntensity,
+  enableImmersiveMode,
+  navBarStyle,
+  appFontFamily,
 }
 
 enum DownloadKeys {

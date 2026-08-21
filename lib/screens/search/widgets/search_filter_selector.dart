@@ -1,5 +1,6 @@
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class FutureisticOptionTile extends StatefulWidget {
   final String option;
@@ -133,7 +134,7 @@ class _FutureisticOptionTileState extends State<FutureisticOptionTile>
                       _buildFuturisticSelector(),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: Text(
+                        child: AnymeXText(
                           widget.option,
                           style: widget.theme.textTheme.bodyLarge?.copyWith(
                             color: widget.isSelected

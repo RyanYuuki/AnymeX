@@ -1,12 +1,12 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/home_page.dart';
-import 'package:anymex/screens/novel/search/search_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:get/get.dart';
 
 void searchTypeSheet(BuildContext context) {
@@ -44,8 +44,7 @@ void searchTypeSheet(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const AnymexText(
-                text: "SEARCH",
+              const AnymeXText("SEARCH",
                 size: 20,
                 variant: TextVariant.semiBold,
               ),
@@ -68,10 +67,10 @@ void searchTypeSheet(BuildContext context) {
 
 ImageButton _buildSearchTile(
     BuildContext context, String buttonText, String imageUrl, bool isNovel) {
-  final isDesktop = MediaQuery.of(context).size.width > 600;
+  final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
   return ImageButton(
-    width: isDesktop ? 300 : MediaQuery.of(context).size.width / 2 - 40,
+    width: isDesktop ? 300 : MediaQuery.sizeOf(context).width / 2 - 40,
     height: !isDesktop ? 70 : 90,
     buttonText: buttonText,
     backgroundImage: imageUrl,
@@ -79,7 +78,11 @@ ImageButton _buildSearchTile(
     onPressed: () {
       Get.back();
       if (isNovel) {
-        navigate(() => const NovelSearchPage());
+        navigate(() => const SearchPage(
+              searchTerm: '',
+              isManga: false,
+              type: ItemType.novel,
+            ));
       } else {
         navigate(() => const SearchPage(
               searchTerm: '',

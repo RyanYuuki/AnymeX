@@ -6,14 +6,13 @@ import 'dart:io';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_discord_rpc_fork/flutter_discord_rpc.dart';
+import 'package:flutter_discord_rpc/flutter_discord_rpc.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -123,6 +122,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   final Rx<DiscordProfile?> profile = Rx<DiscordProfile?>(null);
   final _isLoading = false.obs;
   final _enabled = true.obs;
+  final Map<String, String> _assetCache = {};
 
   bool get isConnected => _isConnected.value;
   bool get isMobile => _isMobile.value;
@@ -294,7 +294,6 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       print('Failed to connect to Discord RPC: $e');
       _isConnected.value = false;
-      snackBar('Failed to connect to Discord RPC');
     }
   }
 
@@ -332,7 +331,6 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       print('Failed to connect to Discord Gateway: $e');
       _isConnected.value = false;
-      snackBar('Failed to connect to Discord');
     }
   }
 
@@ -432,6 +430,9 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<String> urlToDcAsset(String url) async {
+    if (_assetCache.containsKey(url)) {
+      return _assetCache[url]!;
+    }
     try {
       print('Converting URL to Discord asset: $url');
 
@@ -453,6 +454,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
       if (resp.statusCode == 200 && resp.data != null && resp.data.isNotEmpty) {
         final assetPath = "mp:${resp.data[0]['external_asset_path']}";
         print('Successfully converted to asset: $assetPath');
+        _assetCache[url] = assetPath;
         return assetPath;
       } else {
         print('Failed to convert asset: ${resp.statusCode} - ${resp.data}');

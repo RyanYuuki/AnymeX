@@ -10,9 +10,9 @@ class PlayerCoreVisualSettings {
     'videoSync': 'audio',
     'interpolation': false,
     'cacheMinutes': 5,
-    'demuxerReadaheadSeconds': 20,
-    'demuxerMaxBytesMb': 64,
-    'vdLavcThreads': 0,
+    'demuxerReadaheadSeconds': 30,
+    'demuxerMaxBytesMb': 128,
+    'vdLavcThreads': 4,
     'audioPitchCorrection': true,
   };
 
@@ -28,8 +28,8 @@ class PlayerCoreVisualSettings {
     'debandThreshold': 64,
     'correctDownscaling': true,
     'sigmoidUpscaling': true,
-    'scale': 'ewa_lanczossharp',
-    'cscale': 'ewa_lanczossharp',
+    'scale': 'spline36',
+    'cscale': 'spline36',
     'dscale': 'mitchell',
     'ditherDepth': 'auto',
     'temporalDither': true,

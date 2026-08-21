@@ -3,6 +3,7 @@ import 'package:anymex/screens/search/widgets/search_filter_selector.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SearchFilterConstants {
   static Map<String, int> animeStreamingServices = {};
@@ -259,12 +260,7 @@ class FuturisticFilterSheet extends StatefulWidget {
   State<FuturisticFilterSheet> createState() => _FuturisticFilterSheetState();
 }
 
-class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
-    with TickerProviderStateMixin {
-  late AnimationController _slideController;
-  late AnimationController _fadeController;
-  late Animation<double> _slideAnimation;
-  late Animation<double> _fadeAnimation;
+class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
 
   bool _isGenreGrid = false;
   bool _isFilterDataLoaded = false;
@@ -433,7 +429,6 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
   @override
   void initState() {
     super.initState();
-    _initializeAnimations();
     _loadCurrentFilters();
     _fetchFilterData();
   }
@@ -521,26 +516,6 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     }
   }
 
-  void _initializeAnimations() {
-    _slideController = AnimationController(
-      duration: const Duration(milliseconds: 400),
-      vsync: this,
-    );
-    _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-
-    _slideAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
-      CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
-    );
-
-    _slideController.forward();
-    _fadeController.forward();
-  }
 
   void _loadCurrentFilters() {
     if (widget.currentFilters != null) {
@@ -651,8 +626,6 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
 
   @override
   void dispose() {
-    _slideController.dispose();
-    _fadeController.dispose();
     super.dispose();
   }
 
@@ -661,95 +634,84 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return AnimatedBuilder(
-      animation: _slideAnimation,
-      builder: (context, child) {
-        return Transform.translate(
-          offset: Offset(0, _slideAnimation.value * 100),
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: DraggableScrollableSheet(
-              initialChildSize: 0.5,
-              minChildSize: 0.4,
-              maxChildSize: 0.95,
-              snap: true,
-              snapSizes: const [0.5],
-              expand: false,
-              builder: (context, scrollController) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface,
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(24)),
-                    border: Border.all(
-                      color:
-                          colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      SingleChildScrollView(
-                        controller: scrollController,
-                        physics: const ClampingScrollPhysics(),
-                        child: _buildHeader(),
-                      ),
-                      Expanded(
-                        child: _isFilterDataLoaded
-                            ? SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                padding:
-                                    const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (sortOptions.isNotEmpty) ...[
-                                      _buildSortSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    _buildFiltersSection(),
-                                    const SizedBox(height: 24),
-                                    if (cfg.supportsYear) ...[
-                                      _buildYearSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    if (cfg.supportsRanges && !isManga)
-                                      _buildAnimeRangeSection(),
-                                    if (cfg.supportsRanges && isManga)
-                                      _buildMangaRangeSection(),
-                                    if (cfg.supportsRanges)
-                                      const SizedBox(height: 24),
-                                    if (cfg.supportsGenres) ...[
-                                      _buildGenresSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    if (cfg.supportsTags) ...[
-                                      _buildTagsSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    if (cfg.supportsStreaming) ...[
-                                      _buildStreamingSection(),
-                                      const SizedBox(height: 24),
-                                    ],
-                                    if (cfg.supportsAdult ||
-                                        cfg.supportsOnList) ...[
-                                      _buildTogglesSection(),
-                                      const SizedBox(height: 20),
-                                    ],
-                                  ],
-                                ),
-                              )
-                            : const Center(child: CircularProgressIndicator()),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-                        child: _buildActionButtons(),
-                      ),
-                    ],
-                  ),
-                );
-              },
+    return DraggableScrollableSheet(
+      initialChildSize: 0.5,
+      minChildSize: 0.4,
+      maxChildSize: 0.95,
+      snap: true,
+      snapSizes: const [0.5],
+      expand: false,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+              color:
+                  colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
+              width: 1,
             ),
+          ),
+          child: Column(
+            children: [
+              SingleChildScrollView(
+                controller: scrollController,
+                physics: const ClampingScrollPhysics(),
+                child: _buildHeader(),
+              ),
+              Expanded(
+                child: _isFilterDataLoaded
+                    ? SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding:
+                            const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (sortOptions.isNotEmpty) ...[
+                              _buildSortSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            _buildFiltersSection(),
+                            const SizedBox(height: 24),
+                            if (cfg.supportsYear) ...[
+                              _buildYearSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            if (cfg.supportsRanges && !isManga)
+                              _buildAnimeRangeSection(),
+                            if (cfg.supportsRanges && isManga)
+                              _buildMangaRangeSection(),
+                            if (cfg.supportsRanges)
+                              const SizedBox(height: 24),
+                            if (cfg.supportsGenres) ...[
+                              _buildGenresSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            if (cfg.supportsTags) ...[
+                              _buildTagsSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            if (cfg.supportsStreaming) ...[
+                              _buildStreamingSection(),
+                              const SizedBox(height: 24),
+                            ],
+                            if (cfg.supportsAdult ||
+                                cfg.supportsOnList) ...[
+                              _buildTogglesSection(),
+                              const SizedBox(height: 20),
+                            ],
+                          ],
+                        ),
+                      )
+                    : const Center(child: CircularProgressIndicator()),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                child: _buildActionButtons(),
+              ),
+            ],
           ),
         );
       },
@@ -819,7 +781,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                 size: 24,
               ),
               const SizedBox(width: 8),
-              Text(
+              AnymeXText(
                 'FILTERS',
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: colorScheme.onSurface,
@@ -843,7 +805,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                       ),
                     ],
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     '${_getActiveFilterCount()}',
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: colorScheme.onPrimary,
@@ -883,7 +845,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
+              AnymeXText(
                 title,
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: colorScheme.onSurface,
@@ -987,7 +949,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            AnymeXText(
               'Use Year Range',
               style: Theme.of(context)
                   .textTheme
@@ -1193,7 +1155,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: FilterChip(
-        label: Text(
+        label: AnymeXText(
           genre,
           style: theme.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w600,
@@ -1234,7 +1196,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
             runSpacing: 4,
             children: selectedTags
                 .map((t) => Chip(
-                      label: Text(t,
+                      label: AnymeXText(t,
                           style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onPrimary,
                               fontWeight: FontWeight.w600)),
@@ -1261,7 +1223,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                         : colorScheme.onSurface
                             .opaque(0.7, iReallyMeanIt: true)),
                 const SizedBox(width: 8),
-                Text(
+                AnymeXText(
                   hasSelected
                       ? 'Edit Tags (${selectedTags.length})'
                       : 'Add Tags',
@@ -1306,7 +1268,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
             runSpacing: 4,
             children: selectedNames
                 .map((name) => Chip(
-                      label: Text(name,
+                      label: AnymeXText(name,
                           style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onPrimary,
                               fontWeight: FontWeight.w600)),
@@ -1342,7 +1304,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                         : colorScheme.onSurface
                             .opaque(0.7, iReallyMeanIt: true)),
                 const SizedBox(width: 8),
-                Text(
+                AnymeXText(
                   hasSelected
                       ? (isManga
                           ? 'Edit Platforms (${selectedStreamingOn.length})'
@@ -1429,7 +1391,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                 child: Icon(Icons.check_circle_rounded,
                     size: 16, color: colorScheme.primary),
               ),
-            Text(label,
+            AnymeXText(label,
                 style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: value
@@ -1487,7 +1449,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Text(label,
+          child: AnymeXText(label,
               style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.primary, fontWeight: FontWeight.w700)),
         ),
@@ -1514,7 +1476,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
+        AnymeXText(label,
             style: theme.textTheme.bodyMedium
                 ?.copyWith(fontWeight: FontWeight.w600)),
         Switch(
@@ -1580,7 +1542,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         hint.toUpperCase(),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface
@@ -1590,7 +1552,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      AnymeXText(
                         displayLabel,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
@@ -1655,7 +1617,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         'SORT BY',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface.opaque(0.7),
@@ -1664,7 +1626,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      AnymeXText(
                         displayText,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
@@ -1720,7 +1682,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                Text(
+                AnymeXText(
                   'ORDER',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color:
@@ -1744,7 +1706,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                               .opaque(0.5, iReallyMeanIt: true),
                     ),
                     const SizedBox(width: 4),
-                    Text(
+                    AnymeXText(
                       _getOrderLabel(isDescending),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
@@ -1843,7 +1805,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                       isPrimary ? colorScheme.onPrimary : colorScheme.onSurface,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                AnymeXText(
                   text,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w700,
@@ -1927,7 +1889,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                             Icon(Icons.label_rounded,
                                 color: colorScheme.primary, size: 24),
                             const SizedBox(width: 8),
-                            Text('SELECT TAGS',
+                            AnymeXText('SELECT TAGS',
                                 style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 1.5,
@@ -1965,7 +1927,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                       final tag = filtered[i];
                       final isSelected = selectedTags.contains(tag);
                       return CheckboxListTile(
-                        title: Text(tag,
+                        title: AnymeXText(tag,
                             style: theme.textTheme.bodyMedium
                                 ?.copyWith(fontWeight: FontWeight.w500)),
                         value: isSelected,
@@ -1998,7 +1960,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
   Widget _buildCheckboxTile(MapEntry<String, dynamic> entry, ThemeData theme,
       ColorScheme colorScheme, StateSetter setModalState) {
     return CheckboxListTile(
-      title: Text(entry.key,
+      title: AnymeXText(entry.key,
           style: theme.textTheme.bodyMedium
               ?.copyWith(fontWeight: FontWeight.w500)),
       value: selectedStreamingOn.contains(entry.value) ||
@@ -2032,7 +1994,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
         in SearchFilterConstants.mangaReadableOnServices.entries) {
       list.add(Padding(
         padding: const EdgeInsets.only(top: 24, bottom: 8, left: 16),
-        child: Text(
+        child: AnymeXText(
           langEntry.key,
           style: theme.textTheme.labelMedium?.copyWith(
             color: colorScheme.primary,
@@ -2096,7 +2058,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                             Icon(Icons.live_tv_rounded,
                                 color: colorScheme.primary, size: 24),
                             const SizedBox(width: 8),
-                            Text(isManga ? 'READABLE ON' : 'STREAMING ON',
+                            AnymeXText(isManga ? 'READABLE ON' : 'STREAMING ON',
                                 style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 1.5,
@@ -2154,7 +2116,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
       isScrollControlled: true,
       builder: (context) {
         return Container(
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.sizeOf(context).height * 0.5,
           decoration: BoxDecoration(
             color: colorScheme.surface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -2226,7 +2188,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet>
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Text(
+                          AnymeXText(
                             title.toUpperCase(),
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w800,

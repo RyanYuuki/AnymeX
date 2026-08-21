@@ -5,15 +5,17 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/common/cards/card_gate.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
 
 class AIRecommendation extends StatefulWidget {
@@ -32,6 +34,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
   TextEditingController textEditingController = TextEditingController();
   RxBool isLoading = false.obs;
   RxBool isGrid = false.obs;
+  RxBool noMoreItems = false.obs;
 
   @override
   void initState() {
@@ -45,30 +48,68 @@ class _AIRecommendationState extends State<AIRecommendation> {
   void _scrollListener() {
     if (_scrollController.hasClients &&
         _scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent - 100 &&
-        !isLoading.value) {
+            _scrollController.position.maxScrollExtent - 200 &&
+        !isLoading.value &&
+        !noMoreItems.value) {
+      final nextPage = currentPage + 1;
       if (textEditingController.text.isEmpty) {
-        fetchAiRecommendations(++currentPage);
+        fetchAiRecommendations(nextPage);
       } else {
-        fetchAiRecommendations(++currentPage,
+        fetchAiRecommendations(nextPage,
             username: textEditingController.text);
       }
     }
   }
 
   Future<void> fetchAiRecommendations(int page, {String? username}) async {
-    if (isLoading.value) return;
+    if (isLoading.value || noMoreItems.value) return;
     isLoading.value = true;
 
     try {
       final listData = widget.isManga
           ? Get.find<ServiceHandler>().mangaList
           : Get.find<ServiceHandler>().animeList;
-      final existingIds = listData.map((e) => e.id).toSet();
-      final data = await getAiRecommendations(widget.isManga, page,
-          username: username, isAdult: isAdult.value);
+      final existingIds = listData.map((e) => e.id.toString()).toSet();
+      final currentUiIds = recItems.map((e) => e.id.toString()).toSet();
 
-      recItems.addAll(data.where((e) => !existingIds.contains(e.id)));
+      int fetchPage = page;
+      int attempts = 0;
+      int newItemsAdded = 0;
+
+      while (attempts < 15 && newItemsAdded < 12) {
+        attempts++;
+        final data = await getAiRecommendations(
+          widget.isManga,
+          fetchPage,
+          username: username,
+          isAdult: isAdult.value,
+        );
+
+        if (data.isEmpty) {
+          noMoreItems.value = true;
+          break;
+        }
+
+        final newItems = data.where((e) =>
+            !existingIds.contains(e.id.toString()) &&
+            !currentUiIds.contains(e.id.toString())).toList();
+
+        for (final item in newItems) {
+          currentUiIds.add(item.id.toString());
+          recItems.add(item);
+          newItemsAdded++;
+        }
+
+        fetchPage++;
+      }
+
+      currentPage = fetchPage;
+
+      if (newItemsAdded == 0 && attempts >= 15) {
+        noMoreItems.value = true;
+      }
+    } catch (e) {
+      Logger.e('Error fetching AI recommendations: $e');
     } finally {
       isLoading.value = false;
     }
@@ -76,18 +117,15 @@ class _AIRecommendationState extends State<AIRecommendation> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        appBar: AppBar(
+    return AnymeXScaffold(
+  appBar: AppBar(
           backgroundColor: Colors.transparent,
           leading: IconButton(
             onPressed: () => Get.back(),
             icon: const Icon(Icons.arrow_back_ios_new),
           ),
           title: Obx(() {
-            return AnymexText(
-              text:
-                  "AI Picks ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
+            return AnymeXText("AI Picks ${recItems.isNotEmpty ? '(${recItems.length})' : ''}",
               color: context.colors.primary,
             );
           }),
@@ -99,13 +137,12 @@ class _AIRecommendationState extends State<AIRecommendation> {
                 icon: const Icon(Icons.settings))
           ],
         ),
-        body: Obx(() => recItems.isEmpty
+  body: Obx(() => recItems.isEmpty
             ? !serviceHandler.isLoggedIn.value
                 ? _buildInputBox(context)
-                : const Center(child: AnymexProgressIndicator())
-            : _buildRecommendations(context)),
-      ),
-    );
+                : const Center(child: AnymeXProgressIndicator())
+            : _buildRecommendations(context))
+);
   }
 
   Column _buildInputBox(BuildContext context) {
@@ -126,6 +163,8 @@ class _AIRecommendationState extends State<AIRecommendation> {
         GestureDetector(
           onTap: () {
             if (textEditingController.text.isNotEmpty) {
+              noMoreItems.value = false;
+              recItems.clear();
               fetchAiRecommendations(1, username: textEditingController.text);
             }
           },
@@ -134,8 +173,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             decoration: BoxDecoration(
                 color: context.colors.primary,
                 borderRadius: BorderRadius.circular(12.multiplyRadius())),
-            child: AnymexText(
-              text: "Search",
+            child: AnymeXText("Search",
               variant: TextVariant.semiBold,
               color: context.colors.onPrimary,
             ),
@@ -161,12 +199,32 @@ class _AIRecommendationState extends State<AIRecommendation> {
                 if (lastRowIndex == 0 || lastRowIndex == 2) {
                   return const SizedBox.shrink();
                 } else if (lastRowIndex == 1) {
-                  return Obx(() => isLoading.value
-                      ? const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Center(child: AnymexProgressIndicator()),
-                        )
-                      : const SizedBox.shrink());
+                  return Obx(() {
+                    if (isLoading.value) {
+                      return const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Center(child: AnymeXProgressIndicator()),
+                      );
+                    }
+                    if (noMoreItems.value) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Center(
+                          child: AnymeXText(
+                            'No more recommendations',
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .withOpacity(0.6),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  });
                 }
               }
 
@@ -177,11 +235,22 @@ class _AIRecommendationState extends State<AIRecommendation> {
             },
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: getResponsiveCrossAxisVal(
-                MediaQuery.of(context).size.width,
-                itemWidth: isGrid.value ? 120 : 400,
+                MediaQuery.sizeOf(context).width,
+                itemWidth: isGrid.value ? 115 : 400,
               ),
               crossAxisSpacing: 10,
-              mainAxisExtent: isGrid.value ? 250 : 200,
+              mainAxisSpacing: 10,
+              childAspectRatio: isGrid.value
+                  ? getGridCardAspectRatio(
+                      context: context,
+                      crossAxisCount: getResponsiveCrossAxisVal(
+                        MediaQuery.sizeOf(context).width,
+                        itemWidth: 115,
+                      ),
+                      spacing: 10,
+                      padding: 20,
+                    )
+                  : 2.0,
             ),
           ),
         ),
@@ -202,8 +271,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const AnymexText(
-                  text: "Settings",
+                const AnymeXText("Settings",
                   variant: TextVariant.bold,
                   size: 20,
                 ),
@@ -212,8 +280,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AnymexText(
-                        text: "Grid",
+                      AnymeXText("Grid",
                         variant: TextVariant.bold,
                         color: context.colors.primary,
                       ),
@@ -229,8 +296,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AnymexText(
-                        text: "18+",
+                      AnymeXText("18+",
                         variant: TextVariant.bold,
                         color: context.colors.primary,
                       ),
@@ -262,10 +328,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
         padding: const EdgeInsets.all(8),
         margin: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-            color: Theme.of(context)
-                .colorScheme
-                .secondaryContainer
-                .opaque(0.5),
+            color: Theme.of(context).colorScheme.secondaryContainer.opaque(0.5),
             borderRadius: BorderRadius.circular(12.multiplyRoundness())),
         child: Row(
           children: [
@@ -283,8 +346,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnymexText(
-                    text: data.title,
+                  AnymeXText(data.title,
                     variant: TextVariant.semiBold,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -292,8 +354,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   ),
                   const SizedBox(height: 5),
                   Flexible(
-                    child: AnymexText(
-                      text: data.description,
+                    child: AnymeXText(data.description,
                       color: Colors.grey[300],
                       maxLines: 5,
                       overflow: TextOverflow.ellipsis,
@@ -313,8 +374,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                                 borderRadius:
                                     BorderRadius.circular(8.multiplyRadius()),
                               ),
-                              child: AnymexText(
-                                text: e,
+                              child: AnymeXText(e,
                                 variant: TextVariant.semiBold,
                                 color: context.colors.onPrimary,
                               ),

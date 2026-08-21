@@ -1,6 +1,7 @@
 import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class MinimalMediaIndicatorTheme extends MediaIndicatorTheme {
   @override
@@ -83,15 +84,12 @@ class _TopLineBar extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          
           Icon(
             icon,
             color: Colors.white,
             size: 18,
           ),
           const SizedBox(width: 10),
-
-          
           SizedBox(
             width: 160,
             child: TweenAnimationBuilder<double>(
@@ -107,10 +105,7 @@ class _TopLineBar extends StatelessWidget {
               },
             ),
           ),
-
           const SizedBox(width: 10),
-
-          
           TweenAnimationBuilder<double>(
             tween: Tween<double>(end: value),
             duration: valueAnimationDuration,
@@ -118,7 +113,7 @@ class _TopLineBar extends StatelessWidget {
             builder: (context, animValue, _) {
               return SizedBox(
                 width: 34,
-                child: Text(
+                child: AnymeXText(
                   '${(animValue * 100).round()}%',
                   style: const TextStyle(
                     color: Colors.white,
@@ -136,7 +131,6 @@ class _TopLineBar extends StatelessWidget {
     );
   }
 }
-
 
 class _GlowProgressBar extends StatelessWidget {
   const _GlowProgressBar({
@@ -170,7 +164,6 @@ class _GlowProgressBar extends StatelessWidget {
           height: 4,
           child: Stack(
             children: [
-              
               Container(
                 width: totalWidth,
                 height: 4,
@@ -179,8 +172,6 @@ class _GlowProgressBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(100),
                 ),
               ),
-
-              
               Container(
                 width: firstFilledWidth,
                 height: 4,
@@ -196,8 +187,6 @@ class _GlowProgressBar extends StatelessWidget {
                   ],
                 ),
               ),
-
-              
               if (isVolumeIndicator && secondValue > 0)
                 Container(
                   width: secondFilledWidth,
@@ -214,13 +203,12 @@ class _GlowProgressBar extends StatelessWidget {
                     ],
                   ),
                 ),
-
-              
               if (firstFilledWidth > 4)
                 Positioned(
                   left: (isVolumeIndicator && secondValue > 0
                           ? secondFilledWidth
-                          : firstFilledWidth) - 4,
+                          : firstFilledWidth) -
+                      4,
                   top: -2,
                   child: Container(
                     width: 8,

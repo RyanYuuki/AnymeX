@@ -4,12 +4,13 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/contributors/models/contributor_model.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/animation/staggered_animations.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 const Set<String> _excludedGithubIds = {
   '198982749',
@@ -365,7 +366,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
               ),
             ),
             const SizedBox(width: 10),
-            Text(
+            AnymeXText(
               label,
               style: TextStyle(
                 fontSize: 18,
@@ -414,7 +415,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                Text(
+                AnymeXText(
                   title,
                   style: TextStyle(
                     fontSize: 18,
@@ -428,7 +429,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
           if (subtitle != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-              child: Text(
+              child: AnymeXText(
                 subtitle,
                 style: TextStyle(
                   fontSize: 12,
@@ -559,7 +560,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         contributor.displayName,
                         style: TextStyle(
                           fontSize: 14,
@@ -570,7 +571,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      AnymeXText(
                         contributor.roleTitle,
                         style: TextStyle(
                           fontSize: 11,
@@ -590,7 +591,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                             color: colors.primary.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             [
                               if (contributor.commitCount > 0)
                                 contributor.commitCount == 1
@@ -668,7 +669,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                 children: [
                   SizedBox(
                     width: 32,
-                    child: Text(
+                    child: AnymeXText(
                       '#${index + 1}',
                       style: TextStyle(
                         fontSize: 11,
@@ -697,7 +698,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
+                    child: AnymeXText(
                       contributor.displayName,
                       style: TextStyle(
                         fontSize: 14,
@@ -716,7 +717,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                         color: colors.secondaryContainer,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text(
+                      child: AnymeXText(
                         '${contributor.commitCount} commit${contributor.commitCount == 1 ? '' : 's'}',
                         style: TextStyle(
                           fontSize: 11,
@@ -735,7 +736,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                         color: colors.primary.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text(
+                      child: AnymeXText(
                         contributor.prCount == 1
                             ? '1 PR'
                             : '${contributor.prCount} PRs',
@@ -764,8 +765,9 @@ class _ContributorsPageState extends State<ContributorsPage> {
 
   Widget _buildStaffSection(BuildContext context) {
     final colors = context.colors;
-    if (staff.isEmpty)
+    if (staff.isEmpty) {
       return const SliverToBoxAdapter(child: SizedBox.shrink());
+    }
 
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -811,7 +813,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                AnymeXText(
                                   member.displayName,
                                   style: TextStyle(
                                     fontSize: 14,
@@ -821,7 +823,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                Text(
+                                AnymeXText(
                                   member.role,
                                   style: TextStyle(
                                     fontSize: 12,
@@ -856,9 +858,8 @@ class _ContributorsPageState extends State<ContributorsPage> {
   Widget build(BuildContext context) {
     final colors = context.colors;
 
-    return Glow(
-      child: Scaffold(
-        body: Obx(
+    return AnymeXScaffold(
+  body: Obx(
           () => CustomScrollView(
             slivers: [
               const SliverToBoxAdapter(
@@ -870,7 +871,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
               else if (errorMessage.value.isNotEmpty)
                 SliverFillRemaining(
                   child: Center(
-                    child: Text(
+                    child: AnymeXText(
                       errorMessage.value,
                       style: TextStyle(color: colors.error),
                     ),
@@ -878,7 +879,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
                 )
               else if (coreTeam.isEmpty && communityContributors.isEmpty)
                 const SliverFillRemaining(
-                  child: Center(child: Text('No contributors found.')),
+                  child: Center(child: AnymeXText('No contributors found.')),
                 )
               else ...[
                 _buildFeaturedSection(
@@ -894,8 +895,7 @@ class _ContributorsPageState extends State<ContributorsPage> {
               ],
             ],
           ),
-        ),
-      ),
-    );
+        )
+);
   }
 }

@@ -4,8 +4,8 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -131,8 +131,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
               ),
               const SizedBox(width: 8),
               Flexible(
-                child: AnymexText(
-                  text: username,
+                child: AnymeXText(username,
                   variant: TextVariant.semiBold,
                   color: context.colors.primary,
                   maxLines: 1,
@@ -145,8 +144,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                     size: 16, color: context.colors.primary),
               ],
               const SizedBox(width: 4),
-              AnymexText(
-                text: "'s Recs",
+              AnymeXText("'s Recs",
                 variant: TextVariant.semiBold,
                 color: context.colors.onSurfaceVariant,
               ),
@@ -178,8 +176,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
             ),
             const SizedBox(width: 8),
             Flexible(
-              child: AnymexText(
-                text: username,
+              child: AnymeXText(username,
                 variant: TextVariant.semiBold,
                 color: context.colors.primary,
                 maxLines: 1,
@@ -192,8 +189,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                   size: 16, color: context.colors.primary),
             ],
             const SizedBox(width: 4),
-            AnymexText(
-              text: "'s Recs",
+            AnymeXText("'s Recs",
               variant: TextVariant.semiBold,
               color: context.colors.onSurfaceVariant,
             ),
@@ -244,8 +240,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                 size: 48,
                 color: context.colors.onSurfaceVariant.withOpacity(0.5)),
             const SizedBox(height: 12),
-            AnymexText(
-              text: 'No recommendations found',
+            AnymeXText('No recommendations found',
               color: context.colors.onSurfaceVariant.withOpacity(0.7),
               variant: TextVariant.semiBold,
             ),
@@ -255,7 +250,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(12, 16, 12, 40),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 3,
         crossAxisSpacing: 10,
@@ -320,8 +315,7 @@ class _RecCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      child: AnymexText(
-                        text: item.media.rating.toString(),
+                      child: AnymeXText(item.media.rating.toString(),
                         size: 10,
                         color: Colors.white,
                         variant: TextVariant.semiBold,
@@ -333,16 +327,14 @@ class _RecCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          AnymexText(
-            text: item.media.title,
+          AnymeXText(item.media.title,
             variant: TextVariant.semiBold,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             size: 11,
           ),
           const SizedBox(height: 2),
-          AnymexText(
-            text: item.reason.displayText,
+          AnymeXText(item.reason.displayText,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             size: 10,
@@ -385,7 +377,7 @@ class _Avatar extends StatelessWidget {
               radius: size / 2,
             )
           : Center(
-              child: Text(
+              child: AnymeXText(
                 (fallbackLabel?.trim().isNotEmpty == true
                         ? fallbackLabel!.trim()[0]
                         : '?')

@@ -1,6 +1,6 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
-import 'package:anymex/screens/anime/widgets/episode/normal_episode.dart';
+import 'package:anymex/screens/anime/widgets/episode/styles/compact_style.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -9,6 +9,7 @@ import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DynamicBottomSheet extends StatefulWidget {
   final String title;
@@ -106,7 +107,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                 child: Container(
                   width: double.infinity,
                   constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.8,
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.8,
                   ),
                   decoration: BoxDecoration(
                     color: context.theme.colorScheme.surface,
@@ -154,7 +155,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                           child: Row(
                             children: [
                               Expanded(
-                                child: Text(
+                                child: AnymeXText(
                                   widget.title,
                                   style: context.theme.textTheme.titleLarge
                                       ?.copyWith(
@@ -189,7 +190,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                         child: widget.customContent ?? _buildItemsList(),
                       ),
                       SizedBox(
-                          height: MediaQuery.of(context).padding.bottom + 16),
+                          height: MediaQuery.paddingOf(context).bottom + 16),
                     ],
                   ),
                 ),
@@ -367,7 +368,7 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
+                            AnymeXText(
                               widget.item.title,
                               style:
                                   context.theme.textTheme.bodyLarge?.copyWith(
@@ -382,7 +383,7 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                             if (widget.item.subtitle != null)
                               Padding(
                                 padding: const EdgeInsets.only(top: 2),
-                                child: Text(
+                                child: AnymeXText(
                                   widget.item.subtitle!,
                                   style: context.theme.textTheme.bodySmall
                                       ?.copyWith(
@@ -527,7 +528,7 @@ class PlayerBottomSheets {
         backgroundColor: Colors.transparent,
         builder: (context) => isExpanded
             ? SizedBox(
-                height: MediaQuery.of(context).size.height * expandedHeightFactor,
+                height: MediaQuery.sizeOf(context).height * expandedHeightFactor,
                 child: sheet)
             : sheet,
       ),
@@ -603,15 +604,24 @@ class PlayerBottomSheets {
         itemBuilder: (context, index) {
           final episode = episodes[index];
           final isSelected = episode == selectedEpisode.value;
+          final offlineEpisodes = offlineEpisode;
+          final isWatched = (offlineEpisodes ?? []).any((e) => e.number == episode.number);
+          
+          double progress = 0.0;
+          if (offlineEpisodes != null) {
+            final matching = offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
+            if (matching != null && matching.durationInMilliseconds != null && matching.durationInMilliseconds! > 0) {
+              progress = (matching.timeStampInMilliseconds ?? 0) / matching.durationInMilliseconds!;
+            }
+          }
 
-          return BetterEpisode(
+          return CompactEpisodeWidget(
             episode: episode,
             isSelected: isSelected,
+            isWatched: isWatched,
+            progress: progress,
+            media: controller.anilistData,
             onTap: () => controller.changeEpisode(episode),
-            layoutType: EpisodeLayoutType.compact,
-            offlineEpisodes: offlineEpisode,
-            fallbackImageUrl:
-                controller.anilistData.cover ?? controller.anilistData.poster,
           );
         },
       ),
@@ -678,7 +688,7 @@ class _LoaderContentState extends State<_LoaderContent> {
       child: _showWarning
           ? Column(
               children: [
-                Text(
+                AnymeXText(
                   'Taking longer than expected...',
                   style: Get.theme.textTheme.bodyMedium?.copyWith(
                     color: Get.theme.colorScheme.onSurfaceVariant,
@@ -688,7 +698,7 @@ class _LoaderContentState extends State<_LoaderContent> {
                 TextButton.icon(
                   onPressed: () => Get.back(),
                   icon: const Icon(Icons.arrow_back_rounded),
-                  label: const Text('Go Back'),
+                  label: const AnymeXText('Go Back'),
                 ),
               ],
             )

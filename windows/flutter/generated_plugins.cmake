@@ -9,6 +9,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   dynamic_color
   firebase_core
   flutter_inappwebview_windows
+  flutter_media_session
   flutter_qjs
   flutter_tts
   isar_community_flutter_libs
@@ -25,9 +26,10 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  flutter_discord_rpc_fork
+  flutter_discord_rpc
   jni
   libtorrent_flutter
+  rhttp
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)

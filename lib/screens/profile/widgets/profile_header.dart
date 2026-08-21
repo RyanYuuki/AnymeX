@@ -1,19 +1,21 @@
 import 'dart:ui';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/fullscreen_image_viewer.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:anymex/screens/profile/widgets/hover_action_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Widget _buildBottomSheetOption(
   BuildContext context, {
@@ -34,7 +36,7 @@ Widget _buildBottomSheetOption(
             color: context.theme.colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: 14),
-          Text(
+          AnymeXText(
             label,
             style: const TextStyle(
               fontSize: 16,
@@ -104,7 +106,7 @@ class DesktopProfileHeader extends StatelessWidget {
                         Navigator.of(context, rootNavigator: true)
                             .push(
                           MaterialPageRoute(
-                            builder: (_) => FullscreenImageViewer(
+                            builder: (_) => AnymeXFullscreenImageViewer(
                               imageUrl: imageUrl,
                               tag: 'profile_banner_$name',
                             ),
@@ -225,7 +227,7 @@ class DesktopProfileHeader extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
+                              AnymeXText(
                                 name,
                                 style: TextStyle(
                                   fontSize: 28,
@@ -274,7 +276,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                             ),
                                             const SizedBox(width: 4),
                                           ],
-                                          Text(
+                                          AnymeXText(
                                             badgeText,
                                             style: TextStyle(
                                               fontSize: 10,
@@ -324,7 +326,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                                   color: Colors.white70,
                                                 ),
                                                 const SizedBox(width: 4),
-                                                Text(
+                                                AnymeXText(
                                                   countdownText,
                                                   style: const TextStyle(
                                                     fontSize: 10,
@@ -362,7 +364,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                               color: Colors.white70,
                                             ),
                                             const SizedBox(width: 4),
-                                            Text(
+                                            AnymeXText(
                                               'Joined ${DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year}',
                                               style: const TextStyle(
                                                 fontSize: 10,
@@ -426,7 +428,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                             ),
                                           ),
                                           const SizedBox(height: 16),
-                                          Text(
+                                          AnymeXText(
                                             'More Options',
                                             style: TextStyle(
                                               fontSize: 18,
@@ -475,7 +477,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                                   context,
                                                 ).showSnackBar(
                                                   SnackBar(
-                                                    content: const Text(
+                                                    content: const AnymeXText(
                                                       'User ID copied to clipboard',
                                                     ),
                                                     backgroundColor: context
@@ -495,7 +497,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                             label: 'AniList Settings',
                                             onTap: () {
                                               Navigator.pop(ctx);
-                                              Get.to(() => const SettingsAnilistApi());
+                                              navigate(() => const SettingsAnilistApi());
                                             },
                                           ),
                                         ],
@@ -570,7 +572,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
       }
     }
 
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.sizeOf(context).height;
     final bannerHeight = (screenHeight * 0.36).clamp(250.0, 390.0);
 
     return SliverAppBar(
@@ -587,7 +589,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: IconButton(
-          icon: const Icon(IconlyLight.arrow_left),
+          icon: const Icon(IconlyLight.arrowLeft),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -626,7 +628,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Text(
+                        AnymeXText(
                           'More Options',
                           style: TextStyle(
                             fontSize: 18,
@@ -666,7 +668,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const Text(
+                                  content: const AnymeXText(
                                     'User ID copied to clipboard',
                                   ),
                                   backgroundColor: context.theme.colorScheme
@@ -683,7 +685,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           label: 'AniList Settings',
                           onTap: () {
                             Navigator.pop(ctx);
-                            Get.to(() => const SettingsAnilistApi());
+                            navigate(() => const SettingsAnilistApi());
                           },
                         ),
                       ],
@@ -713,7 +715,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         Navigator.of(context, rootNavigator: true)
                             .push(
                           MaterialPageRoute(
-                            builder: (_) => FullscreenImageViewer(
+                            builder: (_) => AnymeXFullscreenImageViewer(
                               imageUrl: imageUrl,
                               tag: 'profile_banner_$name',
                             ),
@@ -777,7 +779,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         if (avatarUrl.isNotEmpty) {
                           Navigator.of(context, rootNavigator: true).push(
                             MaterialPageRoute(
-                              builder: (_) => FullscreenImageViewer(
+                              builder: (_) => AnymeXFullscreenImageViewer(
                                 imageUrl: avatarUrl,
                                 tag: 'profile_avatar_$name',
                               ),
@@ -825,7 +827,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           FittedBox(
                             fit: BoxFit.scaleDown,
                             alignment: Alignment.centerLeft,
-                            child: Text(
+                            child: AnymeXText(
                               name,
                               maxLines: 1,
                               style: const TextStyle(
@@ -868,7 +870,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                       ),
                                       const SizedBox(width: 4),
                                     ],
-                                    Text(
+                                    AnymeXText(
                                       badgeText,
                                       style: TextStyle(
                                         fontSize: 10,
@@ -900,7 +902,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                         color: Colors.white70,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
+                                      AnymeXText(
                                         expiryText,
                                         style: const TextStyle(
                                           fontSize: 10,
@@ -930,7 +932,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                         color: Colors.white70,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
+                                      AnymeXText(
                                         'Joined ${DateTime.fromMillisecondsSinceEpoch(user.createdAt! * 1000).year}',
                                         style: const TextStyle(
                                           fontSize: 10,

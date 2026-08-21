@@ -9,11 +9,10 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/misc/dub_service.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -96,6 +95,37 @@ class _CalendarState extends State<Calendar>
   String _norm(String t) =>
       t.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
 
+  bool _isSameDate(Media media, DateTime date) {
+    if (media.nextAiringEpisode != null) {
+      final airDate = DateTime.fromMillisecondsSinceEpoch(
+          media.nextAiringEpisode!.airingAt * 1000);
+      return airDate.year == date.year &&
+          airDate.month == date.month &&
+          airDate.day == date.day;
+    }
+    final rawAired = media.aired.trim();
+    if (rawAired.isEmpty) return false;
+    try {
+      final parsed = DateTime.tryParse(rawAired);
+      if (parsed != null) {
+        return parsed.day == date.day && parsed.month == date.month;
+      }
+      final parts = rawAired.split('-');
+      if (parts.length == 3) {
+        if (parts[0].length == 4) {
+          final m = int.parse(parts[1]);
+          final d = int.parse(parts[2]);
+          return d == date.day && m == date.month;
+        } else if (parts[2].length == 4) {
+          final d = int.parse(parts[0]);
+          final m = int.parse(parts[1]);
+          return d == date.day && m == date.month;
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
+
   DubAnimeInfo? _getDubInfo(Media m) {
     if (!isAnilist) return null;
     
@@ -128,9 +158,8 @@ class _CalendarState extends State<Calendar>
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        appBar: AppBar(
+    return AnymeXScaffold(
+  appBar: AppBar(
           leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: Icon(
@@ -181,16 +210,14 @@ class _CalendarState extends State<Calendar>
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnymexText(
-                text: "Calendar",
+              AnymeXText("Calendar",
                 color: context.colors.primary,
                 variant: TextVariant.semiBold,
                 size: 16,
               ),
               Obx(() {
                 if (isDubMode.value && isAnilist) {
-                  return AnymexText(
-                    text: isFetching.value ? "Fetching..." : "Dubbed Only",
+                  return AnymeXText(isFetching.value ? "Fetching..." : "Dubbed Only",
                     variant: TextVariant.regular,
                     size: 10,
                     color: Colors.grey,
@@ -207,20 +234,7 @@ class _CalendarState extends State<Calendar>
             tabs: dateTabs.map((date) {
               return Obx(() {
                 var list = (includeList ? listData : rawData)
-                    .where((media) {
-                      if (media.nextAiringEpisode != null) {
-                        return DateTime.fromMillisecondsSinceEpoch(
-                                media.nextAiringEpisode!.airingAt * 1000)
-                            .day ==
-                        date.day;
-                      } else {
-                        try {
-                          return DateTime.parse(media.aired).day == date.day;
-                        } catch (e) {
-                          return false;
-                        }
-                      }
-                    })
+                    .where((media) => _isSameDate(media, date))
                     .toList();
 
                 if (isDubMode.value && isAnilist && !isFetching.value) {
@@ -228,39 +242,25 @@ class _CalendarState extends State<Calendar>
                 }
 
                 return Tab(
-                  child: AnymexText(
+                  child: AnymeXText(
+                    '${DateFormat('EEEE, MMM d').format(date)} (${list.length})',
                     variant: TextVariant.bold,
-                    text:
-                        '${DateFormat('EEEE, MMM d').format(date)} (${list.length})',
                   ),
                 );
               });
             }).toList(),
           ),
         ),
-        body: TabBarView(
+  body: TabBarView(
           controller: _tabController,
           children: dateTabs.map((date) {
             return Obx(() {
               if (isFetching.value && isAnilist) {
-                return const Center(child: AnymexProgressIndicator());
+                return const Center(child: AnymeXProgressIndicator());
               }
 
               var filteredList = (includeList ? listData : rawData)
-                  .where((media) {
-                    if (media.nextAiringEpisode != null) {
-                      return DateTime.fromMillisecondsSinceEpoch(
-                              media.nextAiringEpisode!.airingAt * 1000)
-                          .day ==
-                      date.day;
-                    } else {
-                      try {
-                        return DateTime.parse(media.aired).day == date.day;
-                      } catch (e) {
-                        return false;
-                      }
-                    }
-                  })
+                  .where((media) => _isSameDate(media, date))
                   .toList();
 
               if (isDubMode.value && isAnilist) {
@@ -269,9 +269,9 @@ class _CalendarState extends State<Calendar>
               }
 
               if (isLoading) {
-                return const Center(child: AnymexProgressIndicator());
+                return const Center(child: AnymeXProgressIndicator());
               } else if (filteredList.isEmpty) {
-                return const Center(child: Text("No Anime found"));
+                return const Center(child: AnymeXText("No Anime found"));
               }
 
               return GridView.builder(
@@ -280,7 +280,7 @@ class _CalendarState extends State<Calendar>
                 itemCount: filteredList.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: getResponsiveCrossAxisVal(
-                        MediaQuery.of(context).size.width,
+                        MediaQuery.sizeOf(context).width,
                         itemWidth: isGrid ? 120 : 400),
                     mainAxisExtent: getResponsiveSize(context,
                         mobileSize: isGrid ? 280 : 150,
@@ -300,9 +300,8 @@ class _CalendarState extends State<Calendar>
               );
             });
           }).toList(),
-        ),
-      ),
-    );
+        )
+);
   }
 }
 
@@ -413,8 +412,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                   Icon(Icons.schedule,
                       color: context.colors.primary, size: 14),
                   const SizedBox(width: 4),
-                  AnymexText(
-                    text: 'EP ${widget.dubInfo!.episode}',
+                  AnymeXText('EP ${widget.dubInfo!.episode}',
                     size: 11,
                     variant: TextVariant.bold,
                     color: context.colors.primary,
@@ -436,16 +434,14 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                         if (widget.data.nextAiringEpisode != null) {
                            final nextEp = widget.data.nextAiringEpisode!;
                            final airDate = DateTime.fromMillisecondsSinceEpoch(nextEp.airingAt * 1000);
-                           return AnymexText(
-                              text: _formatAirTime(airDate),
+                           return AnymeXText(_formatAirTime(airDate),
                               size: 10,
                               color: context.colors.primary,
                            );
                         }
                         
                         
-                        return AnymexText(
-                          text: _formatAirTime(widget.dubInfo!.airDateTime),
+                        return AnymeXText(_formatAirTime(widget.dubInfo!.airDateTime),
                           size: 10,
                           color: context.colors.primary,
                         );
@@ -480,7 +476,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                                       child: s.name
                                               .toLowerCase()
                                               .contains('apple')
-                                          ? AnymeXImage(
+                                          ? const AnymeXImage(
                                               imageUrl:
                                                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVCJpAHzn91VMfwirwAbAmV-ONO02UjmCj2w&s",
                                               height: 20,
@@ -549,8 +545,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                 ),
                 if (isAnilist && widget.data.nextAiringEpisode?.episode != null) ...[
                   const SizedBox(width: 5),
-                  AnymexText(
-                    text: 'EPISODE ${widget.data.nextAiringEpisode!.episode}',
+                  AnymeXText('EPISODE ${widget.data.nextAiringEpisode!.episode}',
                     maxLines: 1,
                     variant: TextVariant.regular,
                     fontStyle: FontStyle.italic,
@@ -564,8 +559,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
           const SizedBox(height: 5),
           SizedBox(
             width: cardWidth,
-            child: AnymexText(
-              text: widget.data.title,
+            child: AnymeXText(widget.data.title,
               maxLines: 2,
               size: 14,
               textAlign: TextAlign.center,
@@ -575,8 +569,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
               widget.data.nextAiringEpisode?.episode != null)
             SizedBox(
               width: cardWidth,
-              child: AnymexText(
-                text: '~ | ${widget.data.nextAiringEpisode!.episode - 1} |  ~',
+              child: AnymeXText('~ | ${widget.data.nextAiringEpisode!.episode - 1} |  ~',
                 maxLines: 1,
                 size: 12,
                 color: Colors.grey,
@@ -607,8 +600,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
             color: context.colors.onPrimary,
           ),
           const SizedBox(width: 4),
-          AnymexText(
-            text: media.rating,
+          AnymeXText(media.rating,
             color: context.colors.onPrimary,
             size: 12,
             variant: TextVariant.bold,
@@ -746,8 +738,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                             height: getResponsiveSize(context,
                                 mobileSize: 10, desktopSize: 30)),
                         if (isAnilist && widget.data.nextAiringEpisode != null) ...[
-                          AnymexText(
-                            text: "Episode ${widget.data.nextAiringEpisode!.episode}",
+                          AnymeXText("Episode ${widget.data.nextAiringEpisode!.episode}",
                             size: 14,
                             maxLines: 2,
                             color: context.colors.primary,
@@ -756,8 +747,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                           ),
                           const SizedBox(height: 10),
                         ],
-                        AnymexText(
-                          text: widget.data.title,
+                        AnymeXText(widget.data.title,
                           size: 14,
                           maxLines: 2,
                           variant: TextVariant.bold,
@@ -780,8 +770,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                     borderRadius: BorderRadius.circular((8.multiplyRadius())),
                     color: context.colors.primary,
                   ),
-                  child: AnymexText(
-                    text: formatTime(timeLeft.value),
+                  child: AnymeXText(formatTime(timeLeft.value),
                     size: 12,
                     color: context.colors.onPrimary,
                     variant: TextVariant.bold,

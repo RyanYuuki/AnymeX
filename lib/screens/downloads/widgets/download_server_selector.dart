@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as hive;
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -55,6 +56,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
   final _selectedQuality = RxnString();
   bool _isDisposed = false;
   String? _cancelToken;
+  StreamSubscription? _streamSubscription;
 
   @override
   void initState() {
@@ -65,6 +67,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
   @override
   void dispose() {
     _isDisposed = true;
+    _streamSubscription?.cancel();
     if (_cancelToken != null) {
       widget.source.cancelRequest(_cancelToken!);
     }
@@ -95,19 +98,28 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
           parameters: SourceParams(cancelToken: token));
 
       if (videoStream != null) {
-        await for (final v in videoStream) {
-          if (_isDisposed) break;
-          final nextVideo = hive.Video.fromVideo(v);
-          final exists = _servers.any((existing) =>
-              existing.quality == nextVideo.quality &&
-              existing.originalUrl == nextVideo.originalUrl);
-          if (!exists) {
-            _servers.add(nextVideo);
-            if (_selectedQuality.value == null) {
-              _selectedQuality.value = nextVideo.quality;
+        _streamSubscription = videoStream.listen(
+          (v) {
+            if (_isDisposed) return;
+            final nextVideo = hive.Video.fromVideo(v);
+            final exists = _servers.any((existing) =>
+                existing.quality == nextVideo.quality &&
+                existing.originalUrl == nextVideo.originalUrl);
+            if (!exists) {
+              _servers.add(nextVideo);
+              if (_selectedQuality.value == null) {
+                _selectedQuality.value = nextVideo.quality;
+              }
             }
-          }
-        }
+          },
+          onError: (e) {
+            _errorMsg.value = e.toString();
+            _isLoading.value = false;
+          },
+          onDone: () {
+            _isLoading.value = false;
+          },
+        );
       } else {
         final rawVideos = await widget.source.methods.getVideoList(deEpisode,
             parameters: SourceParams(cancelToken: token));
@@ -116,11 +128,11 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
         if (vids.isNotEmpty) {
           _selectedQuality.value = vids.first.quality;
         }
+        _isLoading.value = false;
       }
     } catch (e, s) {
       _errorMsg.value = e.toString();
       print('Error fetching servers: $e - $s');
-    } finally {
       _isLoading.value = false;
     }
   }
@@ -201,12 +213,10 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymexText(
-                    text: 'Choose Quality',
+                const AnymeXText('Choose Quality',
                     variant: TextVariant.bold,
                     size: 16),
-                AnymexText(
-                  text: 'Fetching from first episode · auto-matched for batch',
+                AnymeXText('Fetching from first episode · auto-matched for batch',
                   size: 12,
                   color: theme.onSurface.opaque(0.5),
                 ),
@@ -233,10 +243,10 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             children: [
               ExpressiveLoadingIndicator(),
               SizedBox(height: 16),
-              Text('Fetching available servers...',
+              AnymeXText('Fetching available servers...',
                   style: TextStyle(fontSize: 14, color: Colors.grey)),
               SizedBox(height: 6),
-              Text('This may take up to 30 seconds',
+              AnymeXText('This may take up to 30 seconds',
                   style: TextStyle(fontSize: 12, color: Colors.grey)),
             ],
           ),
@@ -252,12 +262,11 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
               Icon(Icons.error_outline_rounded,
                   size: 48, color: theme.error.opaque(0.6)),
               const SizedBox(height: 12),
-              const AnymexText(
-                  text: 'Failed to fetch servers',
+              const AnymeXText('Failed to fetch servers',
                   variant: TextVariant.semiBold,
                   size: 15),
               const SizedBox(height: 6),
-              Text(_errorMsg.value!,
+              AnymeXText(_errorMsg.value!,
                   style: TextStyle(color: theme.error, fontSize: 12),
                   textAlign: TextAlign.center),
               const SizedBox(height: 16),
@@ -272,7 +281,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                     border: Border.all(color: theme.primary.opaque(0.4)),
                   ),
                   child:
-                      AnymexText(text: 'Retry', size: 14, color: theme.primary),
+                      AnymeXText('Retry', size: 14, color: theme.primary),
                 ),
               ),
             ],
@@ -289,8 +298,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
               Icon(Icons.cloud_off_rounded,
                   size: 48, color: theme.onSurface.opaque(0.2)),
               const SizedBox(height: 12),
-              AnymexText(
-                  text: 'No servers available',
+              AnymeXText('No servers available',
                   variant: TextVariant.semiBold,
                   size: 15,
                   color: theme.onSurface.opaque(0.4)),
@@ -301,7 +309,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
 
       return ConstrainedBox(
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.45,
+          maxHeight: MediaQuery.sizeOf(context).height * 0.45,
         ),
         child: ListView.builder(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -319,8 +327,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                         height: 16,
                         child: ExpressiveLoadingIndicator()),
                     const SizedBox(width: 8),
-                    AnymexText(
-                        text: 'Scanning for more servers...',
+                    AnymeXText('Scanning for more servers...',
                         size: 12,
                         color: theme.onSurface.opaque(0.5)),
                   ],
@@ -336,90 +343,171 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                   detectLinkType(video.url ?? video.originalUrl ?? '');
               final isHls = linkType == VideoLinkType.hls;
 
-              return AnymexOnTap(
-                  onTap: () => _selectedQuality.value = quality,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? theme.primaryContainer.opaque(0.35)
-                          : theme.surfaceContainer.opaque(0.3),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: isSelected
-                            ? theme.primary.opaque(0.5)
-                            : theme.outline.opaque(0.15),
-                        width: isSelected ? 1.5 : 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 180),
-                          width: 22,
-                          height: 22,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color:
-                                isSelected ? theme.primary : Colors.transparent,
-                            border: Border.all(
-                              color: isSelected
-                                  ? theme.primary
-                                  : theme.outline.opaque(0.4),
-                              width: 2,
-                            ),
-                          ),
-                          child: isSelected
-                              ? Icon(Icons.check_rounded,
-                                  size: 14, color: theme.onPrimary)
-                              : null,
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: AnymexText(
-                            text: quality,
-                            variant: TextVariant.semiBold,
-                            size: 14,
-                            color: isSelected ? theme.primary : theme.onSurface,
-                          ),
-                        ),
-                        if (isHls)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.orange.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                  color: Colors.orange.withOpacity(0.3)),
-                            ),
-                            child: const Text('HLS',
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.orange,
-                                    fontWeight: FontWeight.w600)),
-                          )
-                        else
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 7, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.12),
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(
-                                  color: Colors.green.withOpacity(0.3)),
-                            ),
-                            child: const Text('Direct',
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                      ],
-                    ),
-                  ));
+                        final subCount = video.subtitles?.length ?? 0;
+                        final audioCount = video.audios?.length ?? 0;
+                        final hasTracksInfo = subCount > 0 || audioCount > 0;
+
+                        return AnymexOnTap(
+                            onTap: () => _selectedQuality.value = quality,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 180),
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? theme.primaryContainer.opaque(0.35)
+                                    : theme.surfaceContainer.opaque(0.3),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? theme.primary.opaque(0.5)
+                                      : theme.outline.opaque(0.15),
+                                  width: isSelected ? 1.5 : 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  AnimatedContainer(
+                                    duration: const Duration(milliseconds: 180),
+                                    width: 22,
+                                    height: 22,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color:
+                                          isSelected ? theme.primary : Colors.transparent,
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? theme.primary
+                                            : theme.outline.opaque(0.4),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: isSelected
+                                        ? Icon(Icons.check_rounded,
+                                            size: 14, color: theme.onPrimary)
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: AnymeXText(quality,
+                                      variant: TextVariant.semiBold,
+                                      size: 14,
+                                      color: isSelected ? theme.primary : theme.onSurface,
+                                    ),
+                                  ),
+                                  if (subCount > 0) ...[
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _showTracksDialog(context, video, theme),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: theme.primary.withOpacity(0.12),
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(
+                                              color: theme.primary.withOpacity(0.3)),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.subtitles,
+                                                size: 11, color: theme.primary),
+                                            const SizedBox(width: 3),
+                                            AnymeXText(
+                                              '$subCount',
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: theme.primary,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                  ],
+                                  if (audioCount > 0) ...[
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _showTracksDialog(context, video, theme),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.purple.withOpacity(0.12),
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(
+                                              color: Colors.purple.withOpacity(0.3)),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Icon(Icons.audiotrack,
+                                                size: 11, color: Colors.purple),
+                                            const SizedBox(width: 3),
+                                            AnymeXText(
+                                              '$audioCount',
+                                              style: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.purple,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                  ],
+                                  if (hasTracksInfo) ...[
+                                    GestureDetector(
+                                      onTap: () =>
+                                          _showTracksDialog(context, video, theme),
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.symmetric(horizontal: 2),
+                                        child: Icon(Icons.info_outline_rounded,
+                                            size: 16,
+                                            color: theme.onSurface.opaque(0.5)),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                  ],
+                                  if (isHls)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7, vertical: 3),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                            color: Colors.orange.withOpacity(0.3)),
+                                      ),
+                                      child: const AnymeXText('HLS',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.orange,
+                                              fontWeight: FontWeight.w600)),
+                                    )
+                                  else
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 7, vertical: 3),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.withOpacity(0.12),
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(
+                                            color: Colors.green.withOpacity(0.3)),
+                                      ),
+                                      child: const AnymeXText('Direct',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.green,
+                                              fontWeight: FontWeight.w600)),
+                                    ),
+                                ],
+                              ),
+                            ));
             });
           },
         ),
@@ -438,7 +526,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               decoration: BoxDecoration(
                 color: canDownload ? theme.primary : theme.surfaceContainer,
                 borderRadius: BorderRadius.circular(16),
@@ -452,15 +540,18 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                           ? theme.onPrimary
                           : theme.onSurface.opaque(0.4)),
                   const SizedBox(width: 8),
-                  AnymexText(
-                    text: canDownload
-                        ? 'Download (${widget.episodes.length} ep${widget.episodes.length != 1 ? 's' : ''}) · ${_selectedQuality.value}'
-                        : 'Loading servers...',
-                    size: 14,
-                    variant: TextVariant.semiBold,
-                    color: canDownload
-                        ? theme.onPrimary
-                        : theme.onSurface.opaque(0.4),
+                  Expanded(
+                    child: AnymeXText(canDownload
+                          ? 'Download (${widget.episodes.length} ep${widget.episodes.length != 1 ? 's' : ''}) · ${_selectedQuality.value}'
+                          : 'Loading servers...',
+                      size: 14,
+                      variant: TextVariant.semiBold,
+                      isMarquee: true,
+                      textAlign: TextAlign.center,
+                      color: canDownload
+                          ? theme.onPrimary
+                          : theme.onSurface.opaque(0.4),
+                    ),
                   ),
                 ],
               ),
@@ -469,5 +560,142 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
         ),
       );
     });
+  }
+
+  void _showTracksDialog(
+      BuildContext context, hive.Video video, ColorScheme theme) {
+    final subtitles = video.subtitles ?? [];
+    final audios = video.audios ?? [];
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: theme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.video_library_rounded,
+                      color: theme.primary, size: 22),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: AnymeXText(
+                      video.quality ?? 'Server Tracks',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: theme.onSurface,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(Icons.close_rounded,
+                        color: theme.onSurface.opaque(0.5)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        'Subtitles (${subtitles.length})',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: theme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (subtitles.isEmpty)
+                        AnymeXText(
+                          'No subtitle tracks available',
+                          style: TextStyle(
+                              fontSize: 12, color: theme.onSurface.opaque(0.5)),
+                        )
+                      else
+                        ...subtitles.map((s) => Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: theme.surfaceContainer.opaque(0.4),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.subtitles_rounded,
+                                      size: 16, color: theme.primary),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: AnymeXText(
+                                      s.label ?? s.file ?? 'Unknown',
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          color: theme.onSurface),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
+                      const SizedBox(height: 16),
+                      AnymeXText(
+                        'Audio Tracks (${audios.length})',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: theme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (audios.isEmpty)
+                        AnymeXText(
+                          'No audio tracks available',
+                          style: TextStyle(
+                              fontSize: 12, color: theme.onSurface.opaque(0.5)),
+                        )
+                      else
+                        ...audios.map((a) => Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: theme.surfaceContainer.opaque(0.4),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.audiotrack_rounded,
+                                      size: 16, color: theme.primary),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: AnymeXText(
+                                      a.label ?? a.file ?? 'Unknown',
+                                      style: TextStyle(
+                                          fontSize: 13,
+                                          color: theme.onSurface),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

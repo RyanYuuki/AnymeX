@@ -2,9 +2,11 @@ import 'package:anymex/models/reader/tap_zones.dart';
 import 'package:anymex/repositories/tap_zone_repository.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class TapZoneSettingsScreen extends StatefulWidget {
   const TapZoneSettingsScreen({super.key});
@@ -89,105 +91,74 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     final currentLayout = _getCurrentLayout();
     final onSave = _getCurrentSaveCallback();
 
-    return Glow(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Tap Zones"),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.restart_alt_rounded),
-              tooltip: 'Reset to Default',
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-                    title: const Text('Reset Layout?', style: TextStyle(fontWeight: FontWeight.bold)),
-                    content: const Text('This will revert the current layout to its original settings.'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('Cancel', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          _resetDefaults();
-                          Navigator.pop(context);
+    return AnymeXScaffold(
+      showHeader: true,
+      headerTitle: 'Tap Zones',
+      body: Builder(
+        builder: (ctx) => Column(
+                  children: [
+                    SizedBox(height: AnymeXHeaderScope.of(ctx)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      child: _ElegantSegmentedControl(
+                        options: [
+                          (title: "Paged", icon: Transform.rotate(angle: 1.5708, child: const Icon(Icons.view_day_rounded, size: 18))),
+                          (title: "Webtoon", icon: const Icon(Icons.view_day_rounded, size: 18)),
+                        ],
+                        selectedIndex: _isWebtoon ? 1 : 0,
+                        onChanged: (index) {
+                          final val = index == 1;
+                          setState(() => _isWebtoon = val);
+                          _repo.saveActiveIsWebtoon(val);
+                          _readerController.activeTapIsWebtoon.value = val;
                         },
-                        child: Text('Reset', style: TextStyle(color: Theme.of(context).colorScheme.error)),
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
-        body: Column(
-          children: [
-            // Modes
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: _ElegantSegmentedControl(
-                options: [
-                  (title: "Paged", icon: Transform.rotate(angle: 1.5708, child: const Icon(Icons.view_day_rounded, size: 18))),
-                  (title: "Webtoon", icon: const Icon(Icons.view_day_rounded, size: 18)),
-                ],
-                selectedIndex: _isWebtoon ? 1 : 0,
-                onChanged: (index) {
-                  final val = index == 1;
-                  setState(() => _isWebtoon = val);
-                  _repo.saveActiveIsWebtoon(val);
-                  _readerController.activeTapIsWebtoon.value = val;
-                },
-              ),
-            ),
-             
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-              child: _ElegantSegmentedControl(
-                options: const [
-                  (title: "Horizontal", icon: Icon(Icons.swap_horiz_rounded, size: 18)),
-                  (title: "Vertical", icon: Icon(Icons.swap_vert_rounded, size: 18)),
-                ],
-                selectedIndex: _isVertical ? 1 : 0,
-                onChanged: (index) {
-                  final val = index == 1;
-                  setState(() => _isVertical = val);
-                  _repo.saveActiveIsVertical(val);
-                  _readerController.activeTapIsVertical.value = val;
-                },
-              ),
-            ),
-            
-            const Divider(),
-
-            Obx(() => SwitchListTile(
-              title: const Text("Enable Tap Zones"),
-              subtitle: const Text("Use custom gestures"),
-              value: _readerController.tapZonesEnabled.value,
-              onChanged: (val) => _readerController.toggleTapZones(val),
-              activeColor: Theme.of(context).colorScheme.primary,
-            )),
-            
-            Expanded(
-              child: Obx(() => IgnorePointer(
-                ignoring: !_readerController.tapZonesEnabled.value,
-                child: AnimatedOpacity(
-                  opacity: _readerController.tapZonesEnabled.value ? 1.0 : 0.4,
-                  duration: const Duration(milliseconds: 200),
-                  child: _buildEditor(currentLayout, onSave),
-                ),
-              )),
-            ),
-          ],
-        ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                      child: _ElegantSegmentedControl(
+                        options: const [
+                          (title: "Horizontal", icon: Icon(Icons.swap_horiz_rounded, size: 18)),
+                          (title: "Vertical", icon: Icon(Icons.swap_vert_rounded, size: 18)),
+                        ],
+                        selectedIndex: _isVertical ? 1 : 0,
+                        onChanged: (index) {
+                          final val = index == 1;
+                          setState(() => _isVertical = val);
+                          _repo.saveActiveIsVertical(val);
+                          _readerController.activeTapIsVertical.value = val;
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Obx(() => AnymeXTile.toggle(
+                        icon: Icons.touch_app_rounded,
+                        title: "Enable Tap Zones",
+                        subtitle: "Use custom gestures for reader navigation",
+                        value: _readerController.tapZonesEnabled.value,
+                        onChanged: (val) => _readerController.toggleTapZones(val),
+                      )),
+                    ),
+                    Expanded(
+                      child: Obx(() => IgnorePointer(
+                        ignoring: !_readerController.tapZonesEnabled.value,
+                        child: AnimatedOpacity(
+                          opacity: _readerController.tapZonesEnabled.value ? 1.0 : 0.4,
+                          duration: const Duration(milliseconds: 200),
+                          child: _buildEditor(currentLayout, onSave),
+                        ),
+                      )),
+                    ),
+                  ],
+                )
       ),
     );
   }
@@ -198,7 +169,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Text(
+          child: AnymeXText(
             "Tap a zone to change its action",
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey,
@@ -281,7 +252,7 @@ class VisualZoneEditor extends StatelessWidget {
                   children: [
                     Icon(Icons.touch_app_rounded, color: theme.colorScheme.primary, size: 22),
                     const SizedBox(width: 12),
-                    Text(
+                    AnymeXText(
                       "Tap Action",
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
@@ -311,7 +282,7 @@ class VisualZoneEditor extends StatelessWidget {
                         _getActionIcon(action),
                         color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                       ),
-                      title: Text(
+                      title: AnymeXText(
                         action.displayName,
                         style: TextStyle(
                           color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
@@ -426,7 +397,7 @@ class VisualZoneEditor extends StatelessWidget {
                           const SizedBox(height: 10),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
+                            child: AnymeXText(
                               zone.action.displayName,
                               textAlign: TextAlign.center,
                               style: TextStyle(
@@ -553,7 +524,7 @@ class _ElegantSegmentedControl extends StatelessWidget {
                                     ? Theme.of(context).colorScheme.onPrimary 
                                     : Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
                               ),
-                              child: Text(item.title),
+                              child: AnymeXText(item.title),
                             ),
                           ],
                         ),

@@ -12,7 +12,7 @@ import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +67,7 @@ Future<void> snackString(
       final snackBar = SnackBar(
         content: GestureDetector(
           onTap: () => ScaffoldMessenger.of(context).hideCurrentSnackBar(),
-          child: Text(
+          child: AnymeXText(
             s,
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -81,7 +81,7 @@ Future<void> snackString(
         backgroundColor: theme.surface,
         behavior: SnackBarBehavior.floating,
         margin: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+          bottom: MediaQuery.viewInsetsOf(context).bottom + 32,
           left: 32,
           right: 32,
         ),
@@ -181,8 +181,6 @@ class ChapterRecognition {
 }
 
 Episode DEpisodeToEpisode(DEpisode chapter) {
-  // var episodeNumber = ChapterRecognition.parseChapterNumber(
-  //     selectedMedia?.title ?? '', chapter.name ?? '');
   return Episode(
     number: chapter.episodeNumber,
     link: chapter.url,
@@ -192,6 +190,7 @@ Episode DEpisodeToEpisode(DEpisode chapter) {
     thumbnail: chapter.thumbnail,
     desc: chapter.description,
     filler: chapter.filler,
+    dateUpload: chapter.dateUpload,
   );
 }
 
@@ -247,7 +246,6 @@ String dateFormatHour(String timestamp) {
 
 List<Chapter> DEpisodeToChapter(List<DEpisode> chapters, String title) {
   return chapters.map((e) {
-    print(e.toJson());
     return Chapter(
       title: e.name,
       link: e.url,
@@ -569,37 +567,48 @@ List<TrackedMedia> filterListByStatus(
 List<TrackedMedia> filterListByLabel(
     List<TrackedMedia> animeList, String label) {
   return animeList.where((anime) {
-    if (label == "Continue Watching" && anime.watchingStatus == 'CURRENT') {
+    if ((label == "Continue Watching" ||
+            label == "Continue Watching (Movies)" ||
+            label == "Continue Watching (Shows)") &&
+        anime.watchingStatus == 'CURRENT') {
       return true;
     }
     if (label == "Continue Reading" && anime.watchingStatus == 'CURRENT') {
       return true;
     }
-    if (label == "Completed TV" && anime.watchingStatus == 'COMPLETED') {
+    if ((label == "Completed TV" || label == "Completed Movies") &&
+        anime.watchingStatus == 'COMPLETED') {
       return true;
     }
-    if (label == "Completed Manga" && anime.watchingStatus == 'COMPLETED') {
+    if ((label == "Completed Manga" || label == "Completed Shows") &&
+        anime.watchingStatus == 'COMPLETED') {
       return true;
     }
     if (label == "Completed Movie" && anime.watchingStatus == 'COMPLETED') {
       return true;
     }
-    if (label == "Paused Animes" && anime.watchingStatus == 'PAUSED') {
+    if ((label == "Paused Animes" || label == "Paused Movies") &&
+        anime.watchingStatus == 'PAUSED') {
       return true;
     }
-    if (label == "Paused Manga" && anime.watchingStatus == 'PAUSED') {
+    if ((label == "Paused Manga" || label == "Paused Shows") &&
+        anime.watchingStatus == 'PAUSED') {
       return true;
     }
-    if (label == "Dropped Animes" && anime.watchingStatus == 'DROPPED') {
+    if ((label == "Dropped Animes" || label == "Dropped Movies") &&
+        anime.watchingStatus == 'DROPPED') {
       return true;
     }
-    if (label == "Dropped Manga" && anime.watchingStatus == 'DROPPED') {
+    if ((label == "Dropped Manga" || label == "Dropped Shows") &&
+        anime.watchingStatus == 'DROPPED') {
       return true;
     }
-    if (label == "Planning Animes" && anime.watchingStatus == 'PLANNING') {
+    if ((label == "Planning Animes" || label == "Planning Movies") &&
+        anime.watchingStatus == 'PLANNING') {
       return true;
     }
-    if (label == "Planning Manga" && anime.watchingStatus == 'PLANNING') {
+    if ((label == "Planning Manga" || label == "Planning Shows") &&
+        anime.watchingStatus == 'PLANNING') {
       return true;
     }
     if (label == "Rewatching Animes" && anime.watchingStatus == 'REPEATING') {
@@ -631,6 +640,10 @@ Future<bool> isTv() async {
 
 Future<void> navigate(dynamic page) async {
   await Navigator.push(Get.context!, MaterialPageRoute(builder: (c) => page()));
+}
+
+Future<void> navigateWithAnimation(dynamic page) async {
+  navigate(page);
 }
 
 Future<void> navigateWithSlide(dynamic page) async {
@@ -715,8 +728,7 @@ Widget buildNewsSection(BuildContext context, List<NewsItem> news) {
             child: Row(
               children: [
                 Expanded(
-                  child: AnymexText(
-                    text: decodedTitle,
+                  child: AnymeXText(decodedTitle,
                     size: 13,
                     maxLines: 2,
                     variant: TextVariant.semiBold,

@@ -9,8 +9,10 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
     
     <!-- New permissions for downloading and installing APKs -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
@@ -37,6 +39,8 @@
         android:icon="@mipmap/ic_launcher"
         android:banner="@mipmap/tv_banner" 
         android:requestLegacyExternalStorage="true" 
+        android:largeHeap="true"
+        android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true">
         
         <activity android:name=".MainActivity" 
@@ -44,6 +48,7 @@
             android:launchMode="singleTop" 
             android:taskAffinity="" 
             android:theme="@style/LaunchTheme" 
+            android:supportsPictureInPicture="true"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" 
             android:hardwareAccelerated="true" 
             android:windowSoftInputMode="adjustResize">
@@ -146,6 +151,13 @@
             <data android:host="mal" />
             <data android:pathPrefix="/anime/" />
             <data android:pathPrefix="/manga/" />
+        </intent-filter>
+
+        <intent-filter android:label="Watch Together Join">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="anymex" android:host="watchium" android:pathPrefix="/join/" />
         </intent-filter>
 
         <intent-filter android:label="Open Simkl Link">

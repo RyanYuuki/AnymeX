@@ -4,10 +4,10 @@ import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/watch_order_util.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 
@@ -67,23 +67,21 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Watch Order'),
             Expanded(
               child: Builder(
                 builder: (context) {
                   if (isLoading) {
-                    return const Center(child: AnymexProgressIndicator());
+                    return const Center(child: AnymeXProgressIndicator());
                   }
                   if (error != null) {
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
-                        child: AnymexText(
-                          text: error!,
+                        child: AnymeXText(error!,
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -91,7 +89,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                   }
                   if (watchOrder.isEmpty) {
                     return const Center(
-                        child: AnymexText(text: "No watch order found."));
+                        child: AnymeXText("No watch order found."));
                   }
 
                   return ListView.builder(
@@ -110,9 +108,8 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
               ),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildTimelineItem(
@@ -140,7 +137,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                   ],
                 ),
                 alignment: Alignment.center,
-                child: Text(
+                child: AnymeXText(
                   "$index",
                   style: TextStyle(
                     color: colorScheme.onPrimary,
@@ -200,11 +197,18 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
         child: Row(
           children: [
             if (item.image.isNotEmpty)
-              AnymeXImage(
-                imageUrl: item.image,
-                width: 100,
-                height: double.infinity,
-                fit: BoxFit.cover,
+              Hero(
+                tag: "wo-${item.id}",
+                transitionOnUserGestures: true,
+                flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
+                child: AnymeXImage(
+                  imageUrl: item.image,
+                  width: 100,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
+                ),
               ),
             Expanded(
               child: Padding(
@@ -222,15 +226,13 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                           color: colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: AnymexText(
-                          text: item.relationType.toUpperCase(),
+                        child: AnymeXText(item.relationType.toUpperCase(),
                           size: 9,
                           color: colorScheme.onPrimaryContainer,
                           variant: TextVariant.bold,
                         ),
                       ),
-                    AnymexText(
-                      text: item.nameEnglish ?? item.name,
+                    AnymeXText(item.nameEnglish ?? item.name,
                       variant: TextVariant.bold,
                       size: 15,
                       maxLines: 1,
@@ -241,8 +243,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                         item.nameEnglish!.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
-                        child: AnymexText(
-                          text: item.name,
+                        child: AnymeXText(item.name,
                           size: 11,
                           color: colorScheme.onSurfaceVariant,
                           maxLines: 1,
@@ -269,8 +270,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                     ),
                     const SizedBox(height: 8),
                     if (item.rating.isNotEmpty)
-                      AnymexText(
-                        text: (item.rating),
+                      AnymeXText((item.rating),
                         size: 12,
                         variant: TextVariant.semiBold,
                         color: colorScheme.onSurface,
@@ -296,7 +296,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
       children: [
         Icon(icon, size: 12, color: color),
         const SizedBox(width: 4),
-        Text(
+        AnymeXText(
           text.toUpperCase(),
           style: TextStyle(
             fontSize: 10,

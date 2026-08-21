@@ -14,17 +14,16 @@ class BufferingOverlay extends StatelessWidget {
       final visible = controller.isBuffering.value &&
           (!controller.showControls.value || controller.isLocked.value);
 
-      return IgnorePointer(
+      if (!visible) {
+        return const SizedBox.shrink();
+      }
+      return const IgnorePointer(
         ignoring: true,
         child: Center(
-          child: AnimatedOpacity(
-            opacity: visible ? 1.0 : 0.0,
-            duration: controller.overlayAnimationDuration(150),
-            child: const SizedBox(
-              width: 32,
-              height: 32,
-              child: ExpressiveLoadingIndicator(),
-            ),
+          child: SizedBox(
+            width: 32,
+            height: 32,
+            child: ExpressiveLoadingIndicator(),
           ),
         ),
       );

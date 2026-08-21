@@ -3,12 +3,12 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/player_control_themes/netflix_shared.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme.dart';
-import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+
 
 class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
   @override
@@ -60,7 +60,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10.0),
-                        child: Obx(() => Text(
+                        child: Obx(() => AnymeXText(
                               buildNFTitle(controller),
                               textAlign: TextAlign.center,
                               maxLines: 2,
@@ -193,7 +193,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Row(
                             children: [
-                              Obx(() => Text(
+                              Obx(() => AnymeXText(
                                     controller.formattedCurrentPosition,
                                     style: const TextStyle(
                                       color: NFColors.white,
@@ -224,7 +224,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                                 final formatted = remaining.inHours > 0
                                     ? "${twoDigits(remaining.inHours)}:$mm:$ss"
                                     : "$mm:$ss";
-                                return Text(
+                                return AnymeXText(
                                   remaining.inSeconds > 0
                                       ? "-$formatted"
                                       : "00:00",
@@ -249,14 +249,14 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               NFLabeledButton(
-                                icon: Symbols.playlist_play_rounded,
+                                icon: Icons.playlist_play_rounded,
                                 label: 'Episodes',
                                 onTap: () =>
                                     controller.isEpisodePaneOpened.value =
                                         !controller.isEpisodePaneOpened.value,
                               ),
                               NFLabeledButton(
-                                icon: Symbols.subtitles_rounded,
+                                icon: Icons.subtitles_rounded,
                                 label: 'Audio & Subtitles',
                                 onTap: () =>
                                     controller.isTracksPaneOpened.value =

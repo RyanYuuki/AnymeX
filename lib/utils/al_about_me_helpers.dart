@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnilistSpoilerWidget extends StatefulWidget {
   final Widget child;
@@ -48,7 +49,7 @@ class _AnilistSpoilerWidgetState extends State<AnilistSpoilerWidget> {
                 color: context.theme.colorScheme.onSurfaceVariant
                     .withOpacity(0.7)),
             const SizedBox(width: 8),
-            Text(
+            AnymeXText(
               'Spoiler \u2014 tap to reveal',
               style: TextStyle(
                 fontSize: 13,
@@ -141,6 +142,7 @@ class _AnilistYouTubePlayerState extends State<AnilistYouTubePlayer> {
 ''',
                 ),
                 initialSettings: InAppWebViewSettings(
+                  useHybridComposition: false,
                   mediaPlaybackRequiresUserGesture: false,
                   allowsInlineMediaPlayback: true,
                   iframeAllowFullscreen: true,
@@ -254,14 +256,14 @@ class AnilistExternalTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AnymeXText(
                     title,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       color: context.theme.colorScheme.onSurface,
                     ),
                   ),
-                  Text(
+                  AnymeXText(
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
@@ -357,6 +359,7 @@ class _AnilistWebmPlayerState extends State<AnilistWebmPlayer> {
                   encoding: 'utf-8',
                 ),
                 initialSettings: InAppWebViewSettings(
+                  useHybridComposition: false,
                   transparentBackground: true,
                   mediaPlaybackRequiresUserGesture: false,
                   allowsInlineMediaPlayback: true,

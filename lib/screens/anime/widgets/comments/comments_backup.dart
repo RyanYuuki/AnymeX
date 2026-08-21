@@ -1,10 +1,11 @@
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+
 // import 'package:anymex/database/model/comment.dart';
 // import 'package:anymex/models/Media/media.dart';
 // import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 // import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 // import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 // import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 // import 'package:get/get.dart';
 // import 'package:timeago/timeago.dart' as timeago;
 
@@ -122,7 +123,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //           child: Row(
 //             children: [
 //               Expanded(
-//                 child: Text(
+//                 child: AnymeXText(
 //                   'Comments',
 //                   style: theme.textTheme.headlineSmall?.copyWith(
 //                     fontWeight: FontWeight.w700,
@@ -131,7 +132,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                   ),
 //                 ),
 //               ),
-//               Text(
+//               AnymeXText(
 //                 _getTotalCommentCount(controller.comments),
 //                 style: theme.textTheme.bodyMedium?.copyWith(
 //                   color: colorScheme.onSurfaceVariant,
@@ -266,7 +267,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                           borderRadius: BorderRadius.circular(12),
 //                         ),
 //                       ),
-//                       child: const Text(
+//                       child: const AnymeXText(
 //                         'Cancel',
 //                         style: TextStyle(fontWeight: FontWeight.w600),
 //                       ),
@@ -295,7 +296,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                               height: 18,
 //                               child: ExpressiveLoadingIndicator(),
 //                             )
-//                           : const Text(
+//                           : const AnymeXText(
 //                               'Post',
 //                               style: TextStyle(
 //                                 fontWeight: FontWeight.w700,
@@ -325,7 +326,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //       return Column(
 //         crossAxisAlignment: CrossAxisAlignment.start,
 //         children: [
-//           Text(
+//           AnymeXText(
 //             'Tag',
 //             style: theme.textTheme.bodySmall?.copyWith(
 //               color: colorScheme.onSurfaceVariant,
@@ -360,7 +361,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                       width: 1.5,
 //                     ),
 //                   ),
-//                   child: Text(
+//                   child: AnymeXText(
 //                     t,
 //                     style: TextStyle(
 //                       color: isSelected
@@ -441,7 +442,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //             size: 14,
 //           ),
 //           const SizedBox(width: 6),
-//           Text(
+//           AnymeXText(
 //             tag,
 //             style: TextStyle(
 //               color: colorScheme.primary,
@@ -510,7 +511,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                   color: colorScheme.primary,
 //                 ),
 //                 const SizedBox(height: 20),
-//                 Text(
+//                 AnymeXText(
 //                   'Loading comments...',
 //                   style: TextStyle(
 //                     color: colorScheme.onSurfaceVariant,
@@ -543,7 +544,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                 ),
 //               ),
 //               const SizedBox(height: 20),
-//               Text(
+//               AnymeXText(
 //                 'No comments yet',
 //                 style: theme.textTheme.titleLarge?.copyWith(
 //                   color: colorScheme.onSurface,
@@ -551,7 +552,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                 ),
 //               ),
 //               const SizedBox(height: 8),
-//               Text(
+//               AnymeXText(
 //                 'Start the conversation and share your thoughts!',
 //                 style: theme.textTheme.bodyMedium?.copyWith(
 //                   color: colorScheme.onSurfaceVariant,
@@ -658,7 +659,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                       color: colorScheme.surfaceContainerLow,
 //                       borderRadius: BorderRadius.circular(8),
 //                     ),
-//                     child: Text(
+//                     child: AnymeXText(
 //                       '${comment.replies!.length} replies',
 //                       style: theme.textTheme.bodySmall?.copyWith(
 //                         color: colorScheme.onSurfaceVariant,
@@ -749,7 +750,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //             children: [
 //               Row(
 //                 children: [
-//                   Text(
+//                   AnymeXText(
 //                     comment.username,
 //                     style: theme.textTheme.bodyMedium?.copyWith(
 //                       fontWeight: FontWeight.w700,
@@ -767,7 +768,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                     ),
 //                   ),
 //                   const SizedBox(width: 8),
-//                   Text(
+//                   AnymeXText(
 //                     timeago.format(DateTime.parse(comment.createdAt)),
 //                     style: theme.textTheme.bodySmall?.copyWith(
 //                       color: colorScheme.onSurfaceVariant,
@@ -780,7 +781,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                 ],
 //               ),
 //               const SizedBox(height: 12),
-//               Text(
+//               AnymeXText(
 //                 comment.commentText,
 //                 style: theme.textTheme.bodyLarge?.copyWith(
 //                   color: colorScheme.onSurface,
@@ -893,7 +894,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //     showDialog(
 //       context: context,
 //       builder: (context) => AlertDialog(
-//         title: const Text('Edit Comment'),
+//         title: const AnymeXText('Edit Comment'),
 //         content: TextField(
 //           controller: editController,
 //           maxLines: 5,
@@ -906,7 +907,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //         actions: [
 //           TextButton(
 //             onPressed: () => Navigator.pop(context),
-//             child: const Text('Cancel'),
+//             child: const AnymeXText('Cancel'),
 //           ),
 //           FilledButton(
 //             onPressed: () {
@@ -915,7 +916,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                 Navigator.pop(context);
 //               }
 //             },
-//             child: const Text('Save'),
+//             child: const AnymeXText('Save'),
 //           ),
 //         ],
 //       ),
@@ -927,13 +928,13 @@ import 'package:anymex/utils/theme_extensions.dart';
 //     showDialog(
 //       context: context,
 //       builder: (context) => AlertDialog(
-//         title: const Text('Delete Comment'),
-//         content: const Text(
+//         title: const AnymeXText('Delete Comment'),
+//         content: const AnymeXText(
 //             'Are you sure you want to delete this comment? This action cannot be undone.'),
 //         actions: [
 //           TextButton(
 //             onPressed: () => Navigator.pop(context),
-//             child: const Text('Cancel'),
+//             child: const AnymeXText('Cancel'),
 //           ),
 //           FilledButton(
 //             onPressed: () {
@@ -944,7 +945,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //               backgroundColor: context.colors.error,
 //               foregroundColor: context.colors.onError,
 //             ),
-//             child: const Text('Delete'),
+//             child: const AnymeXText('Delete'),
 //           ),
 //         ],
 //       ),
@@ -978,11 +979,11 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                     child: Column(
 //                       crossAxisAlignment: CrossAxisAlignment.start,
 //                       children: [
-//                         Text(
+//                         AnymeXText(
 //                           comment.username,
 //                           style: const TextStyle(fontWeight: FontWeight.bold),
 //                         ),
-//                         Text(
+//                         AnymeXText(
 //                           'ID: ${comment.id}',
 //                           style: TextStyle(
 //                             fontSize: 12,
@@ -999,7 +1000,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //             const Divider(),
 //             ListTile(
 //               leading: const Icon(Icons.push_pin_outlined),
-//               title: const Text('Pin Comment'),
+//               title: const AnymeXText('Pin Comment'),
 //               onTap: () {
 //                 Navigator.pop(context);
 //                 controller.moderateComment(
@@ -1011,7 +1012,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //             ),
 //             ListTile(
 //               leading: const Icon(Icons.lock_outlined),
-//               title: const Text('Lock Thread'),
+//               title: const AnymeXText('Lock Thread'),
 //               onTap: () {
 //                 Navigator.pop(context);
 //                 controller.moderateComment(
@@ -1023,7 +1024,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //             ),
 //             ListTile(
 //               leading: const Icon(Icons.delete_outlined),
-//               title: const Text('Delete Comment'),
+//               title: const AnymeXText('Delete Comment'),
 //               onTap: () {
 //                 Navigator.pop(context);
 //                 controller.moderateComment(
@@ -1035,7 +1036,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //             ),
 //             ListTile(
 //               leading: const Icon(Icons.person_off_outlined),
-//               title: const Text('Manage User'),
+//               title: const AnymeXText('Manage User'),
 //               onTap: () {
 //                 Navigator.pop(context);
 //                 _showUserManagementDialog(context, comment, controller);
@@ -1055,11 +1056,11 @@ import 'package:anymex/utils/theme_extensions.dart';
 //     showDialog(
 //       context: context,
 //       builder: (context) => AlertDialog(
-//         title: Text('Manage User: ${comment.username}'),
+//         title: AnymeXText('Manage User: ${comment.username}'),
 //         content: Column(
 //           mainAxisSize: MainAxisSize.min,
 //           children: [
-//             const Text('Select action:'),
+//             const AnymeXText('Select action:'),
 //             const SizedBox(height: 16),
 //             DropdownButtonFormField<String>(
 //               value: selectedAction,
@@ -1068,9 +1069,9 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                 border: OutlineInputBorder(),
 //               ),
 //               items: const [
-//                 DropdownMenuItem(value: 'warn_user', child: Text('Warn User')),
-//                 DropdownMenuItem(value: 'mute_user', child: Text('Mute User')),
-//                 DropdownMenuItem(value: 'ban_user', child: Text('Ban User')),
+//                 DropdownMenuItem(value: 'warn_user', child: AnymeXText('Warn User')),
+//                 DropdownMenuItem(value: 'mute_user', child: AnymeXText('Mute User')),
+//                 DropdownMenuItem(value: 'ban_user', child: AnymeXText('Ban User')),
 //               ],
 //               onChanged: (value) {
 //                 selectedAction = value!;
@@ -1089,7 +1090,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //         actions: [
 //           TextButton(
 //             onPressed: () => Navigator.pop(context),
-//             child: const Text('Cancel'),
+//             child: const AnymeXText('Cancel'),
 //           ),
 //           FilledButton(
 //             onPressed: () {
@@ -1102,7 +1103,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                 Navigator.pop(context);
 //               }
 //             },
-//             child: const Text('Apply'),
+//             child: const AnymeXText('Apply'),
 //           ),
 //         ],
 //       ),
@@ -1116,7 +1117,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //   //   showDialog(
 //   //     context: context,
 //   //     builder: (context) => AlertDialog(
-//   //       title: Text('Reply to ${comment.username}'),
+//   //       title: AnymeXText('Reply to ${comment.username}'),
 //   //       content: Column(
 //   //         mainAxisSize: MainAxisSize.min,
 //   //         children: [
@@ -1132,12 +1133,12 @@ import 'package:anymex/utils/theme_extensions.dart';
 //   //             child: Column(
 //   //               crossAxisAlignment: CrossAxisAlignment.start,
 //   //               children: [
-//   //                 Text(
+//   //                 AnymeXText(
 //   //                   comment.username,
 //   //                   style: const TextStyle(fontWeight: FontWeight.bold),
 //   //                 ),
 //   //                 const SizedBox(height: 4),
-//   //                 Text(
+//   //                 AnymeXText(
 //   //                   comment.commentText,
 //   //                   style: TextStyle(
 //   //                     color: context.colors.onSurfaceVariant,
@@ -1164,7 +1165,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //   //       actions: [
 //   //         TextButton(
 //   //           onPressed: () => Navigator.pop(context),
-//   //           child: const Text('Cancel'),
+//   //           child: const AnymeXText('Cancel'),
 //   //         ),
 //   //         FilledButton(
 //   //           onPressed: () {
@@ -1173,7 +1174,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //   //               Navigator.pop(context);
 //   //             }
 //   //           },
-//   //           child: const Text('Reply'),
+//   //           child: const AnymeXText('Reply'),
 //   //         ),
 //   //       ],
 //   //     ),
@@ -1188,11 +1189,11 @@ import 'package:anymex/utils/theme_extensions.dart';
 //     showDialog(
 //       context: context,
 //       builder: (context) => AlertDialog(
-//         title: const Text('Report Comment'),
+//         title: const AnymeXText('Report Comment'),
 //         content: Column(
 //           mainAxisSize: MainAxisSize.min,
 //           children: [
-//             const Text('Please select a reason for reporting this comment:'),
+//             const AnymeXText('Please select a reason for reporting this comment:'),
 //             const SizedBox(height: 16),
 //             DropdownButtonFormField<String>(
 //               value:
@@ -1202,17 +1203,17 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                 border: OutlineInputBorder(),
 //               ),
 //               items: const [
-//                 DropdownMenuItem(value: 'spam', child: Text('Spam')),
+//                 DropdownMenuItem(value: 'spam', child: AnymeXText('Spam')),
 //                 DropdownMenuItem(
 //                     value: 'inappropriate',
-//                     child: Text('Inappropriate Content')),
+//                     child: AnymeXText('Inappropriate Content')),
 //                 DropdownMenuItem(
-//                     value: 'harassment', child: Text('Harassment')),
+//                     value: 'harassment', child: AnymeXText('Harassment')),
 //                 DropdownMenuItem(
-//                     value: 'offensive', child: Text('Offensive Language')),
+//                     value: 'offensive', child: AnymeXText('Offensive Language')),
 //                 DropdownMenuItem(
-//                     value: 'misinformation', child: Text('Misinformation')),
-//                 DropdownMenuItem(value: 'other', child: Text('Other')),
+//                     value: 'misinformation', child: AnymeXText('Misinformation')),
+//                 DropdownMenuItem(value: 'other', child: AnymeXText('Other')),
 //               ],
 //               onChanged: (value) {
 //                 reasonController.text = value ?? '';
@@ -1232,7 +1233,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //         actions: [
 //           TextButton(
 //             onPressed: () => Navigator.pop(context),
-//             child: const Text('Cancel'),
+//             child: const AnymeXText('Cancel'),
 //           ),
 //           FilledButton(
 //             onPressed: () {
@@ -1242,7 +1243,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //                 Navigator.pop(context);
 //               }
 //             },
-//             child: const Text('Report'),
+//             child: const AnymeXText('Report'),
 //           ),
 //         ],
 //       ),
@@ -1262,7 +1263,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //           width: 1,
 //         ),
 //       ),
-//       child: Text(
+//       child: AnymeXText(
 //         tag,
 //         style: TextStyle(
 //           color: colorScheme.primary,
@@ -1314,7 +1315,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 //               ),
 //               if (count > 0) ...[
 //                 const SizedBox(width: 6),
-//                 Text(
+//                 AnymeXText(
 //                   count.toString(),
 //                   style: TextStyle(
 //                     color: isActive ? activeColor : colorScheme.onSurface,

@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:anymex/utils/abi_checker.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:dio/dio.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -33,6 +36,20 @@ class UpdateManager {
     return '';
   }
 
+  void showTestUpdateSheet(BuildContext context) {
+    _showUpdateBottomSheet(
+      context,
+      '1.2.0',
+      '1.3.0',
+      '### What\'s New in v1.3.0\n'
+          '- **Universal Video Casting**: Cast videos to Smart TVs, Chromecast, and PCs.\n',
+      {
+        'android_arm64': 'https://github.com/RyanYuuki/AnymeX/releases',
+        'android_universal': 'https://github.com/RyanYuuki/AnymeX/releases',
+      },
+    );
+  }
+
   Future<void> checkForUpdates(
     BuildContext context,
     RxBool canShowUpdate, {
@@ -46,11 +63,11 @@ class UpdateManager {
         final latestRelease = await _fetchLatestRelease(isBeta: isBeta);
 
         if (latestRelease == null) {
-          snackBar("Failed to check for updates");
+          Logger.i("Failed to check for updates");
           return;
         }
 
-        final assets = latestRelease['assets'];
+        final assets = latestRelease['assets'] ?? [];
 
         Map<String, String> downloadUrls = {
           'android_arm64': getDownloadUrlByArch(assets, 'arm64'),
@@ -61,13 +78,13 @@ class UpdateManager {
           'linux': getDownloadUrlByArch(assets, '.AppImage'),
         };
 
-        if (_shouldUpdate(currentVersion, latestRelease['tag_name'],
+        if (_shouldUpdate(currentVersion, latestRelease['tag_name'] ?? '',
             isBeta: isBeta)) {
           _showUpdateBottomSheet(
             context,
             currentVersion,
-            latestRelease['tag_name'],
-            latestRelease['body'],
+            latestRelease['tag_name'] ?? '',
+            latestRelease['body'] ?? '',
             downloadUrls,
           );
         } else {
@@ -75,10 +92,7 @@ class UpdateManager {
         }
       } catch (e) {
         debugPrint('Error checking for updates: $e');
-        snackBar("Error checking for updates: ${e.toString()}");
       }
-    } else {
-      snackBar("Skipping Update Popup");
     }
   }
 
@@ -150,8 +164,22 @@ class UpdateManager {
     bool isBeta = false,
   }) async {
     try {
-      final url = isBeta ? _betaRepoUrl : _stableRepoUrl;
+      if (isBeta) {
+        const betaReleasesListUrl =
+            'https://api.github.com/repos/Shebyyy/AnymeX-Preview/releases';
+        final response = await http.get(
+          Uri.parse(betaReleasesListUrl),
+          headers: {'Accept': 'application/vnd.github.v3+json'},
+        );
+        if (response.statusCode == 200) {
+          final List<dynamic> list = json.decode(response.body);
+          if (list.isNotEmpty) {
+            return list.first as Map<String, dynamic>;
+          }
+        }
+      }
 
+      final url = isBeta ? _betaRepoUrl : _stableRepoUrl;
       final response = await http.get(
         Uri.parse(url),
         headers: {'Accept': 'application/vnd.github.v3+json'},
@@ -159,8 +187,6 @@ class UpdateManager {
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
-      } else {
-        Logger.i('Failed to fetch latest release: ${response.statusCode}');
       }
     } catch (e) {
       debugPrint('Error fetching latest release: $e');
@@ -175,24 +201,15 @@ class UpdateManager {
     String changelog,
     Map<String, String> downloadUrls,
   ) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      enableDrag: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.75,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        expand: false,
-        builder: (context, scrollController) => UpdateBottomSheet(
-          currentVersion: currentVersion,
-          newVersion: newVersion,
-          changelog: changelog,
-          scrollController: scrollController,
-          downloadUrls: downloadUrls,
-        ),
+    AnymeXSheet.custom(
+      UpdateBottomSheet(
+        currentVersion: currentVersion,
+        newVersion: newVersion,
+        changelog: changelog,
+        downloadUrls: downloadUrls,
       ),
+      context,
+      showDragHandle: true,
     );
   }
 }
@@ -201,7 +218,6 @@ class UpdateBottomSheet extends StatefulWidget {
   final String currentVersion;
   final String newVersion;
   final String changelog;
-  final ScrollController scrollController;
   final Map<String, String> downloadUrls;
 
   const UpdateBottomSheet({
@@ -209,7 +225,6 @@ class UpdateBottomSheet extends StatefulWidget {
     required this.currentVersion,
     required this.newVersion,
     required this.changelog,
-    required this.scrollController,
     required this.downloadUrls,
   });
 
@@ -234,7 +249,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
     )..repeat(reverse: true);
 
     _pulseAnimation = Tween<double>(
-      begin: 0.8,
+      begin: 0.85,
       end: 1.0,
     ).animate(CurvedAnimation(
       parent: _pulseController,
@@ -384,12 +399,12 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       context: context,
       builder: (context) => AlertDialog(
         icon: const Icon(Icons.error_outline, size: 32, color: Colors.red),
-        title: const Text('Download Failed'),
-        content: Text(message),
+        title: const AnymeXText('Download Failed'),
+        content: AnymeXText(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const AnymeXText('OK'),
           )
         ],
       ),
@@ -405,9 +420,9 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
           color: context.colors.primary,
           size: 32,
         ),
-        title: Text(
+        title: AnymeXText(
             Platform.isAndroid ? 'Installation Started' : 'Download Complete'),
-        content: Text(
+        content: AnymeXText(
           Platform.isAndroid
               ? 'Please follow installation prompts.'
               : 'Installer saved to:\n${filePath ?? 'Downloads'}',
@@ -418,7 +433,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text('OK'),
+            child: const AnymeXText('OK'),
           )
         ],
       ),
@@ -430,190 +445,236 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // HEADER
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  colorScheme.primaryContainer,
-                  colorScheme.secondaryContainer,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            AnimatedBuilder(
+              animation: _pulseAnimation,
+              builder: (context, child) => Transform.scale(
+                scale: _pulseAnimation.value,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer.opaque(0.6),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: colorScheme.primary.opaque(0.3)),
+                  ),
+                  child: Icon(
+                    Icons.system_update_rounded,
+                    size: 26,
+                    color: colorScheme.primary,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const AnymeXText("New Version Available",
+                    variant: TextVariant.bold,
+                    size: 18,
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: AnymeXText(
+                          "v${widget.currentVersion}",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 6),
+                        child: Icon(Icons.arrow_forward_rounded, size: 14),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.opaque(0.15),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: colorScheme.primary.opaque(0.3)),
+                        ),
+                        child: AnymeXText(
+                          "v${widget.newVersion}",
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Icon(Icons.auto_awesome_rounded,
+                color: colorScheme.primary, size: 18),
+            const SizedBox(width: 8),
+            const AnymeXText("What's New",
+              variant: TextVariant.bold,
+              size: 15,
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(maxHeight: 240),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: colorScheme.surfaceContainerHigh.opaque(0.5),
+            border: Border.all(
+              color: colorScheme.outline.opaque(0.15),
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: MarkdownBody(
+              data: widget.changelog,
+              selectable: true,
+              styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                p: TextStyle(fontSize: 13, color: colorScheme.onSurface),
+                h3: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.primary),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        if (_isDownloading) ...[
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer.opaque(0.25),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: colorScheme.primary.opaque(0.3),
+              ),
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnimatedBuilder(
-                  animation: _pulseAnimation,
-                  builder: (context, child) => Transform.scale(
-                    scale: _pulseAnimation.value,
-                    child: Icon(
-                      Icons.system_update,
-                      size: 48,
-                      color: colorScheme.primary,
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: ExpressiveLoadingIndicator(
+                        color: colorScheme.primary,
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  "Update Available",
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary.opaque(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    "v${widget.currentVersion} → ${widget.newVersion}",
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.primary,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: AnymeXText(
+                        _downloadStatus,
+                        style: const TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w500),
+                      ),
                     ),
+                    AnymeXText(
+                      '${(_downloadProgress * 100).toInt()}%',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                    value: _downloadProgress,
+                    minHeight: 6,
+                    backgroundColor: colorScheme.surfaceContainerHighest,
+                    valueColor: AlwaysStoppedAnimation(colorScheme.primary),
                   ),
                 ),
               ],
             ),
           ),
-
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.new_releases,
-                          color: colorScheme.primary, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        "What's New",
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // CHANGELOG
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: colorScheme.surfaceContainerHigh,
-                        border: Border.all(
-                          color: colorScheme.outline.opaque(0.2),
-                        ),
-                      ),
-                      child: Markdown(
-                        controller: widget.scrollController,
-                        data: widget.changelog,
-                        selectable: true,
-                      ),
+          const SizedBox(height: 16),
+        ],
+        Row(
+          children: [
+            Expanded(
+              child: AnymeXContainerButton(
+                onTap: _isDownloading ? null : () => Navigator.pop(context),
+                height: 48,
+                borderRadius: BorderRadius.circular(16),
+                border: BorderSide(color: colorScheme.outline.opaque(0.2)),
+                child: Center(
+                  child: AnymeXText(
+                    "Later",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onSurface,
                     ),
                   ),
-
-                  const SizedBox(height: 24),
-
-                  // DOWNLOAD STATUS
-                  if (_isDownloading) ...[
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer.opaque(0.3),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: colorScheme.primary.opaque(0.3),
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: ExpressiveLoadingIndicator(
-                                  color: colorScheme.primary,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(child: Text(_downloadStatus)),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: _downloadProgress,
-                              minHeight: 6,
-                              backgroundColor:
-                                  colorScheme.surfaceContainerHighest,
-                              valueColor: AlwaysStoppedAnimation(
-                                colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16)
-                  ],
-
-                  // ACTION BUTTONS
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: _isDownloading
-                              ? null
-                              : () => Navigator.pop(context),
-                          child: const Text("Later"),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        flex: 2,
-                        child: FilledButton(
-                          onPressed:
-                              _isDownloading ? null : _downloadAndInstall,
-                          child: Text(
-                            _isDownloading
-                                ? "Downloading..."
-                                : (Platform.isAndroid
-                                    ? "Download & Install"
-                                    : "Download"),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+            const SizedBox(width: 12),
+            Expanded(
+              flex: 2,
+              child: AnymeXContainerButton(
+                onTap: _isDownloading ? null : _downloadAndInstall,
+                height: 48,
+                color: colorScheme.primary,
+                borderRadius: BorderRadius.circular(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.download_rounded,
+                      size: 20,
+                      color: colorScheme.onPrimary,
+                    ),
+                    const SizedBox(width: 8),
+                    AnymeXText(
+                      _isDownloading
+                          ? "Downloading..."
+                          : (Platform.isAndroid
+                              ? "Download & Install"
+                              : "Download"),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

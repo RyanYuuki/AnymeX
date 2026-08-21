@@ -1,15 +1,11 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
-import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_chip.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/common/dynamic_style_selector.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 
 enum HistoryCardStyle { regular, blurred, bootiful }
 
@@ -31,25 +27,26 @@ void showHistoryCardStyleSelector(BuildContext context) {
     builder: (dialogContext) {
       return Obx(
         () {
-          return AnymexDialog(
-              padding: const EdgeInsets.all(10),
-              title: 'Card Style',
-              onConfirm: () {
-                settingsController.historyCardStyle = selectedStyle.value.index;
+          return AnymeXDialog(
+            padding: const EdgeInsets.all(10),
+            title: 'Card Style',
+            onConfirm: () {
+              settingsController.historyCardStyle = selectedStyle.value.index;
+            },
+            contentWidget: HistoryCardSelector(
+              onStyleChanged: (e) {
+                selectedStyle.value = e;
               },
-              contentWidget: HistoryCardSelector(
-                onStyleChanged: (e) {
-                  selectedStyle.value = e;
-                },
-                initialStyle: selectedStyle.value,
-              ));
+              initialStyle: selectedStyle.value,
+            ),
+          );
         },
       );
     },
   );
 }
 
-class HistoryCardSelector extends StatefulWidget {
+class HistoryCardSelector extends StatelessWidget {
   final Function(HistoryCardStyle) onStyleChanged;
   final HistoryCardStyle initialStyle;
 
@@ -59,89 +56,59 @@ class HistoryCardSelector extends StatefulWidget {
     required this.initialStyle,
   });
 
-  @override
-  State<HistoryCardSelector> createState() => _HistoryCardSelectorState();
-}
+  static final dummyData = HistoryModel(
+    title: 'Demon Slayer: Kimetsu no Yaiba',
+    cover: 'https://image.tmdb.org/t/p/w500/m9sWQLtoU1G5jdHOYUnykin0xxw.jpg',
+    poster:
+        'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101922-WBsBl0ClmgYL.jpg',
+    sourceName: 'Vumeto',
+    formattedEpisodeTitle: 'Episode 3',
+    progress: 243034,
+    totalProgress: 1420061,
+    progressTitle: 'Sabito and Makomo',
+    isManga: false,
+    calculatedProgress: 0.1711433522926128,
+    progressText: '19:37 left',
+    date: '2025-03-13',
+  );
 
-class _HistoryCardSelectorState extends State<HistoryCardSelector> {
-  late HistoryCardStyle _selectedStyle;
-  final dummyData = HistoryModel(
-      title: 'Demon Slayer: Kimetsu no Yaiba',
-      cover: 'https://image.tmdb.org/t/p/w500/m9sWQLtoU1G5jdHOYUnykin0xxw.jpg',
-      poster:
-          'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101922-WBsBl0ClmgYL.jpg',
-      sourceName: 'Vumeto',
-      formattedEpisodeTitle: 'Episode 3',
-      progress: 243034,
-      totalProgress: 1420061,
-      progressTitle: 'Sabito and Makomo',
-      isManga: false,
-      calculatedProgress: 0.1711433522926128,
-      progressText: '19:37 left',
-      date: '2025-03-13');
+  String _getStyleName(HistoryCardStyle style) {
+    switch (style) {
+      case HistoryCardStyle.regular:
+        return 'Regular';
+      case HistoryCardStyle.blurred:
+        return 'Frosted Glass';
+      case HistoryCardStyle.bootiful:
+        return 'Bootiful';
+    }
+  }
 
-  @override
-  void initState() {
-    super.initState();
-    _selectedStyle = widget.initialStyle;
+  String _getStyleDescription(HistoryCardStyle style) {
+    switch (style) {
+      case HistoryCardStyle.regular:
+        return 'Classic card layout showing media title, progress, and date details.';
+      case HistoryCardStyle.blurred:
+        return 'Frosted glass container overlay with soft background color elements.';
+      case HistoryCardStyle.bootiful:
+        return 'An immersive, premium poster-first card layout.';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 50,
-          child: SuperListView(
-            scrollDirection: Axis.horizontal,
-            children: HistoryCardStyle.values
-                .map((style) => Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: _buildStyleChip(style),
-                    ))
-                .toList(),
-          ),
+    return DynamicStyleSelector<HistoryCardStyle>(
+      values: HistoryCardStyle.values,
+      selectedValue: initialStyle,
+      getTitle: _getStyleName,
+      getDescription: _getStyleDescription,
+      buildPreview: (style) => SizedBox(
+        height: getHistoryCardHeight(style, context),
+        child: HistoryCardGate(
+          data: dummyData,
+          cardStyle: style,
         ),
-        10.height(),
-        AnymexCard(
-          enableAnimation: true,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              height: getHistoryCardHeight(_selectedStyle, context),
-              child: HistoryCardGate(
-                data: dummyData,
-                cardStyle: _selectedStyle,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStyleChip(HistoryCardStyle style) {
-    final bool isSelected = style == _selectedStyle;
-
-    return AnymexChip(
-      isSelected: isSelected,
-      label: style.name.capitalize!,
-      onSelected: (bool selected) {
-        if (selected) {
-          setState(() {
-            _selectedStyle = style;
-          });
-          widget.onStyleChanged(style);
-        }
-      },
+      ),
+      onValueChanged: onStyleChanged,
     );
   }
 }

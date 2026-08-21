@@ -12,23 +12,19 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/continue_watching_cards.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
-import 'package:anymex/widgets/header.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
+import 'package:anymex/widgets/header/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
-import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dialog.dart';
-import 'package:flutter/foundation.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:thanos_snap_effect/thanos_snap_effect.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -45,118 +41,131 @@ class _HomePageState extends State<HomePage> {
       ValueNotifier<bool>(true);
   bool _snapAll = false;
   late final Stream<List<OfflineMedia>> _animeLibraryStream;
+  final List<Worker> _workers = [];
 
   Widget _buildRecentlyOpenedSection(CacheController cacheController) {
-    final data = cacheController.getStoredAnime();
-    if (data.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    return Obx(() {
+      final data = cacheController.getStoredAnime();
+      if (data.isEmpty) {
+        return const SizedBox.shrink();
+      }
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: SizedBox(
-        height: 100,
-        child: RepaintBoundary(
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: data.length,
-            itemBuilder: (context, i) =>
-                RecentlyOpenedAnimeCard(media: data[i]),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContinueWatchingSection(
-      OfflineStorageController offlineStorageController) {
-    return StreamBuilder<List<OfflineMedia>>(
-      stream: _animeLibraryStream,
-      builder: (context, snapshot) {
-        final historyData = (snapshot.data ?? const <OfflineMedia>[])
-            .where((e) => e.currentEpisode?.currentTrack != null)
-            .toList()
-          ..sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
-              .compareTo(a.currentEpisode?.lastWatchedTime ?? 0));
-        final visibleHistory = historyData.take(20).toList(growable: false);
-
-        if (visibleHistory.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Local History",
-                    style: TextStyle(
-                      fontFamily: "Poppins-SemiBold",
-                      fontSize: 17,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _showClearAllHistoryDialog(
-                        context, offlineStorageController, visibleHistory),
-                    child: Text(
-                      "Clear All",
-                      style: TextStyle(
-                        fontFamily: "Poppins-SemiBold",
-                        fontSize: 13,
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              height: 228,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: SizedBox(
+              height: 100,
               child: RepaintBoundary(
-                child: GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: visibleHistory.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 1,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 0,
-                    mainAxisExtent: 300,
-                  ),
-                  itemBuilder: (context, i) => _RemovableHistoryCard(
-                    key: ValueKey(visibleHistory[i].mediaId),
-                    media: HistoryModel.fromOfflineMedia(
-                        visibleHistory[i], ItemType.anime),
-                    snapAll: _snapAll,
-                    onRemoved: () {
-                      offlineStorageController.clearMediaHistory(
-                        visibleHistory[i].mediaId ?? '',
-                        mediaType: ItemType.anime,
-                      );
-                    },
-                  ),
+                  itemCount: data.length,
+                  itemBuilder: (context, i) =>
+                      RecentlyOpenedAnimeCard(media: data[i]),
                 ),
               ),
             ),
-          ],
-        );
-      },
-    );
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildContinueWatchingSection(
+      OfflineStorageController offlineStorageController, Settings settings) {
+    return Obx(() {
+      if (!settings.showContinueWatchingCard) {
+        return const SizedBox.shrink();
+      }
+      return StreamBuilder<List<OfflineMedia>>(
+        initialData: offlineStorageController.getAnimeLibrarySync(),
+        stream: _animeLibraryStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const SizedBox.shrink();
+          }
+          final historyData = (snapshot.data ?? const <OfflineMedia>[])
+              .where((e) => e.currentEpisode?.currentTrack != null)
+              .toList()
+            ..sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
+                .compareTo(a.currentEpisode?.lastWatchedTime ?? 0));
+          final visibleHistory = historyData.take(20).toList(growable: false);
+
+          if (visibleHistory.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    AnymeXText(
+                      "Local History",
+                      style: TextStyle(
+                        fontFamily: "Poppins-SemiBold",
+                        fontSize: 17,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _showClearAllHistoryDialog(
+                          context, offlineStorageController, visibleHistory),
+                      child: AnymeXText(
+                        "Clear All",
+                        style: TextStyle(
+                          fontFamily: "Poppins-SemiBold",
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 228,
+                child: RepaintBoundary(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: visibleHistory.length,
+                    itemBuilder: (context, i) => _RemovableHistoryCard(
+                      key: ValueKey(visibleHistory[i].mediaId),
+                      media: HistoryModel.fromOfflineMedia(
+                          visibleHistory[i], ItemType.anime),
+                      snapAll: _snapAll,
+                      onRemoved: () {
+                        offlineStorageController.clearMediaHistory(
+                          visibleHistory[i].mediaId ?? '',
+                          mediaType: ItemType.anime,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    });
   }
 
   void _showClearAllHistoryDialog(BuildContext context,
       OfflineStorageController controller, List<OfflineMedia> items) {
     showDialog(
       context: context,
-      builder: (context) => AnymexDialog(
+      builder: (context) => AnymeXDialog(
         title: 'Clear All History',
-        contentWidget: const Text(
+        contentWidget: const AnymeXText(
           'Are you sure you want to clear all local watch history? This action cannot be undone.',
           style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
         ),
@@ -184,18 +193,9 @@ class _HomePageState extends State<HomePage> {
     required Settings settings,
   }) {
     final baseWidgets = serviceHandler.homeWidgets(context);
-    final hasRecentSection = cacheController.getStoredAnime().isNotEmpty;
-    final shouldShowContinueSection = settings.showContinueWatchingCard;
-
-    if (!hasRecentSection && !shouldShowContinueSection) {
-      return List<Widget>.from(baseWidgets);
-    }
     final localSections = <Widget>[
-      const SizedBox(height: 12),
-      if (hasRecentSection) _buildRecentlyOpenedSection(cacheController),
-      const SizedBox(height: 12),
-      if (shouldShowContinueSection)
-        _buildContinueWatchingSection(offlineStorageController),
+      _buildRecentlyOpenedSection(cacheController),
+      _buildContinueWatchingSection(offlineStorageController, settings),
     ];
 
     int insertionIndex;
@@ -221,46 +221,23 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _animeLibraryStream = Get.find<OfflineStorageController>().watchAnimeLibrary().asBroadcastStream();
     _scrollController = ScrollController();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showDiscordDialog();
-    });
-  }
-
-  void _showDiscordDialog() {
-    if(kDebugMode) return;
-    if (General.hasJoinedNewDiscord.get(false)) return;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return PopScope(
-          canPop: false,
-          child: AnymexDialog(
-            title: 'Important Announcement',
-            showCancelButton: false,
-            confirmText: 'Join Discord',
-            onConfirm: () async {
-              General.hasJoinedNewDiscord.set(true);
-              final url = Uri.parse(Get.find<Settings>().discordUrl.value);
-              await launchUrl(url, mode: LaunchMode.externalApplication);
-            },
-            contentWidget: const Text(
-              'Our previous Discord server with over 2,100 members was unfortunately taken down due to copyright infringement.\n\n'
-              'We are trying to rebuild! Please join our new Discord server to help us gain our wonderful community back. '
-              'You must join to continue using the app.',
-              style: TextStyle(fontFamily: 'Poppins', fontSize: 14),
-            ),
-          ),
-        );
-      },
-    );
+    final serviceHandler = Get.find<ServiceHandler>();
+    _workers.add(ever(serviceHandler.serviceType, (_) {
+      if (mounted) setState(() {});
+    }));
+    _workers.add(ever(serviceHandler.isLoggedIn, (_) {
+      if (mounted) setState(() {});
+    }));
   }
 
   ScrollController get scrollController => _scrollController;
 
   @override
   void dispose() {
+    for (final w in _workers) {
+      w.dispose();
+    }
+    _workers.clear();
     _scrollController.dispose();
     _isAppBarVisibleExternally.dispose();
     super.dispose();
@@ -273,10 +250,10 @@ class _HomePageState extends State<HomePage> {
     final serviceHandler = Get.find<ServiceHandler>();
     final settings = Get.find<Settings>();
     final sourceController = Get.find<SourceController>();
-    final isDesktop = MediaQuery.of(context).size.width > 600;
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
+    final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
-    final double bottomNavBarHeight = MediaQuery.of(context).padding.bottom;
+    final double bottomNavBarHeight = isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 65.0);
 
     bool isMobile =
         getResponsiveValue(context, desktopValue: false, mobileValue: true);
@@ -313,20 +290,20 @@ class _HomePageState extends State<HomePage> {
                   Obx(
                     () => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: AnymexTextSpans(
+                      child: AnymeXTextSpans(
                         fontSize: 27,
                         spans: [
-                          const AnymexTextSpan(
+                          const AnymeXTextSpan(
                               text: 'Hey ',
                               size: 30,
                               variant: TextVariant.bold),
-                          AnymexTextSpan(
+                          AnymeXTextSpan(
                               text:
                                   '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
                               size: 30,
                               color: context.colors.primary,
                               variant: TextVariant.bold),
-                          const AnymexTextSpan(
+                          const AnymeXTextSpan(
                               text: ', what are we doing today?',
                               size: 30,
                               variant: TextVariant.bold),
@@ -343,7 +320,7 @@ class _HomePageState extends State<HomePage> {
                       const SizedBox(height: 10),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(
+                        child: AnymeXText(
                           'Find your favourite anime or manga, manhwa or whatever you like!',
                           style: TextStyle(
                             color: Theme.of(context)
@@ -355,17 +332,15 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      Obx(() {
-                        cacheController.currentPool.length;
-                        final children = _buildHomeWidgets(
+                      Column(
+                        children: _buildHomeWidgets(
                           context: context,
                           serviceHandler: serviceHandler,
                           cacheController: cacheController,
                           offlineStorageController: offlineStorageController,
                           settings: settings,
-                        );
-                        return Column(children: children);
-                      }),
+                        ),
+                      ),
                       if (novelData.isNotEmpty)
                         ReusableCarousel(
                           title: "Recommended Novels",
@@ -375,10 +350,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                     ],
                   ),
-                  if (!isDesktop)
-                    SizedBox(height: bottomNavBarHeight)
-                  else
-                    const SizedBox(height: 50),
+                  SizedBox(height: bottomNavBarHeight),
                 ],
               ),
             ),
@@ -484,7 +456,7 @@ class ImageButton extends StatelessWidget {
             ),
           ),
           Positioned.fill(
-            child: AnymexButton(
+            child: AnymeXContainerButton(
               onTap: onPressed,
               onLongPress: onLongPress,
               padding: EdgeInsets.zero,
@@ -497,7 +469,7 @@ class ImageButton extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  AnymeXText(
                     buttonText.toUpperCase(),
                     style: textStyle ??
                         const TextStyle(
@@ -542,7 +514,10 @@ class _RemovableHistoryCardState extends State<_RemovableHistoryCard>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     vsync: this,
-    duration: const Duration(milliseconds: 1500),
+    duration: const Duration(milliseconds: 150),
+  );
+  late final Animation<double> _animation = Tween<double>(begin: 1.0, end: 0.0).animate(
+    CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic),
   );
 
   @override
@@ -566,15 +541,24 @@ class _RemovableHistoryCardState extends State<_RemovableHistoryCard>
 
   @override
   Widget build(BuildContext context) {
-    return Snappable(
-      animation: _controller,
-      outerPadding: const EdgeInsets.all(20),
-      style: const SnappableStyle(
-        particleLifetime: 0.6,
-        fadeOutDuration: 0.3,
-        particleSpeed: 1.0,
-        particleSize: SnappableParticleSize.squareFromRelativeWidth(0.008),
-      ),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _animation.value,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            widthFactor: _animation.value,
+            child: SizedBox(
+              width: 300,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: child,
+              ),
+            ),
+          ),
+        );
+      },
       child: ContinueWatchingCard(
         media: widget.media,
         onRemove: _triggerRemoval,

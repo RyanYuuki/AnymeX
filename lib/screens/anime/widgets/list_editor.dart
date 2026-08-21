@@ -1,12 +1,19 @@
 import 'dart:async';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ListEditorModal extends StatefulWidget {
   final RxString animeStatus;
@@ -61,26 +68,163 @@ class _ListEditorModalState extends State<ListEditorModal> {
     ('DROPPED', 'Dropped'),
   ];
 
+  bool get _isAnilist {
+    final activeService = Get.find<ServiceHandler>().serviceType;
+    return activeService.value == ServicesType.anilist ||
+        widget.currentAnime.value?.servicesType == ServicesType.anilist;
+  }
+
+  String get _scoreFormat {
+    if (_isAnilist && Get.find<AnilistAuth>().isLoggedIn.value) {
+      return Get.find<AnilistAuth>().cachedSettings?.scoreFormat ?? 'POINT_10';
+    }
+    return 'POINT_10_DECIMAL';
+  }
+
+  double get _minScore => _scoreFormat == 'POINT_3' ? 1.0 : 0.0;
+
+  double get _maxScore {
+    switch (_scoreFormat) {
+      case 'POINT_100':
+        return 100.0;
+      case 'POINT_10_DECIMAL':
+      case 'POINT_10':
+        return 10.0;
+      case 'POINT_5':
+        return 5.0;
+      case 'POINT_3':
+        return 3.0;
+      default:
+        return 10.0;
+    }
+  }
+
+  int get _divisions {
+    switch (_scoreFormat) {
+      case 'POINT_100':
+        return 100;
+      case 'POINT_10_DECIMAL':
+        return 100;
+      case 'POINT_10':
+        return 10;
+      case 'POINT_5':
+        return 5;
+      case 'POINT_3':
+        return 2;
+      default:
+        return 100;
+    }
+  }
+
+  String _getScoreDisplayLabel(double score) {
+    switch (_scoreFormat) {
+      case 'POINT_100':
+        return '${score.round()} / 100';
+      case 'POINT_10_DECIMAL':
+        return '${score.toStringAsFixed(1)} / 10';
+      case 'POINT_10':
+        return '${score.round()} / 10';
+      case 'POINT_5':
+        return '${score.round()} / 5';
+      case 'POINT_3':
+        final val = score.round();
+        if (val == 3) return ':)';
+        if (val == 2) return ':|';
+        return ':(';
+      default:
+        return '${score.toStringAsFixed(1)} / 10';
+    }
+  }
+
+  double _getNormalizedScore(double formatScore) {
+    switch (_scoreFormat) {
+      case 'POINT_100':
+        return formatScore;
+      case 'POINT_10_DECIMAL':
+      case 'POINT_10':
+        return formatScore * 10.0;
+      case 'POINT_5':
+        return formatScore * 20.0;
+      case 'POINT_3':
+        if (formatScore == 3.0) return 100.0;
+        if (formatScore == 2.0) return 50.0;
+        return 10.0;
+      default:
+        return formatScore * 10.0;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _localStatus =
         widget.animeStatus.value.isEmpty ? 'CURRENT' : widget.animeStatus.value;
-    _localScore = widget.animeScore.value;
     _localProgress = widget.animeProgress.value;
     _localSeason = 1;
+
+    final scoreMin = _minScore;
+    final scoreMax = _maxScore;
+    
+    final rawVal = widget.animeScore.value;
+    double initialVal;
+    if (_scoreFormat == 'POINT_3') {
+      if (rawVal >= 75.0) {
+        initialVal = 3.0;
+      } else if (rawVal >= 35.0) {
+        initialVal = 2.0;
+      } else {
+        initialVal = 1.0;
+      }
+    } else {
+      initialVal = _isAnilist
+          ? Get.find<AnilistAuth>().convertNormalizedToFormat(rawVal)
+          : rawVal / 10.0;
+    }
+
+    _localScore = initialVal;
+    if (_localScore < scoreMin) {
+      _localScore = scoreMin;
+    } else if (_localScore > scoreMax) {
+      _localScore = scoreMax;
+    }
 
     _progressController = TextEditingController(text: _localProgress.toString());
     _seasonController = TextEditingController(text: _localSeason.toString());
 
-    final tracked = widget.currentAnime.value;
+    TrackedMedia? tracked = widget.currentAnime.value;
+    if (tracked == null || (tracked.id ?? '').isEmpty || (tracked.startedAt == null && tracked.completedAt == null)) {
+      final serviceHandler = Get.find<ServiceHandler>();
+      final list = widget.isManga
+          ? serviceHandler.onlineService.mangaList
+          : serviceHandler.onlineService.animeList;
+      final found = list.firstWhereOrNull((e) =>
+          e.id == widget.media.id ||
+          e.mediaListId == widget.media.id ||
+          (tracked?.id != null && e.id == tracked!.id));
+      if (found != null) {
+        tracked = found;
+      }
+    }
+
     if (tracked != null) {
-      _startedAt = tracked.startedAt;
-      _completedAt = tracked.completedAt;
+      _startedAt ??= tracked.startedAt;
+      _completedAt ??= tracked.completedAt;
       _isPrivate = tracked.isPrivate ?? false;
     }
 
-    if (widget.media.serviceType == ServicesType.simkl && !widget.isManga) {
+    if (_localStatus == 'CURRENT' && _startedAt == null) {
+      _startedAt = DateTime.now();
+    } else if (_localStatus == 'COMPLETED') {
+      _completedAt ??= DateTime.now();
+      _startedAt ??= DateTime.now();
+    }
+
+    final activeService = Get.find<ServiceHandler>().serviceType;
+    final isSimklMedia = widget.media.serviceType == ServicesType.simkl ||
+        activeService.value == ServicesType.simkl ||
+        widget.currentAnime.value?.servicesType == ServicesType.simkl;
+
+    if (isSimklMedia && !widget.isManga) {
       _fetchSimklSeasons();
     }
   }
@@ -95,21 +239,29 @@ class _ListEditorModalState extends State<ListEditorModal> {
   Future<void> _fetchSimklSeasons() async {
     setState(() => _isLoadingSeasons = true);
     final service = Get.find<ServiceHandler>().simklService;
-    final listId = widget.currentAnime.value?.id ?? widget.media.id;
+    var listId = widget.currentAnime.value?.id ?? widget.media.id;
+    if (!listId.contains('*')) {
+      listId = '$listId*SERIES';
+    }
     final seasons = await service.getEpisodesBySeason(listId);
     if (mounted) {
       setState(() {
         _simklSeasons = seasons;
         _isLoadingSeasons = false;
         if (_simklSeasons.isNotEmpty && !_simklSeasons.containsKey(_localSeason)) {
-          _localSeason = _simklSeasons.keys.first;
+          final validSeasons =
+              _simklSeasons.keys.where((k) => k > 0).toList()..sort();
+          if (validSeasons.isNotEmpty) {
+            _localSeason = validSeasons.first;
+            _seasonController.text = _localSeason.toString();
+          }
         }
       });
     }
   }
 
   int? get _maxTotal {
-    if (_simklSeasons.isNotEmpty) {
+    if (_simklSeasons.isNotEmpty && _simklSeasons.containsKey(_localSeason)) {
       return _simklSeasons[_localSeason];
     }
     final tracked = widget.currentAnime.value;
@@ -123,7 +275,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
   }
 
   String get _displayTotal {
-    if (_simklSeasons.isNotEmpty) {
+    if (_simklSeasons.isNotEmpty && _simklSeasons.containsKey(_localSeason)) {
       return _simklSeasons[_localSeason]?.toString() ?? '??';
     }
     final tracked = widget.currentAnime.value;
@@ -147,7 +299,58 @@ class _ListEditorModalState extends State<ListEditorModal> {
     return parsed;
   }
 
+  int? get _overallTotal {
+    if (_simklSeasons.isNotEmpty) {
+      return _simklSeasons.entries
+          .where((e) => e.key > 0)
+          .fold<int>(0, (sum, e) => sum + e.value);
+    }
+    final tracked = widget.currentAnime.value;
+    final preferredRaw = widget.isManga
+        ? widget.media.totalChapters
+        : widget.media.totalEpisodes;
+    final fallbackRaw = tracked?.totalEpisodes;
+    return _parseKnownPositiveInt(preferredRaw) ??
+        _parseKnownPositiveInt(fallbackRaw);
+  }
+
   void _setProgress(int value, {bool updateController = true}) {
+    if (_simklSeasons.isNotEmpty) {
+      final validSeasons =
+          _simklSeasons.keys.where((k) => k > 0).toList()..sort();
+      final currentSeasonMax = _simklSeasons[_localSeason];
+
+      if (currentSeasonMax != null) {
+        if (value > currentSeasonMax) {
+          final currentIdx = validSeasons.indexOf(_localSeason);
+          if (currentIdx != -1 && currentIdx + 1 < validSeasons.length) {
+            final nextSeason = validSeasons[currentIdx + 1];
+            final remainder = value - currentSeasonMax;
+            setState(() {
+              _localSeason = nextSeason;
+              _seasonController.text = _localSeason.toString();
+            });
+            _setProgress(remainder, updateController: updateController);
+            return;
+          }
+        } else if (value < 0) {
+          final currentIdx = validSeasons.indexOf(_localSeason);
+          if (currentIdx > 0) {
+            final prevSeason = validSeasons[currentIdx - 1];
+            final prevMax = _simklSeasons[prevSeason] ?? 1;
+            final remainder = prevMax + value + 1;
+            setState(() {
+              _localSeason = prevSeason;
+              _seasonController.text = _localSeason.toString();
+            });
+            _setProgress(remainder.clamp(0, prevMax),
+                updateController: updateController);
+            return;
+          }
+        }
+      }
+    }
+
     final max = _maxTotal;
     setState(() {
       _localProgress =
@@ -189,77 +392,133 @@ class _ListEditorModalState extends State<ListEditorModal> {
       _completedAt ??= DateTime.now();
       _startedAt ??= DateTime.now();
     }
-    if (newStatus != 'COMPLETED') {
-      _completedAt = null;
-    }
+  }
+
+  void _showStatusSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (context, setDialogState) => AnymeXDialog(
+          title: 'Select Status',
+          showCancelButton: true,
+          confirmText: 'Done',
+          onConfirm: () {},
+          contentWidget: AnymeXTileBuilder<(String, String)>(
+            items: _statuses.map((s) {
+              final label = s.$1 == 'CURRENT'
+                  ? (widget.isManga ? 'Reading' : 'Watching')
+                  : s.$2;
+              return (s.$1, label);
+            }).toList(),
+            selectedItem: (_localStatus, _statuses.firstWhere((s) => s.$1 == _localStatus, orElse: () => _statuses.first).$2),
+            isSelected: (item) => item.$1 == _localStatus,
+            getTitle: (item) => item.$2,
+            onItemPressed: (item) {
+              setDialogState(() {
+                _localStatus = item.$1;
+                _applyStatusSideEffects(_localStatus);
+              });
+              setState(() {});
+            },
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
+    final statusLabel = _statuses.firstWhere((s) => s.$1 == _localStatus, orElse: () => _statuses.first).$2;
+    final displayStatus = _localStatus == 'CURRENT'
+        ? (widget.isManga ? 'Reading' : 'Watching')
+        : statusLabel;
 
-    return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(24),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 16,
+        bottom: MediaQuery.viewInsetsOf(context).bottom + 24,
       ),
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 16,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDragHandle(),
-            const SizedBox(height: 4),
-            _buildHeader(context),
-            const SizedBox(height: 20),
-            _buildStatusChips(context),
-            const SizedBox(height: 20),
-            if (widget.media.serviceType == ServicesType.simkl &&
-                !widget.isManga) ...[
-              if (_isLoadingSeasons) ...[
-                const Center(child: CircularProgressIndicator()),
-                const SizedBox(height: 20),
-              ] else ...[
-                _buildSeasonRow(context),
-                const SizedBox(height: 20),
-              ]
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(context),
+          const SizedBox(height: 20),
+          AnymeXSectionBuilder(
+            margin: EdgeInsets.zero,
+            children: [
+              AnymeXTile(
+                icon: Icons.info_outline_rounded,
+                title: 'Status',
+                subtitle: displayStatus,
+                onTap: () => _showStatusSelectionDialog(context),
+              ),
+              if (widget.media.serviceType == ServicesType.simkl &&
+                  !widget.isManga) ...[
+                if (_isLoadingSeasons)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else
+                  _buildSeasonRow(context),
+              ],
+              _buildProgressRow(context),
+              AnymeXTile.slider(
+                icon: Icons.star_rounded,
+                title: 'Score',
+                subtitle: _getScoreDisplayLabel(_localScore),
+                value: _localScore,
+                min: _minScore,
+                max: _maxScore,
+                divisions: _divisions,
+                onChanged: (v) => setState(() => _localScore = v),
+              ),
+              AnymeXTile(
+                icon: Icons.calendar_today_rounded,
+                title: 'Start Date',
+                subtitle: _startedAt != null ? _formatDate(_startedAt!) : 'Not set',
+                onTap: () => _pickDate(context, isStart: true),
+                trailing: _startedAt != null
+                    ? IconButton(
+                        icon: const Icon(Icons.clear_rounded, size: 18),
+                        onPressed: () => setState(() => _startedAt = null),
+                      )
+                    : null,
+                showChevron: _startedAt == null,
+              ),
+              AnymeXTile(
+                icon: Icons.event_available_rounded,
+                title: 'Finish Date',
+                subtitle: _completedAt != null ? _formatDate(_completedAt!) : 'Not set',
+                onTap: () => _pickDate(context, isStart: false),
+                trailing: _completedAt != null
+                    ? IconButton(
+                        icon: const Icon(Icons.clear_rounded, size: 18),
+                        onPressed: () => setState(() => _completedAt = null),
+                      )
+                    : null,
+                showChevron: _completedAt == null,
+              ),
+              if (widget.media.serviceType.isAL)
+                AnymeXTile.toggle(
+                  icon: Icons.lock_rounded,
+                  title: 'Private Entry',
+                  subtitle: 'Hidden from your public profile',
+                  value: _isPrivate,
+                  onChanged: (val) => setState(() => _isPrivate = val),
+                ),
             ],
-            _buildProgressRow(context),
-            const SizedBox(height: 20),
-            _buildScoreRow(context),
-            const SizedBox(height: 20),
-            _buildDateRow(context),
-            if (widget.media.serviceType.isAL) ...[
-              const SizedBox(height: 16),
-              _buildPrivateRow(context),
-            ],
-            const SizedBox(height: 24),
-            _buildActionButtons(context),
-          ],
-        ),
+          ),
+          const SizedBox(height: 24),
+          _buildActionButtons(context),
+        ],
       ),
     );
   }
 
-  Widget _buildDragHandle() {
-    return Center(
-      child: Container(
-        width: 36,
-        height: 4,
-        decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(2),
-        ),
-      ),
-    );
-  }
 
   Widget _buildHeader(BuildContext context) {
     final colors = context.colors;
@@ -270,7 +529,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              AnymeXText(
                 'Edit Media Entry',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
@@ -278,8 +537,8 @@ class _ListEditorModalState extends State<ListEditorModal> {
                     ),
               ),
               const SizedBox(height: 2),
-              Text(
-                widget.media.title ?? '',
+              AnymeXText(
+                widget.media.title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -307,106 +566,63 @@ class _ListEditorModalState extends State<ListEditorModal> {
     );
   }
 
-  Widget _buildStatusChips(BuildContext context) {
-    final colors = context.colors;
-    final items = _statuses.map((s) {
-      final label =
-          s.$1 == 'CURRENT' ? (widget.isManga ? 'Reading' : 'Watching') : s.$2;
-      return (s.$1, label);
-    }).toList();
-
-    return SizedBox(
-      height: 34,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: items.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 6),
-        itemBuilder: (context, i) {
-          final isSelected = _localStatus == items[i].$1;
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _localStatus = items[i].$1;
-                _applyStatusSideEffects(_localStatus);
-              });
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? colors.primary
-                    : colors.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                items[i].$2,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: isSelected
-                          ? colors.onPrimary
-                          : colors.onSurfaceVariant,
-                      fontWeight:
-                          isSelected ? FontWeight.w600 : FontWeight.normal,
-                    ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildSeasonRow(BuildContext context) {
     final colors = context.colors;
 
-    final maxSeason = _simklSeasons.isNotEmpty ? _simklSeasons.keys.reduce((a, b) => a > b ? a : b) : null;
+    final validSeasons =
+        _simklSeasons.keys.where((k) => k > 0).toList();
+    final maxSeason = validSeasons.isNotEmpty
+        ? validSeasons.reduce((a, b) => a > b ? a : b)
+        : null;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Season',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-            ),
-            Text(
-              maxSeason != null ? '$_localSeason / $maxSeason' : _localSeason.toString(),
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            _buildStepButton(
-              context,
-              icon: Icons.remove_rounded,
-              onTap:
-                  _localSeason > 1 ? () => _setSeason(_localSeason - 1) : null,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildSeasonInput(context),
-            ),
-            const SizedBox(width: 10),
-            _buildStepButton(
-              context,
-              icon: Icons.add_rounded,
-              onTap: (maxSeason == null || _localSeason < maxSeason)
-                  ? () => _setSeason(_localSeason + 1)
-                  : null,
-            ),
-          ],
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AnymeXText(
+                'Season',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+              ),
+              AnymeXText(
+                maxSeason != null ? '$_localSeason / $maxSeason' : _localSeason.toString(),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: colors.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _buildStepButton(
+                context,
+                icon: Icons.remove_rounded,
+                onTap:
+                    _localSeason > 1 ? () => _setSeason(_localSeason - 1) : null,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _buildSeasonInput(context),
+              ),
+              const SizedBox(width: 10),
+              _buildStepButton(
+                context,
+                icon: Icons.add_rounded,
+                onTap: (maxSeason == null || _localSeason < maxSeason)
+                    ? () => _setSeason(_localSeason + 1)
+                    : null,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -456,67 +672,84 @@ class _ListEditorModalState extends State<ListEditorModal> {
     final colors = context.colors;
     final max = _maxTotal;
     final pct = max != null ? (_localProgress / max).clamp(0.0, 1.0) : null;
+    final overall = _overallTotal;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Progress',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-            ),
-            Text(
-              '$_localProgress / $_displayTotal',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
-            _buildStepButton(
-              context,
-              icon: Icons.remove_rounded,
-              onTap: _localProgress > 0
-                  ? () => _setProgress(_localProgress - 1)
-                  : null,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: pct != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
-                      child: LinearProgressIndicator(
-                        value: pct,
-                        minHeight: 4,
-                        backgroundColor: colors.surfaceContainerHighest,
-                        valueColor: AlwaysStoppedAnimation(colors.primary),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AnymeXText(
+                'Progress',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+              ),
+              RichText(
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: colors.onSurface,
+                        fontWeight: FontWeight.w600,
                       ),
-                    )
-                  : _buildProgressInput(context),
-            ),
-            const SizedBox(width: 10),
-            _buildStepButton(
-              context,
-              icon: Icons.add_rounded,
-              onTap: (max == null || _localProgress < max)
-                  ? () => _setProgress(_localProgress + 1)
-                  : null,
-            ),
+                  children: [
+                    TextSpan(text: '$_localProgress / $_displayTotal'),
+                    if (overall != null && _simklSeasons.isNotEmpty)
+                      TextSpan(
+                        text: '  ($overall total)',
+                        style: TextStyle(
+                          color: colors.onSurfaceVariant,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 11,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _buildStepButton(
+                context,
+                icon: Icons.remove_rounded,
+                onTap: _localProgress > 0
+                    ? () => _setProgress(_localProgress - 1)
+                    : null,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: pct != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(3),
+                        child: LinearProgressIndicator(
+                          value: pct,
+                          minHeight: 4,
+                          backgroundColor: colors.surfaceContainerHighest,
+                          valueColor: AlwaysStoppedAnimation(colors.primary),
+                        ),
+                      )
+                    : _buildProgressInput(context),
+              ),
+              const SizedBox(width: 10),
+              _buildStepButton(
+                context,
+                icon: Icons.add_rounded,
+                onTap: (max == null || _localProgress < max)
+                    ? () => _setProgress(_localProgress + 1)
+                    : null,
+              ),
+            ],
+          ),
+          if (pct != null) ...[
+            const SizedBox(height: 8),
+            _buildProgressInput(context),
           ],
-        ),
-        if (pct != null) ...[
-          const SizedBox(height: 8),
-          _buildProgressInput(context),
         ],
-      ],
+      ),
     );
   }
 
@@ -587,158 +820,6 @@ class _ListEditorModalState extends State<ListEditorModal> {
     );
   }
 
-  Widget _buildScoreRow(BuildContext context) {
-    final colors = context.colors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Score',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-            ),
-            Text(
-              '${_localScore.toStringAsFixed(1)} / 10',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: colors.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Slider(
-          year2023: false,
-          value: _localScore,
-          min: 0.0,
-          max: 10.0,
-          divisions: 100,
-          activeColor: colors.primary,
-          inactiveColor: colors.surfaceContainerHighest,
-          onChanged: (v) => setState(() => _localScore = v),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateRow(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildDateTile(context,
-              label: 'Start date',
-              date: _startedAt,
-              onTap: () => _pickDate(context, isStart: true),
-              onClear: _startedAt != null
-                  ? () => setState(() => _startedAt = null)
-                  : null),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildDateTile(context,
-              label: 'Finish date',
-              date: _completedAt,
-              onTap: () => _pickDate(context, isStart: false),
-              onClear: _completedAt != null
-                  ? () => setState(() => _completedAt = null)
-                  : null),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateTile(
-    BuildContext context, {
-    required String label,
-    required DateTime? date,
-    required VoidCallback onTap,
-    VoidCallback? onClear,
-  }) {
-    final colors = context.colors;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    label,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                  ),
-                ),
-                if (onClear != null)
-                  GestureDetector(
-                    onTap: onClear,
-                    child: Icon(Icons.close_rounded,
-                        size: 13, color: colors.onSurfaceVariant),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              date != null ? _formatDate(date) : 'Not set',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: date != null
-                        ? colors.onSurface
-                        : colors.onSurfaceVariant,
-                    fontWeight:
-                        date != null ? FontWeight.w600 : FontWeight.normal,
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPrivateRow(BuildContext context) {
-    final colors = context.colors;
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Private entry',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colors.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                'Hidden from your public profile',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-              ),
-            ],
-          ),
-        ),
-        Switch(
-          value: _isPrivate,
-          onChanged: (val) => setState(() => _isPrivate = val),
-          activeColor: colors.primary,
-        ),
-      ],
-    );
-  }
-
   Widget _buildActionButtons(BuildContext context) {
     final colors = context.colors;
     final actionsDisabled = _isLoadingSeasons || _isSaving;
@@ -747,7 +828,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
         Expanded(
           child: SizedBox(
             height: 46,
-            child: AnymexButton(
+            child: AnymeXContainerButton(
               onTap: actionsDisabled ? null : () {
                 Navigator.pop(context);
                 widget.onDelete(widget.media.id);
@@ -755,7 +836,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
               color: colors.surfaceContainerHighest,
               border: BorderSide.none,
               borderRadius: BorderRadius.circular(14),
-              child: Text(
+              child: AnymeXText(
                 'Delete',
                 style: TextStyle(
                   color: colors.error,
@@ -770,15 +851,16 @@ class _ListEditorModalState extends State<ListEditorModal> {
         Expanded(
           child: SizedBox(
             height: 46,
-            child: AnymexButton(
+            child: AnymeXContainerButton(
               borderRadius: BorderRadius.circular(14),
               onTap: () async {
                       if (actionsDisabled) return;
                       setState(() => _isSaving = true);
                       try {
+                        final normalizedScore = _getNormalizedScore(_localScore);
                         await widget.onUpdate(
                           widget.media.id,
-                          _localScore,
+                          normalizedScore,
                           _localStatus,
                           _localProgress,
                           _localSeason,
@@ -802,7 +884,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                   children: [
                     Opacity(
                       opacity: _isSaving ? 0 : 1,
-                      child: Text(
+                      child: AnymeXText(
                         'Save changes',
                         style: TextStyle(
                           color: colors.onPrimary,

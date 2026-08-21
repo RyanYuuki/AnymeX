@@ -1,8 +1,20 @@
+### 🌟 Features
+-  added list ui toggle on wrong title and fixed dimensions by @RyanYuuki
+
 ### 🔧 Bug Fixes & Improvements
--  fixed issues related to progress tracking by @RyanYuuki
+-  ui collision with nav fix by @RyanYuuki
+-  centralized chapter calc logic to fix navigate by number for overscroll by @RyanYuuki
+-  fixed parsing issues causing grey screen on home and library by @RyanYuuki
+-  fixed manga sources not installing not loading icons by @RyanYuuki
+-  fixed omitted labels on header by @RyanYuuki
+-  fixed ui inconsistencies on settings pages by @RyanYuuki
+
+### 🎨 Style Changes
+-  fixed bad logic of dynamic service causing grey screen by @RyanYuuki
+-  improved ux of continue button by making it expandible by @RyanYuuki
 
 ### 🧹 Chores & Documentation
--  bump version to v3.0.9 (patch release) by @RyanYuuki
+-  bump version to v3.1.6 (patch release) by @RyanYuuki
 -  update sideloading source by @ghost
 
  

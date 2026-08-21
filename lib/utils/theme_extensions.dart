@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 
 extension ThemeModeExts on BuildContext {

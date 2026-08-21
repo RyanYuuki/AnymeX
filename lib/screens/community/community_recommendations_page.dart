@@ -2,8 +2,6 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/community/user_recommendations_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -12,10 +10,9 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/media_items/media_peek_popup.dart';
 import 'package:anymex/widgets/non_widgets/reasons_sheet.dart';
@@ -187,16 +184,14 @@ class _CommunityRecommendationsPageState
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AnymexText(
-                    text: 'Filter Settings',
+                  AnymeXText('Filter Settings',
                     variant: TextVariant.semiBold,
                     color: context.colors.primary,
                   ),
                   const SizedBox(height: 8),
                   SwitchListTile(
-                    title: const AnymexText(text: 'Hide by List Status'),
-                    subtitle: const AnymexText(
-                        text: 'Filter out entries already in your list'),
+                    title: const AnymeXText('Hide by List Status'),
+                    subtitle: const AnymeXText('Filter out entries already in your list'),
                     value: svc.filterByListEnabled.value,
                     onChanged: (v) {
                       svc.filterByListEnabled.value = v;
@@ -205,7 +200,7 @@ class _CommunityRecommendationsPageState
                   ),
                   if (svc.filterByListEnabled.value) ...[
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Completed'),
+                      title: const AnymeXText('Hide Completed'),
                       value: svc.filterCompleted.value,
                       onChanged: (v) {
                         svc.filterCompleted.value = v;
@@ -213,7 +208,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Watching / Reading'),
+                      title: const AnymeXText('Hide Watching / Reading'),
                       value: svc.filterWatching.value,
                       onChanged: (v) {
                         svc.filterWatching.value = v;
@@ -221,7 +216,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Dropped'),
+                      title: const AnymeXText('Hide Dropped'),
                       value: svc.filterDropped.value,
                       onChanged: (v) {
                         svc.filterDropped.value = v;
@@ -229,7 +224,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Planning'),
+                      title: const AnymeXText('Hide Planning'),
                       value: svc.filterPlanning.value,
                       onChanged: (v) {
                         svc.filterPlanning.value = v;
@@ -237,7 +232,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide On Hold / Paused'),
+                      title: const AnymeXText('Hide On Hold / Paused'),
                       value: svc.filterPaused.value,
                       onChanged: (v) {
                         svc.filterPaused.value = v;
@@ -245,7 +240,7 @@ class _CommunityRecommendationsPageState
                       },
                     ),
                     SwitchListTile(
-                      title: const AnymexText(text: 'Hide Rewatching'),
+                      title: const AnymeXText('Hide Rewatching'),
                       value: svc.filterRepeating.value,
                       onChanged: (v) {
                         svc.filterRepeating.value = v;
@@ -254,7 +249,7 @@ class _CommunityRecommendationsPageState
                     ),
                   ],
                   SwitchListTile(
-                    title: const AnymexText(text: 'Hide NSFW'),
+                    title: const AnymeXText('Hide NSFW'),
                     value: svc.hideNsfw.value,
                     onChanged: (v) {
                       svc.hideNsfw.value = v;
@@ -274,113 +269,106 @@ class _CommunityRecommendationsPageState
   Widget build(BuildContext context) {
     final isDesktop = getPlatform(context);
 
-    return Glow(
-      child: Scaffold(
+    return AnymeXScaffold(
         body: Column(
-          children: [
-            NestedHeader(
-              title: 'Community Recommendations',
-              action: Row(children: [
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _isGridView = !_isGridView;
-                      General.communityListViewIsGrid.set(_isGridView);
-                    });
-                  },
-                  icon: Icon(
-                    _isGridView
-                        ? Icons.view_list_rounded
-                        : Icons.grid_view_rounded,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => _showSettingsSheet(context),
-                  icon: const Icon(Icons.tune_rounded),
-                ),
-              ]),
+      children: [
+        NestedHeader(
+          title: 'Community Recommendations',
+          action: Row(children: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _isGridView = !_isGridView;
+                  General.communityListViewIsGrid.set(_isGridView);
+                });
+              },
+              icon: Icon(
+                _isGridView ? Icons.view_list_rounded : Icons.grid_view_rounded,
+              ),
             ),
-            Expanded(
-              child: Obx(() {
-                final data = _getFilteredData();
-                final cardStyle =
-                    CardStyle.values[settingsController.cardStyle];
-                final cardHeight = getCardHeight(cardStyle, isDesktop);
-                final crossAxisCount = isDesktop ? 4 : 3;
-
-                if (data.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.filter_list_off_rounded,
-                            size: 48,
-                            color: context.colors.onSurfaceVariant
-                                .withOpacity(0.5)),
-                        const SizedBox(height: 12),
-                        AnymexText(
-                          text: 'No recommendations found',
-                          color:
-                              context.colors.onSurfaceVariant.withOpacity(0.7),
-                          variant: TextVariant.semiBold,
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                if (_isGridView) {
-                  return GridView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      mainAxisExtent: cardHeight +
-                          (CommunityService.votingEnabled ? 38 : 0),
-                    ),
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      final item = data[index];
-                      final id = _mediaId(item);
-                      return _SeeAllCard(
-                        item: item,
-                        type: widget.type,
-                        cardStyle: cardStyle,
-                        isDesktop: isDesktop,
-                        votes: _votes[id],
-                        userVote: _userVotes[id],
-                        isLoading: _loading[id] == true,
-                        onVote: (dir) => _castVote(item, dir),
-                      );
-                    },
-                  );
-                } else {
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
-                    itemCount: data.length,
-                    itemBuilder: (context, index) {
-                      final item = data[index];
-                      final id = _mediaId(item);
-                      return _SeeAllListTile(
-                        item: item,
-                        type: widget.type,
-                        votes: _votes[id],
-                        userVote: _userVotes[id],
-                        isLoading: _loading[id] == true,
-                        onVote: (dir) => _castVote(item, dir),
-                      );
-                    },
-                  );
-                }
-              }),
+            IconButton(
+              onPressed: () => _showSettingsSheet(context),
+              icon: const Icon(Icons.tune_rounded),
             ),
-          ],
+          ]),
         ),
-      ),
-    );
+        Expanded(
+          child: Obx(() {
+            final data = _getFilteredData();
+            final cardStyle = CardStyle.values[settingsController.cardStyle];
+            final cardHeight = getCardHeight(cardStyle, isDesktop);
+            final crossAxisCount = getResponsiveCrossAxisVal(
+              MediaQuery.sizeOf(context).width,
+              itemWidth: 105,
+            );
+
+            if (data.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.filter_list_off_rounded,
+                        size: 48,
+                        color:
+                            context.colors.onSurfaceVariant.withOpacity(0.5)),
+                    const SizedBox(height: 12),
+                    AnymeXText('No recommendations found',
+                      color: context.colors.onSurfaceVariant.withOpacity(0.7),
+                      variant: TextVariant.semiBold,
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (_isGridView) {
+              return GridView.builder(
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 50),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  mainAxisExtent:
+                      cardHeight + (CommunityService.votingEnabled ? 38 : 0),
+                ),
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final item = data[index];
+                  final id = _mediaId(item);
+                  return _SeeAllCard(
+                    item: item,
+                    type: widget.type,
+                    cardStyle: cardStyle,
+                    isDesktop: isDesktop,
+                    votes: _votes[id],
+                    userVote: _userVotes[id],
+                    isLoading: _loading[id] == true,
+                    onVote: (dir) => _castVote(item, dir),
+                  );
+                },
+              );
+            } else {
+              return ListView.builder(
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 50),
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final item = data[index];
+                  final id = _mediaId(item);
+                  return _SeeAllListTile(
+                    item: item,
+                    type: widget.type,
+                    votes: _votes[id],
+                    userVote: _userVotes[id],
+                    isLoading: _loading[id] == true,
+                    onVote: (dir) => _castVote(item, dir),
+                  );
+                },
+              );
+            }
+          }),
+        ),
+      ],
+    ));
   }
 }
 
@@ -422,9 +410,9 @@ class _SeeAllCard extends StatelessWidget {
     final media = item.media;
     final tag = 'community-all-${media.id}';
     if (type == ItemType.manga) {
-      navigate(() => MangaDetailsPage(media: media, tag: tag));
+      navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
     } else {
-      navigate(() => AnimeDetailsPage(media: media, tag: tag));
+      navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));
     }
   }
 
@@ -459,7 +447,7 @@ class _SeeAllCard extends StatelessWidget {
     final author = item.usernameFor(serviceType);
     final avatarUrl = item.avatarFor(serviceType);
     final carouselData = item.toCarouselData(isManga: type == ItemType.manga);
-    final tag = 'community-all-${carouselData.id}-${item.media.hashCode}';
+    final tag = 'community-all-${carouselData.id}';
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -721,7 +709,7 @@ class _VoteBtn extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 3),
-              Text(
+              AnymeXText(
                 '$count',
                 style: TextStyle(
                   fontSize: 10,
@@ -767,7 +755,7 @@ class _AuthorAvatar extends StatelessWidget {
               radius: size / 2,
             )
           : Center(
-              child: Text(
+              child: AnymeXText(
                 (fallbackLabel?.trim().isNotEmpty == true
                         ? fallbackLabel!.trim()[0]
                         : '?')
@@ -814,7 +802,7 @@ class _ReasonCountBadge extends StatelessWidget {
               size: 12, color: theme.colorScheme.onTertiaryContainer),
           const SizedBox(width: 3),
           Flexible(
-            child: Text(
+            child: AnymeXText(
               '$count',
               maxLines: 1,
               style: TextStyle(
@@ -864,9 +852,9 @@ class _SeeAllListTile extends StatelessWidget {
     final media = item.media;
     final tag = 'community-list-${media.id}';
     if (type == ItemType.manga) {
-      navigate(() => MangaDetailsPage(media: media, tag: tag));
+      navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
     } else {
-      navigate(() => AnimeDetailsPage(media: media, tag: tag));
+      navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));
     }
   }
 
@@ -920,10 +908,24 @@ class _SeeAllListTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            AnymeXImage(
-              imageUrl: item.media.poster,
-              width: 70,
-              height: 100,
+            Hero(
+              tag: 'community-list-${item.media.id}',
+              transitionOnUserGestures: true,
+              flightShuttleBuilder: AnymeXImage.heroFlightShuttleBuilder,
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  bottomLeft: Radius.circular(12),
+                ),
+                child: AnymeXImage(
+                  imageUrl: item.media.poster,
+                  width: 70,
+                  height: 100,
+                  radius: 0,
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -932,16 +934,14 @@ class _SeeAllListTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymexText(
-                      text: item.displayTitle,
+                    AnymeXText(item.displayTitle,
                       variant: TextVariant.semiBold,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (item.reason != null && item.reason!.isNotEmpty) ...[
                       const SizedBox(height: 4),
-                      AnymexText(
-                        text: item.reason!,
+                      AnymeXText(item.reason!,
                         variant: TextVariant.regular,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -965,8 +965,7 @@ class _SeeAllListTile extends StatelessWidget {
                                   size: 18),
                             ),
                             const SizedBox(width: 4),
-                            AnymexText(
-                              text: author,
+                            AnymeXText(author,
                               variant: TextVariant.semiBold,
                               color: colors.primary,
                             ),
@@ -1002,8 +1001,7 @@ class _SeeAllListTile extends StatelessWidget {
                               Icon(Icons.people_rounded,
                                   size: 12, color: colors.onSecondaryContainer),
                               const SizedBox(width: 4),
-                              AnymexText(
-                                text: '${item.reasonCount} recommendations',
+                              AnymeXText('${item.reasonCount} recommendations',
                                 size: 11,
                                 color: colors.onSecondaryContainer,
                                 variant: TextVariant.semiBold,

@@ -2,11 +2,16 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
+import 'package:anymex/widgets/common/fps_meter.dart';
+import 'package:rhttp/rhttp.dart';
+
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -19,6 +24,7 @@ import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/firebase_options.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
@@ -26,7 +32,9 @@ import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
 import 'package:anymex/screens/manga/home_page.dart';
+import 'package:anymex/screens/novel/home_page.dart';
 import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/screens/notifications/notification_screen.dart';
@@ -34,12 +42,15 @@ import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/utils/notification.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
-import 'package:anymex/widgets/animation/more_page_transitions.dart';
-import 'package:anymex/widgets/common/glow.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_splash_screen.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_titlebar.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -51,17 +62,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:anymex/utils/torrent/torrent_stream_resolver.dart';
 import 'package:provider/provider.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 import 'package:window_manager/window_manager.dart';
 
 WebViewEnvironment? webViewEnvironment;
@@ -124,65 +132,102 @@ void initDeepLinkListener(List<String> args) async {
   );
 }
 
+Future<void> safeCall(FutureOr<void> Function() function,
+    {String? errorMessage}) async {
+  try {
+    await function();
+  } catch (e) {
+    if (errorMessage != null) {
+      Logger.e("$errorMessage: $e");
+    } else {
+      debugPrint("Error: $e");
+    }
+  }
+}
+
 void main(List<String> args) async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    if (!Platform.isLinux) {
-      if (Platform.isWindows || Platform.isMacOS) {
-        webViewEnvironment = await WebViewEnvironment.create();
+
+    await safeCall(() async {
+      if (!Platform.isLinux) {
+        if (Platform.isWindows) {
+          webViewEnvironment = await WebViewEnvironment.create();
+        }
+        if (Platform.isAndroid || Platform.isIOS) {
+          await InAppWebViewController.setWebContentsDebuggingEnabled(
+            !const bool.fromEnvironment('dart.vm.product'),
+          );
+        }
       }
-      await InAppWebViewController.setWebContentsDebuggingEnabled(
-        !const bool.fromEnvironment('dart.vm.product'), 
-      );
-    }
-    if (Platform.isAndroid) {
-      FlutterDisplayMode.setHighRefreshRate().catchError((e) {
-        debugPrint("Error setting high refresh rate: $e");
-      });
-    }
-    ExternalFontLoader.loadAllFonts();
+    }, errorMessage: 'Failed to initialize WebViewEnvironment');
+
+    await safeCall(() => ExternalFontLoader.loadAllFonts(),
+        errorMessage: 'Failed to load external fonts');
 
     await Logger.init();
-    await dotenv.load(fileName: ".env");
+
+    await safeCall(() => Rhttp.init(),
+        errorMessage: 'Failed to initialize Rhttp');
+
+    await safeCall(() => dotenv.load(fileName: ".env"),
+        errorMessage: 'Failed to load .env file');
 
     if (!Platform.isLinux) {
-      await _initFirebase();
+      await safeCall(() async {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+        FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      }, errorMessage: 'Failed to initialize Firebase');
     }
 
-    if (Platform.isWindows) {
-      [
-        'dar',
-        'anymex',
-        'sugoireads',
-        'mangayomi',
-        'cloudstreamrepo',
-        'sora',
-        'tachiyomi',
-        'aniyomi'
-      ].forEach(registerProtocolHandler);
+    if (Platform.isWindows || Platform.isLinux) {
+      await safeCall(() {
+        [
+          'dar',
+          'anymex',
+          'sugoireads',
+          'mangayomi',
+          'cloudstreamrepo',
+          'sora',
+          'tachiyomi',
+          'aniyomi'
+        ].forEach(registerProtocolHandler);
+      }, errorMessage: 'Failed to register protocol handlers');
     }
-    await Database().init();
+
+    await safeCall(() => Database().init(),
+        errorMessage: 'CRITICAL: Database initialization failed');
+
     HttpOverrides.global = MyHttpoverrides();
 
     _initializeGetxController();
-    initDeepLinkListener(args);
-    initializeDateFormatting();
-    MediaKit.ensureInitialized();
-    if (!Platform.isAndroid && !Platform.isIOS) {
-      await windowManager.ensureInitialized();
-      if (Platform.isWindows) {
-        await AnymexTitleBar.initialize();
+
+    await safeCall(() => initDeepLinkListener(args),
+        errorMessage: 'Failed to initialize deep link listener');
+
+    await safeCall(() => initializeDateFormatting(),
+        errorMessage: 'Failed to initialize date formatting');
+
+    await safeCall(() => MediaKit.ensureInitialized(),
+        errorMessage: 'Failed to initialize MediaKit');
+
+    await safeCall(() async {
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        await windowManager.ensureInitialized();
+        await AnymeXTitleBar.initialize();
+      } else {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+        SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+            systemNavigationBarDividerColor: Colors.transparent,
+            systemNavigationBarContrastEnforced: false,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.dark,
+            statusBarColor: Colors.transparent,
+            statusBarBrightness: Brightness.dark));
       }
-    } else {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-          systemNavigationBarDividerColor: Colors.transparent,
-          systemNavigationBarContrastEnforced: false,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
-          statusBarBrightness: Brightness.dark));
-    }
+    }, errorMessage: 'Failed to initialize window manager or system UI');
 
     FlutterError.onError = (FlutterErrorDetails details) async {
       FlutterError.presentError(details);
@@ -201,50 +246,42 @@ void main(List<String> args) async {
     Logger.e("STACK: $stackTrace");
   }, zoneSpecification: ZoneSpecification(
     print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
-      Logger.i(line);
+      if (Logger.isInitialized) {
+        Logger.i(line);
+      } else {
+        parent.print(zone, line);
+      }
     },
   ));
 }
 
-Future<void> _initFirebase() async {
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    Logger.i('Firebase initialized successfully');
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  } catch (e) {
-    Logger.e('Firebase init skipped (non-fatal): $e');
-  }
-}
-
 void _initializeGetxController() async {
-  Get.put(Settings());
-  Get.put(OfflineStorageController());
-  Get.put(AnilistAuth());
-  Get.put(CommunityService());
-  Get.put(AnilistData());
-  Get.put(SimklService());
-  Get.put(MalService());
-  Get.put(DiscordRPCController());
-  if (!Get.isRegistered<SourceController>()) {
-    Get.put(SourceController());
-  }
-  Get.put(ServiceHandler());
-  Get.put(GreetingController());
-  Get.put(CommentumService());
-  Get.put(CommentPreloader());
-  Get.put(GistSyncController(), permanent: true);
-  Get.put(DownloadController(), permanent: true);
-  Get.lazyPut(() => NotificationService());
-  Get.lazyPut(() => CacheController());
-  await StorageManagerService().enforceImageCacheLimit();
+  await safeCall(() {
+    Get.put(Settings());
+    Get.put(OfflineStorageController());
+    Get.put(AnilistAuth());
+    Get.put(CommunityService());
+    Get.put(AnilistData());
+    Get.put(SimklService());
+    Get.put(MalService());
+    Get.put(DiscordRPCController());
+    if (!Get.isRegistered<SourceController>()) {
+      Get.put(SourceController());
+    }
+    Get.put(ServiceHandler());
+    Get.put(TrackBindingController());
+    Get.put(GreetingController());
+    Get.put(CommentumService());
+    Get.put(CommentPreloader());
+    Get.put(WatchiumService(), permanent: true);
+    Get.put(GistSyncController(), permanent: true);
+    Get.put(DownloadController(), permanent: true);
+    Get.lazyPut(() => NotificationService());
+    Get.lazyPut(() => CacheController());
+  }, errorMessage: 'Failed to register GetX controllers');
 
-  TorrentStreamResolver.initialize().then((_) {
-    debugPrint('Torrent engine initialized');
-  }).catchError((e) {
-    debugPrint('Torrent engine init failed (non-critical): $e');
-  });
+  await safeCall(() => StorageManagerService().enforceImageCacheLimit(),
+      errorMessage: 'Failed to enforce image cache limit');
 }
 
 class MainApp extends StatefulWidget {
@@ -264,7 +301,7 @@ class _MainAppState extends State<MainApp> {
     if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.escape) {
       if (_isFullScreen) {
-        AnymexTitleBar.setFullScreen(false);
+        AnymeXTitleBar.setFullScreen(false);
       } else {
         BuildContext escapeContext = Get.context!;
         if (Navigator.of(escapeContext).canPop()) {
@@ -274,7 +311,7 @@ class _MainAppState extends State<MainApp> {
       return KeyEventResult.handled;
     } else if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.f11) {
-      AnymexTitleBar.toggleFullScreen();
+      AnymeXTitleBar.toggleFullScreen();
       return KeyEventResult.handled;
     } else if (event is KeyDownEvent &&
         event.logicalKey == LogicalKeyboardKey.enter) {
@@ -283,7 +320,7 @@ class _MainAppState extends State<MainApp> {
           HardwareKeyboard.instance.logicalKeysPressed
               .contains(LogicalKeyboardKey.altRight);
       if (isAltPressed) {
-        AnymexTitleBar.toggleFullScreen();
+        AnymeXTitleBar.toggleFullScreen();
       }
       return KeyEventResult.handled;
     }
@@ -294,8 +331,8 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
 
-    AnymexTitleBar.isFullScreen
-        .addListener(() => _isFullScreen = AnymexTitleBar.isFullScreen.value);
+    AnymeXTitleBar.isFullScreen
+        .addListener(() => _isFullScreen = AnymeXTitleBar.isFullScreen.value);
 
     focusNode = FocusNode();
 
@@ -350,13 +387,19 @@ class _MainAppState extends State<MainApp> {
                   right: 0,
                   child: Container(
                     color: Colors.transparent,
-                    child: AnymexTitleBar.titleBar(),
+                    child: AnymeXTitleBar.titleBar(),
                   ),
                 ),
+                // const FpsMeter(),
               ],
             );
           }
-          return child!;
+          return Stack(
+            children: [
+              child!,
+              // const FpsMeter(),
+            ],
+          );
         },
         enableLog: true,
         logWriterCallback: (text, {isError = false}) async {
@@ -386,7 +429,138 @@ class _FilterScreenState extends State<FilterScreen> {
       final settings = Get.find<Settings>();
       settings.checkForUpdates(context);
       settings.showWelcomeDialog(context);
+
+      // final launchCount = KvHelper.get<int>(
+      //         'anymex_discord_notice_launch_count',
+      //         defaultVal: 0) +
+      //     1;
+      // KvHelper.set('anymex_discord_notice_launch_count', launchCount);
+
+      // void checkAndShowDiscord() {
+      //   if (!mounted) return;
+      //   if (launchCount <= 3 || settings.showJoinDialog.value) {
+      //     _showDiscordNoticeDialog(context);
+      //   }
+      // }
+
+      // if (settings.linksFetched) {
+      //   checkAndShowDiscord();
+      // } else {
+      //   settings.onLinksReady = checkAndShowDiscord;
+      // }
     });
+  }
+
+  void _showDiscordNoticeDialog(BuildContext context) {
+    final settings = Get.find<Settings>();
+    bool isUnlocked =
+        KvHelper.get<bool>('anymex_discord_notice_unlocked', defaultVal: false);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return PopScope(
+              canPop: false,
+              child: AnymeXDialog(
+                title: 'Discord Taken Down',
+                forceAction: true,
+                showCancelButton: false,
+                confirmText: 'Okay',
+                isConfirmEnabled: isUnlocked,
+                onConfirm: () {},
+                contentWidget: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnymeXText(
+                      isUnlocked
+                          ? 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nYou have already visited our social links, so the Okay button is unlocked.'
+                          : 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nOnce you click to join one of them, the Okay button below will unlock.',
+                      size: 14,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      textAlign: TextAlign.center,
+                      maxLines: 999,
+                    ),
+                    const SizedBox(height: 20),
+                    AnymexOnTap(
+                      onTap: () async {
+                        final url = settings.discordUrl.value;
+                        await launchUrl(Uri.parse(url),
+                            mode: LaunchMode.externalApplication);
+                        KvHelper.set('anymex_discord_notice_unlocked', true);
+                        setDialogState(() {
+                          isUnlocked = true;
+                        });
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF5865F2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(HugeIcons.strokeRoundedDiscord,
+                                color: Colors.white, size: 20),
+                            SizedBox(width: 8),
+                            AnymeXText(
+                              'Join New Discord',
+                              color: Colors.white,
+                              variant: TextVariant.bold,
+                              size: 13,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    AnymexOnTap(
+                      onTap: () async {
+                        final url = settings.telegramUrl.value;
+                        await launchUrl(Uri.parse(url),
+                            mode: LaunchMode.externalApplication);
+                        KvHelper.set('anymex_discord_notice_unlocked', true);
+                        setDialogState(() {
+                          isUnlocked = true;
+                        });
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0088CC),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(HugeIcons.strokeRoundedTelegram,
+                                color: Colors.white, size: 20),
+                            SizedBox(width: 8),
+                            AnymeXText(
+                              'Join Telegram Channel',
+                              color: Colors.white,
+                              variant: TextVariant.bold,
+                              size: 13,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _onItemTapped(int index) {
@@ -466,21 +640,83 @@ class _FilterScreenState extends State<FilterScreen> {
     );
   }
 
-  final routes = [
-    const SizedBox.shrink(),
-    const HomePage(),
-    const AnimeHomePage(),
-    const MangaHomePage(),
-    const MyLibrary(),
-    const ExtensionScreen(disableGlow: true),
-  ];
+  List<String> _getNavTabs(ServiceHandler authService, Settings settings) {
+    settings.uiSettings.value;
+    return settings.navigationTabOrder;
+  }
 
-  final mobileRoutes = [
-    const HomePage(),
-    const AnimeHomePage(),
-    const MangaHomePage(),
-    const MyLibrary()
-  ];
+  Widget _getWidgetForTab(String tabKey) {
+    switch (tabKey) {
+      case 'Home':
+        return const HomePage();
+      case 'Anime':
+        return const AnimeHomePage();
+      case 'Manga':
+        return const MangaHomePage();
+      case 'Novel':
+        return const NovelHomePage();
+      case 'Library':
+        return const MyLibrary();
+      case 'Extensions':
+        return const ExtensionScreen(isTabScreen: true);
+      default:
+        return const HomePage();
+    }
+  }
+
+  NavItem _getNavItemForTab(String tabKey, bool isSimkl, Function(int) onTap) {
+    switch (tabKey) {
+      case 'Home':
+        return NavItem(
+          unselectedIcon: IconlyLight.home,
+          selectedIcon: IconlyBold.home,
+          onTap: onTap,
+          label: 'Home',
+        );
+      case 'Anime':
+        return NavItem(
+          unselectedIcon: Icons.movie_filter_outlined,
+          selectedIcon: Icons.movie_filter_rounded,
+          onTap: onTap,
+          label: isSimkl ? 'Movies' : 'Anime',
+        );
+      case 'Manga':
+        return NavItem(
+          unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
+          selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
+          onTap: onTap,
+          label: isSimkl ? 'Series' : 'Manga',
+        );
+      case 'Novel':
+        return NavItem(
+          unselectedIcon: Icons.auto_stories_outlined,
+          selectedIcon: Icons.auto_stories_rounded,
+          onTap: onTap,
+          label: 'Novel',
+        );
+      case 'Library':
+        return NavItem(
+          unselectedIcon: HugeIcons.strokeRoundedLibrary,
+          selectedIcon: HugeIcons.strokeRoundedLibrary,
+          onTap: onTap,
+          label: 'Library',
+        );
+      case 'Extensions':
+        return NavItem(
+          unselectedIcon: Icons.extension_outlined,
+          selectedIcon: Icons.extension_rounded,
+          onTap: onTap,
+          label: 'Extensions',
+        );
+      default:
+        return NavItem(
+          unselectedIcon: IconlyLight.home,
+          selectedIcon: IconlyBold.home,
+          onTap: onTap,
+          label: tabKey,
+        );
+    }
+  }
 
   @override
   void dispose() {
@@ -491,19 +727,16 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   Widget build(BuildContext context) {
     final authService = Get.put(ServiceHandler());
-    final isSimkl =
-        Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
-    return Glow(
-      child: PlatformBuilder(
-        strictMode: false,
-        desktopBuilder: _buildDesktopLayout(context, authService, isSimkl),
-        androidBuilder: _buildAndroidLayout(isSimkl),
-      ),
-    );
+    return AnymeXScaffold(
+        body: PlatformBuilder(
+      strictMode: false,
+      desktopBuilder: _buildDesktopLayout(context, authService),
+      androidBuilder: _buildAndroidLayout(authService),
+    ));
   }
 
-  Scaffold _buildDesktopLayout(
-      BuildContext context, ServiceHandler authService, bool isSimkl) {
+  Widget _buildDesktopLayout(BuildContext context, ServiceHandler authService) {
+    final settings = Get.find<Settings>();
     return Scaffold(
       extendBody: true,
       backgroundColor: Provider.of<ThemeProvider>(context).isOled
@@ -512,123 +745,128 @@ class _FilterScreenState extends State<FilterScreen> {
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Obx(() => SizedBox(
-              width: 120,
-              child: SuperListView(
-                children: [
-                  ResponsiveNavBar(
-                    isDesktop: true,
-                    currentIndex: _selectedIndex,
-                    margin: const EdgeInsets.fromLTRB(20, 30, 15, 10),
-                    items: [
-                      NavItem(
-                          unselectedIcon: IconlyBold.profile,
-                          selectedIcon: IconlyBold.profile,
-                          onTap: (index) {
-                            return SettingsSheet.show(context);
-                          },
-                          label: 'Profile',
-                          altIcon: CircleAvatar(
-                              radius: 24,
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer
-                                  .withValues(alpha: 0.3),
-                              child: authService.isLoggedIn.value
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(59),
-                                      child: AnymeXImage(
-                                          width: 40,
-                                          height: 40,
-                                          fit: BoxFit.cover,
-                                          radius: 0,
-                                          imageUrl: authService
-                                                  .profileData.value.avatar ??
-                                              ''),
-                                    )
-                                  : const Icon((IconlyBold.profile)))),
-                      NavItem(
-                        unselectedIcon: IconlyLight.home,
-                        selectedIcon: IconlyBold.home,
-                        onTap: _onItemTapped,
-                        label: 'Home',
-                      ),
-                      NavItem(
-                        unselectedIcon: Icons.movie_filter_outlined,
-                        selectedIcon: Icons.movie_filter_rounded,
-                        onTap: _onItemTapped,
-                        label: 'Anime',
-                      ),
-                      NavItem(
-                        unselectedIcon:
-                            isSimkl ? Iconsax.monitor : Iconsax.book,
-                        selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
-                        onTap: _onItemTapped,
-                        label: 'Manga',
-                      ),
-                      NavItem(
-                        unselectedIcon: HugeIcons.strokeRoundedLibrary,
-                        selectedIcon: HugeIcons.strokeRoundedLibrary,
-                        onTap: _onItemTapped,
-                        label: 'Library',
-                      ),
-                      NavItem(
-                        unselectedIcon: Icons.extension_outlined,
-                        selectedIcon: Icons.extension_rounded,
-                        onTap: _onItemTapped,
-                        label: "Extensions",
-                      ),
-                    ],
-                  ),
-                ],
-              ))),
+          Obx(() {
+            final isSimkl = authService.serviceType.value == ServicesType.simkl;
+            final navTabs = _getNavTabs(authService, settings);
+            final navRailWidth = settings.navBarStyle == 0 ? 110.0 : 110.0;
+            return SizedBox(
+                width: navRailWidth,
+                child: ListView(
+                  children: [
+                    ResponsiveNavBar(
+                      isDesktop: true,
+                      currentIndex: _selectedIndex.clamp(0, navTabs.length),
+                      margin: const EdgeInsets.fromLTRB(12, 18, 12, 10),
+                      borderRadius: BorderRadius.circular(50),
+                      items: [
+                        NavItem(
+                            unselectedIcon: IconlyBold.profile,
+                            selectedIcon: IconlyBold.profile,
+                            onTap: (index) {
+                              return SettingsSheet.show(context);
+                            },
+                            label: 'Profile',
+                            altIcon: Obx(() {
+                              final count = Get.find<SourceController>()
+                                  .extensionUpdatesCount
+                                  .value;
+                              final avatar = CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainer
+                                      .withValues(alpha: 0.3),
+                                  child: authService.isLoggedIn.value
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(59),
+                                          child: AnymeXImage(
+                                              width: 40,
+                                              height: 40,
+                                              fit: BoxFit.cover,
+                                              radius: 0,
+                                              imageUrl: authService.profileData
+                                                      .value.avatar ??
+                                                  ''),
+                                        )
+                                      : const Icon((IconlyBold.profile)));
+                              if (count > 0) {
+                                return AnymeXBadge(
+                                  label: count.toString(),
+                                  offset: const Offset(0, 0),
+                                  child: avatar,
+                                );
+                              }
+                              return avatar;
+                            })),
+                        for (final tab in navTabs)
+                          _getNavItemForTab(tab, isSimkl, _onItemTapped),
+                      ],
+                    ),
+                  ],
+                ));
+          }),
           Expanded(
-              child: SmoothPageEntrance(
-                  style: PageEntranceStyle.slideUpGentle,
-                  key: Key(_selectedIndex.toString()),
-                  child: routes[_selectedIndex])),
+            child: Obx(() {
+              final navTabs = _getNavTabs(authService, settings);
+              final desktopRoutes = [
+                const SizedBox.shrink(),
+                for (final tab in navTabs) _getWidgetForTab(tab),
+              ];
+              final validIndex =
+                  _selectedIndex.clamp(0, desktopRoutes.length - 1);
+              return IndexedStack(
+                index: validIndex,
+                children: desktopRoutes,
+              );
+            }),
+          ),
         ],
       ),
     );
   }
 
-  Scaffold _buildAndroidLayout(bool isSimkl) {
-    return Scaffold(
-        body: SmoothPageEntrance(
-            style: PageEntranceStyle.slideUpGentle,
-            key: Key(_mobileSelectedIndex.toString()),
-            child: mobileRoutes[_mobileSelectedIndex]),
-        extendBody: true,
-        bottomNavigationBar: ResponsiveNavBar(
-          isDesktop: false,
-          currentIndex: _mobileSelectedIndex,
-          margin: const EdgeInsets.symmetric(vertical: 40, horizontal: 40),
-          items: [
-            NavItem(
-              unselectedIcon: IconlyBold.home,
-              selectedIcon: IconlyBold.home,
-              onTap: _onMobileItemTapped,
-              label: 'Home',
+  Widget _buildAndroidLayout(ServiceHandler authService) {
+    final settings = Get.find<Settings>();
+    return Obx(() {
+      final isSimkl = authService.serviceType.value == ServicesType.simkl;
+      final navTabs = _getNavTabs(authService, settings);
+      final mobileRoutes = [
+        for (final tab in navTabs) _getWidgetForTab(tab),
+      ];
+      final validIndex = _mobileSelectedIndex.clamp(0, mobileRoutes.length - 1);
+
+      return PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) async {
+          if (didPop) return;
+          final homeIndex = navTabs.indexOf('Home');
+          if (validIndex != homeIndex && homeIndex != -1) {
+            setState(() {
+              _mobileSelectedIndex = homeIndex;
+            });
+          } else {
+            const MethodChannel("com.ryan.anymex/utils")
+                .invokeMethod("exitApp");
+          }
+        },
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: IndexedStack(
+              index: validIndex,
+              children: mobileRoutes,
             ),
-            NavItem(
-              unselectedIcon: Icons.movie_filter_rounded,
-              selectedIcon: Icons.movie_filter_rounded,
-              onTap: _onMobileItemTapped,
-              label: 'Anime',
-            ),
-            NavItem(
-              unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
-              selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
-              onTap: _onMobileItemTapped,
-              label: 'Manga',
-            ),
-            NavItem(
-              unselectedIcon: HugeIcons.strokeRoundedLibrary,
-              selectedIcon: HugeIcons.strokeRoundedLibrary,
-              onTap: _onMobileItemTapped,
-              label: 'Library',
-            ),
-          ],
-        ));
+            extendBody: true,
+            bottomNavigationBar: ResponsiveNavBar(
+              isDesktop: false,
+              currentIndex: validIndex,
+              margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
+              items: [
+                for (final tab in navTabs)
+                  _getNavItemForTab(tab, isSimkl, _onMobileItemTapped),
+              ],
+            )),
+      );
+    });
   }
 }

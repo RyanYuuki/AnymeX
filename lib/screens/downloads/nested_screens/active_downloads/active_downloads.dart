@@ -5,11 +5,9 @@ import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
-import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide Video;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,9 +19,8 @@ class ActiveDownloads extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<DownloadController>();
-    return Glow(
-      child: Scaffold(
-        body: Column(
+    return AnymeXScaffold(
+  body: Column(
           children: [
             const NestedHeader(title: 'Active Downloads'),
             Expanded(
@@ -59,9 +56,8 @@ class ActiveDownloads extends StatelessWidget {
               }),
             ),
           ],
-        ),
-      ),
-    );
+        )
+);
   }
 
   Widget _buildEmptyState(BuildContext context) {
@@ -72,16 +68,14 @@ class ActiveDownloads extends StatelessWidget {
           Icon(HugeIcons.strokeRoundedDownload04,
               size: 64, color: context.colors.onSurface.opaque(0.15)),
           const SizedBox(height: 16),
-          AnymexText(
-              text: 'No active downloads',
+          AnymeXText('No active downloads',
               size: 16,
               variant: TextVariant.semiBold,
               color: context.colors.onSurface.opaque(0.4)),
           const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: AnymexText(
-                text: 'Start a new download from the "New Download" tab',
+            child: AnymeXText('Start a new download from the "New Download" tab',
                 size: 13,
                 color: context.colors.onSurface.opaque(0.3),
                 textAlign: TextAlign.center),
@@ -155,14 +149,12 @@ class ActiveDownloads extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymexText(
-                        text: task.mediaTitle,
+                    AnymeXText(task.mediaTitle,
                         variant: TextVariant.semiBold,
                         size: 15,
                         maxLines: 2),
                     const SizedBox(height: 4),
-                    AnymexText(
-                      text: task.displayId,
+                    AnymeXText(task.displayId,
                       size: 13,
                       maxLines: 1,
                       color: theme.onSurface.opaque(0.55),
@@ -264,8 +256,7 @@ class ActiveDownloads extends StatelessWidget {
               Icon(statusIcon, size: 14, color: statusColor),
               const SizedBox(width: 6),
               Expanded(
-                child: AnymexText(
-                    text: statusLabel,
+                child: AnymeXText(statusLabel,
                     size: 12,
                     color: statusColor,
                     variant: TextVariant.semiBold,
@@ -290,8 +281,7 @@ class ActiveDownloads extends StatelessWidget {
                       color: theme.tertiaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: AnymexText(
-                        text: 'Select Server',
+                    child: AnymeXText('Select Server',
                         size: 11,
                         color: theme.onTertiaryContainer,
                         variant: TextVariant.bold),
@@ -309,8 +299,7 @@ class ActiveDownloads extends StatelessWidget {
                       color: theme.primary,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: AnymexText(
-                        text: 'Select Server',
+                    child: AnymeXText('Select Server',
                         size: 11,
                         color: theme.onPrimary,
                         variant: TextVariant.bold),
@@ -324,8 +313,7 @@ class ActiveDownloads extends StatelessWidget {
                     color: theme.primaryContainer.opaque(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: AnymexText(
-                      text: task.qualityOrStatus,
+                  child: AnymeXText(task.qualityOrStatus,
                       size: 11,
                       color: theme.primary),
                 ),
@@ -337,8 +325,7 @@ class ActiveDownloads extends StatelessWidget {
                   color: theme.surfaceContainerHighest.opaque(0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: AnymexText(
-                    text: task.extensionName,
+                child: AnymeXText(task.extensionName,
                     size: 11,
                     color: theme.onSurface.opaque(0.5)),
               ),
@@ -347,8 +334,7 @@ class ActiveDownloads extends StatelessWidget {
           if (task.errorMessage != null && task.isFailed) ...[
 
             const SizedBox(height: 6),
-            AnymexText(
-                text: task.errorMessage!,
+            AnymeXText(task.errorMessage!,
                 size: 11,
                 color: theme.error.opaque(0.7),
                 maxLines: 2),
@@ -417,8 +403,7 @@ class ActiveDownloads extends StatelessWidget {
                 return SizedBox(
                   height: 240,
                   child: Center(
-                    child: AnymexText(
-                        text: 'No servers found.',
+                    child: AnymeXText('No servers found.',
                         color: context.colors.onSurface.opaque(0.5)),
                   ),
                 );
@@ -548,8 +533,7 @@ class _ServerListBody extends StatelessWidget {
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 14),
-            child: AnymexText(
-                text: 'Select Server', variant: TextVariant.bold, size: 18),
+            child: AnymeXText('Select Server', variant: TextVariant.bold, size: 18),
           ),
           Expanded(
             child: ListView.builder(
@@ -559,11 +543,9 @@ class _ServerListBody extends StatelessWidget {
                 final server = servers[index];
                 return ListTile(
                   leading: Icon(Icons.dns_rounded, color: theme.primary),
-                  title: AnymexText(
-                      text: server.quality ?? 'Unknown Quality',
+                  title: AnymeXText(server.quality ?? 'Unknown Quality',
                       variant: TextVariant.semiBold),
-                  subtitle: AnymexText(
-                      text: server.originalUrl ?? server.url ?? '',
+                  subtitle: AnymeXText(server.originalUrl ?? server.url ?? '',
                       size: 12,
                       maxLines: 1),
                   onTap: () => onServerSelected(server),
@@ -638,8 +620,7 @@ class _ServerSheetStreamBodyState extends State<_ServerSheetStreamBody> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const AnymexText(
-                    text: 'Select Server',
+                const AnymeXText('Select Server',
                     variant: TextVariant.bold,
                     size: 18),
                 if (!_done) ...[
@@ -660,8 +641,7 @@ class _ServerSheetStreamBodyState extends State<_ServerSheetStreamBody> {
           else if (_servers.isEmpty && _done)
             Expanded(
               child: Center(
-                child: AnymexText(
-                    text: 'No servers found.',
+                child: AnymeXText('No servers found.',
                     color: theme.onSurface.opaque(0.5)),
               ),
             )
@@ -674,11 +654,9 @@ class _ServerSheetStreamBodyState extends State<_ServerSheetStreamBody> {
                   final server = _servers[index];
                   return ListTile(
                     leading: Icon(Icons.dns_rounded, color: theme.primary),
-                    title: AnymexText(
-                        text: server.quality ?? 'Unknown Quality',
+                    title: AnymeXText(server.quality ?? 'Unknown Quality',
                         variant: TextVariant.semiBold),
-                    subtitle: AnymexText(
-                        text: server.originalUrl ?? server.url ?? '',
+                    subtitle: AnymeXText(server.originalUrl ?? server.url ?? '',
                         size: 12,
                         maxLines: 1),
                     onTap: () => widget.onServerSelected(server),

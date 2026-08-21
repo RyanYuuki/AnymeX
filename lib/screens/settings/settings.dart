@@ -1,5 +1,3 @@
-import 'package:anymex/screens/downloads/download_screen.dart';
-import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
@@ -9,7 +7,6 @@ import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_downloads.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
@@ -18,38 +15,19 @@ import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/utils/updater.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
-
-class _CategoryItem {
-  final IconData icon;
-  final String title;
-  final String description;
-  final Widget Function()? destination;
-  final void Function()? customTap;
-  final bool isDebugOnly;
-  final bool addDividerAbove;
-
-  const _CategoryItem({
-    required this.icon,
-    required this.title,
-    required this.description,
-    this.destination,
-    this.customTap,
-    this.isDebugOnly = false,
-    this.addDividerAbove = false,
-  });
-}
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -88,94 +66,44 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final listPadding = getResponsiveValue(context,
-        mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
-        desktopValue: const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0));
-
-    return Glow(
-        child: Scaffold(
-            body: Column(children: [
-      const NestedHeader(title: 'Settings'),
-      Padding(
-        padding:
-            EdgeInsets.fromLTRB(listPadding.left, 16, listPadding.right, 0),
-        child: _buildSearchBar(context),
-      ),
-      Expanded(
-          child: _isSearching
-              ? _buildSearchResults(listPadding)
-              : _buildCategoryList(listPadding)),
-    ])));
-  }
-
-  Widget _buildSearchBar(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [lightGlowingShadow(context)],
-      ),
-      child: TextField(
-        controller: _search.textController,
-        style: TextStyle(color: context.colors.onSurface, fontSize: 16),
-        decoration: InputDecoration(
-          hintText: 'Search settings...',
-          filled: true,
-          fillColor: context.colors.secondaryContainer.opaque(0.5),
-          hintStyle: TextStyle(
-            color: context.colors.onSurface.opaque(0.4, iReallyMeanIt: true),
-            fontSize: 16,
-          ),
-          prefixIcon: Icon(IconlyLight.search, color: context.colors.primary),
-          suffixIcon: _isSearching
-              ? IconButton(
-                  icon: Icon(Icons.close_rounded,
-                      color: context.colors.onSurface
-                          .opaque(0.5, iReallyMeanIt: true)),
-                  onPressed: () {
-                    _search.textController.clear();
-                    FocusScope.of(context).unfocus();
-                  },
-                )
-              : null,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide(
-              color: context.colors.secondaryContainer,
-              width: 1,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(999),
-            borderSide: BorderSide(
-              color: context.colors.secondaryContainer,
-              width: 1,
-            ),
-          ),
-        ),
+    return AnymeXScaffold(
+      resizeToAvoidBottomInset: false,
+      showHeader: true,
+      headerTitle: 'Settings',
+      headerEnableSearch: true,
+      headerSearchController: _search.textController,
+      headerSearchHint: 'Search settings...',
+      onHeaderSearchChanged: (value) => setState(() {}),
+      onHeaderSearchClear: () => setState(() {}),
+      body: Builder(
+        builder: (ctx) {
+          final headerHeight = AnymeXHeaderScope.of(ctx);
+          return _isSearching
+              ? _buildSearchResults(headerHeight)
+              : _buildCategoryList(headerHeight);
+        },
       ),
     );
   }
 
-  Widget _buildSearchResults(EdgeInsets padding) {
+  Widget _buildSearchResults(double headerHeight) {
     if (_searchResults.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.search_off_rounded,
-                size: 64,
-                color:
-                    context.colors.onSurface.opaque(0.15, iReallyMeanIt: true)),
+            Icon(
+              Icons.search_off_rounded,
+              size: 64,
+              color: context.colors.onSurface.opaque(0.15, iReallyMeanIt: true),
+            ),
             const SizedBox(height: 16),
-            AnymexText(
-              text: 'No search results',
+            AnymeXText('No search results',
               size: 16,
               color: context.colors.onSurface.opaque(0.4, iReallyMeanIt: true),
             ),
             const SizedBox(height: 6),
-            AnymexText(
-              text: 'Try a different keyword',
+            AnymeXText('Try a different keyword',
               size: 13,
               color: context.colors.onSurface.opaque(0.3, iReallyMeanIt: true),
             ),
@@ -186,185 +114,207 @@ class _SettingsPageState extends State<SettingsPage> {
 
     final query = _search.textController.text.trim().toLowerCase();
     final categories = _search.sortedCategories(query);
+
     return ListView.builder(
-      padding: EdgeInsets.fromLTRB(padding.left, 12, padding.right, 20),
-      itemCount: categories.length,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+      itemCount: categories.length + 1,
       itemBuilder: (context, index) {
-        final category = categories[index];
+        if (index == 0) return SizedBox(height: headerHeight - 12);
+        final category = categories[index - 1];
         final items = _searchResults[category]!;
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: AnymexExpansionTile(
-            title: category,
-            initialExpanded: true,
-            content: Column(
-              children: items
-                  .map((item) => ListTile(
-                        leading: buildSettingsSearchLeading(context, item),
-                        title: Text(item.title),
-                        subtitle: Text(
-                          item.expansionTitle ?? category,
-                          style: TextStyle(
-                            color: context.colors.onSurface.opaque(0.5),
-                            fontSize: 12,
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 14,
-                          color: context.colors.onSurface.opaque(0.3),
-                        ),
-                        onTap: () async {
-                          final builder = categoryRoutes[category];
-                          if (builder != null) {
-                            await navigate(() => SettingsHighlightProvider(
-                                  highlightTitle: item.targetTitle,
-                                  expansionTitle: item.expansionTitle,
-                                  child: builder(),
-                                ));
-                          }
-                        },
-                      ))
-                  .toList(),
-            ),
-          ),
+
+        return AnymeXSectionBuilder(
+          title: category,
+          children: items
+              .map((item) => AnymeXTile(
+                    leading: buildSettingsSearchLeading(context, item),
+                    title: item.title,
+                    subtitle: item.expansionTitle ?? category,
+                    onTap: () async {
+                      final builder = categoryRoutes[category];
+                      if (builder != null) {
+                        await navigate(() => SettingsHighlightProvider(
+                              highlightTitle: item.targetTitle,
+                              expansionTitle: item.expansionTitle,
+                              child: builder(),
+                            ));
+                      }
+                    },
+                  ))
+              .toList(),
         );
       },
     );
   }
 
-  Widget _buildCategoryList(EdgeInsets padding) {
+  Widget _buildCategoryList(double headerHeight) {
     return SuperListView(
-      padding: padding,
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       children: [
-        const SizedBox(height: 16),
-        Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color:
-                  Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
-          child: Column(
-            children: [
-              ..._buildCategoryWidgets(),
-            ],
-          ),
+        SizedBox(height: headerHeight),
+        _buildCategorySection(
+          title: "Accounts & Sync",
+          tiles: [
+            _buildTile(
+              icon: IconlyLight.profile,
+              title: "Accounts",
+              description: "Manage your MyAnimeList, Anilist, Simkl Accounts!",
+              destination: SettingsAccounts.new,
+            ),
+          ],
         ),
-        30.height(),
+        _buildCategorySection(
+          title: "Preferences & System",
+          tiles: [
+            _buildTile(
+              icon: HugeIcons.strokeRoundedBulb,
+              title: "Common",
+              description: "Tweak general app settings",
+              destination: SettingsCommon.new,
+            ),
+            _buildTile(
+              icon: HugeIcons.strokeRoundedLibraries,
+              title: "Backup & Restore",
+              description: "Backup and restore your library",
+              destination: BackupRestorePage.new,
+            ),
+            _buildTile(
+              icon: Icons.storage_rounded,
+              title: "Storage Manager",
+              description:
+                  "Manage cached images, thresholds, and reset app data",
+              destination: SettingsStorageManager.new,
+            ),
+          ],
+        ),
+        _buildCategorySection(
+          title: "Appearance & Interface",
+          tiles: [
+            _buildTile(
+              icon: HugeIcons.strokeRoundedPaintBoard,
+              title: "UI",
+              description: "Customize the interface to your liking",
+              destination: SettingsUi.new,
+            ),
+            _buildTile(
+              icon: HugeIcons.strokeRoundedPaintBrush01,
+              title: "Theme",
+              description: "Personalize the look and make it yours",
+              destination: SettingsTheme.new,
+            ),
+          ],
+        ),
+        _buildCategorySection(
+          title: "Media & Playback",
+          tiles: [
+            _buildTile(
+              icon: HugeIcons.strokeRoundedPlay,
+              title: "Player",
+              description: "Play around with the video player",
+              destination: SettingsPlayer.new,
+            ),
+            _buildTile(
+              icon: Icons.menu_book_rounded,
+              title: "Reader",
+              description: "Configure manga and novel reader defaults",
+              destination: SettingsReader.new,
+            ),
+            _buildTile(
+              icon: Icons.settings_suggest_rounded,
+              title: "Download Settings",
+              description: "Configure parallel downloads and directory",
+              destination: SettingsDownloads.new,
+            ),
+          ],
+        ),
+        _buildCategorySection(
+          title: "Extensions & Diagnostics",
+          tiles: [
+            _buildTile(
+              icon: Icons.chat_bubble_outline_rounded,
+              title: "Comment System",
+              description: "Commentum v2 settings, moderation & preferences",
+              destination: SettingsComments.new,
+            ),
+            _buildTile(
+              icon: Icons.extension_rounded,
+              title: "Extensions",
+              description: "Extensions tailored to your needs",
+              destination: SettingsExtensions.new,
+            ),
+            _buildTile(
+              icon: HugeIcons.strokeRoundedFile01,
+              title: "Logs",
+              description: "Manage log capture and share saved logs",
+              destination: SettingsLogs.new,
+            ),
+          ],
+        ),
+        _buildCategorySection(
+          title: "About",
+          tiles: [
+            _buildTile(
+              icon: HugeIcons.strokeRoundedInformationCircle,
+              title: "About",
+              description: "About the App",
+              destination: AboutPage.new,
+            ),
+            if (kDebugMode)
+              _buildTile(
+                icon: HugeIcons.strokeRoundedBug01,
+                title: "Test",
+                description: "Debug extensions and update sheet",
+                customTap: () async {
+                  AnymeXDialog(
+                    title: "Debug",
+                    contentWidget: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnymeXTile(
+                          icon: HugeIcons.strokeRoundedBug01,
+                          title: "Debug Extensions",
+                          subtitle: "Debug extensions and view logs",
+                          onTap: () async {},
+                        ),
+                      ],
+                    ),
+                    onConfirm: () {},
+                  ).show(context);
+                },
+              ),
+          ],
+        ),
+        const SizedBox(height: 30),
       ],
     );
   }
 
-  List<Widget> _buildCategoryWidgets() {
-    final items = [
-      _CategoryItem(
-          icon: IconlyLight.profile,
-          title: "Accounts",
-          description: "Manage your MyAnimeList, Anilist, Simkl Accounts!",
-          destination: () => const SettingsAccounts()),
-      _CategoryItem(
-          icon: HugeIcons.strokeRoundedBulb,
-          title: "Common",
-          description: "Tweak Settings",
-          destination: () => const SettingsCommon()),
-      _CategoryItem(
-          icon: HugeIcons.strokeRoundedLibraries,
-          title: "Backup & Restore",
-          description: "Backup and restore your library",
-          destination: () => const BackupRestorePage()),
-      _CategoryItem(
-          icon: Icons.storage_rounded,
-          title: "Storage Manager",
-          description: "Manage cached images, thresholds, and reset app data",
-          destination: () => const SettingsStorageManager()),
-      _CategoryItem(
-          icon: HugeIcons.strokeRoundedPaintBoard,
-          title: "UI",
-          description: "Customize the interface to your liking",
-          destination: () => const SettingsUi()),
-      _CategoryItem(
-          icon: HugeIcons.strokeRoundedPlay,
-          title: "Player",
-          description: "Play around with the video player",
-          destination: () => const SettingsPlayer()),
-      _CategoryItem(
-          icon: Icons.menu_book_rounded,
-          title: "Reader",
-          description: "Configure manga and novel reader defaults",
-          destination: () => const SettingsReader()),
-      _CategoryItem(
-          icon: HugeIcons.strokeRoundedPaintBrush01,
-          title: "Theme",
-          description: "Personalize the look and make it yours",
-          destination: () => const SettingsTheme()),
-      _CategoryItem(
-          icon: Icons.settings_suggest_rounded,
-          title: "Download Settings",
-          description: "Configure parallel downloads and directory",
-          destination: () => const SettingsDownloads()),
+  Widget _buildCategorySection({
+    required String title,
+    required List<Widget> tiles,
+  }) {
+    return AnymeXSectionBuilder(
+      title: title,
+      children: tiles,
+    );
+  }
 
-      _CategoryItem(
-          icon: Icons.chat_bubble_outline_rounded,
-          title: "Comment System",
-          description: "Commentum v2 settings, moderation & preferences",
-          destination: () => const SettingsComments()),
-      _CategoryItem(
-          icon: Icons.extension_rounded,
-          title: "Extensions",
-          description: "Extensions tailored to your needs",
-          destination: () => const SettingsExtensions(),
-          addDividerAbove: true),
-
-      _CategoryItem(
-          icon: HugeIcons.strokeRoundedFile01,
-          title: "Logs",
-          description: "Manage log capture and share saved logs",
-          destination: () => const SettingsLogs(),
-          addDividerAbove: true),
-      _CategoryItem(
-          icon: HugeIcons.strokeRoundedInformationCircle,
-          title: "About",
-          description: "About the App",
-          destination: () => const AboutPage(),
-          addDividerAbove: true),
-      _CategoryItem(
-        icon: HugeIcons.strokeRoundedInformationCircle,
-        title: "Test",
-        description: "Debug extensions",
-        isDebugOnly: true,
-        addDividerAbove: true,
-        customTap: () async {
-          final list = Get.find<ExtensionManager>()
-              .installedAnimeExtensions
-              .whereType<CloudStreamSource>()
-              .toList();
-          for (CloudStreamSource i in list) {
-            debugPrint("${i.id} - ${i.internalName} - ${i.jarUrl}");
-            final search =
-                await i.methods.search("Attack on titan", 1, []);
-            print(search.toJson());
-          }
-        },
-      ),
-    ];
-
-    final widgets = <Widget>[];
-    for (final item in items) {
-      if (item.isDebugOnly && !kDebugMode) continue;
-
-      if (item.addDividerAbove) {
-        widgets.add(const SizedBox(height: 10));
-      }
-
-      widgets.add(
-        CustomTile(
-          icon: item.icon,
-          title: item.title,
-          description: item.description,
-          onTap: item.customTap ?? () => navigate(item.destination!),
-        ),
-      );
-    }
-    return widgets;
+  Widget _buildTile({
+    required IconData icon,
+    required String title,
+    required String description,
+    Widget Function()? destination,
+    VoidCallback? customTap,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+    return AnymeXTile(
+      icon: icon,
+      iconColor: colors.primary,
+      iconBackgroundColor: colors.primary.opaque(0.12, iReallyMeanIt: true),
+      title: title,
+      subtitle: description,
+      onTap: customTap ?? () => navigate(destination),
+    );
   }
 }
 
@@ -376,12 +326,14 @@ class CustomBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-        style: ElevatedButton.styleFrom(
-            backgroundColor:
-                Theme.of(context).colorScheme.surfaceContainer.opaque(0.5)),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        icon: const Icon(Icons.arrow_back_ios_new_rounded));
+      style: ElevatedButton.styleFrom(
+        backgroundColor:
+            Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
+      ),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+      icon: const Icon(Icons.arrow_back_ios_new_rounded),
+    );
   }
 }

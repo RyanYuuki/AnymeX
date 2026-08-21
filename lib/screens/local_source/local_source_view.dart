@@ -10,9 +10,9 @@ import 'package:anymex/screens/local_source/model/detail_result.dart';
 import 'package:anymex/screens/local_source/player/offline_player.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -55,10 +55,8 @@ class _WatchOfflineState extends State<WatchOffline> {
           }
         }
       },
-      child: Glow(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Container(
+      child: AnymeXScaffold(
+  body: Container(
             decoration: BoxDecoration(
               color: theme.colorScheme.surface.opaque(0.4),
             ),
@@ -70,9 +68,8 @@ class _WatchOfflineState extends State<WatchOffline> {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
+          )
+),
     );
   }
 
@@ -106,7 +103,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   'Local Library',
                   style: TextStyle(
                     color: theme.colorScheme.onSurface,
@@ -115,7 +112,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Obx(() => Text(
+                Obx(() => AnymeXText(
                       controller.viewMode.value == ViewMode.search
                           ? 'Search stuff you wanna download'
                           : controller.viewMode.value == ViewMode.download
@@ -166,7 +163,7 @@ class _WatchOfflineState extends State<WatchOffline> {
           //                   minHeight: 20,
           //                 ),
           //                 child: Center(
-          //                   child: Text(
+          //                   child: AnymeXText(
           //                     DownloadManagerController
           //                         .instance.downloadsList.length
           //                         .toString(),
@@ -329,7 +326,7 @@ class _WatchOfflineState extends State<WatchOffline> {
         return _buildNoSearchResultsState(theme);
       }
 
-      if (controller.selectedVideos.value.isNotEmpty) {
+      if (controller.selectedVideos.isNotEmpty) {
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -340,10 +337,10 @@ class _WatchOfflineState extends State<WatchOffline> {
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
           ),
-          itemCount: controller.selectedVideos.value.length,
+          itemCount: controller.selectedVideos.length,
           itemBuilder: (context, index) {
             return _buildServerTile(
-                theme, controller.selectedVideos.value[index]);
+                theme, controller.selectedVideos[index]);
           },
         );
       }
@@ -406,7 +403,7 @@ class _WatchOfflineState extends State<WatchOffline> {
 
   Widget _buildSearchLoadingState(ThemeData theme) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.sizeOf(context).height * 0.6,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -415,7 +412,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               color: theme.colorScheme.primary,
             ),
             const SizedBox(height: 16),
-            Text(
+            AnymeXText(
               'Searching...',
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
@@ -430,7 +427,7 @@ class _WatchOfflineState extends State<WatchOffline> {
 
   Widget _buildMediaLoadingState(ThemeData theme) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.sizeOf(context).height * 0.6,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -439,7 +436,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               color: theme.colorScheme.primary,
             ),
             const SizedBox(height: 16),
-            Text(
+            AnymeXText(
               'Loading Media...',
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
@@ -454,7 +451,7 @@ class _WatchOfflineState extends State<WatchOffline> {
 
   Widget _buildNoSearchResultsState(ThemeData theme) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.sizeOf(context).height * 0.6,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -466,7 +463,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               color: theme.colorScheme.onSurface.opaque(0.3),
             ),
             const SizedBox(height: 16),
-            Text(
+            AnymeXText(
               searchController.text.isEmpty
                   ? 'Search Something...'
                   : 'No results found',
@@ -477,7 +474,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               searchController.text.isEmpty
                   ? 'e.q. "Attack on Titan", "Breaking Bad", "Naruto"'
                   : 'Try searching for different keywords',
@@ -530,8 +527,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AnymexText(
-                      text: title,
+                    AnymeXText(title,
                       maxLines: 2,
                       size: 16,
                       variant: TextVariant.semiBold,
@@ -614,8 +610,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AnymexText(
-                      text: title,
+                    AnymeXText(title,
                       maxLines: 2,
                       size: 16,
                       variant: TextVariant.semiBold,
@@ -683,8 +678,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AnymexText(
-                      text: title,
+                    AnymeXText(title,
                       maxLines: 2,
                       size: 16,
                       variant: TextVariant.semiBold,
@@ -750,7 +744,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    AnymeXText(
                       video?.quality ?? 'Auto',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -807,7 +801,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               color: theme.colorScheme.primary,
             ),
             const SizedBox(height: 24),
-            Text(
+            AnymeXText(
               'Loading media files...',
               style: TextStyle(
                 color: theme.colorScheme.onSurface.opaque(0.7),
@@ -836,7 +830,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               color: theme.colorScheme.onSurface.opaque(0.5),
             ),
             const SizedBox(height: 24),
-            Text(
+            AnymeXText(
               'Storage Permission Required',
               style: TextStyle(
                 color: theme.colorScheme.onSurface,
@@ -845,7 +839,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(
+            AnymeXText(
               'Please grant storage permission to browse your media files',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -857,7 +851,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ElevatedButton.icon(
               onPressed: controller.checkPermissionAndShowPicker,
               icon: const Icon(Icons.folder_open),
-              label: const Text('Grant Permission'),
+              label: const AnymeXText('Grant Permission'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary.opaque(0.4),
                 foregroundColor: theme.colorScheme.onPrimary,
@@ -889,7 +883,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               color: theme.colorScheme.onSurface.opaque(0.5),
             ),
             const SizedBox(height: 24),
-            Text(
+            AnymeXText(
               'Select Media Directory',
               style: TextStyle(
                 color: theme.colorScheme.onSurface,
@@ -898,7 +892,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(
+            AnymeXText(
               'Choose a directory to browse your media files',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -910,7 +904,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ElevatedButton.icon(
               onPressed: controller.showDirectoryPicker,
               icon: const Icon(Icons.folder_open),
-              label: const Text('Select Directory'),
+              label: const AnymeXText('Select Directory'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary.opaque(0.4),
                 foregroundColor: theme.colorScheme.onPrimary,
@@ -941,7 +935,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               color: theme.colorScheme.onSurface.opaque(0.5),
             ),
             const SizedBox(height: 24),
-            Text(
+            AnymeXText(
               'No Media Files Found',
               style: TextStyle(
                 color: theme.colorScheme.onSurface,
@@ -950,7 +944,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(
+            AnymeXText(
               'This directory contains no supported media files',
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -1103,7 +1097,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                     AnimatedOpacity(
                       opacity: isSelected ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 200),
-                      child: Text(
+                      child: AnymeXText(
                         label,
                         style: theme.textTheme.labelMedium?.copyWith(
                             color: theme.colorScheme.onPrimary,
@@ -1186,8 +1180,8 @@ class _WatchOfflineState extends State<WatchOffline> {
           child: Row(
             children: [
               Container(
-                width: 60,
-                height: 88,
+                width: isVideoFile ? 104 : 60,
+                height: isVideoFile ? 60 : 88,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   color: isDirectory
@@ -1212,7 +1206,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    AnymeXText(
                       itemName,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -1289,7 +1283,7 @@ class _WatchOfflineState extends State<WatchOffline> {
           ),
           const SizedBox(width: 4),
           Flexible(
-            child: Text(
+            child: AnymeXText(
               text,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: isFilled
@@ -1325,8 +1319,8 @@ class _WatchOfflineState extends State<WatchOffline> {
     if (isVideoFile) {
       return VideoThumbnailWidget(
         videoPath: item.path,
-        width: 60,
-        height: 88,
+        width: 104,
+        height: 60,
         borderRadius: BorderRadius.circular(12),
         fallback: Container(
           decoration: BoxDecoration(

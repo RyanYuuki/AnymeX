@@ -1,7 +1,7 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -46,9 +46,10 @@ class InlineSearchHistory extends StatelessWidget {
     }
 
     final displayedTerms = searchTerms.reversed.toList();
+    final bottomMargin = MediaQuery.paddingOf(context).bottom + 32.0;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+      margin: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, bottomMargin),
       decoration: BoxDecoration(
         color: context.colors.surface.opaque(0.3),
         borderRadius: BorderRadius.circular(24),
@@ -82,8 +83,7 @@ class InlineSearchHistory extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    AnymexText(
-                      text: 'Recent Searches',
+                    AnymeXText('Recent Searches',
                       variant: TextVariant.semiBold,
                       size: 15,
                       color: Theme.of(context)
@@ -115,8 +115,7 @@ class InlineSearchHistory extends StatelessWidget {
                               .opaque(0.8, iReallyMeanIt: true),
                         ),
                         const SizedBox(width: 4),
-                        AnymexText(
-                          text: "Clear",
+                        AnymeXText("Clear",
                           size: 11,
                           color: Theme.of(context)
                               .colorScheme
@@ -151,68 +150,48 @@ class InlineSearchHistory extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Theme.of(context)
                               .colorScheme
-                              .surfaceVariant
-                              .opaque(0.3),
+                              .surfaceContainerHighest
+                              .opaque(0.3, iReallyMeanIt: true),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: Theme.of(context)
                                 .colorScheme
-                                .outline
-                                .opaque(0.05),
-                            width: 1,
+                                .onSurface
+                                .opaque(0.05, iReallyMeanIt: true),
                           ),
                         ),
                         child: Row(
                           children: [
-                            Container(
-                              width: 28,
-                              height: 28,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .opaque(0.1, iReallyMeanIt: true),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Iconsax.search_normal_1,
+                            Icon(
+                              Iconsax.search_normal_1,
+                              size: 16,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .opaque(0.6, iReallyMeanIt: true),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: AnymeXText(term,
+                                variant: TextVariant.semiBold,
                                 size: 14,
                                 color: Theme.of(context)
                                     .colorScheme
-                                    .primary
-                                    .opaque(0.7, iReallyMeanIt: true),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: AnymexText(
-                                text: term,
-                                size: 13,
-                                color: Theme.of(context)
-                                    .colorScheme
                                     .onSurface
-                                    .opaque(0.8, iReallyMeanIt: true),
+                                    .opaque(0.9, iReallyMeanIt: true),
                               ),
                             ),
                             GestureDetector(
                               onTap: () => _deleteTerm(term),
-                              child: Container(
-                                width: 28,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .error
-                                      .opaque(0.1, iReallyMeanIt: true),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
                                 child: Icon(
-                                  Iconsax.close_circle,
-                                  size: 12,
+                                  Iconsax.close_square,
+                                  size: 16,
                                   color: Theme.of(context)
                                       .colorScheme
-                                      .error
-                                      .opaque(0.6, iReallyMeanIt: true),
+                                      .onSurface
+                                      .opaque(0.4, iReallyMeanIt: true),
                                 ),
                               ),
                             ),

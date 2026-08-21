@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -12,6 +14,9 @@ enum SortType {
   lastAdded,
   lastRead,
   rating,
+  popularity,
+  progress,
+  aired,
 }
 
 class LibraryController extends GetxController {
@@ -27,11 +32,103 @@ class LibraryController extends GetxController {
   final currentSort = SortType.lastAdded.obs;
   final isAscending = false.obs;
 
+  StreamSubscription? _streamSubscription;
+  StreamSubscription? _customListsSubscription;
+  final rawItems = <OfflineMedia>[].obs;
+  final customListNames = <String>[].obs;
+  final isLoading = false.obs;
+
+  List<OfflineMedia> get processedItems {
+    final searched = applySearch(rawItems, searchQuery.value);
+    return applySorting(searched);
+  }
+
   @override
   void onInit() {
     super.onInit();
     _migrateGridDefaultToAuto();
     getPreferences();
+    
+    ever(type, (_) {
+      _setupCustomListsSubscription();
+    });
+    ever(selectedListIndex, (_) => _updateSourceStream());
+    ever(serviceHandler.serviceType, (_) => _updateSourceStream());
+    
+    _setupCustomListsSubscription();
+  }
+
+  void _setupCustomListsSubscription() {
+    _customListsSubscription?.cancel();
+    _customListsSubscription = offlineStorage.watchCustomLists(type.value).listen((lists) {
+      final names = lists
+          .where((l) => l.mediaTypeIndex == type.value.index)
+          .map((l) => l.listName ?? '')
+          .toList();
+      customListNames.value = names;
+      
+      if (selectedListIndex.value != -1) {
+        if (customListNames.isEmpty) {
+          selectedListIndex.value = 0;
+        } else if (selectedListIndex.value >= customListNames.length) {
+          selectedListIndex.value = customListNames.length - 1;
+        }
+      }
+      
+      _updateSourceStream();
+    });
+  }
+
+  Future<void> _updateSourceStream() async {
+    _streamSubscription?.cancel();
+    if (rawItems.isEmpty) {
+      isLoading.value = true;
+    }
+
+    if (selectedListIndex.value != -1) {
+      if (customListNames.isEmpty || selectedListIndex.value >= customListNames.length) {
+        rawItems.clear();
+        isLoading.value = false;
+        return;
+      }
+    }
+
+    Stream<List<OfflineMedia>> stream;
+    if (selectedListIndex.value == -1) {
+      stream = getLibraryStream();
+    } else {
+      final selectedListName = customListNames[selectedListIndex.value];
+      stream = getCustomListStream(selectedListName, type.value);
+    }
+
+    _streamSubscription = stream.listen((items) {
+      if (selectedListIndex.value == -1) {
+        List<OfflineMedia> filtered;
+        if (type.value.isAnime) {
+          filtered = items
+              .where((e) => e.currentEpisode?.currentTrack != null)
+              .toList();
+        } else {
+          filtered = items
+              .where((e) => e.currentChapter?.link != null)
+              .toList();
+        }
+        rawItems.value = filtered;
+      } else {
+        rawItems.value = items;
+      }
+      isLoading.value = false;
+    }, onError: (e) {
+      isLoading.value = false;
+    });
+  }
+
+  @override
+  void onClose() {
+    _streamSubscription?.cancel();
+    _customListsSubscription?.cancel();
+    searchController.dispose();
+    super.onClose();
   }
 
   void _migrateGridDefaultToAuto() {
@@ -43,12 +140,6 @@ class LibraryController extends GetxController {
     }
 
     General.libraryGridAutoMigrated.set(true);
-  }
-
-  @override
-  void onClose() {
-    searchController.dispose();
-    super.onClose();
   }
 
   void getPreferences() {
@@ -66,10 +157,18 @@ class LibraryController extends GetxController {
   }
 
   void _loadSortPrefs() {
-    final prefix = selectedListIndex.value == -1 ? '${type.value.name}_history' : type.value.name;
-    final defaultSort = selectedListIndex.value == -1 ? SortType.lastRead.index : SortType.lastAdded.index;
+    final isHistory = selectedListIndex.value == -1;
+    final prefix = isHistory ? '${type.value.name}_history' : type.value.name;
+    final defaultSort = isHistory ? SortType.lastRead.index : SortType.lastAdded.index;
 
-    currentSort.value = SortType.values[DynamicKeys.librarySortType.get<int>(prefix, defaultSort)];
+    final savedSortIndex = DynamicKeys.librarySortType.get<int>(prefix, defaultSort);
+    var loadedSort = SortType.values[savedSortIndex.clamp(0, SortType.values.length - 1)];
+
+    if (isHistory && (loadedSort == SortType.lastAdded || loadedSort == SortType.aired || loadedSort == SortType.popularity)) {
+      loadedSort = SortType.lastRead;
+    }
+
+    currentSort.value = loadedSort;
     isAscending.value = DynamicKeys.librarySortOrder.get<bool>(prefix, false);
   }
 
@@ -89,14 +188,22 @@ class LibraryController extends GetxController {
   }
 
   void switchCategory(ItemType typ) {
+    if (type.value == typ) return;
+
+    savePreferences();
+
     type.value = typ;
 
-    DynamicKeys.libraryLastListIndex.set(type.value.name, type.value.index);
+    final savedListIndex =
+        DynamicKeys.libraryLastListIndex.get<int>(type.value.name, 0);
+    selectedListIndex.value = savedListIndex;
+    gridCount.value = DynamicKeys.libraryGridSize.get<int>(type.value.name, 0);
 
     if (searchQuery.isNotEmpty) {
       searchController.clear();
       searchQuery.value = '';
     }
+    _loadSortPrefs();
     savePreferences();
   }
 
@@ -161,7 +268,25 @@ class LibraryController extends GetxController {
           comparison = aRating.compareTo(bRating);
           break;
         case SortType.lastAdded:
-        // return isAscending ? items.reversed.toList() : items;
+          comparison = a.id.compareTo(b.id);
+          break;
+        case SortType.popularity:
+          final aPop = double.tryParse(a.popularity ?? '0.0') ?? 0.0;
+          final bPop = double.tryParse(b.popularity ?? '0.0') ?? 0.0;
+          comparison = aPop.compareTo(bPop);
+          break;
+        case SortType.progress:
+          final aProg = type.value.isAnime
+              ? (a.watchedEpisodes?.length ?? 0)
+              : (a.readChapters?.length ?? 0);
+          final bProg = type.value.isAnime
+              ? (b.watchedEpisodes?.length ?? 0)
+              : (b.readChapters?.length ?? 0);
+          comparison = aProg.compareTo(bProg);
+          break;
+        case SortType.aired:
+          comparison = (a.aired ?? '').compareTo(b.aired ?? '');
+          break;
       }
 
       return isAscending.value ? comparison : -comparison;
@@ -179,43 +304,43 @@ class LibraryController extends GetxController {
         .toList();
   }
 
+  List<OfflineMedia> _filterByService(List<OfflineMedia> items) {
+    final isUnified = General.unifiedLibrary.get<bool>(true);
+    if (isUnified) return items;
+    final currentServiceIndex = serviceHandler.serviceType.value.index;
+    return items
+        .where((e) => e.serviceIndex == null || e.serviceIndex == currentServiceIndex)
+        .toList();
+  }
+
   Stream<List<OfflineMedia>> getLibraryStream() {
+    Stream<List<OfflineMedia>> rawStream;
     switch (type.value) {
       case ItemType.anime:
-        return offlineStorage.watchAnimeLibrary();
+        rawStream = offlineStorage.watchAnimeLibrary();
+        break;
       case ItemType.manga:
-        return offlineStorage.watchMangaLibrary();
+        rawStream = offlineStorage.watchMangaLibrary();
+        break;
       case ItemType.novel:
-        return offlineStorage.watchNovelLibrary();
+        rawStream = offlineStorage.watchNovelLibrary();
+        break;
     }
+    return rawStream.map((items) => _filterByService(items));
   }
 
   Stream<List<OfflineMedia>> getHistoryStream() {
-    return getLibraryStream().map((items) {
+    return getLibraryStream().asyncMap((items) async {
+      List<OfflineMedia> filtered;
       if (type.value.isAnime) {
-        var filtered = items
+        filtered = items
             .where((e) => e.currentEpisode?.currentTrack != null)
             .toList();
-        filtered.sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
-            .compareTo(a.currentEpisode?.lastWatchedTime ?? 0));
-        return filtered;
+      } else {
+        filtered = items.where((e) => e.currentChapter?.link != null).toList();
       }
-
-      if (type.value.isManga) {
-        var filtered = items.where((e) => e.currentChapter?.link != null).toList();
-        filtered.sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
-            .compareTo(a.currentChapter?.lastReadTime ?? 0));
-        return filtered;
-      }
-
-      if (type.value.isNovel) {
-        var filtered = items.where((e) => e.currentChapter?.link != null).toList();
-        filtered.sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
-            .compareTo(a.currentChapter?.lastReadTime ?? 0));
-        return filtered;
-      }
-
-      return items;
+      final searched = applySearch(filtered, searchQuery.value);
+      return applySorting(searched);
     });
   }
 
@@ -228,6 +353,14 @@ class LibraryController extends GetxController {
       String listName, ItemType type) {
     return offlineStorage
         .watchCustomListData(listName, type)
-        .map((data) => data.listData);
+        .map((data) => _filterByService(data.listData));
+  }
+
+  Stream<List<OfflineMedia>> getProcessedCustomListStream(
+      String listName, ItemType type) {
+    return getCustomListStream(listName, type).asyncMap((items) async {
+      final searched = applySearch(items, searchQuery.value);
+      return applySorting(searched);
+    });
   }
 }

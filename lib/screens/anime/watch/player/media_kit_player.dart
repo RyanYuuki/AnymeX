@@ -7,7 +7,9 @@ import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:path_provider/path_provider.dart';
 
+import 'package:anymex/database/data_keys/keys.dart';
 import 'base_player.dart' as base;
 
 class MediaKitPlayer extends base.BasePlayer {
@@ -74,18 +76,18 @@ class MediaKitPlayer extends base.BasePlayer {
   @override
   Future<void> initialize() async {
     final resolvedVo = switch (config.videoOutput) {
-      'gpu-next' => 'gpu-next',
+      'gpu-next' => Platform.isAndroid ? 'gpu-next' : null,
       'mediacodec_embed' => 'mediacodec_embed',
-      'gpu' => 'gpu',
-      'auto' => 'gpu',
-      _ => 'gpu',
+      'gpu' => Platform.isAndroid ? 'gpu' : null,
+      'auto' => Platform.isAndroid ? 'gpu' : null,
+      _ => null,
     };
+
+    final bufferSize = config.bufferSize;
 
     _player = Player(
       configuration: PlayerConfiguration(
-          bufferSize: config.bufferSize,
-          libass: config.useLibass,
-          vo: resolvedVo),
+          bufferSize: bufferSize, libass: config.useLibass, vo: resolvedVo),
     );
 
     _videoController = VideoController(
@@ -94,10 +96,42 @@ class MediaKitPlayer extends base.BasePlayer {
         hwdec: config.hwdec,
         enableHardwareAcceleration: config.hwdec != 'no',
         androidAttachSurfaceAfterVideoParameters: true,
+        enableAndroidSurfaceProducer: false,
       ),
     );
 
     _setupListeners();
+
+    try {
+      final mpv = _player.platform as dynamic;
+      final tempDir = await getTemporaryDirectory();
+      await mpv.setProperty("demuxer-cache-dir", tempDir.path);
+      await mpv.setProperty("af", "scaletempo2=max-speed=8");
+      final currentAo = config.audioOutput;
+      if (currentAo != 'auto') {
+        await mpv.setProperty("ao", currentAo);
+      }
+      if (Platform.isAndroid) {
+        await mpv.setProperty("volume-max", "100");
+        if (currentAo == 'auto') {
+          await mpv.setProperty("ao", "audiotrack");
+        }
+      }
+      await mpv.setProperty("hwdec", config.hwdec);
+      await mpv.setProperty("vd-lavc-fast", "yes");
+      await mpv.setProperty("vd-lavc-skiploopfilter", "nonkey");
+      if (!Platform.isAndroid && !Platform.isIOS) {
+        await mpv.setProperty("vd-lavc-threads", "4");
+      }
+      await mpv.setProperty("cache", "yes");
+      final savedAudioLayout = PlayerKeys.audioChannelLayout.get<String>('auto');
+      if (savedAudioLayout != 'auto') {
+        await mpv.setProperty("audio-channels", savedAudioLayout);
+      }
+    } catch (e) {
+      print('Error setting MPV optimization properties: $e');
+    }
+
     await PlayerCoreVisualSettings.applyMpvCoreSettings(_player);
     await PlayerCoreVisualSettings.applyMpvVisualSettings(_player);
   }
@@ -319,6 +353,16 @@ class MediaKitPlayer extends base.BasePlayer {
   Future<void> setSubtitleDelay(Duration delay) async {
     final seconds = delay.inMicroseconds / 1000000.0;
     (_player.platform as dynamic).setProperty('sub-delay', seconds.toString());
+  }
+
+  @override
+  Future<void> setAudioChannelLayout(String layout) async {
+    try {
+      final mpv = _player.platform as dynamic;
+      await mpv.setProperty('audio-channels', layout);
+    } catch (e) {
+      debugPrint('Error setting audio-channels: $e');
+    }
   }
 
   @override

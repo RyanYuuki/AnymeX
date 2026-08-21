@@ -1,14 +1,13 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Future<void> showReaderPageActionsDialog(
   BuildContext context,
@@ -61,7 +60,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          Text(
+          AnymeXText(
             'Page Actions',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -116,29 +115,38 @@ class _ReaderPageActionsSheet extends StatelessWidget {
       final fileName = 'anymex_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       if (Platform.isAndroid) {
-        Future<bool> check(Permission p) async {
-          var status = await p.status;
-          if (!status.isGranted) status = await p.request();
-          return status.isGranted;
-        }
-
-        await check(Permission.storage);
-        await check(Permission.photos);
-        await check(Permission.manageExternalStorage);
-
-        final directory = Directory('/storage/emulated/0/Pictures/AnymeX');
-        if (!await directory.exists()) {
-          await directory.create(recursive: true);
-        }
-        final file = File('${directory.path}/$fileName');
-        await file.writeAsBytes(bytes);
-
         try {
           const platform = MethodChannel('com.ryan.anymex/utils');
-          await platform.invokeMethod('scanFile', {'path': file.path});
-        } catch (_) {}
+          await platform.invokeMethod('saveImageToGallery', {
+            'bytes': bytes,
+            'name': fileName,
+          });
+          snackBar('Page saved to Pictures/AnymeX', duration: 2500);
+        } catch (_) {
+          Future<bool> check(Permission p) async {
+            var status = await p.status;
+            if (!status.isGranted) status = await p.request();
+            return status.isGranted;
+          }
 
-        snackBar('Page saved to Pictures/AnymeX', duration: 2500);
+          await check(Permission.storage);
+          await check(Permission.photos);
+          await check(Permission.manageExternalStorage);
+
+          final directory = Directory('/storage/emulated/0/Pictures/AnymeX');
+          if (!await directory.exists()) {
+            await directory.create(recursive: true);
+          }
+          final file = File('${directory.path}/$fileName');
+          await file.writeAsBytes(bytes);
+
+          try {
+            const platform = MethodChannel('com.ryan.anymex/utils');
+            await platform.invokeMethod('scanFile', {'path': file.path});
+          } catch (_) {}
+
+          snackBar('Page saved to Pictures/AnymeX', duration: 2500);
+        }
       } else if (Platform.isIOS) {
         final dir = await getTemporaryDirectory();
         final file = File('${dir.path}/$fileName');
@@ -233,7 +241,7 @@ class _ActionButton extends StatelessWidget {
           children: [
             Icon(icon, size: 28, color: context.colors.primary),
             const SizedBox(height: 6),
-            Text(label,
+            AnymeXText(label,
                 style: TextStyle(fontSize: 12, color: context.colors.onSurface)),
           ],
         ),

@@ -3,6 +3,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DictionaryPopup extends StatefulWidget {
   final String selectedText;
@@ -91,7 +92,7 @@ class _DictionaryPopupState extends State<DictionaryPopup>
           child: Container(
             width: 250,
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.4,
+              maxHeight: MediaQuery.sizeOf(context).height * 0.4,
             ),
             decoration: BoxDecoration(
               color: context.colors.surfaceContainer,
@@ -134,7 +135,7 @@ class _DictionaryPopupState extends State<DictionaryPopup>
       child: Row(
         children: [
           Expanded(
-            child: Text(
+            child: AnymeXText(
               widget.selectedText,
               style: TextStyle(
                 fontSize: 18,
@@ -179,7 +180,7 @@ class _DictionaryPopupState extends State<DictionaryPopup>
               color: context.colors.error,
             ),
             const SizedBox(height: 8),
-            Text(
+            AnymeXText(
               _error!,
               style: TextStyle(
                 color: context.colors.error,
@@ -217,7 +218,7 @@ class _DictionaryPopupState extends State<DictionaryPopup>
             color: context.colors.primary,
           ),
           const SizedBox(width: 8),
-          Text(
+          AnymeXText(
             phonetic,
             style: TextStyle(
               fontSize: 14,
@@ -249,7 +250,7 @@ class _DictionaryPopupState extends State<DictionaryPopup>
                   color: context.colors.primary.opaque(0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Text(
+                child: AnymeXText(
                   meaning['partOfSpeech'] ?? 'Unknown',
                   style: TextStyle(
                     fontSize: 12,
@@ -280,7 +281,7 @@ class _DictionaryPopupState extends State<DictionaryPopup>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            AnymeXText(
               '• ${def['definition'] ?? ''}',
               style: TextStyle(
                 fontSize: 13,
@@ -290,7 +291,7 @@ class _DictionaryPopupState extends State<DictionaryPopup>
             if (def['example'] != null)
               Padding(
                 padding: const EdgeInsets.only(left: 16, top: 4),
-                child: Text(
+                child: AnymeXText(
                   '"${def['example']}"',
                   style: TextStyle(
                     fontSize: 12,

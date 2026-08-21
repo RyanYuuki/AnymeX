@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:math' show Random;
+import 'package:anymex/utils/oauth_helper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -22,22 +24,25 @@ import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:anymex/controllers/services/mal/mal_api.dart';
+
 class MalService extends GetxController implements BaseService, OnlineService {
+  final api = MalApi();
   final communityService = Get.find<CommunityService>();
 
   Media? _firstMediaWithCover(Iterable<Media> mediaList) {
@@ -64,6 +69,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   void _openHomeButtonMedia(Media media) {
     final tag = 'home-button-${media.serviceType.name}-${media.id}';
+    if (media.mediaType == ItemType.novel) {
+      navigate(() => NovelDetailsPage(media: media));
+      return;
+    }
     if (media.mediaType == ItemType.manga) {
       navigate(() => MangaDetailsPage(media: media, tag: tag));
       return;
@@ -92,18 +101,13 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Future<List<Media>> fetchDataFromApi(String url,
       {String? customFields}) async {
-    final newField = customFields ?? field;
-    final data = await fetchMAL('$url&$newField') as Map<String, dynamic>;
-    return (data['data'] as List<dynamic>)
-        .map((e) => Media.fromMAL(e))
-        .toList()
-        .removeDupes();
+    return api.fetchRanking(url, customFields: customFields);
   }
 
   Widget buildSectionIfNotEmpty(String title, RxList<Media> list,
       {bool isManga = false}) {
     return list.isEmpty
-        ? const AnymexProgressIndicator()
+        ? const AnymeXProgressIndicator()
         : buildSection(title, list,
             type: isManga ? ItemType.manga : ItemType.anime);
   }
@@ -111,7 +115,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> animeWidgets(BuildContext context) => [
         Obx(() => trendingAnimes.isEmpty
-            ? const Center(child: AnymexProgressIndicator())
+            ? const Center(child: AnymeXProgressIndicator())
             : Column(
                 children: [
                   buildBigCarousel(trendingAnimes, false),
@@ -119,7 +123,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Popular Anime", popularAnimes),
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
-                  // Underrated Anime section at the bottom (filtered for logged-in users)
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityAnimes();
@@ -129,7 +132,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     return buildUnderratedSection(
                         'Community Recommendations', filteredList,
                         onSeeAll: () =>
-                            navigate(() => CommunityRecommendationsPage(
+                            navigate(() => const CommunityRecommendationsPage(
                                   category: 'anime',
                                   type: ItemType.anime,
                                 )));
@@ -141,7 +144,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   @override
   RxList<Widget> mangaWidgets(BuildContext context) => [
         Obx(() => trendingManga.isEmpty
-            ? const Center(child: AnymexProgressIndicator())
+            ? const Center(child: AnymeXProgressIndicator())
             : Column(
                 children: [
                   buildBigCarousel(trendingManga, true),
@@ -152,8 +155,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       isManga: true),
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
-                  ...sourceController.novelSections.value,
-                  // Underrated Manga section at the bottom (filtered for logged-in users)
+                  ...sourceController.novelSections,
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityMangas();
@@ -163,7 +165,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     return buildUnderratedMangaSection(
                         'Community Recommendations', filteredList,
                         onSeeAll: () =>
-                            navigate(() => CommunityRecommendationsPage(
+                            navigate(() => const CommunityRecommendationsPage(
                                   category: 'manga',
                                   type: ItemType.manga,
                                 )));
@@ -173,38 +175,59 @@ class MalService extends GetxController implements BaseService, OnlineService {
       ].obs;
 
   @override
+  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+
+  @override
+  bool get isDataLoaded =>
+      trendingAnimes.isNotEmpty ||
+      popularAnimes.isNotEmpty ||
+      trendingManga.isNotEmpty;
+
+  @override
+  void clearState() {
+    trendingAnimes.clear();
+    popularAnimes.clear();
+    topAnimes.clear();
+    upcomingAnimes.clear();
+    trendingManga.clear();
+    topManga.clear();
+    topManhwa.clear();
+    topManhua.clear();
+    animeList.clear();
+    mangaList.clear();
+    continueWatching.clear();
+    continueReading.clear();
+  }
+
+  @override
   Future<void> fetchHomePage() async {
     try {
-      trendingAnimes.value = (await fetchDataFromApi(
+      trendingAnimes.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15'))
           .removeDupes();
-      for (var i in trendingAnimes) {
-        print("${i.cover} - ${i.poster}");
-      }
-      popularAnimes.value = (await fetchDataFromApi(
+      popularAnimes.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15'))
           .removeDupes();
-      topAnimes.value = (await fetchDataFromApi(
+      topAnimes.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15'))
           .removeDupes();
-      upcomingAnimes.value = (await fetchDataFromApi(
+      upcomingAnimes.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15'))
           .removeDupes();
 
-      trendingManga.value = (await fetchDataFromApi(
+      trendingManga.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15'))
           .removeDupes();
-      topManga.value = (await fetchDataFromApi(
+      topManga.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15'))
           .removeDupes();
-      topManhwa.value = (await fetchDataFromApi(
+      topManhwa.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15'))
           .removeDupes();
-      topManhua.value = (await fetchDataFromApi(
+      topManhua.value = (await api.fetchRanking(
               'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'))
           .removeDupes();
 
-      // Fetch underrated content
       await communityService.fetchAll();
     } catch (e) {
       Logger.i('Error fetching home page data: $e');
@@ -213,6 +236,19 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
+    if (params.type != null) {
+      if (params.type == ItemType.anime) {
+        final animeData = await fetchWithToken(
+          'https://api.myanimelist.net/v2/anime/${params.id}',
+        );
+        return animeData;
+      } else if (params.type == ItemType.manga) {
+        final mangaData = await fetchWithToken(
+          'https://api.myanimelist.net/v2/manga/${params.id}',
+        );
+        return mangaData;
+      }
+    }
     try {
       final animeData = await fetchWithToken(
         'https://api.myanimelist.net/v2/anime/${params.id}',
@@ -237,25 +273,31 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
     final data = await fetchMAL('$url?$newField') as Map<String, dynamic>;
     cacheController.addCache(data);
-    return Media.fromFullMAL(data);
+    final isManga = url.contains('/manga/');
+    return Media.fromFullMAL(data, isManga: isManga);
   }
 
   @override
   Future<List<Media>> search(SearchParams params) async {
     final mediaType = params.isManga ? 'manga' : 'anime';
-    final response = await http.get(
-      Uri.parse(
-          'https://api.jikan.moe/v4/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&page=${params.page}&sfw=${!params.args}'),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return (data['data'] as List<dynamic>)
-          .map((e) => Media.fromJikan(e, isManga: params.isManga))
-          .toList()
-          .removeDupes();
-    } else {
-      Logger.i('Jikan search failed: ${response.statusCode}');
+    final offset = (params.page - 1) * 25;
+    final token = AuthKeys.malAuthToken.get<String?>();
+    final isLoggedIn = token != null && token.isNotEmpty;
+    const fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
+    final showNsfw = params.args == true;
+    final url = 'https://api.myanimelist.net/v2/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&offset=$offset&fields=$fields${showNsfw ? '&nsfw=true' : ''}';
+    
+    try {
+      final data = await fetchMAL(url, useAuthHeader: isLoggedIn);
+      if (data != null && data['data'] != null) {
+        return (data['data'] as List<dynamic>)
+            .map((e) => Media.fromMAL(e, isManga: params.isManga))
+            .toList()
+            .removeDupes();
+      }
+      return [];
+    } catch (e) {
+      Logger.i('MAL search failed: $e');
       return [];
     }
   }
@@ -270,77 +312,89 @@ class MalService extends GetxController implements BaseService, OnlineService {
         .toList();
     return [
       if (isLoggedIn.value) ...[
-        LayoutBuilder(builder: (context, constraints) {
-          final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
-          final overflow = constraints.maxWidth < 900;
-          final overflowSecond =
-              !isDesktop ? false : constraints.maxWidth < 600;
-          final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
-          final mangaButtonMedia = _firstMediaWithCover(
-            trendingManga.isNotEmpty ? trendingManga : trendingMangas,
-          );
-          final otherButtonMedia = _lastMediaWithCover([
-            ...popularAnimes,
-            ...(topManga.isNotEmpty ? topManga : popularMangas),
-            ...(trendingManga.isNotEmpty ? trendingManga : trendingMangas),
-            ...trendingAnimes,
-          ]);
-          return Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 15,
-            children: [
-              ImageButton(
-                width: width,
-                height: !isDesktop ? 70 : 90,
-                buttonText: "ANIME LIST",
-                backgroundImage: animeButtonMedia?.cover ?? '',
-                borderRadius: 16.multiplyRadius(),
-                onPressed: () {
-                  navigate(() => const AnimeList());
-                },
-                onLongPress: animeButtonMedia == null
-                    ? null
-                    : () => _openHomeButtonMedia(animeButtonMedia),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
-                child: ImageButton(
+        Obx(() {
+          trendingAnimes.length;
+          trendingMangas.length;
+          popularAnimes.length;
+          popularMangas.length;
+          trendingManga.length;
+          topManga.length;
+          return LayoutBuilder(builder: (context, constraints) {
+            final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
+            final overflow = constraints.maxWidth < 900;
+            final overflowSecond =
+                !isDesktop ? false : constraints.maxWidth < 600;
+            final animeButtonMedia = _firstMediaWithCover(trendingAnimes);
+            final mangaButtonMedia = _firstMediaWithCover(
+              trendingManga.isNotEmpty ? trendingManga : trendingMangas,
+            );
+            final otherButtonMedia = _lastMediaWithCover([
+              ...popularAnimes,
+              ...(topManga.isNotEmpty ? topManga : popularMangas),
+              ...(trendingManga.isNotEmpty ? trendingManga : trendingMangas),
+              ...trendingAnimes,
+            ]);
+            return Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 15,
+              children: [
+                ImageButton(
                   width: width,
                   height: !isDesktop ? 70 : 90,
-                  buttonText: "MANGA LIST",
+                  buttonText: "ANIME LIST",
+                  backgroundImage: animeButtonMedia?.cover ?? '',
                   borderRadius: 16.multiplyRadius(),
-                  backgroundImage: mangaButtonMedia?.cover ?? '',
                   onPressed: () {
-                    navigate(() => const AnilistMangaList());
+                    navigate(() => AnimeList(data: animeList.value.removeDupes()));
                   },
-                  onLongPress: mangaButtonMedia == null
+                  onLongPress: animeButtonMedia == null
                       ? null
-                      : () => _openHomeButtonMedia(mangaButtonMedia),
+                      : () => _openHomeButtonMedia(animeButtonMedia),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
-                child: ImageButton(
-                  width: constraints.maxWidth > (width * 3)
-                      ? width
-                      : width * 2 + 15,
-                  height: !isDesktop ? 70 : 90,
-                  buttonText: "OTHER",
-                  borderRadius: 16.multiplyRadius(),
-                  backgroundImage: otherButtonMedia?.cover ?? '',
-                  onPressed: () {
-                    navigate(() => const OtherFeaturesPage());
-                  },
-                  onLongPress: otherButtonMedia == null
-                      ? null
-                      : () => _openHomeButtonMedia(otherButtonMedia),
+                Padding(
+                  padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
+                  child: ImageButton(
+                    width: width,
+                    height: !isDesktop ? 70 : 90,
+                    buttonText: "MANGA LIST",
+                    borderRadius: 16.multiplyRadius(),
+                    backgroundImage: mangaButtonMedia?.cover ?? '',
+                    onPressed: () {
+                      navigate(() => AnilistMangaList(data: mangaList.value.removeDupes()));
+                    },
+                    onLongPress: mangaButtonMedia == null
+                        ? null
+                        : () => _openHomeButtonMedia(mangaButtonMedia),
+                  ),
                 ),
-              ),
-            ],
-          );
+                Padding(
+                  padding: EdgeInsets.only(top: overflow ? 8.0 : 0),
+                  child: ImageButton(
+                    width: constraints.maxWidth > (width * 3)
+                        ? width
+                        : width * 2 + 15,
+                    height: !isDesktop ? 70 : 90,
+                    buttonText: "OTHER",
+                    borderRadius: 16.multiplyRadius(),
+                    backgroundImage: otherButtonMedia?.cover ?? '',
+                    onPressed: () {
+                      navigate(() => const OtherFeaturesPage());
+                    },
+                    onLongPress: otherButtonMedia == null
+                        ? null
+                        : () => _openHomeButtonMedia(otherButtonMedia),
+                  ),
+                ),
+              ],
+            );
+          });
         }),
         const SizedBox(height: 10),
-        Obx(() => Column(
+        if (acceptedLists.isNotEmpty)
+          Obx(() {
+            mangaList.length;
+            animeList.length;
+            return Column(
               children: acceptedLists.map((e) {
                 return ReusableCarousel(
                   data: filterListByLabel(
@@ -355,7 +409,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
                       : ItemType.anime,
                 );
               }).toList(),
-            )),
+            );
+          }),
       ],
       buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
       buildSectionIfNotEmpty("Popular Animes", popularAnimes),
@@ -373,7 +428,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Future<void> fetchUserAnimeList() async {
     final data = await fetchMAL(
         'https://api.myanimelist.net/v2/users/@me/animelist?fields=num_episodes,mean,list_status&limit=1000&sort=list_updated_at&nsfw=1',
-        auth: false,
         useAuthHeader: true);
     animeList.value = (data['data'] as List<dynamic>)
         .map((e) => TrackedMedia.fromMAL(e))
@@ -386,7 +440,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Future<void> fetchUserMangaList() async {
     final data = await fetchMAL(
         'https://api.myanimelist.net/v2/users/@me/mangalist?fields=num_chapters,mean,list_status&limit=1000&sort=list_updated_at&nsfw=1',
-        auth: false,
         useAuthHeader: true);
     mangaList.value = (data['data'] as List<dynamic>)
         .map((e) => TrackedMedia.fromMAL(e))
@@ -398,9 +451,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Future<void> fetchUserInfo({String? token}) async {
     final tokenn = token ?? AuthKeys.malAuthToken.get<String?>();
-    final data = await fetchMAL('https://api.myanimelist.net/v2/users/@me',
-        auth: true, useAuthHeader: true, token: tokenn);
-    profileData.value = Profile.fromKitsu(data);
+    final data = await fetchMAL('https://api.myanimelist.net/v2/users/@me?fields=anime_statistics,manga_statistics',
+        useAuthHeader: true, token: tokenn);
+    profileData.value = Profile.fromMAL(data);
     isLoggedIn.value = true;
     Future.wait([fetchUserAnimeList(), fetchUserMangaList()]);
   }
@@ -482,6 +535,21 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> login(BuildContext context) async {
+    final selectedMethod = await AnymeXSheet.custom<String>(
+      loginSheetHelper(
+        context: context,
+        title: 'Login to MyAnimeList',
+        serviceName: 'MyAnimeList',
+        showTokenOption: false,
+      ),
+      context,
+      showDragHandle: true,
+    );
+
+    if (selectedMethod == null || !context.mounted) return;
+
+    final forceWebAuth = selectedMethod == 'browser_external';
+
     String clientId = dotenv.env['MAL_CLIENT_ID'] ?? '';
     String secret = dotenv.env['MAL_CLIENT_SECRET'] ?? '';
     final secureRandom = Random.secure();
@@ -497,16 +565,20 @@ class MalService extends GetxController implements BaseService, OnlineService {
         'https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=$clientId&code_challenge=$codeChallenge';
 
     try {
-      final result = await FlutterWebAuth2.authenticate(
+      final result = await OauthHelper.authenticate(
+        context: context,
         url: url,
         callbackUrlScheme: 'anymex',
+        forceWebAuth: forceWebAuth,
       );
 
-      final code = Uri.parse(result).queryParameters['code'];
-      if (code != null) {
-        Logger.i("Authorization code: $code");
-        await _exchangeCodeForTokenMAL(code, clientId, codeChallenge, secret);
-        await _fetchAndStoreMalSessionId();
+      if (result != null) {
+        final code = Uri.parse(result).queryParameters['code'];
+        if (code != null) {
+          Logger.i("Authorization code: $code");
+          await _exchangeCodeForTokenMAL(code, clientId, codeChallenge, secret);
+          await _fetchAndStoreMalSessionId();
+        }
       }
     } catch (e) {
       Logger.i('Error during MyAnimeList login: $e');
@@ -641,15 +713,16 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   Future<dynamic> fetchMAL(String url,
-      {bool auth = false, bool useAuthHeader = false, String? token}) async {
+      {bool useAuthHeader = false, String? token}) async {
     try {
       final clientId = dotenv.env['MAL_CLIENT_ID'];
       if (clientId == null || clientId.isEmpty) {
         throw Exception('MAL_CLIENT_ID is not set in .env file.');
       }
       final tokenn = token ?? AuthKeys.malAuthToken.get<String?>();
+      final useAuth = useAuthHeader && tokenn != null && tokenn.isNotEmpty;
       final response = await http.get(Uri.parse(url),
-          headers: useAuthHeader
+          headers: useAuth
               ? {
                   'Authorization': 'Bearer $tokenn',
                 }
@@ -658,13 +731,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                 });
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (auth) {
-          final rep = await http.get(
-              Uri.parse('https://api.jikan.moe/v4/users/${data['name']}/full'));
-          return jsonDecode(rep.body)..['picture'] = data['picture'];
-        }
-        return data;
+        return jsonDecode(response.body);
       } else {
         Logger.i('Failed to fetch data from $url: ${response.statusCode}');
         throw Exception(
@@ -672,7 +739,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       }
     } catch (e) {
       Logger.i('Error fetching data from API: $e');
-      return [];
+      return null;
     }
   }
 
@@ -691,7 +758,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
-    String _formatMalDate(DateTime d) =>
+    String formatMalDate(DateTime d) =>
         '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
     final body = {
@@ -702,8 +769,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
         'num_watched_episodes': progress.toString(),
       if (progress != null && !isAnime)
         'num_chapters_read': progress.toString(),
-      if (startedAt != null) 'start_date': _formatMalDate(startedAt),
-      if (completedAt != null) 'finish_date': _formatMalDate(completedAt),
+      if (startedAt != null) 'start_date': formatMalDate(startedAt),
+      if (completedAt != null) 'finish_date': formatMalDate(completedAt),
     };
 
     final req = await http.put(
@@ -724,6 +791,20 @@ class MalService extends GetxController implements BaseService, OnlineService {
           isAnime: isAnime,
           startedAt: startedAt,
           completedAt: completedAt));
+    }
+
+    if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
+      final anilistId =
+          (params.syncIds?.isNotEmpty ?? false) ? params.syncIds![0] : null;
+      serviceHandler.simklService.updateListEntryFromExternalId(
+        malId: listId,
+        anilistId: anilistId,
+        score: score,
+        status: status,
+        progress: progress,
+        season: params.season,
+        isAnime: isAnime,
+      );
     }
 
     if (req.statusCode == 200) {
@@ -799,7 +880,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
               totalEpisodes: savedManga?.chapters?.length.toString() ?? '??'));
     } else {
       final savedAnime = offlineStorage.getAnimeById(id);
-      final number = savedAnime?.currentEpisode?.number?.toInt() ?? 0;
+      final number = savedAnime?.currentEpisode?.number.toInt() ?? 0;
       currentMedia.value = animeList.firstWhere((el) => el.id == id,
           orElse: () => TrackedMedia(
               episodeCount: number.toString(),
@@ -828,3 +909,4 @@ class MalService extends GetxController implements BaseService, OnlineService {
     ]);
   }
 }
+

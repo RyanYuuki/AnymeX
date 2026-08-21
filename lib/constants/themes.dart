@@ -1,4 +1,3 @@
-import 'package:anymex/widgets/animation/page_transition.dart';
 import 'package:flutter/material.dart';
 
 const Color seedColor = Colors.red;
@@ -17,8 +16,7 @@ ThemeData lightMode = ThemeData(
   pageTransitionsTheme: PageTransitionsTheme(
     builders: {
       for (var platform in TargetPlatform.values)
-        if (platform != TargetPlatform.iOS)
-          platform: const SharedAxisTransition(),
+        platform: const CupertinoPageTransitionsBuilder(),
     },
   ),
   textTheme: const TextTheme(
@@ -83,8 +81,7 @@ ThemeData darkMode = ThemeData(
   pageTransitionsTheme: PageTransitionsTheme(
     builders: {
       for (var platform in TargetPlatform.values)
-        if (platform != TargetPlatform.iOS)
-          platform: const SharedAxisTransition(),
+        platform: const CupertinoPageTransitionsBuilder(),
     },
   ),
   inputDecorationTheme: InputDecorationTheme(

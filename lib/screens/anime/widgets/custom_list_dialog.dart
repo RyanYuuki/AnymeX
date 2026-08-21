@@ -3,12 +3,15 @@ import 'package:anymex/main.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/search_bar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
-import 'package:super_sliver_list/super_sliver_list.dart';
 
 import '../../../database/isar_models/custom_list.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class CustomListDialog extends StatefulWidget {
   final Media original;
@@ -42,6 +45,12 @@ class _CustomListDialogState extends State<CustomListDialog> {
     _init();
   }
 
+  bool _isItemInList(CustomList list) {
+    final targetId = widget.original.id;
+    if (targetId.isEmpty) return false;
+    return list.mediaIds?.contains(targetId) ?? false;
+  }
+
   void _init() {
     final raw = isar.customLists
         .filter()
@@ -60,8 +69,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
 
     initialState = {
       for (var list in modifiedLists)
-        list.listName ?? '':
-            list.mediaIds?.contains(widget.original.id) ?? false
+        list.listName ?? '': _isItemInList(list)
     };
   }
 
@@ -85,74 +93,30 @@ class _CustomListDialogState extends State<CustomListDialog> {
   }
 
   Future<void> _showCreateListDialog() async {
-    final colorScheme = context.colors;
-    final textTheme = Theme.of(context).textTheme;
     final TextEditingController textController = TextEditingController();
-    bool isButtonEnabled = false;
 
     String? newListName = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, setState) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'New Collection',
-                    style: textTheme.titleLarge?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  TextField(
-                    controller: textController,
-                    autofocus: true,
-                    onChanged: (value) {
-                      setState(() {
-                        isButtonEnabled = value.trim().isNotEmpty;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Collection name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(color: colorScheme.onSurfaceVariant),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      FilledButton(
-                        onPressed: isButtonEnabled
-                            ? () => Navigator.of(context)
-                                .pop(textController.text.trim())
-                            : null,
-                        child: const Text('Create'),
-                      ),
-                    ],
-                  ),
-                ],
+        return StatefulBuilder(builder: (context, setDialogState) {
+          return AnymeXDialog(
+            title: 'New Collection',
+            confirmText: 'Create',
+            onConfirm: () {},
+            confirmResultGetter: () => textController.text.trim(),
+            showCancelButton: true,
+            contentWidget: TextField(
+              controller: textController,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: 'Collection name',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
               ),
             ),
           );
@@ -170,7 +134,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
     }
   }
 
-  void _handleOkPress() {
+  Future<void> _handleOkPress() async {
     for (var list in modifiedLists) {
       final listName = list.listName ?? '';
       final wasChecked = initialState[listName] ?? false;
@@ -178,14 +142,12 @@ class _CustomListDialogState extends State<CustomListDialog> {
 
       if (wasChecked != isCheckedNow) {
         if (isCheckedNow) {
-          storage.addMedia(listName, widget.original);
+          await storage.addMedia(listName, widget.original);
         } else {
-          storage.removeMedia(listName, widget.original);
+          await storage.removeMedia(listName, widget.original);
         }
       }
     }
-
-    Navigator.of(context).pop();
   }
 
   List<CustomList> get filteredLists {
@@ -203,248 +165,93 @@ class _CustomListDialogState extends State<CustomListDialog> {
     final colorScheme = context.colors;
     final textTheme = Theme.of(context).textTheme;
 
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Collections',
-                      style: textTheme.headlineSmall?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon:
-                        Icon(Icons.close, color: colorScheme.onSurfaceVariant),
-                    iconSize: 20,
-                  ),
-                ],
-              ),
+    return AnymeXDialog(
+      title: 'Collections',
+      confirmText: 'Save',
+      onConfirm: _handleOkPress,
+      showCancelButton: true,
+      contentWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (modifiedLists.length > 3) ...[
+            CustomSearchBar(
+              padding: const EdgeInsets.all(0),
+              disableIcons: true,
+              onSubmitted: (_) {},
+              controller: _searchController,
+              focusNode: _searchFocus,
             ),
-            if (modifiedLists.length > 3)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: CustomSearchBar(
-                  padding: const EdgeInsets.all(0),
-                  disableIcons: true,
-                  onSubmitted: (_) {},
-                  controller: _searchController,
-                  focusNode: _searchFocus,
-                ),
-              ),
-            Flexible(
-              child: Container(
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.of(context).size.height * 0.4,
-                  minHeight: 100,
-                ),
-                margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                child: filteredLists.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              _searchQuery.isNotEmpty
-                                  ? Icons.search_off_outlined
-                                  : Icons.playlist_add_outlined,
-                              size: 48,
-                              color: colorScheme.onSurfaceVariant.opaque(0.5),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              _searchQuery.isNotEmpty
-                                  ? 'No collections found'
-                                  : 'No collections yet',
-                              style: textTheme.bodyLarge?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : SuperListView.builder(
-                        shrinkWrap: true,
-                        itemCount: filteredLists.length,
-                        itemBuilder: (context, index) {
-                          final list = filteredLists[index];
-                          final listName = list.listName ?? 'Unnamed List';
-                          final isChecked =
-                              list.mediaIds?.contains(widget.original.id) ??
-                                  false;
-                          final itemCount = list.mediaIds?.length ?? 0;
-
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            decoration: BoxDecoration(
-                              color: isChecked
-                                  ? colorScheme.primaryContainer.opaque(0.3)
-                                  : colorScheme.surfaceVariant.opaque(0.3),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isChecked
-                                    ? colorScheme.primary.opaque(0.5)
-                                    : colorScheme.outline.opaque(0.2),
-                                width: 1,
-                              ),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () =>
-                                    _handleCheckboxChanged(!isChecked, list),
-                                borderRadius: BorderRadius.circular(12),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          color: isChecked
-                                              ? colorScheme.primary
-                                              : Colors.transparent,
-                                          border: Border.all(
-                                            color: isChecked
-                                                ? colorScheme.primary
-                                                : colorScheme.outline,
-                                            width: 2,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                        child: isChecked
-                                            ? Icon(
-                                                Icons.check,
-                                                size: 14,
-                                                color: colorScheme.onPrimary,
-                                              )
-                                            : null,
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              listName,
-                                              style:
-                                                  textTheme.bodyLarge?.copyWith(
-                                                fontWeight: FontWeight.w500,
-                                                color: isChecked
-                                                    ? colorScheme.primary
-                                                    : colorScheme.onSurface,
-                                              ),
-                                            ),
-                                            if (itemCount > 0)
-                                              Text(
-                                                '$itemCount items',
-                                                style: textTheme.bodySmall
-                                                    ?.copyWith(
-                                                  color: colorScheme
-                                                      .onSurfaceVariant,
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (isChecked)
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                colorScheme.primary.opaque(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: Text(
-                                            'Added',
-                                            style:
-                                                textTheme.labelSmall?.copyWith(
-                                              color: colorScheme.primary,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  OutlinedButton.icon(
-                    onPressed: _showCreateListDialog,
-                    icon: const Icon(Icons.add, size: 18),
-                    label: const Text('New Collection'),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 48),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      side: BorderSide(
-                        color: colorScheme.outline.opaque(0.5),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          style: TextButton.styleFrom(
-                            minimumSize: const Size(0, 48),
-                          ),
-                          child: Text(
-                            'Cancel',
-                            style:
-                                TextStyle(color: colorScheme.onSurfaceVariant),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: FilledButton(
-                          onPressed: _handleOkPress,
-                          style: FilledButton.styleFrom(
-                            minimumSize: const Size(0, 48),
-                          ),
-                          child: const Text('Save'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            const SizedBox(height: 16),
           ],
-        ),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.4,
+              minHeight: 80,
+            ),
+            child: filteredLists.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            _searchQuery.isNotEmpty
+                                ? Icons.search_off_outlined
+                                : Icons.playlist_add_outlined,
+                            size: 48,
+                            color: colorScheme.onSurfaceVariant.opaque(0.5),
+                          ),
+                          const SizedBox(height: 16),
+                          AnymeXText(
+                            _searchQuery.isNotEmpty
+                                ? 'No collections found'
+                                : 'No collections yet',
+                            style: textTheme.bodyLarge?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : SingleChildScrollView(
+                    child: AnymeXSectionBuilder(
+                      margin: EdgeInsets.zero,
+                      children: filteredLists.map((list) {
+                        final listName = list.listName ?? 'Unnamed List';
+                        final isChecked = _isItemInList(list);
+                        final itemCount = list.mediaIds?.length ?? 0;
+
+                        return AnymeXTile.checkbox(
+                          title: listName,
+                          subtitle: itemCount > 0 ? '$itemCount items' : 'No items',
+                          value: isChecked,
+                          onChanged: (val) {
+                            _handleCheckboxChanged(val, list);
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: _showCreateListDialog,
+            icon: const Icon(Icons.add, size: 18),
+            label: const AnymeXText('New Collection'),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              side: BorderSide(
+                color: colorScheme.outline.opaque(0.5),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

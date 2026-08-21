@@ -5,9 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/anime/watch/controller/player_utils.dart';
 import 'dart:async';
 
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DoubleTapSeekWidget extends StatefulWidget {
   final PlayerController controller;
@@ -46,6 +50,14 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   double _initialSwipeY = 0.0;
   bool _isDragging = false;
   bool _longPressStarted = false;
+
+  bool _isHorizontalDragging = false;
+  bool _showSeekTime = false;
+  Duration _dragCurrentPosition = Duration.zero;
+  Duration _dragStartPlayerPosition = Duration.zero;
+  int _dragSeekDirection = 0;
+  bool _wasPlayingBeforeSeek = false;
+
   late AnimationController _speedAnimationController;
   late Animation<double> _speedScaleAnimation;
   late AnimationController _glowAnimationController;
@@ -92,20 +104,32 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     super.dispose();
   }
 
+  bool _isFollowMode() {
+    try {
+      final watchium = Get.find<WatchiumService>();
+      return watchium.inRoom.value && watchium.followHost.value && !watchium.isHost.value;
+    } catch (_) {
+      return false;
+    }
+  }
+
   void _handleLeftSeek() {
     if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: true);
   }
 
   void _handleRightSeek() {
     if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
     HapticFeedback.lightImpact();
     _performSeek(isLeft: false);
   }
 
   void _performSeek({required bool isLeft}) {
     if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
 
     setState(() {
       if (isLeft) {
@@ -242,26 +266,26 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
       _setRateDebounceTimer?.cancel();
 
       if (instant) {
-        widget.controller.setRate(rate);
+        widget.controller.setRate(rate, updateSession: false);
 
         Future.delayed(const Duration(milliseconds: 200), () {
           if (mounted) {
             double currentRate = widget.controller.playbackSpeed.value;
             if ((currentRate - rate).abs() > 0.1) {
-              widget.controller.setRate(rate);
+              widget.controller.setRate(rate, updateSession: false);
             }
           }
         });
       } else {
         _setRateDebounceTimer = Timer(_setRateDebounceTimeout, () {
           if (mounted) {
-            widget.controller.setRate(_pendingSpeed);
+            widget.controller.setRate(_pendingSpeed, updateSession: false);
 
             Future.delayed(const Duration(milliseconds: 200), () {
               if (mounted) {
                 double currentRate = widget.controller.playbackSpeed.value;
                 if ((currentRate - _pendingSpeed).abs() > 0.1) {
-                  widget.controller.setRate(_pendingSpeed);
+                  widget.controller.setRate(_pendingSpeed, updateSession: false);
                 }
               }
             });
@@ -270,6 +294,68 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
       }
     } catch (e) {
       debugPrint('Error setting playback rate: $e');
+    }
+  }
+
+  void _onHorizontalDragStart(DragStartDetails details) {
+    if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
+    if (_isHolding || _longPressStarted) return;
+    if (!Get.find<Settings>().enableSlideToSeek) return;
+
+    _isHorizontalDragging = true;
+    _dragStartPlayerPosition = widget.controller.currentPosition.value;
+    _dragCurrentPosition = _dragStartPlayerPosition;
+    _dragSeekDirection = 0;
+    _wasPlayingBeforeSeek = widget.controller.isPlaying.value;
+
+    if (_wasPlayingBeforeSeek) {
+      widget.controller.pause();
+    }
+    if (widget.controller.showControls.value) {
+      widget.controller.toggleControls(val: false);
+    }
+
+    setState(() => _showSeekTime = true);
+  }
+
+  void _onHorizontalDragUpdate(DragUpdateDetails details) {
+    if (!_isHorizontalDragging) return;
+    if (widget.controller.isLocked.value) return;
+    if (_isFollowMode()) return;
+    if (!Get.find<Settings>().enableSlideToSeek) return;
+
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    const sensitivity = 0.80;
+    final totalMs = widget.controller.episodeDuration.value.inMilliseconds;
+    if (totalMs <= 0) return;
+
+    final msPerPixel = (totalMs * sensitivity) / screenWidth;
+    final deltaMs = (details.delta.dx * msPerPixel).round();
+
+    final newMs =
+        (_dragCurrentPosition.inMilliseconds + deltaMs).clamp(0, totalMs);
+    final newPosition = Duration(milliseconds: newMs);
+    final direction = deltaMs > 0 ? 1 : (deltaMs < 0 ? -1 : _dragSeekDirection);
+
+    setState(() {
+      _dragSeekDirection = direction;
+      _dragCurrentPosition = newPosition;
+    });
+
+    widget.controller.seekTo(newPosition);
+  }
+
+  void _onHorizontalDragEnd(DragEndDetails details) {
+    if (!_isHorizontalDragging) return;
+    if (!Get.find<Settings>().enableSlideToSeek) return;
+
+    _isHorizontalDragging = false;
+
+    setState(() => _showSeekTime = false);
+
+    if (_wasPlayingBeforeSeek) {
+      widget.controller.play();
     }
   }
 
@@ -350,7 +436,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                           const SizedBox(width: 10),
                           SizedBox(
                             width: 42,
-                            child: Text(
+                            child: AnymeXText(
                               '${_currentSpeed.toStringAsFixed(_currentSpeed == _currentSpeed.toInt() ? 0 : 1)}x',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 color: colorScheme.onSurface,
@@ -391,6 +477,149 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     );
   }
 
+  Widget _buildDragSeekHud() {
+    if (!_showSeekTime) return const SizedBox.shrink();
+
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final totalMs = widget.controller.episodeDuration.value.inMilliseconds;
+    final progress = totalMs > 0
+        ? (_dragCurrentPosition.inMilliseconds / totalMs).clamp(0.0, 1.0)
+        : 0.0;
+    final isForward = _dragSeekDirection >= 0;
+    final icon =
+        isForward ? Icons.fast_forward_rounded : Icons.fast_rewind_rounded;
+    final accent = colorScheme.secondaryContainer;
+    final container = colorScheme.secondary;
+    final onContainer = colorScheme.onSecondary;
+    final surface = colorScheme.surfaceContainerHighest;
+    final border = colorScheme.outlineVariant.withValues(alpha: 0.34);
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: AnimatedOpacity(
+        opacity: _showSeekTime ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        child: AnimatedSlide(
+          offset: _showSeekTime ? Offset.zero : const Offset(0, -0.18),
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 24),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                width: 248,
+                decoration: BoxDecoration(
+                  color: surface,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withValues(alpha: 0.24),
+                      blurRadius: 32,
+                      spreadRadius: 1,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.28),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: FractionallySizedBox(
+                          widthFactor: progress,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: colorScheme.secondaryContainer,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 10,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: container,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              switchInCurve: Curves.easeOutBack,
+                              switchOutCurve: Curves.easeInCubic,
+                              transitionBuilder: (child, animation) =>
+                                  ScaleTransition(
+                                scale: animation,
+                                child: FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                ),
+                              ),
+                              child: Icon(
+                                icon,
+                                key: ValueKey(icon),
+                                color: onContainer,
+                                size: 22,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AnymeXText(
+                                  PlayerUtils.formatDuration(
+                                      _dragCurrentPosition),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    color: colorScheme.onSurface,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 1),
+                                AnymeXText(
+                                  '/ ${PlayerUtils.formatDuration(widget.controller.episodeDuration.value)}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSeekIndicator({
     required bool isLeft,
     required int tapCount,
@@ -400,13 +629,14 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
 
     if (tapCount == 0) return const SizedBox.shrink();
 
-    final totalSeekSeconds = widget.controller.playerSettings.seekDuration * tapCount;
+    final totalSeekSeconds =
+        widget.controller.playerSettings.seekDuration * tapCount;
 
     return AnimatedItemWrapper(
         slideDistance: 5,
         key: Key(tapCount.toString()),
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.25,
+          width: MediaQuery.sizeOf(context).width * 0.25,
           height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -465,8 +695,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color:
-                          colorScheme.surfaceContainerHighest.opaque(0.9),
+                      color: colorScheme.surfaceContainerHighest.opaque(0.9),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -478,7 +707,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                           color: colorScheme.onSurface,
                         ),
                         const SizedBox(width: 4),
-                        Text(
+                        AnymeXText(
                           '${totalSeekSeconds}s',
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: colorScheme.onSurface,
@@ -575,13 +804,24 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                   widget.controller.onVerticalDragUpdate(context, details);
                 }
               },
+              onHorizontalDragStart: _onHorizontalDragStart,
+              onHorizontalDragUpdate: _onHorizontalDragUpdate,
+              onHorizontalDragEnd: _onHorizontalDragEnd,
               onLongPressStart: (details) {
+                if (!Get.find<Settings>().enableHoldToSeek) return;
                 _initialSwipeY = details.globalPosition.dy;
                 _startHold();
               },
-              onLongPressEnd: (details) => _endHold(),
-              onLongPressCancel: () => _endHold(),
+              onLongPressEnd: (details) {
+                if (!Get.find<Settings>().enableHoldToSeek) return;
+                _endHold();
+              },
+              onLongPressCancel: () {
+                if (!Get.find<Settings>().enableHoldToSeek) return;
+                _endHold();
+              },
               onLongPressMoveUpdate: (details) {
+                if (!Get.find<Settings>().enableHoldToSeek) return;
                 if (_isHolding) {
                   double deltaY = details.globalPosition.dy - _initialSwipeY;
                   _updateSpeedFromSwipe(deltaY);
@@ -646,8 +886,14 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                     Positioned(
                       left: 0,
                       right: 0,
-                      top: MediaQuery.of(context).size.height * 0.05,
+                      top: MediaQuery.sizeOf(context).height * 0.05,
                       child: IgnorePointer(child: _buildSpeedIndicator()),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      child: IgnorePointer(child: _buildDragSeekHud()),
                     ),
                   ],
                 ),

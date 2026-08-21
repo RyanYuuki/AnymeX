@@ -12,13 +12,12 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:get/get.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
 
 class MangaStats extends StatefulWidget {
   final Media data;
@@ -82,7 +81,7 @@ class _MangaStatsState extends State<MangaStats> {
               ])
         .where((e) => e.cover != null && (e.cover?.isNotEmpty ?? false))
         .toList();
-    final isDesktop = MediaQuery.of(context).size.width > 600;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
 
     return SingleChildScrollView(
       child: Column(
@@ -113,8 +112,7 @@ class _MangaStatsState extends State<MangaStats> {
                   context,
                   icon: Icons.language_rounded,
                   title: "Romaji Title",
-                  content: AnymexText(
-                    text: widget.data.romajiTitle,
+                  content: AnymeXText(widget.data.romajiTitle,
                     variant: TextVariant.semiBold,
                     size: 15,
                     maxLines: 3,
@@ -322,8 +320,7 @@ class _MangaStatsState extends State<MangaStats> {
                 ),
               ),
               const SizedBox(width: 12),
-              AnymexText(
-                text: title,
+              AnymeXText(title,
                 variant: TextVariant.bold,
                 size: 20,
               ),
@@ -372,8 +369,7 @@ class _MangaStatsState extends State<MangaStats> {
                 ),
               ),
               const SizedBox(width: 10),
-              AnymexText(
-                text: title,
+              AnymeXText(title,
                 variant: TextVariant.bold,
                 size: 16,
                 autoResize: true,
@@ -429,14 +425,12 @@ class _MangaStatsState extends State<MangaStats> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AnymexText(
-                        text: "Recent News",
+                      const AnymeXText("Recent News",
                         variant: TextVariant.bold,
                         size: 14,
                       ),
                       const SizedBox(height: 4),
-                      AnymexText(
-                        text: "Read latest updates about this manga",
+                      AnymeXText("Read latest updates about this manga",
                         variant: TextVariant.regular,
                         size: 13,
                         color: colorScheme.onSurface.opaque(0.6),
@@ -532,8 +526,7 @@ class _MangaStatsState extends State<MangaStats> {
                     color: colorScheme.primary.opaque(0.7, iReallyMeanIt: true),
                   ),
                   const SizedBox(width: 6),
-                  AnymexText(
-                    text: stat['label'].toString(),
+                  AnymeXText(stat['label'].toString(),
                     variant: TextVariant.regular,
                     size: 11,
                     color:
@@ -542,8 +535,7 @@ class _MangaStatsState extends State<MangaStats> {
                 ],
               ),
               const SizedBox(height: 6),
-              AnymexText(
-                text: stat['value'].toString(),
+              AnymeXText(stat['value'].toString(),
                 variant: TextVariant.bold,
                 size: 15,
                 color: colorScheme.primary,
@@ -594,15 +586,13 @@ class _MangaStatsState extends State<MangaStats> {
                       if (_latestChapter != null) ...[
                         Row(
                           children: [
-                            AnymexText(
-                              text: "Current • ",
+                            AnymeXText("Current • ",
                               variant: TextVariant.regular,
                               size: 11,
                               color: colorScheme.onSurface
                                   .opaque(0.6, iReallyMeanIt: true),
                             ),
-                            AnymexText(
-                              text: _latestChapter!,
+                            AnymeXText(_latestChapter!,
                               variant: TextVariant.bold,
                               size: 11,
                               color: colorScheme.primary,
@@ -611,16 +601,14 @@ class _MangaStatsState extends State<MangaStats> {
                         ),
                         const SizedBox(height: 4),
                       ],
-                      AnymexText(
-                        text: "Next Release",
+                      AnymeXText("Next Release",
                         variant: TextVariant.regular,
                         size: 11,
                         color: colorScheme.onSurface
                             .opaque(0.6, iReallyMeanIt: true),
                       ),
                       const SizedBox(height: 4),
-                      AnymexText(
-                        text: "${pred.nextChapter} • $dateStr",
+                      AnymeXText("${pred.nextChapter} • $dateStr",
                         variant: TextVariant.bold,
                         size: 14,
                         color: colorScheme.primary,
@@ -662,8 +650,7 @@ class _MangaStatsState extends State<MangaStats> {
         children: [
           Expanded(
             flex: 2,
-            child: AnymexText(
-              text: label,
+            child: AnymeXText(label,
               variant: TextVariant.semiBold,
               size: 13,
               color: colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
@@ -675,8 +662,7 @@ class _MangaStatsState extends State<MangaStats> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: chapters
                   .map(
-                    (chapter) => AnymexText(
-                      text: chapter,
+                    (chapter) => AnymeXText(chapter,
                       variant: TextVariant.bold,
                       size: 13,
                       color: colorScheme.primary,
@@ -723,8 +709,7 @@ class _MangaStatsState extends State<MangaStats> {
                     width: 1,
                   ),
                 ),
-                child: AnymexText(
-                  text: chip.label,
+                child: AnymeXText(chip.label,
                   size: 12,
                   variant: TextVariant.semiBold,
                   color: color,
@@ -762,8 +747,7 @@ class _MangaStatsState extends State<MangaStats> {
             ),
           ),
           const SizedBox(width: 10),
-          AnymexText(
-            text: title,
+          AnymeXText(title,
             variant: TextVariant.bold,
             size: 16,
           ),
@@ -800,8 +784,7 @@ class _MangaStatsState extends State<MangaStats> {
             ),
           ),
           const SizedBox(width: 12),
-          AnymexText(
-            text: title,
+          AnymeXText(title,
             variant: TextVariant.bold,
             size: 20,
           ),

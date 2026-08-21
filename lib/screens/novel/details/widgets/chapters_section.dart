@@ -1,15 +1,20 @@
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/manga/widgets/chapter_ranges.dart';
 import 'package:anymex/screens/novel/details/controller/details_controller.dart';
 import 'package:anymex/screens/novel/details/widgets/chapter_item.dart';
+import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:anymex_extension_runtime_bridge/Models/DEpisode.dart';
+import 'package:anymex/widgets/common/source_selector.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -33,10 +38,12 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
   bool _initializedChunk = false;
   Worker? _selectedChunkWorker;
   Worker? _chaptersWorker;
+  late final SourceController _sourceController;
 
   @override
   void initState() {
     super.initState();
+    _sourceController = Get.find<SourceController>();
     _initializeChapterChunking();
   }
 
@@ -140,20 +147,79 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
         : 0;
   }
 
-  Chapter? _findContinueChapter(List<Chapter> chapters, int userProgress,
-      Chapter? readChapter, ServiceHandler auth) {
+  bool _isChapterCompleted(Chapter? chapter) {
+    if (chapter == null) return false;
+    final pageNum = chapter.pageNumber;
+    final totalPgs = chapter.totalPages;
+    if (pageNum != null && totalPgs != null && totalPgs > 0) {
+      return pageNum >= totalPgs ||
+          pageNum >= totalPgs - 1 ||
+          (pageNum / totalPgs) >= 0.95;
+    }
+    final currentOffset = chapter.currentOffset;
+    final maxOffset = chapter.maxOffset;
+    if (currentOffset != null && maxOffset != null && maxOffset > 0) {
+      return (currentOffset / maxOffset) >= 0.95;
+    }
+    return false;
+  }
+
+  Chapter? _findContinueChapter(
+    List<Chapter> chapters,
+    OfflineMedia? savedManga,
+    ServiceHandler auth,
+  ) {
+    if (chapters.isEmpty) return null;
+
     if (auth.isLoggedIn.value &&
         auth.serviceType.value != ServicesType.extensions) {
+      final temp = auth.onlineService.mangaList
+          .firstWhereOrNull((e) => e.id.toString() == savedManga?.id.toString());
+      final userProgress =
+          double.tryParse(temp?.episodeCount ?? '')?.toInt() ?? 0;
+
+      final lastRead = savedManga?.currentChapter;
+      if (lastRead != null && !_isChapterCompleted(lastRead)) {
+        final matching = chapters.firstWhereOrNull(
+          (c) =>
+              (c.link != null && c.link == lastRead.link) ||
+              c.number == lastRead.number,
+        );
+        if (matching != null) return matching;
+      }
+
       final candidate = chapters
           .firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1);
       return candidate ??
-          chapters.firstWhereOrNull((e) => e.number?.toInt() == userProgress);
-    } else {
-      return chapters
-              .firstWhereOrNull((e) => e.number?.toInt() == userProgress + 1) ??
-          readChapter ??
-          (chapters.isNotEmpty ? chapters.first : null);
+          chapters
+              .firstWhereOrNull((e) => e.number?.toInt() == userProgress) ??
+          chapters.first;
     }
+
+    final lastRead = savedManga?.currentChapter;
+    if (lastRead == null) {
+      return chapters.first;
+    }
+
+    final matchingIndex = chapters.indexWhere(
+      (c) =>
+          (c.link != null && c.link == lastRead.link) ||
+          c.number == lastRead.number,
+    );
+
+    if (matchingIndex != -1) {
+      if (_isChapterCompleted(lastRead)) {
+        if (matchingIndex + 1 < chapters.length) {
+          return chapters[matchingIndex + 1];
+        } else {
+          return chapters[matchingIndex];
+        }
+      } else {
+        return chapters[matchingIndex];
+      }
+    }
+
+    return chapters.first;
   }
 
   void sortToggle() {
@@ -163,7 +229,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isLoading = widget.controller.isLoading.value;
+      final isLoading = widget.controller.isChaptersLoading.value;
 
       return CustomScrollView(
         physics: const BouncingScrollPhysics(),
@@ -202,7 +268,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                       const SliverToBoxAdapter(
                         child: SizedBox(
                           height: 500,
-                          child: Center(child: AnymexProgressIndicator()),
+                          child: Center(child: AnymeXProgressIndicator()),
                         ),
                       )
                     else if (chunkedChapters.isEmpty)
@@ -210,7 +276,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                         child: SizedBox(
                           height: 240,
                           child: Center(
-                            child: AnymexText(text: "No Chapters Found"),
+                            child: AnymeXText("No Chapters Found"),
                           ),
                         ),
                       )
@@ -224,27 +290,132 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+          const SliverToBoxAdapter(child: SizedBox(height: 250)),
         ],
       );
     });
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Row(
-      children: [
-        const AnymexText(
-          text: "Chapters",
-          variant: TextVariant.bold,
-          size: 18,
-        ),
-        const Spacer(),
-        IconButton(
-          onPressed: sortToggle,
-          icon: const Icon(Icons.sort_rounded),
-        ),
-      ],
-    );
+    return Obx(() {
+      final controller = widget.controller;
+      final title = controller.searchedTitle.value;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SourceSelectorWidget(
+            activeSource: controller.activeSource.value,
+            installedSources: _sourceController.installedNovelExtensions,
+            isManga: false,
+            label: 'Select Novel Source',
+            onSourceSelected: (source) {
+              controller.switchSource(source);
+            },
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Theme.of(context)
+                  .colorScheme
+                  .surfaceContainer
+                  .opaque(0.3),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: context.colors.outline.opaque(0.2, iReallyMeanIt: true),
+                width: 1.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: AnymeXText(title.isEmpty ? controller.initialMedia.title : title,
+                    variant: TextVariant.semiBold,
+                    size: 14,
+                    color: title.contains('No Match Found')
+                        ? context.colors.error
+                        : context.colors.primary,
+                    maxLines: 1,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: () {
+                    showWrongTitleModal(
+                      context,
+                      controller.initialMedia.title,
+                      (selected) async {
+                        final media =
+                            Media.froDMedia(selected, ItemType.novel);
+                        await controller.getDetailsFromSource(media);
+                        final key =
+                            '${controller.activeSource.value?.id}-${controller.initialMedia.id}';
+                        DynamicKeys.mappedMediaTitle
+                            .set(key, selected.title);
+                      },
+                      isNovel: true,
+                      mediaId: controller.initialMedia.id.toString(),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primaryContainer
+                          .opaque(0.4),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outline
+                            .opaque(0.3),
+                      ),
+                    ),
+                    child: AnymeXText('Wrong Title?',
+                      size: 12,
+                      variant: TextVariant.semiBold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const AnymeXText('Chapters',
+                variant: TextVariant.bold,
+                size: 18,
+              ),
+              const Spacer(),
+              if (controller.hasInitialSource)
+                Obx(() => controller.isSyncing.value
+                    ? const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : IconButton(
+                        onPressed: controller.syncDetails,
+                        tooltip: 'Sync Details',
+                        icon: const Icon(Icons.sync_rounded),
+                      )),
+              IconButton(
+                onPressed: sortToggle,
+                icon: const Icon(Icons.sort_rounded),
+              ),
+            ],
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildChapterRanges() {
@@ -271,8 +442,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
 
     final continueChapter = _findContinueChapter(
       filteredChapters,
-      userProgress,
-      readChapter,
+      savedManga,
       auth,
     );
 

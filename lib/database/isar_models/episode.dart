@@ -13,7 +13,19 @@ class Episode {
   String? thumbnail;
   List<String>? sortKeys;
   List<String>? sortVals;
+
+  @ignore
+  Map<String, String> get headers {
+    return sortMap;
+  }
+
+  set headers(Map<String, String> map) {
+    sortKeys = map.keys.toList();
+    sortVals = map.values.toList();
+  }
+
   bool? filler;
+  String? dateUpload;
   int? timeStampInMilliseconds;
   int? durationInMilliseconds;
   int? lastWatchedTime;
@@ -30,6 +42,7 @@ class Episode {
     this.desc,
     this.thumbnail,
     this.filler,
+    this.dateUpload,
     this.sortKeys,
     this.sortVals,
     this.timeStampInMilliseconds,
@@ -48,6 +61,7 @@ class Episode {
       'desc': desc,
       'thumbnail': thumbnail,
       'filler': filler,
+      'dateUpload': dateUpload,
       'timeStampInMilliseconds': timeStampInMilliseconds,
       'durationInMilliseconds': durationInMilliseconds,
       'lastWatchedTime': lastWatchedTime,
@@ -70,6 +84,7 @@ class Episode {
       desc: json['desc'] as String?,
       thumbnail: json['thumbnail'] as String?,
       filler: json['filler'] as bool?,
+      dateUpload: json['dateUpload'] as String?,
       timeStampInMilliseconds: json['timeStampInMilliseconds'] as int?,
       durationInMilliseconds: json['durationInMilliseconds'] as int?,
       lastWatchedTime: json['lastWatchedTime'] as int?,
@@ -84,21 +99,46 @@ class Episode {
       sortVals: rawSortVals?.map((e) => e.toString()).toList(),
     );
   }
+
+  Episode clone() {
+    return Episode(
+      number: number,
+      link: link,
+      title: title,
+      desc: desc,
+      thumbnail: thumbnail,
+      filler: filler,
+      dateUpload: dateUpload,
+      sortKeys: sortKeys != null ? List<String>.from(sortKeys!) : null,
+      sortVals: sortVals != null ? List<String>.from(sortVals!) : null,
+      timeStampInMilliseconds: timeStampInMilliseconds,
+      durationInMilliseconds: durationInMilliseconds,
+      lastWatchedTime: lastWatchedTime,
+      currentTrack: currentTrack,
+      videoTracks: videoTracks != null ? List<Video>.from(videoTracks!) : null,
+      source: source,
+    );
+  }
 }
+
 
 extension EpisodeMap on Episode {
   Map<String, String> get sortMap {
     if (sortKeys == null || sortVals == null) return {};
     if (sortKeys!.isEmpty || sortVals!.isEmpty) return {};
 
+    final result = <String, String>{};
     final pairCount = sortKeys!.length < sortVals!.length
         ? sortKeys!.length
         : sortVals!.length;
-    if (pairCount == 0) return {};
 
-    return Map<String, String>.fromIterables(
-      sortKeys!.take(pairCount),
-      sortVals!.take(pairCount),
-    );
+    for (int i = 0; i < pairCount; i++) {
+      final k = sortKeys![i].trim();
+      final v = sortVals![i].trim();
+      if (k.isNotEmpty && v.isNotEmpty) {
+        result[k] = v;
+      }
+    }
+    return result;
   }
 }

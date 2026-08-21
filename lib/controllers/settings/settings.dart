@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:anymex/database/data_keys/keys.dart';
@@ -15,6 +16,7 @@ import 'package:anymex/utils/updater.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:get/get.dart';
 
 Settings get settingsController => Get.find<Settings>();
@@ -22,16 +24,24 @@ Settings get settingsController => Get.find<Settings>();
 class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
   late Rx<PlayerSettings> playerSettings;
-  final RxString discordUrl = 'https://discord.gg/hDwQ3heJ8V'.obs;
+  final RxString discordUrl = 'https://discord.gg/GKVvSyXDUD'.obs;
   final RxString telegramUrl = 'https://t.me/AnymeX_Discussion'.obs;
+  final RxBool showJoinDialog = true.obs;
+  bool linksFetched = false;
+  VoidCallback? onLinksReady;
 
   final canShowUpdate = true.obs;
   final playerControlThemeRx = 'default'.obs;
   final mediaIndicatorThemeRx = 'default'.obs;
   final readerControlThemeRx = 'default'.obs;
+  final chapterStyleRx = 'compact'.obs;
 
+  RxBool useAlternateTitle = false.obs;
   RxBool enableBetaUpdates = false.obs;
   RxBool writeLogToFile = false.obs;
+  Rxn<DisplayMode> preferredDisplayMode = Rxn<DisplayMode>();
+  Rxn<DisplayMode> activeDisplayMode = Rxn<DisplayMode>();
+  RxList<DisplayMode> supportedModes = <DisplayMode>[].obs;
   RxString customLogDirectory = ''.obs;
 
   RxString downloadPath = ''.obs;
@@ -81,22 +91,22 @@ class Settings extends GetxController {
         PlayerUiKeys.mediaIndicatorTheme.get<String>('default');
     readerControlThemeRx.value =
         ReaderKeys.readerControlTheme.get<String>('default');
+    chapterStyleRx.value =
+        ReaderKeys.chapterStyle.get<String>('compact');
 
+    useAlternateTitle.value = General.useAlternateTitle.get<bool>(false);
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
-    
+
     downloadPath.value = DownloadKeys.downloadPath.get<String>("");
     concurrentDownloads.value = DownloadKeys.concurrentDownloads.get<int>(3);
     downloadChunks.value = DownloadKeys.downloadChunks.get<int>(1);
     hlsParallelSegments.value = DownloadKeys.hlsParallelSegments.get<int>(3);
-    enableJxlCompression.value = DownloadKeys.enableJxlCompression.get<bool>(false);
+    enableJxlCompression.value =
+        DownloadKeys.enableJxlCompression.get<bool>(false);
 
     bridgeMode.value = PluginKeys.bridgeMode.get<String>(_defaultBridgeMode);
-    if (Platform.isMacOS && bridgeMode.value != 'sidecar') {
-      PluginKeys.bridgeMode.set('sidecar');
-      bridgeMode.value = 'sidecar';
-    }
     _updateBridgeDispatcher();
     Logger.setFileLoggingEnabled(writeLogToFile.value,
         customPath: customLogDirectory.value);
@@ -108,16 +118,61 @@ class Settings extends GetxController {
     PlayerShaders.getMpvPath().then((e) {
       mpvPath.value = e;
     });
-    setHighRefreshRate();
+
+    if (Platform.isAndroid) {
+      _initDisplayModes();
+    }
   }
 
-  Future<void> setHighRefreshRate() async {
+  Future<void> _initDisplayModes() async {
+    try {
+      final modes = await FlutterDisplayMode.supported;
+      supportedModes.value = modes;
+      
+      final savedStr = General.preferredDisplayMode.get<String?>();
+      if (savedStr != null) {
+        preferredDisplayMode.value = modes.firstWhere(
+          (m) => m.toString() == savedStr,
+          orElse: () => DisplayMode.auto,
+        );
+        await applyDisplayRefreshMode();
+      } else {
+        preferredDisplayMode.value = DisplayMode.auto;
+      }
+      
+      activeDisplayMode.value = await FlutterDisplayMode.active;
+    } catch (e) {
+      Logger.e("Error initializing display modes: $e");
+    }
+  }
+
+  Future<void> applyDisplayRefreshMode() async {
     if (!Platform.isAndroid) return;
     try {
-      await FlutterDisplayMode.setHighRefreshRate();
+      final savedStr = General.preferredDisplayMode.get<String?>();
+      if (savedStr != null) {
+        final mode = preferredDisplayMode.value ?? DisplayMode.auto;
+        await FlutterDisplayMode.setPreferredMode(mode);
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
+      activeDisplayMode.value = await FlutterDisplayMode.active;
     } catch (e) {
-      Logger.e("Error setting high refresh rate: $e");
+      Logger.e("Error setting display refresh mode: $e");
     }
+  }
+
+  Future<void> savePreferredDisplayMode(DisplayMode mode) async {
+    preferredDisplayMode.value = mode;
+    General.preferredDisplayMode.set(mode.toString());
+    await applyDisplayRefreshMode();
+  }
+
+  String getPreferredRefreshRateLabel() {
+    final mode = preferredDisplayMode.value;
+    if (mode == null || mode == DisplayMode.auto) {
+      return "Auto";
+    }
+    return "${mode.width}x${mode.height} @ ${mode.refreshRate.toInt()}Hz";
   }
 
   Future<void> _fetchInviteLinks() async {
@@ -132,9 +187,15 @@ class Settings extends GetxController {
         if (data['telegram'] != null) {
           telegramUrl.value = data['telegram'];
         }
+        if (data['showJoinDialog'] != null) {
+          showJoinDialog.value = data['showJoinDialog'] as bool;
+        }
       }
     } catch (e) {
       Logger.e("Failed to fetch invite links: $e");
+    } finally {
+      linksFetched = true;
+      onLinksReady?.call();
     }
   }
 
@@ -265,6 +326,18 @@ class Settings extends GetxController {
     UISettingsKeys.carouselStyle.set(value);
   }
 
+  int get navBarStyle => _getUISetting((s) => s.navBarStyle);
+  set navBarStyle(int value) {
+    uiSettings.update((s) => s?.navBarStyle = value);
+    UISettingsKeys.navBarStyle.set(value);
+  }
+
+  String get appFontFamily => _getUISetting((s) => s.appFontFamily);
+  set appFontFamily(String value) {
+    uiSettings.update((s) => s?.appFontFamily = value);
+    UISettingsKeys.appFontFamily.set(value);
+  }
+
   double get glowDensity => _getUISetting((s) => s.glowDensity);
   set glowDensity(double value) {
     uiSettings.update((s) => s?.glowDensity = value);
@@ -283,9 +356,83 @@ class Settings extends GetxController {
     UISettingsKeys.disableGradient.set(value);
   }
 
+  bool get useLegacyHeader => _getUISetting((s) => s.useLegacyHeader);
+  set useLegacyHeader(bool value) {
+    uiSettings.update((s) => s?.useLegacyHeader = value);
+    UISettingsKeys.useLegacyHeader.set(value);
+  }
+
+  bool get useGrainTexture => _getUISetting((s) => s.useGrainTexture);
+  set useGrainTexture(bool value) {
+    uiSettings.update((s) => s?.useGrainTexture = value);
+    UISettingsKeys.useGrainTexture.set(value);
+  }
+
+  double get grainIntensity => _getUISetting((s) => s.grainIntensity);
+  set grainIntensity(double value) {
+    uiSettings.update((s) => s?.grainIntensity = value);
+    UISettingsKeys.grainIntensity.set(value);
+  }
+
+  bool get enableImmersiveMode => _getUISetting((s) => s.enableImmersiveMode);
+  set enableImmersiveMode(bool value) {
+    uiSettings.update((s) => s?.enableImmersiveMode = value);
+    UISettingsKeys.enableImmersiveMode.set(value);
+    applyImmersiveMode(value);
+  }
+
+  static void applyImmersiveMode(bool enable) {
+    if (enable) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
+  }
+
+
   Map<String, bool> get homePageCards => _getUISetting((s) => s.homePageCards);
   Map<String, bool> get homePageCardsMal =>
       _getUISetting((s) => s.homePageCardsMal);
+  Map<String, bool> get homePageCardsSimkl =>
+      _getUISetting((s) => s.homePageCardsSimkl);
+
+  String get _currentTabOrderKey {
+    final service = Get.isRegistered<ServiceHandler>()
+        ? Get.find<ServiceHandler>().serviceType.value.name
+        : 'none';
+    return 'navigationTabOrder_$service';
+  }
+
+  List<String> get navigationTabOrder {
+    final raw = KvHelper.get<String>(_currentTabOrderKey, defaultVal: '');
+    final isDesktop = Get.context != null && MediaQuery.of(Get.context!).size.width > 600;
+    final authService = Get.isRegistered<ServiceHandler>() ? Get.find<ServiceHandler>() : null;
+    final isExtensionsService = authService?.serviceType.value == ServicesType.extensions;
+
+    final defaultTabs = isExtensionsService
+        ? ['Library', 'Anime', 'Manga', 'Novel', 'Extensions']
+        : (isDesktop
+            ? ['Home', 'Anime', 'Manga', 'Library', 'Extensions']
+            : ['Home', 'Anime', 'Manga', 'Library']);
+
+    if (raw.isEmpty) {
+      return defaultTabs;
+    }
+    try {
+      final List<dynamic> list = jsonDecode(raw);
+      final strings = list.map((e) => e.toString()).toList();
+      if (strings.isNotEmpty) {
+        return strings;
+      }
+    } catch (_) {}
+    return defaultTabs;
+  }
+
+  set navigationTabOrder(List<String> order) {
+    KvHelper.set(_currentTabOrderKey, jsonEncode(order));
+    uiSettings.refresh();
+    update();
+  }
 
   double get glowMultiplier => _getUISetting((s) => s.glowMultiplier);
   set glowMultiplier(double value) {
@@ -465,6 +612,12 @@ class Settings extends GetxController {
     ReaderKeys.readerControlTheme.set(value);
   }
 
+  String get chapterStyle => chapterStyleRx.value;
+  set chapterStyle(String value) {
+    chapterStyleRx.value = value;
+    ReaderKeys.chapterStyle.set(value);
+  }
+
   int get subtitleOutlineWidth =>
       _getPlayerSetting((s) => s.subtitleOutlineWidth);
   set subtitleOutlineWidth(int value) {
@@ -508,6 +661,24 @@ class Settings extends GetxController {
     PlayerSettingsKeys.enableScreenshot.set(value);
   }
 
+  bool get enableHoldToSeek => _getPlayerSetting((s) => s.enableHoldToSeek);
+  set enableHoldToSeek(bool value) {
+    playerSettings.update((s) => s?.enableHoldToSeek = value);
+    PlayerSettingsKeys.enableHoldToSeek.set(value);
+  }
+
+  bool get enableSlideToSeek => _getPlayerSetting((s) => s.enableSlideToSeek);
+  set enableSlideToSeek(bool value) {
+    playerSettings.update((s) => s?.enableSlideToSeek = value);
+    PlayerSettingsKeys.enableSlideToSeek.set(value);
+  }
+
+  bool get useMediaSession => _getPlayerSetting((s) => s.useMediaSession);
+  set useMediaSession(bool value) {
+    playerSettings.update((s) => s?.useMediaSession = value);
+    PlayerSettingsKeys.useMediaSession.set(value);
+  }
+
   bool get playerMenuAnimation =>
       _getPlayerSetting((s) => s.playerMenuAnimation);
   set playerMenuAnimation(bool value) {
@@ -521,7 +692,7 @@ class Settings extends GetxController {
       'hw+' => 'hw+',
       'hw' => 'hw',
       'sw' => 'sw',
-      _ => 'hw',
+      _ => 'hw+',
     };
     playerSettings.update((s) => s?.hardwareDecoder = normalized);
     PlayerSettingsKeys.hardwareDecoder.set(normalized);
@@ -541,6 +712,15 @@ class Settings extends GetxController {
     };
     playerSettings.update((s) => s?.videoOutput = normalized);
     PlayerSettingsKeys.videoOutput.set(normalized);
+    if (Get.isRegistered<PlayerController>()) {
+      unawaited(Get.find<PlayerController>().reloadActivePlayer());
+    }
+  }
+
+  String get audioOutput => _getPlayerSetting((s) => s.audioOutput);
+  set audioOutput(String value) {
+    playerSettings.update((s) => s?.audioOutput = value);
+    PlayerSettingsKeys.audioOutput.set(value);
     if (Get.isRegistered<PlayerController>()) {
       unawaited(Get.find<PlayerController>().reloadActivePlayer());
     }
@@ -579,5 +759,13 @@ class Settings extends GetxController {
     currentCards[key] = value;
     uiSettings.update((s) => s?.homePageCardsMal = currentCards);
     UISettingsKeys.homePageCardsMal.set(jsonEncode(currentCards));
+  }
+
+  void updateHomePageCardSimkl(String key, bool value) {
+    final currentCards =
+        Map<String, bool>.from(uiSettings.value.homePageCardsSimkl);
+    currentCards[key] = value;
+    uiSettings.update((s) => s?.homePageCardsSimkl = currentCards);
+    UISettingsKeys.homePageCardsSimkl.set(jsonEncode(currentCards));
   }
 }

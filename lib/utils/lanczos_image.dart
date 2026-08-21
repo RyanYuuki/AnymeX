@@ -89,11 +89,10 @@ class _LanczosNetworkImageState extends State<LanczosNetworkImage> {
   bool _loaded = false;
 
   void _updateDimensions() {
-    final mq = MediaQuery.of(context);
-    _maxWidth =
-        (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
-    _maxHeight =
-        (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
+    final size = MediaQuery.sizeOf(context);
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    _maxWidth = (size.width * dpr).toInt().clamp(1, 4096);
+    _maxHeight = (size.height * dpr).toInt().clamp(1, 4096);
   }
 
   @override
@@ -207,11 +206,10 @@ class _LanczosFileImageState extends State<LanczosFileImage> {
   bool _loaded = false;
 
   void _updateDimensions() {
-    final mq = MediaQuery.of(context);
-    _maxWidth =
-        (mq.size.width * mq.devicePixelRatio).toInt().clamp(1, 4096);
-    _maxHeight =
-        (mq.size.height * mq.devicePixelRatio).toInt().clamp(1, 4096);
+    final size = MediaQuery.sizeOf(context);
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    _maxWidth = (size.width * dpr).toInt().clamp(1, 4096);
+    _maxHeight = (size.height * dpr).toInt().clamp(1, 4096);
   }
 
   @override

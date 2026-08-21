@@ -7,9 +7,11 @@ import 'package:anymex/screens/manga/widgets/reader/auto_scroll_menu.dart';
 import 'package:anymex/screens/manga/widgets/reader/tabbed_reader_settings.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme.dart';
 import 'package:anymex/screens/manga/widgets/reader/top_controls.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class IOSReaderControlTheme extends ReaderControlTheme {
   @override
@@ -42,8 +44,7 @@ class _LiquidTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context);
-    final topInset = mq.padding.top;
+    final topInset = MediaQuery.paddingOf(context).top;
     final isDesktop =
         Platform.isWindows || Platform.isLinux || Platform.isMacOS;
     final extraTop = isDesktop ? 12.0 : 0.0;
@@ -149,7 +150,7 @@ class _ChapterPill extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    AnymeXText(
                       chapter?.title ?? 'Unknown Chapter',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -160,7 +161,7 @@ class _ChapterPill extends StatelessWidget {
                         letterSpacing: -0.1,
                       ),
                     ),
-                    Text(
+                    AnymeXText(
                       'Ch. ${_fmt(chapter?.number)} · ${controller.chapterList.length} total',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.6),
@@ -190,19 +191,10 @@ class _ChapterPill extends StatelessWidget {
   }
 
   void _showChapterSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (_) => DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        snap: true,
-        snapSizes: const [0.5],
-        expand: false,
-        builder: (ctx, sc) => ChapterListSheet(scrollController: sc),
-      ),
+    AnymeXSheet.custom(
+      const ChapterListSheet(),
+      context,
+      showDragHandle: true,
     );
   }
 }
@@ -224,7 +216,7 @@ class _PagePill extends StatelessWidget {
       return _LiquidSurface(
         radius: 20,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        child: Text(
+        child: AnymeXText(
           label,
           style: const TextStyle(
             color: Colors.white,
@@ -245,11 +237,7 @@ class _LiquidBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (controller.isOverscrolling.value) {
-        return _OverscrollBubble(controller: controller);
-      }
-
-      final w = MediaQuery.of(context).size.width;
+      final w = MediaQuery.sizeOf(context).width;
       final pillW = w > 900 ? w * 0.5 : double.infinity;
       final show = controller.showControls.value;
 
@@ -330,7 +318,7 @@ class _SliderSection extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Obx(() => Text(
+                  Obx(() => AnymeXText(
                         'Page ${controller.currentPageIndex.value}',
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.75),
@@ -339,7 +327,7 @@ class _SliderSection extends StatelessWidget {
                           letterSpacing: 0.1,
                         ),
                       )),
-                  Text(
+                  AnymeXText(
                     '${controller.pageList.length} pages',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.45),
@@ -409,141 +397,6 @@ class _NavBubble extends StatelessWidget {
   }
 }
 
-class _OverscrollBubble extends StatelessWidget {
-  const _OverscrollBubble({required this.controller});
-  final ReaderController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
-
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: _BottomGradientFade(
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: Center(
-              child: Obx(() {
-                final progress = controller.overscrollProgress.value;
-                final isNext = controller.isOverscrollingNext.value;
-                final list = controller.chapterList;
-                final curIdx =
-                    list.indexOf(controller.currentChapter.value!);
-                final targetIdx = isNext ? curIdx + 1 : curIdx - 1;
-
-                final atEdge =
-                    targetIdx < 0 || targetIdx >= list.length;
-                final target = atEdge ? null : list[targetIdx];
-
-                final heading = atEdge
-                    ? (targetIdx < 0 ? 'First Chapter' : 'Last Chapter')
-                    : (isNext ? 'Next' : 'Previous');
-
-                final subtext = target != null
-                    ? (target.title ?? 'Chapter ${target.number}')
-                    : (isNext
-                        ? 'You\'ve reached the end'
-                        : 'You\'re at the beginning');
-
-                return _LiquidSurface(
-                  width: w > 900 ? w * 0.46 : double.infinity,
-                  radius: 22,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 42,
-                        height: 42,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              value: 1,
-                              strokeWidth: 3.5,
-                              color: Colors.white.withValues(alpha: 0.15),
-                              strokeCap: StrokeCap.round,
-                            ),
-                            CircularProgressIndicator(
-                              value: progress,
-                              strokeWidth: 3.5,
-                              color: _ringColor(progress),
-                              strokeCap: StrokeCap.round,
-                            ),
-                            Icon(
-                              _arrowIcon(isNext),
-                              size: 16,
-                              color: _ringColor(progress),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              heading,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.6),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 3),
-                            Text(
-                              subtext,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                height: 1.2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Color _ringColor(double p) {
-    if (p < 0.6) {
-      return Color.lerp(
-          Colors.white.withOpacity(0.4), Colors.white, p / 0.6)!;
-    }
-    return Color.lerp(
-        Colors.white, const Color(0xFF5AC8FA), (p - 0.6) / 0.4)!;
-  }
-
-  IconData _arrowIcon(bool isNext) {
-    final dir = controller.readingDirection.value;
-    if (dir.axis == Axis.vertical) {
-      return isNext ? CupertinoIcons.arrow_down : CupertinoIcons.arrow_up;
-    }
-    if (dir.reversed) {
-      return isNext ? CupertinoIcons.arrow_left : CupertinoIcons.arrow_right;
-    }
-    return isNext ? CupertinoIcons.arrow_right : CupertinoIcons.arrow_left;
-  }
-}
-
 class _LiquidSurface extends StatelessWidget {
   const _LiquidSurface({
     required this.child,
@@ -551,9 +404,9 @@ class _LiquidSurface extends StatelessWidget {
     this.height,
     this.padding,
     this.radius = 20,
-    this.blurSigma = 28,
-    this.tintAlpha = 0.18,
-    this.edgeAlpha = 0.32,
+    this.blurSigma = 24,
+    this.tintAlpha = 0.28,
+    this.edgeAlpha = 0.34,
   });
 
   final Widget child;
@@ -570,23 +423,19 @@ class _LiquidSurface extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
       child: BackdropFilter(
-        filter: ImageFilter.compose(
-          outer: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-          inner: ImageFilter.matrix(
-            Matrix4.identity().storage,
-          ),
-        ),
+        filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
         child: Container(
           width: width,
           height: height,
           padding: padding,
           decoration: BoxDecoration(
+            color: const Color(0x66181818),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.white.withValues(alpha: tintAlpha + 0.06),
-                Colors.white.withValues(alpha: tintAlpha - 0.04),
+                Colors.white.withValues(alpha: tintAlpha + 0.08),
+                Colors.white.withValues(alpha: tintAlpha),
               ],
             ),
             borderRadius: BorderRadius.circular(radius),
@@ -596,13 +445,13 @@ class _LiquidSurface extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.28),
-                blurRadius: 30,
+                color: Colors.black.withValues(alpha: 0.35),
+                blurRadius: 25,
                 spreadRadius: -4,
-                offset: const Offset(0, 12),
+                offset: const Offset(0, 8),
               ),
               BoxShadow(
-                color: Colors.white.withValues(alpha: 0.06),
+                color: Colors.white.withValues(alpha: 0.08),
                 blurRadius: 1,
                 offset: const Offset(0, -1),
               ),

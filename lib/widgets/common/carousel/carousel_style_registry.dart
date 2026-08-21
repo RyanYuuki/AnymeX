@@ -1,6 +1,6 @@
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/widgets/common/big_carousel_v2.dart';
-import 'package:anymex/widgets/common/carousel/big_carousel_classic.dart';
+import 'package:anymex/widgets/common/carousel/themes/big_carousel_classic.dart';
+import 'package:anymex/widgets/common/carousel/themes/big_carousel_portrait.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
 import 'package:flutter/widgets.dart';
 
@@ -33,10 +33,10 @@ class CarouselStyleRegistry {
       builder: _buildClassic,
     ),
     CarouselStyleDefinition(
-      id: 'cinematic',
-      name: 'Cinematic',
-      description: 'Centered showcase cards with expanded visuals and smoother focus.',
-      builder: _buildCinematic,
+      id: 'portrait',
+      name: 'Portrait',
+      description: 'Classic carousel card layout featuring vertical poster cards.',
+      builder: _buildPortrait,
     ),
   ];
 
@@ -68,11 +68,11 @@ class CarouselStyleRegistry {
     return BigCarouselClassic(key: key, data: data, carouselType: carouselType);
   }
 
-  static Widget _buildCinematic({
+  static Widget _buildPortrait({
     Key? key,
     required List<Media> data,
     required CarouselType carouselType,
   }) {
-    return BigCarouselV2(key: key, data: data, carouselType: carouselType);
+    return BigCarouselPortrait(key: key, data: data, carouselType: carouselType);
   }
 }

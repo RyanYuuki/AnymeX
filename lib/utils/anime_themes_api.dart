@@ -51,7 +51,7 @@ class AnimeThemesAPI {
           if (themesData != null && themesData is List) {
             final themes = themesData;
             return themes
-                .where((theme) => theme is Map)
+                .whereType<Map>()
                 .map((theme) =>
                     AnimeTheme.fromJson(theme as Map<String, dynamic>))
                 .toList();
@@ -144,7 +144,7 @@ class AnimeThemesAPI {
           if (themesData != null && themesData is List) {
             final themesJsonList = themesData;
             themes = themesJsonList
-                .where((theme) => theme is Map)
+                .whereType<Map>()
                 .map((theme) =>
                     AnimeTheme.fromJson(theme as Map<String, dynamic>))
                 .toList();

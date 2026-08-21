@@ -1,4 +1,6 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:get/get.dart';
 
 class TrackedMedia {
   String? id;
@@ -29,10 +31,25 @@ class TrackedMedia {
   int? startYear;
   int? updatedAt;
 
+  String? romajiTitle;
+
+  String get displayTitle {
+    if (Get.isRegistered<Settings>() &&
+        Get.find<Settings>().useAlternateTitle.value) {
+      if (romajiTitle != null &&
+          romajiTitle!.trim().isNotEmpty &&
+          romajiTitle != '?') {
+        return romajiTitle!;
+      }
+    }
+    return title ?? '?';
+  }
+
   TrackedMedia({
     this.id,
     this.idMal,
     this.title,
+    this.romajiTitle,
     this.poster,
     this.episodeCount,
     this.chapterCount,
@@ -60,13 +77,17 @@ class TrackedMedia {
   });
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
+    final titleMap = json['media']?['title'];
     return TrackedMedia(
       id: json['media']['id']?.toString(),
       idMal: json['media']['idMal']?.toString(),
-      title: json['media']['title']['userPreferred'] ??
-          json['media']['title']['english'] ??
-          json['media']['title']['romaji'] ??
-          json['media']['title']['native'],
+      title: titleMap?['userPreferred'] ??
+          titleMap?['english'] ??
+          titleMap?['romaji'] ??
+          titleMap?['native'],
+      romajiTitle: titleMap?['romaji'] ??
+          titleMap?['userPreferred'] ??
+          titleMap?['english'],
       poster: json['media']['coverImage']['large'],
       episodeCount: json['progress']?.toString(),
       chapterCount: json['media']['chapters']?.toString(),
@@ -113,8 +134,19 @@ class TrackedMedia {
   }
 
   factory TrackedMedia.fromSimklShow(Map<String, dynamic> json) {
-    final show = json['show'];
+    final show = json['show'] ?? {};
     final ids = show['ids'] ?? {};
+    final rawDate = json['last_watched_at'] ?? json['user_updated_at'] ?? json['updated_at'];
+    final updatedTime = rawDate != null
+        ? (DateTime.tryParse(rawDate.toString())?.millisecondsSinceEpoch ?? 0)
+        : 0;
+    final year = int.tryParse(show['year']?.toString() ?? '') ?? 0;
+    final rawScore = json['user_rating'] ?? show['ratings']?['simkl']?['rating'];
+    final scoreStr = rawScore != null
+        ? (double.tryParse(rawScore.toString()) != null
+            ? (double.parse(rawScore.toString()) * 10).toString()
+            : null)
+        : null;
 
     return TrackedMedia(
       id: '${ids['simkl']}*SERIES',
@@ -123,22 +155,40 @@ class TrackedMedia {
           ? "https://wsrv.nl/?url=https://simkl.in/posters/${show['poster']}_m.jpg"
           : '?',
       episodeCount: json['watched_episodes_count']?.toString(),
-      totalEpisodes: json['total_episodes_count']?.toString(),
+      totalEpisodes: (json['total_episodes_count'] ??
+              json['total_episodes'] ??
+              json['episodes_count'] ??
+              json['episodes'])
+          ?.toString(),
       watchingStatus: Simkl.simklShowToAL(json['status']),
       type: "show",
       servicesType: ServicesType.simkl,
       mediaStatus:
           json['not_aired_episodes_count'] == 0 ? "completed" : "airing",
       rating: null,
-      score: json['user_rating']?.toString(),
+      score: scoreStr,
       format: null,
       mediaListId: '${ids['simkl']}*SERIES',
+      updatedAt: updatedTime,
+      startYear: year,
     );
   }
 
   factory TrackedMedia.fromSimklMovie(Map<String, dynamic> json) {
-    final show = json['movie'];
+    final show = json['movie'] ?? {};
     final ids = show['ids'] ?? {};
+    final rawDate = json['last_watched_at'] ?? json['user_updated_at'] ?? json['updated_at'];
+    final updatedTime = rawDate != null
+        ? (DateTime.tryParse(rawDate.toString())?.millisecondsSinceEpoch ?? 0)
+        : 0;
+    final year = int.tryParse(show['year']?.toString() ?? '') ?? 0;
+    final rawScore = json['user_rating'] ?? show['ratings']?['simkl']?['rating'];
+    final scoreStr = rawScore != null
+        ? (double.tryParse(rawScore.toString()) != null
+            ? (double.parse(rawScore.toString()) * 10).toString()
+            : null)
+        : null;
+
     return TrackedMedia(
       id: '${ids['simkl']}*MOVIE',
       title: show['title'],
@@ -154,19 +204,22 @@ class TrackedMedia {
       mediaStatus:
           json['not_aired_episodes_count'] == 0 ? "COMPLETED" : "AIRING",
       rating: null,
-      score: json['user_rating']?.toString(),
+      score: scoreStr,
       format: null,
       mediaListId: '${ids['simkl']}*MOVIE',
+      updatedAt: updatedTime,
+      startYear: year,
     );
   }
 
   factory TrackedMedia.fromMAL(Map<String, dynamic> json) {
+    final isMangaResolved = json['node']?['num_chapters'] != null || json['list_status']?['num_chapters_read'] != null;
     return TrackedMedia(
       id: json['node']['id']?.toString(),
       idMal: json['node']['id']?.toString(),
       title: json['node']['title'],
       servicesType: ServicesType.mal,
-      poster: json['node']['main_picture']['large'],
+      poster: json['node']['main_picture']?['large'] ?? json['node']['main_picture']?['medium'] ?? '',
       chapterCount:
           json['node']?['list_status']?['num_chapters_read']?.toString() ?? '?',
       episodeCount: json['list_status']?['num_chapters_read']?.toString() ??
@@ -177,8 +230,10 @@ class TrackedMedia {
           '?',
       rating: json['node']?['mean']?.toString() ?? '?',
       watchingStatus: returnConvertedStatus(json['list_status']['status']),
-      score: json['list_status']['score']?.toString(),
-      type: null,
+      score: json['list_status']['score'] != null
+          ? (json['list_status']['score'] * 10).toString()
+          : null,
+      type: isMangaResolved ? 'MANGA' : 'ANIME',
       mediaListId: json['node']['id']?.toString(),
       startedAt: _parseMalDate(json['list_status']?['start_date']),
       completedAt: _parseMalDate(json['list_status']?['finish_date']),

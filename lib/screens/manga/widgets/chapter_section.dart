@@ -1,456 +1,351 @@
 import 'package:anymex/controllers/source/source_controller.dart';
-import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/details/controller/media_details_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
 import 'package:anymex/screens/manga/widgets/chapter_list_builder.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/language.dart';
-import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/common/no_source.dart';
-import 'package:anymex/widgets/common/cloudflare_webview.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_dropdown.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/custom_widgets/custom_textspan.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
+import 'package:anymex/widgets/common/unified_source_section.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/Services/CloudStream/CloudStreamSourceMethods.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ChapterSection extends StatelessWidget {
-  final RxString searchedTitle;
-  final Media anilistData;
-  final RxList<Chapter> chapterList;
-  final SourceController sourceController;
-  final Future<void> Function() mapToAnilist;
-  final Future<void> Function(Media media) getDetailsFromSource;
-  final void Function(
-    BuildContext context,
-    String title,
-    Function(dynamic manga) onMangaSelected, {
-    required bool isManga,
-    String? mediaId,
-  }) showWrongTitleModal;
+  final dynamic searchedTitle;
+  final dynamic anilistData;
+  final RxList<Chapter>? chapterList;
+  final RxBool chapterError;
+  final String tag;
 
   const ChapterSection({
     super.key,
     required this.searchedTitle,
     required this.anilistData,
     required this.chapterList,
-    required this.sourceController,
-    required this.mapToAnilist,
-    required this.getDetailsFromSource,
-    required this.showWrongTitleModal,
+    required this.chapterError,
+    required this.tag,
   });
 
-  String _sourceDropdownValue(Source source) => source.id.toString();
-
-  Widget _buildListShell({
-    required BuildContext context,
-    required Widget child,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer.opaque(0.3),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.colors.outline.opaque(0.2, iReallyMeanIt: true),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context)
-                .colorScheme
-                .shadow
-                .opaque(0.08, iReallyMeanIt: true),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildSliverContent(context);
-  }
-
-  Widget _buildSliverContent(BuildContext context) {
-    return Obx(() => SliverMainAxisGroup(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainer
-                        .opaque(0.3),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: context.colors.outline
-                          .opaque(0.2, iReallyMeanIt: true),
-                      width: 1.5,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .shadow
-                            .opaque(0.08, iReallyMeanIt: true),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: AnymexTextSpans(
-                          spans: [
-                            AnymexTextSpan(
-                              text: searchedTitle.value,
-                              variant: TextVariant.semiBold,
-                              size: 14,
-                              color:
-                                  searchedTitle.value.contains('No Match Found')
-                                      ? context.colors.error
-                                      : context.colors.primary,
-                            )
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      AnymexOnTap(
-                        onTap: () {
-                          showWrongTitleModal(
-                            context,
-                            anilistData.title,
-                            (manga) async {
-                              chapterList.value = [];
-                              await getDetailsFromSource(
-                                  Media.froDMedia(manga, ItemType.manga));
-                              final key =
-                                  '${sourceController.activeMangaSource.value?.id}-${anilistData.id}-${anilistData.serviceType.index}';
-                              DynamicKeys.mappedMediaTitle.set(key, manga.title);
-                            },
-                            isManga: true,
-                            mediaId: anilistData.id.toString(),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primaryContainer
-                                .opaque(0.4),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .outline
-                                  .opaque(0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.swap_horiz_rounded,
-                                size: 14,
-                                color: context.colors.primary,
-                              ),
-                              const SizedBox(width: 6),
-                              AnymexText(
-                                text: "Wrong Title?",
-                                size: 12,
-                                color: context.colors.primary,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: buildMangaSourceDropdown(),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: buildLanguageDropdown(),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 20)),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              sliver: DecoratedSliver(
-                decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .surfaceContainer
-                      .opaque(0.3),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color:
-                        context.colors.outline.opaque(0.2, iReallyMeanIt: true),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .shadow
-                          .opaque(0.08, iReallyMeanIt: true),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                sliver: SliverPadding(
-                  padding: const EdgeInsets.all(16),
-                  sliver: SliverMainAxisGroup(
-                    slivers: [
-                      const SliverToBoxAdapter(
-                        child: Row(
-                          children: [
-                            AnymexText(
-                              text: "Chapters",
-                              variant: TextVariant.bold,
-                              size: 18,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SliverToBoxAdapter(child: SizedBox(height: 16)),
-                      if (sourceController.activeMangaSource.value == null)
-                        const SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: 320,
-                            child: NoSourceSelectedWidget(),
-                          ),
-                        )
-                      else if (chapterList.value.isEmpty)
-                        const SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: 500,
-                            child: Center(child: AnymexProgressIndicator()),
-                          ),
-                        )
-                      else if (searchedTitle.value.toLowerCase() !=
-                          "no match found")
-                        ChapterListBuilder(
-                          chapters: chapterList,
-                          anilistData: anilistData,
-                          isSliverMode: true,
-                        )
-                      else
-                        const SliverToBoxAdapter(
-                          child: Center(
-                              child: AnymexText(text: "No Match Found")),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 10)),
-          ],
-        ));
-  }
-
-  void openSourcePreferences(BuildContext context) {
-    navigate(
-      () => SourcePreferenceScreen(
-        source: sourceController.activeMangaSource.value!,
-      ),
-    );
-  }
-
-  Widget buildMangaSourceDropdown() {
-    List<DropdownItem> items = sourceController.installedMangaExtensions.isEmpty
-        ? [
-            const DropdownItem(
-              value: "No Sources Installed",
-              text: "No Manga Sources Available",
-              subtitle: "Install manga extensions to get started",
-              leadingIcon: Icon(
-                Icons.menu_book_outlined,
-                size: 24,
-                color: Colors.grey,
-              ),
-            ),
-          ]
-        : sourceController.installedMangaExtensions.map<DropdownItem>((source) {
-            return DropdownItem(
-              value: _sourceDropdownValue(source),
-              text: source.name?.toUpperCase() ?? 'Unknown Source',
-              subtitle: source.lang?.toUpperCase() ?? 'Unknown',
-              leadingIcon: AnymeXImage(
-                radius: 16,
-                imageUrl: source.managerIcon,
-                height: 24,
-                width: 24,
-              ),
-            );
-          }).toList();
-
-    DropdownItem? selectedItem;
-    if (sourceController.installedMangaExtensions.isEmpty) {
-      selectedItem = items.first;
-    } else {
-      final activeSource = sourceController.activeMangaSource.value;
-      if (activeSource != null) {
-        selectedItem = DropdownItem(
-          value: _sourceDropdownValue(activeSource),
-          text: activeSource.name?.toUpperCase() ?? 'Unknown Source',
-          subtitle: 'Manga • ${activeSource.lang?.toUpperCase() ?? 'Unknown'}',
-          leadingIcon: AnymeXImage(
-            radius: 12,
-            imageUrl: activeSource.managerIcon,
-            height: 20,
-            width: 20,
-          ),
-        );
-      } else if (items.isNotEmpty) {
-        selectedItem = null;
+  void openSourcePreferences(BuildContext context, Source active) async {
+    if (active is CloudStreamSource) {
+      if (active.hasSettings) {
+        await CloudStreamSourceMethods(active).openNativeSettings();
       }
+      return;
     }
-
-    return AnymexDropdown(
-      items: items,
-      selectedItem: selectedItem,
-      label: "SELECT SOURCE",
-      icon: Icons.extension_rounded,
-      actions: selectedItem == null || sourceController.installedMangaExtensions.isEmpty ? null : [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () {
-                final activeSource = sourceController.activeMangaSource.value;
-                if (activeSource != null && activeSource.baseUrl != null) {
-                  Get.context!.openCloudflareBypass(activeSource.baseUrl!);
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Icon(
-                  Icons.security_rounded,
-                  size: 20,
-                  color: Theme.of(Get.context!).colorScheme.primary.opaque(0.8),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Material(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(20),
-              onTap: () => openSourcePreferences(Get.context!),
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Icon(
-                  Icons.settings_outlined,
-                  size: 20,
-                  color: Theme.of(Get.context!).colorScheme.primary.opaque(0.8),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-      onChanged: (DropdownItem item) async {
-        chapterList.value = [];
-        try {
-          sourceController.getMangaExtensionByName(item.value,
-              mediaId: anilistData.id.toString());
-          await mapToAnilist();
-        } catch (e) {
-          Logger.i(e.toString());
-        }
-      },
-    );
+    navigate(() => SourcePreferenceScreen(source: active));
   }
 
-  void handleLanguageChange(String? value) async {
+  Future<void> handleLanguageChange(BuildContext context, String? value,
+      MediaDetailsController controller) async {
     if (value == null) return;
-
-    final activeSource = sourceController.activeMangaSource.value as ASource?;
+    final activeSource = controller.activeSource.value as ASource?;
     if (activeSource == null || activeSource.langs == null) return;
 
     final newSubSource =
         activeSource.langs!.firstWhere((s) => s.id.toString() == value);
-    sourceController.setActiveSource(newSubSource, mediaId: anilistData.id.toString());
-
-    chapterList.value = [];
-    try {
-      await mapToAnilist();
-    } catch (e) {
-      Logger.i(e.toString());
-    }
+    controller.switchSource(newSubSource);
   }
 
-  Widget buildLanguageDropdown() {
-    final activeSource = sourceController.activeMangaSource.value;
-    if (activeSource is! ASource ||
-        activeSource.langs == null ||
-        activeSource.langs!.isEmpty) {
-      return const SizedBox.shrink();
-    }
+  Widget _buildHeader(BuildContext context) {
+    final sourceController = Get.find<SourceController>();
+    final isNovel = anilistData is Media &&
+        (anilistData as Media).mediaType == ItemType.novel;
 
-    List<DropdownItem> items = activeSource.langs!.map<DropdownItem>((source) {
-      return DropdownItem(
-        value: source.id.toString(),
-        text: extensionLanguageName(source.lang),
-        subtitle: source.name ?? 'Unknown Source',
-        leadingIcon: AnymeXImage(
-          radius: 0,
-          imageUrl: extensionLanguageFlagUrl(source.lang),
-          height: 20,
-          width: 20,
-        ),
+    return Obx(() {
+      final installed = isNovel
+          ? sourceController.installedNovelExtensions
+          : sourceController.installedMangaExtensions;
+
+      if (installed.isEmpty) {
+        return const NoSourceSelectedWidget();
+      }
+
+      final activeSource = (isNovel
+              ? sourceController.activeNovelSource.value
+              : sourceController.activeMangaSource.value) ??
+          installed.first;
+
+      final titleText = searchedTitle is RxString
+          ? searchedTitle.value
+          : searchedTitle.toString();
+      final controller = Get.find<MediaDetailsController>(tag: tag);
+      final colors = context.colors;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          UnifiedSourceSection(
+            media: anilistData is Media
+                ? anilistData
+                : Media(serviceType: ServicesType.extensions),
+            searchedTitle: titleText,
+            activeSource: activeSource,
+            installedSources: installed,
+            onSourceSelected: (source) {
+              controller.switchSource(source);
+            },
+            onSubSourceSelected: (sub) {
+              handleLanguageChange(context, sub.id.toString(), controller);
+            },
+            onWrongTitleMapped: (manga) async {
+              controller.chapterList.clear();
+              await controller.fetchSourceDetailsFromMedia(
+                Media.froDMedia(manga, (anilistData as Media).mediaType),
+              );
+            },
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHighest
+                  .opaque(0.2, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Expanded(
+                  child: AnymeXText('Chapters',
+                    variant: TextVariant.bold,
+                    size: 18,
+                  ),
+                ),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _showChapterSettingsDialog(context),
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceContainerHighest
+                            .opaque(0.35, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color:
+                              colors.outline.opaque(0.15, iReallyMeanIt: true),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.settings_outlined,
+                            size: 16,
+                            color: colors.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          AnymeXText('Settings',
+                            size: 12,
+                            color: colors.primary,
+                            variant: TextVariant.bold,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+        ],
       );
-    }).toList();
+    });
+  }
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: AnymexDropdown(
-        items: items,
-        selectedItem: items.firstWhere(
-            (item) => item.value == activeSource.id.toString(),
-            orElse: () => items.first),
-        label: "SELECT SUB-LANGUAGE",
-        icon: Icons.language_rounded,
-        onChanged: (DropdownItem item) => handleLanguageChange(item.value),
+  Widget _buildChapterListSliver(BuildContext context) {
+    return Obx(() {
+      final chapters = chapterList ?? <Chapter>[];
+      if (chapterError.value) {
+        return const SliverToBoxAdapter(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: AnymeXText('Error loading chapters from source'),
+            ),
+          ),
+        );
+      } else if (chapters.isEmpty) {
+        return const SliverToBoxAdapter(
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: AnymeXProgressIndicator(),
+            ),
+          ),
+        );
+      } else {
+        return ChapterListBuilder(
+          chapterList: chapters,
+          anilistData: anilistData is Media ? anilistData : null,
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          sliver: SliverToBoxAdapter(child: _buildHeader(context)),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: _buildChapterListSliver(context),
+        ),
+      ],
+    );
+  }
+
+  void _showChapterSettingsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        final settings = Get.find<Settings>();
+        return Obx(
+          () => AnymeXDialog(
+            title: 'Chapter List Settings',
+            onConfirm: () {},
+            contentWidget: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AnymeXText('Layout Style',
+                  variant: TextVariant.bold,
+                  size: 14,
+                ),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _ProviderOptionTile(
+                    title: 'Compact',
+                    subtitle: 'Simple compact list view',
+                    isSelected: settings.chapterStyle == 'compact',
+                    onTap: () {
+                      settings.chapterStyle = 'compact';
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _ProviderOptionTile(
+                    title: 'Detailed (Classic)',
+                    subtitle:
+                        'Full-width detailed cards with progress and read button',
+                    isSelected: settings.chapterStyle == 'detailed',
+                    onTap: () {
+                      settings.chapterStyle = 'detailed';
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _ProviderOptionTile(
+                    title: 'Grid',
+                    subtitle: 'Compact grid of chapter numbers',
+                    isSelected: settings.chapterStyle == 'grid',
+                    onTap: () {
+                      settings.chapterStyle = 'grid';
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ProviderOptionTile extends StatelessWidget {
+  const _ProviderOptionTile({
+    required this.title,
+    required this.subtitle,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? colors.primaryContainer.opaque(0.35, iReallyMeanIt: true)
+                : colors.surfaceContainerHighest
+                    .opaque(0.3, iReallyMeanIt: true),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected
+                  ? colors.primary.opaque(0.4, iReallyMeanIt: true)
+                  : colors.onSurface.opaque(0.1, iReallyMeanIt: true),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymeXText(title,
+                      variant: TextVariant.semiBold,
+                      size: 13,
+                    ),
+                    const SizedBox(height: 2),
+                    AnymeXText(subtitle,
+                      size: 11,
+                      color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              if (isSelected)
+                Icon(
+                  Icons.check_circle_rounded,
+                  color: colors.primary,
+                  size: 20,
+                )
+              else
+                Icon(
+                  Icons.circle_outlined,
+                  color: colors.onSurface.opaque(0.4, iReallyMeanIt: true),
+                  size: 20,
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

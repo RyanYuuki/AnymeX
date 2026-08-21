@@ -1,5 +1,6 @@
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/anime/widgets/track_dialog.dart' as anime_track;
@@ -12,12 +13,13 @@ import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/m3u8_parser.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 typedef _LogFn = void Function(String message);
 
@@ -159,7 +161,7 @@ Future<void> _handleMangaTap(OfflineMedia media) async {
   var chapters = media.chapters ?? [];
   if (chapters.length <= 1) {
     Get.dialog(
-      const Center(child: AnymexProgressIndicator()),
+      const Center(child: AnymeXProgressIndicator()),
       barrierDismissible: false,
     );
     try {
@@ -186,16 +188,21 @@ Future<void> _handleMangaTap(OfflineMedia media) async {
   final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
 
   bool? shouldTrack;
+  final isExtension = mediaModel.serviceType == ServicesType.extensions;
+  final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&
+      Get.find<TrackBindingController>().hasAnyBinding(mediaModel.id);
+
   if (savedTracking != null) {
     shouldTrack = savedTracking;
+  } else if (isExtension) {
+    shouldTrack = hasTrackBinding;
   } else if (General.shouldAskForTrack.get(true) == false) {
     shouldTrack = true;
   } else if (Get.context != null) {
-    shouldTrack = mediaModel.serviceType == ServicesType.extensions
-        ? false
-        : await manga_track.showTrackingDialog(Get.context!, dbId: dbId);
+    shouldTrack =
+        await manga_track.showTrackingDialog(Get.context!, dbId: dbId);
   } else {
-    shouldTrack = mediaModel.serviceType != ServicesType.extensions;
+    shouldTrack = !isExtension;
   }
 
   if (shouldTrack == null) return;
@@ -636,10 +643,10 @@ class _LoaderLogSession {
               children: [
                 Row(
                   children: [
-                    const AnymexProgressIndicator(),
+                    const AnymeXProgressIndicator(),
                     const SizedBox(width: 12),
                     const Expanded(
-                      child: Text(
+                      child: AnymeXText(
                         'Preparing stream',
                         style: TextStyle(
                           fontSize: 16,
@@ -663,7 +670,7 @@ class _LoaderLogSession {
                       itemBuilder: (_, index) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 6),
-                          child: Text(
+                          child: AnymeXText(
                             _logs[index],
                             style: const TextStyle(fontSize: 13),
                           ),
@@ -680,7 +687,7 @@ class _LoaderLogSession {
                       onPressed: () {
                         cancel();
                       },
-                      child: const Text('Cancel'),
+                      child: const AnymeXText('Cancel'),
                     ),
                   ],
                 ),

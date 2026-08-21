@@ -18,7 +18,7 @@
 *.ipr
 *.iws
 .idea/
-
+test/
 # Visual Studio Code related
 .classpath
 .project
@@ -168,3 +168,6 @@ keystore.b64
 # Flutter Version Management (fvm)
 .fvm/
 .vscode/settings.json
+
+# Local Flutter SDK
+flutter_sdk/

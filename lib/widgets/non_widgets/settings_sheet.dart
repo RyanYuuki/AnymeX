@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/notifications/notification_screen.dart';
@@ -11,17 +12,18 @@ import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/screens/watchium/watchium_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:iconly/iconly.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:iconsax/iconsax.dart';
 
 class SettingsSheet extends StatelessWidget {
@@ -30,12 +32,9 @@ class SettingsSheet extends StatelessWidget {
   final serviceHandler = Get.find<ServiceHandler>();
 
   static void show(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => SettingsSheet(),
-    );
+    AnymeXSheet(
+      customWidget: SettingsSheet(),
+    ).show(context);
   }
 
   void showServiceSelector(BuildContext context) {
@@ -60,17 +59,15 @@ class SettingsSheet extends StatelessWidget {
         'icon': 'simkl-icon.png',
         'desc': 'for movies and series'
       },
-      if (serviceHandler.extensionService.installedExtensions.isNotEmpty &&
-          serviceHandler.extensionService.installedMangaExtensions.isNotEmpty)
-        {
-          'type': ServicesType.extensions,
-          'name': "Extensions",
-          'icon': null,
-          'desc': 'Third-party plugins'
-        },
+      {
+        'type': ServicesType.extensions,
+        'name': "Extensions",
+        'icon': null,
+        'desc': 'Third-party plugins'
+      },
     ];
 
-    Get.bottomSheet(
+    AnymeXSheet.custom(
       ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(Get.context!).size.height * 0.95,
@@ -81,7 +78,6 @@ class SettingsSheet extends StatelessWidget {
             color: theme.colorScheme.surface,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
           ),
-          padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
@@ -98,14 +94,14 @@ class SettingsSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const AnymexText(
-                  text: "Choose Provider",
+                const AnymeXText(
+                  "Choose Provider",
                   size: 20,
                   variant: TextVariant.bold,
                 ),
                 const SizedBox(height: 5),
-                AnymexText(
-                  text: "Select your preferred content source",
+                AnymeXText(
+                  "Select your preferred content source",
                   size: 14,
                   color: theme.colorScheme.onSurface
                       .opaque(0.5, iReallyMeanIt: true),
@@ -180,16 +176,16 @@ class SettingsSheet extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    AnymexText(
-                                      text: service['name'] as String,
+                                    AnymeXText(
+                                      service['name'] as String,
                                       size: 16,
                                       variant: TextVariant.semiBold,
                                       color: isSelected ? primaryColor : null,
                                     ),
                                     if (service['desc'] != null) ...[
                                       const SizedBox(height: 2),
-                                      AnymexText(
-                                        text: service['desc'] as String,
+                                      AnymeXText(
+                                        service['desc'] as String,
                                         size: 12,
                                         color: theme.colorScheme.onSurface
                                             .opaque(0.6),
@@ -223,45 +219,29 @@ class SettingsSheet extends StatelessWidget {
           ),
         ),
       ),
-      isScrollControlled: true,
+      context,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(12, 0, 12, 16 + bottomInset),
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: theme.outline.opaque(0.1)),
-        ),
-        padding: const EdgeInsets.fromLTRB(14, 16, 14, 10),
-        child: SafeArea(
-          top: false,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 36,
-                height: 3.5,
-                margin: const EdgeInsets.only(bottom: 14),
-                decoration: BoxDecoration(
-                  color: theme.onSurface.opaque(0.15),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              _buildProfileHeader(context, theme),
-              const SizedBox(height: 10),
-              _buildMenuSection(context, theme),
-              const SizedBox(height: 4),
-            ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 36,
+          height: 3.5,
+          margin: const EdgeInsets.only(bottom: 14),
+          decoration: BoxDecoration(
+            color: theme.onSurface.opaque(0.15),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
-      ),
+        _buildProfileHeader(context, theme),
+        const SizedBox(height: 10),
+        _buildMenuSection(context, theme),
+      ],
     );
   }
 
@@ -318,8 +298,8 @@ class SettingsSheet extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymexText(
-                  text: serviceHandler.profileData.value.name ?? 'Guest',
+                AnymeXText(
+                  serviceHandler.profileData.value.name ?? 'Guest',
                   variant: TextVariant.semiBold,
                   size: 14,
                 ),
@@ -336,8 +316,8 @@ class SettingsSheet extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        AnymexText(
-                          text: serviceHandler.isLoggedIn.value
+                        AnymeXText(
+                          serviceHandler.isLoggedIn.value
                               ? 'Tap to logout'
                               : 'Tap to login',
                           size: 12,
@@ -469,6 +449,14 @@ class SettingsSheet extends StatelessWidget {
         },
       ),
       _SheetMenuItem(
+        icon: Icons.people_rounded,
+        label: 'Watch Together',
+        onTap: () {
+          Get.back();
+          navigate(() => const WatchiumPage());
+        },
+      ),
+      _SheetMenuItem(
         icon: Iconsax.setting,
         label: 'Settings',
         onTap: () {
@@ -488,7 +476,7 @@ class SettingsSheet extends StatelessWidget {
         children: items.asMap().entries.map((entry) {
           final index = entry.key;
           final item = entry.value;
-          final isMobile = MediaQuery.of(context).size.width < 600;
+          final isMobile = MediaQuery.sizeOf(context).width < 600;
           final effectiveFirst = isMobile ? false : index == 0;
           final isLast = index == items.length - 1;
           return _buildMenuItem(
@@ -510,6 +498,37 @@ class SettingsSheet extends StatelessWidget {
     required bool isFirst,
     required bool isLast,
   }) {
+    final iconWidget = Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: theme.primaryContainer.opaque(0.3),
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: Icon(
+        item.icon,
+        size: 16,
+        color: theme.primary,
+      ),
+    );
+
+    final finalIcon = item.label == 'Extensions'
+        ? Obx(() {
+            final count =
+                Get.find<SourceController>().extensionUpdatesCount.value;
+            if (count > 0) {
+              return AnymeXBadge(
+                label: count.toString(),
+                backgroundColor: theme.primary,
+                textColor: theme.onPrimary,
+                offset: const Offset(-3, -3),
+                child: iconWidget,
+              );
+            }
+            return iconWidget;
+          })
+        : iconWidget;
+
     return AnymexOnTap(
       onTap: item.onTap,
       child: Container(
@@ -526,29 +545,17 @@ class SettingsSheet extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: theme.primaryContainer.opaque(0.3),
-                borderRadius: BorderRadius.circular(9),
-              ),
-              child: Icon(
-                item.icon,
-                size: 16,
-                color: theme.primary,
-              ),
-            ),
+            finalIcon,
             const SizedBox(width: 12),
             Expanded(
-              child: AnymexText(
-                text: item.label,
+              child: AnymeXText(
+                item.label,
                 size: 13.5,
                 variant: TextVariant.semiBold,
               ),
             ),
             Icon(
-              IconlyLight.arrow_right_2,
+              IconlyLight.arrowRight2,
               size: 14,
               color: theme.onSurface.opaque(0.25),
             ),

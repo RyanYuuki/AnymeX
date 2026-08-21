@@ -3,6 +3,7 @@ import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:checkmark/checkmark.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class ListTileWithCheckMark extends StatelessWidget {
   final bool active;
@@ -47,13 +48,13 @@ class ListTileWithCheckMark extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           titleWidget ??
-              Text(
+              AnymeXText(
                 title!,
                 style:
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
           if (subtitle != '')
-            Text(
+            AnymeXText(
               subtitle,
               maxLines: 1,
             )
