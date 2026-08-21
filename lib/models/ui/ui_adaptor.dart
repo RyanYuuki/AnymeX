@@ -35,6 +35,7 @@ class UISettings {
   bool enableImmersiveMode;
   int navBarStyle;
   String appFontFamily;
+  double bottomNavBarMargin;
 
   UISettings({
     this.glowMultiplier = 1.0,
@@ -69,6 +70,7 @@ class UISettings {
     this.enableImmersiveMode = false,
     this.navBarStyle = 1,
     this.appFontFamily = '',
+    this.bottomNavBarMargin = 32.0,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -206,6 +208,8 @@ class UISettings {
       navBarStyle: UISettingsKeys.navBarStyle.get<int>(uiDefaults.navBarStyle),
       appFontFamily:
           UISettingsKeys.appFontFamily.get<String>(uiDefaults.appFontFamily),
+      bottomNavBarMargin: UISettingsKeys.bottomNavBarMargin
+          .get<double>(uiDefaults.bottomNavBarMargin),
     );
   }
 }

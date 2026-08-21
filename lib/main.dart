@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
-import 'package:anymex/widgets/common/fps_meter.dart';
 import 'package:rhttp/rhttp.dart';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -789,7 +788,7 @@ class _FilterScreenState extends State<FilterScreen> {
             bottomNavigationBar: ResponsiveNavBar(
               isDesktop: false,
               currentIndex: validIndex,
-              margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
+              margin: EdgeInsets.only(bottom: settings.bottomNavBarMargin, left: 32, right: 32, top: 10),
               items: [
                 for (final tab in navTabs)
                   _getNavItemForTab(tab, isSimkl, _onMobileItemTapped),

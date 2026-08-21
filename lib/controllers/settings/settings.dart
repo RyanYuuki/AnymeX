@@ -199,11 +199,12 @@ class Settings extends GetxController {
     }
   }
 
-  void checkForUpdates(BuildContext context) {
+  void checkForUpdates(BuildContext context, {bool manualCheck = false}) {
     UpdateManager().checkForUpdates(
       context,
       RxBool(true),
       isBeta: enableBetaUpdates.value,
+      manualCheck: manualCheck,
     );
   }
 
@@ -432,6 +433,12 @@ class Settings extends GetxController {
     KvHelper.set(_currentTabOrderKey, jsonEncode(order));
     uiSettings.refresh();
     update();
+  }
+
+  double get bottomNavBarMargin => _getUISetting((s) => s.bottomNavBarMargin);
+  set bottomNavBarMargin(double value) {
+    uiSettings.update((s) => s?.bottomNavBarMargin = value);
+    UISettingsKeys.bottomNavBarMargin.set(value);
   }
 
   double get glowMultiplier => _getUISetting((s) => s.glowMultiplier);
