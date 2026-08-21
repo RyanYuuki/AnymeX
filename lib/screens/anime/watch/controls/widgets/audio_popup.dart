@@ -134,20 +134,18 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
     final selectedItem = (selectedFile == null || selectedFile.isEmpty)
         ? null
         : externalAudios.firstWhereOrNull((a) => a.file == selectedFile);
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: SingleChildScrollView(
-        child: AnymeXTileBuilder(
-          items: items,
-          selectedItem: selectedItem,
-          getTitle: (track) =>
-              track == null ? 'Default' : (track.label ?? 'Track'),
-          getSubtitle: (track) =>
-              track == null ? 'Default Source Audio' : 'External Audio Stream',
-          getIcon: (track) => Icons.audiotrack_rounded,
-          onItemPressed: (track) => widget.controller.setExternalAudio(track),
-        ),
+      child: AnymeXTileBuilder(
+        items: items,
+        selectedItem: selectedItem,
+        getTitle: (track) =>
+            track == null ? 'Default' : (track.label ?? 'Track'),
+        getSubtitle: (track) =>
+            track == null ? 'Default Source Audio' : 'External Audio Stream',
+        getIcon: (track) => Icons.audiotrack_rounded,
+        onItemPressed: (track) => widget.controller.setExternalAudio(track),
+        lazy: true,
       ),
     );
   }

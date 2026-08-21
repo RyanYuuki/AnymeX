@@ -116,17 +116,16 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
 
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: SingleChildScrollView(
-          child: AnymeXTileBuilder(
-            items: servers,
-            selectedItem: selectedServer,
-            getTitle: (server) => server.quality ?? 'Auto',
-            getSubtitle: (server) => 'Server',
-            getIcon: (server) => Icons.dns_rounded,
-            onItemPressed: (server) {
-              widget.controller.setServerTrack(server);
-            },
-          ),
+        child: AnymeXTileBuilder(
+          items: servers,
+          selectedItem: selectedServer,
+          getTitle: (server) => server.quality ?? 'Auto',
+          getSubtitle: (server) => 'Server',
+          getIcon: (server) => Icons.dns_rounded,
+          onItemPressed: (server) {
+            widget.controller.setServerTrack(server);
+          },
+          lazy: true,
         ),
       );
     });
@@ -146,18 +145,17 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
 
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: SingleChildScrollView(
-          child: AnymeXTileBuilder<VideoTrack>(
-            items: qualities,
-            selectedItem: selected,
-            getTitle: (track) => '${track.height}p',
-            getSubtitle: (track) => 'Embedded Quality',
-            getIcon: (track) => Icons.high_quality_rounded,
-            onItemPressed: (track) {
-              widget.controller.setVideoTrack(track);
-              widget.controller.selectedQualityTrack.value = track;
-            },
-          ),
+        child: AnymeXTileBuilder<VideoTrack>(
+          items: qualities,
+          selectedItem: selected,
+          getTitle: (track) => '${track.height}p',
+          getSubtitle: (track) => 'Embedded Quality',
+          getIcon: (track) => Icons.high_quality_rounded,
+          onItemPressed: (track) {
+            widget.controller.setVideoTrack(track);
+            widget.controller.selectedQualityTrack.value = track;
+          },
+          lazy: true,
         ),
       );
     });
