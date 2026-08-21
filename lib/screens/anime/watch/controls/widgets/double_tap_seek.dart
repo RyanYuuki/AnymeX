@@ -34,6 +34,10 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   Timer? _seekModeTimer;
   Timer? _seekDebounceTimer;
   Timer? _setRateDebounceTimer;
+  Timer? _leftTapTimer;
+  Timer? _rightTapTimer;
+  int _lastLeftTapTime = 0;
+  int _lastRightTapTime = 0;
 
   static const Duration _seekModeTimeout = Duration(milliseconds: 1500);
   static const Duration _indicatorTimeout = Duration(milliseconds: 1000);
@@ -57,7 +61,6 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   Duration _dragStartPlayerPosition = Duration.zero;
   int _dragSeekDirection = 0;
   bool _wasPlayingBeforeSeek = false;
-
   late AnimationController _speedAnimationController;
   late Animation<double> _speedScaleAnimation;
   late AnimationController _glowAnimationController;
@@ -99,6 +102,8 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     _seekDebounceTimer?.cancel();
     _holdStartTimer?.cancel();
     _setRateDebounceTimer?.cancel();
+    _leftTapTimer?.cancel();
+    _rightTapTimer?.cancel();
     _speedAnimationController.dispose();
     _glowAnimationController.dispose();
     super.dispose();
@@ -725,7 +730,41 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
         ));
   }
 
+  void _cancelAllTapTimers() {
+    _leftTapTimer?.cancel();
+    _rightTapTimer?.cancel();
+  }
+
+  void _onLeftTap() {
+    if (widget.controller.playerSettings.seekDuration == 0) {
+      _handleSingleTap();
+      return;
+    }
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (now - _lastLeftTapTime < 250) {
+      _handleLeftSeek();
+    } else {
+      _handleSingleTap();
+    }
+    _lastLeftTapTime = now;
+  }
+
+  void _onRightTap() {
+    if (widget.controller.playerSettings.seekDuration == 0) {
+      _handleSingleTap();
+      return;
+    }
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (now - _lastRightTapTime < 250) {
+      _handleRightSeek();
+    } else {
+      _handleSingleTap();
+    }
+    _lastRightTapTime = now;
+  }
+
   void _handleSingleTap() {
+    _cancelAllTapTimers();
     if (widget.controller.isLocked.value) {
       widget.controller.toggleControls();
       return;
@@ -782,51 +821,67 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
             onKeyEvent: _handleKeyboard,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onVerticalDragStart: (details) {
-                if (!_longPressStarted && !_isHolding) {
-                  _isDragging = true;
-                  widget.controller.onVerticalDragStart(context, details);
-                } else if (_isHolding) {
-                  _initialSwipeY = details.globalPosition.dy;
-                }
-              },
-              onVerticalDragEnd: (details) {
-                if (!_isHolding) {
-                  _isDragging = false;
-                  widget.controller.onVerticalDragEnd(context, details);
-                }
-              },
-              onVerticalDragUpdate: (details) {
-                if (_isHolding) {
-                  double deltaY = details.globalPosition.dy - _initialSwipeY;
-                  _updateSpeedFromSwipe(deltaY);
-                } else if (_isDragging) {
-                  widget.controller.onVerticalDragUpdate(context, details);
-                }
-              },
-              onHorizontalDragStart: _onHorizontalDragStart,
-              onHorizontalDragUpdate: _onHorizontalDragUpdate,
-              onHorizontalDragEnd: _onHorizontalDragEnd,
-              onLongPressStart: (details) {
-                if (!Get.find<Settings>().enableHoldToSeek) return;
-                _initialSwipeY = details.globalPosition.dy;
-                _startHold();
-              },
-              onLongPressEnd: (details) {
-                if (!Get.find<Settings>().enableHoldToSeek) return;
-                _endHold();
-              },
-              onLongPressCancel: () {
-                if (!Get.find<Settings>().enableHoldToSeek) return;
-                _endHold();
-              },
-              onLongPressMoveUpdate: (details) {
-                if (!Get.find<Settings>().enableHoldToSeek) return;
-                if (_isHolding) {
-                  double deltaY = details.globalPosition.dy - _initialSwipeY;
-                  _updateSpeedFromSwipe(deltaY);
-                }
-              },
+              onVerticalDragStart: Get.find<Settings>().enableSwipeControls
+                  ? (details) {
+                      if (!_longPressStarted && !_isHolding) {
+                        _isDragging = true;
+                        widget.controller.onVerticalDragStart(context, details);
+                      } else if (_isHolding) {
+                        _initialSwipeY = details.globalPosition.dy;
+                      }
+                    }
+                  : null,
+              onVerticalDragEnd: Get.find<Settings>().enableSwipeControls
+                  ? (details) {
+                      if (!_isHolding) {
+                        _isDragging = false;
+                        widget.controller.onVerticalDragEnd(context, details);
+                      }
+                    }
+                  : null,
+              onVerticalDragUpdate: Get.find<Settings>().enableSwipeControls
+                  ? (details) {
+                      if (_isHolding) {
+                        double deltaY = details.globalPosition.dy - _initialSwipeY;
+                        _updateSpeedFromSwipe(deltaY);
+                      } else if (_isDragging) {
+                        widget.controller.onVerticalDragUpdate(context, details);
+                      }
+                    }
+                  : null,
+              onHorizontalDragStart: Get.find<Settings>().enableSlideToSeek
+                  ? _onHorizontalDragStart
+                  : null,
+              onHorizontalDragUpdate: Get.find<Settings>().enableSlideToSeek
+                  ? _onHorizontalDragUpdate
+                  : null,
+              onHorizontalDragEnd: Get.find<Settings>().enableSlideToSeek
+                  ? _onHorizontalDragEnd
+                  : null,
+              onLongPressStart: Get.find<Settings>().enableHoldToSeek
+                  ? (details) {
+                      _initialSwipeY = details.globalPosition.dy;
+                      _startHold();
+                    }
+                  : null,
+              onLongPressEnd: Get.find<Settings>().enableHoldToSeek
+                  ? (details) {
+                      _endHold();
+                    }
+                  : null,
+              onLongPressCancel: Get.find<Settings>().enableHoldToSeek
+                  ? () {
+                      _endHold();
+                    }
+                  : null,
+              onLongPressMoveUpdate: Get.find<Settings>().enableHoldToSeek
+                  ? (details) {
+                      if (_isHolding) {
+                        double deltaY = details.globalPosition.dy - _initialSwipeY;
+                        _updateSpeedFromSwipe(deltaY);
+                      }
+                    }
+                  : null,
               child: Container(
                 color: Colors.transparent,
                 child: Stack(
@@ -837,8 +892,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                           flex: 35,
                           child: GestureDetector(
                             behavior: HitTestBehavior.translucent,
-                            onTap: _handleSingleTap,
-                            onDoubleTapDown: (details) => _handleLeftSeek(),
+                            onTap: _onLeftTap,
                             child: Container(color: Colors.transparent),
                           ),
                         ),
@@ -854,8 +908,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                           flex: 35,
                           child: GestureDetector(
                             behavior: HitTestBehavior.translucent,
-                            onTap: _handleSingleTap,
-                            onDoubleTapDown: (details) => _handleRightSeek(),
+                            onTap: _onRightTap,
                             child: Container(color: Colors.transparent),
                           ),
                         ),
