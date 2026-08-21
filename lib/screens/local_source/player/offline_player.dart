@@ -4,9 +4,11 @@ import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/themed_controls.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/audio_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/source_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/speed_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
@@ -99,13 +101,6 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
         episodeList: episodes,
         anilistData: Media(serviceType: ServicesType.simkl)
           ..title = widget.episode.folderName));
-
-    if (kDebugMode && controller.subtitleText.isEmpty) {
-      controller.subtitleText.value = [
-        'Sample Subtitle Line 1 (Subtitle Settings Check)',
-        'Sample Subtitle Line 2 (Margin & Style Preview)'
-      ];
-    }
   }
 
   @override
@@ -153,6 +148,20 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
                 controller: controller,
               ),
               ShaderOsd(controller: controller),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: SourcePopup(controller: controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: AudioPopup(controller: controller),
+              ),
               Positioned(
                 right: 0,
                 top: 0,

@@ -119,7 +119,8 @@ class ChapterSection extends StatelessWidget {
             child: Row(
               children: [
                 const Expanded(
-                  child: AnymeXText('Chapters',
+                  child: AnymeXText(
+                    'Chapters',
                     variant: TextVariant.bold,
                     size: 18,
                   ),
@@ -150,7 +151,8 @@ class ChapterSection extends StatelessWidget {
                             color: colors.primary,
                           ),
                           const SizedBox(width: 8),
-                          AnymeXText('Settings',
+                          AnymeXText(
+                            'Settings',
                             size: 12,
                             color: colors.primary,
                             variant: TextVariant.bold,
@@ -201,16 +203,22 @@ class ChapterSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNovel = anilistData is Media &&
+        (anilistData as Media).mediaType == ItemType.novel;
+    final installed = isNovel
+        ? sourceController.installedNovelExtensions
+        : sourceController.installedMangaExtensions;
     return SliverMainAxisGroup(
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           sliver: SliverToBoxAdapter(child: _buildHeader(context)),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          sliver: _buildChapterListSliver(context),
-        ),
+        if (installed.isNotEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: _buildChapterListSliver(context),
+          ),
       ],
     );
   }
@@ -228,7 +236,8 @@ class ChapterSection extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText('Layout Style',
+                const AnymeXText(
+                  'Layout Style',
                   variant: TextVariant.bold,
                   size: 14,
                 ),
@@ -318,12 +327,14 @@ class _ProviderOptionTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText(title,
+                    AnymeXText(
+                      title,
                       variant: TextVariant.semiBold,
                       size: 13,
                     ),
                     const SizedBox(height: 2),
-                    AnymeXText(subtitle,
+                    AnymeXText(
+                      subtitle,
                       size: 11,
                       color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                     ),

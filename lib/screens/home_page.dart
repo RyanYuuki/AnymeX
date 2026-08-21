@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -12,8 +11,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/continue_watching_cards.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/header/header.dart';
@@ -381,114 +378,6 @@ class _HomePageState extends State<HomePage> {
               ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class ImageButton extends StatelessWidget {
-  final String buttonText;
-  final VoidCallback onPressed;
-  final VoidCallback? onLongPress;
-  final String backgroundImage;
-  final double width;
-  final double height;
-  final double borderRadius;
-  final TextStyle? textStyle;
-  final double margin;
-
-  const ImageButton({
-    super.key,
-    required this.buttonText,
-    required this.onPressed,
-    this.onLongPress,
-    required this.backgroundImage,
-    this.width = 160,
-    this.height = 60,
-    this.borderRadius = 18,
-    this.textStyle,
-    this.margin = 0,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final gradient = Theme.of(context).brightness == Brightness.dark
-        ? [
-            Colors.black.withOpacity(0.5),
-            Colors.black.withOpacity(0.5),
-          ]
-        : [Colors.transparent, Colors.transparent];
-    return Container(
-      width: width,
-      height: height,
-      margin: EdgeInsets.symmetric(vertical: margin),
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(borderRadius.multiplyRadius()),
-        border: Border.all(
-          width: 1,
-          color: context.colors.inverseSurface.withOpacity(0.3),
-        ),
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius:
-                  BorderRadius.circular(borderRadius.multiplyRadius()),
-              child: AnymeXImage(
-                height: height,
-                width: width,
-                imageUrl: backgroundImage,
-                fit: BoxFit.cover,
-                radius: 0,
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: gradient),
-                borderRadius: BorderRadius.circular(borderRadius),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: AnymeXContainerButton(
-              onTap: onPressed,
-              onLongPress: onLongPress,
-              padding: EdgeInsets.zero,
-              color: Colors.transparent,
-              border: BorderSide(
-                color: context.colors.primary.withOpacity(0.7),
-              ),
-              radius: borderRadius,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnymeXText(
-                    buttonText.toUpperCase(),
-                    style: textStyle ??
-                        const TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Poppins-SemiBold',
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 3),
-                  Container(
-                    color: context.colors.primary,
-                    height: 2,
-                    width: 6 * buttonText.length.toDouble(),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

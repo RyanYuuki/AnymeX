@@ -3,7 +3,7 @@ import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
 import 'package:anymex/models/mangaupdates/next_release.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/screens/news/news_page.dart';
-import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/anime/widgets/social_section.dart';
 import 'package:anymex/utils/anime_adaptation_util.dart';
