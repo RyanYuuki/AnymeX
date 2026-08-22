@@ -946,6 +946,145 @@ class AnilistAuth extends GetxController {
     return null;
   }
 
+  Future<Profile?> fetchUserByName(String userName) async {
+    const query = r'''
+  query ($name: String) {
+    User(name: $name) {
+      id
+      name
+      about(asHtml: true)
+      aboutMarkdown: about
+      donatorTier
+      donatorBadge
+      isFollowing
+      isFollower
+      createdAt
+      avatar { large }
+      bannerImage
+      statistics {
+        anime {
+          count
+          episodesWatched
+          meanScore
+          minutesWatched
+          standardDeviation
+          scores(sort: MEAN_SCORE) { score count meanScore minutesWatched }
+          formats { format count meanScore minutesWatched }
+          statuses { status count meanScore minutesWatched }
+          countries { country count meanScore minutesWatched }
+          lengths { length count meanScore minutesWatched }
+          releaseYears { releaseYear count meanScore minutesWatched }
+          startYears { startYear count meanScore minutesWatched }
+          genres(sort: COUNT_DESC) { genre count meanScore minutesWatched }
+          tags(sort: COUNT_DESC) { tag { name } count meanScore minutesWatched }
+          voiceActors(sort: COUNT_DESC) { voiceActor { id name { userPreferred full } image { medium } } count meanScore minutesWatched }
+          studios(sort: COUNT_DESC) { studio { id name } count meanScore minutesWatched }
+          staff(sort: COUNT_DESC) { staff { id name { userPreferred full } image { medium } } count meanScore minutesWatched }
+        }
+        manga {
+          count
+          chaptersRead
+          volumesRead
+          meanScore
+          standardDeviation
+          scores(sort: MEAN_SCORE) { score count meanScore chaptersRead }
+          formats { format count meanScore chaptersRead }
+          statuses { status count meanScore chaptersRead }
+          countries { country count meanScore chaptersRead }
+          lengths { length count meanScore chaptersRead }
+          releaseYears { releaseYear count meanScore chaptersRead }
+          startYears { startYear count meanScore chaptersRead }
+          genres(sort: COUNT_DESC) { genre count meanScore chaptersRead }
+          tags(sort: COUNT_DESC) { tag { name } count meanScore chaptersRead }
+          staff(sort: COUNT_DESC) { staff { id name { userPreferred full } image { medium } } count meanScore chaptersRead }
+        }
+      }
+      favourites {
+        anime {
+          pageInfo { total }
+          nodes {
+            id
+            title { userPreferred english romaji }
+            coverImage { large }
+            averageScore
+            format
+          }
+        }
+        manga {
+          pageInfo { total }
+          nodes {
+            id
+            title { userPreferred english romaji }
+            coverImage { large }
+            averageScore
+            format
+          }
+        }
+        characters {
+          nodes {
+            id
+            name { userPreferred full }
+            image { large medium }
+          }
+        }
+        staff {
+          nodes {
+            id
+            name { full userPreferred }
+            image { large }
+          }
+        }
+        studios {
+          nodes {
+            id
+            name
+          }
+        }
+      }
+      stats {
+        activityHistory { date amount level }
+      }
+      mediaListOptions {
+        animeList { splitCompletedSectionByFormat sectionOrder }
+        mangaList { splitCompletedSectionByFormat sectionOrder }
+      }
+    }
+  }
+  ''';
+
+    try {
+      final token = AuthKeys.authToken.get<String?>();
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await _anilistPost(
+        headers: headers,
+        body: {
+          'query': query,
+          'variables': {'name': userName},
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final userData = data['data']?['User'];
+        if (userData != null) {
+          return Profile.fromJson(userData);
+        }
+      } else {
+        Logger.e('Failed to find user by name: ${response.statusCode}');
+      }
+    } catch (e) {
+      Logger.e('Error finding user by name: $e');
+    }
+    return null;
+  }
+
   Future<bool?> toggleFollow(int userId) async {
     const mutation = r'''
   mutation ($userId: Int) {
