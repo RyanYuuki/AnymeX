@@ -146,7 +146,7 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: SizedBox(
-        height: 50,
+        height: 52,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final totalWidth = constraints.maxWidth;
@@ -157,8 +157,8 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar> {
                 final targetWidth = totalWidth * flex / totalFlex;
 
                 return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOutCubic,
+                  duration: const Duration(milliseconds: 450),
+                  curve: const Cubic(0.34, 1.56, 0.64, 1.0),
                   width: targetWidth,
                   child: GestureDetector(
                     onTap: () => widget.items[index].onTap(index),
@@ -223,17 +223,17 @@ class _FloatingPillNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double horizontalPadding = isVertical ? 6.0 : (isSelected ? 14.0 : 10.0);
+    final double horizontalPadding = isVertical ? 6.0 : (isSelected ? 18.0 : 12.0);
     final double verticalPadding = isVertical ? 8.0 : 10.0;
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOutCubic,
+      duration: const Duration(milliseconds: 450),
+      curve: const Cubic(0.34, 1.56, 0.64, 1.0),
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
       decoration: BoxDecoration(
         color: isSelected
             ? theme.colorScheme.primary
             : Colors.transparent,
-        borderRadius: BorderRadius.circular(isVertical ? 16 : 22),
+        borderRadius: BorderRadius.circular(isVertical ? 16 : 30),
       ),
       child: isVertical
           ? Column(
@@ -263,10 +263,10 @@ class _FloatingPillNavItem extends StatelessWidget {
             size: item.iconSize ?? 20,
           ),
       AnimatedSize(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
+        duration: const Duration(milliseconds: 450),
+        curve: const Cubic(0.34, 1.56, 0.64, 1.0),
         child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 300),
           opacity: isSelected ? 1.0 : 0.0,
           child: isSelected
               ? (isVertical

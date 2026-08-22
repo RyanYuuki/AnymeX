@@ -4,6 +4,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_spring_transition.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
