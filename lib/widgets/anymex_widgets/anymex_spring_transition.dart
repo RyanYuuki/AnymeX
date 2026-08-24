@@ -17,6 +17,7 @@ class AnymeXSpringTransition extends StatefulWidget {
   final bool animateScale;
   final double initialScale;
   final bool animateOpacity;
+  final bool enabled;
 
   const AnymeXSpringTransition({
     super.key,
@@ -29,6 +30,7 @@ class AnymeXSpringTransition extends StatefulWidget {
     this.animateScale = true,
     this.initialScale = 0.9,
     this.animateOpacity = true,
+    this.enabled = true,
   });
 
   @override
@@ -37,7 +39,7 @@ class AnymeXSpringTransition extends StatefulWidget {
 
 class _AnymeXSpringTransitionState extends State<AnymeXSpringTransition>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
+  AnimationController? _controller;
   late final Animation<Offset> _slideAnimation;
   late final Animation<double> _scaleAnimation;
   late final Animation<double> _opacityAnimation;
@@ -45,6 +47,8 @@ class _AnymeXSpringTransitionState extends State<AnymeXSpringTransition>
   @override
   void initState() {
     super.initState();
+    if (!widget.enabled) return;
+
     _controller = AnimationController(
       vsync: this,
       duration: widget.duration,
@@ -67,7 +71,7 @@ class _AnymeXSpringTransitionState extends State<AnymeXSpringTransition>
     }
 
     final curvedAnimation = CurvedAnimation(
-      parent: _controller,
+      parent: _controller!,
       curve: widget.curve,
     );
 
@@ -85,16 +89,16 @@ class _AnymeXSpringTransitionState extends State<AnymeXSpringTransition>
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _controller,
+      parent: _controller!,
       curve: Curves.easeOut,
     ));
 
     if (widget.delay == Duration.zero) {
-      _controller.forward();
+      _controller!.forward();
     } else {
       Future.delayed(widget.delay, () {
-        if (mounted) {
-          _controller.forward();
+        if (mounted && _controller != null) {
+          _controller!.forward();
         }
       });
     }
@@ -102,14 +106,18 @@ class _AnymeXSpringTransitionState extends State<AnymeXSpringTransition>
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.enabled || _controller == null) {
+      return widget.child;
+    }
+
     return AnimatedBuilder(
-      animation: _controller,
+      animation: _controller!,
       builder: (context, child) {
         Widget current = Transform.translate(
           offset: _slideAnimation.value,

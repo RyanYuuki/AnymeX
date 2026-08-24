@@ -14,6 +14,9 @@ class NavItem {
   final double? iconSize;
   final Function(int n) onTap;
   final Widget? altIcon;
+  final List<NavItem>? subItems;
+  final bool isSelected;
+  final Widget? subWidget;
 
   const NavItem({
     required this.selectedIcon,
@@ -22,6 +25,9 @@ class NavItem {
     this.iconSize,
     this.altIcon,
     required this.onTap,
+    this.subItems,
+    this.isSelected = false,
+    this.subWidget,
   });
 }
 
