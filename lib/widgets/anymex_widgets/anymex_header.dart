@@ -60,11 +60,12 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
     BuildContext context, {
     required Widget child,
     EdgeInsetsGeometry? padding,
+    VoidCallback? onTap,
   }) {
     final theme = Theme.of(context);
     final radius = BorderRadius.circular(30.multiplyRadius());
 
-    return ClipRRect(
+    Widget content = ClipRRect(
       borderRadius: radius,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
@@ -92,6 +93,19 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
         ),
       ),
     );
+
+    if (onTap != null) {
+      return GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: content,
+        ),
+      );
+    }
+
+    return content;
   }
 
   @override
@@ -146,6 +160,7 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
       children: [
         _buildPill(
           context,
+          onTap: canPop ? () => Navigator.of(context).pop() : null,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

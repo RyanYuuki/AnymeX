@@ -45,6 +45,8 @@ class AnymeXPills extends StatelessWidget {
   
   final double selectedOuterRadius;
 
+  final bool expandEqually;
+
   const AnymeXPills({
     super.key,
     required this.items,
@@ -55,6 +57,7 @@ class AnymeXPills extends StatelessWidget {
     this.scrollable = true,
     this.scrollPadding = const EdgeInsets.symmetric(vertical: 4),
     this.selectedOuterRadius = 50.0,
+    this.expandEqually = false,
   });
 
   double get _effectiveGap =>
@@ -101,20 +104,29 @@ class AnymeXPills extends StatelessWidget {
     if (items.isEmpty) return const SizedBox.shrink();
 
     final row = Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: expandEqually ? MainAxisSize.max : MainAxisSize.min,
       children: [
         for (int i = 0; i < items.length; i++) ...[
           if (i > 0) SizedBox(width: _effectiveGap),
-          _PillCell(
-            item: items[i],
-            borderRadius: _borderFor(i),
-            selectedBorderRadius: _selectedBorderFor(i),
-          ),
+          if (expandEqually)
+            Expanded(
+              child: _PillCell(
+                item: items[i],
+                borderRadius: _borderFor(i),
+                selectedBorderRadius: _selectedBorderFor(i),
+              ),
+            )
+          else
+            _PillCell(
+              item: items[i],
+              borderRadius: _borderFor(i),
+              selectedBorderRadius: _selectedBorderFor(i),
+            ),
         ],
       ],
     );
 
-    if (!scrollable) return row;
+    if (expandEqually || !scrollable) return row;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

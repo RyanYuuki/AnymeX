@@ -21,7 +21,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -320,6 +320,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
           popularMangas.length;
           trendingManga.length;
           topManga.length;
+          animeList.length;
+          mangaList.length;
           return LayoutBuilder(builder: (context, constraints) {
             final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
             final overflow = constraints.maxWidth < 900;
@@ -342,6 +344,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                 ImageButton(
                   width: width,
                   height: !isDesktop ? 70 : 90,
+                  subText: '${animeList.length} items',
                   buttonText: "ANIME LIST",
                   backgroundImage: animeButtonMedia?.cover ?? '',
                   borderRadius: 16.multiplyRadius(),
@@ -357,6 +360,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   child: ImageButton(
                     width: width,
                     height: !isDesktop ? 70 : 90,
+                    subText: '${mangaList.length} items',
                     buttonText: "MANGA LIST",
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: mangaButtonMedia?.cover ?? '',
@@ -384,6 +388,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     onLongPress: otherButtonMedia == null
                         ? null
                         : () => _openHomeButtonMedia(otherButtonMedia),
+                    imageProportion: 0.5,
                   ),
                 ),
               ],

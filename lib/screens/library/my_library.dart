@@ -15,7 +15,7 @@ import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/cards/base_card.dart';
+
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/exceptions/empty_library.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -27,9 +27,12 @@ import 'package:get/get.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/header/header.dart';
 import 'package:flutter/services.dart';
+import 'package:anymex/controllers/media_mode_controller.dart';
+import 'package:anymex/widgets/common/media_mode_selector.dart';
 
 class MyLibrary extends StatefulWidget {
-  const MyLibrary({super.key});
+  final ItemType? type;
+  const MyLibrary({super.key, this.type});
 
   @override
   State<MyLibrary> createState() => _MyLibraryState();
@@ -40,6 +43,7 @@ class _MyLibraryState extends State<MyLibrary>
   late final ScrollController _scrollController;
   final ValueNotifier<bool> _isAppBarVisibleExternally =
       ValueNotifier<bool>(true);
+  late Worker _mediaModeWorker;
 
   @override
   bool get wantKeepAlive => true;
@@ -48,10 +52,26 @@ class _MyLibraryState extends State<MyLibrary>
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    final mediaModeController = Get.put(MediaModeController());
+    final libraryController = Get.put(LibraryController());
+
+    libraryController.switchCategory(mediaModeController.mode);
+    _mediaModeWorker = ever(mediaModeController.rxMode, (ItemType type) {
+      libraryController.switchCategory(type);
+    });
+  }
+
+  @override
+  void didUpdateWidget(MyLibrary oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.type != null && widget.type != oldWidget.type) {
+      Get.find<LibraryController>().switchCategory(widget.type!);
+    }
   }
 
   @override
   void dispose() {
+    _mediaModeWorker.dispose();
     _scrollController.dispose();
     _isAppBarVisibleExternally.dispose();
     super.dispose();
@@ -60,9 +80,12 @@ class _MyLibraryState extends State<MyLibrary>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final controller = Get.put(LibraryController());
+    final controller = Get.find<LibraryController>();
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
+    final double extraHeight = isDesktop ? 100.0 : 60.0;
+    final double topOffset = statusBarHeight + appBarHeight + extraHeight;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -73,17 +96,8 @@ class _MyLibraryState extends State<MyLibrary>
             slivers: [
               SliverToBoxAdapter(
                 child: SizedBox(
-                  height: statusBarHeight + appBarHeight,
+                  height: topOffset,
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-                  child: LibrarySegmentedControl(controller: controller),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: ChipTabs(controller: controller),
               ),
               _LibraryContent(controller: controller),
             ],
@@ -91,7 +105,10 @@ class _MyLibraryState extends State<MyLibrary>
           CustomAnimatedAppBar(
             isVisible: _isAppBarVisibleExternally,
             scrollController: _scrollController,
-            headerContent: const Header(type: PageType.library),
+            headerContent: Header(
+              type: PageType.library,
+              bottom: ChipTabs(controller: controller),
+            ),
             visibleStatusBarStyle: SystemUiOverlayStyle(
               statusBarIconBrightness:
                   Theme.of(context).brightness == Brightness.light
@@ -112,6 +129,14 @@ class _MyLibraryState extends State<MyLibrary>
               statusBarColor: Colors.transparent,
             ),
           ),
+          if (!isDesktop)
+            Positioned(
+              bottom: MediaModeSelector.getBottomOffset(context),
+              left: 0,
+              right: 0,
+              child:
+                  const Center(child: MediaModeSelector(showPlayButton: false, isLibraryOrHistory: true)),
+            ),
         ],
       ),
     );
@@ -172,8 +197,8 @@ class _LibraryContent extends StatelessWidget {
             );
             return HistoryCardGate(
               data: historyModel,
-              cardStyle: HistoryCardStyle
-                  .values[settingsController.historyCardStyle],
+              cardStyle:
+                  HistoryCardStyle.values[settingsController.historyCardStyle],
             );
           },
           childCount: data.length,
@@ -201,7 +226,6 @@ class _LibraryContent extends StatelessWidget {
                 tag: tag,
                 variant: DataVariant.library,
                 type: controller.type.value,
-                cardStyle: CardStyle.values[settingsController.cardStyle],
               ),
             );
           },

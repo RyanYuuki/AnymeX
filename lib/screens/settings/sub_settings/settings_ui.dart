@@ -9,6 +9,7 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
+import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -42,6 +43,9 @@ class _SettingsUiState extends State<SettingsUi> {
         break;
       case 'cardRoundness':
         settings.cardRoundness = value;
+        break;
+      case 'bottomNavBarMargin':
+        settings.bottomNavBarMargin = value;
         break;
       case 'animation':
         settings.animationDuration = value.toInt();
@@ -134,6 +138,28 @@ class _SettingsUiState extends State<SettingsUi> {
                             subtitle:
                                 'Drag and drop to reorder navigation bar tabs',
                             onTap: () => _showReorderTabsDialog(context),
+                          ),
+                          PlatformBuilder(
+                            androidBuilder: AnymeXTile.slider(
+                              icon: Icons.margin_rounded,
+                              title: 'Bottom Nav Bar Margin',
+                              subtitle: 'Adjust horizontal margin of bottom navigation bar',
+                              value: settings.bottomNavBarMargin,
+                              min: 0,
+                              max: 100,
+                              divisions: 100,
+                              onChanged: (value) => handleSliderChange('bottomNavBarMargin', value),
+                            ),
+                            desktopBuilder: AnymeXTile.slider(
+                              icon: Icons.margin_rounded,
+                              title: 'Bottom Nav Bar Margin',
+                              subtitle: 'Adjust bottom bar margin (media details page only)',
+                              value: settings.bottomNavBarMargin,
+                              min: 0,
+                              max: 100,
+                              divisions: 100,
+                              onChanged: (value) => handleSliderChange('bottomNavBarMargin', value),
+                            ),
                           ),
                         ],
                       ),

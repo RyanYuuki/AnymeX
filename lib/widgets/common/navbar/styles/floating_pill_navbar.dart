@@ -3,6 +3,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/navbar/navbar_registry.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -146,7 +147,7 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       child: SizedBox(
-        height: 50,
+        height: 52,
         child: LayoutBuilder(
           builder: (context, constraints) {
             final totalWidth = constraints.maxWidth;
@@ -157,8 +158,8 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar> {
                 final targetWidth = totalWidth * flex / totalFlex;
 
                 return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOutCubic,
+                  duration: const Duration(milliseconds: 450),
+                  curve: const Cubic(0.34, 1.56, 0.64, 1.0),
                   width: targetWidth,
                   child: GestureDetector(
                     onTap: () => widget.items[index].onTap(index),
@@ -189,20 +190,111 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar> {
         children: List.generate(itemCount, (index) {
           final item = widget.items[index];
           final isSelected = widget.currentIndex == index;
+          final hasSubItems = isSelected && (item.subWidget != null || (item.subItems != null && item.subItems!.isNotEmpty));
           return Padding(
             padding: EdgeInsets.only(bottom: index < itemCount - 1 ? 8 : 12),
-            child: GestureDetector(
-              onTap: () => item.onTap(index),
-              behavior: HitTestBehavior.opaque,
-              child: _FloatingPillNavItem(
-                item: item,
-                isSelected: isSelected,
-                theme: theme,
-                isVertical: true,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOutCubic,
+              decoration: BoxDecoration(
+                color: hasSubItems
+                    ? theme.colorScheme.onSurface.opaque(0.04, iReallyMeanIt: true)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: hasSubItems
+                      ? theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true)
+                      : Colors.transparent,
+                  width: 0.8,
+                ),
+              ),
+              padding: hasSubItems ? const EdgeInsets.all(6) : EdgeInsets.zero,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () => item.onTap(index),
+                    behavior: HitTestBehavior.opaque,
+                    child: _FloatingPillNavItem(
+                      item: item,
+                      isSelected: isSelected,
+                      theme: theme,
+                      isVertical: true,
+                    ),
+                  ),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOutCubic,
+                    child: hasSubItems
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(height: 8),
+                              if (item.subWidget != null)
+                                item.subWidget!
+                              else
+                                for (final sub in item.subItems!)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 2),
+                                    child: _buildSubNavItem(theme, sub),
+                                  ),
+                            ],
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
               ),
             ),
           );
         }),
+      ),
+    );
+  }
+
+  Widget _buildSubNavItem(ThemeData theme, NavItem sub) {
+    final active = sub.isSelected;
+    final iconColor = active
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true);
+
+    return Tooltip(
+      message: sub.label,
+      child: InkWell(
+        onTap: () => sub.onTap(0),
+        borderRadius: BorderRadius.circular(12),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: active
+                ? theme.colorScheme.primary.opaque(0.12, iReallyMeanIt: true)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: active
+                  ? theme.colorScheme.primary.opaque(0.3, iReallyMeanIt: true)
+                  : Colors.transparent,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                active ? sub.selectedIcon : sub.unselectedIcon,
+                color: iconColor,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              AnymeXText(
+                sub.label,
+                size: 11,
+                variant: active ? TextVariant.semiBold : TextVariant.regular,
+                color: iconColor,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -223,17 +315,19 @@ class _FloatingPillNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double horizontalPadding = isVertical ? 6.0 : (isSelected ? 14.0 : 10.0);
-    final double verticalPadding = isVertical ? 8.0 : 10.0;
+    final double horizontalPadding = isVertical ? 4.0 : (isSelected ? 18.0 : 12.0);
+    final double verticalPadding = isVertical ? 6.0 : 10.0;
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOutCubic,
+      duration: const Duration(milliseconds: 450),
+      curve: const Cubic(0.34, 1.56, 0.64, 1.0),
+      width: isVertical ? 76 : null,
+      height: isVertical ? 60 : null,
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: verticalPadding),
       decoration: BoxDecoration(
         color: isSelected
             ? theme.colorScheme.primary
             : Colors.transparent,
-        borderRadius: BorderRadius.circular(isVertical ? 16 : 22),
+        borderRadius: BorderRadius.circular(isVertical ? 16 : 30),
       ),
       child: isVertical
           ? Column(
@@ -263,17 +357,17 @@ class _FloatingPillNavItem extends StatelessWidget {
             size: item.iconSize ?? 20,
           ),
       AnimatedSize(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
+        duration: const Duration(milliseconds: 450),
+        curve: const Cubic(0.34, 1.56, 0.64, 1.0),
         child: AnimatedOpacity(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 300),
           opacity: isSelected ? 1.0 : 0.0,
           child: isSelected
               ? (isVertical
                   ? Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         AnymeXText(item.label,
                           size: 10,
                           variant: TextVariant.semiBold,

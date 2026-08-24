@@ -14,7 +14,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:get/get.dart';
 
-
 class BottomControls extends StatelessWidget {
   const BottomControls({super.key});
 
@@ -211,7 +210,8 @@ class BottomControls extends StatelessWidget {
                             size: 20,
                           ),
                         ),
-                      AnymeXText(controller.skipButtonLabel,
+                      AnymeXText(
+                        controller.skipButtonLabel,
                         variant: TextVariant.semiBold,
                         color: controller.isLocked.value
                             ? theme.colorScheme.onSurface.opaque(0.4)
@@ -339,25 +339,29 @@ class BottomControls extends StatelessWidget {
         tooltip: 'External Player',
         compact: true,
       ),
-      // 'watch_together': Obx(() {
-      //   final watchium = Get.find<WatchiumService>();
-      //   return ControlButton(
-      //     icon: watchium.inRoom.value ? Icons.people_rounded : Icons.people_outline_rounded,
-      //     onPressed: () {
-      //       if (watchium.inRoom.value) {
-      //         watchium.isPartyPaneOpened.value =
-      //             !watchium.isPartyPaneOpened.value;
-      //       } else {
-      //         showWatchiumCreateSheet(
-      //           context: Get.context!,
-      //           playerController: controller,
-      //         );
-      //       }
-      //     },
-      //     tooltip: watchium.inRoom.value ? 'Watch Together (In Room)' : 'Watch Together',
-      //     compact: true,
-      //   );
-      // }),
+      'watch_together': Obx(() {
+        final watchium = Get.find<WatchiumService>();
+        return ControlButton(
+          icon: watchium.inRoom.value
+              ? Icons.people_rounded
+              : Icons.people_outline_rounded,
+          onPressed: () {
+            if (watchium.inRoom.value) {
+              watchium.isPartyPaneOpened.value =
+                  !watchium.isPartyPaneOpened.value;
+            } else {
+              showWatchiumCreateSheet(
+                context: Get.context!,
+                playerController: controller,
+              );
+            }
+          },
+          tooltip: watchium.inRoom.value
+              ? 'Watch Together (In Room)'
+              : 'Watch Together',
+          compact: true,
+        );
+      }),
       'cast': ControlButton(
         icon: Icons.cast_rounded,
         onPressed: () => CastDeviceDialog.show(context, controller),
@@ -390,10 +394,15 @@ class BottomControls extends StatelessWidget {
         if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
           continue;
         }
+        if (id == 'watch_together' && controller.isOffline.value) {
+          continue;
+        }
 
         final widget = buttonWidgets[id];
         if (widget != null) {
-          if (id == 'orientation' || (widget is ControlButton && widget.compact)) {
+          if (id == 'orientation' ||
+              id == 'watch_together' ||
+              (widget is ControlButton && widget.compact)) {
             compactButtons.add(widget);
           } else {
             regularButtons.add(widget);

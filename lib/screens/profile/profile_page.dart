@@ -10,6 +10,7 @@ import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/screens/profile/activity_details_page.dart';
 import 'package:anymex/widgets/non_widgets/activity_card.dart';
@@ -644,6 +645,7 @@ class _ProfilePageState extends State<ProfilePage>
                         title: activity.mediaTitle ?? '',
                         poster: activity.mediaCoverUrl ?? '',
                         serviceType: ServicesType.anilist,
+                        mediaType: ItemType.anime,
                       );
                       Navigator.push(
                         context,
@@ -660,6 +662,7 @@ class _ProfilePageState extends State<ProfilePage>
                         title: activity.mediaTitle ?? '',
                         poster: activity.mediaCoverUrl ?? '',
                         serviceType: ServicesType.anilist,
+                        mediaType: ItemType.manga,
                       );
                       Navigator.push(
                         context,

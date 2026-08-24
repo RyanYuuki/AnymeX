@@ -23,7 +23,7 @@ import 'package:anymex/models/Media/staff.dart';
 import 'package:anymex/models/Service/base_service.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -122,6 +122,8 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
           trendingMangas.length;
           popularAnimes.length;
           popularMangas.length;
+          anilistAuth.animeList.length;
+          anilistAuth.mangaList.length;
           return LayoutBuilder(
             builder: (context, constraints) {
               final isDesktop = constraints.maxWidth > 600;
@@ -151,6 +153,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                         Expanded(
                           child: ImageButton(
                             height: buttonHeight,
+                            subText: '${anilistAuth.animeList.length} items',
                             buttonText: "ANIME LIST",
                             backgroundImage: animeButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
@@ -164,6 +167,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                         Expanded(
                           child: ImageButton(
                             height: buttonHeight,
+                            subText: '${anilistAuth.mangaList.length} items',
                             buttonText: "MANGA LIST",
                             backgroundImage: mangaButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
@@ -183,6 +187,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                         : itemWidth * 2 + 15,
                     child: ImageButton(
                       height: buttonHeight,
+                      subText: 'Calendar, AI Picks and more',
                       buttonText: "OTHER",
                       borderRadius: 16.multiplyRadius(),
                       backgroundImage: otherButtonMedia?.cover ?? '',
@@ -191,6 +196,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                       onLongPress: otherButtonMedia == null
                           ? null
                           : () => _openHomeButtonMedia(otherButtonMedia),
+                      imageProportion: 0.5,
                     ),
                   ),
                 ],

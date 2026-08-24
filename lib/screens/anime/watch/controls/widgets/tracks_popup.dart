@@ -1,10 +1,13 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/database/isar_models/track.dart' as model;
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/utils/language.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -102,66 +105,118 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
   }
 
   Widget _buildSourceSubtitles(ColorScheme cs, ThemeData theme) {
-    return Column(
-      children: [
-        _buildAllStreamsToggle(cs),
-        Expanded(
-          child: Obx(() {
-            final allMode = _showAllStreams.value;
-            final tracks = allMode
-                ? widget.controller.getAllStreamSubtitleOptions()
-                : widget.controller.getCurrentStreamSubtitleOptions();
-            final selectedFile =
-                widget.controller.selectedExternalSub.value.file;
+    return Obx(() {
+      final allMode = _showAllStreams.value;
+      final tracks = allMode
+          ? widget.controller.getAllStreamSubtitleOptions()
+          : widget.controller.getCurrentStreamSubtitleOptions();
+      final selectedFile = widget.controller.selectedExternalSub.value.file;
+      final localSubs = widget.controller.localSubtitles;
 
-            final items = [null, ...tracks];
-            final selectedItem = (selectedFile == null || selectedFile.isEmpty)
-                ? null
-                : tracks.firstWhereOrNull((t) => t.file == selectedFile);
+      final List<model.Track?> items = [null];
+      for (final local in localSubs) {
+        if (!tracks.any((t) => t.file == local.file)) {
+          items.add(local);
+        }
+      }
+      items.addAll(tracks);
 
-            if (tracks.isEmpty) {
-              return _buildEmpty(
-                  cs, theme, Icons.subtitles_rounded, 'No external subtitles');
-            }
+      final totalCount = 2 + items.length;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: SingleChildScrollView(
-                child: AnymeXTileBuilder(
-                  items: items,
-                  selectedItem: selectedItem,
-                  getTitle: (track) => track == null ? 'None' : (track.label ?? 'No Title'),
-                  getSubtitle: (track) => track == null ? 'No subtitles' : (allMode ? 'All Streams' : 'Current Stream'),
-                  getIcon: (track) => track == null ? Icons.subtitles_off : Icons.subtitles,
-                  onItemPressed: (track) => widget.controller.setExternalSub(track),
-                ),
-              ),
-            );
-          }),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildAllStreamsToggle(ColorScheme cs) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Obx(() => Container(
-            decoration: BoxDecoration(
-              color: cs.surfaceContainerHighest.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(14),
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Container(
+          margin: EdgeInsets.zero,
+          decoration: BoxDecoration(
+            color: context.colors.surfaceContainer
+                .opaque(0.45, iReallyMeanIt: true),
+            borderRadius: BorderRadius.circular(18.0),
+            border: Border.all(
+              color: context.colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+              width: 0.8,
             ),
-            child: SwitchListTile(
-              value: _showAllStreams.value,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-              title: const AnymeXText('Show all streams'),
-              onChanged: (val) {
-                _showAllStreams.value = val;
-                widget.controller.showAllStreamSubtitles.value = val;
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18.0),
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              itemCount: totalCount,
+              separatorBuilder: (context, index) => Divider(
+                height: 1,
+                thickness: 0.6,
+                indent: index == 0 ? 16 : 66.0,
+                endIndent: 16,
+                color:
+                    context.colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+              ),
+              itemBuilder: (context, index) {
+                BorderRadius radius;
+                if (totalCount == 1) {
+                  radius = BorderRadius.circular(18.0);
+                } else if (index == 0) {
+                  radius =
+                      const BorderRadius.vertical(top: Radius.circular(18.0));
+                } else if (index == totalCount - 1) {
+                  radius = const BorderRadius.vertical(
+                      bottom: Radius.circular(18.0));
+                } else {
+                  radius = BorderRadius.zero;
+                }
+
+                if (index == 0) {
+                  return AnymeXTile.toggle(
+                    value: allMode,
+                    icon: Icons.layers_rounded,
+                    title: 'Show all streams',
+                    onChanged: (val) {
+                      _showAllStreams.value = val;
+                      widget.controller.showAllStreamSubtitles.value = val;
+                    },
+                    borderRadius: radius,
+                  );
+                }
+
+                if (index == 1) {
+                  return AnymeXTile(
+                    title: 'Import Local Subtitle',
+                    subtitle:
+                        'Choose a subtitle file from your device (.srt, .vtt, .ass, .ssa)',
+                    icon: Icons.file_open_rounded,
+                    onTap: () {
+                      widget.controller.pickLocalSubtitle();
+                      widget.onClose();
+                    },
+                    borderRadius: radius,
+                  );
+                }
+
+                final item = items[index - 2];
+                final checked = (selectedFile == null || selectedFile.isEmpty)
+                    ? item == null
+                    : item?.file == selectedFile;
+
+                final isLocal =
+                    item != null && !tracks.any((t) => t.file == item.file);
+
+                return AnymeXTile.radio(
+                  title: item == null ? 'None' : (item.label ?? 'No Title'),
+                  subtitle: item == null
+                      ? 'No subtitles'
+                      : (isLocal
+                          ? 'Local Subtitle File'
+                          : (allMode ? 'All Streams' : 'Current Stream')),
+                  icon: item == null ? Icons.subtitles_off : Icons.subtitles,
+                  selected: checked,
+                  onTap: () => widget.controller.setExternalSub(item),
+                  borderRadius: radius,
+                );
               },
             ),
-          )),
-    );
+          ),
+        ),
+      );
+    });
   }
 
   Widget _buildEmbeddedSubtitles(ColorScheme cs, ThemeData theme) {
@@ -179,23 +234,26 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: SingleChildScrollView(
-          child: AnymeXTileBuilder<SubtitleTrack>(
-            items: subtitleTrackItems,
-            selectedItem: selectedItem,
-            getTitle: (t) => t.id == 'no' ? 'None' : (completeSubtitleLanguageName(t.language ?? '')).toUpperCase(),
-            getSubtitle: (t) => t.id == 'no' ? 'No subtitles' : 'Embedded Subtitle',
-            getIcon: (t) => t.id == 'no' ? Icons.subtitles_off : Icons.closed_caption_rounded,
-            onItemPressed: (t) => widget.controller.setSubtitleTrack(t),
-          ),
+        child: AnymeXTileBuilder<SubtitleTrack>(
+          items: subtitleTrackItems,
+          selectedItem: selectedItem,
+          getTitle: (t) => t.id == 'no'
+              ? 'None'
+              : (completeSubtitleLanguageName(t.language ?? '')).toUpperCase(),
+          getSubtitle: (t) =>
+              t.id == 'no' ? 'No subtitles' : 'Embedded Subtitle',
+          getIcon: (t) =>
+              t.id == 'no' ? Icons.subtitles_off : Icons.closed_caption_rounded,
+          onItemPressed: (t) => widget.controller.setSubtitleTrack(t),
+          lazy: true,
         ),
       );
     });
   }
 
   Widget _buildOnlineSubtitles(ColorScheme cs, ThemeData theme) {
-    return _buildEmpty(
-        cs, theme, Icons.language_rounded, 'Online subtitle search coming soon');
+    return _buildEmpty(cs, theme, Icons.language_rounded,
+        'Online subtitle search coming soon');
   }
 
   Widget _buildEmpty(

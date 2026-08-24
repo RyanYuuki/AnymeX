@@ -295,6 +295,7 @@ enum UISettingsKeys {
   enableImmersiveMode,
   navBarStyle,
   appFontFamily,
+  bottomNavBarMargin,
 }
 
 enum DownloadKeys {

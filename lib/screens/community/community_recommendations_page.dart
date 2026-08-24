@@ -8,7 +8,9 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/common/cards/base_card.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
@@ -173,96 +175,92 @@ class _CommunityRecommendationsPageState
 
   void _showSettingsSheet(BuildContext context) {
     final svc = Get.find<CommunityService>();
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => Obx(() {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+    AnymeXSheet(
+      title: 'Filter Settings',
+      contentWidget: Obx(() {
+        return AnymeXTileBuilder<String>(
+          items: const [],
+          getTitle: (e) => e,
+          onItemPressed: (_) {},
+          isSelection: false,
+          children: [
+            AnymeXTile.toggle(
+              title: 'Hide by List Status',
+              subtitle: 'Filter out entries already in your list',
+              value: svc.filterByListEnabled.value,
+              onChanged: (v) {
+                svc.filterByListEnabled.value = v;
+                General.filterByListEnabled.set(v);
+              },
+              child: AnymeXTileBuilder<String>(
+                items: const [],
+                getTitle: (e) => e,
+                onItemPressed: (_) {},
+                isSelection: false,
                 children: [
-                  AnymeXText('Filter Settings',
-                    variant: TextVariant.semiBold,
-                    color: context.colors.primary,
-                  ),
-                  const SizedBox(height: 8),
-                  SwitchListTile(
-                    title: const AnymeXText('Hide by List Status'),
-                    subtitle: const AnymeXText('Filter out entries already in your list'),
-                    value: svc.filterByListEnabled.value,
+                  AnymeXTile.toggle(
+                    title: 'Hide Completed',
+                    value: svc.filterCompleted.value,
                     onChanged: (v) {
-                      svc.filterByListEnabled.value = v;
-                      General.filterByListEnabled.set(v);
+                      svc.filterCompleted.value = v;
+                      General.filterCompleted.set(v);
                     },
                   ),
-                  if (svc.filterByListEnabled.value) ...[
-                    SwitchListTile(
-                      title: const AnymeXText('Hide Completed'),
-                      value: svc.filterCompleted.value,
-                      onChanged: (v) {
-                        svc.filterCompleted.value = v;
-                        General.filterCompleted.set(v);
-                      },
-                    ),
-                    SwitchListTile(
-                      title: const AnymeXText('Hide Watching / Reading'),
-                      value: svc.filterWatching.value,
-                      onChanged: (v) {
-                        svc.filterWatching.value = v;
-                        General.filterWatching.set(v);
-                      },
-                    ),
-                    SwitchListTile(
-                      title: const AnymeXText('Hide Dropped'),
-                      value: svc.filterDropped.value,
-                      onChanged: (v) {
-                        svc.filterDropped.value = v;
-                        General.filterDropped.set(v);
-                      },
-                    ),
-                    SwitchListTile(
-                      title: const AnymeXText('Hide Planning'),
-                      value: svc.filterPlanning.value,
-                      onChanged: (v) {
-                        svc.filterPlanning.value = v;
-                        General.filterPlanning.set(v);
-                      },
-                    ),
-                    SwitchListTile(
-                      title: const AnymeXText('Hide On Hold / Paused'),
-                      value: svc.filterPaused.value,
-                      onChanged: (v) {
-                        svc.filterPaused.value = v;
-                        General.filterPaused.set(v);
-                      },
-                    ),
-                    SwitchListTile(
-                      title: const AnymeXText('Hide Rewatching'),
-                      value: svc.filterRepeating.value,
-                      onChanged: (v) {
-                        svc.filterRepeating.value = v;
-                        General.filterRepeating.set(v);
-                      },
-                    ),
-                  ],
-                  SwitchListTile(
-                    title: const AnymeXText('Hide NSFW'),
-                    value: svc.hideNsfw.value,
+                  AnymeXTile.toggle(
+                    title: 'Hide Watching / Reading',
+                    value: svc.filterWatching.value,
                     onChanged: (v) {
-                      svc.hideNsfw.value = v;
-                      General.hideNsfwRecommendations.set(v);
+                      svc.filterWatching.value = v;
+                      General.filterWatching.set(v);
+                    },
+                  ),
+                  AnymeXTile.toggle(
+                    title: 'Hide Dropped',
+                    value: svc.filterDropped.value,
+                    onChanged: (v) {
+                      svc.filterDropped.value = v;
+                      General.filterDropped.set(v);
+                    },
+                  ),
+                  AnymeXTile.toggle(
+                    title: 'Hide Planning',
+                    value: svc.filterPlanning.value,
+                    onChanged: (v) {
+                      svc.filterPlanning.value = v;
+                      General.filterPlanning.set(v);
+                    },
+                  ),
+                  AnymeXTile.toggle(
+                    title: 'Hide On Hold / Paused',
+                    value: svc.filterPaused.value,
+                    onChanged: (v) {
+                      svc.filterPaused.value = v;
+                      General.filterPaused.set(v);
+                    },
+                  ),
+                  AnymeXTile.toggle(
+                    title: 'Hide Rewatching',
+                    value: svc.filterRepeating.value,
+                    onChanged: (v) {
+                      svc.filterRepeating.value = v;
+                      General.filterRepeating.set(v);
                     },
                   ),
                 ],
               ),
             ),
-          ),
+            AnymeXTile.toggle(
+              title: 'Hide NSFW',
+              value: svc.hideNsfw.value,
+              onChanged: (v) {
+                svc.hideNsfw.value = v;
+                General.hideNsfwRecommendations.set(v);
+              },
+            ),
+          ],
         );
       }),
-    );
+    ).show(context);
   }
 
   @override
@@ -295,11 +293,13 @@ class _CommunityRecommendationsPageState
         Expanded(
           child: Obx(() {
             final data = _getFilteredData();
-            final cardStyle = CardStyle.values[settingsController.cardStyle];
-            final cardHeight = getCardHeight(cardStyle, isDesktop);
+            final cardStyle = settingsController.cardStyle;
+            final double cardHeight = getCardHeight(cardStyle, isDesktop);
+            final double mainAxisExtent = cardHeight + (CommunityService.votingEnabled ? 38 : 0);
+            final _ = settingsController.cardStyle;
             final crossAxisCount = getResponsiveCrossAxisVal(
               MediaQuery.sizeOf(context).width,
-              itemWidth: 105,
+              itemWidth: isDesktop ? 160 : 130,
             );
 
             if (data.isEmpty) {
@@ -328,8 +328,7 @@ class _CommunityRecommendationsPageState
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  mainAxisExtent:
-                      cardHeight + (CommunityService.votingEnabled ? 38 : 0),
+                  mainAxisExtent: mainAxisExtent,
                 ),
                 itemCount: data.length,
                 itemBuilder: (context, index) {
@@ -338,8 +337,6 @@ class _CommunityRecommendationsPageState
                   return _SeeAllCard(
                     item: item,
                     type: widget.type,
-                    cardStyle: cardStyle,
-                    isDesktop: isDesktop,
                     votes: _votes[id],
                     userVote: _userVotes[id],
                     isLoading: _loading[id] == true,
@@ -375,8 +372,6 @@ class _CommunityRecommendationsPageState
 class _SeeAllCard extends StatelessWidget {
   final CommunityMedia item;
   final ItemType type;
-  final CardStyle cardStyle;
-  final bool isDesktop;
   final VoteResult? votes;
   final String? userVote;
   final bool isLoading;
@@ -385,8 +380,6 @@ class _SeeAllCard extends StatelessWidget {
   const _SeeAllCard({
     required this.item,
     required this.type,
-    required this.cardStyle,
-    required this.isDesktop,
     required this.votes,
     required this.userVote,
     required this.isLoading,
@@ -462,7 +455,6 @@ class _SeeAllCard extends StatelessWidget {
                   itemData: carouselData,
                   tag: tag,
                   variant: DataVariant.underrated,
-                  cardStyle: cardStyle,
                   type: type,
                 ),
                 if (item.hasMultipleReasons)

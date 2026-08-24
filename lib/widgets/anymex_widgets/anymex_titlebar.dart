@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class AnymeXTitleBar {
   static final ValueNotifier<bool> isMaximized = ValueNotifier(false);
 
   static Future<void> initialize() async {
+    if (kDebugMode) return;
     if (!Platform.isWindows) {
       await windowManager.waitUntilReadyToShow(
         const WindowOptions(

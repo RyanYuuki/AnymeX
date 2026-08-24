@@ -24,18 +24,24 @@ void showSelectionDialog<T>({
           showCancelButton: false,
           confirmText: 'Close',
           onConfirm: () {},
-          contentWidget: AnymeXTileBuilder<T>(
-            items: items,
-            selectedItem: currentSelected,
-            getTitle: getTitle,
-            onItemPressed: (item) {
-              if (didSelectItem) return;
-              didSelectItem = true;
-              Navigator.pop(context);
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                onItemSelected(item);
-              });
-            },
+          contentWidget: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.45,
+            ),
+            child: AnymeXTileBuilder<T>(
+              items: items,
+              selectedItem: currentSelected,
+              getTitle: getTitle,
+              lazy: true,
+              onItemPressed: (item) {
+                if (didSelectItem) return;
+                didSelectItem = true;
+                Navigator.pop(context);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  onItemSelected(item);
+                });
+              },
+            ),
           ),
         );
       });

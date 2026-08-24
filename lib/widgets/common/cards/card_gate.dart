@@ -4,35 +4,20 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/media_card_registry.dart';
 import 'package:anymex/widgets/common/cards/media_cards.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 
-double getCardHeight(CardStyle style, bool isDesktop) {
+double getCardHeight(int styleIndex, bool isDesktop) {
   registerBuiltInMediaCardStyles();
-  return MediaCardRegistry.getHeightByIndex(style.index, isDesktop);
+  return MediaCardRegistry.getHeightByIndex(styleIndex, isDesktop);
 }
 
 double getResponsiveGridCardAspectRatio(BuildContext context) {
+  registerBuiltInMediaCardStyles();
   final desktop = MediaQuery.sizeOf(context).width > 600;
-  final style = CardStyle.values[settingsController.cardStyle];
-  
-  switch (style) {
-    case CardStyle.saikou:
-      return desktop ? (150 / 290) : (108 / 230);
-    case CardStyle.exotic:
-      return desktop ? (160 / 300) : (118 / 240);
-    case CardStyle.minimalExotic:
-      return desktop ? (160 / 270) : (118 / 210);
-    case CardStyle.modern:
-      return desktop ? (150 / 230) : (108 / 170);
-    case CardStyle.glass:
-      return desktop ? (150 / 230) : (108 / 170);
-    case CardStyle.simple:
-      return desktop ? (150 / 290) : (108 / 230);
-  }
+  return MediaCardRegistry.getAspectRatioByIndex(settingsController.cardStyle, desktop);
 }
 
 double getGridCardAspectRatio({
@@ -41,13 +26,11 @@ double getGridCardAspectRatio({
   required double spacing,
   double padding = 20,
 }) {
+  registerBuiltInMediaCardStyles();
   final screenWidth = MediaQuery.sizeOf(context).width;
   final desktop = screenWidth > 600;
-  final style = CardStyle.values[settingsController.cardStyle];
-  
   final columnWidth = (screenWidth - padding - (spacing * (crossAxisCount - 1))) / crossAxisCount;
-  final extraHeight = MediaCardRegistry.getExtraHeightByIndex(style.index, desktop);
-  
+  final extraHeight = MediaCardRegistry.getExtraHeightByIndex(settingsController.cardStyle, desktop);
   final cellHeight = columnWidth * 1.4 + extraHeight;
   return columnWidth / cellHeight;
 }
@@ -57,15 +40,15 @@ class MediaCardGate extends StatelessWidget {
   final String tag;
   final DataVariant variant;
   final ItemType type;
-  final CardStyle cardStyle;
+  final int? cardStyleIndex;
 
   const MediaCardGate({
     super.key,
     required this.itemData,
     required this.tag,
     required this.variant,
-    required this.cardStyle,
     required this.type,
+    this.cardStyleIndex,
   });
 
   @override
@@ -89,7 +72,7 @@ class MediaCardGate extends StatelessWidget {
 
     return MediaCardRegistry.buildByIndex(
       context: context,
-      index: cardStyle.index,
+      index: cardStyleIndex ?? settingsController.cardStyle,
       props: props,
     );
   }

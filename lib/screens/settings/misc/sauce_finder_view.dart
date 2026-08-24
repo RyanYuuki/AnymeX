@@ -110,46 +110,53 @@ class _SauceFinderViewState extends State<SauceFinderView> {
           ),
         ),
       ),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(
-              Icons.arrow_back_ios_rounded,
-              color: theme.colorScheme.onSurface,
-            ),
-            style: IconButton.styleFrom(
-              backgroundColor:
-                  theme.colorScheme.surfaceContainerHighest.opaque(0.3),
-              padding: const EdgeInsets.all(12),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnymeXText(
-                  'Sauce Searcher',
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 22,
-                  ),
+      child: GestureDetector(
+        onTap: () => Navigator.pop(context),
+        behavior: HitTestBehavior.opaque,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: theme.colorScheme.onSurface,
                 ),
-                const SizedBox(height: 4),
-                AnymeXText(
-                  'Find anime sauce by screenshots',
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface.opaque(0.7),
-                    fontSize: 12,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+                style: IconButton.styleFrom(
+                  backgroundColor:
+                      theme.colorScheme.surfaceContainerHighest.opaque(0.3),
+                  padding: const EdgeInsets.all(12),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymeXText(
+                      'Sauce Searcher',
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 22,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    AnymeXText(
+                      'Find anime sauce by screenshots',
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.opaque(0.7),
+                        fontSize: 12,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

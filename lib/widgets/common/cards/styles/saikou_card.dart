@@ -20,6 +20,9 @@ class SaikouCardStyle implements MediaCardStyle {
   double getExtraHeight(bool isDesktop) => isDesktop ? 50 : 45;
 
   @override
+  double getAspectRatio(bool isDesktop) => isDesktop ? (150 / 290) : (108 / 230);
+
+  @override
   Widget buildCard(BuildContext context, MediaCardProps props) {
     return SaikouCard(
       itemData: props.itemData,

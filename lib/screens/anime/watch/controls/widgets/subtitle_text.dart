@@ -21,13 +21,7 @@ class SubtitleText extends StatelessWidget {
           subtitleAnimation ? const Duration(milliseconds: 250) : Duration.zero;
 
       var rawSubLines = controller.subtitleText.toList();
-      if (kDebugMode &&
-          (rawSubLines.isEmpty || rawSubLines.every((l) => l.trim().isEmpty))) {
-        rawSubLines = [
-          'Sample Subtitle Line 1 (Subtitle Settings Check)',
-          'Sample Subtitle Line 2 (Margin & Style Preview)'
-        ];
-      }
+  
 
       if (rawSubLines.isEmpty) return const SizedBox.shrink();
 

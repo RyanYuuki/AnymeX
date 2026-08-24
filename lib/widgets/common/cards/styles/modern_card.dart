@@ -21,6 +21,9 @@ class ModernCardStyle implements MediaCardStyle {
   double getExtraHeight(bool isDesktop) => 0;
 
   @override
+  double getAspectRatio(bool isDesktop) => isDesktop ? (150 / 230) : (108 / 170);
+
+  @override
   Widget buildCard(BuildContext context, MediaCardProps props) {
     return ModernCard(
       itemData: props.itemData,

@@ -387,16 +387,21 @@ class _SettingsThemeState extends State<SettingsTheme> {
       showCancelButton: false,
       confirmText: 'Close',
       onConfirm: () {},
-      contentWidget: AnymeXTileBuilder<String>(
-        items: dynamicSchemeVariantKeys,
-        selectedItem: dynamicSchemeVariantKeys[selectedVariantIndex],
-        getTitle: (label) => label,
-        onItemPressed: (label) {
-          final index = dynamicSchemeVariantKeys.indexOf(label);
-          setState(() {
-            selectedVariantIndex = index;
-          });
-          handlePaletteChange(index);
+      contentWidget: StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AnymeXTileBuilder<String>(
+            items: dynamicSchemeVariantKeys,
+            selectedItem: dynamicSchemeVariantKeys[selectedVariantIndex],
+            getTitle: (label) => label,
+            onItemPressed: (label) {
+              final index = dynamicSchemeVariantKeys.indexOf(label);
+              setState(() {
+                selectedVariantIndex = index;
+              });
+              setDialogState(() {});
+              handlePaletteChange(index);
+            },
+          );
         },
       ),
     ).show(context);

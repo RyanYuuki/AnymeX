@@ -63,11 +63,9 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
   }
 
   void _scrollToActive(int index) {
-    if (!_userScrolling && _scrollController.isAttached && index >= 0) {
-      _scrollController.scrollTo(
+    if (!_userScrolling && _scrollController.isAttached) {
+      _scrollController.jumpTo(
         index: index,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
         alignment: 0.3,
       );
     }
@@ -226,9 +224,9 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
       }
 
       if (activeIndex != _lastHighlightedIndex && activeIndex >= 0) {
-        _lastHighlightedIndex = activeIndex;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _scrollToActive(activeIndex);
+          _lastHighlightedIndex = activeIndex;
         });
       }
 
@@ -254,16 +252,21 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
 
             double progress = 0.0;
             if (isActive) {
-              final cueDuration = cue.end.inMilliseconds - cue.start.inMilliseconds;
+              final cueDuration =
+                  cue.end.inMilliseconds - cue.start.inMilliseconds;
               if (cueDuration > 0) {
-                progress = ((adjustedPos.inMilliseconds - cue.start.inMilliseconds) / cueDuration).clamp(0.0, 1.0);
+                progress =
+                    ((adjustedPos.inMilliseconds - cue.start.inMilliseconds) /
+                            cueDuration)
+                        .clamp(0.0, 1.0);
               }
             }
 
             return GestureDetector(
               onTap: () {
                 final currentPos = widget.controller.currentPosition.value;
-                final newDelay = currentPos - cue.start - const Duration(milliseconds: 150);
+                final newDelay =
+                    currentPos - cue.start - const Duration(milliseconds: 150);
                 widget.controller.setSubtitleDelay(newDelay);
                 _userScrolling = false;
               },
@@ -307,7 +310,8 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                               fontWeight: FontWeight.w600,
                               color: isActive
                                   ? cs.primary
-                                  : cs.onSurface.withOpacity(isPast ? 0.35 : 0.5),
+                                  : cs.onSurface
+                                      .withOpacity(isPast ? 0.35 : 0.5),
                             ),
                           ),
                         ),
@@ -318,7 +322,8 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: isActive
                                   ? cs.primary
-                                  : cs.onSurface.withOpacity(isPast ? 0.4 : 0.85),
+                                  : cs.onSurface
+                                      .withOpacity(isPast ? 0.4 : 0.85),
                               fontWeight:
                                   isActive ? FontWeight.w600 : FontWeight.w400,
                               height: 1.4,
@@ -345,12 +350,18 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                             min: 0.0,
                             max: 1.0,
                             onChanged: (val) {
-                              final currentPos = widget.controller.currentPosition.value;
-                              final cueDuration = cue.end.inMilliseconds - cue.start.inMilliseconds;
+                              final currentPos =
+                                  widget.controller.currentPosition.value;
+                              final cueDuration = cue.end.inMilliseconds -
+                                  cue.start.inMilliseconds;
                               // Clamp away from edges so adjustedPos stays inside the cue
                               // and doesn't trigger a jump to the previous/next cue.
                               final safeVal = val.clamp(0.02, 0.98);
-                              final newDelay = currentPos - cue.start - Duration(milliseconds: (cueDuration * safeVal).toInt());
+                              final newDelay = currentPos -
+                                  cue.start -
+                                  Duration(
+                                      milliseconds:
+                                          (cueDuration * safeVal).toInt());
                               widget.controller.setSubtitleDelay(newDelay);
                             },
                           ),

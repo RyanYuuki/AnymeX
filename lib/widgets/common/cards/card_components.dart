@@ -191,6 +191,7 @@ class MediaTitle extends StatelessWidget {
   final bool isDesktop;
   final int maxLines;
   final bool overlay;
+  final double? customHeight;
 
   const MediaTitle({
     super.key,
@@ -198,6 +199,7 @@ class MediaTitle extends StatelessWidget {
     required this.isDesktop,
     this.maxLines = 2,
     this.overlay = false,
+    this.customHeight,
   });
 
   @override
@@ -232,7 +234,7 @@ class MediaTitle extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 50,
+      height: customHeight ?? 50,
       child: AnymeXText(title,
         maxLines: maxLines,
         size: isDesktop ? 14 : 12,

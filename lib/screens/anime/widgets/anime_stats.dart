@@ -14,7 +14,7 @@ import 'package:anymex/screens/anime/widgets/social_section.dart';
 import 'package:anymex/utils/anime_adaptation_util.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 
-import 'package:anymex/screens/home_page.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -490,7 +490,8 @@ class AnimeStats extends StatelessWidget {
                             child: ImageButton(
                               height: getResponsiveSize(context,
                                   mobileSize: 60, desktopSize: 80),
-                              buttonText: relation.relationType,
+                              buttonText: relation.title,
+                              subText: relation.relationType,
                               onPressed: () {
                                 final isMangaRelation = relation.type == 'MANGA';
                                 final media = Media(
@@ -520,6 +521,7 @@ class AnimeStats extends StatelessWidget {
                               backgroundImage: relation.cover.isNotEmpty
                                   ? relation.cover
                                   : relation.poster,
+                              imageProportion: 0.5,
                           )))
                       .toList(),
                 ),

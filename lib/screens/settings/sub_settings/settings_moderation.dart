@@ -53,13 +53,21 @@ class _SettingsModerationState extends State<SettingsModeration> {
             mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
             desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
         children: [
-          const Row(
-            children: [
-              CustomBackButton(),
-              SizedBox(width: 10),
-              AnymeXText("Moderation Panel",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-            ],
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            behavior: HitTestBehavior.opaque,
+            child: const MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Row(
+                children: [
+                  CustomBackButton(),
+                  SizedBox(width: 10),
+                  AnymeXText("Moderation Panel",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: 30),
 

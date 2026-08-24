@@ -1,3 +1,4 @@
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,12 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
   final bool Function(T)? showChevron;
   final TextStyle Function(T)? getTitleStyle;
   final TextStyle Function(T)? getSubtitleStyle;
+  final int? maxLines;
+  final bool lazy;
+
+  final List<Widget>? children;
+
+  final List<Widget>? footerChildren;
 
   const AnymeXTileBuilder({
     super.key,
@@ -37,60 +44,185 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     this.maxLines,
     this.getTitleStyle,
     this.getSubtitleStyle,
+    this.lazy = false,
+    this.children,
+    this.footerChildren,
   });
-
-  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
     final hasIcons = getIcon != null || getLeading != null;
     final separatorIndent = hasIcons ? 66.0 : 16.0;
+    final colors = context.colors;
+
+    if (lazy) {
+      final headerChildren = children ?? [];
+      final footerItems = footerChildren ?? [];
+      final totalCount =
+          headerChildren.length + items.length + footerItems.length;
+
+      return Container(
+        margin: EdgeInsets.zero,
+        decoration: BoxDecoration(
+          color: colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(18.0),
+          border: Border.all(
+            color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+            width: 0.8,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18.0),
+          child: ListView.separated(
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            itemCount: totalCount,
+            separatorBuilder: (context, index) => Divider(
+              height: 1,
+              thickness: 0.6,
+              indent: separatorIndent,
+              endIndent: 16,
+              color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+            ),
+            itemBuilder: (context, index) {
+              BorderRadius radius;
+              if (totalCount == 1) {
+                radius = BorderRadius.circular(18.0);
+              } else if (index == 0) {
+                radius =
+                    const BorderRadius.vertical(top: Radius.circular(18.0));
+              } else if (index == totalCount - 1) {
+                radius =
+                    const BorderRadius.vertical(bottom: Radius.circular(18.0));
+              } else {
+                radius = BorderRadius.zero;
+              }
+
+              if (index < headerChildren.length) {
+                return ClipRRect(
+                  borderRadius: radius,
+                  child: headerChildren[index],
+                );
+              }
+
+              final footerStartIndex = headerChildren.length + items.length;
+              if (index >= footerStartIndex) {
+                return ClipRRect(
+                  borderRadius: radius,
+                  child: footerItems[index - footerStartIndex],
+                );
+              }
+
+              final itemIndex = index - headerChildren.length;
+              final item = items[itemIndex];
+
+              if (!isSelection) {
+                return AnymeXTile(
+                  title: getTitle(item),
+                  subtitle: getSubtitle?.call(item),
+                  icon: getIcon?.call(item),
+                  leading: getLeading?.call(item),
+                  trailing: getTrailing?.call(item),
+                  onTap: () => onItemPressed(item),
+                  showChevron: showChevron?.call(item) ?? false,
+                  maxLines: maxLines,
+                  titleStyle: getTitleStyle?.call(item),
+                  subtitleStyle: getSubtitleStyle?.call(item),
+                  borderRadius: radius,
+                );
+              }
+
+              final checked = isSelected != null
+                  ? isSelected!(item)
+                  : (selectedItems != null
+                      ? selectedItems!.contains(item)
+                      : item == selectedItem);
+
+              if (isRadio) {
+                return AnymeXTile.radio(
+                  title: getTitle(item),
+                  subtitle: getSubtitle?.call(item),
+                  icon: getIcon?.call(item),
+                  selected: checked,
+                  onTap: () => onItemPressed(item),
+                  titleStyle: getTitleStyle?.call(item),
+                  subtitleStyle: getSubtitleStyle?.call(item),
+                  borderRadius: radius,
+                );
+              } else {
+                return AnymeXTile.checkbox(
+                  title: getTitle(item),
+                  subtitle: getSubtitle?.call(item),
+                  icon: getIcon?.call(item),
+                  value: checked,
+                  onChanged: (_) => onItemPressed(item),
+                  titleStyle: getTitleStyle?.call(item),
+                  subtitleStyle: getSubtitleStyle?.call(item),
+                  borderRadius: radius,
+                );
+              }
+            },
+          ),
+        ),
+      );
+    }
+
+    final headerChildren = children ?? [];
+    final footerItems = footerChildren ?? [];
+
+    final itemWidgets = items.map((item) {
+      if (!isSelection) {
+        return AnymeXTile(
+          title: getTitle(item),
+          subtitle: getSubtitle?.call(item),
+          icon: getIcon?.call(item),
+          leading: getLeading?.call(item),
+          trailing: getTrailing?.call(item),
+          onTap: () => onItemPressed(item),
+          showChevron: showChevron?.call(item) ?? false,
+          maxLines: maxLines,
+          titleStyle: getTitleStyle?.call(item),
+          subtitleStyle: getSubtitleStyle?.call(item),
+        ) as Widget;
+      }
+
+      final checked = isSelected != null
+          ? isSelected!(item)
+          : (selectedItems != null
+              ? selectedItems!.contains(item)
+              : item == selectedItem);
+
+      if (isRadio) {
+        return AnymeXTile.radio(
+          title: getTitle(item),
+          subtitle: getSubtitle?.call(item),
+          icon: getIcon?.call(item),
+          selected: checked,
+          onTap: () => onItemPressed(item),
+          titleStyle: getTitleStyle?.call(item),
+          subtitleStyle: getSubtitleStyle?.call(item),
+        ) as Widget;
+      } else {
+        return AnymeXTile.checkbox(
+          title: getTitle(item),
+          subtitle: getSubtitle?.call(item),
+          icon: getIcon?.call(item),
+          value: checked,
+          onChanged: (_) => onItemPressed(item),
+          titleStyle: getTitleStyle?.call(item),
+          subtitleStyle: getSubtitleStyle?.call(item),
+        ) as Widget;
+      }
+    }).toList();
 
     return AnymeXSectionBuilder(
       margin: EdgeInsets.zero,
       separatorIndent: separatorIndent,
-      children: items.map((item) {
-        if (!isSelection) {
-          return AnymeXTile(
-            title: getTitle(item),
-            subtitle: getSubtitle?.call(item),
-            icon: getIcon?.call(item),
-            leading: getLeading?.call(item),
-            trailing: getTrailing?.call(item),
-            onTap: () => onItemPressed(item),
-            showChevron: showChevron?.call(item) ?? false,
-            maxLines: maxLines,
-            titleStyle: getTitleStyle?.call(item),
-            subtitleStyle: getSubtitleStyle?.call(item),
-          );
-        }
-
-        final checked = isSelected != null
-            ? isSelected!(item)
-            : (selectedItems != null ? selectedItems!.contains(item) : item == selectedItem);
-
-        if (isRadio) {
-          return AnymeXTile.radio(
-            title: getTitle(item),
-            subtitle: getSubtitle?.call(item),
-            icon: getIcon?.call(item),
-            selected: checked,
-            onTap: () => onItemPressed(item),
-            titleStyle: getTitleStyle?.call(item),
-            subtitleStyle: getSubtitleStyle?.call(item),
-          );
-        } else {
-          return AnymeXTile.checkbox(
-            title: getTitle(item),
-            subtitle: getSubtitle?.call(item),
-            icon: getIcon?.call(item),
-            value: checked,
-            onChanged: (_) => onItemPressed(item),
-            titleStyle: getTitleStyle?.call(item),
-            subtitleStyle: getSubtitleStyle?.call(item),
-          );
-        }
-      }).toList(),
+      children: [
+        ...headerChildren,
+        ...itemWidgets,
+        ...footerItems,
+      ],
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -138,215 +141,196 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                       child: AnymeXText("Source doesn't have any settings"),
                     );
                   }
-                  return ListView.separated(
+                  return SingleChildScrollView(
                     padding: const EdgeInsets.all(16),
-                    itemCount: preference.value!.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final pref = preference.value![index];
-                      switch (pref.type) {
-                        case 'checkBox':
-                          final p = pref.checkBoxPreference!;
-                          return _PreferenceTile(
-                            title: p.title ?? '',
-                            subtitle: p.summary ?? 'Toggle setting',
-                            isSelected: p.value ?? false,
-                            onTap: () {
-                              final newVal = !(p.value ?? false);
-                              p.value = newVal;
-                              _savePreference(pref, newVal);
-                            },
-                            type: _PreferenceType.toggle,
-                          );
-                        case 'switch':
-                          final p = pref.switchPreferenceCompat!;
-                          return _PreferenceTile(
-                            title: p.title ?? '',
-                            subtitle: p.summary ?? 'Toggle setting',
-                            isSelected: p.value ?? false,
-                            onTap: () {
-                              final newVal = !(p.value ?? false);
-                              p.value = newVal;
-                              _savePreference(pref, newVal);
-                            },
-                            type: _PreferenceType.toggle,
-                          );
-                        case 'list':
-                          final p = pref.listPreference!;
-                          return _PreferenceTile(
-                            title: p.title ?? '',
-                            subtitle: _listPreferenceSubtitle(p),
-                            isSelected: false,
-                            onTap: () {
-                              int tempIndex = _initialListPreferenceIndex(p);
-                              showDialog(
-                                context: context,
-                                builder: (context) => StatefulBuilder(
-                                  builder: (context, setDialogState) =>
-                                      AnymeXDialog(
-                                    title: p.title ?? 'Select Option',
-                                    onConfirm: () {
-                                      p.valueIndex = tempIndex;
-                                      final newValue =
-                                          _listPreferenceValueAt(p, tempIndex);
-                                      p.value = newValue;
-                                      _savePreference(pref, newValue);
-                                    },
-                                    contentWidget: SizedBox(
-                                      height: 300,
-                                      width: double.maxFinite,
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: p.entries?.length ?? 0,
-                                        itemBuilder: (context, i) => Padding(
-                                          padding: const EdgeInsets.only(
-                                              bottom: 8.0),
-                                          child: _PreferenceTile(
-                                            title: p.entries![i],
-                                            subtitle: 'Option ${i + 1}',
-                                            isSelected: tempIndex == i,
-                                            onTap: () {
-                                              setDialogState(() {
-                                                tempIndex = i;
-                                              });
-                                            },
-                                            type: _PreferenceType.toggle,
-                                          ),
+                    child: AnymeXSectionBuilder(
+                      margin: EdgeInsets.zero,
+                      children: preference.value!.map((pref) {
+                        switch (pref.type) {
+                          case 'checkBox':
+                            final p = pref.checkBoxPreference!;
+                            return AnymeXTile.toggle(
+                              title: p.title ?? '',
+                              subtitle: p.summary ?? 'Toggle setting',
+                              value: p.value ?? false,
+                              onChanged: (v) {
+                                p.value = v;
+                                _savePreference(pref, v);
+                              },
+                            );
+                          case 'switch':
+                            final p = pref.switchPreferenceCompat!;
+                            return AnymeXTile.toggle(
+                              title: p.title ?? '',
+                              subtitle: p.summary ?? 'Toggle setting',
+                              value: p.value ?? false,
+                              onChanged: (v) {
+                                p.value = v;
+                                _savePreference(pref, v);
+                              },
+                            );
+                          case 'list':
+                            final p = pref.listPreference!;
+                            return AnymeXTile(
+                              title: p.title ?? '',
+                              subtitle: _listPreferenceSubtitle(p),
+                              onTap: () {
+                                int tempIndex = _initialListPreferenceIndex(p);
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => StatefulBuilder(
+                                    builder: (context, setDialogState) =>
+                                        AnymeXDialog(
+                                      title: p.title ?? 'Select Option',
+                                      onConfirm: () {
+                                        p.valueIndex = tempIndex;
+                                        final newValue =
+                                            _listPreferenceValueAt(p, tempIndex);
+                                        p.value = newValue;
+                                        _savePreference(pref, newValue);
+                                      },
+                                      contentWidget: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxHeight: MediaQuery.sizeOf(context).height * 0.45,
+                                        ),
+                                        child: AnymeXTileBuilder<int>(
+                                          items: List.generate(p.entries?.length ?? 0, (index) => index),
+                                          selectedItem: tempIndex,
+                                          getTitle: (i) => p.entries![i],
+                                          getSubtitle: (i) => 'Option ${i + 1}',
+                                          lazy: true,
+                                          onItemPressed: (i) {
+                                            setDialogState(() {
+                                              tempIndex = i;
+                                            });
+                                          },
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                            type: _PreferenceType.list,
-                          );
-                        case 'multi_select':
-                          final p = pref.multiSelectListPreference!;
-                          return _PreferenceTile(
-                            title: p.title ?? '',
-                            subtitle: _multiSelectPreferenceSubtitle(p),
-                            isSelected: false,
-                            onTap: () {
-                              final tempSelectedValues =
-                                  (p.values ?? []).toSet();
-                              showDialog(
-                                context: context,
-                                builder: (context) => StatefulBuilder(
-                                  builder: (context, setDialogState) =>
-                                      AnymeXDialog(
-                                    title: p.title ?? 'Select Options',
+                                );
+                              },
+                            );
+                          case 'multi_select':
+                            final p = pref.multiSelectListPreference!;
+                            return AnymeXTile(
+                              title: p.title ?? '',
+                              subtitle: _multiSelectPreferenceSubtitle(p),
+                              onTap: () {
+                                final tempSelectedValues =
+                                    (p.values ?? []).toSet();
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => StatefulBuilder(
+                                    builder: (context, setDialogState) =>
+                                        AnymeXDialog(
+                                      title: p.title ?? 'Select Options',
+                                      onConfirm: () {
+                                        p.values = tempSelectedValues.toList();
+                                        _savePreference(pref, p.values);
+                                      },
+                                      contentWidget: ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxHeight: MediaQuery.sizeOf(context).height * 0.45,
+                                        ),
+                                        child: AnymeXTileBuilder<int>(
+                                          items: List.generate(p.entries?.length ?? 0, (index) => index),
+                                          isSelected: (i) {
+                                            final val = _multiSelectPreferenceValueAt(p, i);
+                                            return tempSelectedValues.contains(val);
+                                          },
+                                          getTitle: (i) => p.entries![i],
+                                          getSubtitle: (i) => 'Option ${i + 1}',
+                                          lazy: true,
+                                          onItemPressed: (i) {
+                                            final val = _multiSelectPreferenceValueAt(p, i);
+                                            setDialogState(() {
+                                              if (tempSelectedValues.contains(val)) {
+                                                tempSelectedValues.remove(val);
+                                              } else {
+                                                tempSelectedValues.add(val);
+                                              }
+                                            });
+                                          },
+                                          isRadio: false,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          case 'text':
+                            final p = pref.editTextPreference!;
+                            return AnymeXTile(
+                              title: p.title ?? '',
+                              subtitle: p.value ?? p.text ?? 'Edit text',
+                              onTap: () {
+                                String tempValue = p.value ?? p.text ?? '';
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AnymeXDialog(
+                                    title:
+                                        p.dialogTitle ?? p.title ?? 'Edit Text',
                                     onConfirm: () {
-                                      p.values = tempSelectedValues.toList();
-                                      _savePreference(pref, p.values);
+                                      p.value = tempValue;
+                                      p.text = tempValue;
+                                      _savePreference(pref, tempValue);
                                     },
-                                    contentWidget: SizedBox(
-                                      height: 300,
-                                      width: double.maxFinite,
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: p.entries?.length ?? 0,
-                                        itemBuilder: (context, i) {
-                                          final val =
-                                              _multiSelectPreferenceValueAt(
-                                                  p, i);
-                                          final isCurrentlySelected =
-                                              tempSelectedValues.contains(val);
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 8.0),
-                                            child: _PreferenceTile(
-                                              title: p.entries![i],
-                                              subtitle: 'Option ${i + 1}',
-                                              isSelected: isCurrentlySelected,
-                                              onTap: () {
-                                                setDialogState(() {
-                                                  if (isCurrentlySelected) {
-                                                    tempSelectedValues
-                                                        .remove(val);
-                                                  } else {
-                                                    tempSelectedValues.add(val);
-                                                  }
-                                                });
-                                              },
-                                              type: _PreferenceType.toggle,
+                                    contentWidget: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (p.dialogMessage != null) ...[
+                                          AnymeXText(p.dialogMessage!,
+                                            size: 14,
+                                            color: theme.onSurfaceVariant,
+                                          ),
+                                          const SizedBox(height: 12),
+                                        ],
+                                        TextField(
+                                          controller: TextEditingController(
+                                              text: tempValue),
+                                          onChanged: (val) => tempValue = val,
+                                          maxLines: 3,
+                                          minLines: 1,
+                                          style:
+                                              TextStyle(color: theme.onSurface),
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: theme
+                                                .surfaceContainerHighest
+                                                .opaque(0.3),
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: BorderSide(
+                                                  color: theme.outline),
                                             ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                            type: _PreferenceType.list,
-                          );
-                        case 'text':
-                          final p = pref.editTextPreference!;
-                          return _PreferenceTile(
-                            title: p.title ?? '',
-                            subtitle: p.value ?? p.text ?? 'Edit text',
-                            isSelected: false,
-                            onTap: () {
-                              String tempValue = p.value ?? p.text ?? '';
-                              showDialog(
-                                context: context,
-                                builder: (context) => AnymeXDialog(
-                                  title:
-                                      p.dialogTitle ?? p.title ?? 'Edit Text',
-                                  onConfirm: () {
-                                    p.value = tempValue;
-                                    p.text = tempValue;
-                                    _savePreference(pref, tempValue);
-                                  },
-                                  contentWidget: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      if (p.dialogMessage != null) ...[
-                                        AnymeXText(p.dialogMessage!,
-                                          size: 14,
-                                          color: theme.onSurfaceVariant,
-                                        ),
-                                        const SizedBox(height: 12),
-                                      ],
-                                      TextField(
-                                        controller: TextEditingController(
-                                            text: tempValue),
-                                        onChanged: (val) => tempValue = val,
-                                        style:
-                                            TextStyle(color: theme.onSurface),
-                                        decoration: InputDecoration(
-                                          filled: true,
-                                          fillColor: theme
-                                              .surfaceContainerHighest
-                                              .opaque(0.3),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            borderSide: BorderSide(
-                                                color: theme.outline),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                            type: _PreferenceType.text,
-                          );
+                                );
+                              },
+                              trailing: Icon(
+                                Icons.edit_rounded,
+                                size: 16,
+                                color: theme.onSurface.opaque(0.5),
+                              ),
+                              showChevron: false,
+                            );
 
-                        default:
-                          return _PreferenceTile(
-                            title: pref.key ?? 'Unknown Preference',
-                            subtitle: 'Unsupported type ${pref.type}',
-                            isSelected: false,
-                            onTap: () {},
-                            type: _PreferenceType.text,
-                          );
-                      }
-                    },
+                          default:
+                            return AnymeXTile(
+                              title: pref.key ?? 'Unknown Preference',
+                              subtitle: 'Unsupported type ${pref.type}',
+                              showChevron: false,
+                              onTap: () {},
+                            );
+                        }
+                      }).toList(),
+                    ),
                   );
                 },
               ),
@@ -357,88 +341,4 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
   }
 }
 
-enum _PreferenceType { toggle, list, text }
 
-class _PreferenceTile extends StatelessWidget {
-  const _PreferenceTile({
-    required this.title,
-    required this.subtitle,
-    required this.isSelected,
-    required this.onTap,
-    required this.type,
-  });
-
-  final String title;
-  final String subtitle;
-  final bool isSelected;
-  final VoidCallback onTap;
-  final _PreferenceType type;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? context.colors.primaryContainer.opaque(0.35)
-                : context.colors.surfaceContainerHighest.opaque(0.35),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isSelected
-                  ? context.colors.primary.opaque(0.4)
-                  : context.colors.outline.opaque(0.2),
-            ),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnymeXText(title,
-                      variant: TextVariant.semiBold,
-                      color: isSelected ? context.colors.primary : null,
-                    ),
-                    const SizedBox(height: 4),
-                    AnymeXText(subtitle,
-                      size: 11,
-                      color: context.colors.onSurface.opaque(0.7),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              if (type == _PreferenceType.toggle)
-                Icon(
-                  isSelected
-                      ? Icons.check_circle_rounded
-                      : Icons.radio_button_unchecked_rounded,
-                  color: isSelected
-                      ? context.colors.primary
-                      : context.colors.onSurface.opaque(0.5),
-                )
-              else if (type == _PreferenceType.list)
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: context.colors.onSurface.opaque(0.5),
-                )
-              else
-                Icon(
-                  Icons.edit_rounded,
-                  size: 16,
-                  color: context.colors.onSurface.opaque(0.5),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

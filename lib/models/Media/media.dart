@@ -64,6 +64,7 @@ class Media {
   bool? isAdult;
   String? sourceName;
   String? sourceId;
+  String? sourceMaterial;
   List<TrackedMedia>? friendsWatching;
   String? userStatus;
   String? characterRole;
@@ -112,6 +113,7 @@ class Media {
       required this.serviceType,
       this.sourceName,
       this.sourceId,
+      this.sourceMaterial,
       this.friendsWatching,
       this.userStatus,
       this.characterRole,
@@ -259,7 +261,8 @@ class Media {
       status: (node['status']?.toString() ?? '??').replaceAll('_', ' '),
       rating: node['mean']?.toString() ?? '??',
       popularity: node['popularity']?.toString() ?? '??',
-      format: node['media_type']?.toString() ?? '??',
+      format: formatFormatString(node['media_type']?.toString(), null),
+      sourceMaterial: node['source']?.toString() ?? '?',
       aired: node['start_date']?.toString() ?? '??',
       totalChapters: (mediaTypeStr?.toLowerCase() == 'one_shot')
           ? '1'
@@ -1154,7 +1157,8 @@ class Media {
       status: (json['status']?.toString() ?? '?').replaceAll('_', ' '),
       rating: ((json['averageScore'] ?? 0) / 10).toString(),
       popularity: json['popularity']?.toString() ?? '6900',
-      format: json['format']?.toString() ?? '?',
+      format: formatFormatString(json['format']?.toString(), json['countryOfOrigin']?.toString()),
+      sourceMaterial: json['source']?.toString() ?? '?',
       aired: _parseDateRange(json['startDate'], json['endDate']),
       seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
       totalChapters:
@@ -1489,4 +1493,53 @@ class ExternalLink {
     required this.url,
     this.icon,
   });
+}
+
+String formatFormatString(String? format, String? countryOfOrigin) {
+  if (format == null) return '?';
+  final upperFormat = format.toUpperCase();
+  if (upperFormat == 'MANGA') {
+    final origin = (countryOfOrigin ?? '').toUpperCase();
+    if (origin == 'KR') return 'Manga (South Korea)';
+    if (origin == 'CN') return 'Manga (China)';
+    if (origin == 'TW') return 'Manga (Taiwan)';
+    return 'Manga';
+  }
+  switch (upperFormat) {
+    case 'TV': return 'TV';
+    case 'TV_SHORT': return 'TV Short';
+    case 'MOVIE': return 'Movie';
+    case 'SPECIAL': return 'Special';
+    case 'OVA': return 'OVA';
+    case 'ONA': return 'ONA';
+    case 'MUSIC': return 'Music';
+    case 'MANGA': return 'Manga';
+    case 'NOVEL': return 'Novel';
+    case 'ONE_SHOT': return 'One Shot';
+    default:
+      return upperFormat.replaceAll('_', ' ').split(' ').map((word) {
+        if (word.isEmpty) return '';
+        return word[0] + word.substring(1).toLowerCase();
+      }).join(' ');
+  }
+}
+
+String formatSourceMaterial(String? source) {
+  if (source == null || source == '?') return '?';
+  final upper = source.toUpperCase();
+  switch (upper) {
+    case 'ORIGINAL': return 'Original';
+    case 'LIGHT_NOVEL': return 'Light Novel';
+    case 'VISUAL_NOVEL': return 'Visual Novel';
+    case 'VIDEO_GAME': return 'Video Game';
+    case 'WEB_NOVEL': return 'Web Novel';
+    case 'LIVE_ACTION': return 'Live Action';
+    case 'MULTIMEDIA_PROJECT': return 'Multimedia Project';
+    case 'PICTURE_BOOK': return 'Picture Book';
+    default:
+      return upper.replaceAll('_', ' ').split(' ').map((word) {
+        if (word.isEmpty) return '';
+        return word[0] + word.substring(1).toLowerCase();
+      }).join(' ');
+  }
 }
