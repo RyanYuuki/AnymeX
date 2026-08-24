@@ -21,6 +21,10 @@ class Profile {
   bool splitCompletedManga;
   List<String> animeSectionOrder;
   List<String> mangaSectionOrder;
+  List<int>? perfectAnimeIds;
+  List<int>? perfectMangaIds;
+  List<FavouriteMedia>? perfectAnimeList;
+  List<FavouriteMedia>? perfectMangaList;
 
   Profile({
     this.id,
@@ -45,6 +49,10 @@ class Profile {
     this.splitCompletedManga = false,
     this.animeSectionOrder = const [],
     this.mangaSectionOrder = const [],
+    this.perfectAnimeIds,
+    this.perfectMangaIds,
+    this.perfectAnimeList,
+    this.perfectMangaList,
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
@@ -178,11 +186,27 @@ class FavouriteMedia {
   String? cover;
   double? averageScore;
   int? episodes;
+  List<String> genres;
+  List<String> tags;
 
-  FavouriteMedia(
-      {this.id, this.title, this.cover, this.averageScore, this.episodes});
+  FavouriteMedia({
+    this.id,
+    this.title,
+    this.cover,
+    this.averageScore,
+    this.episodes,
+    this.genres = const [],
+    this.tags = const [],
+  });
 
   factory FavouriteMedia.fromJson(Map<String, dynamic> json) {
+    final rawGenres = (json['genres'] as List<dynamic>?)?.cast<String>() ?? const [];
+    final rawTags = (json['tags'] as List<dynamic>?)
+            ?.map((e) => e is Map ? (e['name'] as String? ?? '') : e.toString())
+            .where((s) => s.isNotEmpty)
+            .toList() ??
+        const [];
+
     return FavouriteMedia(
       id: json['id']?.toString(),
       title: json['title']?['userPreferred'] ??
@@ -193,6 +217,8 @@ class FavouriteMedia {
           ? (json['averageScore'] / 10).toDouble()
           : null,
       episodes: json['episodes'] ?? json['chapters'],
+      genres: rawGenres,
+      tags: rawTags,
     );
   }
 }

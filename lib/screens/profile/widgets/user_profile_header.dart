@@ -312,6 +312,15 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                         child: Row(
                           children: [
                             HoverActionButton(
+                              icon: Iconsax.heart5,
+                              onTap: () => navigate(() => CompatibilityInputPage(
+                                    prefillProfile: widget.user,
+                                    prefillUsername: name,
+                                    useLoggedInUser: true,
+                                  )),
+                            ),
+                            const SizedBox(width: 10),
+                            HoverActionButton(
                               icon: Icons.north_east_rounded,
                               onTap: () => launchUrlString(
                                   'https://anilist.co/user/$name'),
@@ -415,6 +424,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                             onTap: () {
                                               Navigator.pop(ctx);
                                               navigate(() => CompatibilityInputPage(
+                                                prefillProfile: widget.user,
                                                 prefillUsername: name,
                                                 useLoggedInUser: true,
                                               ));

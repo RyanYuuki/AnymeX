@@ -1,10 +1,13 @@
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/compatibility_controller.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/profile/compatibility/compatibility_result_page.dart';
 import 'package:anymex/screens/watchium/watchium_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
@@ -12,6 +15,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/widgets/watchium/watchium_server_sheet.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 
 class Deeplink {
@@ -41,6 +45,11 @@ class Deeplink {
 
     if (_isWatchiumDeepLink(uri)) {
       _handleWatchiumDeepLink(uri);
+      return;
+    }
+
+    if (_isAnimatchDeepLink(uri)) {
+      _handleAnimatchDeepLink(uri);
       return;
     }
 
@@ -460,6 +469,91 @@ class Deeplink {
       if (content != null && content.availableServers.isNotEmpty && Get.context != null) {
         showWatchiumServerSheet(context: Get.context!, content: content);
       }
+    }
+  }
+
+  static bool _isAnimatchDeepLink(Uri uri) {
+    final host = uri.host.toLowerCase();
+    const validKeywords = {'animatch', 'almatch', 'compat', 'compatibility'};
+    if (validKeywords.contains(host)) return true;
+
+    final segments = _compactSegments(uri.pathSegments);
+    if (segments.isNotEmpty && validKeywords.contains(segments.first.toLowerCase())) {
+      return true;
+    }
+
+    final watchiumUrl = (dotenv.env['WATCHIUM_SERVER_URL'] ?? WatchiumKeys.serverUrl.get<String>('')).trim();
+    if (watchiumUrl.isNotEmpty) {
+      final envUri = Uri.tryParse(watchiumUrl);
+      if (envUri != null && envUri.host.isNotEmpty && host == envUri.host.toLowerCase()) {
+        if (segments.isNotEmpty && validKeywords.contains(segments.first.toLowerCase())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  static Future<void> _handleAnimatchDeepLink(Uri uri) async {
+    String? user1 = uri.queryParameters['user1'] ??
+        uri.queryParameters['u1'] ??
+        uri.queryParameters['username1'] ??
+        uri.queryParameters['user'];
+    String? user2 = uri.queryParameters['user2'] ??
+        uri.queryParameters['u2'] ??
+        uri.queryParameters['username2'];
+
+    final segments = _compactSegments(uri.pathSegments);
+    if (user1 == null || user2 == null) {
+      const keywords = {'animatch', 'almatch', 'compat', 'compatibility'};
+      final meaningful = segments.where((s) => !keywords.contains(s.toLowerCase())).toList();
+
+      if (meaningful.length >= 2) {
+        user1 ??= meaningful[0];
+        user2 ??= meaningful[1];
+      } else if (meaningful.length == 1 && meaningful[0].contains('&')) {
+        final parts = meaningful[0].split('&');
+        if (parts.length >= 2) {
+          user1 ??= parts[0];
+          user2 ??= parts[1];
+        }
+      }
+    }
+
+    user1 = user1?.trim();
+    user2 = user2?.trim();
+
+    if (user1 == null || user1.isEmpty || user2 == null || user2.isEmpty) {
+      errorSnackBar('Invalid compatibility link: missing usernames.');
+      return;
+    }
+
+    if (user1.toLowerCase() == user2.toLowerCase()) {
+      errorSnackBar('Cannot compare the same profile with itself.');
+      return;
+    }
+
+    snackBar('Calculating AniMatch compatibility for $user1 & $user2...');
+
+    final controller = Get.isRegistered<CompatibilityController>()
+        ? Get.find<CompatibilityController>()
+        : Get.put(CompatibilityController());
+
+    await controller.runMatch(
+      userName1: user1,
+      userName2: user2,
+      useLoggedInUser: false,
+    );
+
+    if (controller.errorMessage.value.isNotEmpty) {
+      errorSnackBar(controller.errorMessage.value);
+      return;
+    }
+
+    if (controller.result.value != null) {
+      navigate(() => CompatibilityResultPage(controller: controller));
+    } else {
+      errorSnackBar('Could not calculate compatibility.');
     }
   }
 }

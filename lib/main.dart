@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
-import 'package:anymex/widgets/common/fps_meter.dart';
 import 'package:rhttp/rhttp.dart';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -105,7 +104,9 @@ void initDeepLinkListener(List<String> args) async {
           'cloudstreamrepo',
           'sora',
           'tachiyomi',
-          'aniyomi'
+          'aniyomi',
+          'http',
+          'https',
         };
         if (uri.hasScheme && schemes.contains(uri.scheme.toLowerCase())) {
           Deeplink.handleDeepLink(uri);

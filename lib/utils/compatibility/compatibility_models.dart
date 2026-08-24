@@ -1,9 +1,100 @@
-/// A single section of compatibility (e.g. Anime, Manga & Novels, Shared).
+import 'package:anymex/models/Anilist/anilist_profile.dart';
+import 'package:anymex/models/Anilist/social_user.dart';
+
+class MutualSocialData {
+  final bool user1FollowsUser2;
+  final bool user2FollowsUser1;
+  final List<SocialUser> mutualFollowing;
+  final List<SocialUser> mutualFollowers;
+
+  const MutualSocialData({
+    this.user1FollowsUser2 = false,
+    this.user2FollowsUser1 = false,
+    this.mutualFollowing = const [],
+    this.mutualFollowers = const [],
+  });
+
+  bool get isMutualFriends => user1FollowsUser2 && user2FollowsUser1;
+  bool get hasAnySocialData =>
+      user1FollowsUser2 ||
+      user2FollowsUser1 ||
+      mutualFollowing.isNotEmpty ||
+      mutualFollowers.isNotEmpty;
+}
+
+class StatComparisonRow {
+  final String user1Value;
+  final String label;
+  final String user2Value;
+
+  const StatComparisonRow({
+    required this.user1Value,
+    required this.label,
+    required this.user2Value,
+  });
+}
+
+class HeuristicCardData {
+  final String title;
+  final List<StatComparisonRow> rows;
+  final String? imageUrl;
+  final String? mediaId;
+  final List<String> posterUrls;
+  final List<FavouriteMedia> commonMediaItems;
+
+  const HeuristicCardData({
+    required this.title,
+    this.rows = const [],
+    this.imageUrl,
+    this.mediaId,
+    this.posterUrls = const [],
+    this.commonMediaItems = const [],
+  });
+}
+
+class HeuristicDetail {
+  final String key;
+  final String title;
+  final String description;
+  final double score; // 0.0–1.0
+  final double weight;
+  final List<HeuristicCardData> cards;
+  final List<FavouriteMedia> mediaItems;
+  final List<FavouriteCharacter> characterItems;
+  final List<FavouriteStaff> staffItems;
+  final bool hasData;
+
+  const HeuristicDetail({
+    required this.key,
+    required this.title,
+    required this.description,
+    required this.score,
+    required this.weight,
+    this.cards = const [],
+    this.mediaItems = const [],
+    this.characterItems = const [],
+    this.staffItems = const [],
+    this.hasData = true,
+  });
+
+  double get percentage => (score * 100.0).clamp(0.0, 100.0);
+
+  HeuristicScore toScore() => HeuristicScore(
+        key: key,
+        label: title,
+        description: description,
+        score: score,
+        weight: weight,
+        weightedScore: score * weight,
+      );
+}
+
 class CompatibilitySection {
   final double percentage;
   final String rank;
   final String rankDescription;
   final List<HeuristicScore> breakdown;
+  final List<HeuristicDetail> details;
   final bool hasData;
 
   const CompatibilitySection({
@@ -11,6 +102,7 @@ class CompatibilitySection {
     required this.rank,
     required this.rankDescription,
     required this.breakdown,
+    this.details = const [],
     this.hasData = true,
   });
 
@@ -19,11 +111,11 @@ class CompatibilitySection {
         rank: 'N/A',
         rankDescription: 'No data available',
         breakdown: [],
+        details: [],
         hasData: false,
       );
 }
 
-/// Format distribution for the manga section (Manga vs LN vs Novel).
 class MangaFormatSplit {
   final double mangaPercent;
   final double lightNovelPercent;
@@ -47,55 +139,26 @@ class MangaFormatSplit {
 }
 
 class CompatibilityResult {
-  /// Overall compatibility (weighted average of sections that have data).
   final double percentage;
-   final String rank;
+  final String rank;
   final String rankDescription;
-
-  /// Anime-specific compatibility.
   final CompatibilitySection animeSection;
-
-  /// Manga & Novels compatibility.
   final CompatibilitySection mangaSection;
-
-  /// Flat list of ALL heuristic scores (for backwards compat / detailed view).
   final List<HeuristicScore> breakdown;
-
-  // ---- Shared data ----
-  final List<int> commonFavouriteAnimeIds;
-  final List<int> commonFavouriteMangaIds;
-  final List<int> commonFavouriteCharacterIds;
-  final List<String> commonStaffIds;
-  final List<String> commonGenres;
-  final List<String> commonTags;
-  final List<String> commonStudios;
-  final List<String> commonVoiceActors;
-  final List<String> commonMangaGenres;
-  final List<String> commonMangaTags;
-
-  /// Format split (Manga vs LN vs Novel) for each user.
   final MangaFormatSplit? user1FormatSplit;
   final MangaFormatSplit? user2FormatSplit;
+  MutualSocialData? socialData;
 
-  const CompatibilityResult({
+  CompatibilityResult({
     required this.percentage,
     required this.rank,
     required this.rankDescription,
     required this.animeSection,
     required this.mangaSection,
     required this.breakdown,
-    this.commonFavouriteAnimeIds = const [],
-    this.commonFavouriteMangaIds = const [],
-    this.commonFavouriteCharacterIds = const [],
-    this.commonStaffIds = const [],
-    this.commonGenres = const [],
-    this.commonTags = const [],
-    this.commonStudios = const [],
-    this.commonVoiceActors = const [],
-    this.commonMangaGenres = const [],
-    this.commonMangaTags = const [],
     this.user1FormatSplit,
     this.user2FormatSplit,
+    this.socialData,
   });
 }
 
@@ -124,7 +187,8 @@ class RankInfo {
   final double min;
   final double max;
   final String description;
-  final String colorHex; // For UI theming
+  final String colorHex;
+  final String? template;
 
   const RankInfo({
     required this.name,
@@ -132,9 +196,15 @@ class RankInfo {
     required this.max,
     required this.description,
     required this.colorHex,
+    this.template,
   });
 
   bool contains(double value) => value >= min && value < max;
+
+  String getFormattedDescription(double percentage) {
+    final t = template ?? description;
+    return t.replaceAll('{{RANGE}}', '${percentage.toStringAsFixed(0)}%');
+  }
 }
 
 const kRanks = <RankInfo>[
@@ -143,56 +213,64 @@ const kRanks = <RankInfo>[
     min: 85,
     max: 100.01,
     description: 'You are basically the same person.',
-    colorHex: '#FFD700',
+    colorHex: '#FBBF24',
+    template: 'Absolute soulmates in taste with {{RANGE}} overlap.',
   ),
   RankInfo(
     name: 'SS',
     min: 75,
     max: 85,
     description: 'Practically made for each other.',
-    colorHex: '#FF6B6B',
+    colorHex: '#F59E0B',
+    template: 'Practically made for each other with {{RANGE}} overlap.',
   ),
   RankInfo(
     name: 'S',
     min: 65,
     max: 75,
-    description: 'Very similar taste.',
-    colorHex: '#A855F7',
+    description: 'You both have very similar taste.',
+    colorHex: '#EAB308',
+    template: 'You both have very similar taste—about {{RANGE}} agreement.',
   ),
   RankInfo(
     name: 'A',
     min: 55,
     max: 65,
     description: 'Good chemistry and shared taste.',
-    colorHex: '#3B82F6',
+    colorHex: '#8B5CF6',
+    template: 'Good chemistry and shared taste with around {{RANGE}} overlap.',
   ),
   RankInfo(
     name: 'B',
     min: 40,
     max: 55,
     description: 'Above-average similarity.',
-    colorHex: '#22C55E',
+    colorHex: '#10B981',
+    template: 'Above-average similarity at roughly {{RANGE}} overlap.',
   ),
   RankInfo(
     name: 'C',
     min: 20,
     max: 40,
     description: 'Average overlap.',
-    colorHex: '#EAB308',
+    colorHex: '#22C55E',
+    template: 'Average overlap with around {{RANGE}} shared taste.',
   ),
   RankInfo(
     name: 'D',
     min: 10,
     max: 20,
-    description: 'Small spark of agreement.',
+    description: 'There’s a small spark of agreement.',
     colorHex: '#F97316',
+    template: 'There’s a small spark of agreement: about {{RANGE}} overlap.',
   ),
   RankInfo(
     name: 'F',
     min: 0,
     max: 10,
     description: 'Not very compatible at all.',
-    colorHex: '#6B7280',
+    colorHex: '#EF4444',
+    template: 'Not very compatible at all. Only {{RANGE}} of your taste overlaps.',
   ),
 ];
 

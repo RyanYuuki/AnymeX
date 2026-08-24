@@ -85,7 +85,29 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
       ),
       actions: [
         Container(
-          margin: const EdgeInsets.all(8),
+          margin: const EdgeInsets.only(top: 8, bottom: 8, right: 4),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: Icon(
+              Iconsax.heart5,
+              color: context.theme.colorScheme.primary,
+              size: 20,
+            ),
+            tooltip: 'Check Compatibility',
+            onPressed: () {
+              navigate(() => CompatibilityInputPage(
+                    prefillProfile: user,
+                    prefillUsername: user.name,
+                    useLoggedInUser: true,
+                  ));
+            },
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
           decoration: BoxDecoration(
             color: context.theme.colorScheme.surface.withOpacity(0.5),
             shape: BoxShape.circle,
@@ -176,6 +198,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                           onTap: () {
                             Navigator.pop(ctx);
                             navigate(() => CompatibilityInputPage(
+                              prefillProfile: user,
                               prefillUsername: name,
                               useLoggedInUser: true,
                             ));
