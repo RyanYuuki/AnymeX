@@ -126,8 +126,10 @@ class SourceController extends GetxController implements BaseService {
 
     bool isSorted = true;
     for (int i = 0; i < current.length - 1; i++) {
-      final aIdx = orderMap[current[i].id?.toString() ?? ''] ?? orderedIds.length;
-      final bIdx = orderMap[current[i + 1].id?.toString() ?? ''] ?? orderedIds.length;
+      final aIdx =
+          orderMap[current[i].id?.toString() ?? ''] ?? orderedIds.length;
+      final bIdx =
+          orderMap[current[i + 1].id?.toString() ?? ''] ?? orderedIds.length;
       if (aIdx > bIdx) {
         isSorted = false;
         break;
@@ -209,19 +211,21 @@ class SourceController extends GetxController implements BaseService {
   void onInit() {
     super.onInit();
 
-   
     _loadExtensionOrders();
 
     ever(installedExtensions, (_) {
-      _applyOrderToInstalledList(ItemType.anime, _extensionOrders[ItemType.anime] ?? []);
+      _applyOrderToInstalledList(
+          ItemType.anime, _extensionOrders[ItemType.anime] ?? []);
       _scheduleRebuild(ItemType.anime);
     });
     ever(installedMangaExtensions, (_) {
-      _applyOrderToInstalledList(ItemType.manga, _extensionOrders[ItemType.manga] ?? []);
+      _applyOrderToInstalledList(
+          ItemType.manga, _extensionOrders[ItemType.manga] ?? []);
       _scheduleRebuild(ItemType.manga);
     });
     ever(installedNovelExtensions, (_) {
-      _applyOrderToInstalledList(ItemType.novel, _extensionOrders[ItemType.novel] ?? []);
+      _applyOrderToInstalledList(
+          ItemType.novel, _extensionOrders[ItemType.novel] ?? []);
       _scheduleRebuild(ItemType.novel);
     });
 
@@ -309,7 +313,8 @@ class SourceController extends GetxController implements BaseService {
     for (final s in list) {
       if (s.id?.toString() == id) return s;
       if (s is ASource && s.langs != null) {
-        final sub = s.langs!.firstWhereOrNull((subSource) => subSource.id?.toString() == id);
+        final sub = s.langs!
+            .firstWhereOrNull((subSource) => subSource.id?.toString() == id);
         if (sub != null) return sub;
       }
     }
@@ -325,7 +330,8 @@ class SourceController extends GetxController implements BaseService {
       final restored = findSourceById(id, itemType);
       if (restored != null) return restored;
     }
-    return list.firstWhereOrNull((s) => s.id?.toString() == id) ?? list.firstOrNull;
+    return list.firstWhereOrNull((s) => s.id?.toString() == id) ??
+        list.firstOrNull;
   }
 
   void setActiveSource(Source source, {String? mediaId}) {
@@ -408,7 +414,8 @@ class SourceController extends GetxController implements BaseService {
         if (s is ASource && s.langs != null) {
           final sub = s.langs!.firstWhereOrNull((subSource) =>
               subSource.id?.toString() == name ||
-              '${subSource.name}-${subSource.lang?.toUpperCase()}-${subSource.runtimeType}' == name ||
+              '${subSource.name}-${subSource.lang?.toUpperCase()}-${subSource.runtimeType}' ==
+                  name ||
               subSource.name == name);
           if (sub != null) {
             match = sub;
@@ -463,7 +470,8 @@ class SourceController extends GetxController implements BaseService {
     if (type == null) return;
 
     final managerId = getSourceManager(source).id;
-    await _bridge.refreshManagerType(managerId, type, refreshAvailableSource: false);
+    await _bridge.refreshManagerType(managerId, type,
+        refreshAvailableSource: false);
     await initExtensions();
   }
 
@@ -472,13 +480,13 @@ class SourceController extends GetxController implements BaseService {
       [Obx(() => Column(children: _animeSections))].obs;
 
   @override
-  RxList<Widget> homeWidgets(BuildContext context) =>
-      [Obx(() => Column(children: _homeSections))].obs;
+  RxList<Widget> homeWidgets(BuildContext context) => [
+        Obx(() => Column(children: _homeSections.value))
+      ].obs;
 
   @override
   RxList<Widget> mangaWidgets(BuildContext context) => [
-        Obx(() =>
-            Column(children: [..._mangaSections, ...novelSections]))
+        Obx(() => Column(children: [..._mangaSections, ...novelSections]))
       ].obs;
 
   @override
@@ -572,21 +580,25 @@ class SourceController extends GetxController implements BaseService {
     if (installed == null || latest == null) return false;
     if (installed.isEmpty || latest.isEmpty) return false;
 
-    String clean(String v) => v.toLowerCase().replaceAll(RegExp(r'[^0-9.]'), '');
+    String clean(String v) =>
+        v.toLowerCase().replaceAll(RegExp(r'[^0-9.]'), '');
     final installedClean = clean(installed);
     final latestClean = clean(latest);
 
     if (installedClean.isEmpty || latestClean.isEmpty) return false;
 
-    final installedParts = installedClean.split('.').map((e) => int.tryParse(e) ?? 0).toList();
-    final latestParts = latestClean.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+    final installedParts =
+        installedClean.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+    final latestParts =
+        latestClean.split('.').map((e) => int.tryParse(e) ?? 0).toList();
 
     final maxLength = installedParts.length > latestParts.length
         ? installedParts.length
         : latestParts.length;
 
     for (var index = 0; index < maxLength; index++) {
-      final installedPart = index < installedParts.length ? installedParts[index] : 0;
+      final installedPart =
+          index < installedParts.length ? installedParts[index] : 0;
       final latestPart = index < latestParts.length ? latestParts[index] : 0;
 
       if (latestPart > installedPart) return true;
@@ -603,10 +615,15 @@ class SourceController extends GetxController implements BaseService {
     final pkgName = source is ASource ? source.pkgName : null;
     final available = availableList.firstWhereOrNull((s) {
       if (s.runtimeType != source.runtimeType) return false;
-      if (pkgName != null && pkgName.isNotEmpty && s is ASource && s.pkgName == pkgName) {
+      if (pkgName != null &&
+          pkgName.isNotEmpty &&
+          s is ASource &&
+          s.pkgName == pkgName) {
         return true;
       }
-      if (s.id?.toString() == source.id?.toString() && s.id != null && s.id!.isNotEmpty) {
+      if (s.id?.toString() == source.id?.toString() &&
+          s.id != null &&
+          s.id!.isNotEmpty) {
         return true;
       }
       return s.name != null && s.name!.isNotEmpty && s.name == source.name;
@@ -617,14 +634,16 @@ class SourceController extends GetxController implements BaseService {
 
   Future<void> checkBridgeUpdate() async {
     try {
-      if (Platform.isAndroid && await AnymeXRuntimeBridge.isLoadedFromStorage()) {
+      if (Platform.isAndroid &&
+          await AnymeXRuntimeBridge.isLoadedFromStorage()) {
         return;
       }
       final manager = PluginManager();
       final latestRelease = await manager.fetchLatestRelease();
       if (latestRelease != null) {
         final installed = manager.installedVersion;
-        if (installed.isNotEmpty && manager.isNewerVersion(installed, latestRelease.tagName)) {
+        if (installed.isNotEmpty &&
+            manager.isNewerVersion(installed, latestRelease.tagName)) {
           infoSnackBar(
             "Extension Bridge has an update available (${latestRelease.tagName})",
             title: "Bridge Update Available",

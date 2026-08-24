@@ -37,6 +37,7 @@ class AnymeXImage extends StatefulWidget {
   final double? width;
   final double? height;
   final double radius;
+  final BorderRadius? borderRadius;
   final BoxFit fit;
   final Alignment alignment;
   final Color? color;
@@ -54,6 +55,7 @@ class AnymeXImage extends StatefulWidget {
     this.width,
     this.height,
     this.radius = 8,
+    this.borderRadius,
     this.fit = BoxFit.cover,
     this.alignment = Alignment.center,
     this.color,
@@ -229,7 +231,7 @@ class _AnymeXImageState extends State<AnymeXImage> {
 
     return RepaintBoundary(
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(widget.radius),
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(widget.radius),
         child: imageContent,
       ),
     );

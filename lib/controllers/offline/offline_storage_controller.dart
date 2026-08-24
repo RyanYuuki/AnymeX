@@ -10,6 +10,7 @@ import 'package:anymex/main.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex/controllers/stats/stats_tracker.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
 
@@ -30,6 +31,35 @@ class OfflineStorageController extends GetxController {
   void onInit() {
     super.onInit();
     _cleanupDuplicateOfflineMedias();
+    _ensureDefaultListsExist();
+  }
+
+  Future<void> _ensureDefaultListsExist() async {
+    try {
+      await isar.writeTxn(() async {
+        for (final type in ItemType.values) {
+          final existing = await isar.customLists
+              .filter()
+              .listNameEqualTo('Default')
+              .mediaTypeIndexEqualTo(type.index)
+              .findFirst();
+          if (existing == null &&
+              isar.customLists
+                  .filter()
+                  .mediaTypeIndexEqualTo(type.index)
+                  .findAllSync()
+                  .isEmpty) {
+            await isar.customLists.put(CustomList(
+              listName: 'Default',
+              mediaIds: [],
+              mediaTypeIndex: type.index,
+            ));
+          }
+        }
+      });
+    } catch (e) {
+      Logger.e('Error ensuring default custom lists exist: $e');
+    }
   }
 
   Future<void> _cleanupDuplicateOfflineMedias() async {
@@ -53,23 +83,25 @@ class OfflineStorageController extends GetxController {
         await isar.writeTxn(() async {
           await isar.offlineMedias.deleteAll(idsToDelete);
         });
-        Logger.i('Cleaned up ${idsToDelete.length} duplicate offline media records.');
+        Logger.i(
+            'Cleaned up ${idsToDelete.length} duplicate offline media records.');
       }
     } catch (e) {
       Logger.e('Error cleaning up duplicate offline media: $e');
     }
   }
 
-  Future<T> _synchronizedWrite<T>(String mediaId, Future<T> Function() action) async {
+  Future<T> _synchronizedWrite<T>(
+      String mediaId, Future<T> Function() action) async {
     if (mediaId.isEmpty) return action();
-    
+
     while (_activeWrites.containsKey(mediaId)) {
       await _activeWrites[mediaId];
     }
-    
+
     final completer = Completer<void>();
     _activeWrites[mediaId] = completer.future;
-    
+
     try {
       return await action();
     } finally {
@@ -137,7 +169,8 @@ class OfflineStorageController extends GetxController {
           .mediaTypeIndexEqualTo(ItemType.anime.index)
           .findAllSync();
     } catch (e) {
-      if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
+      if (e.toString().contains('RangeError') ||
+          e.toString().contains('deserialize')) {
         _attemptDatabaseRepair(e);
       }
       return [];
@@ -151,7 +184,8 @@ class OfflineStorageController extends GetxController {
           .mediaTypeIndexEqualTo(ItemType.manga.index)
           .findAllSync();
     } catch (e) {
-      if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
+      if (e.toString().contains('RangeError') ||
+          e.toString().contains('deserialize')) {
         _attemptDatabaseRepair(e);
       }
       return [];
@@ -165,7 +199,8 @@ class OfflineStorageController extends GetxController {
           .mediaTypeIndexEqualTo(ItemType.novel.index)
           .findAllSync();
     } catch (e) {
-      if (e.toString().contains('RangeError') || e.toString().contains('deserialize')) {
+      if (e.toString().contains('RangeError') ||
+          e.toString().contains('deserialize')) {
         _attemptDatabaseRepair(e);
       }
       return [];
@@ -181,7 +216,10 @@ class OfflineStorageController extends GetxController {
   }
 
   Stream<List<CustomList>> watchCustomLists(ItemType mediaType) {
-    return isar.customLists.where().watch(fireImmediately: true);
+    return isar.customLists
+        .filter()
+        .mediaTypeIndexEqualTo(mediaType.index)
+        .watch(fireImmediately: true);
   }
 
   Stream<CustomListData> watchCustomListData(
@@ -672,6 +710,14 @@ class OfflineStorageController extends GetxController {
       } else {
         existingAnime.watchedEpisodes!.add(episode);
         Logger.i('Added new episode: ${episode.title} for anime ID: $animeId');
+        Get.find<StatsTracker>().logWatch(
+          animeId,
+          existingAnime.name ?? 'Unknown',
+          0,
+          episodeCompleted: true,
+          poster: existingAnime.poster,
+          cover: existingAnime.cover,
+        );
       }
 
       existingAnime.currentEpisode = episode;
@@ -728,6 +774,17 @@ class OfflineStorageController extends GetxController {
       } else {
         existingManga.readChapters!.add(chapter);
         Logger.i('Added new chapter: ${chapter.title} for manga ID: $mangaId');
+        Get.find<StatsTracker>().logRead(
+          mangaId,
+          existingManga.name ?? 'Unknown',
+          0,
+          chaptersCompleted: 1,
+          type: existingManga.mediaTypeIndex == ItemType.novel.index
+              ? 'novel'
+              : 'manga',
+          poster: existingManga.poster,
+          cover: existingManga.cover,
+        );
       }
 
       existingManga.currentChapter = chapter;
