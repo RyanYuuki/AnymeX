@@ -13,7 +13,8 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 void showStudioDetailsSheet(
-    BuildContext context, int studioId, String studioName) {
+    BuildContext context, int studioId, String studioName,
+    {bool initialOnlyOnList = false}) {
   Navigator.of(context, rootNavigator: true).push(
     PageRouteBuilder(
       opaque: false,
@@ -34,6 +35,7 @@ void showStudioDetailsSheet(
                 child: StudioDetailsSheetContent(
                   studioId: studioId,
                   studioName: studioName,
+                  initialOnlyOnList: initialOnlyOnList,
                 ),
               ),
             ),
@@ -55,11 +57,13 @@ void showStudioDetailsSheet(
 class StudioDetailsSheetContent extends StatefulWidget {
   final int studioId;
   final String studioName;
+  final bool initialOnlyOnList;
 
   const StudioDetailsSheetContent({
     super.key,
     required this.studioId,
     required this.studioName,
+    this.initialOnlyOnList = false,
   });
 
   @override
@@ -71,13 +75,14 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
   Map<String, List<Media>>? _yearMedia;
   int _favouritesCount = 0;
   bool _isLoading = true;
-  final RxBool showOnlyOnList = false.obs;
+  late final RxBool showOnlyOnList;
   late RxBool isFav;
   final anilistAuth = Get.find<AnilistAuth>();
 
   @override
   void initState() {
     super.initState();
+    showOnlyOnList = widget.initialOnlyOnList.obs;
     _initFavoriteStatus();
     _loadStudioData();
   }

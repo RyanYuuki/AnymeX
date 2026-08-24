@@ -6,7 +6,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rhttp/rhttp.dart';
-
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
@@ -112,7 +111,9 @@ void initDeepLinkListener(List<String> args) async {
           'cloudstreamrepo',
           'sora',
           'tachiyomi',
-          'aniyomi'
+          'aniyomi',
+          'http',
+          'https',
         };
         if (uri.hasScheme && schemes.contains(uri.scheme.toLowerCase())) {
           Deeplink.handleDeepLink(uri);

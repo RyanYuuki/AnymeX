@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/screens/profile/compatibility/compatibility_input_page.dart';
 
 Widget _buildBottomSheetOption(
   BuildContext context, {
@@ -500,6 +501,15 @@ class DesktopProfileHeader extends StatelessWidget {
                                               navigate(() => const SettingsAnilistApi());
                                             },
                                           ),
+                                          _buildBottomSheetOption(
+                                            ctx,
+                                            icon: Iconsax.heart4,
+                                            label: 'Check Compatibility',
+                                            onTap: () {
+                                              Navigator.pop(ctx);
+                                              navigate(() => const CompatibilityInputPage());
+                                            },
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -686,6 +696,15 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           onTap: () {
                             Navigator.pop(ctx);
                             navigate(() => const SettingsAnilistApi());
+                          },
+                        ),
+                        _buildBottomSheetOption(
+                          ctx,
+                          icon: Iconsax.heart4,
+                          label: 'Check Compatibility',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            navigate(() => const CompatibilityInputPage());
                           },
                         ),
                       ],

@@ -1,10 +1,12 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
 import 'package:anymex/models/mangaupdates/next_release.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/screens/anime/details/controller/media_details_controller.dart';
 import 'package:anymex/screens/anime/details/media_details_page.dart';
+import 'package:anymex/screens/anime/studio_details_page.dart';
 import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
 import 'package:anymex/screens/anime/widgets/social_section.dart';
@@ -567,29 +569,55 @@ Widget buildStatsGrid(BuildContext context, Media media) {
     child: Wrap(
       spacing: 20,
       runSpacing: 12,
-      children: stats
-          .map((entry) => buildStatCard(context, entry.key, entry.value))
-          .toList(),
+      children: stats.map((entry) {
+        VoidCallback? onTap;
+        if (entry.key == 'Studio' && (media.studios ?? []).isNotEmpty) {
+          final studioName = media.studios!.first;
+          onTap = () async {
+            final studioId = await AnilistData.fetchStudioIdByName(studioName);
+            if (studioId != null && context.mounted) {
+              showStudioDetailsSheet(
+                context,
+                studioId,
+                studioName,
+              );
+            }
+          };
+        }
+        return buildStatCard(context, entry.key, entry.value, onTap: onTap);
+      }).toList(),
     ),
   );
 }
 
-Widget buildStatCard(BuildContext context, String label, String value) {
+Widget buildStatCard(BuildContext context, String label, String value,
+    {VoidCallback? onTap}) {
   final colors = context.colors;
 
-  return Column(
+  final card = Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: [
-      AnymeXText(label,
+      AnymeXText(
+        label,
         size: 11,
         color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
       ),
       const SizedBox(height: 2),
-      AnymeXText(value,
+      AnymeXText(
+        value,
         size: 13,
         variant: TextVariant.semiBold,
       ),
     ],
   );
+
+  if (onTap != null) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: card,
+    );
+  }
+  return card;
 }

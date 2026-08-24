@@ -246,6 +246,7 @@ class AnilistAuth extends GetxController {
         'https://anilist.co/api/v2/oauth/authorize?client_id=35224&response_type=token';
 
     await launchUrlString(url);
+    if (!context.mounted) return;
 
     showDialog(
       context: context,
@@ -540,8 +541,8 @@ class AnilistAuth extends GetxController {
   }
 
   void prefetchSettings() {
-    fetchUserSettings().then((s) => cachedSettings = s).catchError((_) {});
-    fetchSettingsMetadata().then((m) => cachedMetadata = m).catchError((_) {});
+    fetchUserSettings().then((s) => cachedSettings = s).catchError((_) => null);
+    fetchSettingsMetadata().then((m) => cachedMetadata = m).catchError((_) => null);
   }
 
   Future<AnilistUserSettings?> fetchUserSettings() async {
@@ -801,10 +802,41 @@ class AnilistAuth extends GetxController {
     throw Exception(fallback);
   }
 
-  Future<Profile?> fetchUserDetails(int userId) async {
+  final Map<String, (Profile, DateTime)> _userProfileCache = {};
+  final Map<String, Future<Profile?>> _inFlightProfileRequests = {};
+
+  Future<Profile?> fetchUserDetails(dynamic user, {bool forceRefresh = false}) async {
+    final cacheKey = user?.toString().trim().toLowerCase() ?? '';
+    if (!forceRefresh && cacheKey.isNotEmpty && _userProfileCache.containsKey(cacheKey)) {
+      final (cachedProfile, cachedAt) = _userProfileCache[cacheKey]!;
+      if (DateTime.now().difference(cachedAt).inMinutes < 10) {
+        return cachedProfile;
+      }
+    }
+
+    if (!forceRefresh && cacheKey.isNotEmpty && _inFlightProfileRequests.containsKey(cacheKey)) {
+      return _inFlightProfileRequests[cacheKey]!;
+    }
+
+    final future = _fetchUserDetailsInternal(user);
+    if (cacheKey.isNotEmpty) {
+      _inFlightProfileRequests[cacheKey] = future;
+    }
+
+    try {
+      final res = await future;
+      return res;
+    } finally {
+      if (cacheKey.isNotEmpty) {
+        _inFlightProfileRequests.remove(cacheKey);
+      }
+    }
+  }
+
+  Future<Profile?> _fetchUserDetailsInternal(dynamic user) async {
     const query = r'''
-  query ($id: Int) {
-    User(id: $id) {
+  query ($id: Int, $name: String) {
+    User(id: $id, name: $name) {
       id
       name
       about(asHtml: true)
@@ -865,6 +897,8 @@ class AnilistAuth extends GetxController {
             coverImage { large }
             averageScore
             format
+            genres
+            tags { name }
           }
         }
         manga {
@@ -875,6 +909,8 @@ class AnilistAuth extends GetxController {
             coverImage { large }
             averageScore
             format
+            genres
+            tags { name }
           }
         }
         characters {
@@ -923,19 +959,31 @@ class AnilistAuth extends GetxController {
         headers['Authorization'] = 'Bearer $token';
       }
 
+      final variables = <String, dynamic>{
+        if (user is int) 'id': user,
+        if (user is String) 'name': user.trim(),
+      };
+
       final response = await _anilistPost(
         headers: headers,
         body: {
           'query': query,
-          'variables': {'id': userId},
+          'variables': variables,
         },
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final userData = data['data']['User'];
+        final userData = data['data']?['User'];
         if (userData != null) {
-          return Profile.fromJson(userData);
+          final profile = Profile.fromJson(userData);
+          if (profile.id != null) {
+            _userProfileCache[profile.id.toString().toLowerCase()] = (profile, DateTime.now());
+          }
+          if (profile.name != null && profile.name!.isNotEmpty) {
+            _userProfileCache[profile.name!.toLowerCase().trim()] = (profile, DateTime.now());
+          }
+          return profile;
         }
       } else {
         Logger.e('Failed to load user details: ${response.statusCode}');
@@ -943,6 +991,42 @@ class AnilistAuth extends GetxController {
     } catch (e) {
       Logger.e('Error fetching user details: $e');
     }
+    return null;
+  }
+
+  Future<Profile?> fetchUserByName(String userName, {bool forceRefresh = false}) =>
+      fetchUserDetails(userName, forceRefresh: forceRefresh);
+
+  Future<String?> fetchUserAvatar(String userName) async {
+    const query = r'''
+  query ($name: String) {
+    User(name: $name) {
+      avatar { large }
+    }
+  }
+  ''';
+    try {
+      final token = AuthKeys.authToken.get<String?>();
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      final response = await _anilistPost(
+        headers: headers,
+        body: {
+          'query': query,
+          'variables': {'name': userName.trim()},
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['data']?['User']?['avatar']?['large'] as String?;
+      }
+    } catch (_) {}
     return null;
   }
 
@@ -984,10 +1068,10 @@ class AnilistAuth extends GetxController {
   }
 
   Future<Map<String, List<TrackedMedia>>> fetchUserMediaList(
-      int userId, String type) async {
+      dynamic user, String type) async {
     const query = r'''
-  query ($userId: Int, $type: MediaType) {
-    MediaListCollection(userId: $userId, type: $type, sort: UPDATED_TIME) {
+  query ($userId: Int, $userName: String, $type: MediaType) {
+    MediaListCollection(userId: $userId, userName: $userName, type: $type, sort: UPDATED_TIME) {
       lists {
         name
         entries {
@@ -1004,6 +1088,7 @@ class AnilistAuth extends GetxController {
             chapters
             averageScore
             genres
+            tags { name }
             startDate { year }
             title { userPreferred english romaji native }
             coverImage { large }
@@ -1026,11 +1111,17 @@ class AnilistAuth extends GetxController {
         headers['Authorization'] = 'Bearer $token';
       }
 
+      final variables = <String, dynamic>{
+        'type': type,
+        if (user is int) 'userId': user,
+        if (user is String) 'userName': user.trim(),
+      };
+
       final response = await _anilistPost(
         headers: headers,
         body: {
           'query': query,
-          'variables': {'userId': userId, 'type': type},
+          'variables': variables,
         },
       );
 
@@ -1042,17 +1133,22 @@ class AnilistAuth extends GetxController {
 
         final result = <String, List<TrackedMedia>>{};
         final allEntries = <TrackedMedia>[];
+        final seenIds = <String>{};
         for (final list in lists) {
           final name = list['name'] as String? ?? 'Unknown';
           final entries = list['entries'] as List<dynamic>? ?? [];
           final parsed = <TrackedMedia>[];
           for (final entry in entries) {
             if (entry['media'] == null) continue;
-            parsed.add(TrackedMedia.fromJson(entry));
+            final item = TrackedMedia.fromJson(entry);
+            parsed.add(item);
+            if (item.id != null && !seenIds.contains(item.id)) {
+              seenIds.add(item.id!);
+              allEntries.add(item);
+            }
           }
           if (parsed.isNotEmpty) {
             result[name] = parsed;
-            allEntries.addAll(parsed);
           }
         }
         if (allEntries.isNotEmpty) {
@@ -1067,6 +1163,10 @@ class AnilistAuth extends GetxController {
     }
     return {};
   }
+
+  Future<List<TrackedMedia>> fetchUserMediaListFlat(
+          String userName, String type) async =>
+      (await fetchUserMediaList(userName, type))['All'] ?? [];
 
   Future<int?> fetchUserIdByName(String username) async {
     const query = r'''
@@ -1854,6 +1954,7 @@ class AnilistAuth extends GetxController {
       lists {
         name
         entries {
+          id
           media {
             id
             idMal
@@ -1953,8 +2054,8 @@ class AnilistAuth extends GetxController {
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {
-        Logger.i('Fetch failed with status code: ${response.statusCode}');
-        Logger.i('Response body: ${response.body}');
+        Logger.i('Failed to load anime list: ${response.statusCode}');
+        throw Exception('Failed to load anime list ${response.body}');
       }
     } catch (e) {
       Logger.i('Failed to load anime list: $e');
@@ -1976,14 +2077,54 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      if (profileData.value.id == null) {
-        Logger.i('User ID is not available. Fetching user profile first.');
-        await fetchUserProfile();
+      int? entryId = int.tryParse(listId);
+
+     
+      final targetList = isAnime ? animeList.value : mangaList.value;
+      final matched = targetList.firstWhereOrNull((m) => m.id == listId || m.mediaListId == listId);
+      if (matched != null && matched.mediaListId != null) {
+        final parsed = int.tryParse(matched.mediaListId!);
+        if (parsed != null) entryId = parsed;
       }
 
-      final userId = profileData.value.id;
-      if (userId == null) {
-        throw Exception('Failed to get user ID');
+     
+      if (matched == null || matched.mediaListId == null || matched.id == matched.mediaListId) {
+        try {
+          final res = await http.post(
+            Uri.parse('https://graphql.anilist.co'),
+            headers: {
+              'Authorization': 'Bearer $token',
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: json.encode({
+              'query': r'''
+                query GetMediaEntryId($mediaId: Int) {
+                  Media(id: $mediaId) {
+                    mediaListEntry {
+                      id
+                    }
+                  }
+                }
+              ''',
+              'variables': {'mediaId': int.tryParse(listId)},
+            }),
+          );
+          if (res.statusCode == 200) {
+            final d = json.decode(res.body);
+            final fetchedId = d['data']?['Media']?['mediaListEntry']?['id'] as int?;
+            if (fetchedId != null) {
+              entryId = fetchedId;
+            }
+          }
+        } catch (e) {
+          Logger.i('Could not resolve mediaListEntry id via query: $e');
+        }
+      }
+
+      if (entryId == null) {
+        Logger.i('Failed to resolve entry ID for deletion: $listId');
+        return;
       }
 
       final response = await http.post(
@@ -1996,7 +2137,7 @@ class AnilistAuth extends GetxController {
         body: json.encode({
           'query': mutation,
           'variables': {
-            'deleteMediaListEntryId': listId,
+            'deleteMediaListEntryId': entryId,
           },
         }),
       );
@@ -2010,10 +2151,17 @@ class AnilistAuth extends GetxController {
         } else {
           fetchUserMangaList();
         }
+
+        if (serviceHandler.malService.isLoggedIn.value) {
+          final malTargetId = matched?.idMal;
+          if (malTargetId != null && malTargetId.isNotEmpty) {
+            serviceHandler.malService.deleteListEntry(malTargetId, isAnime: isAnime);
+          }
+        }
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {
-        Logger.i('Failed to delete media with list ID $listId');
+        Logger.i('Failed to delete media with list ID $listId (entryId: $entryId)');
         Logger.i('${response.statusCode}: ${response.body}');
       }
     } catch (e) {
@@ -2105,9 +2253,13 @@ class AnilistAuth extends GetxController {
         }),
       );
 
-      if (malId != null) {
+      final targetList = isAnime ? animeList.value : mangaList.value;
+      final matched = targetList.firstWhereOrNull((m) => m.id == listId || m.mediaListId == listId);
+      final effectiveMalId = malId ?? matched?.idMal;
+
+      if (effectiveMalId != null && effectiveMalId.isNotEmpty && serviceHandler.malService.isLoggedIn.value) {
         serviceHandler.malService.updateListEntry(UpdateListEntryParams(
-            listId: malId,
+            listId: effectiveMalId,
             score: score != null ? score / 10.0 : null,
             status: status,
             progress: progress,
@@ -2119,7 +2271,7 @@ class AnilistAuth extends GetxController {
       if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
         serviceHandler.simklService.updateListEntryFromExternalId(
           anilistId: listId,
-          malId: malId,
+          malId: effectiveMalId,
           score: score != null ? score / 10.0 : null,
           status: status,
           progress: progress,
@@ -2162,6 +2314,7 @@ class AnilistAuth extends GetxController {
         lists {
           name
           entries {
+            id
             media {
               id
               idMal
