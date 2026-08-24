@@ -8,7 +8,6 @@ import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/big_carousel_gate.dart';
-import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/future_reusable_carousel.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
@@ -157,8 +156,6 @@ class _UnderratedCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final cardHeight = getCardHeight(
-        CardStyle.values[settingsController.cardStyle], getPlatform(context));
 
     if (data.isEmpty) return const SizedBox.shrink();
 
@@ -206,21 +203,25 @@ class _UnderratedCarousel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          SizedBox(
-            height: cardHeight,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                final item = data[index];
-                return _UnderratedCard(
-                  item: item,
-                  type: type,
-                );
-              },
-            ),
-          ),
+          Obx(() {
+            final cardHeight = getCardHeight(
+                settingsController.cardStyle, getPlatform(context));
+            return SizedBox(
+              height: cardHeight,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final item = data[index];
+                  return _UnderratedCard(
+                    item: item,
+                    type: type,
+                  );
+                },
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -252,33 +253,27 @@ class _UnderratedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDesktop = MediaQuery.sizeOf(context).width > 600;
-    final cardWidth = isDesktop ? 160.0 : 118.0;
     final carouselData = item.toCarouselData(isManga: type == ItemType.manga);
     final tag = 'underrated-${carouselData.id}';
 
     return GestureDetector(
       onTap: () => _navigateToDetails(context),
       onLongPress: () => _showPeekPopup(context),
-      child: SizedBox(
-        width: cardWidth,
-        child: Stack(
-          children: [
-            MediaCardGate(
-              itemData: carouselData,
-              tag: tag,
-              variant: DataVariant.underrated,
-              cardStyle: CardStyle.values[settingsController.cardStyle],
-              type: type,
+      child: Stack(
+        children: [
+          MediaCardGate(
+            itemData: carouselData,
+            tag: tag,
+            variant: DataVariant.underrated,
+            type: type,
+          ),
+          if (item.author != null && item.author!.isNotEmpty)
+            Positioned(
+              top: 6,
+              left: 6,
+              child: _buildAuthorBadge(context, theme),
             ),
-            if (item.author != null && item.author!.isNotEmpty)
-              Positioned(
-                top: 6,
-                left: 6,
-                child: _buildAuthorBadge(context, theme),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

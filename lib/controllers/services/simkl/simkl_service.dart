@@ -191,6 +191,8 @@ class SimklService extends GetxController
         Obx(() {
           trendingMovies.length;
           trendingSeries.length;
+          animeList.length;
+          mangaList.length;
           return LayoutBuilder(
             builder: (context, constraints) {
               final isDesktop = constraints.maxWidth > 600;
@@ -204,6 +206,7 @@ class SimklService extends GetxController
                   ImageButton(
                     width: itemWidth,
                     height: buttonHeight,
+                    subText: '${animeList.length} items',
                     buttonText: "MOVIES LIST",
                     backgroundImage: trendingMovies
                             .firstWhere(
@@ -225,6 +228,7 @@ class SimklService extends GetxController
                   ImageButton(
                     width: itemWidth,
                     height: buttonHeight,
+                    subText: '${mangaList.length} items',
                     buttonText: "SERIES LIST",
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: trendingSeries
@@ -268,6 +272,7 @@ class SimklService extends GetxController
                 onPressed: () {
                   navigate(() => const Calendar());
                 },
+                imageProportion: 0.5,
               ),
             );
           },
