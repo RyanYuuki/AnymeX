@@ -3,6 +3,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
@@ -36,7 +37,11 @@ class LibraryController extends GetxController {
   StreamSubscription? _customListsSubscription;
   final rawItems = <OfflineMedia>[].obs;
   final customListNames = <String>[].obs;
+  final customLists = <CustomList>[].obs;
   final isLoading = false.obs;
+
+  bool _isSwitchingCategory = false;
+  late bool _isUnified;
 
   List<OfflineMedia> get processedItems {
     final searched = applySearch(rawItems, searchQuery.value);
@@ -47,13 +52,24 @@ class LibraryController extends GetxController {
   void onInit() {
     super.onInit();
     _migrateGridDefaultToAuto();
+    _isUnified = General.unifiedLibrary.get<bool>(true);
     getPreferences();
     
     ever(type, (_) {
-      _setupCustomListsSubscription();
+      if (!_isSwitchingCategory) {
+        _setupCustomListsSubscription();
+      }
     });
-    ever(selectedListIndex, (_) => _updateSourceStream());
-    ever(serviceHandler.serviceType, (_) => _updateSourceStream());
+    ever(selectedListIndex, (_) {
+      if (!_isSwitchingCategory) {
+        _updateSourceStream();
+      }
+    });
+    ever(serviceHandler.serviceType, (_) {
+      if (!_isSwitchingCategory) {
+        _updateSourceStream();
+      }
+    });
     
     _setupCustomListsSubscription();
   }
@@ -61,11 +77,11 @@ class LibraryController extends GetxController {
   void _setupCustomListsSubscription() {
     _customListsSubscription?.cancel();
     _customListsSubscription = offlineStorage.watchCustomLists(type.value).listen((lists) {
-      final names = lists
+      final filteredLists = lists
           .where((l) => l.mediaTypeIndex == type.value.index)
-          .map((l) => l.listName ?? '')
           .toList();
-      customListNames.value = names;
+      customLists.value = filteredLists;
+      customListNames.value = filteredLists.map((l) => l.listName ?? '').toList();
       
       if (selectedListIndex.value != -1) {
         if (customListNames.isEmpty) {
@@ -75,15 +91,16 @@ class LibraryController extends GetxController {
         }
       }
       
-      _updateSourceStream();
+      if (!_isSwitchingCategory) {
+        _updateSourceStream();
+      }
     });
   }
 
   Future<void> _updateSourceStream() async {
     _streamSubscription?.cancel();
-    if (rawItems.isEmpty) {
-      isLoading.value = true;
-    }
+    isLoading.value = true;
+    rawItems.value = [];
 
     if (selectedListIndex.value != -1) {
       if (customListNames.isEmpty || selectedListIndex.value >= customListNames.length) {
@@ -190,7 +207,8 @@ class LibraryController extends GetxController {
   void switchCategory(ItemType typ) {
     if (type.value == typ) return;
 
-    savePreferences();
+    _isSwitchingCategory = true;
+    Future.microtask(savePreferences);
 
     type.value = typ;
 
@@ -204,16 +222,26 @@ class LibraryController extends GetxController {
       searchQuery.value = '';
     }
     _loadSortPrefs();
-    savePreferences();
+    _isSwitchingCategory = false;
+
+    _setupCustomListsSubscription();
+    _updateSourceStream();
+
+    Future.microtask(savePreferences);
   }
 
   void selectList(int index) {
+    if (selectedListIndex.value == index) return;
+    _isSwitchingCategory = true;
     selectedListIndex.value = index;
     if (searchQuery.isNotEmpty) {
       searchController.clear();
       searchQuery.value = '';
     }
     _loadSortPrefs();
+    _isSwitchingCategory = false;
+
+    _updateSourceStream();
     savePreferences();
 
     if (index == -1) {
@@ -305,8 +333,7 @@ class LibraryController extends GetxController {
   }
 
   List<OfflineMedia> _filterByService(List<OfflineMedia> items) {
-    final isUnified = General.unifiedLibrary.get<bool>(true);
-    if (isUnified) return items;
+    if (_isUnified) return items;
     final currentServiceIndex = serviceHandler.serviceType.value.index;
     return items
         .where((e) => e.serviceIndex == null || e.serviceIndex == currentServiceIndex)
