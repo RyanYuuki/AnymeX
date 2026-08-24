@@ -8,7 +8,6 @@ import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/animation/slide_scale.dart';
-import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -28,7 +27,6 @@ class ReusableCarousel extends StatefulWidget {
   final DataVariant variant;
   final bool isLoading;
   final Source? source;
-  final CardStyle? cardStyle;
 
   const ReusableCarousel({
     super.key,
@@ -38,7 +36,6 @@ class ReusableCarousel extends StatefulWidget {
     this.variant = DataVariant.regular,
     this.isLoading = false,
     this.source,
-    this.cardStyle,
   });
 
   @override
@@ -123,26 +120,25 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       final cardStyleIndex = settingsController.cardStyle;
 
       return SizedBox(
-        height: getCardHeight(CardStyle.values[cardStyleIndex],
-            getPlatform(context)),
+        height: getCardHeight(cardStyleIndex, getPlatform(context)),
         child: ListView.builder(
           key: ValueKey('${widget.title}-${processedData.length}-${widget.data.hashCode}'),
           itemCount: processedData.length,
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
           itemBuilder: (context, index) =>
-              _buildCarouselItem(processedData[index], enableAnimation, cardStyleIndex, index),
+              _buildCarouselItem(processedData[index], enableAnimation, index),
         ),
       );
     });
   }
 
-  Widget _buildCarouselItem(CarouselData itemData, bool enableAnimation, int cardStyleIndex, int index) {
+  Widget _buildCarouselItem(CarouselData itemData, bool enableAnimation, int index) {
     final tag = '${widget.title}-${itemData.id}-$index-${DateTime.now().microsecondsSinceEpoch}';
 
     final card = enableAnimation
-        ? SlideAndScaleAnimation(child: _buildCard(itemData, tag, cardStyleIndex))
-        : _buildCard(itemData, tag, cardStyleIndex);
+        ? SlideAndScaleAnimation(child: _buildCard(itemData, tag))
+        : _buildCard(itemData, tag);
 
     final child = AnymexOnTap(
       onTap: () => _navigateToDetailsPage(itemData, tag),
@@ -162,13 +158,12 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     MediaPeekPopup.show(context, media, mediaType, tag);
   }
 
-  MediaCardGate _buildCard(CarouselData itemData, String tag, int cardStyleIndex) {
+  MediaCardGate _buildCard(CarouselData itemData, String tag) {
     return MediaCardGate(
         itemData: itemData,
         tag: tag,
         variant: widget.variant,
-        type: widget.type,
-        cardStyle: CardStyle.values[cardStyleIndex]);
+        type: widget.type);
   }
 
   void _navigateToDetailsPage(CarouselData itemData, String tag) {
