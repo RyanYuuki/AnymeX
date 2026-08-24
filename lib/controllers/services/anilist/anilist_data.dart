@@ -812,7 +812,13 @@ averageScore
     return (sortedYearMedia, favouritesCount);
   }
 
+  static final Map<String, int> _studioIdCache = {};
+
   static Future<int?> fetchStudioIdByName(String studioName) async {
+    final key = studioName.trim().toLowerCase();
+    if (key.isEmpty) return null;
+    if (_studioIdCache.containsKey(key)) return _studioIdCache[key];
+
     const String url = 'https://graphql.anilist.co';
     final query = '''
     {
@@ -836,7 +842,11 @@ averageScore
     final data = json.decode(response.body);
     final studios = data['data']?['Page']?['studios'] as List?;
     if (studios == null || studios.isEmpty) return null;
-    return studios.first['id'] as int?;
+    final studioId = studios.first['id'] as int?;
+    if (studioId != null) {
+      _studioIdCache[key] = studioId;
+    }
+    return studioId;
   }
 
   static Future<List<Episode>> fetchEpisodesFromAnify(
