@@ -222,9 +222,23 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         }
       }
 
+      final Set<String> scanlatorsSet = {};
+      for (final ch in widget.chapterList) {
+        if (ch.scanlator?.isNotEmpty == true) {
+          scanlatorsSet.add(ch.scanlator!);
+        }
+      }
+      final scanlatorsList = scanlatorsSet.toList();
+      final scanIndex = selectedScanlatorIndex.value;
+      final filteredChapters = (scanIndex == 0 || scanlatorsList.isEmpty)
+          ? widget.chapterList
+          : widget.chapterList
+              .where((c) => c.scanlator == scanlatorsList[scanIndex - 1])
+              .toList();
+
       await navigate(() => ReadingPage(
             anilistData: mediaData,
-            chapterList: widget.chapterList,
+            chapterList: filteredChapters,
             currentChapter: chapter,
             shouldTrack: shouldTrackValue,
           ));
