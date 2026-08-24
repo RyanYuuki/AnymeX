@@ -11,6 +11,7 @@ import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.d
 
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/stats/stats_tracker.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -99,6 +100,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final _mediaSession = FlutterMediaSession();
   bool _isMediaSessionActive = false;
   DateTime? _lastMediaSessionPositionUpdate;
+  int _secondsWatchedAccumulator = 0;
   final List<Episode> episodeList;
   final anymex.Media anilistData;
   RxList<model.Video> episodeTracks = RxList();
@@ -1189,6 +1191,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       currentEpisode.value.timeStampInMilliseconds = pos.inMilliseconds;
       currentEpisode.value.durationInMilliseconds =
           episodeDuration.value.inMilliseconds;
+
+      if (isPlaying.value) {
+        _secondsWatchedAccumulator++;
+        if (_secondsWatchedAccumulator >= 60) {
+          _secondsWatchedAccumulator = 0;
+          Get.find<StatsTracker>().logWatch(
+            anilistData.id,
+            anilistData.title,
+            1,
+            poster: anilistData.poster,
+            cover: anilistData.cover,
+          );
+        }
+      }
 
       if (_isTorrentBuffering && pos.inMilliseconds > 500) {
         _isTorrentBuffering = false;

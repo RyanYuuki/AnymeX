@@ -540,9 +540,14 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
               }
             }
 
+            final String? targetScanlator = ch.scanlator;
+            final filteredChapters = (targetScanlator != null && targetScanlator.isNotEmpty)
+                ? controller.chapterList.where((c) => c.scanlator == targetScanlator).toList()
+                : controller.chapterList;
+
             await navigate(() => ReadingPage(
                   anilistData: mediaData,
-                  chapterList: controller.chapterList,
+                  chapterList: filteredChapters,
                   currentChapter: ch,
                   shouldTrack: shouldTrackValue,
                 ));

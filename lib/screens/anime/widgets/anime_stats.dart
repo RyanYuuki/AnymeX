@@ -490,7 +490,8 @@ class AnimeStats extends StatelessWidget {
                             child: ImageButton(
                               height: getResponsiveSize(context,
                                   mobileSize: 60, desktopSize: 80),
-                              buttonText: relation.relationType,
+                              buttonText: relation.title,
+                              subText: relation.relationType,
                               onPressed: () {
                                 final isMangaRelation = relation.type == 'MANGA';
                                 final media = Media(
@@ -520,6 +521,7 @@ class AnimeStats extends StatelessWidget {
                               backgroundImage: relation.cover.isNotEmpty
                                   ? relation.cover
                                   : relation.poster,
+                              imageProportion: 0.5,
                           )))
                       .toList(),
                 ),

@@ -56,7 +56,7 @@ Widget buildMediaStatsSection(
             const SizedBox(height: 8),
             AnymeXText(cleanDesc,
               size: 13,
-              maxLines: 8,
+              maxLines: 9999,
               overflow: TextOverflow.ellipsis,
               isMarquee: false,
             ),
@@ -239,6 +239,7 @@ Widget buildSeasonsSection(BuildContext context, Media mediaData) {
                           tag: relation.id.toString(),
                         ));
                   },
+                  imageProportion: 0.5,
                 ),
               ),
             );
