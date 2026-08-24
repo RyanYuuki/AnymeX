@@ -57,6 +57,10 @@ Widget buildMediaQuickActions(
                               status: status,
                               progress: progress,
                               score: score,
+                              season: season,
+                              startedAt: startedAt,
+                              completedAt: completedAt,
+                              isPrivate: isPrivate,
                             );
                           },
                           onDelete: (id) {
