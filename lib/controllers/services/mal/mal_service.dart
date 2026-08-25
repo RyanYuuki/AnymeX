@@ -284,10 +284,12 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final offset = (params.page - 1) * 25;
     final token = AuthKeys.malAuthToken.get<String?>();
     final isLoggedIn = token != null && token.isNotEmpty;
-    const fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
+    const fields =
+        'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
     final showNsfw = params.args == true;
-    final url = 'https://api.myanimelist.net/v2/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&offset=$offset&fields=$fields${showNsfw ? '&nsfw=true' : ''}';
-    
+    final url =
+        'https://api.myanimelist.net/v2/$mediaType?q=${Uri.encodeComponent(params.query)}&limit=25&offset=$offset&fields=$fields${showNsfw ? '&nsfw=true' : ''}';
+
     try {
       final data = await fetchMAL(url, useAuthHeader: isLoggedIn);
       if (data != null && data['data'] != null) {
@@ -343,6 +345,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
               children: [
                 ImageButton(
                   width: width,
+                  tagIcon: Icons.movie_filter_outlined,
                   height: !isDesktop ? 70 : 90,
                   subText: '${animeList.length} items',
                   buttonText: "ANIME LIST",
@@ -359,13 +362,15 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   padding: EdgeInsets.only(top: overflowSecond ? 8.0 : 0),
                   child: ImageButton(
                     width: width,
+                    tagIcon: Icons.book_outlined,
                     height: !isDesktop ? 70 : 90,
                     subText: '${mangaList.length} items',
                     buttonText: "MANGA LIST",
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: mangaButtonMedia?.cover ?? '',
                     onPressed: () {
-                      navigate(() => AnilistMangaList(data: mangaList.removeDupes()));
+                      navigate(() =>
+                          AnilistMangaList(data: mangaList.removeDupes()));
                     },
                     onLongPress: mangaButtonMedia == null
                         ? null
@@ -457,8 +462,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Future<void> fetchUserInfo({String? token}) async {
     final tokenn = token ?? AuthKeys.malAuthToken.get<String?>();
-    final data = await fetchMAL('https://api.myanimelist.net/v2/users/@me?fields=anime_statistics,manga_statistics',
-        useAuthHeader: true, token: tokenn);
+    final data = await fetchMAL(
+        'https://api.myanimelist.net/v2/users/@me?fields=anime_statistics,manga_statistics',
+        useAuthHeader: true,
+        token: tokenn);
     profileData.value = Profile.fromMAL(data);
     isLoggedIn.value = true;
     Future.wait([fetchUserAnimeList(), fetchUserMangaList()]);
@@ -818,14 +825,15 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
     if ((params.syncIds?.isNotEmpty ?? false) && params.syncIds?[0] != null) {
       if (serviceHandler.anilistService.isLoggedIn.value) {
-        await serviceHandler.anilistService.updateListEntry(UpdateListEntryParams(
-            listId: params.syncIds![0],
-            score: score != null ? score * 10.0 : null,
-            status: status,
-            progress: progress,
-            isAnime: isAnime,
-            startedAt: startedAt,
-            completedAt: completedAt));
+        await serviceHandler.anilistService.updateListEntry(
+            UpdateListEntryParams(
+                listId: params.syncIds![0],
+                score: score != null ? score * 10.0 : null,
+                status: status,
+                progress: progress,
+                isAnime: isAnime,
+                startedAt: startedAt,
+                completedAt: completedAt));
       }
     }
 
@@ -905,8 +913,10 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
       if (serviceHandler.anilistService.isLoggedIn.value) {
         final anilistAuth = Get.find<AnilistAuth>();
-        final targetList = isAnime ? anilistAuth.animeList : anilistAuth.mangaList;
-        final matchedAniList = targetList.firstWhereOrNull((m) => m.idMal == listId || m.id == listId);
+        final targetList =
+            isAnime ? anilistAuth.animeList : anilistAuth.mangaList;
+        final matchedAniList = targetList
+            .firstWhereOrNull((m) => m.idMal == listId || m.id == listId);
         if (matchedAniList != null && matchedAniList.id != null) {
           anilistAuth.deleteMediaFromList(matchedAniList.id!, isAnime: isAnime);
         }
@@ -967,4 +977,3 @@ class MalService extends GetxController implements BaseService, OnlineService {
     ]);
   }
 }
-

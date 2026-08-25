@@ -153,6 +153,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                         Expanded(
                           child: ImageButton(
                             height: buttonHeight,
+                            tagIcon: Icons.movie_filter_outlined,
                             subText: '${anilistAuth.animeList.length} items',
                             buttonText: "ANIME LIST",
                             backgroundImage: animeButtonMedia?.cover ?? '',
@@ -167,6 +168,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                         Expanded(
                           child: ImageButton(
                             height: buttonHeight,
+                            tagIcon: Icons.book_outlined,
                             subText: '${anilistAuth.mangaList.length} items',
                             buttonText: "MANGA LIST",
                             backgroundImage: mangaButtonMedia?.cover ?? '',
