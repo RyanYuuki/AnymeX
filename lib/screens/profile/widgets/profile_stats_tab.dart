@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/staff.dart';
+import 'package:anymex/screens/anime/studio_details_page.dart';
 import 'package:anymex/screens/anime/widgets/character_staff_sheet.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
@@ -320,14 +321,21 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
   // studios tab
   List<Widget> _studiosView(AnimeStats? anime) {
     final items = (anime?.studios ?? [])
-        .map((s) => _RankedItem(s.name, s.count, s.meanScore, s.amount))
+        .map((s) =>
+            _RankedItem(s.name, s.count, s.meanScore, s.amount, id: s.id))
         .toList();
     if (items.isEmpty) return [_emptyState('No studio data')];
     return [
       _sectionContainer(
         icon: Icons.business_outlined,
         title: 'Studios',
-        child: _rankedList(items),
+        child: _rankedList(items, onTap: (label, {id, image}) {
+          final studioId = int.tryParse(id ?? '') ?? 0;
+          if (studioId > 0) {
+            showStudioDetailsSheet(context, studioId, label,
+                initialOnlyOnList: true);
+          }
+        }),
       ),
     ];
   }

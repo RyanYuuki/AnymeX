@@ -28,6 +28,7 @@ class TrackedMedia {
   int? userProgress;
   double? userScore;
   List<String> genres;
+  List<String> tags;
   int? startYear;
   int? updatedAt;
 
@@ -69,6 +70,7 @@ class TrackedMedia {
     this.userProgress,
     this.userScore,
     this.genres = const [],
+    this.tags = const [],
     this.startYear,
     this.updatedAt,
     this.startedAt,
@@ -105,11 +107,17 @@ class TrackedMedia {
       score: json['score']?.toString(),
       type: json['media']['type']?.toString(),
       servicesType: ServicesType.anilist,
-      mediaListId:
-          (json['media']['mediaListEntry']?['id'] ?? json['media']['id'])
-              .toString(),
+      mediaListId: (json['id'] ??
+              json['media']?['mediaListEntry']?['id'] ??
+              json['media']?['id'])
+          ?.toString(),
       genres: (json['media']['genres'] as List<dynamic>?)
               ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      tags: (json['media']['tags'] as List<dynamic>?)
+              ?.map((e) => e is Map ? (e['name']?.toString() ?? '') : e.toString())
+              .where((s) => s.isNotEmpty)
               .toList() ??
           const [],
       startYear: json['media']['startDate']?['year'] as int?,
@@ -343,35 +351,52 @@ String getAniListStatusEquivalent(String status) {
 }
 
 String returnConvertedStatus(String status) {
-  switch (status) {
-    case 'watching' || 'reading':
+  switch (status.toLowerCase().trim()) {
+    case 'watching':
+    case 'reading':
       return 'CURRENT';
     case 'completed':
       return 'COMPLETED';
     case 'on_hold':
+    case 'on-hold':
+    case 'paused':
       return 'PAUSED';
     case 'dropped':
       return 'DROPPED';
-    case 'plan_to_watch' || 'plan_to_read':
+    case 'plan_to_watch':
+    case 'plan_to_read':
+    case 'planning':
       return 'PLANNING';
+    case 'repeating':
+    case 'rewatching':
+    case 'rereading':
+      return 'REPEATING';
     default:
       return 'ALL';
   }
 }
 
 String getMALStatusEquivalent(String status, {bool isAnime = true}) {
-  switch (status.toUpperCase()) {
+  switch (status.toUpperCase().replaceAll(' ', '_').replaceAll('-', '_')) {
     case 'CURRENT':
+    case 'WATCHING':
+    case 'READING':
+    case 'REPEATING':
+    case 'REWATCHING':
+    case 'REREADING':
       return isAnime ? 'watching' : 'reading';
     case 'COMPLETED':
       return 'completed';
     case 'PAUSED':
+    case 'ON_HOLD':
       return 'on_hold';
     case 'DROPPED':
       return 'dropped';
     case 'PLANNING':
+    case 'PLAN_TO_WATCH':
+    case 'PLAN_TO_READ':
       return isAnime ? 'plan_to_watch' : 'plan_to_read';
     default:
-      return 'unknown';
+      return isAnime ? 'plan_to_watch' : 'plan_to_read';
   }
 }

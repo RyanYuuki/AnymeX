@@ -662,16 +662,28 @@ class MediaDetailsController extends GetxController {
     required String status,
     required int progress,
     required double score,
+    int? season,
+    DateTime? startedAt,
+    DateTime? completedAt,
+    bool? isPrivate,
   }) async {
     if (!serviceHandler.isLoggedIn.value) return;
     try {
+      final malId = (media.value.idMal.isNotEmpty && media.value.idMal != '0')
+          ? media.value.idMal
+          : trackedMedia.value?.idMal;
       await serviceHandler.onlineService.updateListEntry(
         UpdateListEntryParams(
           listId: media.value.id,
+          syncIds: malId != null && malId.isNotEmpty ? [malId] : null,
           status: status,
           progress: progress,
           score: score,
           isAnime: isAnime,
+          season: season,
+          startedAt: startedAt,
+          completedAt: completedAt,
+          isPrivate: isPrivate,
         ),
       );
       mediaStatus.value = status;
@@ -687,8 +699,10 @@ class MediaDetailsController extends GetxController {
   Future<void> deleteListEntry() async {
     if (!serviceHandler.isLoggedIn.value) return;
     try {
-      final listId = trackedMedia.value?.id ?? media.value.id;
-      if (listId == null) return;
+      final listId = trackedMedia.value?.mediaListId ??
+          trackedMedia.value?.id ??
+          media.value.id;
+      if (listId.isEmpty) return;
       await serviceHandler.onlineService.deleteListEntry(
         listId,
         isAnime: isAnime,
@@ -698,7 +712,6 @@ class MediaDetailsController extends GetxController {
       mediaScore.value = 0.0;
       isListedMedia.value = false;
       trackedMedia.value = null;
-      snackBar('List entry deleted successfully!');
     } catch (e) {
       errorSnackBar('Failed to delete list entry');
     }

@@ -12,6 +12,8 @@ import 'package:iconsax/iconsax.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/screens/profile/compatibility/compatibility_input_page.dart';
+import 'package:anymex/utils/function.dart';
 
 class UserProfileHeader extends StatefulWidget {
   final Profile user;
@@ -310,6 +312,15 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                         child: Row(
                           children: [
                             HoverActionButton(
+                              icon: Iconsax.heart5,
+                              onTap: () => navigate(() => CompatibilityInputPage(
+                                    prefillProfile: widget.user,
+                                    prefillUsername: name,
+                                    useLoggedInUser: true,
+                                  )),
+                            ),
+                            const SizedBox(width: 10),
+                            HoverActionButton(
                               icon: Icons.north_east_rounded,
                               onTap: () => launchUrlString(
                                   'https://anilist.co/user/$name'),
@@ -404,6 +415,19 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                   ),
                                                 );
                                               }
+                                            },
+                                          ),
+                                          buildProfileSheetOption(
+                                            ctx,
+                                            icon: Iconsax.heart4,
+                                            label: 'Check Compatibility',
+                                            onTap: () {
+                                              Navigator.pop(ctx);
+                                              navigate(() => CompatibilityInputPage(
+                                                prefillProfile: widget.user,
+                                                prefillUsername: name,
+                                                useLoggedInUser: true,
+                                              ));
                                             },
                                           ),
                                         ],

@@ -1,7 +1,9 @@
 import 'dart:ui';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/studio_details_page.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/visuals/visuals_popup.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
@@ -179,13 +181,29 @@ class MediaHeader extends StatelessWidget {
                             creator = authorStaff?.name;
                           }
 
+                          final studioName = creator;
+                          final canOpenStudio = isAnime && studioName != null && studioName != 'Unknown';
+
                           return Row(spacing: 1, children: [
                             _buildMetaData(
-                                context,
-                                creator ?? 'Unknown',
-                                const BorderRadius.horizontal(
-                                    right: Radius.circular(5),
-                                    left: Radius.circular(10))),
+                              context,
+                              studioName ?? 'Unknown',
+                              const BorderRadius.horizontal(
+                                  right: Radius.circular(5),
+                                  left: Radius.circular(10)),
+                              onTap: canOpenStudio
+                                  ? () async {
+                                      final studioId = await AnilistData.fetchStudioIdByName(studioName);
+                                      if (studioId != null && context.mounted) {
+                                        showStudioDetailsSheet(
+                                          context,
+                                          studioId,
+                                          studioName,
+                                        );
+                                      }
+                                    }
+                                  : null,
+                            ),
                             _buildMetaData(
                                 context,
                                 status.isNotEmpty ? status : 'Unknown',
@@ -278,8 +296,8 @@ class MediaHeader extends StatelessWidget {
   }
 
   Widget _buildMetaData(
-      BuildContext context, String val, BorderRadius? radius) {
-    return AnymeXContainer(
+      BuildContext context, String val, BorderRadius? radius, {VoidCallback? onTap}) {
+    final chip = AnymeXContainer(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: context.colors.surfaceContainer.opaque(0.2, iReallyMeanIt: true),
@@ -293,6 +311,15 @@ class MediaHeader extends StatelessWidget {
         size: 11,
       ),
     );
+
+    if (onTap != null) {
+      return AnymexOnTap(
+        onTap: onTap,
+        margin: 0,
+        child: chip,
+      );
+    }
+    return chip;
   }
 }
 

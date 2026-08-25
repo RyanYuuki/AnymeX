@@ -7,6 +7,7 @@ import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex/controllers/services/community_service.dart';
@@ -348,7 +349,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   backgroundImage: animeButtonMedia?.cover ?? '',
                   borderRadius: 16.multiplyRadius(),
                   onPressed: () {
-                    navigate(() => AnimeList(data: animeList.value.removeDupes()));
+                    navigate(() => AnimeList(data: animeList.removeDupes()));
                   },
                   onLongPress: animeButtonMedia == null
                       ? null
@@ -364,7 +365,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: mangaButtonMedia?.cover ?? '',
                     onPressed: () {
-                      navigate(() => AnilistMangaList(data: mangaList.value.removeDupes()));
+                      navigate(() => AnilistMangaList(data: mangaList.removeDupes()));
                     },
                     onLongPress: mangaButtonMedia == null
                         ? null
@@ -535,6 +536,18 @@ class MalService extends GetxController implements BaseService, OnlineService {
       await fetchUserInfo(token: newToken);
     } else {
       throw Exception('Failed to refresh token: ${response.body}');
+    }
+  }
+
+  Future<String?> _refreshAccessToken() async {
+    final refreshToken = AuthKeys.malRefreshToken.get<String?>();
+    if (refreshToken == null) return null;
+    try {
+      await _refreshTokenWithMAL(refreshToken);
+      return AuthKeys.malAuthToken.get<String?>();
+    } catch (e) {
+      Logger.i('Failed to refresh MAL access token: $e');
+      return null;
     }
   }
 
@@ -759,7 +772,9 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final startedAt = params.startedAt;
     final completedAt = params.completedAt;
 
-    final token = AuthKeys.malAuthToken.get<String?>();
+    var token = AuthKeys.malAuthToken.get<String?>();
+    if (token == null) return;
+
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
@@ -778,7 +793,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (completedAt != null) 'finish_date': formatMalDate(completedAt),
     };
 
-    final req = await http.put(
+    var req = await http.put(
       url,
       headers: {
         'Authorization': 'Bearer $token',
@@ -787,15 +802,31 @@ class MalService extends GetxController implements BaseService, OnlineService {
       body: body,
     );
 
+    if (req.statusCode == 401) {
+      token = await _refreshAccessToken();
+      if (token != null) {
+        req = await http.put(
+          url,
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: body,
+        );
+      }
+    }
+
     if ((params.syncIds?.isNotEmpty ?? false) && params.syncIds?[0] != null) {
-      await serviceHandler.anilistService.updateListEntry(UpdateListEntryParams(
-          listId: params.syncIds![0],
-          score: score,
-          status: status,
-          progress: progress,
-          isAnime: isAnime,
-          startedAt: startedAt,
-          completedAt: completedAt));
+      if (serviceHandler.anilistService.isLoggedIn.value) {
+        await serviceHandler.anilistService.updateListEntry(UpdateListEntryParams(
+            listId: params.syncIds![0],
+            score: score != null ? score * 10.0 : null,
+            status: status,
+            progress: progress,
+            isAnime: isAnime,
+            startedAt: startedAt,
+            completedAt: completedAt));
+      }
     }
 
     if (isAnime && serviceHandler.simklService.isLoggedIn.value) {
@@ -813,9 +844,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
     }
 
     if (req.statusCode == 200) {
-      // snackBar(
-      //     "${isAnime ? 'Anime' : 'Manga'} Tracked to ${isAnime ? 'Episode' : 'Chapter'} $progress Successfully!");
-
       final newMedia = currentMedia.value
         ..episodeCount = progress.toString()
         ..watchingStatus = status
@@ -835,12 +863,13 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> deleteListEntry(String listId, {bool isAnime = true}) async {
-    final token = AuthKeys.malAuthToken.get<String?>();
+    var token = AuthKeys.malAuthToken.get<String?>();
+    if (token == null || !isLoggedIn.value) return;
 
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
-    final req = await http.delete(
+    var req = await http.delete(
       url,
       headers: {
         'Authorization': 'Bearer $token',
@@ -848,15 +877,39 @@ class MalService extends GetxController implements BaseService, OnlineService {
       },
     );
 
+    if (req.statusCode == 401) {
+      token = await _refreshAccessToken();
+      if (token != null) {
+        req = await http.delete(
+          url,
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        );
+      }
+    }
+
     if (req.statusCode == 200) {
       snackBar(
           "${isAnime ? "Anime" : "Manga"} successfully deleted from your list!");
 
       currentMedia.value = TrackedMedia();
       if (isAnime) {
+        animeList.removeWhere((m) => m.id == listId || m.idMal == listId);
         fetchUserAnimeList();
       } else {
+        mangaList.removeWhere((m) => m.id == listId || m.idMal == listId);
         fetchUserMangaList();
+      }
+
+      if (serviceHandler.anilistService.isLoggedIn.value) {
+        final anilistAuth = Get.find<AnilistAuth>();
+        final targetList = isAnime ? anilistAuth.animeList : anilistAuth.mangaList;
+        final matchedAniList = targetList.firstWhereOrNull((m) => m.idMal == listId || m.id == listId);
+        if (matchedAniList != null && matchedAniList.id != null) {
+          anilistAuth.deleteMediaFromList(matchedAniList.id!, isAnime: isAnime);
+        }
       }
     } else {
       Logger.i('Error deleting entry: ${req.body}');
