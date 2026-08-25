@@ -1,6 +1,7 @@
 import 'package:anymex/database/isar_models/daily_activity.dart';
 import 'package:anymex/database/isar_models/media_stats.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/screens/stats/model/user_rank_info.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide isar;
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ import 'package:isar_community/isar.dart';
 class UserStatsController extends GetxController {
   final dailyActivities = <DailyActivity>[].obs;
   final mediaStats = <MediaStats>[].obs;
+  final libraryItems = <OfflineMedia>[].obs;
 
   @override
   void onInit() {
@@ -18,6 +20,9 @@ class UserStatsController extends GetxController {
     );
     mediaStats.bindStream(
       isar.mediaStats.where().sortByLastInteractedDesc().watch(fireImmediately: true),
+    );
+    libraryItems.bindStream(
+      isar.offlineMedias.where().watch(fireImmediately: true),
     );
     syncLibraryStats();
   }
@@ -177,5 +182,151 @@ class UserStatsController extends GetxController {
     final list = List<MediaStats>.from(mediaStats);
     list.sort((a, b) => b.interactionCount.compareTo(a.interactionCount));
     return list.take(5).toList();
+  }
+
+  List<OfflineMedia> getFilteredLibrary(String filter) {
+    if (filter == 'Anime') {
+      return libraryItems.where((e) => e.itemType == ItemType.anime).toList();
+    } else if (filter == 'Manga') {
+      return libraryItems.where((e) => e.itemType == ItemType.manga).toList();
+    } else if (filter == 'Novel') {
+      return libraryItems.where((e) => e.itemType == ItemType.novel).toList();
+    } else {
+      return libraryItems;
+    }
+  }
+
+  Map<String, int> getGenreDistribution(String filter) {
+    final filtered = getFilteredLibrary(filter);
+    final Map<String, int> distribution = {};
+    for (final item in filtered) {
+      if (item.genres != null) {
+        for (final genre in item.genres!) {
+          final trimmed = genre.trim();
+          if (trimmed.isNotEmpty) {
+            distribution[trimmed] = (distribution[trimmed] ?? 0) + 1;
+          }
+        }
+      }
+    }
+    final sortedEntries = distribution.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return Map.fromEntries(sortedEntries);
+  }
+
+  Map<String, int> getStudioDistribution() {
+    final filtered = libraryItems.where((e) => e.itemType == ItemType.anime).toList();
+    final Map<String, int> distribution = {};
+    for (final item in filtered) {
+      if (item.studios != null) {
+        for (final studio in item.studios!) {
+          final trimmed = studio.trim();
+          if (trimmed.isNotEmpty) {
+            distribution[trimmed] = (distribution[trimmed] ?? 0) + 1;
+          }
+        }
+      }
+    }
+    final sortedEntries = distribution.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return Map.fromEntries(sortedEntries);
+  }
+
+  Map<String, int> getFormatDistribution(String filter) {
+    final filtered = getFilteredLibrary(filter);
+    final Map<String, int> distribution = {};
+    for (final item in filtered) {
+      final format = item.format?.trim();
+      if (format != null && format.isNotEmpty && format != '?') {
+        final normalized = format.toUpperCase();
+        distribution[normalized] = (distribution[normalized] ?? 0) + 1;
+      }
+    }
+    final sortedEntries = distribution.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return Map.fromEntries(sortedEntries);
+  }
+
+  double get averageEpisodesPerDay {
+    final activeDays = totalDaysActive;
+    if (activeDays == 0) return 0.0;
+    int totalEps = mediaStats
+        .where((s) => s.type == 'anime' || s.type == 'movie' || s.type == 'series')
+        .fold(0, (sum, s) => sum + s.totalUnitsConsumed);
+    return totalEps / activeDays;
+  }
+
+  double get averageChaptersPerDay {
+    final activeDays = totalDaysActive;
+    if (activeDays == 0) return 0.0;
+    int totalChs = mediaStats
+        .where((s) => s.type == 'manga' || s.type == 'novel')
+        .fold(0, (sum, s) => sum + s.totalUnitsConsumed);
+    return totalChs / activeDays;
+  }
+
+  UserRankInfo getUserRankInfo(int totalMinutes) {
+    final hours = totalMinutes / 60.0;
+    String title = "Filthy Casual";
+    int currentMinHours = 0;
+    int nextMaxHours = 1;
+    String rankIcon = "🌱";
+
+    if (hours < 1) {
+      title = "Filthy Casual";
+      currentMinHours = 0;
+      nextMaxHours = 1;
+      rankIcon = "🌱";
+    } else if (hours < 10) {
+      title = "Academy Student";
+      currentMinHours = 1;
+      nextMaxHours = 10;
+      rankIcon = "🎒";
+    } else if (hours < 20) {
+      title = "Genin";
+      currentMinHours = 10;
+      nextMaxHours = 20;
+      rankIcon = "🗡️";
+    } else if (hours < 50) {
+      title = "Chunin";
+      currentMinHours = 20;
+      nextMaxHours = 50;
+      rankIcon = "🎖️";
+    } else if (hours < 100) {
+      title = "Jonin";
+      currentMinHours = 50;
+      nextMaxHours = 100;
+      rankIcon = "🌀";
+    } else if (hours < 500) {
+      title = "Special Jonin";
+      currentMinHours = 100;
+      nextMaxHours = 500;
+      rankIcon = "🔥";
+    } else if (hours < 1000) {
+      title = "Hokage";
+      currentMinHours = 500;
+      nextMaxHours = 1000;
+      rankIcon = "👑";
+    } else {
+      title = "Otaku Sage";
+      currentMinHours = 1000;
+      nextMaxHours = 1000;
+      rankIcon = "✨";
+    }
+
+    final double progress = nextMaxHours == currentMinHours
+        ? 1.0
+        : ((hours - currentMinHours) / (nextMaxHours - currentMinHours)).clamp(0.0, 1.0);
+
+    final points = totalMinutes ~/ 6;
+
+    return UserRankInfo(
+      title: title,
+      hours: hours,
+      nextMaxHours: nextMaxHours,
+      progress: progress,
+      rankIcon: rankIcon,
+      points: points,
+    );
   }
 }

@@ -4,6 +4,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/screens/stats/model/user_rank_info.dart';
 import 'package:anymex/screens/stats/controller/user_stats_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
@@ -11,6 +12,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
+import 'package:anymex/widgets/common/media_mode_selector.dart';
 import 'package:anymex/widgets/header/header.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -87,8 +90,6 @@ class _UserStatsPageState extends State<UserStatsPage> {
       body: Stack(
         children: [
           Obx(() {
-            final streaksData = controller.streaks;
-            final longestStreak = streaksData['longest'] ?? 0;
 
             final totalWatchTime = controller.totalWatchTimeMinutes;
             final totalReadTime = controller.totalReadTimeMinutes;
@@ -161,13 +162,17 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      _buildFilterRow(context),
-                      const SizedBox(height: 16),
-                      _buildMainStatsGrid(context, totalHrs, totalMins, displayedUnits, favorite),
-                      const SizedBox(height: 12),
-                      _buildSmallCardsRow(longestStreak),
+                      _buildPrimaryStatsRow(context, totalHrs, totalMins, displayedUnits),
+                      const SizedBox(height: 14),
+                      _buildRankProgressCard(context, totalWatchTime + totalReadTime),
+                      const SizedBox(height: 14),
+                      _buildDailyAveragesRow(context),
+                      const SizedBox(height: 20),
+                      _buildFavoriteTitleShowcase(context, favorite),
                       const SizedBox(height: 20),
                       _buildHeatmapSection(context),
+                      const SizedBox(height: 24),
+                      _buildDetailedInsightsSection(context),
                       const SizedBox(height: 24),
                       _buildFrequentlyRevisitedSection(context),
                       const SizedBox(height: 100),
@@ -200,88 +205,29 @@ class _UserStatsPageState extends State<UserStatsPage> {
               statusBarColor: Colors.transparent,
             ),
           ),
+          Positioned(
+            bottom: MediaModeSelector.getBottomOffset(context),
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Obx(() => MediaModeSelector(
+                    customOptions: const ['All', 'Anime', 'Manga', 'Novel'],
+                    selectedOption: activeFilter.value,
+                    onOptionSelected: (val) => activeFilter.value = val,
+                  )),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildFilterRow(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        AnymeXText(
-          "SHOWING ${activeFilter.value.toUpperCase()} TIME",
-          size: 11,
-          variant: TextVariant.bold,
-          color: context.colors.onSurfaceVariant.withOpacity(0.5),
-        ),
-        Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: context.colors.surfaceContainerLow.opaque(0.35),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: context.colors.outline.opaque(0.08),
-            ),
-          ),
-          child: Row(
-            children: ['All', 'Anime', 'Manga', 'Novel'].map((filter) {
-              final isSelected = activeFilter.value == filter;
-              return GestureDetector(
-                onTap: () => activeFilter.value = filter,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: isSelected ? context.colors.primary : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: AnymeXText(
-                    filter,
-                    size: 11,
-                    variant: TextVariant.bold,
-                    color: isSelected ? context.colors.onPrimary : context.colors.onSurfaceVariant,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMainStatsGrid(BuildContext context, int hrs, int mins, int units, MediaStats? favorite) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final isDesktop = screenWidth > 600;
-
-    final favoriteTitleStr = favorite?.title ?? 'None';
-    final favoritePoster = favorite?.poster ?? '';
-
+  Widget _buildPrimaryStatsRow(BuildContext context, int hrs, int mins, int units) {
     final timeReadCard = _buildDashboardCard(
       context: context,
       title: activeFilter.value == 'Anime' ? 'TIME WATCHED' : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel' ? 'TIME READ' : 'TIME SPENT'),
-      value: "${hrs}h ${mins}m",
+      value: hrs > 0 ? "${hrs}h ${mins}m" : "${mins}m",
       icon: IconlyLight.timeCircle,
-      child: Container(
-        height: 15,
-        margin: const EdgeInsets.only(top: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: List.generate(14, (index) {
-            final double h = [6.0, 12.0, 8.0, 14.0, 4.0, 9.0, 15.0, 11.0, 7.0, 13.0, 5.0, 10.0, 14.0, 6.0][index];
-            return Container(
-              width: 4,
-              height: h,
-              decoration: BoxDecoration(
-                color: context.colors.primary.withOpacity(index == 6 ? 1.0 : 0.25),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            );
-          }),
-        ),
-      ),
     );
 
     final pagesCard = _buildDashboardCard(
@@ -291,26 +237,6 @@ class _UserStatsPageState extends State<UserStatsPage> {
       icon: IconlyLight.paper,
     );
 
-    final favoriteCard = _buildDashboardCard(
-      context: context,
-      title: 'FAVORITE TITLE',
-      value: favoriteTitleStr,
-      icon: IconlyLight.bookmark,
-      valueMaxLines: 3,
-      isChildOnRight: true,
-      child: favoritePoster.isEmpty
-          ? null
-          : ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: AnymeXImage(
-                imageUrl: favoritePoster,
-                width: 50,
-                height: 65,
-              ),
-            ),
-    );
-    
-
     final daysCard = _buildDashboardCard(
       context: context,
       title: 'DAYS ACTIVE',
@@ -318,37 +244,139 @@ class _UserStatsPageState extends State<UserStatsPage> {
       icon: IconlyLight.calendar,
     );
 
-    if (isDesktop) {
-      return GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 2.2,
-        children: [timeReadCard, pagesCard, favoriteCard, daysCard],
-      );
-    } else {
-      return Column(
+    return Row(
+      children: [
+        Expanded(child: SizedBox(height: 80, child: timeReadCard)),
+        const SizedBox(width: 8),
+        Expanded(child: SizedBox(height: 80, child: pagesCard)),
+        const SizedBox(width: 8),
+        Expanded(child: SizedBox(height: 80, child: daysCard)),
+      ],
+    );
+  }
+
+  Widget _buildRankProgressCard(BuildContext context, int totalMinutes) {
+    final UserRankInfo rankInfo = controller.getUserRankInfo(totalMinutes);
+    final String title = rankInfo.title;
+    final double hours = rankInfo.hours;
+    final int nextMaxHours = rankInfo.nextMaxHours;
+    final double progress = rankInfo.progress;
+    final String rankIcon = rankInfo.rankIcon;
+    final int points = rankInfo.points;
+
+    return AnymeXCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(child: SizedBox(height: 120, child: timeReadCard)),
-              const SizedBox(width: 12),
-              Expanded(child: SizedBox(height: 120, child: pagesCard)),
+              Row(
+                children: [
+                  AnymeXText(
+                    rankIcon,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        title.toUpperCase(),
+                        size: 13,
+                        variant: TextVariant.bold,
+                        color: context.colors.primary,
+                      ),
+                      const SizedBox(height: 2),
+                      AnymeXText(
+                        'Otaku Rank Level',
+                        size: 10,
+                        color: context.colors.onSurfaceVariant.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: context.colors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: AnymeXText(
+                  '$points XP',
+                  size: 11,
+                  variant: TextVariant.bold,
+                  color: context.colors.primary,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(child: SizedBox(height: 120, child: favoriteCard)),
-              const SizedBox(width: 12),
-              Expanded(child: SizedBox(height: 120, child: daysCard)),
+              AnymeXText(
+                'Level Progress',
+                size: 11,
+                variant: TextVariant.semiBold,
+                color: context.colors.onSurfaceVariant.withOpacity(0.8),
+              ),
+              AnymeXText(
+                '${hours.toStringAsFixed(1)}h / ${nextMaxHours}h',
+                size: 11,
+                variant: TextVariant.semiBold,
+                color: context.colors.onSurfaceVariant.withOpacity(0.6),
+              ),
             ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 8,
+              backgroundColor: context.colors.primary.withOpacity(0.08),
+              valueColor: AlwaysStoppedAnimation<Color>(context.colors.primary),
+            ),
           ),
         ],
-      );
-    }
+      ),
+    );
+  }
+
+  Widget _buildDailyAveragesRow(BuildContext context) {
+    final longestStreak = controller.streaks['longest'] ?? 0;
+    final currentStreak = controller.streaks['current'] ?? 0;
+
+    return Row(
+      children: [
+        Expanded(
+          child: _buildSmallInfoCard(
+            title: 'Avg Episodes',
+            value: '${controller.averageEpisodesPerDay.toStringAsFixed(1)}/day',
+            icon: Icons.play_circle_outline_rounded,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildSmallInfoCard(
+            title: 'Avg Chapters',
+            value: '${controller.averageChaptersPerDay.toStringAsFixed(1)}/day',
+            icon: Icons.chrome_reader_mode_outlined,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildSmallInfoCard(
+            title: 'Streak (Cur/Long)',
+            value: '${currentStreak}d / ${longestStreak}d',
+            icon: Icons.local_fire_department_rounded,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildDashboardCard({
@@ -412,31 +440,59 @@ class _UserStatsPageState extends State<UserStatsPage> {
     );
   }
 
-  Widget _buildSmallCardsRow(int longestStreak) {
-    return Row(
+  Widget _buildFavoriteTitleShowcase(BuildContext context, MediaStats? favorite) {
+    if (favorite == null) return const SizedBox.shrink();
+
+    final totalHrs = favorite.totalTimeMinutes ~/ 60;
+    final totalMins = favorite.totalTimeMinutes % 60;
+    final timeStr = totalHrs > 0 ? '${totalHrs}h ${totalMins}m' : '${totalMins}m';
+
+    final mediaType = favorite.type == 'anime' || favorite.type == 'movie' || favorite.type == 'series'
+        ? ItemType.anime
+        : (favorite.type == 'novel' ? ItemType.novel : ItemType.manga);
+    
+    final mediaObj = Media(
+      id: favorite.mediaId,
+      title: favorite.title,
+      mediaType: mediaType,
+      poster: favorite.poster ?? '',
+      cover: favorite.cover ?? '',
+      serviceType: favorite.mediaId.contains('*')
+          ? ServicesType.simkl
+          : Get.find<ServiceHandler>().serviceType.value,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: _buildSmallInfoCard(
-            title: 'Titles added',
-            value: '${controller.totalTitlesAdded}',
-            icon: IconlyLight.bookmark,
+        const Padding(
+          padding: EdgeInsets.only(left: 4.0),
+          child: AnymeXText(
+            'Favorite Title',
+            size: 16,
+            variant: TextVariant.bold,
           ),
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildSmallInfoCard(
-            title: 'Avg items/day',
-            value: controller.averageUnitsPerDay.toStringAsFixed(1),
-            icon: IconlyLight.chart,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _buildSmallInfoCard(
-            title: 'Longest str.',
-            value: '${longestStreak}d',
-            icon: Icons.local_fire_department_rounded,
-          ),
+        const SizedBox(height: 12),
+        ImageButton(
+          buttonText: favorite.title,
+          backgroundColor: context.colors.surfaceContainerLowest.withOpacity(0.2),
+          subText: 'FAVORITE • $timeStr spent',
+          tagIcon: IconlyLight.bookmark,
+          backgroundImage: favorite.poster ?? '',
+          width: double.infinity,
+          height: 100,
+          borderRadius: 16,
+          imageProportion: 0.35,
+          onPressed: () {
+            if (mediaType == ItemType.anime) {
+              navigateWithAnimation(() => AnimeDetailsPage(media: mediaObj, tag: favorite.title));
+            } else if (mediaType == ItemType.manga) {
+              navigateWithAnimation(() => MangaDetailsPage(media: mediaObj, tag: favorite.title));
+            } else {
+              navigateWithAnimation(() => NovelDetailsPage(media: mediaObj, tag: favorite.title));
+            }
+          },
         ),
       ],
     );
@@ -738,7 +794,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainerLowest.opaque(0.5),
+        color: context.colors.surfaceContainerLowest.opaque(0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -802,10 +858,13 @@ class _UserStatsPageState extends State<UserStatsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const AnymeXText(
-          'Frequently Revisited',
-          size: 16,
-          variant: TextVariant.bold,
+        const Padding(
+          padding: EdgeInsets.only(left: 4.0),
+          child: AnymeXText(
+            'Frequently Revisited',
+            size: 16,
+            variant: TextVariant.bold,
+          ),
         ),
         const SizedBox(height: 12),
         if (list.isEmpty)
@@ -834,62 +893,222 @@ class _UserStatsPageState extends State<UserStatsPage> {
             children: list.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: AnymeXCard(
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    leading: AnymeXImage(
-                      imageUrl: item.poster ?? '',
-                      width: 45,
-                      height: 60,
-                      radius: 8,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.3),
+                    border: Border.all(
+                      color: context.colors.outline.opaque(0.1, iReallyMeanIt: true),
                     ),
-                    title: AnymeXText(
-                      item.title,
-                      size: 13,
-                      variant: TextVariant.semiBold,
-                      maxLines: 2,
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: AnymeXText(
-                        '${item.type.capitalizeFirst} • Interacted: ${item.interactionCount} times',
-                        size: 11,
-                        color: context.colors.onSurfaceVariant.withOpacity(0.6),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () {
+                        final mediaType = item.type == 'anime' || item.type == 'movie' || item.type == 'series'
+                            ? ItemType.anime
+                            : (item.type == 'novel' ? ItemType.novel : ItemType.manga);
+                        final mediaObj = Media(
+                          id: item.mediaId,
+                          title: item.title,
+                          mediaType: mediaType,
+                          poster: item.poster ?? '',
+                          cover: item.cover ?? '',
+                          serviceType: item.mediaId.contains('*') 
+                              ? ServicesType.simkl 
+                              : Get.find<ServiceHandler>().serviceType.value,
+                        );
+                        if (mediaType == ItemType.anime) {
+                          navigateWithAnimation(() => AnimeDetailsPage(media: mediaObj, tag: item.title));
+                        } else if (mediaType == ItemType.manga) {
+                          navigateWithAnimation(() => MangaDetailsPage(media: mediaObj, tag: item.title));
+                        } else {
+                          navigateWithAnimation(() => NovelDetailsPage(media: mediaObj, tag: item.title));
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: AnymeXImage(
+                                width: 55,
+                                height: 80,
+                                imageUrl: item.poster ?? '',
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AnymeXText(
+                                    item.title,
+                                    maxLines: 2,
+                                    size: 14,
+                                    variant: TextVariant.semiBold,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  AnymeXText(
+                                    '${item.type.capitalizeFirst} • Interacted: ${item.interactionCount} times',
+                                    size: 11,
+                                    color: context.colors.onSurfaceVariant.withOpacity(0.6),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              IconlyLight.arrowRight2,
+                              color: context.colors.onSurfaceVariant.withOpacity(0.5),
+                              size: 16,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    trailing: Icon(
-                      IconlyLight.arrowRight2,
-                      color: context.colors.primary,
-                      size: 16,
-                    ),
-                    onTap: () {
-                      final mediaType = item.type == 'anime' || item.type == 'movie' || item.type == 'series'
-                          ? ItemType.anime
-                          : (item.type == 'novel' ? ItemType.novel : ItemType.manga);
-                      final mediaObj = Media(
-                        id: item.mediaId,
-                        title: item.title,
-                        mediaType: mediaType,
-                        poster: item.poster ?? '',
-                        cover: item.cover ?? '',
-                        serviceType: item.mediaId.contains('*') 
-                            ? ServicesType.simkl 
-                            : Get.find<ServiceHandler>().serviceType.value,
-                      );
-                      if (mediaType == ItemType.anime) {
-                        navigateWithAnimation(() => AnimeDetailsPage(media: mediaObj, tag: item.title));
-                      } else if (mediaType == ItemType.manga) {
-                        navigateWithAnimation(() => MangaDetailsPage(media: mediaObj, tag: item.title));
-                      } else {
-                        navigateWithAnimation(() => NovelDetailsPage(media: mediaObj, tag: item.title));
-                      }
-                    },
                   ),
                 ),
               );
             }).toList(),
           ),
       ],
+    );
+  }
+
+  Widget _buildDetailedInsightsSection(BuildContext context) {
+    final filter = activeFilter.value;
+    final genres = controller.getGenreDistribution(filter);
+    final formats = controller.getFormatDistribution(filter);
+    final studios = controller.getStudioDistribution();
+
+    final showStudios = filter == 'All' || filter == 'Anime';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(left: 4.0),
+          child: AnymeXText(
+            'Detailed Insights',
+            size: 16,
+            variant: TextVariant.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (genres.isEmpty && formats.isEmpty && (!showStudios || studios.isEmpty))
+          AnymeXCard(
+            padding: const EdgeInsets.all(24),
+            child: Center(
+              child: AnymeXText(
+                'No insights available yet. Add items to your library!',
+                size: 12,
+                color: context.colors.onSurfaceVariant.withOpacity(0.4),
+              ),
+            ),
+          )
+        else ...[
+          if (genres.isNotEmpty) ...[
+            _buildInsightCard(
+              context: context,
+              title: 'Top Genres',
+              icon: Icons.category_outlined,
+              data: genres.entries.take(5).toList(),
+            ),
+            const SizedBox(height: 12),
+          ],
+          if (showStudios && studios.isNotEmpty) ...[
+            _buildInsightCard(
+              context: context,
+              title: 'Top Studios',
+              icon: Icons.movie_creation_outlined,
+              data: studios.entries.take(5).toList(),
+            ),
+            const SizedBox(height: 12),
+          ],
+          if (formats.isNotEmpty) ...[
+            _buildInsightCard(
+              context: context,
+              title: 'Media Type Breakdown',
+              icon: Icons.grid_view_rounded,
+              data: formats.entries.toList(),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ],
+      ],
+    );
+  }
+
+  Widget _buildInsightCard({
+    required BuildContext context,
+    required String title,
+    required IconData icon,
+    required List<MapEntry<String, int>> data,
+  }) {
+    if (data.isEmpty) return const SizedBox.shrink();
+    final maxVal = data.first.value;
+
+    return AnymeXCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 16, color: context.colors.primary),
+              const SizedBox(width: 8),
+              AnymeXText(
+                title,
+                size: 14,
+                variant: TextVariant.bold,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...data.map((entry) {
+            final double percent = maxVal > 0 ? entry.value / maxVal : 0.0;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AnymeXText(
+                        entry.key,
+                        size: 12,
+                        variant: TextVariant.semiBold,
+                      ),
+                      AnymeXText(
+                        '${entry.value} ${entry.value == 1 ? "title" : "titles"}',
+                        size: 11,
+                        color: context.colors.onSurfaceVariant.withOpacity(0.6),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: percent,
+                      minHeight: 6,
+                      backgroundColor: context.colors.primary.withOpacity(0.08),
+                      valueColor: AlwaysStoppedAnimation<Color>(context.colors.primary),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 }

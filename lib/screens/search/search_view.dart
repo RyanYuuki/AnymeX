@@ -174,9 +174,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     if (_serviceHandler.serviceType.value == ServicesType.mal) {
       return isManga ? FilterConfig.malManga : FilterConfig.malAnime;
     }
-    return isManga
-        ? FilterConfig.anilistManga
-        : FilterConfig.anilistAnime;
+    return isManga ? FilterConfig.anilistManga : FilterConfig.anilistAnime;
   }
 
   void _saveHistory() {
@@ -687,8 +685,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
-  resizeToAvoidBottomInset: false,
-  body: SafeArea(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
           bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -735,8 +733,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               Expanded(child: _buildMainContent()),
             ],
           ),
-        )
-);
+        ));
   }
 
   Widget _buildModernSearchBar() {
@@ -751,7 +748,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       focusNode: _searchFocusNode,
       hintText: hintText,
       onSubmitted: (query) => _performSearch(query: query),
-      
       onClear: () {
         setState(() {
           _searchState = SearchState.initial;
@@ -817,14 +813,18 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                             _sourceController.setActiveSource(src);
                             if (_searchController.text.trim().isEmpty) {
                               if (src.supportsPopular == true) {
-                                _extensionBrowseMode = _ExtensionBrowseMode.popular;
+                                _extensionBrowseMode =
+                                    _ExtensionBrowseMode.popular;
                               } else if (src.supportsLatest == true) {
-                                _extensionBrowseMode = _ExtensionBrowseMode.latest;
+                                _extensionBrowseMode =
+                                    _ExtensionBrowseMode.latest;
                               } else {
-                                _extensionBrowseMode = _ExtensionBrowseMode.search;
+                                _extensionBrowseMode =
+                                    _ExtensionBrowseMode.search;
                               }
                             } else {
-                              _extensionBrowseMode = _ExtensionBrowseMode.search;
+                              _extensionBrowseMode =
+                                  _ExtensionBrowseMode.search;
                             }
                             _extensionActiveFilters = [];
                             _extensionFiltersLoaded = false;
@@ -1355,11 +1355,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 24),
-          const AnymeXText.bold('Oops! Something went wrong',
+          const AnymeXText.bold(
+            'Oops! Something went wrong',
             size: 18,
           ),
           const SizedBox(height: 8),
-          AnymeXText.regular(_errorMessage ?? 'Please try again later',
+          AnymeXText.regular(
+            _errorMessage ?? 'Please try again later',
             textAlign: TextAlign.center,
             size: 14,
             color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -1401,11 +1403,13 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             ),
           ),
           const SizedBox(height: 24),
-          const AnymeXText.bold('No results found',
+          const AnymeXText.bold(
+            'No results found',
             size: 18,
           ),
           const SizedBox(height: 8),
-          AnymeXText.regular('Try adjusting your search terms or filters',
+          AnymeXText.regular(
+            'Try adjusting your search terms or filters',
             textAlign: TextAlign.center,
             size: 14,
             color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
@@ -1439,9 +1443,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       physics: const BouncingScrollPhysics(),
       gridDelegate: _currentViewMode == ViewMode.list
           ? const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1,
-              mainAxisExtent: 120,
-            )
+              crossAxisCount: 1, mainAxisExtent: 120, mainAxisSpacing: 0)
           : SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
               crossAxisSpacing: 12.0,
@@ -1466,7 +1468,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           child: ScaleAnimation(
             duration: const Duration(milliseconds: 100),
             child: _currentViewMode == ViewMode.list
-                ? _buildListItem(media)
+                ? _buildListItem(
+                    media, index == 0, index == _searchResults!.length - 1)
                 : GridAnimeCard(
                     data: media,
                     isManga: isManga,
@@ -1478,8 +1481,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildListItem(Media media) {
+  Widget _buildListItem(Media media, bool isFirst, bool isLast) {
     final heroTag = '${media.id}-search-list';
+    final radius = BorderRadius.vertical(
+      top: isFirst ? const Radius.circular(30) : const Radius.circular(5),
+      bottom: isLast ? const Radius.circular(30) : const Radius.circular(5),
+    );
     return GestureDetector(
       onTap: () => _navigateToDetails(media, heroTag),
       onLongPress: () {
@@ -1488,9 +1495,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         }
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 1),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: radius,
           color:
               Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.3),
           border: Border.all(
@@ -1525,7 +1532,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    AnymeXText(media.title,
+                    AnymeXText(
+                      media.title,
                       maxLines: 2,
                       size: 16,
                       variant: TextVariant.semiBold,

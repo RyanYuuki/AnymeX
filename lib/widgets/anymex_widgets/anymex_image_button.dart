@@ -11,6 +11,7 @@ class ImageButton extends StatelessWidget {
   final VoidCallback onPressed;
   final VoidCallback? onLongPress;
   final String backgroundImage;
+  final Color? backgroundColor;
   final double width;
   final double height;
   final double borderRadius;
@@ -24,6 +25,7 @@ class ImageButton extends StatelessWidget {
     this.subText,
     this.tagIcon,
     required this.onPressed,
+    this.backgroundColor,
     this.onLongPress,
     required this.backgroundImage,
     this.width = 160,
@@ -39,9 +41,11 @@ class ImageButton extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    final backgroundColor = theme.brightness == Brightness.dark
+    final bgColor = theme.brightness == Brightness.dark
         ? colors.primaryContainer.withOpacity(0.2)
         : colors.surfaceContainerLowest;
+
+    final buttonColor = backgroundColor ?? bgColor;
 
     final icon = tagIcon ?? Icons.auto_awesome;
     final hasSubText = subText != null && subText!.isNotEmpty;
@@ -66,7 +70,7 @@ class ImageButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         child: Container(
           decoration: BoxDecoration(
-            color: backgroundColor,
+            color: buttonColor,
             border: Border.all(
               width: 0.8,
               color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
@@ -118,9 +122,9 @@ class ImageButton extends StatelessWidget {
                                       begin: Alignment.centerLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        backgroundColor,
-                                        backgroundColor.withOpacity(0.6),
-                                        backgroundColor.withOpacity(0),
+                                        bgColor,
+                                        bgColor.withOpacity(0.6),
+                                        bgColor.withOpacity(0),
                                       ],
                                     ),
                                   ),

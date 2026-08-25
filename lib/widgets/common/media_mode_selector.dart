@@ -19,12 +19,18 @@ class MediaModeSelector extends StatelessWidget {
   final bool isVertical;
   final bool showPlayButton;
   final bool isLibraryOrHistory;
+  final List<String>? customOptions;
+  final String? selectedOption;
+  final ValueChanged<String>? onOptionSelected;
 
   const MediaModeSelector({
     super.key,
     this.isVertical = false,
     this.showPlayButton = false,
     this.isLibraryOrHistory = false,
+    this.customOptions,
+    this.selectedOption,
+    this.onOptionSelected,
   });
 
   static double getBottomOffset(BuildContext context) {
@@ -103,6 +109,77 @@ class MediaModeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    if (customOptions != null) {
+      final activeMode = selectedOption;
+      final containerDecoration = BoxDecoration(
+        color: theme.colorScheme.surfaceContainer.opaque(0.4),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.opaque(0.12, iReallyMeanIt: true),
+          width: 0.8,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.opaque(0.12, iReallyMeanIt: true),
+            blurRadius: 24,
+            spreadRadius: 0,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      );
+
+      final options = customOptions!.map((opt) {
+        return MapEntry(opt, opt);
+      }).toList();
+      final int itemCount = options.length;
+
+      const double selectedFlex = 2.2;
+      const double unselectedFlex = 1.0;
+      final double totalFlex = selectedFlex + unselectedFlex * (itemCount - 1);
+
+      return SafeArea(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          width: 280,
+          decoration: containerDecoration,
+          padding: const EdgeInsets.all(4),
+          child: SizedBox(
+            height: 36,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final totalWidth = constraints.maxWidth;
+                return Row(
+                  children: options.map((opt) {
+                    final isSelected = activeMode == opt.value;
+                    final flex = isSelected ? selectedFlex : unselectedFlex;
+                    final targetWidth = totalWidth * flex / totalFlex;
+
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 350),
+                      curve: const Cubic(0.34, 1.56, 0.64, 1.0),
+                      width: targetWidth,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: GestureDetector(
+                        onTap: () => onOptionSelected?.call(opt.value),
+                        behavior: HitTestBehavior.opaque,
+                        child: _buildCustomPillItemContent(theme, opt.key, isSelected),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+    }
+
     final controller = Get.put(MediaModeController());
     final isSimkl =
         Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
@@ -475,6 +552,61 @@ class MediaModeSelector extends StatelessWidget {
           color: theme.colorScheme.onPrimary,
           size: 16,
         ),
+      ),
+    );
+  }
+
+  Widget _buildCustomPillItemContent(ThemeData theme, String label, bool isSelected) {
+    IconData icon;
+    switch (label.toLowerCase()) {
+      case 'anime':
+        icon = Icons.play_arrow_rounded;
+        break;
+      case 'manga':
+        icon = Icons.menu_book_rounded;
+        break;
+      case 'novel':
+        icon = Icons.auto_stories_rounded;
+        break;
+      default:
+        icon = Icons.interests_rounded;
+    }
+
+    final iconColor = isSelected
+        ? theme.colorScheme.onPrimary
+        : theme.colorScheme.onSurface.withOpacity(0.6);
+
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: iconColor,
+            size: 16,
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 350),
+            curve: const Cubic(0.34, 1.56, 0.64, 1.0),
+            child: isSelected
+                ? Row(
+                    children: [
+                      const SizedBox(width: 4),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                          color: theme.colorScheme.onPrimary,
+                        ),
+                      ),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
       ),
     );
   }
