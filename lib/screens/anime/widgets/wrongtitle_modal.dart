@@ -290,8 +290,6 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                             tag: heroTag,
                             variant: DataVariant.regular,
                             type: itemType,
-                            cardStyle:
-                                CardStyle.values[settingsController.cardStyle],
                           ),
                         );
                       },

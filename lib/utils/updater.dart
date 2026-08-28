@@ -54,16 +54,24 @@ class UpdateManager {
     BuildContext context,
     RxBool canShowUpdate, {
     bool isBeta = false,
+    bool manualCheck = false,
   }) async {
     if (canShowUpdate.value) {
       canShowUpdate.value = false;
 
       try {
+        final packageInfo = await PackageInfo.fromPlatform();
+        final isBetaApp = packageInfo.packageName == 'com.ryan.anymexbeta';
+        final effectiveIsBeta = isBeta || isBetaApp;
+
         final currentVersion = await _getCurrentVersion();
-        final latestRelease = await _fetchLatestRelease(isBeta: isBeta);
+        final latestRelease = await _fetchLatestRelease(isBeta: effectiveIsBeta);
 
         if (latestRelease == null) {
           Logger.i("Failed to check for updates");
+          if (manualCheck) {
+            snackBar('Failed to check for updates');
+          }
           return;
         }
 
@@ -79,19 +87,31 @@ class UpdateManager {
         };
 
         if (_shouldUpdate(currentVersion, latestRelease['tag_name'] ?? '',
-            isBeta: isBeta)) {
-          _showUpdateBottomSheet(
-            context,
-            currentVersion,
-            latestRelease['tag_name'] ?? '',
-            latestRelease['body'] ?? '',
-            downloadUrls,
-          );
+            isBeta: effectiveIsBeta)) {
+          if (isBetaApp) {
+            snackBar('New beta update available: ${latestRelease['tag_name'] ?? ''}');
+          } else {
+            if (context.mounted) {
+              _showUpdateBottomSheet(
+                context,
+                currentVersion,
+                latestRelease['tag_name'] ?? '',
+                latestRelease['body'] ?? '',
+                downloadUrls,
+              );
+            }
+          }
         } else {
+          if (manualCheck) {
+            snackBar('No updates available');
+          }
           debugPrint("You are already using the latest version!");
         }
       } catch (e) {
         debugPrint('Error checking for updates: $e');
+        if (manualCheck) {
+          snackBar('Error checking for updates');
+        }
       }
     }
   }
@@ -117,6 +137,19 @@ class UpdateManager {
       if (l > c) return true;
       if (l < c) return false;
     }
+
+    int getBuildNumber(String version) {
+      final plusIndex = version.indexOf('+');
+      if (plusIndex == -1) return 0;
+      final suffix = version.substring(plusIndex + 1);
+      final digitsOnly = suffix.split('-')[0];
+      return int.tryParse(digitsOnly) ?? 0;
+    }
+
+    final currentBuild = getBuildNumber(currentVersion);
+    final latestBuild = getBuildNumber(latestVersion);
+    if (latestBuild > currentBuild) return true;
+    if (latestBuild < currentBuild) return false;
 
     final currentHasTag = currentSplit.length == 2;
     final latestHasTag = latestSplit.length == 2;

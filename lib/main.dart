@@ -2,16 +2,18 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
-import 'package:anymex/widgets/common/fps_meter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:rhttp/rhttp.dart';
-
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
+import 'package:anymex/controllers/stats/stats_tracker.dart';
+import 'package:anymex/screens/stats/user_stats_page.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -24,30 +26,34 @@ import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
-import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/firebase_options.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/screens/home_page.dart';
 import 'package:anymex/screens/library/my_library.dart';
+import 'package:anymex/screens/library/history_page.dart';
+import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/screens/novel/home_page.dart';
+import 'package:anymex/widgets/common/lazy_indexed_stack.dart';
+import 'package:anymex/widgets/common/media_mode_selector.dart';
+import 'package:anymex/controllers/media_mode_controller.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
-import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/screens/notifications/notification_screen.dart';
 import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/utils/notification.dart';
 import 'package:anymex/utils/deeplink.dart';
+import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
@@ -109,7 +115,9 @@ void initDeepLinkListener(List<String> args) async {
           'cloudstreamrepo',
           'sora',
           'tachiyomi',
-          'aniyomi'
+          'aniyomi',
+          'http',
+          'https',
         };
         if (uri.hasScheme && schemes.contains(uri.scheme.toLowerCase())) {
           Deeplink.handleDeepLink(uri);
@@ -277,6 +285,7 @@ void _initializeGetxController() async {
     Get.put(GistSyncController(), permanent: true);
     Get.put(DownloadController(), permanent: true);
     Get.lazyPut(() => NotificationService());
+    Get.put(StatsTracker());
     Get.lazyPut(() => CacheController());
   }, errorMessage: 'Failed to register GetX controllers');
 
@@ -421,146 +430,20 @@ class _FilterScreenState extends State<FilterScreen> {
   int _selectedIndex = 1;
   int _mobileSelectedIndex = 0;
 
+  final List<String> _onlineTabs = ['Home', 'Discover', 'Library', 'History', 'Stats'];
+  final List<String> _extensionTabs = ['Home', 'Anime', 'Manga', 'Novel', 'Extensions'];
+
   @override
   void initState() {
     super.initState();
+    _mobileSelectedIndex = 0;
+    _selectedIndex = 1;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = Get.find<Settings>();
       settings.checkForUpdates(context);
       settings.showWelcomeDialog(context);
-
-      // final launchCount = KvHelper.get<int>(
-      //         'anymex_discord_notice_launch_count',
-      //         defaultVal: 0) +
-      //     1;
-      // KvHelper.set('anymex_discord_notice_launch_count', launchCount);
-
-      // void checkAndShowDiscord() {
-      //   if (!mounted) return;
-      //   if (launchCount <= 3 || settings.showJoinDialog.value) {
-      //     _showDiscordNoticeDialog(context);
-      //   }
-      // }
-
-      // if (settings.linksFetched) {
-      //   checkAndShowDiscord();
-      // } else {
-      //   settings.onLinksReady = checkAndShowDiscord;
-      // }
     });
-  }
-
-  void _showDiscordNoticeDialog(BuildContext context) {
-    final settings = Get.find<Settings>();
-    bool isUnlocked =
-        KvHelper.get<bool>('anymex_discord_notice_unlocked', defaultVal: false);
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogCtx) {
-        return StatefulBuilder(
-          builder: (dialogContext, setDialogState) {
-            return PopScope(
-              canPop: false,
-              child: AnymeXDialog(
-                title: 'Discord Taken Down',
-                forceAction: true,
-                showCancelButton: false,
-                confirmText: 'Okay',
-                isConfirmEnabled: isUnlocked,
-                onConfirm: () {},
-                contentWidget: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    AnymeXText(
-                      isUnlocked
-                          ? 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nYou have already visited our social links, so the Okay button is unlocked.'
-                          : 'Our main Discord server has been taken down. Please join our new Discord server, and also join our Telegram channel for backup updates!\n\nOnce you click to join one of them, the Okay button below will unlock.',
-                      size: 14,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      textAlign: TextAlign.center,
-                      maxLines: 999,
-                    ),
-                    const SizedBox(height: 20),
-                    AnymexOnTap(
-                      onTap: () async {
-                        final url = settings.discordUrl.value;
-                        await launchUrl(Uri.parse(url),
-                            mode: LaunchMode.externalApplication);
-                        KvHelper.set('anymex_discord_notice_unlocked', true);
-                        setDialogState(() {
-                          isUnlocked = true;
-                        });
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF5865F2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(HugeIcons.strokeRoundedDiscord,
-                                color: Colors.white, size: 20),
-                            SizedBox(width: 8),
-                            AnymeXText(
-                              'Join New Discord',
-                              color: Colors.white,
-                              variant: TextVariant.bold,
-                              size: 13,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    AnymexOnTap(
-                      onTap: () async {
-                        final url = settings.telegramUrl.value;
-                        await launchUrl(Uri.parse(url),
-                            mode: LaunchMode.externalApplication);
-                        KvHelper.set('anymex_discord_notice_unlocked', true);
-                        setDialogState(() {
-                          isUnlocked = true;
-                        });
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0088CC),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(HugeIcons.strokeRoundedTelegram,
-                                color: Colors.white, size: 20),
-                            SizedBox(width: 8),
-                            AnymeXText(
-                              'Join Telegram Channel',
-                              color: Colors.white,
-                              variant: TextVariant.bold,
-                              size: 13,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
   }
 
   void _onItemTapped(int index) {
@@ -641,22 +524,29 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   List<String> _getNavTabs(ServiceHandler authService, Settings settings) {
-    settings.uiSettings.value;
-    return settings.navigationTabOrder;
+    return authService.serviceType.value == ServicesType.extensions ? _extensionTabs : _onlineTabs;
   }
 
   Widget _getWidgetForTab(String tabKey) {
     switch (tabKey) {
       case 'Home':
         return const HomePage();
-      case 'Anime':
+      case 'Discover':
         return const AnimeHomePage();
+      case 'Search':
+        return const SearchPage(searchTerm: '');
+      case 'Library':
+        return const MyLibrary();
+      case 'History':
+        return const AnymeXHistoryPage();
+      case 'Stats':
+        return const UserStatsPage();
+      case 'Anime':
+        return const AnimeHomePage(type: ItemType.anime);
       case 'Manga':
         return const MangaHomePage();
       case 'Novel':
         return const NovelHomePage();
-      case 'Library':
-        return const MyLibrary();
       case 'Extensions':
         return const ExtensionScreen(isTabScreen: true);
       default:
@@ -665,6 +555,27 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   NavItem _getNavItemForTab(String tabKey, bool isSimkl, Function(int) onTap) {
+    Widget? subWidget;
+
+    if (tabKey == 'Discover') {
+      subWidget = const MediaModeSelector(
+        isVertical: true,
+        showPlayButton: false,
+      );
+    } else if (tabKey == 'Library') {
+      subWidget = const MediaModeSelector(
+        isVertical: true,
+        showPlayButton: false,
+        isLibraryOrHistory: true,
+      );
+    } else if (tabKey == 'History') {
+      subWidget = const MediaModeSelector(
+        isVertical: true,
+        showPlayButton: true,
+        isLibraryOrHistory: true,
+      );
+    }
+
     switch (tabKey) {
       case 'Home':
         return NavItem(
@@ -672,27 +583,23 @@ class _FilterScreenState extends State<FilterScreen> {
           selectedIcon: IconlyBold.home,
           onTap: onTap,
           label: 'Home',
+          subWidget: subWidget,
         );
-      case 'Anime':
+      case 'Discover':
         return NavItem(
-          unselectedIcon: Icons.movie_filter_outlined,
-          selectedIcon: Icons.movie_filter_rounded,
+          unselectedIcon: Iconsax.discover_13,
+          selectedIcon: Iconsax.discover5,
           onTap: onTap,
-          label: isSimkl ? 'Movies' : 'Anime',
+          label: 'Discover',
+          subWidget: subWidget,
         );
-      case 'Manga':
+      case 'Search':
         return NavItem(
-          unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
-          selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
+          unselectedIcon: IconlyLight.search,
+          selectedIcon: IconlyBold.search,
           onTap: onTap,
-          label: isSimkl ? 'Series' : 'Manga',
-        );
-      case 'Novel':
-        return NavItem(
-          unselectedIcon: Icons.auto_stories_outlined,
-          selectedIcon: Icons.auto_stories_rounded,
-          onTap: onTap,
-          label: 'Novel',
+          label: 'Search',
+          subWidget: subWidget,
         );
       case 'Library':
         return NavItem(
@@ -700,6 +607,39 @@ class _FilterScreenState extends State<FilterScreen> {
           selectedIcon: HugeIcons.strokeRoundedLibrary,
           onTap: onTap,
           label: 'Library',
+          subWidget: subWidget,
+        );
+      case 'History':
+        return NavItem(
+          unselectedIcon: Iconsax.clock,
+          selectedIcon: Iconsax.clock5,
+          onTap: onTap,
+          label: 'History',
+          subWidget: subWidget,
+        );
+      case 'Anime':
+        return NavItem(
+          unselectedIcon: Icons.movie_filter_outlined,
+          selectedIcon: Icons.movie_filter_rounded,
+          onTap: onTap,
+          label: isSimkl ? 'Movies' : 'Anime',
+          subWidget: subWidget,
+        );
+      case 'Manga':
+        return NavItem(
+          unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
+          selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
+          onTap: onTap,
+          label: isSimkl ? 'Series' : 'Manga',
+          subWidget: subWidget,
+        );
+      case 'Novel':
+        return NavItem(
+          unselectedIcon: Icons.auto_stories_outlined,
+          selectedIcon: Icons.auto_stories_rounded,
+          onTap: onTap,
+          label: 'Novel',
+          subWidget: subWidget,
         );
       case 'Extensions':
         return NavItem(
@@ -707,6 +647,15 @@ class _FilterScreenState extends State<FilterScreen> {
           selectedIcon: Icons.extension_rounded,
           onTap: onTap,
           label: 'Extensions',
+          subWidget: subWidget,
+        );
+      case 'Stats':
+        return NavItem(
+          unselectedIcon: IconlyLight.chart,
+          selectedIcon: IconlyBold.chart,
+          onTap: onTap,
+          label: 'Stats',
+          subWidget: subWidget,
         );
       default:
         return NavItem(
@@ -714,6 +663,7 @@ class _FilterScreenState extends State<FilterScreen> {
           selectedIcon: IconlyBold.home,
           onTap: onTap,
           label: tabKey,
+          subWidget: subWidget,
         );
     }
   }
@@ -746,16 +696,20 @@ class _FilterScreenState extends State<FilterScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Obx(() {
+            final mediaModeController = Get.put(MediaModeController());
+            final _ = mediaModeController.rxMode.value;
             final isSimkl = authService.serviceType.value == ServicesType.simkl;
             final navTabs = _getNavTabs(authService, settings);
-            final navRailWidth = settings.navBarStyle == 0 ? 110.0 : 110.0;
+            final navRailWidth = settings.navBarStyle == 0 ? 110.0 : 120.0;
+            final validIndex = _selectedIndex.clamp(0, navTabs.length);
+
             return SizedBox(
                 width: navRailWidth,
                 child: ListView(
                   children: [
                     ResponsiveNavBar(
                       isDesktop: true,
-                      currentIndex: _selectedIndex.clamp(0, navTabs.length),
+                      currentIndex: validIndex,
                       margin: const EdgeInsets.fromLTRB(12, 18, 12, 10),
                       borderRadius: BorderRadius.circular(50),
                       items: [
@@ -815,7 +769,7 @@ class _FilterScreenState extends State<FilterScreen> {
               ];
               final validIndex =
                   _selectedIndex.clamp(0, desktopRoutes.length - 1);
-              return IndexedStack(
+              return LazyIndexedStack(
                 index: validIndex,
                 children: desktopRoutes,
               );
@@ -852,18 +806,23 @@ class _FilterScreenState extends State<FilterScreen> {
         },
         child: Scaffold(
             resizeToAvoidBottomInset: false,
-            body: IndexedStack(
+            body: LazyIndexedStack(
               index: validIndex,
               children: mobileRoutes,
             ),
             extendBody: true,
-            bottomNavigationBar: ResponsiveNavBar(
-              isDesktop: false,
-              currentIndex: validIndex,
-              margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 32),
-              items: [
-                for (final tab in navTabs)
-                  _getNavItemForTab(tab, isSimkl, _onMobileItemTapped),
+            bottomNavigationBar: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ResponsiveNavBar(
+                  isDesktop: false,
+                  currentIndex: validIndex,
+                  margin: EdgeInsets.only(bottom: settings.bottomNavBarMargin, left: 32, right: 32, top: 10),
+                  items: [
+                    for (final tab in navTabs)
+                      _getNavItemForTab(tab, isSimkl, _onMobileItemTapped),
+                  ],
+                ),
               ],
             )),
       );

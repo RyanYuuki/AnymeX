@@ -8,7 +8,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/dialogs/alert_dialog_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/Services/CloudStream/CloudStreamSourceMethods.dart';
@@ -416,12 +416,13 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
     if (updateAvailable) {
       _handleUpdate();
     } else {
-      AlertDialogBuilder(context)
-        ..setTitle("Delete Extension")
-        ..setMessage("Are you sure you want to delete this extension?")
-        ..setPositiveButton("Yes", _handleUninstall)
-        ..setNegativeButton("No", () {})
-        ..show();
+      AnymeXDialog(
+        title: "Delete Extension",
+        message: "Are you sure you want to delete this extension?",
+        onConfirm: _handleUninstall,
+        confirmText: "Delete",
+        cancelText: "Cancel",
+      ).show(context);
     }
   }
 }

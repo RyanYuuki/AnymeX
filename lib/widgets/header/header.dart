@@ -27,18 +27,19 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex/widgets/header/legacy_header.dart' as legacy;
+import 'package:anymex/screens/library/history_page.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
-import 'package:anymex/screens/novel/search/search_page.dart';
 
-enum PageType { manga, anime, home, novel, library, extensions }
+enum PageType { manga, anime, home, novel, library, extensions, history, stats }
 
 class Header extends StatelessWidget {
   final PageType type;
-  const Header({super.key, required this.type});
+  final Widget? bottom;
+  const Header({super.key, required this.type, this.bottom});
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +130,12 @@ class Header extends StatelessWidget {
           case PageType.extensions:
             legacyType = legacy.PageType.extensions;
             break;
+          case PageType.history:
+            legacyType = legacy.PageType.library;
+            break;
+          case PageType.stats:
+            legacyType = legacy.PageType.library;
+            break;
         }
 
         final libraryController = Get.isRegistered<LibraryController>()
@@ -149,6 +156,10 @@ class Header extends StatelessWidget {
       final isLibrarySearchActive = type == PageType.library &&
           Get.isRegistered<LibraryController>() &&
           Get.find<LibraryController>().isSearchActive.value;
+
+      final isHistorySearchActive = type == PageType.history &&
+          Get.isRegistered<HistorySearchController>() &&
+          Get.find<HistorySearchController>().isSearchActive.value;
 
       if (isLibrarySearchActive) {
         final libraryController = Get.find<LibraryController>();
@@ -208,20 +219,120 @@ class Header extends StatelessWidget {
         return _FloatingHeaderWrapper(child: searchContent);
       }
 
-      if (isDesktop) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      if (isHistorySearchActive) {
+        final historyController = Get.find<HistorySearchController>();
+        final searchContent = Row(
           children: [
-            _FloatingHeaderWrapper(
-              margin: const EdgeInsets.fromLTRB(24, 8, 0, 8),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  type == PageType.home
-                      ? _buildActionButtons(context, profileData)
-                      : _profileIcon(context, profileData),
-                  const SizedBox(width: 12),
-                  Column(
+            GestureDetector(
+              onTap: historyController.toggleSearch,
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: context.colors.secondaryContainer.opaque(0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.arrow_back_ios_new,
+                    color: context.colors.primary, size: 16),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: TextField(
+                controller: historyController.searchController,
+                onChanged: historyController.search,
+                autofocus: true,
+                style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
+                decoration: InputDecoration(
+                  hintText: 'Search in History...',
+                  hintStyle: TextStyle(
+                    color: context.colors.onSurface.withOpacity(0.4),
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  filled: true,
+                  fillColor: context.colors.secondaryContainer.opaque(0.3),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(
+                      color: context.colors.primary.withOpacity(0.3),
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+        return _FloatingHeaderWrapper(child: searchContent);
+      }
+
+      if (isDesktop) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _FloatingHeaderWrapper(
+                  margin: const EdgeInsets.fromLTRB(24, 8, 0, 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      type == PageType.home
+                          ? _buildActionButtons(context, profileData)
+                          : _profileIcon(context, profileData),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildHeaderTitle(
+                              context, greetingController, profileData),
+                          _buildHeaderSubtitle(
+                              context, greetingController, profileData),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                _FloatingHeaderWrapper(
+                  margin: const EdgeInsets.fromLTRB(0, 8, 24, 8),
+                  child: type == PageType.home
+                      ? _profileIcon(context, profileData)
+                      : _buildActionButtons(context, profileData),
+                ),
+              ],
+            ),
+            if (bottom != null)
+              _FloatingHeaderWrapper(
+                margin: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                child: bottom!,
+              ),
+          ],
+        );
+      } else {
+        final content = Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                type == PageType.home
+                    ? _buildActionButtons(context, profileData)
+                    : _profileIcon(context, profileData),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -231,38 +342,17 @@ class Header extends StatelessWidget {
                           context, greetingController, profileData),
                     ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 12),
+                type == PageType.home
+                    ? _profileIcon(context, profileData)
+                    : _buildActionButtons(context, profileData),
+              ],
             ),
-            _FloatingHeaderWrapper(
-              margin: const EdgeInsets.fromLTRB(0, 8, 24, 8),
-              child: type == PageType.home
-                  ? _profileIcon(context, profileData)
-                  : _buildActionButtons(context, profileData),
-            ),
-          ],
-        );
-      } else {
-        final content = Row(
-          children: [
-            type == PageType.home
-                ? _buildActionButtons(context, profileData)
-                : _profileIcon(context, profileData),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildHeaderTitle(context, greetingController, profileData),
-                  _buildHeaderSubtitle(context, greetingController, profileData),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            type == PageType.home
-                ? _profileIcon(context, profileData)
-                : _buildActionButtons(context, profileData),
+            if (bottom != null) ...[
+              const SizedBox(height: 8),
+              bottom!,
+            ],
           ],
         );
         return _FloatingHeaderWrapper(child: content);
@@ -318,6 +408,20 @@ class Header extends StatelessWidget {
           size: 15,
           variant: TextVariant.bold,
         );
+      case PageType.history:
+        return const AnymeXText("History",
+          autoResize: true,
+          maxLines: 1,
+          size: 15,
+          variant: TextVariant.bold,
+        );
+      case PageType.stats:
+        return const AnymeXText("Stats",
+          autoResize: true,
+          maxLines: 1,
+          size: 15,
+          variant: TextVariant.bold,
+        );
     }
   }
 
@@ -333,6 +437,22 @@ class Header extends StatelessWidget {
     }
     if (type == PageType.extensions) {
       return AnymeXText("Manage plugins & sources",
+        autoResize: true,
+        maxLines: 1,
+        size: 11,
+        color: context.colors.onSurface.withOpacity(0.55),
+      );
+    }
+    if (type == PageType.history) {
+      return AnymeXText("Your watch & read history",
+        autoResize: true,
+        maxLines: 1,
+        size: 11,
+        color: context.colors.onSurface.withOpacity(0.55),
+      );
+    }
+    if (type == PageType.stats) {
+      return AnymeXText("Your watch & read statistics",
         autoResize: true,
         maxLines: 1,
         size: 11,
@@ -367,6 +487,16 @@ class Header extends StatelessWidget {
         _PillIconButton(
           onPressed: () => _showSortingSettings(context, libraryController),
           icon: Icon(Icons.sort, color: context.colors.primary, size: 18),
+          context: context,
+        ),
+      );
+    } else if (type == PageType.history && Get.isRegistered<HistorySearchController>()) {
+      final historyController = Get.find<HistorySearchController>();
+      list.add(
+        _PillIconButton(
+          onPressed: historyController.toggleSearch,
+          icon:
+              Icon(IconlyLight.search, color: context.colors.primary, size: 18),
           context: context,
         ),
       );

@@ -199,11 +199,12 @@ class Settings extends GetxController {
     }
   }
 
-  void checkForUpdates(BuildContext context) {
+  void checkForUpdates(BuildContext context, {bool manualCheck = false}) {
     UpdateManager().checkForUpdates(
       context,
       RxBool(true),
       isBeta: enableBetaUpdates.value,
+      manualCheck: manualCheck,
     );
   }
 
@@ -434,6 +435,12 @@ class Settings extends GetxController {
     update();
   }
 
+  double get bottomNavBarMargin => _getUISetting((s) => s.bottomNavBarMargin);
+  set bottomNavBarMargin(double value) {
+    uiSettings.update((s) => s?.bottomNavBarMargin = value);
+    UISettingsKeys.bottomNavBarMargin.set(value);
+  }
+
   double get glowMultiplier => _getUISetting((s) => s.glowMultiplier);
   set glowMultiplier(double value) {
     uiSettings.update((s) => s?.glowMultiplier = value);
@@ -498,13 +505,6 @@ class Settings extends GetxController {
   set animationDuration(int value) {
     uiSettings.update((s) => s?.animationDuration = value);
     UISettingsKeys.animationDuration.set(value);
-  }
-
-  bool get showContinueWatchingCard =>
-      _getUISetting((s) => s.showContinueWatchingCard);
-  set showContinueWatchingCard(bool value) {
-    uiSettings.update((s) => s?.showContinueWatchingCard = value);
-    UISettingsKeys.showContinueWatchingCard.set(value);
   }
 
   bool get defaultPortraitMode =>

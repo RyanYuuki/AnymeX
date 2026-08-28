@@ -50,23 +50,48 @@ class _SettingsModerationState extends State<SettingsModeration> {
 
   @override
   Widget build(BuildContext context) {
-    return Glow(
-      child: Scaffold(
-        body: Column(
-          children: [
-            const NestedHeader(title: 'Moderation Panel'),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: getResponsiveValue(context,
-                    mobileValue:
-                        const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 50.0),
-                    desktopValue:
-                        const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
+    return Scaffold(
+      body: SuperListView(
+        padding: getResponsiveValue(context,
+            mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
+            desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            behavior: HitTestBehavior.opaque,
+            child: const MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Row(
+                children: [
+                  CustomBackButton(),
+                  SizedBox(width: 10),
+                  AnymeXText("Moderation Panel",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 30),
+
+          // User Role Display
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color:
+                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
+            child: Column(
+              children: [
+                Obx(() => CustomTile(
+                      icon: Icons.admin_panel_settings,
+                      title: "Your Role",
+                      description:
+                          commentumService.currentUserRole.value.toUpperCase(),
+                      postFix: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _getRoleColor(),
                           borderRadius: BorderRadius.circular(12),
                           color: Theme.of(context)
                               .colorScheme

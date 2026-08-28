@@ -26,6 +26,7 @@ abstract class MediaCardStyle {
 
   double getHeight(bool isDesktop);
   double getExtraHeight(bool isDesktop);
+  double getAspectRatio(bool isDesktop);
   Widget buildCard(BuildContext context, MediaCardProps props);
 }
 
@@ -81,5 +82,10 @@ class MediaCardRegistry {
   static double getExtraHeightByIndex(int index, bool isDesktop) {
     if (_styles.isEmpty) return 0;
     return getByIndex(index).getExtraHeight(isDesktop);
+  }
+
+  static double getAspectRatioByIndex(int index, bool isDesktop) {
+    if (_styles.isEmpty) return isDesktop ? (150 / 230) : (108 / 170);
+    return getByIndex(index).getAspectRatio(isDesktop);
   }
 }

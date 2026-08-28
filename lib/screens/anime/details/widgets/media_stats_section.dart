@@ -1,10 +1,12 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
 import 'package:anymex/models/mangaupdates/next_release.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/screens/anime/details/controller/media_details_controller.dart';
 import 'package:anymex/screens/anime/details/media_details_page.dart';
+import 'package:anymex/screens/anime/studio_details_page.dart';
 import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
 import 'package:anymex/screens/anime/widgets/social_section.dart';
@@ -16,6 +18,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +58,7 @@ Widget buildMediaStatsSection(
             const SizedBox(height: 8),
             AnymeXText(cleanDesc,
               size: 13,
-              maxLines: 8,
+              maxLines: 9999,
               overflow: TextOverflow.ellipsis,
               isMarquee: false,
             ),
@@ -196,15 +199,16 @@ Widget _buildSection(String title, List<Widget> children, ColorScheme colors) {
 }
 
 Widget buildSeasonsSection(BuildContext context, Media mediaData) {
-  final filteredRelations = mediaData.relations
-          ?.where((element) =>
-              element.relationType == 'SEQUEL' ||
-              element.relationType == 'PREQUEL')
-          .take(2)
-          .toList() ??
-      [];
+  final prequels = mediaData.relations?.where((element) => element.relationType == 'PREQUEL').toList() ?? [];
+  final sequels = mediaData.relations?.where((element) => element.relationType == 'SEQUEL').toList() ?? [];
+  final filteredRelations = [
+    if (prequels.isNotEmpty) prequels.first,
+    if (sequels.isNotEmpty) sequels.first,
+  ];
 
   if (filteredRelations.isEmpty) return const SizedBox.shrink();
+
+  final colors = context.colors;
 
   return _buildSection(
       'Seasons',
@@ -223,42 +227,28 @@ Widget buildSeasonsSection(BuildContext context, Media mediaData) {
             );
 
             return Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  navigate(() => MediaDetailsPage(
-                        media: media,
-                        tag: relation.id.toString(),
-                      ));
-                },
-                child: Container(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: ImageButton(
+                  buttonText: relation.relationType,
+                  backgroundImage: relation.cover.isNotEmpty ? relation.cover : relation.poster,
+                  width: double.infinity,
                   height: 70,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
-                      image: NetworkImage(relation.cover.isNotEmpty
-                          ? relation.cover
-                          : relation.poster),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.55),
-                        BlendMode.darken,
-                      ),
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: AnymeXText(relation.relationType,
-                    variant: TextVariant.bold,
-                    size: 14,
-                    color: Colors.white,
-                  ),
+                  borderRadius: 12,
+                  onPressed: () {
+                    navigate(() => MediaDetailsPage(
+                          media: media,
+                          tag: relation.id.toString(),
+                        ));
+                  },
+                  imageProportion: 0.5,
                 ),
               ),
             );
           }).toList(),
         )
       ],
-      context.colors);
+      colors);
 }
 
 Widget buildExtrasSection(BuildContext context, Media mediaData) {
@@ -540,25 +530,28 @@ Widget buildStatsGrid(BuildContext context, Media media) {
   final yearStr = media.seasonYear?.toString() ?? '';
 
   final seasonText = [
-    if (media.season.isNotEmpty) media.season,
+    if (media.season.isNotEmpty && media.season != '?') media.season,
     if (yearStr.isNotEmpty) yearStr,
   ].join(' ');
 
   final stats = [
     if ((media.studios ?? []).isNotEmpty)
       MapEntry('Studio', (media.studios ?? []).join(', ')),
-    if (isAnime && media.totalEpisodes.isNotEmpty && media.totalEpisodes != '0')
+    if (isAnime && media.totalEpisodes.isNotEmpty && media.totalEpisodes != '0' && media.totalEpisodes != '?')
       MapEntry('Episodes', media.totalEpisodes),
     if (!isAnime &&
         (media.totalChapters ?? '').isNotEmpty &&
-        media.totalChapters != '0')
+        media.totalChapters != '0' &&
+        media.totalChapters != '?')
       MapEntry('Chapters', media.totalChapters!),
-    if (media.duration.isNotEmpty) MapEntry('Duration', media.duration),
-    if (seasonText.isNotEmpty) MapEntry('Season', seasonText),
-    if (media.status.isNotEmpty) MapEntry('Status', media.status),
-    if (media.format.isNotEmpty) MapEntry('Format', media.format),
-    if (media.rating.isNotEmpty) MapEntry('Score', '★ ${media.rating}'),
-    if (media.popularity.isNotEmpty) MapEntry('Popularity', media.popularity),
+    if (isAnime && media.duration.isNotEmpty && media.duration != '?') MapEntry('Duration', media.duration),
+    if (seasonText.trim().isNotEmpty) MapEntry('Season', seasonText.trim()),
+    if (media.status.isNotEmpty && media.status != '?') MapEntry('Status', media.status),
+    if (media.format.isNotEmpty && media.format != '?') MapEntry('Format', media.format),
+    if (media.sourceMaterial != null && media.sourceMaterial!.isNotEmpty && media.sourceMaterial != '?')
+      MapEntry('Source', formatSourceMaterial(media.sourceMaterial)),
+    if (media.rating.isNotEmpty && media.rating != '?') MapEntry('Score', '★ ${media.rating}'),
+    if (media.popularity.isNotEmpty && media.popularity != '?') MapEntry('Popularity', media.popularity),
   ];
 
   if (stats.isEmpty) return const SizedBox.shrink();
@@ -576,29 +569,55 @@ Widget buildStatsGrid(BuildContext context, Media media) {
     child: Wrap(
       spacing: 20,
       runSpacing: 12,
-      children: stats
-          .map((entry) => buildStatCard(context, entry.key, entry.value))
-          .toList(),
+      children: stats.map((entry) {
+        VoidCallback? onTap;
+        if (entry.key == 'Studio' && (media.studios ?? []).isNotEmpty) {
+          final studioName = media.studios!.first;
+          onTap = () async {
+            final studioId = await AnilistData.fetchStudioIdByName(studioName);
+            if (studioId != null && context.mounted) {
+              showStudioDetailsSheet(
+                context,
+                studioId,
+                studioName,
+              );
+            }
+          };
+        }
+        return buildStatCard(context, entry.key, entry.value, onTap: onTap);
+      }).toList(),
     ),
   );
 }
 
-Widget buildStatCard(BuildContext context, String label, String value) {
+Widget buildStatCard(BuildContext context, String label, String value,
+    {VoidCallback? onTap}) {
   final colors = context.colors;
 
-  return Column(
+  final card = Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: [
-      AnymeXText(label,
+      AnymeXText(
+        label,
         size: 11,
         color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
       ),
       const SizedBox(height: 2),
-      AnymeXText(value,
+      AnymeXText(
+        value,
         size: 13,
         variant: TextVariant.semiBold,
       ),
     ],
   );
+
+  if (onTap != null) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: card,
+    );
+  }
+  return card;
 }

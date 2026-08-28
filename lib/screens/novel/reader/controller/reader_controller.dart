@@ -4,6 +4,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/controllers/stats/stats_tracker.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/volume_key_handler.dart';
 import 'package:anymex/utils/logger.dart';
@@ -118,6 +119,7 @@ class NovelReaderController extends GetxController {
 
   Rx<Chapter> savedChapter = Chapter().obs;
   RxInt consecutiveReads = 0.obs;
+  Timer? _statsTimer;
 
   @override
   void onInit() {
@@ -131,6 +133,17 @@ class NovelReaderController extends GetxController {
     fetchData();
     scrollController.addListener(_scrollListener);
     _initTts();
+    _statsTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      Get.find<StatsTracker>().logRead(
+        media.id,
+        media.title,
+        1,
+        chaptersCompleted: 0,
+        type: 'novel',
+        poster: media.poster,
+        cover: media.cover,
+      );
+    });
   }
 
   @override
@@ -143,6 +156,7 @@ class NovelReaderController extends GetxController {
     _disableVolumeKeys();
     flutterTts.stop();
     WakelockPlus.disable();
+    _statsTimer?.cancel();
     super.onClose();
   }
 

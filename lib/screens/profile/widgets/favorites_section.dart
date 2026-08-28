@@ -202,6 +202,7 @@ class FavoritesSection extends StatelessWidget {
             title: item.title ?? '?',
             poster: item.cover ?? '',
             serviceType: ServicesType.anilist,
+            mediaType: isAnime ? ItemType.anime : ItemType.manga,
           );
 
     return GestureDetector(

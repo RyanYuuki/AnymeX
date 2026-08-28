@@ -21,6 +21,7 @@ import 'package:anymex/screens/manga/widgets/track_dialog.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/anime/media_header.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
@@ -187,7 +188,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
             child: ResponsiveNavBar(
               isDesktop: false,
               currentIndex: selected,
-              margin: EdgeInsets.fromLTRB(32, 0, 32, isDesktop ? 32 : 10),
+              margin: EdgeInsets.fromLTRB(32, 0, 32, settingsController.bottomNavBarMargin),
               items: navItems,
             ),
           ),
@@ -361,6 +362,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                           ? 'Recommended Anime'
                           : 'Recommended Manga',
                       variant: DataVariant.recommendation,
+                      type: controller.isAnime ? ItemType.anime : ItemType.manga,
                     );
                   }),
                 ],
@@ -538,9 +540,14 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
               }
             }
 
+            final String? targetScanlator = ch.scanlator;
+            final filteredChapters = (targetScanlator != null && targetScanlator.isNotEmpty)
+                ? controller.chapterList.where((c) => c.scanlator == targetScanlator).toList()
+                : controller.chapterList;
+
             await navigate(() => ReadingPage(
                   anilistData: mediaData,
-                  chapterList: controller.chapterList,
+                  chapterList: filteredChapters,
                   currentChapter: ch,
                   shouldTrack: shouldTrackValue,
                 ));

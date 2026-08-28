@@ -33,6 +33,7 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
   Offset _baseOffset = Offset.zero;
   Offset _pinchStartFocalPoint = Offset.zero;
   Offset _doubleTapPosition = Offset.zero;
+  int _activePointers = 0;
 
   late final AnimationController _zoomAnimController;
   double _animStartScale = 1.0;
@@ -293,6 +294,9 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
   }
 
   void _handleScaleEnd(ScaleEndDetails details) {
+    setState(() {
+      _activePointers = 0;
+    });
     if (_scale < 1.0) {
       _animateZoom(
         1.0,
@@ -469,32 +473,49 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onScaleStart: _handleScaleStart,
-      onScaleUpdate: _handleScaleUpdate,
-      onScaleEnd: _handleScaleEnd,
-      onDoubleTapDown: (d) => _doubleTapPosition = d.localPosition,
-      onDoubleTap: () => _toggleScale(_doubleTapPosition),
-      child: Transform(
-        transform: Matrix4.diagonal3Values(_scale, _scale, 1.0)
-          ..setTranslationRaw(_offset.dx, _offset.dy, 0.0),
-        alignment: Alignment.center,
-        child: ScrollablePositionedList.separated(
-          key: ValueKey('$_scrollDirection-$_reverse'),
-          itemCount: math.max(_spreadCount, 1),
-          itemScrollController: widget.controller.itemScrollController,
-          scrollOffsetController: widget.controller.scrollOffsetController,
-          itemPositionsListener: widget.controller.itemPositionsListener,
-          scrollOffsetListener: widget.controller.scrollOffsetListener,
-          initialScrollIndex: _initialIndex,
-          physics: _scale > 1.0
-              ? const NeverScrollableScrollPhysics()
-              : const ClampingScrollPhysics(),
-          scrollDirection: _scrollDirection,
-          reverse: _reverse,
-          itemBuilder: _buildItemAt,
-          separatorBuilder: _buildSeparator,
+    return Listener(
+      onPointerDown: (event) {
+        setState(() {
+          _activePointers++;
+        });
+      },
+      onPointerUp: (event) {
+        setState(() {
+          _activePointers = math.max(0, _activePointers - 1);
+        });
+      },
+      onPointerCancel: (event) {
+        setState(() {
+          _activePointers = math.max(0, _activePointers - 1);
+        });
+      },
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onScaleStart: _handleScaleStart,
+        onScaleUpdate: _handleScaleUpdate,
+        onScaleEnd: _handleScaleEnd,
+        onDoubleTapDown: (d) => _doubleTapPosition = d.localPosition,
+        onDoubleTap: () => _toggleScale(_doubleTapPosition),
+        child: Transform(
+          transform: Matrix4.diagonal3Values(_scale, _scale, 1.0)
+            ..setTranslationRaw(_offset.dx, _offset.dy, 0.0),
+          alignment: Alignment.center,
+          child: ScrollablePositionedList.separated(
+            key: ValueKey('$_scrollDirection-$_reverse'),
+            itemCount: math.max(_spreadCount, 1),
+            itemScrollController: widget.controller.itemScrollController,
+            scrollOffsetController: widget.controller.scrollOffsetController,
+            itemPositionsListener: widget.controller.itemPositionsListener,
+            scrollOffsetListener: widget.controller.scrollOffsetListener,
+            initialScrollIndex: _initialIndex,
+            physics: (_scale > 1.0 || _activePointers >= 2)
+                ? const NeverScrollableScrollPhysics()
+                : const ClampingScrollPhysics(),
+            scrollDirection: _scrollDirection,
+            reverse: _reverse,
+            itemBuilder: _buildItemAt,
+            separatorBuilder: _buildSeparator,
+          ),
         ),
       ),
     );

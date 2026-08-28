@@ -24,7 +24,7 @@ import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.d
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/novel/search/search_page.dart';
 
-enum PageType { manga, anime, home, novel, library, extensions }
+enum PageType { manga, anime, home, novel, library, extensions, history, stats }
 
 class Header extends StatelessWidget {
   final PageType type;

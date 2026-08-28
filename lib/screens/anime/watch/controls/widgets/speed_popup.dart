@@ -67,7 +67,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
   void initState() {
     super.initState();
     _currentSpeed = widget.controller.playbackSpeed.value;
-    final saved = KvHelper.get<List<dynamic>>('custom_playback_speeds');
+    final saved = KvHelper.get<List<dynamic>>('custom_playback_speeds', defaultVal: []);
     if (saved != null && saved.isNotEmpty) {
       _speedChips = saved.map((e) => (e as num).toDouble()).toList();
     } else {

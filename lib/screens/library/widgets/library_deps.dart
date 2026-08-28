@@ -1,11 +1,10 @@
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
-import 'package:anymex/screens/library/editor/history_editor.dart';
 import 'package:anymex/screens/library/editor/list_editor.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
@@ -238,57 +237,26 @@ class ChipTabs extends StatelessWidget {
 
   const ChipTabs({super.key, required this.controller});
 
-  Widget _buildCustomPill({
-    required BuildContext context,
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-    VoidCallback? onLongPress,
-    Widget? icon,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          onLongPress: onLongPress,
-          borderRadius: BorderRadius.circular(30),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? context.colors.primary.withOpacity(0.08)
-                  : context.colors.surfaceContainer.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: isSelected
-                    ? context.colors.primary.withOpacity(0.3)
-                    : context.colors.outline.withOpacity(0.08),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (icon != null) ...[
-                  icon,
-                  const SizedBox(width: 6),
-                ],
-                AnymeXText(
-                  label,
-                  style: TextStyle(
-                    color: isSelected
-                        ? context.colors.primary
-                        : context.colors.onSurfaceVariant,
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
+
+  Widget _buildSettingsButton(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: () => navigate(
+          () => CustomListsEditor(type: controller.type.value)),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+            width: 0.5,
           ),
+        ),
+        child: Icon(
+          Iconsax.setting,
+          size: 16,
+          color: context.colors.onSurfaceVariant,
         ),
       ),
     );
@@ -297,92 +265,45 @@ class ChipTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Obx(() {
-          controller.selectedListIndex.value;
-          return StreamBuilder<List<dynamic>>(
-            stream: controller.offlineStorage
-                .watchCustomLists(controller.type.value)
-                .map((lists) => lists
-                    .where(
-                        (l) => l.mediaTypeIndex == controller.type.value.index)
-                    .toList()),
-            builder: (context, customListSnapshot) {
-              return StreamBuilder<List<dynamic>>(
-                stream: controller.getHistoryStream(),
-                builder: (context, historySnapshot) {
-                  final customLists = customListSnapshot.data ?? [];
-                  final historyCount = historySnapshot.data?.length ?? 0;
+      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+      child: Obx(() {
+        final lists = controller.customLists;
+        final selectedIndex = controller.selectedListIndex.value;
+        final isUnified = General.unifiedLibrary.get<bool>(true);
 
-                  return Row(children: [
-                    _buildCustomPill(
-                      context: context,
-                      label: 'History ($historyCount)',
-                      isSelected: controller.selectedListIndex.value == -1,
-                      onTap: () => controller.selectList(-1),
-                      onLongPress: () => navigate(
-                          () => HistoryEditor(type: controller.type.value)),
-                      icon: Icon(
-                        controller.selectedListIndex.value == -1
-                            ? Iconsax.clock5
-                            : Iconsax.clock,
-                        size: 16,
-                        color: controller.selectedListIndex.value == -1
-                            ? context.colors.primary
-                            : context.colors.onSurfaceVariant,
-                      ),
-                    ),
-                    ...List.generate(
-                      customLists.length,
-                      (index) {
-                        final list = customLists[index];
-                        final listName = list.listName ?? '';
+        final pillItems = <PillItem>[];
+        for (int i = 0; i < lists.length; i++) {
+          final list = lists[i];
+          final listName = list.listName ?? '';
+          final itemCount = list.mediaIds?.length ?? 0;
+          final isSelected = selectedIndex == i;
 
-                        return StreamBuilder<List<OfflineMedia>>(
-                          stream: controller.getCustomListStream(
-                              listName, controller.type.value),
-                          builder: (context, listDataSnapshot) {
-                            final itemCount =
-                                listDataSnapshot.data?.length ?? 0;
+          if (!isUnified && itemCount == 0 && !isSelected) {
+            continue;
+          }
 
-                            if (!General.unifiedLibrary.get<bool>(true) &&
-                                itemCount == 0 &&
-                                controller.selectedListIndex.value != index) {
-                              return const SizedBox.shrink();
-                            }
-
-                            return _buildCustomPill(
-                              context: context,
-                              label: '$listName ($itemCount)',
-                              isSelected:
-                                  controller.selectedListIndex.value == index,
-                              onTap: () => controller.selectList(index),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    _buildCustomPill(
-                      context: context,
-                      label: 'Edit',
-                      isSelected: false,
-                      onTap: () => navigate(
-                          () => CustomListsEditor(type: controller.type.value)),
-                      icon: Icon(
-                        Iconsax.edit,
-                        size: 16,
-                        color: context.colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ]);
-                },
-              );
-            },
+          pillItems.add(
+            PillItem(
+              label: '$listName ($itemCount)',
+              isSelected: isSelected,
+              onTap: () => controller.selectList(i),
+            ),
           );
-        }),
-      ),
+        }
+
+        return Row(
+          children: [
+            _buildSettingsButton(context),
+            const SizedBox(width: 8),
+            Expanded(
+              child: AnymeXPills(
+                scrollPadding: EdgeInsets.zero,
+                items: pillItems,
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }

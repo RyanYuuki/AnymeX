@@ -3,6 +3,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/navbar/navbar_registry.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -228,58 +229,118 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
 
   Widget _buildDesktopLayout(ThemeData theme) {
     final itemCount = widget.items.length;
-    const itemHeight = 56.0;
     const gap = 4.0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-      child: SizedBox(
-        height: itemCount * (itemHeight + gap) - gap,
-        child: Stack(
-          children: [
-            AnimatedBuilder(
-              animation: _indicatorPosition,
-              builder: (context, _) {
-                final pos = _indicatorPosition.value;
-                return Positioned(
-                  top: pos * (itemHeight + gap) + 2,
-                  left: 2,
-                  right: 2,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    height: itemHeight - 4,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22.multiplyRadius()),
-                      color: theme.colorScheme.primary
-                          .opaque(0.14, iReallyMeanIt: true),
-                      border: Border.all(
-                        color: theme.colorScheme.primary
-                            .opaque(0.2, iReallyMeanIt: true),
-                        width: 0.6,
-                      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: List.generate(itemCount, (index) {
+            final item = widget.items[index];
+            final isSelected = widget.currentIndex == index;
+            final hasSubItems = isSelected && (item.subWidget != null || (item.subItems != null && item.subItems!.isNotEmpty));
+            return Padding(
+              padding: EdgeInsets.only(bottom: index < itemCount - 1 ? gap : 0),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOutCubic,
+                decoration: BoxDecoration(
+                  color: hasSubItems
+                      ? theme.colorScheme.onSurface.opaque(0.04, iReallyMeanIt: true)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: hasSubItems
+                      ? theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true)
+                      : Colors.transparent,
+                    width: 0.8,
+                  ),
+                ),
+                padding: hasSubItems ? const EdgeInsets.all(6) : EdgeInsets.zero,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _ClassicDesktopNavItem(
+                      item: item,
+                      isSelected: isSelected,
+                      theme: theme,
+                      index: index,
                     ),
-                  ),
-                );
-              },
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOutCubic,
+                      child: hasSubItems
+                          ? Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(height: 8),
+                                if (item.subWidget != null)
+                                  item.subWidget!
+                                else
+                                  for (final sub in item.subItems!)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 2),
+                                      child: _buildSubNavItem(theme, sub),
+                                    ),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSubNavItem(ThemeData theme, NavItem sub) {
+    final active = sub.isSelected;
+    final iconColor = active
+        ? theme.colorScheme.primary
+        : theme.colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true);
+
+    return Tooltip(
+      message: sub.label,
+      child: InkWell(
+        onTap: () => sub.onTap(0),
+        borderRadius: BorderRadius.circular(12),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: active
+                ? theme.colorScheme.primary.opaque(0.12, iReallyMeanIt: true)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: active
+                  ? theme.colorScheme.primary.opaque(0.3, iReallyMeanIt: true)
+                  : Colors.transparent,
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(itemCount, (index) {
-                final item = widget.items[index];
-                final isSelected = widget.currentIndex == index;
-                return Padding(
-                  padding:
-                      EdgeInsets.only(bottom: index < itemCount - 1 ? gap : 0),
-                  child: _ClassicDesktopNavItem(
-                    item: item,
-                    isSelected: isSelected,
-                    theme: theme,
-                    index: index,
-                  ),
-                );
-              }),
-            ),
-          ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                active ? sub.selectedIcon : sub.unselectedIcon,
+                color: iconColor,
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              AnymeXText(
+                sub.label,
+                size: 11,
+                variant: active ? TextVariant.semiBold : TextVariant.regular,
+                color: iconColor,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -395,9 +456,17 @@ class _ClassicDesktopNavItemState extends State<_ClassicDesktopNavItem> {
           width: double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(22),
-            color: _isHovered && !isSelected
-                ? theme.colorScheme.onSurface.opaque(0.06, iReallyMeanIt: true)
-                : Colors.transparent,
+            color: isSelected
+                ? theme.colorScheme.primary.opaque(0.14, iReallyMeanIt: true)
+                : _isHovered
+                    ? theme.colorScheme.onSurface.opaque(0.06, iReallyMeanIt: true)
+                    : Colors.transparent,
+            border: isSelected
+                ? Border.all(
+                    color: theme.colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
+                    width: 0.6,
+                  )
+                : Border.all(color: Colors.transparent, width: 0.6),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

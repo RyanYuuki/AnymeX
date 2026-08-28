@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/stats/stats_tracker.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
@@ -366,6 +367,29 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   late Worker _rpcWorker;
   final VolumeKeyHandler _volumeKeyHandler = VolumeKeyHandler();
   StreamSubscription? _volumeSubscription;
+  Timer? _statsTimer;
+
+  void _startStatsTimer() {
+    _statsTimer?.cancel();
+    _statsTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (media.mediaType == ItemType.manga || media.mediaType == ItemType.novel) {
+        Get.find<StatsTracker>().logRead(
+          media.id,
+          media.title,
+          1,
+          chaptersCompleted: 0,
+          type: media.mediaType == ItemType.novel ? 'novel' : 'manga',
+          poster: media.poster,
+          cover: media.cover,
+        );
+      }
+    });
+  }
+
+  void _stopStatsTimer() {
+    _statsTimer?.cancel();
+    _statsTimer = null;
+  }
 
   @override
   void onInit() {
@@ -373,6 +397,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     WakelockPlus.enable();
     WidgetsBinding.instance.addObserver(this);
     _performSave(reason: 'Page opened');
+    _startStatsTimer();
 
     _rpcWorker = ever(currentChapter, (_) {
       DiscordRPCController.instance.updateMangaPresence(
@@ -528,8 +553,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     pageController?.dispose();
     _autoScrollResumeTimer?.cancel();
     _stopAutoScroll();
+    _stopStatsTimer();
     super.onClose();
-  }
+}
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -539,25 +565,30 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       case AppLifecycleState.paused:
         Logger.i('App paused - saving reading progress');
         _performSave(reason: 'App paused');
+        _stopStatsTimer();
         break;
       case AppLifecycleState.detached:
         Logger.i('App detached - performing final save');
         _performFinalSave();
+        _stopStatsTimer();
         break;
       case AppLifecycleState.resumed:
         Logger.i('App resumed');
         if (volumeKeysEnabled.value) {
           _enableVolumeKeys();
         }
+        _startStatsTimer();
         break;
       case AppLifecycleState.inactive:
         _performSave(reason: "App inactive");
         Logger.i('App inactive');
+        _stopStatsTimer();
         break;
       case AppLifecycleState.hidden:
         Logger.i('App hidden - saving progress');
         _performSave(reason: 'App hidden');
         _disableVolumeKeys();
+        _stopStatsTimer();
         break;
     }
   }

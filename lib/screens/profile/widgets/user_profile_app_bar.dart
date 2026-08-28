@@ -13,6 +13,8 @@ import 'package:iconsax/iconsax.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/screens/profile/compatibility/compatibility_input_page.dart';
+import 'package:anymex/utils/function.dart';
 
 class UserProfileAppBar extends StatefulWidget {
   final Profile user;
@@ -83,7 +85,29 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
       ),
       actions: [
         Container(
-          margin: const EdgeInsets.all(8),
+          margin: const EdgeInsets.only(top: 8, bottom: 8, right: 4),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: Icon(
+              Iconsax.heart5,
+              color: context.theme.colorScheme.primary,
+              size: 20,
+            ),
+            tooltip: 'Check Compatibility',
+            onPressed: () {
+              navigate(() => CompatibilityInputPage(
+                    prefillProfile: user,
+                    prefillUsername: user.name,
+                    useLoggedInUser: true,
+                  ));
+            },
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
           decoration: BoxDecoration(
             color: context.theme.colorScheme.surface.withOpacity(0.5),
             shape: BoxShape.circle,
@@ -165,6 +189,19 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                 ),
                               );
                             }
+                          },
+                        ),
+                        buildProfileSheetOption(
+                          ctx,
+                          icon: Iconsax.heart4,
+                          label: 'Check Compatibility',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            navigate(() => CompatibilityInputPage(
+                              prefillProfile: user,
+                              prefillUsername: name,
+                              useLoggedInUser: true,
+                            ));
                           },
                         ),
                       ],

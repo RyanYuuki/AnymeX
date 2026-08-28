@@ -31,15 +31,38 @@ class _SettingsCommentsState extends State<SettingsComments> {
     return Glow(
       child: Scaffold(
         body: Column(
-          children: [
-            const NestedHeader(title: 'Comment System'),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: getResponsiveValue(context,
-                    mobileValue:
-                        const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 50.0),
-                    desktopValue:
-                        const EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 20.0)),
+      children: [
+        const NestedHeader(title: 'Comment System'),
+        Expanded(
+          child: SuperListView(
+            padding: getResponsiveValue(context,
+                mobileValue: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                desktopValue:
+                    const EdgeInsets.fromLTRB(20.0, 20.0, 25.0, 20.0)),
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.pop(context),
+                behavior: HitTestBehavior.opaque,
+                child: const MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: Row(
+                    children: [
+                      CustomBackButton(),
+                      SizedBox(width: 10),
+                      AnymeXText("Comment System",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20)),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainer
+                        .opaque(0.3)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

@@ -24,6 +24,9 @@ class MinimalExoticCardStyle implements MediaCardStyle {
   double getExtraHeight(bool isDesktop) => isDesktop ? 40 : 35;
 
   @override
+  double getAspectRatio(bool isDesktop) => isDesktop ? (160 / 270) : (118 / 210);
+
+  @override
   Widget buildCard(BuildContext context, MediaCardProps props) {
     return MinimalExoticCard(
       itemData: props.itemData,

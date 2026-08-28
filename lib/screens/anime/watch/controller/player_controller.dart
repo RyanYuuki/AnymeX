@@ -11,6 +11,7 @@ import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.d
 
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/stats/stats_tracker.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -31,6 +32,7 @@ import 'package:anymex/screens/anime/watch/player/media_kit_player.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_media_session/flutter_media_session.dart';
 import 'package:flutter_media_session/flutter_media_session_platform_interface.dart';
+import 'package:file_picker/file_picker.dart';
 
 import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/media_syncer.dart';
@@ -98,6 +100,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final _mediaSession = FlutterMediaSession();
   bool _isMediaSessionActive = false;
   DateTime? _lastMediaSessionPositionUpdate;
+  int _secondsWatchedAccumulator = 0;
   final List<Episode> episodeList;
   final anymex.Media anilistData;
   RxList<model.Video> episodeTracks = RxList();
@@ -219,6 +222,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<bool> isTracksPaneOpened = false.obs;
   final Rx<bool> isAudioPaneOpened = false.obs;
   final Rx<bool> isSyncSubsPaneOpened = false.obs;
+  final Rx<bool> isSettingsPaneOpened = false.obs;
+  final RxList<model.Track> localSubtitles = <model.Track>[].obs;
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
   final Rx<bool> isSpeedPaneOpened = false.obs;
@@ -1187,6 +1192,20 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       currentEpisode.value.durationInMilliseconds =
           episodeDuration.value.inMilliseconds;
 
+      if (isPlaying.value) {
+        _secondsWatchedAccumulator++;
+        if (_secondsWatchedAccumulator >= 60) {
+          _secondsWatchedAccumulator = 0;
+          Get.find<StatsTracker>().logWatch(
+            anilistData.id,
+            anilistData.title,
+            1,
+            poster: anilistData.poster,
+            cover: anilistData.cover,
+          );
+        }
+      }
+
       if (_isTorrentBuffering && pos.inMilliseconds > 500) {
         _isTorrentBuffering = false;
         isBuffering.value = _basePlayer.state.isBuffering;
@@ -2147,6 +2166,32 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     });
   }
 
+  Future<void> pickLocalSubtitle() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['srt', 'vtt', 'ass', 'ssa'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final filePath = result.files.single.path!;
+        final fileName = p.basename(filePath);
+        final track = model.Track(
+          file: filePath,
+          label: fileName,
+        );
+        if (!localSubtitles.any((t) => t.file == filePath)) {
+          localSubtitles.add(track);
+        }
+        setExternalSub(track);
+        AnymeXToast.show(message: 'Subtitle loaded: $fileName');
+      }
+    } catch (e) {
+      AnymeXToast.show(message: 'Error loading subtitle: $e');
+    }
+  }
+
   void setExternalSub(model.Track? track) {
     if (track == null) {
       selectedExternalSub.value = model.Track();
@@ -2208,6 +2253,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   String _resolveSubtitleUrl(String subtitlePath) {
     final raw = subtitlePath.trim();
+    if (raw.startsWith('/') ||
+        raw.startsWith('file:') ||
+        raw.startsWith('content:') ||
+        (Platform.isWindows && raw.contains(':\\'))) {
+      return raw;
+    }
     final uri = Uri.tryParse(raw);
     if (uri != null && uri.hasScheme) {
       return raw;
