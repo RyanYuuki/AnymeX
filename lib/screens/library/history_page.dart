@@ -223,13 +223,6 @@ class _AnymeXHistoryPageState extends State<AnymeXHistoryPage> {
               statusBarColor: Colors.transparent,
             ),
           ),
-          if (!isDesktop)
-            Positioned(
-              bottom: MediaModeSelector.getBottomOffset(context),
-              left: 0,
-              right: 0,
-              child: const Center(child: MediaModeSelector(showPlayButton: true, isLibraryOrHistory: true)),
-            ),
         ],
       ),
     );

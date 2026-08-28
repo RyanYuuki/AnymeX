@@ -204,19 +204,6 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
               ),
             );
           }),
-          if (!isDesktop)
-            Obx(() {
-              final isExtensions =
-                  serviceHandler.serviceType.value == ServicesType.extensions;
-              if (isExtensions) return const SizedBox.shrink();
-              return Positioned(
-                bottom: MediaModeSelector.getBottomOffset(context),
-                left: 0,
-                right: 0,
-                child:
-                    const Center(child: MediaModeSelector(showPlayButton: false)),
-              );
-            }),
         ],
       ),
     );

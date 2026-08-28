@@ -84,62 +84,70 @@ class _MyLibraryState extends State<MyLibrary>
     final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
-    final double extraHeight = isDesktop ? 100.0 : 60.0;
-    final double topOffset = statusBarHeight + appBarHeight + extraHeight;
+    final settings = Get.find<Settings>();
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  height: topOffset,
+    return Obx(() {
+      final isLegacy = settings.useLegacyNavbar;
+      final double extraHeight = isDesktop
+          ? 100.0
+          : (isLegacy ? 96.0 : 60.0);
+      final double topOffset = statusBarHeight + appBarHeight + extraHeight;
+
+      return Scaffold(
+        extendBodyBehindAppBar: true,
+        body: Stack(
+          children: [
+            CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: topOffset,
+                  ),
                 ),
+                _LibraryContent(controller: controller),
+              ],
+            ),
+            CustomAnimatedAppBar(
+              isVisible: _isAppBarVisibleExternally,
+              scrollController: _scrollController,
+              headerContent: Header(
+                type: PageType.library,
+                bottom: isLegacy
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          LibrarySegmentedControl(controller: controller),
+                          const SizedBox(height: 2),
+                          ChipTabs(controller: controller),
+                        ],
+                      )
+                    : ChipTabs(controller: controller),
               ),
-              _LibraryContent(controller: controller),
-            ],
-          ),
-          CustomAnimatedAppBar(
-            isVisible: _isAppBarVisibleExternally,
-            scrollController: _scrollController,
-            headerContent: Header(
-              type: PageType.library,
-              bottom: ChipTabs(controller: controller),
+              visibleStatusBarStyle: SystemUiOverlayStyle(
+                statusBarIconBrightness:
+                    Theme.of(context).brightness == Brightness.light
+                        ? Brightness.dark
+                        : Brightness.light,
+                statusBarBrightness: Theme.of(context).brightness,
+                statusBarColor: Colors.transparent,
+              ),
+              hiddenStatusBarStyle: SystemUiOverlayStyle(
+                statusBarIconBrightness:
+                    Theme.of(context).brightness == Brightness.light
+                        ? Brightness.light
+                        : Brightness.dark,
+                statusBarBrightness:
+                    Theme.of(context).brightness == Brightness.light
+                        ? Brightness.dark
+                        : Brightness.light,
+                statusBarColor: Colors.transparent,
+              ),
             ),
-            visibleStatusBarStyle: SystemUiOverlayStyle(
-              statusBarIconBrightness:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Brightness.dark
-                      : Brightness.light,
-              statusBarBrightness: Theme.of(context).brightness,
-              statusBarColor: Colors.transparent,
-            ),
-            hiddenStatusBarStyle: SystemUiOverlayStyle(
-              statusBarIconBrightness:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Brightness.light
-                      : Brightness.dark,
-              statusBarBrightness:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Brightness.dark
-                      : Brightness.light,
-              statusBarColor: Colors.transparent,
-            ),
-          ),
-          if (!isDesktop)
-            Positioned(
-              bottom: MediaModeSelector.getBottomOffset(context),
-              left: 0,
-              right: 0,
-              child:
-                  const Center(child: MediaModeSelector(showPlayButton: false, isLibraryOrHistory: true)),
-            ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }
 

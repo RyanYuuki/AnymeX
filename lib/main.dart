@@ -14,6 +14,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/stats/stats_tracker.dart';
 import 'package:anymex/screens/stats/user_stats_page.dart';
+import 'package:anymex/screens/stats/controller/user_stats_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -424,9 +425,6 @@ class _FilterScreenState extends State<FilterScreen> {
   int _selectedIndex = 1;
   int _mobileSelectedIndex = 0;
 
-  final List<String> _onlineTabs = ['Home', 'Discover', 'Library', 'History', 'Stats'];
-  final List<String> _extensionTabs = ['Home', 'Anime', 'Manga', 'Novel', 'Extensions'];
-
   @override
   void initState() {
     super.initState();
@@ -453,7 +451,7 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   List<String> _getNavTabs(ServiceHandler authService, Settings settings) {
-    return authService.serviceType.value == ServicesType.extensions ? _extensionTabs : _onlineTabs;
+    return settings.navigationTabOrder;
   }
 
   Widget _getWidgetForTab(String tabKey) {
@@ -483,26 +481,41 @@ class _FilterScreenState extends State<FilterScreen> {
     }
   }
 
-  NavItem _getNavItemForTab(String tabKey, bool isSimkl, Function(int) onTap) {
+  NavItem _getNavItemForTab(String tabKey, bool isSimkl, Function(int) onTap,
+      {bool isDesktop = false}) {
+    final settings = Get.find<Settings>();
     Widget? subWidget;
 
-    if (tabKey == 'Discover') {
-      subWidget = const MediaModeSelector(
-        isVertical: true,
-        showPlayButton: false,
-      );
-    } else if (tabKey == 'Library') {
-      subWidget = const MediaModeSelector(
-        isVertical: true,
-        showPlayButton: false,
-        isLibraryOrHistory: true,
-      );
-    } else if (tabKey == 'History') {
-      subWidget = const MediaModeSelector(
-        isVertical: true,
-        showPlayButton: true,
-        isLibraryOrHistory: true,
-      );
+    if (!settings.useLegacyNavbar) {
+      if (tabKey == 'Discover') {
+        subWidget = MediaModeSelector(
+          isVertical: isDesktop,
+          showPlayButton: false,
+        );
+      } else if (tabKey == 'Library') {
+        subWidget = MediaModeSelector(
+          isVertical: isDesktop,
+          showPlayButton: false,
+          isLibraryOrHistory: true,
+        );
+      } else if (tabKey == 'History') {
+        subWidget = MediaModeSelector(
+          isVertical: isDesktop,
+          showPlayButton: true,
+          isLibraryOrHistory: true,
+        );
+      } else if (tabKey == 'Stats') {
+        final statsController = Get.isRegistered<UserStatsController>()
+            ? Get.find<UserStatsController>()
+            : Get.put(UserStatsController());
+        subWidget = Obx(() => MediaModeSelector(
+              isVertical: isDesktop,
+              customOptions: const ['All', 'Anime', 'Manga', 'Novel'],
+              selectedOption: statsController.activeFilter.value,
+              onOptionSelected: (val) =>
+                  statsController.activeFilter.value = val,
+            ));
+      }
     }
 
     switch (tabKey) {
@@ -629,7 +642,7 @@ class _FilterScreenState extends State<FilterScreen> {
             final _ = mediaModeController.rxMode.value;
             final isSimkl = authService.serviceType.value == ServicesType.simkl;
             final navTabs = _getNavTabs(authService, settings);
-            final navRailWidth = settings.navBarStyle == 0 ? 110.0 : 120.0;
+            final navRailWidth = settings.navBarStyle == 0 ? 120.0 : 120.0;
             final validIndex = _selectedIndex.clamp(0, navTabs.length);
 
             return SizedBox(
@@ -683,7 +696,8 @@ class _FilterScreenState extends State<FilterScreen> {
                               return avatar;
                             })),
                         for (final tab in navTabs)
-                          _getNavItemForTab(tab, isSimkl, _onItemTapped),
+                          _getNavItemForTab(tab, isSimkl, _onItemTapped,
+                              isDesktop: true),
                       ],
                     ),
                   ],
@@ -735,26 +749,31 @@ class _FilterScreenState extends State<FilterScreen> {
         },
         child: Scaffold(
             resizeToAvoidBottomInset: false,
-            body: LazyIndexedStack(
-              index: validIndex,
-              children: mobileRoutes,
-            ),
-            extendBody: true,
-            bottomNavigationBar: Column(
-              mainAxisSize: MainAxisSize.min,
+            body: Stack(
               children: [
-                ResponsiveNavBar(
-                  isDesktop: false,
-                  currentIndex: validIndex,
-                  margin: EdgeInsets.only(bottom: settings.bottomNavBarMargin, left: 32, right: 32, top: 10),
-                  items: [
-                    for (final tab in navTabs)
-                      _getNavItemForTab(tab, isSimkl, _onMobileItemTapped),
-                  ],
+                LazyIndexedStack(
+                  index: validIndex,
+                  children: mobileRoutes,
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: ResponsiveNavBar(
+                    isDesktop: false,
+                    currentIndex: validIndex,
+                    margin: EdgeInsets.only(bottom: settings.bottomNavBarMargin, left: 32, right: 32, top: 10),
+                    items: [
+                      for (final tab in navTabs)
+                        _getNavItemForTab(tab, isSimkl, _onMobileItemTapped,
+                            isDesktop: false),
+                    ],
+                  ),
                 ),
               ],
-            )),
-      );
+            ),
+            extendBody: true,
+      ));
     });
   }
 }

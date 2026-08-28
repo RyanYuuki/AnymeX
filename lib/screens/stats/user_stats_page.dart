@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/isar_models/daily_activity.dart';
 import 'package:anymex/database/isar_models/media_stats.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -22,6 +23,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 
 class UserStatsPage extends StatefulWidget {
@@ -37,7 +40,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
   final _heatmapScrollController = ScrollController();
   final _isAppBarVisibleExternally = ValueNotifier<bool>(true);
 
-  final RxString activeFilter = 'All'.obs; // 'All', 'Anime', 'Manga', 'Novel'
+  RxString get activeFilter => controller.activeFilter;
   final Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
   final Rx<DailyActivity?> selectedActivity = Rx<DailyActivity?>(null);
   bool _heatmapHasJumped = false;
@@ -52,9 +55,11 @@ class _UserStatsPageState extends State<UserStatsPage> {
     }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final today = DateTime.utc(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      final today = DateTime.utc(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
       selectedDate.value = today;
-      selectedActivity.value = controller.dailyActivities.firstWhereOrNull((a) => a.date.isAtSameMomentAs(today));
+      selectedActivity.value = controller.dailyActivities
+          .firstWhereOrNull((a) => a.date.isAtSameMomentAs(today));
     });
   }
 
@@ -75,8 +80,19 @@ class _UserStatsPageState extends State<UserStatsPage> {
 
   String _monthLabel(int month) {
     const labels = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
     return labels[month];
   }
@@ -85,12 +101,14 @@ class _UserStatsPageState extends State<UserStatsPage> {
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
+    final settings = Get.find<Settings>();
 
-    return AnymeXScaffold(
+    return Scaffold(
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           Obx(() {
-
+            final isLegacy = settings.useLegacyNavbar;
             final totalWatchTime = controller.totalWatchTimeMinutes;
             final totalReadTime = controller.totalReadTimeMinutes;
 
@@ -100,17 +118,27 @@ class _UserStatsPageState extends State<UserStatsPage> {
 
             if (activeFilter.value == 'Anime') {
               displayedMinutes = controller.mediaStats
-                  .where((e) => e.type == 'anime' || e.type == 'movie' || e.type == 'series')
+                  .where((e) =>
+                      e.type == 'anime' ||
+                      e.type == 'movie' ||
+                      e.type == 'series')
                   .fold(0, (sum, e) => sum + e.totalTimeMinutes);
               displayedUnits = controller.mediaStats
-                  .where((e) => e.type == 'anime' || e.type == 'movie' || e.type == 'series')
+                  .where((e) =>
+                      e.type == 'anime' ||
+                      e.type == 'movie' ||
+                      e.type == 'series')
                   .fold(0, (sum, e) => sum + e.totalUnitsConsumed);
-              
+
               final animeList = controller.mediaStats
-                  .where((e) => e.type == 'anime' || e.type == 'movie' || e.type == 'series')
+                  .where((e) =>
+                      e.type == 'anime' ||
+                      e.type == 'movie' ||
+                      e.type == 'series')
                   .toList();
               if (animeList.isNotEmpty) {
-                animeList.sort((a, b) => b.totalTimeMinutes.compareTo(a.totalTimeMinutes));
+                animeList.sort(
+                    (a, b) => b.totalTimeMinutes.compareTo(a.totalTimeMinutes));
                 favorite = animeList.first;
               }
             } else if (activeFilter.value == 'Manga') {
@@ -120,12 +148,13 @@ class _UserStatsPageState extends State<UserStatsPage> {
               displayedUnits = controller.mediaStats
                   .where((e) => e.type == 'manga')
                   .fold(0, (sum, e) => sum + e.totalUnitsConsumed);
-              
+
               final mangaList = controller.mediaStats
                   .where((e) => e.type == 'manga')
                   .toList();
               if (mangaList.isNotEmpty) {
-                mangaList.sort((a, b) => b.totalTimeMinutes.compareTo(a.totalTimeMinutes));
+                mangaList.sort(
+                    (a, b) => b.totalTimeMinutes.compareTo(a.totalTimeMinutes));
                 favorite = mangaList.first;
               }
             } else if (activeFilter.value == 'Novel') {
@@ -135,12 +164,13 @@ class _UserStatsPageState extends State<UserStatsPage> {
               displayedUnits = controller.mediaStats
                   .where((e) => e.type == 'novel')
                   .fold(0, (sum, e) => sum + e.totalUnitsConsumed);
-              
+
               final novelList = controller.mediaStats
                   .where((e) => e.type == 'novel')
                   .toList();
               if (novelList.isNotEmpty) {
-                novelList.sort((a, b) => b.totalTimeMinutes.compareTo(a.totalTimeMinutes));
+                novelList.sort(
+                    (a, b) => b.totalTimeMinutes.compareTo(a.totalTimeMinutes));
                 favorite = novelList.first;
               }
             } else {
@@ -156,15 +186,20 @@ class _UserStatsPageState extends State<UserStatsPage> {
               controller: _scrollController,
               slivers: [
                 SliverToBoxAdapter(
-                  child: SizedBox(height: statusBarHeight + appBarHeight + 10),
+                  child: SizedBox(
+                      height: statusBarHeight +
+                          appBarHeight +
+                          (isLegacy ? 60 : 10)),
                 ),
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      _buildPrimaryStatsRow(context, totalHrs, totalMins, displayedUnits),
+                      _buildPrimaryStatsRow(
+                          context, totalHrs, totalMins, displayedUnits),
                       const SizedBox(height: 14),
-                      _buildRankProgressCard(context, totalWatchTime + totalReadTime),
+                      _buildRankProgressCard(
+                          context, totalWatchTime + totalReadTime),
                       const SizedBox(height: 14),
                       _buildDailyAveragesRow(context),
                       const SizedBox(height: 20),
@@ -182,58 +217,89 @@ class _UserStatsPageState extends State<UserStatsPage> {
               ],
             );
           }),
-          CustomAnimatedAppBar(
-            isVisible: _isAppBarVisibleExternally,
-            scrollController: _scrollController,
-            headerContent: const Header(
-              type: PageType.stats,
-            ),
-            visibleStatusBarStyle: SystemUiOverlayStyle(
-              statusBarIconBrightness:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Brightness.dark
-                      : Brightness.light,
-              statusBarBrightness: Theme.of(context).brightness,
-              statusBarColor: Colors.transparent,
-            ),
-            hiddenStatusBarStyle: SystemUiOverlayStyle(
-              statusBarIconBrightness:
-                  Theme.of(context).brightness == Brightness.light
-                      ? Brightness.dark
-                      : Brightness.light,
-              statusBarBrightness: Theme.of(context).brightness,
-              statusBarColor: Colors.transparent,
-            ),
-          ),
-          Positioned(
-            bottom: MediaModeSelector.getBottomOffset(context),
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Obx(() => MediaModeSelector(
-                    customOptions: const ['All', 'Anime', 'Manga', 'Novel'],
-                    selectedOption: activeFilter.value,
-                    onOptionSelected: (val) => activeFilter.value = val,
-                  )),
-            ),
-          ),
+          Obx(() {
+            final isLegacy = settings.useLegacyNavbar;
+            return CustomAnimatedAppBar(
+              isVisible: _isAppBarVisibleExternally,
+              scrollController: _scrollController,
+              headerContent: Header(
+                type: PageType.stats,
+                bottom: isLegacy ? _buildStatsModeChips(context) : null,
+              ),
+              visibleStatusBarStyle: SystemUiOverlayStyle(
+                statusBarIconBrightness:
+                    Theme.of(context).brightness == Brightness.light
+                        ? Brightness.dark
+                        : Brightness.light,
+                statusBarBrightness: Theme.of(context).brightness,
+                statusBarColor: Colors.transparent,
+              ),
+              hiddenStatusBarStyle: SystemUiOverlayStyle(
+                statusBarIconBrightness:
+                    Theme.of(context).brightness == Brightness.light
+                        ? Brightness.dark
+                        : Brightness.light,
+                statusBarBrightness: Theme.of(context).brightness,
+                statusBarColor: Colors.transparent,
+              ),
+            );
+          }),
         ],
       ),
     );
   }
 
-  Widget _buildPrimaryStatsRow(BuildContext context, int hrs, int mins, int units) {
+  Widget _buildStatsModeChips(BuildContext context) {
+    const options = [
+      ('All', Icons.grid_view_rounded),
+      ('Anime', Icons.movie_filter_rounded),
+      ('Manga', Iconsax.book),
+      ('Novel', Icons.auto_stories_rounded),
+    ];
+
+    return Obx(() {
+      final items = options.map((opt) {
+        return PillItem(
+          icon: opt.$2,
+          label: opt.$1,
+          isSelected: activeFilter.value == opt.$1,
+          onTap: () => activeFilter.value = opt.$1,
+        );
+      }).toList();
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: AnymeXPills(
+          scrollPadding: EdgeInsets.zero,
+          expandEqually: true,
+          items: items,
+        ),
+      );
+    });
+  }
+
+  Widget _buildPrimaryStatsRow(
+      BuildContext context, int hrs, int mins, int units) {
     final timeReadCard = _buildDashboardCard(
       context: context,
-      title: activeFilter.value == 'Anime' ? 'TIME WATCHED' : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel' ? 'TIME READ' : 'TIME SPENT'),
+      title: activeFilter.value == 'Anime'
+          ? 'TIME WATCHED'
+          : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
+              ? 'TIME READ'
+              : 'TIME SPENT'),
       value: hrs > 0 ? "${hrs}h ${mins}m" : "${mins}m",
       icon: IconlyLight.timeCircle,
     );
 
     final pagesCard = _buildDashboardCard(
       context: context,
-      title: activeFilter.value == 'Anime' ? 'Episodes' : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel' ? 'Chapters' : 'Items Consumed'),
-      value: units >= 1000 ? "${(units / 1000.0).toStringAsFixed(1)}k" : "$units",
+      title: activeFilter.value == 'Anime'
+          ? 'Episodes'
+          : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
+              ? 'Chapters'
+              : 'Items Consumed'),
+      value:
+          units >= 1000 ? "${(units / 1000.0).toStringAsFixed(1)}k" : "$units",
       icon: IconlyLight.paper,
     );
 
@@ -299,7 +365,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: context.colors.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -398,14 +465,18 @@ class _UserStatsPageState extends State<UserStatsPage> {
               child: child,
             ),
           Padding(
-            padding: EdgeInsets.only(right: (child != null && isChildOnRight) ? 56.0 : 0.0),
+            padding: EdgeInsets.only(
+                right: (child != null && isChildOnRight) ? 56.0 : 0.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    Icon(icon, size: 12, color: context.colors.onSurfaceVariant.withOpacity(0.5)),
+                    Icon(icon,
+                        size: 12,
+                        color:
+                            context.colors.onSurfaceVariant.withOpacity(0.5)),
                     const SizedBox(width: 6),
                     Expanded(
                       child: AnymeXText(
@@ -440,17 +511,21 @@ class _UserStatsPageState extends State<UserStatsPage> {
     );
   }
 
-  Widget _buildFavoriteTitleShowcase(BuildContext context, MediaStats? favorite) {
+  Widget _buildFavoriteTitleShowcase(
+      BuildContext context, MediaStats? favorite) {
     if (favorite == null) return const SizedBox.shrink();
 
     final totalHrs = favorite.totalTimeMinutes ~/ 60;
     final totalMins = favorite.totalTimeMinutes % 60;
-    final timeStr = totalHrs > 0 ? '${totalHrs}h ${totalMins}m' : '${totalMins}m';
+    final timeStr =
+        totalHrs > 0 ? '${totalHrs}h ${totalMins}m' : '${totalMins}m';
 
-    final mediaType = favorite.type == 'anime' || favorite.type == 'movie' || favorite.type == 'series'
+    final mediaType = favorite.type == 'anime' ||
+            favorite.type == 'movie' ||
+            favorite.type == 'series'
         ? ItemType.anime
         : (favorite.type == 'novel' ? ItemType.novel : ItemType.manga);
-    
+
     final mediaObj = Media(
       id: favorite.mediaId,
       title: favorite.title,
@@ -476,7 +551,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
         const SizedBox(height: 12),
         ImageButton(
           buttonText: favorite.title,
-          backgroundColor: context.colors.surfaceContainerLowest.withOpacity(0.2),
+          backgroundColor:
+              context.colors.surfaceContainerLowest.withOpacity(0.2),
           subText: 'FAVORITE • $timeStr spent',
           tagIcon: IconlyLight.bookmark,
           backgroundImage: favorite.poster ?? '',
@@ -486,11 +562,14 @@ class _UserStatsPageState extends State<UserStatsPage> {
           imageProportion: 0.35,
           onPressed: () {
             if (mediaType == ItemType.anime) {
-              navigateWithAnimation(() => AnimeDetailsPage(media: mediaObj, tag: favorite.title));
+              navigateWithAnimation(
+                  () => AnimeDetailsPage(media: mediaObj, tag: favorite.title));
             } else if (mediaType == ItemType.manga) {
-              navigateWithAnimation(() => MangaDetailsPage(media: mediaObj, tag: favorite.title));
+              navigateWithAnimation(
+                  () => MangaDetailsPage(media: mediaObj, tag: favorite.title));
             } else {
-              navigateWithAnimation(() => NovelDetailsPage(media: mediaObj, tag: favorite.title));
+              navigateWithAnimation(
+                  () => NovelDetailsPage(media: mediaObj, tag: favorite.title));
             }
           },
         ),
@@ -510,7 +589,9 @@ class _UserStatsPageState extends State<UserStatsPage> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 10, color: context.colors.onSurfaceVariant.withOpacity(0.5)),
+              Icon(icon,
+                  size: 10,
+                  color: context.colors.onSurfaceVariant.withOpacity(0.5)),
               const SizedBox(width: 4),
               Expanded(
                 child: AnymeXText(
@@ -549,7 +630,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       final totalMins = h.watchTimeMinutes + h.readTimeMinutes;
 
       amountMap[key] = totalMins;
-      
+
       int level = 0;
       if (totalMins > 0 && totalMins <= 15) {
         level = 2;
@@ -594,7 +675,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || _heatmapHasJumped) return;
         if (_heatmapScrollController.hasClients) {
-          _heatmapScrollController.jumpTo(_heatmapScrollController.position.maxScrollExtent);
+          _heatmapScrollController
+              .jumpTo(_heatmapScrollController.position.maxScrollExtent);
           _heatmapHasJumped = true;
         }
       });
@@ -655,7 +737,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
                         return SizedBox(
                           height: cellStep,
                           child: Center(
-                            child: AnymeXText(dayLabels[row], style: dayLabelStyle),
+                            child: AnymeXText(dayLabels[row],
+                                style: dayLabelStyle),
                           ),
                         );
                       }),
@@ -679,7 +762,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                 left: monthOffsets[i],
                                 child: AnymeXText(
                                   monthLabels[i],
-                                  style: TextStyle(fontSize: 9, color: subtleText),
+                                  style:
+                                      TextStyle(fontSize: 9, color: subtleText),
                                 ),
                               );
                             }),
@@ -695,13 +779,16 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                 width: cellStep,
                                 child: Column(
                                   children: List.generate(7, (row) {
-                                    final date = gridStart.add(Duration(days: col * 7 + row));
-                                    final dateStrip = DateTime(date.year, date.month, date.day);
+                                    final date = gridStart
+                                        .add(Duration(days: col * 7 + row));
+                                    final dateStrip = DateTime(
+                                        date.year, date.month, date.day);
                                     final key = _dayKey(dateStrip);
                                     final level = levelMap[key] ?? 0;
                                     final minutes = amountMap[key] ?? 0;
 
-                                    final isFuture = dateStrip.isAfter(todayDate);
+                                    final isFuture =
+                                        dateStrip.isAfter(todayDate);
 
                                     Color cellColor;
                                     if (isFuture) {
@@ -709,29 +796,37 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                     } else if (level == 0) {
                                       cellColor = emptyColor;
                                     } else {
-                                      final opacity = 0.15 + (level / 10.0) * 0.85;
+                                      final opacity =
+                                          0.15 + (level / 10.0) * 0.85;
                                       cellColor = primary.withOpacity(opacity);
                                     }
 
                                     final tooltipText =
                                         '${_dayName(date.weekday)}, ${date.day} ${_monthLabel(date.month)} | $minutes mins active';
 
-                                    final isSelected = selectedDate.value?.isAtSameMomentAs(dateStrip) ?? false;
+                                    final isSelected = selectedDate.value
+                                            ?.isAtSameMomentAs(dateStrip) ??
+                                        false;
 
                                     return SizedBox(
                                       width: cellStep,
                                       height: cellStep,
                                       child: Padding(
-                                        padding: const EdgeInsets.all(cellGap / 2),
+                                        padding:
+                                            const EdgeInsets.all(cellGap / 2),
                                         child: Tooltip(
                                           message: isFuture ? '' : tooltipText,
                                           preferBelow: false,
                                           verticalOffset: 14,
                                           decoration: BoxDecoration(
-                                            color: context.colors.surfaceContainerHighest,
-                                            borderRadius: BorderRadius.circular(8),
+                                            color: context
+                                                .colors.surfaceContainerHighest,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             border: Border.all(
-                                              color: context.colors.outlineVariant.withOpacity(0.3),
+                                              color: context
+                                                  .colors.outlineVariant
+                                                  .withOpacity(0.3),
                                             ),
                                           ),
                                           textStyle: TextStyle(
@@ -741,18 +836,28 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                           ),
                                           triggerMode: TooltipTriggerMode.tap,
                                           child: GestureDetector(
-                                            onTap: isFuture ? null : () {
-                                              selectedDate.value = dateStrip;
-                                              selectedActivity.value = controller.dailyActivities.firstWhereOrNull(
-                                                (a) => a.date.isAtSameMomentAs(dateStrip)
-                                              );
-                                            },
+                                            onTap: isFuture
+                                                ? null
+                                                : () {
+                                                    selectedDate.value =
+                                                        dateStrip;
+                                                    selectedActivity.value = controller
+                                                        .dailyActivities
+                                                        .firstWhereOrNull((a) => a
+                                                            .date
+                                                            .isAtSameMomentAs(
+                                                                dateStrip));
+                                                  },
                                             child: Container(
                                               decoration: BoxDecoration(
                                                 color: cellColor,
-                                                borderRadius: BorderRadius.circular(3),
+                                                borderRadius:
+                                                    BorderRadius.circular(3),
                                                 border: isSelected
-                                                    ? Border.all(color: context.colors.onSurface, width: 1.2)
+                                                    ? Border.all(
+                                                        color: context
+                                                            .colors.onSurface,
+                                                        width: 1.2)
                                                     : null,
                                               ),
                                             ),
@@ -783,7 +888,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
   Widget _buildDayDetailPanel(BuildContext context) {
     if (selectedDate.value == null) return const SizedBox.shrink();
 
-    final formattedDate = DateFormat('MMMM d, yyyy').format(selectedDate.value!);
+    final formattedDate =
+        DateFormat('MMMM d, yyyy').format(selectedDate.value!);
     final activity = selectedActivity.value;
 
     final watchMins = activity?.watchTimeMinutes ?? 0;
@@ -828,7 +934,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
             Row(
               children: [
                 if (watchMins > 0) ...[
-                  Icon(IconlyLight.play, size: 12, color: context.colors.primary),
+                  Icon(IconlyLight.play,
+                      size: 12, color: context.colors.primary),
                   const SizedBox(width: 4),
                   AnymeXText(
                     '$watchMins min watch ($eps eps)',
@@ -837,7 +944,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   const SizedBox(width: 16),
                 ],
                 if (readMins > 0) ...[
-                  Icon(IconlyLight.paper, size: 12, color: context.colors.secondary),
+                  Icon(IconlyLight.paper,
+                      size: 12, color: context.colors.secondary),
                   const SizedBox(width: 4),
                   AnymeXText(
                     '$readMins min read ($chs chs)',
@@ -896,9 +1004,13 @@ class _UserStatsPageState extends State<UserStatsPage> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.3),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest
+                        .opaque(0.3),
                     border: Border.all(
-                      color: context.colors.outline.opaque(0.1, iReallyMeanIt: true),
+                      color: context.colors.outline
+                          .opaque(0.1, iReallyMeanIt: true),
                     ),
                   ),
                   child: Material(
@@ -907,25 +1019,32 @@ class _UserStatsPageState extends State<UserStatsPage> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(16),
                       onTap: () {
-                        final mediaType = item.type == 'anime' || item.type == 'movie' || item.type == 'series'
+                        final mediaType = item.type == 'anime' ||
+                                item.type == 'movie' ||
+                                item.type == 'series'
                             ? ItemType.anime
-                            : (item.type == 'novel' ? ItemType.novel : ItemType.manga);
+                            : (item.type == 'novel'
+                                ? ItemType.novel
+                                : ItemType.manga);
                         final mediaObj = Media(
                           id: item.mediaId,
                           title: item.title,
                           mediaType: mediaType,
                           poster: item.poster ?? '',
                           cover: item.cover ?? '',
-                          serviceType: item.mediaId.contains('*') 
-                              ? ServicesType.simkl 
+                          serviceType: item.mediaId.contains('*')
+                              ? ServicesType.simkl
                               : Get.find<ServiceHandler>().serviceType.value,
                         );
                         if (mediaType == ItemType.anime) {
-                          navigateWithAnimation(() => AnimeDetailsPage(media: mediaObj, tag: item.title));
+                          navigateWithAnimation(() => AnimeDetailsPage(
+                              media: mediaObj, tag: item.title));
                         } else if (mediaType == ItemType.manga) {
-                          navigateWithAnimation(() => MangaDetailsPage(media: mediaObj, tag: item.title));
+                          navigateWithAnimation(() => MangaDetailsPage(
+                              media: mediaObj, tag: item.title));
                         } else {
-                          navigateWithAnimation(() => NovelDetailsPage(media: mediaObj, tag: item.title));
+                          navigateWithAnimation(() => NovelDetailsPage(
+                              media: mediaObj, tag: item.title));
                         }
                       },
                       child: Padding(
@@ -957,7 +1076,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                   AnymeXText(
                                     '${item.type.capitalizeFirst} • Interacted: ${item.interactionCount} times',
                                     size: 11,
-                                    color: context.colors.onSurfaceVariant.withOpacity(0.6),
+                                    color: context.colors.onSurfaceVariant
+                                        .withOpacity(0.6),
                                   ),
                                 ],
                               ),
@@ -965,7 +1085,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
                             const SizedBox(width: 8),
                             Icon(
                               IconlyLight.arrowRight2,
-                              color: context.colors.onSurfaceVariant.withOpacity(0.5),
+                              color: context.colors.onSurfaceVariant
+                                  .withOpacity(0.5),
                               size: 16,
                             ),
                           ],
@@ -1001,7 +1122,9 @@ class _UserStatsPageState extends State<UserStatsPage> {
           ),
         ),
         const SizedBox(height: 12),
-        if (genres.isEmpty && formats.isEmpty && (!showStudios || studios.isEmpty))
+        if (genres.isEmpty &&
+            formats.isEmpty &&
+            (!showStudios || studios.isEmpty))
           AnymeXCard(
             padding: const EdgeInsets.all(24),
             child: Center(
@@ -1100,7 +1223,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
                       value: percent,
                       minHeight: 6,
                       backgroundColor: context.colors.primary.withOpacity(0.08),
-                      valueColor: AlwaysStoppedAnimation<Color>(context.colors.primary),
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(context.colors.primary),
                     ),
                   ),
                 ],
