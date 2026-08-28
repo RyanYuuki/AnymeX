@@ -91,8 +91,7 @@ class Settings extends GetxController {
         PlayerUiKeys.mediaIndicatorTheme.get<String>('default');
     readerControlThemeRx.value =
         ReaderKeys.readerControlTheme.get<String>('default');
-    chapterStyleRx.value =
-        ReaderKeys.chapterStyle.get<String>('compact');
+    chapterStyleRx.value = ReaderKeys.chapterStyle.get<String>('compact');
 
     useAlternateTitle.value = General.useAlternateTitle.get<bool>(false);
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
@@ -128,7 +127,7 @@ class Settings extends GetxController {
     try {
       final modes = await FlutterDisplayMode.supported;
       supportedModes.value = modes;
-      
+
       final savedStr = General.preferredDisplayMode.get<String?>();
       if (savedStr != null) {
         preferredDisplayMode.value = modes.firstWhere(
@@ -139,7 +138,7 @@ class Settings extends GetxController {
       } else {
         preferredDisplayMode.value = DisplayMode.auto;
       }
-      
+
       activeDisplayMode.value = await FlutterDisplayMode.active;
     } catch (e) {
       Logger.e("Error initializing display modes: $e");
@@ -390,6 +389,13 @@ class Settings extends GetxController {
     }
   }
 
+  bool get useLegacyNavbar => _getUISetting((s) => s.useLegacyNavbar);
+  set useLegacyNavbar(bool value) {
+    uiSettings.update((s) => s?.useLegacyNavbar = value);
+    UISettingsKeys.useLegacyNavbar.set(value);
+    uiSettings.refresh();
+    update();
+  }
 
   Map<String, bool> get homePageCards => _getUISetting((s) => s.homePageCards);
   Map<String, bool> get homePageCardsMal =>
@@ -401,20 +407,51 @@ class Settings extends GetxController {
     final service = Get.isRegistered<ServiceHandler>()
         ? Get.find<ServiceHandler>().serviceType.value.name
         : 'none';
-    return 'navigationTabOrder_$service';
+    final mode = useLegacyNavbar ? 'legacy' : 'modern';
+    return 'navigationTabOrder_${mode}_$service';
   }
 
   List<String> get navigationTabOrder {
     final raw = KvHelper.get<String>(_currentTabOrderKey, defaultVal: '');
-    final isDesktop = Get.context != null && MediaQuery.of(Get.context!).size.width > 600;
-    final authService = Get.isRegistered<ServiceHandler>() ? Get.find<ServiceHandler>() : null;
-    final isExtensionsService = authService?.serviceType.value == ServicesType.extensions;
+    final isDesktop =
+        Get.context != null && MediaQuery.of(Get.context!).size.width > 600;
+    final authService =
+        Get.isRegistered<ServiceHandler>() ? Get.find<ServiceHandler>() : null;
+    final isExtensionsService =
+        authService?.serviceType.value == ServicesType.extensions;
 
-    final defaultTabs = isExtensionsService
-        ? ['Library', 'Anime', 'Manga', 'Novel', 'Extensions']
-        : (isDesktop
-            ? ['Home', 'Anime', 'Manga', 'Library', 'Extensions']
-            : ['Home', 'Anime', 'Manga', 'Library']);
+    final defaultTabs = useLegacyNavbar
+        ? (isExtensionsService
+            ? [
+                'Home',
+                'Anime',
+                'Manga',
+                'Library',
+                'Stats',
+                if (isDesktop) 'Extensions'
+              ]
+            : (isDesktop
+                ? ['Home', 'Anime', 'Manga', 'Library', 'Stats', 'Extensions']
+                : ['Home', 'Anime', 'Manga', 'Library', 'Stats']))
+        : (isExtensionsService
+            ? [
+                'Home',
+                'Discover',
+                'Library',
+                'History',
+                'Stats',
+                if (isDesktop) 'Extensions'
+              ]
+            : (isDesktop
+                ? [
+                    'Home',
+                    'Discover',
+                    'Library',
+                    'History',
+                    'Stats',
+                    'Extensions'
+                  ]
+                : ['Home', 'Discover', 'Library', 'History', 'Stats']));
 
     if (raw.isEmpty) {
       return defaultTabs;

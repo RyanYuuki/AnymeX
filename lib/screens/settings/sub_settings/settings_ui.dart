@@ -5,12 +5,14 @@ import 'package:anymex/screens/settings/widgets/card_selector.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/screens/settings/widgets/carousel_style_selector.dart';
 import 'package:anymex/screens/settings/widgets/navbar_selector.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
@@ -109,28 +111,12 @@ class _SettingsUiState extends State<SettingsUi> {
                               },
                             ),
                           AnymeXTile(
-                            onTap: () => showCardStyleSwitcher(context),
-                            icon: Iconsax.card5,
-                            title: "Card Style",
-                            subtitle: "Customize media card presentation",
-                          ),
-                          AnymeXTile(
-                            onTap: () => showHistoryCardStyleSelector(context),
-                            icon: Iconsax.card5,
-                            title: "History Card Style",
-                            subtitle: "Customize history card presentation",
-                          ),
-                          AnymeXTile(
-                            onTap: () => showCarouselStyleSelector(context),
-                            icon: Icons.view_carousel_rounded,
-                            title: "Carousel Style",
-                            subtitle: "Change home screen hero carousel style",
-                          ),
-                          AnymeXTile(
-                            onTap: () => showNavBarStyleSwitcher(context),
-                            icon: Icons.navigation_rounded,
-                            title: 'Nav Bar Style',
-                            subtitle: 'Choose your navigation bar look',
+                            icon: Icons.font_download_rounded,
+                            title: 'Font Family',
+                            subtitle: settings.appFontFamily.isEmpty
+                                ? 'Default (Linotte)'
+                                : settings.appFontFamily,
+                            onTap: () => _showFontFamilyPicker(context),
                           ),
                           AnymeXTile(
                             icon: Icons.reorder_rounded,
@@ -164,15 +150,39 @@ class _SettingsUiState extends State<SettingsUi> {
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Font',
+                        title: 'Layout & Styles',
                         children: [
                           AnymeXTile(
-                            icon: Icons.font_download_rounded,
-                            title: 'Font Family',
-                            subtitle: settings.appFontFamily.isEmpty
-                                ? 'Default (Linotte)'
-                                : settings.appFontFamily,
-                            onTap: () => _showFontFamilyPicker(context),
+                            onTap: () => showCardStyleSwitcher(context),
+                            icon: Iconsax.card5,
+                            title: "Card Style",
+                            subtitle: "Customize media card presentation",
+                          ),
+                          AnymeXTile(
+                            onTap: () => showHistoryCardStyleSelector(context),
+                            icon: Iconsax.card5,
+                            title: "History Card Style",
+                            subtitle: "Customize history card presentation",
+                          ),
+                          AnymeXTile(
+                            onTap: () => showCarouselStyleSelector(context),
+                            icon: Icons.view_carousel_rounded,
+                            title: "Carousel Style",
+                            subtitle: "Change home screen hero carousel style",
+                          ),
+                          AnymeXTile(
+                            onTap: () => _showNavBarModeSwitcher(context),
+                            icon: Icons.view_sidebar_rounded,
+                            title: 'Nav Bar Layout',
+                            subtitle: settings.useLegacyNavbar
+                                ? 'Legacy (Direct Category Tabs)'
+                                : 'Modern (Discover & Floating Selector)',
+                          ),
+                          AnymeXTile(
+                            onTap: () => showNavBarStyleSwitcher(context),
+                            icon: Icons.navigation_rounded,
+                            title: 'Nav Bar Style',
+                            subtitle: 'Choose your navigation bar look',
                           ),
                         ],
                       ),
@@ -240,17 +250,54 @@ class _SettingsUiState extends State<SettingsUi> {
     );
   }
 
+  void _showNavBarModeSwitcher(BuildContext context) {
+    AnymeXDialog(
+      title: 'Nav Bar Layout',
+      showCancelButton: false,
+      confirmText: 'Close',
+      onConfirm: () {},
+      contentWidget: SizedBox(
+        width: double.maxFinite,
+        child: Obx(() => AnymeXTileBuilder<bool>(
+              items: const [true, false],
+              selectedItem: settings.useLegacyNavbar,
+              getTitle: (isLegacy) =>
+                  isLegacy ? 'Legacy Nav Bar' : 'Modern Nav Bar',
+              getSubtitle: (isLegacy) => isLegacy
+                  ? 'Direct tabs for Anime, Manga, and Novels. History accessed from Library.'
+                  : 'Discover and Library tabs with floating media mode selector, separate History tab.',
+              onItemPressed: (isLegacy) {
+                settings.useLegacyNavbar = isLegacy;
+                Navigator.pop(context);
+                setState(() {});
+              },
+            )),
+      ),
+    ).show(context);
+  }
+
   void _showReorderTabsDialog(BuildContext context) {
     final isSimkl =
         Get.find<ServiceHandler>().serviceType.value == ServicesType.simkl;
-    final allPossibleTabs = [
-      'Home',
-      'Anime',
-      'Manga',
-      'Library',
-      'Novel',
-      'Extensions'
-    ];
+    final isLegacy = settings.useLegacyNavbar;
+    final allPossibleTabs = isLegacy
+        ? [
+            'Home',
+            'Anime',
+            'Manga',
+            'Novel',
+            'Library',
+            'Stats',
+            'Extensions'
+          ]
+        : [
+            'Home',
+            'Discover',
+            'Library',
+            'History',
+            'Stats',
+            'Extensions'
+          ];
     final visibleTabs = settings.navigationTabOrder
         .where((t) => allPossibleTabs.contains(t))
         .toList();
@@ -260,10 +307,13 @@ class _SettingsUiState extends State<SettingsUi> {
 
     const tabIcons = {
       'Home': Icons.home_rounded,
+      'Discover': Iconsax.discover_13,
       'Anime': Icons.movie_rounded,
       'Manga': Icons.menu_book_rounded,
       'Novel': Icons.auto_stories_rounded,
       'Library': Icons.video_library_rounded,
+      'History': Iconsax.clock,
+      'Stats': IconlyBold.chart,
       'Extensions': Icons.extension_rounded,
     };
 
@@ -555,7 +605,6 @@ class FontFamilyDialogContent extends StatelessWidget {
       'Ubuntu',
       'JetBrains Mono',
     ];
-
     return Container(
       width: double.maxFinite,
       constraints: const BoxConstraints(maxHeight: 320),
@@ -602,3 +651,4 @@ class FontFamilyDialogContent extends StatelessWidget {
     );
   }
 }
+

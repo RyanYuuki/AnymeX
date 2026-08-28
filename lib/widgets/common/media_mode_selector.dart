@@ -113,20 +113,26 @@ class MediaModeSelector extends StatelessWidget {
     if (customOptions != null) {
       final activeMode = selectedOption;
       final containerDecoration = BoxDecoration(
-        color: theme.colorScheme.surfaceContainer.opaque(0.4),
+        color: isVertical
+            ? theme.colorScheme.surfaceContainer.opaque(0.4)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.colorScheme.onSurface.opaque(0.12, iReallyMeanIt: true),
-          width: 0.8,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.opaque(0.12, iReallyMeanIt: true),
-            blurRadius: 24,
-            spreadRadius: 0,
-            offset: const Offset(0, 6),
-          ),
-        ],
+        border: isVertical
+            ? Border.all(
+                color: theme.colorScheme.onSurface.opaque(0.12, iReallyMeanIt: true),
+                width: 0.8,
+              )
+            : null,
+        boxShadow: isVertical
+            ? [
+                BoxShadow(
+                  color: Colors.black.opaque(0.12, iReallyMeanIt: true),
+                  blurRadius: 24,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 6),
+                ),
+              ]
+            : null,
       );
 
       final options = customOptions!.map((opt) {
@@ -134,47 +140,77 @@ class MediaModeSelector extends StatelessWidget {
       }).toList();
       final int itemCount = options.length;
 
+      if (isVertical) {
+        return Container(
+          width: 86,
+          decoration: containerDecoration.copyWith(
+              borderRadius: BorderRadius.circular(16)),
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: options.map((opt) {
+              final isSelected = activeMode == opt.value;
+              return GestureDetector(
+                onTap: () => onOptionSelected?.call(opt.value),
+                child: Container(
+                  height: 34.0,
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: _buildCustomPillItemContent(
+                      theme, opt.key, isSelected),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      }
+
       const double selectedFlex = 2.2;
       const double unselectedFlex = 1.0;
       final double totalFlex = selectedFlex + unselectedFlex * (itemCount - 1);
 
-      return SafeArea(
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          width: 280,
-          decoration: containerDecoration,
-          padding: const EdgeInsets.all(4),
-          child: SizedBox(
-            height: 36,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final totalWidth = constraints.maxWidth;
-                return Row(
-                  children: options.map((opt) {
-                    final isSelected = activeMode == opt.value;
-                    final flex = isSelected ? selectedFlex : unselectedFlex;
-                    final targetWidth = totalWidth * flex / totalFlex;
+      return Container(
+        width: double.infinity,
+        decoration: containerDecoration,
+        padding: const EdgeInsets.all(4),
+        child: SizedBox(
+          height: 36,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final totalWidth = constraints.maxWidth;
+              return Row(
+                children: options.map((opt) {
+                  final isSelected = activeMode == opt.value;
+                  final flex = isSelected ? selectedFlex : unselectedFlex;
+                  final targetWidth = totalWidth * flex / totalFlex;
 
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 350),
-                      curve: const Cubic(0.34, 1.56, 0.64, 1.0),
-                      width: targetWidth,
-                      height: double.infinity,
-                      decoration: BoxDecoration(
-                        color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: GestureDetector(
-                        onTap: () => onOptionSelected?.call(opt.value),
-                        behavior: HitTestBehavior.opaque,
-                        child: _buildCustomPillItemContent(theme, opt.key, isSelected),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: const Cubic(0.34, 1.56, 0.64, 1.0),
+                    width: targetWidth,
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? theme.colorScheme.primary
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: GestureDetector(
+                      onTap: () => onOptionSelected?.call(opt.value),
+                      behavior: HitTestBehavior.opaque,
+                      child: _buildCustomPillItemContent(
+                          theme, opt.key, isSelected),
+                    ),
+                  );
+                }).toList(),
+              );
+            },
           ),
         ),
       );
@@ -193,145 +229,44 @@ class MediaModeSelector extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return SafeArea(
-      child: Obx(() {
-        final activeMode = controller.mode;
-        final items = controller.currentHistory;
-        final hasItems = items.isNotEmpty;
-
-        final containerDecoration = BoxDecoration(
-          color: theme.colorScheme.surfaceContainer.opaque(0.4),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: theme.colorScheme.onSurface.opaque(0.12, iReallyMeanIt: true),
-            width: 0.8,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.opaque(0.12, iReallyMeanIt: true),
-              blurRadius: 24,
-              spreadRadius: 0,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        );
-
-        final showContinue = showPlayButton && hasItems;
-
-        if (isSimkl) {
-          const options = [
-            MapEntry('Movie', ItemType.anime),
-            MapEntry('Series', ItemType.manga),
-          ];
-          final int itemCount = options.length;
-
-          if (isVertical) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              width: 86,
-              decoration: containerDecoration.copyWith(
-                  borderRadius: BorderRadius.circular(16)),
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-              child: AnimatedSize(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (showContinue) ...[
-                      _buildContinueButtonVertical(
-                          context, controller, activeMode, items),
-                      const SizedBox(height: 6),
-                    ],
-                    ...options.map((opt) {
-                      final isSelected = activeMode == opt.value;
-                      return GestureDetector(
-                        onTap: () => controller.mode = opt.value,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 350),
-                          curve: const Cubic(0.34, 1.56, 0.64, 1.0),
-                          height: 34.0,
-                          width: double.infinity,
-                          margin: const EdgeInsets.symmetric(vertical: 2),
-                          decoration: BoxDecoration(
-                            color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: _buildPillItemContent(theme, opt.key, opt.value, isSelected),
-                        ),
-                      );
-                    }),
-                  ],
+    return Obx(() {
+      final activeMode = controller.mode;
+      final items = controller.currentHistory;
+      final hasItems = items.isNotEmpty;
+    
+      final containerDecoration = BoxDecoration(
+        color: isVertical
+            ? theme.colorScheme.surfaceContainer.opaque(0.4)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        border: isVertical
+            ? Border.all(
+                color: theme.colorScheme.onSurface
+                    .opaque(0.12, iReallyMeanIt: true),
+                width: 0.8,
+              )
+            : null,
+        boxShadow: isVertical
+            ? [
+                BoxShadow(
+                  color: Colors.black.opaque(0.12, iReallyMeanIt: true),
+                  blurRadius: 24,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 6),
                 ),
-              ),
-            );
-          }
-
-          const double selectedFlex = 2.4;
-          const double unselectedFlex = 1.0;
-          final double totalFlex = selectedFlex + unselectedFlex * (itemCount - 1);
-
-          return AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            width: 260,
-            decoration: containerDecoration,
-            padding: const EdgeInsets.all(4),
-            child: AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (showContinue) ...[
-                    _buildContinueButton(context, controller, activeMode, items),
-                    const SizedBox(height: 4),
-                  ],
-                  SizedBox(
-                    height: 36,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final totalWidth = constraints.maxWidth;
-                        return Row(
-                          children: options.map((opt) {
-                            final isSelected = activeMode == opt.value;
-                            final flex = isSelected ? selectedFlex : unselectedFlex;
-                            final targetWidth = totalWidth * flex / totalFlex;
-
-                            return AnimatedContainer(
-                              duration: const Duration(milliseconds: 350),
-                              curve: const Cubic(0.34, 1.56, 0.64, 1.0),
-                              width: targetWidth,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: GestureDetector(
-                                onTap: () => controller.mode = opt.value,
-                                behavior: HitTestBehavior.opaque,
-                                child: _buildPillItemContent(theme, opt.key, opt.value, isSelected),
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
+              ]
+            : null,
+      );
+    
+      final showContinue = showPlayButton && hasItems;
+    
+      if (isSimkl) {
         const options = [
-          MapEntry('Anime', ItemType.anime),
-          MapEntry('Manga', ItemType.manga),
-          MapEntry('Novel', ItemType.novel),
+          MapEntry('Movie', ItemType.anime),
+          MapEntry('Series', ItemType.manga),
         ];
         final int itemCount = options.length;
-
+    
         if (isVertical) {
           return AnimatedContainer(
             duration: const Duration(milliseconds: 300),
@@ -362,10 +297,13 @@ class MediaModeSelector extends StatelessWidget {
                         width: double.infinity,
                         margin: const EdgeInsets.symmetric(vertical: 2),
                         decoration: BoxDecoration(
-                          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                          color: isSelected
+                              ? theme.colorScheme.primary
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: _buildPillItemContent(theme, opt.key, opt.value, isSelected),
+                        child: _buildPillItemContent(
+                            theme, opt.key, opt.value, isSelected),
                       ),
                     );
                   }),
@@ -374,15 +312,16 @@ class MediaModeSelector extends StatelessWidget {
             ),
           );
         }
-
+    
         const double selectedFlex = 2.4;
         const double unselectedFlex = 1.0;
-        final double totalFlex = selectedFlex + unselectedFlex * (itemCount - 1);
-
+        final double totalFlex =
+            selectedFlex + unselectedFlex * (itemCount - 1);
+    
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
-          width: 260,
+          width: double.infinity,
           decoration: containerDecoration,
           padding: const EdgeInsets.all(4),
           child: AnimatedSize(
@@ -392,7 +331,8 @@ class MediaModeSelector extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (showContinue) ...[
-                  _buildContinueButton(context, controller, activeMode, items),
+                  _buildContinueButton(
+                      context, controller, activeMode, items),
                   const SizedBox(height: 4),
                 ],
                 SizedBox(
@@ -403,22 +343,26 @@ class MediaModeSelector extends StatelessWidget {
                       return Row(
                         children: options.map((opt) {
                           final isSelected = activeMode == opt.value;
-                          final flex = isSelected ? selectedFlex : unselectedFlex;
+                          final flex =
+                              isSelected ? selectedFlex : unselectedFlex;
                           final targetWidth = totalWidth * flex / totalFlex;
-
+    
                           return AnimatedContainer(
                             duration: const Duration(milliseconds: 350),
                             curve: const Cubic(0.34, 1.56, 0.64, 1.0),
                             width: targetWidth,
                             height: double.infinity,
                             decoration: BoxDecoration(
-                              color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                              color: isSelected
+                                  ? theme.colorScheme.primary
+                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: GestureDetector(
                               onTap: () => controller.mode = opt.value,
                               behavior: HitTestBehavior.opaque,
-                              child: _buildPillItemContent(theme, opt.key, opt.value, isSelected),
+                              child: _buildPillItemContent(
+                                  theme, opt.key, opt.value, isSelected),
                             ),
                           );
                         }).toList(),
@@ -430,11 +374,126 @@ class MediaModeSelector extends StatelessWidget {
             ),
           ),
         );
-      }),
-    );
+      }
+    
+      const options = [
+        MapEntry('Anime', ItemType.anime),
+        MapEntry('Manga', ItemType.manga),
+        MapEntry('Novel', ItemType.novel),
+      ];
+      final int itemCount = options.length;
+    
+      if (isVertical) {
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          width: 86,
+          decoration: containerDecoration.copyWith(
+              borderRadius: BorderRadius.circular(16)),
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+          child: AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (showContinue) ...[
+                  _buildContinueButtonVertical(
+                      context, controller, activeMode, items),
+                  const SizedBox(height: 6),
+                ],
+                ...options.map((opt) {
+                  final isSelected = activeMode == opt.value;
+                  return GestureDetector(
+                    onTap: () => controller.mode = opt.value,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 350),
+                      curve: const Cubic(0.34, 1.56, 0.64, 1.0),
+                      height: 34.0,
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(vertical: 2),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? theme.colorScheme.primary
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: _buildPillItemContent(
+                          theme, opt.key, opt.value, isSelected),
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      }
+    
+      const double selectedFlex = 2.4;
+      const double unselectedFlex = 1.0;
+      final double totalFlex =
+          selectedFlex + unselectedFlex * (itemCount - 1);
+    
+      return AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        width: double.infinity,
+        decoration: containerDecoration,
+        padding: const EdgeInsets.all(4),
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (showContinue) ...[
+                _buildContinueButton(context, controller, activeMode, items),
+                const SizedBox(height: 4),
+              ],
+              SizedBox(
+                height: 36,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final totalWidth = constraints.maxWidth;
+                    return Row(
+                      children: options.map((opt) {
+                        final isSelected = activeMode == opt.value;
+                        final flex =
+                            isSelected ? selectedFlex : unselectedFlex;
+                        final targetWidth = totalWidth * flex / totalFlex;
+    
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 350),
+                          curve: const Cubic(0.34, 1.56, 0.64, 1.0),
+                          width: targetWidth,
+                          height: double.infinity,
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? theme.colorScheme.primary
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: GestureDetector(
+                            onTap: () => controller.mode = opt.value,
+                            behavior: HitTestBehavior.opaque,
+                            child: _buildPillItemContent(
+                                theme, opt.key, opt.value, isSelected),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
-  Widget _buildPillItemContent(ThemeData theme, String label, ItemType type, bool isSelected) {
+  Widget _buildPillItemContent(
+      ThemeData theme, String label, ItemType type, bool isSelected) {
     IconData icon;
     switch (type) {
       case ItemType.anime:
@@ -457,11 +516,12 @@ class MediaModeSelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            color: iconColor,
-            size: 16,
-          ),
+          if (!isSelected)
+            Icon(
+              icon,
+              color: iconColor,
+              size: 16,
+            ),
           AnimatedSize(
             duration: const Duration(milliseconds: 350),
             curve: const Cubic(0.34, 1.56, 0.64, 1.0),
@@ -556,7 +616,8 @@ class MediaModeSelector extends StatelessWidget {
     );
   }
 
-  Widget _buildCustomPillItemContent(ThemeData theme, String label, bool isSelected) {
+  Widget _buildCustomPillItemContent(
+      ThemeData theme, String label, bool isSelected) {
     IconData icon;
     switch (label.toLowerCase()) {
       case 'anime':

@@ -296,6 +296,7 @@ enum UISettingsKeys {
   navBarStyle,
   appFontFamily,
   bottomNavBarMargin,
+  useLegacyNavbar,
 }
 
 enum DownloadKeys {

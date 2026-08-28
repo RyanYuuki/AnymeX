@@ -51,10 +51,21 @@ class _ClassicNavBar extends StatefulWidget {
 }
 
 class _ClassicNavBarState extends State<_ClassicNavBar>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _indicatorController;
   late Animation<double> _indicatorPosition;
   int _previousIndex = 0;
+
+  late AnimationController _subWidgetController;
+  late CurvedAnimation _subWidgetCurve;
+
+  bool _hasSubWidget(int index) {
+    final itemCount = widget.items.length;
+    if (index < 0 || index >= itemCount) return false;
+    final item = widget.items[index];
+    return item.subWidget != null ||
+        (item.subItems != null && item.subItems!.isNotEmpty);
+  }
 
   @override
   void initState() {
@@ -71,6 +82,15 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
       parent: _indicatorController,
       curve: Curves.easeOutCubic,
     ));
+    _subWidgetController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      value: _hasSubWidget(widget.currentIndex) ? 1.0 : 0.0,
+    );
+    _subWidgetCurve = CurvedAnimation(
+      parent: _subWidgetController,
+      curve: Curves.fastOutSlowIn,
+    );
   }
 
   @override
@@ -86,12 +106,20 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
         curve: Curves.easeOutCubic,
       ));
       _indicatorController.forward(from: 0);
+
+      if (_hasSubWidget(widget.currentIndex)) {
+        _subWidgetController.forward();
+      } else {
+        _subWidgetController.reverse();
+      }
     }
   }
 
   @override
   void dispose() {
     _indicatorController.dispose();
+    _subWidgetCurve.dispose();
+    _subWidgetController.dispose();
     super.dispose();
   }
 
@@ -119,111 +147,156 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
             bottom: (widget.isDesktop ? 0 : 12) + bottomPadding,
           );
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      margin: finalMargin,
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        border: Border.all(
-          color: theme.colorScheme.onSurface.opaque(0.12, iReallyMeanIt: true),
-          width: 0.8,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.opaque(0.12, iReallyMeanIt: true),
-            blurRadius: 24,
-            spreadRadius: 0,
-            offset: const Offset(0, 6),
+    return RepaintBoundary(
+      child: Container(
+        margin: finalMargin,
+        decoration: BoxDecoration(
+          borderRadius: borderRadius,
+          border: Border.all(
+            color: theme.colorScheme.onSurface.opaque(0.12, iReallyMeanIt: true),
+            width: 0.8,
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: Obx(() {
-          final isTranslucent = translucent.value;
-          return BackdropFilter(
-            filter: isTranslucent
-                ? ImageFilter.blur(sigmaX: 25, sigmaY: 25)
-                : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: isTranslucent
-                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
-                    : theme.colorScheme.surfaceContainer.withValues(alpha: 0.95),
-                borderRadius: borderRadius,
-              ),
-              child: widget.isDesktop
-                  ? _buildDesktopLayout(theme)
-                  : _buildMobileLayout(theme),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.opaque(0.12, iReallyMeanIt: true),
+              blurRadius: 24,
+              spreadRadius: 0,
+              offset: const Offset(0, 6),
             ),
-          );
-        }),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: borderRadius,
+          child: Obx(() {
+            final isTranslucent = translucent.value;
+            return BackdropFilter(
+              filter: isTranslucent
+                  ? ImageFilter.blur(sigmaX: 25, sigmaY: 25)
+                  : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isTranslucent
+                      ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
+                      : theme.colorScheme.surfaceContainer
+                          .withValues(alpha: 0.95),
+                  borderRadius: borderRadius,
+                ),
+                child: widget.isDesktop
+                    ? _buildDesktopLayout(theme)
+                    : _buildMobileLayout(theme),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
 
   Widget _buildMobileLayout(ThemeData theme) {
     final itemCount = widget.items.length;
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-      child: SizedBox(
-        height: 58,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final totalWidth = constraints.maxWidth;
-            final itemWidth = totalWidth / itemCount;
+    final currentItem =
+        (widget.currentIndex >= 0 && widget.currentIndex < itemCount)
+            ? widget.items[widget.currentIndex]
+            : null;
+    final hasSubWidget = currentItem != null &&
+        (currentItem.subWidget != null ||
+            (currentItem.subItems != null && currentItem.subItems!.isNotEmpty));
 
-            return Stack(
-              children: [
-                AnimatedBuilder(
-                  animation: _indicatorPosition,
-                  builder: (context, _) {
-                    final pos = _indicatorPosition.value;
-                    return Positioned(
-                      left: pos * itemWidth + 3,
-                      top: 3,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: itemWidth - 6,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(28.multiplyRadius()),
-                          color: theme.colorScheme.primary
-                              .opaque(0.14, iReallyMeanIt: true),
-                          border: Border.all(
-                            color: theme.colorScheme.primary
-                                .opaque(0.2, iReallyMeanIt: true),
-                            width: 0.6,
-                          ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedBuilder(
+          animation: _subWidgetCurve,
+          builder: (context, child) => ClipRect(
+            child: Align(
+              alignment: Alignment.topCenter,
+              heightFactor: _subWidgetCurve.value,
+              child: child,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 2),
+            child: hasSubWidget
+                ? (currentItem.subWidget != null
+                    ? currentItem.subWidget!
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            for (final sub in currentItem.subItems!)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: _buildSubNavItem(theme, sub),
+                              ),
+                          ],
                         ),
-                      ),
-                    );
-                  },
-                ),
-                Row(
-                  children: List.generate(itemCount, (index) {
-                    final item = widget.items[index];
-                    final isSelected = widget.currentIndex == index;
-                    return Expanded(
-                      child: GestureDetector(
-                        onTap: () => item.onTap(index),
-                        behavior: HitTestBehavior.opaque,
-                        child: _ClassicMobileNavItem(
-                          item: item,
-                          isSelected: isSelected,
-                          theme: theme,
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ],
-            );
-          },
+                      ))
+                : const SizedBox.shrink(),
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          child: SizedBox(
+            height: 58,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final totalWidth = constraints.maxWidth;
+                final itemWidth = totalWidth / itemCount;
+
+                return Stack(
+                  children: [
+                    AnimatedBuilder(
+                      animation: _indicatorPosition,
+                      builder: (context, _) {
+                        final pos = _indicatorPosition.value;
+                        return Positioned(
+                          left: pos * itemWidth + 3,
+                          top: 3,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: itemWidth - 6,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.circular(28.multiplyRadius()),
+                              color: theme.colorScheme.primary
+                                  .opaque(0.14, iReallyMeanIt: true),
+                              border: Border.all(
+                                color: theme.colorScheme.primary
+                                    .opaque(0.2, iReallyMeanIt: true),
+                                width: 0.6,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    Row(
+                      children: List.generate(itemCount, (index) {
+                        final item = widget.items[index];
+                        final isSelected = widget.currentIndex == index;
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () => item.onTap(index),
+                            behavior: HitTestBehavior.opaque,
+                            child: _ClassicMobileNavItem(
+                              item: item,
+                              isSelected: isSelected,
+                              theme: theme,
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -240,7 +313,9 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
           children: List.generate(itemCount, (index) {
             final item = widget.items[index];
             final isSelected = widget.currentIndex == index;
-            final hasSubItems = isSelected && (item.subWidget != null || (item.subItems != null && item.subItems!.isNotEmpty));
+            final hasSubItems = isSelected &&
+                (item.subWidget != null ||
+                    (item.subItems != null && item.subItems!.isNotEmpty));
             return Padding(
               padding: EdgeInsets.only(bottom: index < itemCount - 1 ? gap : 0),
               child: AnimatedContainer(
@@ -248,17 +323,20 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
                 curve: Curves.easeInOutCubic,
                 decoration: BoxDecoration(
                   color: hasSubItems
-                      ? theme.colorScheme.onSurface.opaque(0.04, iReallyMeanIt: true)
+                      ? theme.colorScheme.onSurface
+                          .opaque(0.04, iReallyMeanIt: true)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: hasSubItems
-                      ? theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true)
-                      : Colors.transparent,
+                        ? theme.colorScheme.onSurface
+                            .opaque(0.08, iReallyMeanIt: true)
+                        : Colors.transparent,
                     width: 0.8,
                   ),
                 ),
-                padding: hasSubItems ? const EdgeInsets.all(6) : EdgeInsets.zero,
+                padding:
+                    hasSubItems ? const EdgeInsets.all(6) : EdgeInsets.zero,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -281,7 +359,8 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
                                 else
                                   for (final sub in item.subItems!)
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 2),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2),
                                       child: _buildSubNavItem(theme, sub),
                                     ),
                               ],
@@ -327,12 +406,14 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                active ? sub.selectedIcon : sub.unselectedIcon,
-                color: iconColor,
-                size: 16,
-              ),
-              const SizedBox(width: 8),
+              if (!active) ...[
+                Icon(
+                  sub.unselectedIcon,
+                  color: iconColor,
+                  size: 16,
+                ),
+                const SizedBox(width: 8),
+              ],
               AnymeXText(
                 sub.label,
                 size: 11,
@@ -397,7 +478,8 @@ class _ClassicMobileNavItem extends StatelessWidget {
               ),
               child: FittedBox(
                 fit: BoxFit.scaleDown,
-                child: AnymeXText(item.label,
+                child: AnymeXText(
+                  item.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   size: isSelected ? 10.5 : 10,
@@ -459,11 +541,13 @@ class _ClassicDesktopNavItemState extends State<_ClassicDesktopNavItem> {
             color: isSelected
                 ? theme.colorScheme.primary.opaque(0.14, iReallyMeanIt: true)
                 : _isHovered
-                    ? theme.colorScheme.onSurface.opaque(0.06, iReallyMeanIt: true)
+                    ? theme.colorScheme.onSurface
+                        .opaque(0.06, iReallyMeanIt: true)
                     : Colors.transparent,
             border: isSelected
                 ? Border.all(
-                    color: theme.colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
+                    color: theme.colorScheme.primary
+                        .opaque(0.2, iReallyMeanIt: true),
                     width: 0.6,
                   )
                 : Border.all(color: Colors.transparent, width: 0.6),
