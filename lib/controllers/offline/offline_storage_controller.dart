@@ -686,52 +686,54 @@ class OfflineStorageController extends GetxController {
     Episode episode, {
     bool syncToCloud = true,
   }) async {
-    final existingAnime = getAnimeById(animeId);
-    if (existingAnime == null) {
-      Logger.i(
-          'Anime with ID: $animeId not found. Unable to add/update episode.');
-      return;
-    }
-
-    await isar.writeTxn(() async {
-      existingAnime.watchedEpisodes ??= [];
-      episode.source = sourceController.activeSource.value?.name;
-      episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
-
-      final index = existingAnime.watchedEpisodes!
-          .indexWhere((e) => e.number == episode.number);
-      existingAnime.watchedEpisodes =
-          List<Episode>.from(existingAnime.watchedEpisodes!);
-
-      if (index != -1) {
-        existingAnime.watchedEpisodes![index] = episode;
+    await _synchronizedWrite(animeId, () async {
+      final existingAnime = getAnimeById(animeId);
+      if (existingAnime == null) {
         Logger.i(
-            'Overwritten episode: ${episode.number} for anime ID: $animeId with source => ${episode.source}');
-      } else {
-        existingAnime.watchedEpisodes!.add(episode);
-        Logger.i('Added new episode: ${episode.title} for anime ID: $animeId');
-        Get.find<StatsTracker>().logWatch(
-          animeId,
-          existingAnime.name ?? 'Unknown',
-          0,
-          episodeCompleted: true,
-          poster: existingAnime.poster,
-          cover: existingAnime.cover,
-        );
+            'Anime with ID: $animeId not found. Unable to add/update episode.');
+        return;
       }
 
-      existingAnime.currentEpisode = episode;
+      await isar.writeTxn(() async {
+        existingAnime.watchedEpisodes ??= [];
+        episode.source = sourceController.activeSource.value?.name;
+        episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
 
-      await isar.offlineMedias.put(existingAnime);
+        final index = existingAnime.watchedEpisodes!
+            .indexWhere((e) => e.number == episode.number);
+        existingAnime.watchedEpisodes =
+            List<Episode>.from(existingAnime.watchedEpisodes!);
+
+        if (index != -1) {
+          existingAnime.watchedEpisodes![index] = episode;
+          Logger.i(
+              'Overwritten episode: ${episode.number} for anime ID: $animeId with source => ${episode.source}');
+        } else {
+          existingAnime.watchedEpisodes!.add(episode);
+          Logger.i('Added new episode: ${episode.title} for anime ID: $animeId');
+          Get.find<StatsTracker>().logWatch(
+            animeId,
+            existingAnime.name ?? 'Unknown',
+            0,
+            episodeCompleted: true,
+            poster: existingAnime.poster,
+            cover: existingAnime.cover,
+          );
+        }
+
+        existingAnime.currentEpisode = episode;
+
+        await isar.offlineMedias.put(existingAnime);
+      });
+      update();
+
+      if (syncToCloud) {
+        _syncCtrl?.pushEpisodeProgress(
+          mediaId: animeId,
+          episode: episode,
+        );
+      }
     });
-    update();
-
-    if (syncToCloud) {
-      _syncCtrl?.pushEpisodeProgress(
-        mediaId: animeId,
-        episode: episode,
-      );
-    }
   }
 
   Episode? getWatchedEpisode(String anilistId, String episodeNumber) {
@@ -748,58 +750,60 @@ class OfflineStorageController extends GetxController {
     Source? source,
     bool syncToCloud = true,
   }) async {
-    OfflineMedia? existingManga = getMangaById(mangaId);
-    existingManga ??= getNovelById(mangaId);
+    await _synchronizedWrite(mangaId, () async {
+      OfflineMedia? existingManga = getMangaById(mangaId);
+      existingManga ??= getNovelById(mangaId);
 
-    if (existingManga == null) {
-      Logger.i(
-          'Manga with ID: $mangaId not found. Unable to add/update chapter.');
-      return;
-    }
-
-    await isar.writeTxn(() async {
-      existingManga!.readChapters ??= [];
-      chapter.sourceName =
-          source?.name ?? sourceController.activeMangaSource.value?.name;
-      chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
-
-      final index = existingManga.readChapters!
-          .indexWhere((c) => c.number == chapter.number);
-      existingManga.readChapters =
-          List<Chapter>.from(existingManga.readChapters!);
-      if (index != -1) {
-        existingManga.readChapters![index] = chapter;
+      if (existingManga == null) {
         Logger.i(
-            'Overwritten chapter: ${chapter.title} for manga ID: $mangaId');
-      } else {
-        existingManga.readChapters!.add(chapter);
-        Logger.i('Added new chapter: ${chapter.title} for manga ID: $mangaId');
-        Get.find<StatsTracker>().logRead(
-          mangaId,
-          existingManga.name ?? 'Unknown',
-          0,
-          chaptersCompleted: 1,
-          type: existingManga.mediaTypeIndex == ItemType.novel.index
-              ? 'novel'
-              : 'manga',
-          poster: existingManga.poster,
-          cover: existingManga.cover,
-        );
+            'Manga with ID: $mangaId not found. Unable to add/update chapter.');
+        return;
       }
 
-      existingManga.currentChapter = chapter;
+      await isar.writeTxn(() async {
+        existingManga!.readChapters ??= [];
+        chapter.sourceName =
+            source?.name ?? sourceController.activeMangaSource.value?.name;
+        chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
 
-      await isar.offlineMedias.put(existingManga);
+        final index = existingManga.readChapters!
+            .indexWhere((c) => c.number == chapter.number);
+        existingManga.readChapters =
+            List<Chapter>.from(existingManga.readChapters!);
+        if (index != -1) {
+          existingManga.readChapters![index] = chapter;
+          Logger.i(
+              'Overwritten chapter: ${chapter.title} for manga ID: $mangaId');
+        } else {
+          existingManga.readChapters!.add(chapter);
+          Logger.i('Added new chapter: ${chapter.title} for manga ID: $mangaId');
+          Get.find<StatsTracker>().logRead(
+            mangaId,
+            existingManga.name ?? 'Unknown',
+            0,
+            chaptersCompleted: 1,
+            type: existingManga.mediaTypeIndex == ItemType.novel.index
+                ? 'novel'
+                : 'manga',
+            poster: existingManga.poster,
+            cover: existingManga.cover,
+          );
+        }
+
+        existingManga.currentChapter = chapter;
+
+        await isar.offlineMedias.put(existingManga);
+      });
+      update();
+
+      if (syncToCloud) {
+        _syncCtrl?.pushChapterProgress(
+          mediaId: mangaId,
+          mediaType: existingManga.mediaTypeIndex == 2 ? 'novel' : 'manga',
+          chapter: chapter,
+        );
+      }
     });
-    update();
-
-    if (syncToCloud) {
-      _syncCtrl?.pushChapterProgress(
-        mediaId: mangaId,
-        mediaType: existingManga.mediaTypeIndex == 2 ? 'novel' : 'manga',
-        chapter: chapter,
-      );
-    }
   }
 
   Chapter? getReadChapter(String anilistId, double number) {
