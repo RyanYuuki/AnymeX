@@ -32,6 +32,7 @@ enum General {
   navigationTabOrder,
   useAlternateTitle,
   unifiedLibrary,
+  joinDialogShowCount,
 }
 
 enum ThemeKeys {

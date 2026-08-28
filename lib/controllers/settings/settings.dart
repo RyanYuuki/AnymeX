@@ -266,6 +266,28 @@ class Settings extends GetxController {
   void showWelcomeDialog(BuildContext context) {
     if (General.isFirstTime.get<bool>(true)) {
       showWelcomeDialogg(context);
+      return;
+    }
+
+    if (linksFetched) {
+      _checkAndShowJoinDialog(context);
+    } else {
+      onLinksReady = () {
+        _checkAndShowJoinDialog(context);
+      };
+    }
+  }
+
+  void _checkAndShowJoinDialog(BuildContext context) {
+    final showOnline = showJoinDialog.value;
+    if (showOnline) {
+      showWelcomeDialogg(context);
+    } else {
+      final count = General.joinDialogShowCount.get<int>(0);
+      if (count < 3) {
+        General.joinDialogShowCount.set(count + 1);
+        showWelcomeDialogg(context);
+      }
     }
   }
 
