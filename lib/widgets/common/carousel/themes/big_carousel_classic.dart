@@ -198,7 +198,7 @@ class BigCarouselClassicState extends State<BigCarouselClassic> {
                   disableGesture: false,
                   itemBuilder: (itemContext, index, realIndex) {
                     final media = mediaList[index];
-                    final tag = '${media.id}-classic-carousel';
+                    final tag = '${media.id}-${widget.carouselType.name}-classic-carousel-$index';
 
                     return buildCarouselCard(
                       context: itemContext,

@@ -246,7 +246,7 @@ class _BigCarouselPortraitState extends State<BigCarouselPortrait> {
                         event.logicalKey == LogicalKeyboardKey.space ||
                         event.logicalKey == LogicalKeyboardKey.select) {
                       navigateToDetailsPage(mediaList[activeIndex],
-                          '${mediaList[activeIndex].id}-portrait-carousel');
+                          '${mediaList[activeIndex].id}-${widget.carouselType.name}-portrait-carousel-$activeIndex');
                     }
                   }
                   return KeyEventResult.handled;
@@ -265,7 +265,7 @@ class _BigCarouselPortraitState extends State<BigCarouselPortrait> {
                     disableGesture: false,
                     itemBuilder: (itemContext, index, realIndex) {
                       final media = mediaList[index];
-                      final tag = '${media.id}-portrait-carousel';
+                      final tag = '${media.id}-${widget.carouselType.name}-portrait-carousel-$index';
 
                       return _buildPortraitCard(
                         context: itemContext,

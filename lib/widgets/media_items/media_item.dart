@@ -96,11 +96,13 @@ class GridAnimeCard extends StatelessWidget {
     required this.isManga,
     this.variant,
     this.type,
+    this.tagPrefix,
   });
   final dynamic data;
   final bool isManga;
   final CardVariant? variant;
   final ItemType? type;
+  final String? tagPrefix;
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +130,8 @@ class GridAnimeCard extends StatelessWidget {
       servicesType: media.data.serviceType,
     );
 
-    final heroTag = '${media.id}-${itemType.name}-grid-card';
+    final prefix = tagPrefix != null ? '${tagPrefix!}-' : '';
+    final heroTag = '$prefix${media.id}-${itemType.name}-grid-card';
 
     final cardWidget = MediaCardGate(
       itemData: carouselData,
