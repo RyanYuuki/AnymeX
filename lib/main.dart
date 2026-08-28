@@ -43,6 +43,9 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/screens/notifications/notification_screen.dart';
+import 'package:anymex/screens/notifications/notification_controller.dart';
+import 'package:anymex/utils/notification.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
@@ -60,6 +63,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:app_links/app_links.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -178,11 +182,12 @@ void main(List<String> args) async {
         errorMessage: 'Failed to load .env file');
 
     if (!Platform.isLinux) {
-      await safeCall(
-          () => Firebase.initializeApp(
-                options: DefaultFirebaseOptions.currentPlatform,
-              ),
-          errorMessage: 'Failed to initialize Firebase');
+      await safeCall(() async {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+        FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      }, errorMessage: 'Failed to initialize Firebase');
     }
 
     if (Platform.isWindows || Platform.isLinux) {
@@ -279,6 +284,7 @@ void _initializeGetxController() async {
     Get.put(WatchiumService(), permanent: true);
     Get.put(GistSyncController(), permanent: true);
     Get.put(DownloadController(), permanent: true);
+    Get.lazyPut(() => NotificationService());
     Get.put(StatsTracker());
     Get.lazyPut(() => CacheController());
   }, errorMessage: 'Failed to register GetX controllers');
@@ -450,6 +456,71 @@ class _FilterScreenState extends State<FilterScreen> {
     setState(() {
       _mobileSelectedIndex = index;
     });
+  }
+
+  void _openNotifications() {
+    if (!Get.isRegistered<NotificationController>()) {
+      Get.put(NotificationController());
+    }
+    Get.to(() => const NotificationScreen());
+  }
+
+  Widget _buildNotificationBell(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return FutureBuilder<int>(
+      future: () async {
+        try {
+          final commentumService = Get.find<CommentumService>();
+          return await commentumService.getUnreadNotificationCount();
+        } catch (_) {
+          return 0;
+        }
+      }(),
+      builder: (context, snapshot) {
+        final unreadCount = snapshot.data ?? 0;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Icon(
+              Icons.notifications_rounded,
+              color: colorScheme.primary,
+              size: 22,
+            ),
+            if (unreadCount > 0)
+              Positioned(
+                right: -2,
+                top: -2,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: colorScheme.error,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.error.withOpacity(0.4),
+                        blurRadius: 4,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  child: Text(
+                    unreadCount > 99 ? '99+' : '$unreadCount',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      height: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
   }
 
   List<String> _getNavTabs(ServiceHandler authService, Settings settings) {

@@ -7,6 +7,7 @@ import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
@@ -607,6 +608,11 @@ class Header extends StatelessWidget {
         },
         child: Obx(() {
           final count = Get.find<SourceController>().extensionUpdatesCount.value;
+          int? unread;
+          try {
+            final commentumService = Get.find<CommentumService>();
+            unread = commentumService.unreadNotificationCount.value;
+          } catch (_) {}
           final avatar = CircleAvatar(
             radius: 20,
             backgroundColor: context.colors.secondaryContainer.opaque(0.50),
@@ -625,6 +631,14 @@ class Header extends StatelessWidget {
                 : Icon(IconlyBold.profile,
                     color: context.colors.onSecondaryContainer, size: 18),
           );
+          if (unread != null && unread > 0) {
+            return AnymeXBadge(
+              label: unread > 99 ? '99+' : '$unread',
+              backgroundColor: Theme.of(context).colorScheme.error,
+              textColor: Colors.white,
+              child: avatar,
+            );
+          }
           if (count > 0) {
             return AnymeXBadge(
               label: count.toString(),
