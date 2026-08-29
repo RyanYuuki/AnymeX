@@ -53,12 +53,7 @@ class Database {
       Logger.e('Primary Isar open failed: $e. Attempting lock recovery...');
       try {
         dir = await getDatabaseDirectory();
-        final lockFile = File(path.join(dir!.path, 'AnymeX.isar.lock'));
-        if (await lockFile.exists()) {
-          try {
-            await lockFile.delete();
-          } catch (_) {}
-        }
+        await _deleteLockFiles(dir!);
         final existingInstance = Isar.getInstance('AnymeX');
         if (existingInstance != null && existingInstance.isOpen) {
           isar = existingInstance;
@@ -76,15 +71,14 @@ class Database {
               'AnymeX.isar.corrupted_bak_${DateTime.now().millisecondsSinceEpoch}',
             );
             try {
-              await dbFile.copy(backupPath);
+              // Move rather than copy. Copying leaves the unreadable database
+              // exactly where it was, so the _openIsar below fails for the same
+              // reason and this branch can never actually recover -- while a
+              // full-size backup piles up on every single launch.
+              await dbFile.rename(backupPath);
             } catch (_) {}
           }
-          final lockFile = File(path.join(dir.path, 'AnymeX.isar.lock'));
-          if (await lockFile.exists()) {
-            try {
-              await lockFile.delete();
-            } catch (_) {}
-          }
+          await _deleteLockFiles(dir);
           isar = _openIsar(dir);
         } catch (e3) {
           rethrow;
@@ -121,6 +115,19 @@ class Database {
     }
   }
 
+  /// Removes whichever lock file the bundled Isar build left behind. Isar 3
+  /// writes `<name>.isar.lock`; the libmdbx backend used by isar_community
+  /// writes `<name>.isar-lck`. Clearing only one of them leaves a stale lock
+  /// that keeps the retry failing.
+  Future<void> _deleteLockFiles(Directory dir) async {
+    for (final name in const ['AnymeX.isar.lock', 'AnymeX.isar-lck']) {
+      final lockFile = File(path.join(dir.path, name));
+      try {
+        if (await lockFile.exists()) await lockFile.delete();
+      } catch (_) {}
+    }
+  }
+
   Future<bool> requestPermission() async {
     Permission permission = Permission.manageExternalStorage;
     if (Platform.isAndroid) {
@@ -138,13 +145,94 @@ class Database {
   }
 
   Future<Directory?> getDatabaseDirectory() async {
-    final dir = await getApplicationDocumentsDirectory();
-    if (Platform.isAndroid || Platform.isIOS || Platform.isMacOS) {
+    // On macOS the database must not live in ~/Documents. When iCloud
+    // "Desktop & Documents Folders" sync is on, macOS reclaims space by
+    // evicting inactive files to dataless placeholders (`ls -lO` reports them
+    // as `compressed,dataless`). libmdbx memory-maps its file and cannot map a
+    // placeholder, so the open below throws, the recovery path treats a
+    // perfectly good database as corrupt, and the app comes up to a grey
+    // screen that no relaunch clears. Application Support is app-private and
+    // never synced, so it is never evicted. iOS keeps Documents, where the
+    // database stays reachable through the Files app.
+    final dir = Platform.isMacOS
+        ? await getApplicationSupportDirectory()
+        : await getApplicationDocumentsDirectory();
+
+    if (Platform.isMacOS) {
+      await _migrateLegacyMacosDatabase(dir);
       return dir;
-    } else {
-      String dbDir = path.join(dir.path, 'AnymeX', 'databases');
-      await Directory(dbDir).create(recursive: true);
-      return Directory(dbDir);
+    }
+    if (Platform.isAndroid || Platform.isIOS) {
+      return dir;
+    }
+    String dbDir = path.join(dir.path, 'AnymeX', 'databases');
+    await Directory(dbDir).create(recursive: true);
+    return Directory(dbDir);
+  }
+
+  /// One-shot migration for macOS installs whose data still sits in the legacy
+  /// ~/Documents location. Moves the database, its lock file and the AnymeX
+  /// support folder (extensions, runtime) across so libraries and installed
+  /// extensions survive the change. Anything already present at the new
+  /// location wins, and a failure leaves the legacy copy untouched, so the
+  /// migration is safe to retry on the next launch.
+  Future<void> _migrateLegacyMacosDatabase(Directory newDir) async {
+    try {
+      final legacyDir = await getApplicationDocumentsDirectory();
+      if (legacyDir.path == newDir.path) return;
+
+      for (final name in const [
+        'AnymeX.isar',
+        'AnymeX.isar-lck',
+        'AnymeX.isar.lock',
+      ]) {
+        await _moveAcross(
+          File(path.join(legacyDir.path, name)),
+          File(path.join(newDir.path, name)),
+        );
+      }
+
+      final legacySupport = Directory(path.join(legacyDir.path, 'AnymeX'));
+      final newSupport = Directory(path.join(newDir.path, 'AnymeX'));
+      if (await legacySupport.exists() && !await newSupport.exists()) {
+        // Collect the listing up front: _moveAcross deletes as it goes, and
+        // mutating the tree while the walk is still streaming skips entries.
+        final entities =
+            await legacySupport.list(recursive: true, followLinks: false).toList();
+        for (final entity in entities) {
+          if (entity is! File) continue;
+          final relative = path.relative(entity.path, from: legacySupport.path);
+          await _moveAcross(entity, File(path.join(newSupport.path, relative)));
+        }
+        try {
+          await legacySupport.delete(recursive: true);
+        } catch (_) {}
+      }
+    } catch (e) {
+      Logger.e('macOS database migration skipped: $e');
+    }
+  }
+
+  /// Copies [from] to [to] and only then removes [from].
+  ///
+  /// The copy is what forces iCloud to materialize a dataless placeholder: a
+  /// plain rename would carry the placeholder out of the sync root, where its
+  /// contents can no longer be fetched. A failed or short copy leaves the
+  /// legacy file exactly where it was.
+  Future<void> _moveAcross(File from, File to) async {
+    try {
+      if (!await from.exists() || await to.exists()) return;
+      await to.parent.create(recursive: true);
+      await from.copy(to.path);
+      if (await to.length() != await from.length()) {
+        try {
+          await to.delete();
+        } catch (_) {}
+        return;
+      }
+      await from.delete();
+    } catch (_) {
+      // Leave the legacy copy in place; the migration retries next launch.
     }
   }
 
