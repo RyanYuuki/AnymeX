@@ -188,7 +188,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
             child: ResponsiveNavBar(
               isDesktop: false,
               currentIndex: selected,
-              margin: EdgeInsets.fromLTRB(32, 0, 32, settingsController.bottomNavBarMargin),
+              margin: EdgeInsets.fromLTRB(
+                  32, 0, 32, settingsController.bottomNavBarMargin),
               items: navItems,
             ),
           ),
@@ -362,7 +363,8 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                           ? 'Recommended Anime'
                           : 'Recommended Manga',
                       variant: DataVariant.recommendation,
-                      type: controller.isAnime ? ItemType.anime : ItemType.manga,
+                      type:
+                          controller.isAnime ? ItemType.anime : ItemType.manga,
                     );
                   }),
                 ],
@@ -471,8 +473,13 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
       if (isAnime) {
         final ep = controller.getContinueEpisode();
         if (ep == null) return const SizedBox.shrink();
-        titleText =
-            ep.title?.isNotEmpty == true ? ep.title! : 'Episode ${ep.number}';
+        final matchedEp = controller.episodeList.firstWhereOrNull((e) =>
+            (e.link != null && e.link!.isNotEmpty && e.link == ep.link) ||
+            e.number == ep.number);
+        final title = (matchedEp?.title?.isNotEmpty == true)
+            ? matchedEp!.title!
+            : (ep.title?.isNotEmpty == true ? ep.title! : 'Episode ${ep.number}');
+        titleText = title;
         subtitleText = 'Episode ${ep.number}';
         imageUrl = ep.thumbnail?.isNotEmpty == true
             ? ep.thumbnail!
@@ -490,8 +497,13 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
       } else {
         final ch = controller.getContinueChapter();
         if (ch == null) return const SizedBox.shrink();
-        titleText =
-            ch.title?.isNotEmpty == true ? ch.title! : 'Chapter ${ch.number}';
+        final matchedCh = controller.chapterList.firstWhereOrNull((c) =>
+            (c.link != null && c.link!.isNotEmpty && c.link == ch.link) ||
+            (c.number != null && c.number == ch.number));
+        final title = (matchedCh?.title?.isNotEmpty == true)
+            ? matchedCh!.title!
+            : (ch.title?.isNotEmpty == true ? ch.title! : 'Chapter ${ch.number}');
+        titleText = title;
         subtitleText = 'Chapter ${ch.number}';
         imageUrl = controller.media.value.poster;
         progressVal = controller.getChapterProgress(ch);
@@ -541,9 +553,12 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
             }
 
             final String? targetScanlator = ch.scanlator;
-            final filteredChapters = (targetScanlator != null && targetScanlator.isNotEmpty)
-                ? controller.chapterList.where((c) => c.scanlator == targetScanlator).toList()
-                : controller.chapterList;
+            final filteredChapters =
+                (targetScanlator != null && targetScanlator.isNotEmpty)
+                    ? controller.chapterList
+                        .where((c) => c.scanlator == targetScanlator)
+                        .toList()
+                    : controller.chapterList;
 
             await navigate(() => ReadingPage(
                   anilistData: mediaData,
@@ -701,33 +716,60 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 2),
-                            Row(
+                            Wrap(
+                              spacing: 2,
+                              runSpacing: 2,
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
-                                AnymeXText(
-                                  subtitleText,
-                                  size: 11,
-                                  color: context.colors.onSurface
-                                      .opaque(0.6, iReallyMeanIt: true),
-                                ),
-                                if (clampedProgress > 0) ...[
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    width: 3,
-                                    height: 3,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: context.colors.onSurface
-                                          .opaque(0.4, iReallyMeanIt: true),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: context.colors.secondary,
+                                    borderRadius: clampedProgress > 0
+                                        ? const BorderRadius.horizontal(
+                                            left: Radius.circular(8),
+                                            right: Radius.circular(5),
+                                          )
+                                        : BorderRadius.circular(8),
+                                  ),
+                                  child: AnymeXText(
+                                    subtitleText.toUpperCase(),
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-SemiBold',
+                                      fontSize: 10.0,
+                                      color: context.colors.secondary
+                                                  .computeLuminance() >
+                                              0.5
+                                          ? Colors.black
+                                          : Colors.white,
                                     ),
                                   ),
-                                  const SizedBox(width: 6),
-                                  AnymeXText(
-                                    '${(clampedProgress * 100).toInt()}% ${isAnime ? 'watched' : 'read'}',
-                                    size: 11,
-                                    color: context.colors.primary,
-                                    variant: TextVariant.semiBold,
+                                ),
+                                if (clampedProgress > 0)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(
+                                      color: context.colors.tertiary,
+                                      borderRadius: const BorderRadius.horizontal(
+                                        left: Radius.circular(5),
+                                        right: Radius.circular(8),
+                                      ),
+                                    ),
+                                    child: AnymeXText(
+                                      '${(clampedProgress * 100).toInt()}% ${isAnime ? 'WATCHED' : 'READ'}',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins-SemiBold',
+                                        fontSize: 10.0,
+                                        color: context.colors.tertiary
+                                                    .computeLuminance() >
+                                                0.5
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                    ),
                                   ),
-                                ],
                               ],
                             ),
                           ],
