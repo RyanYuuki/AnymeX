@@ -68,6 +68,32 @@ class Header extends StatelessWidget {
                         color: context.colors.primary,
                         variant: TextVariant.semiBold,
                       ),
+                    ] else if (type == PageType.history) ...[
+                      const AnymeXText(
+                        "History",
+                        autoResize: true,
+                        maxLines: 1,
+                      ),
+                      AnymeXText(
+                        "Your watch & read history",
+                        autoResize: true,
+                        maxLines: 1,
+                        color: context.colors.primary,
+                        variant: TextVariant.semiBold,
+                      ),
+                    ] else if (type == PageType.stats) ...[
+                      const AnymeXText(
+                        "Stats",
+                        autoResize: true,
+                        maxLines: 1,
+                      ),
+                      AnymeXText(
+                        "Your watch & read statistics",
+                        autoResize: true,
+                        maxLines: 1,
+                        color: context.colors.primary,
+                        variant: TextVariant.semiBold,
+                      ),
                     ] else if (type == PageType.extensions) ...[
                       const AnymeXText(
                         "Extensions",
@@ -138,6 +164,28 @@ class Header extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ],
+                ),
+              ] else if (type == PageType.history) ...[
+                Row(
+                  children: [
+                    if (onSearchPressed != null)
+                      AnymexOnTap(
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .secondaryContainer
+                              .opaque(0.50),
+                          child: IconButton(
+                            onPressed: onSearchPressed,
+                            icon: Icon(
+                              IconlyLight.search,
+                              color: context.colors.primary,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ] else if (type == PageType.extensions) ...[

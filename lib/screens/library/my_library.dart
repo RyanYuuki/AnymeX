@@ -26,9 +26,9 @@ import 'package:get/get.dart';
 
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/header/header.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:flutter/services.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
-import 'package:anymex/widgets/common/media_mode_selector.dart';
 
 class MyLibrary extends StatefulWidget {
   final ItemType? type;
@@ -111,18 +111,39 @@ class _MyLibraryState extends State<MyLibrary>
             CustomAnimatedAppBar(
               isVisible: _isAppBarVisibleExternally,
               scrollController: _scrollController,
-              headerContent: Header(
-                type: PageType.library,
-                bottom: isLegacy
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          LibrarySegmentedControl(controller: controller),
-                          const SizedBox(height: 2),
-                          ChipTabs(controller: controller),
-                        ],
-                      )
-                    : ChipTabs(controller: controller),
+              headerContent: Obx(
+                () => Header(
+                  title: 'Library',
+                  subtitle: 'All your local shi',
+                  isSearchActive: controller.isSearchActive.value,
+                  searchBar: HeaderSearchBar(
+                    controller: controller.searchController,
+                    onChanged: controller.search,
+                    onClose: controller.toggleSearch,
+                    hintText: 'Search in Library...',
+                  ),
+                  actions: [
+                    HeaderActionButton(
+                      icon: IconlyLight.search,
+                      onTap: controller.toggleSearch,
+                    ),
+                    2.width(),
+                    HeaderActionButton(
+                      icon: Icons.sort_rounded,
+                      onTap: () => showLibrarySortSheet(context, controller),
+                    ),
+                  ],
+                  bottom: isLegacy
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            LibrarySegmentedControl(controller: controller),
+                            const SizedBox(height: 2),
+                            ChipTabs(controller: controller),
+                          ],
+                        )
+                      : ChipTabs(controller: controller),
+                ),
               ),
               visibleStatusBarStyle: SystemUiOverlayStyle(
                 statusBarIconBrightness:

@@ -15,7 +15,6 @@ import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
-import 'package:anymex/widgets/common/media_mode_selector.dart';
 
 class HistorySearchController extends GetxController {
   final isSearchActive = false.obs;
@@ -77,25 +76,20 @@ class _AnymeXHistoryPageState extends State<AnymeXHistoryPage> {
     super.dispose();
   }
 
-  void _deleteItem(OfflineMedia item, ItemType type) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AnymeXDialog(
-        title: 'Remove from History',
-        contentWidget: AnymeXText(
-          'Are you sure you want to remove "${item.name}" from your history?',
-          size: 14,
-        ),
-        onConfirm: () => Navigator.pop(context, true),
+  void _deleteItem(OfflineMedia item, ItemType type) {
+    AnymeXDialog(
+      title: 'Remove from History',
+      contentWidget: AnymeXText(
+        'Are you sure you want to remove "${item.name}" from your history?',
+        size: 14,
       ),
-    );
-
-    if (confirmed == true) {
-      await _storage.clearMediaHistory(
-        item.mediaId ?? '',
-        mediaType: type,
-      );
-    }
+      onConfirm: () async {
+        await _storage.clearMediaHistory(
+          item.mediaId ?? '',
+          mediaType: type,
+        );
+      },
+    ).show(context);
   }
 
   @override
@@ -203,8 +197,24 @@ class _AnymeXHistoryPageState extends State<AnymeXHistoryPage> {
           CustomAnimatedAppBar(
             isVisible: _isAppBarVisibleExternally,
             scrollController: _scrollController,
-            headerContent: const Header(
-              type: PageType.history,
+            headerContent: Obx(
+              () => Header(
+                title: 'History',
+                subtitle: 'Your watch & read history',
+                isSearchActive: _searchController.isSearchActive.value,
+                searchBar: HeaderSearchBar(
+                  controller: _searchController.searchController,
+                  onChanged: _searchController.search,
+                  onClose: _searchController.toggleSearch,
+                  hintText: 'Search in History...',
+                ),
+                actions: [
+                  HeaderActionButton(
+                    icon: IconlyLight.search,
+                    onTap: _searchController.toggleSearch,
+                  ),
+                ],
+              ),
             ),
             visibleStatusBarStyle: SystemUiOverlayStyle(
               statusBarIconBrightness:

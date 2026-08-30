@@ -1,279 +1,144 @@
 import 'dart:ui';
-import 'package:anymex/controllers/settings/settings.dart';
-import 'package:anymex/controllers/settings/methods.dart';
+
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
-import 'package:anymex/screens/manga/widgets/search_selector.dart';
-import 'package:anymex/screens/search/search_view.dart';
-import 'package:anymex/screens/search/source_search_page.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
-import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:hugeicons/hugeicons.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:iconsax/iconsax.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
-import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
-import 'package:anymex/widgets/header/legacy_header.dart' as legacy;
-import 'package:anymex/screens/library/history_page.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
-import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
-import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:iconsax/iconsax.dart';
 
 enum PageType { manga, anime, home, novel, library, extensions, history, stats }
 
 class Header extends StatelessWidget {
-  final PageType type;
+  final Widget? leading;
+  final Widget? titleWidget;
+  final String? title;
+  final Color? titleColor;
+  final Widget? subtitleWidget;
+  final String? subtitle;
+  final List<Widget>? actions;
   final Widget? bottom;
-  const Header({super.key, required this.type, this.bottom});
+  final bool isSearchActive;
+  final Widget? searchBar;
+
+  const Header({
+    super.key,
+    this.leading,
+    this.titleWidget,
+    this.title,
+    this.titleColor,
+    this.subtitleWidget,
+    this.subtitle,
+    this.actions,
+    this.bottom,
+    this.isSearchActive = false,
+    this.searchBar,
+  });
+
+  factory Header.fromType({
+    Key? key,
+    required PageType type,
+    Widget? bottom,
+    VoidCallback? onSearchPressed,
+    VoidCallback? onSortPressed,
+  }) {
+    return _buildHeaderFromType(
+      key: key,
+      type: type,
+      bottom: bottom,
+      onSearchPressed: onSearchPressed,
+      onSortPressed: onSortPressed,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final profileData = Get.find<ServiceHandler>();
-    final greetingController = Get.find<GreetingController>();
-
     return Obx(() {
-      if (settingsController.useLegacyHeader) {
-        final isLibrarySearchActive = type == PageType.library &&
-            Get.isRegistered<LibraryController>() &&
-            Get.find<LibraryController>().isSearchActive.value;
-
-        if (isLibrarySearchActive) {
-          final libraryController = Get.find<LibraryController>();
-          final searchContent = Row(
-            children: [
-              GestureDetector(
-                onTap: libraryController.toggleSearch,
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: context.colors.secondaryContainer.opaque(0.5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.arrow_back_ios_new,
-                      color: context.colors.primary, size: 16),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: TextField(
-                  controller: libraryController.searchController,
-                  onChanged: libraryController.search,
-                  autofocus: true,
-                  style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
-                  decoration: InputDecoration(
-                    hintText: 'Search in Library...',
-                    hintStyle: TextStyle(
-                      color: context.colors.onSurface.withOpacity(0.4),
-                      fontSize: 14,
-                      fontFamily: 'Poppins',
-                    ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    filled: true,
-                    fillColor: context.colors.secondaryContainer.opaque(0.3),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(
-                        color: context.colors.primary.withOpacity(0.3),
-                        width: 1.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-          return _FloatingHeaderWrapper(child: searchContent);
-        }
-
-        legacy.PageType legacyType;
-        switch (type) {
-          case PageType.manga:
-            legacyType = legacy.PageType.manga;
-            break;
-          case PageType.anime:
-            legacyType = legacy.PageType.anime;
-            break;
-          case PageType.home:
-            legacyType = legacy.PageType.home;
-            break;
-          case PageType.novel:
-            legacyType = legacy.PageType.novel;
-            break;
-          case PageType.library:
-            legacyType = legacy.PageType.library;
-            break;
-          case PageType.extensions:
-            legacyType = legacy.PageType.extensions;
-            break;
-          case PageType.history:
-            legacyType = legacy.PageType.library;
-            break;
-          case PageType.stats:
-            legacyType = legacy.PageType.library;
-            break;
-        }
-
-        final libraryController = Get.isRegistered<LibraryController>()
-            ? Get.find<LibraryController>()
-            : null;
-
-        return legacy.Header(
-          type: legacyType,
-          onSearchPressed: libraryController != null
-              ? () => libraryController.toggleSearch()
-              : null,
-          onSortPressed: libraryController != null
-              ? () => _showSortingSettings(context, libraryController)
-              : null,
-        );
-      }
+      final isLegacy = settingsController.useLegacyHeader;
       final isDesktop = MediaQuery.sizeOf(context).width > 600;
-      final isLibrarySearchActive = type == PageType.library &&
-          Get.isRegistered<LibraryController>() &&
-          Get.find<LibraryController>().isSearchActive.value;
 
-      final isHistorySearchActive = type == PageType.history &&
-          Get.isRegistered<HistorySearchController>() &&
-          Get.find<HistorySearchController>().isSearchActive.value;
-
-      if (isLibrarySearchActive) {
-        final libraryController = Get.find<LibraryController>();
-        final searchContent = Row(
-          children: [
-            GestureDetector(
-              onTap: libraryController.toggleSearch,
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: context.colors.secondaryContainer.opaque(0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.arrow_back_ios_new,
-                    color: context.colors.primary, size: 16),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: TextField(
-                controller: libraryController.searchController,
-                onChanged: libraryController.search,
-                autofocus: true,
-                style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
-                decoration: InputDecoration(
-                  hintText: 'Search in Library...',
-                  hintStyle: TextStyle(
-                    color: context.colors.onSurface.withOpacity(0.4),
-                    fontSize: 14,
-                    fontFamily: 'Poppins',
-                  ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  filled: true,
-                  fillColor: context.colors.secondaryContainer.opaque(0.3),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(
-                      color: context.colors.primary.withOpacity(0.3),
-                      width: 1.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-        return _FloatingHeaderWrapper(child: searchContent);
+      if (isSearchActive && searchBar != null) {
+        if (isLegacy) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: searchBar!,
+          );
+        }
+        return _FloatingHeaderWrapper(child: searchBar!);
       }
 
-      if (isHistorySearchActive) {
-        final historyController = Get.find<HistorySearchController>();
-        final searchContent = Row(
-          children: [
-            GestureDetector(
-              onTap: historyController.toggleSearch,
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: context.colors.secondaryContainer.opaque(0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.arrow_back_ios_new,
-                    color: context.colors.primary, size: 16),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: TextField(
-                controller: historyController.searchController,
-                onChanged: historyController.search,
-                autofocus: true,
-                style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
-                decoration: InputDecoration(
-                  hintText: 'Search in History...',
-                  hintStyle: TextStyle(
-                    color: context.colors.onSurface.withOpacity(0.4),
-                    fontSize: 14,
-                    fontFamily: 'Poppins',
-                  ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  filled: true,
-                  fillColor: context.colors.secondaryContainer.opaque(0.3),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(
-                      color: context.colors.primary.withOpacity(0.3),
-                      width: 1.0,
+      final effectiveLeading = leading ?? const HeaderProfileAvatar();
+      final effectiveTitle = titleWidget ??
+          (title != null
+              ? HeaderTitle(title: title!, color: titleColor)
+              : const SizedBox.shrink());
+      final effectiveSubtitle = subtitleWidget ??
+          (subtitle != null
+              ? HeaderSubtitle(subtitle: subtitle!)
+              : const SizedBox.shrink());
+
+      if (isLegacy) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  effectiveLeading,
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        effectiveTitle,
+                        effectiveSubtitle,
+                      ],
                     ),
                   ),
-                ),
+                  if (actions != null && actions!.isNotEmpty) ...[
+                    const SizedBox(width: 15),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: actions!
+                          .map((a) => Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: a,
+                              ))
+                          .toList(),
+                    ),
+                  ],
+                ],
               ),
-            ),
-          ],
+              if (bottom != null) ...[
+                const SizedBox(height: 8),
+                bottom!,
+              ],
+            ],
+          ),
         );
-        return _FloatingHeaderWrapper(child: searchContent);
       }
 
       if (isDesktop) {
@@ -288,29 +153,27 @@ class Header extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      type == PageType.home
-                          ? _buildActionButtons(context, profileData)
-                          : _profileIcon(context, profileData),
+                      effectiveLeading,
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildHeaderTitle(
-                              context, greetingController, profileData),
-                          _buildHeaderSubtitle(
-                              context, greetingController, profileData),
+                          effectiveTitle,
+                          effectiveSubtitle,
                         ],
                       ),
                     ],
                   ),
                 ),
-                _FloatingHeaderWrapper(
-                  margin: const EdgeInsets.fromLTRB(0, 8, 24, 8),
-                  child: type == PageType.home
-                      ? _profileIcon(context, profileData)
-                      : _buildActionButtons(context, profileData),
-                ),
+                if (actions != null && actions!.isNotEmpty)
+                  _FloatingHeaderWrapper(
+                    margin: const EdgeInsets.fromLTRB(0, 8, 24, 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: actions!,
+                    ),
+                  ),
               ],
             ),
             if (bottom != null)
@@ -320,283 +183,173 @@ class Header extends StatelessWidget {
               ),
           ],
         );
-      } else {
-        final content = Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                type == PageType.home
-                    ? _buildActionButtons(context, profileData)
-                    : _profileIcon(context, profileData),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _buildHeaderTitle(
-                          context, greetingController, profileData),
-                      _buildHeaderSubtitle(
-                          context, greetingController, profileData),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                type == PageType.home
-                    ? _profileIcon(context, profileData)
-                    : _buildActionButtons(context, profileData),
-              ],
-            ),
-            if (bottom != null) ...[
-              const SizedBox(height: 8),
-              bottom!,
-            ],
-          ],
-        );
-        return _FloatingHeaderWrapper(child: content);
       }
+
+      final content = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              effectiveLeading,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    effectiveTitle,
+                    effectiveSubtitle,
+                  ],
+                ),
+              ),
+              if (actions != null && actions!.isNotEmpty) ...[
+                const SizedBox(width: 12),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: actions!,
+                ),
+              ],
+            ],
+          ),
+          if (bottom != null) ...[
+            const SizedBox(height: 8),
+            bottom!,
+          ],
+        ],
+      );
+      return _FloatingHeaderWrapper(child: content);
     });
   }
+}
 
-  Widget _buildHeaderTitle(BuildContext context,
-      GreetingController greetingController, ServiceHandler profileData) {
-    final isSimkl = profileData.serviceType.value == ServicesType.simkl;
+Header _buildHeaderFromType({
+  Key? key,
+  required PageType type,
+  Widget? bottom,
+  VoidCallback? onSearchPressed,
+  VoidCallback? onSortPressed,
+}) {
+  final profileData = Get.find<ServiceHandler>();
+  final isSimkl = profileData.serviceType.value == ServicesType.simkl;
 
-    switch (type) {
-      case PageType.home:
-        return AnymeXText("AnymeX",
-          autoResize: true,
-          maxLines: 1,
-          size: 15,
-          variant: TextVariant.bold,
-          color: context.colors.primary,
-        );
-      case PageType.anime:
-        return AnymeXText(isSimkl ? "Movies" : "Anime",
-          autoResize: true,
-          maxLines: 1,
-          size: 15,
-          variant: TextVariant.bold,
-        );
-      case PageType.manga:
-        return AnymeXText(isSimkl ? "Series" : "Manga",
-          autoResize: true,
-          maxLines: 1,
-          size: 15,
-          variant: TextVariant.bold,
-        );
-      case PageType.novel:
-        return const AnymeXText("Novels",
-          autoResize: true,
-          maxLines: 1,
-          size: 15,
-          variant: TextVariant.bold,
-        );
-      case PageType.library:
-        return const AnymeXText("Library",
-          autoResize: true,
-          maxLines: 1,
-          size: 15,
-          variant: TextVariant.bold,
-        );
-      case PageType.extensions:
-        return const AnymeXText("Extensions",
-          autoResize: true,
-          maxLines: 1,
-          size: 15,
-          variant: TextVariant.bold,
-        );
-      case PageType.history:
-        return const AnymeXText("History",
-          autoResize: true,
-          maxLines: 1,
-          size: 15,
-          variant: TextVariant.bold,
-        );
-      case PageType.stats:
-        return const AnymeXText("Stats",
-          autoResize: true,
-          maxLines: 1,
-          size: 15,
-          variant: TextVariant.bold,
-        );
-    }
-  }
-
-  Widget _buildHeaderSubtitle(BuildContext context,
-      GreetingController greetingController, ServiceHandler profileData) {
-    if (type == PageType.library) {
-      return AnymeXText("All your local shi",
-        autoResize: true,
-        maxLines: 1,
-        size: 11,
-        color: context.colors.onSurface.withOpacity(0.55),
+  switch (type) {
+    case PageType.home:
+      return Header(
+        key: key,
+        leading: const HeaderLogoButton(),
+        title: 'AnymeX',
+        titleColor: Get.theme.colorScheme.primary,
+        subtitleWidget: const HeaderGreetingSubtitle(),
+        actions: const [HeaderProfileAvatar()],
+        bottom: bottom,
       );
-    }
-    if (type == PageType.extensions) {
-      return AnymeXText("Manage plugins & sources",
-        autoResize: true,
-        maxLines: 1,
-        size: 11,
-        color: context.colors.onSurface.withOpacity(0.55),
-      );
-    }
-    if (type == PageType.history) {
-      return AnymeXText("Your watch & read history",
-        autoResize: true,
-        maxLines: 1,
-        size: 11,
-        color: context.colors.onSurface.withOpacity(0.55),
-      );
-    }
-    if (type == PageType.stats) {
-      return AnymeXText("Your watch & read statistics",
-        autoResize: true,
-        maxLines: 1,
-        size: 11,
-        color: context.colors.onSurface.withOpacity(0.55),
-      );
-    }
-
-    final greeting = greetingController.currentGreeting.value;
-    return AnymeXText(greeting,
-      autoResize: true,
-      maxLines: 1,
-      size: 11,
-      color: context.colors.onSurface.withOpacity(0.55),
-    );
-  }
-
-  Widget _buildActionButtons(BuildContext context, ServiceHandler profileData) {
-    final list = <Widget>[];
-
-    if (type == PageType.library && Get.isRegistered<LibraryController>()) {
-      final libraryController = Get.find<LibraryController>();
-      list.add(
-        _PillIconButton(
-          onPressed: libraryController.toggleSearch,
-          icon:
-              Icon(IconlyLight.search, color: context.colors.primary, size: 18),
-          context: context,
-        ),
-      );
-      list.add(const SizedBox(width: 8));
-      list.add(
-        _PillIconButton(
-          onPressed: () => _showSortingSettings(context, libraryController),
-          icon: Icon(Icons.sort, color: context.colors.primary, size: 18),
-          context: context,
-        ),
-      );
-    } else if (type == PageType.history && Get.isRegistered<HistorySearchController>()) {
-      final historyController = Get.find<HistorySearchController>();
-      list.add(
-        _PillIconButton(
-          onPressed: historyController.toggleSearch,
-          icon:
-              Icon(IconlyLight.search, color: context.colors.primary, size: 18),
-          context: context,
-        ),
-      );
-    } else if (type == PageType.extensions) {
-      list.add(
-        _PillIconButton(
-          onPressed: () => navigate(() => const ExtensionTestPage()),
-          icon: Icon(Icons.build_outlined, color: context.colors.primary, size: 18),
-          context: context,
-        ),
-      );
-      list.add(const SizedBox(width: 8));
-      list.add(
-        _PillIconButton(
-          onPressed: () => navigate(() => const SettingsExtensions()),
-          icon: Icon(HugeIcons.strokeRoundedGithub, color: context.colors.primary, size: 18),
-          context: context,
-        ),
-      );
-    } else if (type == PageType.home) {
-      list.add(
-        AnymexOnTap(
-          onTap: () => SettingsSheet().showServiceSelector(context),
-          child: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: context.colors.secondaryContainer.opaque(0.5),
-              shape: BoxShape.circle,
+    case PageType.anime:
+      return Header(
+        key: key,
+        leading: const HeaderProfileAvatar(),
+        title: isSimkl ? 'Movies' : 'Anime',
+        subtitleWidget: const HeaderGreetingSubtitle(),
+        actions: [
+          if (onSearchPressed != null)
+            HeaderActionButton(
+              icon: IconlyLight.search,
+              onTap: onSearchPressed,
             ),
-            child: Center(
-              child: AnymeXAnimatedLogo(
-                size: 36,
-                color: context.colors.primary,
-              ),
-            ),
-          ),
-        ),
+        ],
+        bottom: bottom,
       );
-    } else {
-      if (profileData.serviceType.value == ServicesType.extensions) {
-        final itemType = type == PageType.manga
-            ? ItemType.manga
-            : (type == PageType.novel ? ItemType.novel : ItemType.anime);
-        list.add(
-          _PillIconButton(
-            onPressed: () {
-              navigateWithAnimation(() => SourceSearchPage(
-                    initialTerm: '',
-                    type: itemType,
-                    source: null,
-                  ));
-            },
-            icon: Icon(
-              IconlyLight.search,
-              color: context.colors.primary,
-              size: 18,
+    case PageType.manga:
+      return Header(
+        key: key,
+        leading: const HeaderProfileAvatar(),
+        title: isSimkl ? 'Series' : 'Manga',
+        subtitleWidget: const HeaderGreetingSubtitle(),
+        actions: [
+          if (onSearchPressed != null)
+            HeaderActionButton(
+              icon: IconlyLight.search,
+              onTap: onSearchPressed,
             ),
-            context: context,
-          ),
-        );
-      } else {
-        list.add(
-          _PillIconButton(
-            onPressed: () => _handleSearchPress(context, profileData),
-            icon: Icon(IconlyLight.search,
-                color: context.colors.primary, size: 18),
-            context: context,
-          ),
-        );
-      }
-    }
-
-    return Row(children: list);
+        ],
+        bottom: bottom,
+      );
+    case PageType.novel:
+      return Header(
+        key: key,
+        leading: const HeaderProfileAvatar(),
+        title: 'Novels',
+        subtitleWidget: const HeaderGreetingSubtitle(),
+        actions: [
+          if (onSearchPressed != null)
+            HeaderActionButton(
+              icon: IconlyLight.search,
+              onTap: onSearchPressed,
+            ),
+        ],
+        bottom: bottom,
+      );
+    case PageType.library:
+      return Header(
+        key: key,
+        leading: const HeaderProfileAvatar(),
+        title: 'Library',
+        subtitle: 'All your local shi',
+        actions: [
+          if (onSearchPressed != null)
+            HeaderActionButton(
+              icon: IconlyLight.search,
+              onTap: onSearchPressed,
+            ),
+          if (onSortPressed != null)
+            HeaderActionButton(
+              icon: Icons.sort_rounded,
+              onTap: onSortPressed,
+            ),
+        ],
+        bottom: bottom,
+      );
+    case PageType.history:
+      return Header(
+        key: key,
+        leading: const HeaderProfileAvatar(),
+        title: 'History',
+        subtitle: 'Your watch & read history',
+        actions: [
+          if (onSearchPressed != null)
+            HeaderActionButton(
+              icon: IconlyLight.search,
+              onTap: onSearchPressed,
+            ),
+        ],
+        bottom: bottom,
+      );
+    case PageType.stats:
+      return Header(
+        key: key,
+        leading: const HeaderProfileAvatar(),
+        title: 'Stats',
+        subtitle: 'Your watch & read statistics',
+        bottom: bottom,
+      );
+    case PageType.extensions:
+      return Header(
+        key: key,
+        leading: const HeaderProfileAvatar(),
+        title: 'Extensions',
+        subtitle: 'Manage plugins & sources',
+        bottom: bottom,
+      );
   }
+}
 
-  void _handleSearchPress(BuildContext context, ServiceHandler profileData) {
-    final hasNovelExts = sourceController.installedNovelExtensions.isNotEmpty;
-    final isSimkl = profileData.serviceType.value == ServicesType.simkl;
+class HeaderProfileAvatar extends StatelessWidget {
+  final double radius;
 
-    if (type == PageType.novel) {
-      navigate(() => const SearchPage(searchTerm: '', isManga: false, type: ItemType.novel));
-      return;
-    }
+  const HeaderProfileAvatar({super.key, this.radius = 20});
 
-    if (type == PageType.manga) {
-      if (isSimkl) {
-        navigate(() => const SearchPage(searchTerm: '', isManga: false));
-        return;
-      }
-      if (!hasNovelExts) {
-        navigate(() => const SearchPage(searchTerm: '', isManga: true));
-        return;
-      }
-      searchTypeSheet(context);
-    } else {
-      navigate(() => const SearchPage(searchTerm: '', isManga: false));
-    }
-  }
-
-  AnymexOnTap _profileIcon(BuildContext context, ServiceHandler profileData) {
+  @override
+  Widget build(BuildContext context) {
+    final profileData = Get.find<ServiceHandler>();
     return AnymexOnTap(
       onTap: () => SettingsSheet.show(context),
       child: GestureDetector(
@@ -606,24 +359,28 @@ class Header extends StatelessWidget {
           }
         },
         child: Obx(() {
-          final count = Get.find<SourceController>().extensionUpdatesCount.value;
+          final count =
+              Get.find<SourceController>().extensionUpdatesCount.value;
           final avatar = CircleAvatar(
-            radius: 20,
+            radius: radius,
             backgroundColor: context.colors.secondaryContainer.opaque(0.50),
             child: profileData.isLoggedIn.value
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(50),
                     child: AnymeXImage(
-                      width: 40,
-                      height: 40,
+                      width: radius * 2,
+                      height: radius * 2,
                       fit: BoxFit.cover,
                       radius: 0,
                       errorImage: '',
                       imageUrl: profileData.profileData.value.avatar ?? '',
                     ),
                   )
-                : Icon(IconlyBold.profile,
-                    color: context.colors.onSecondaryContainer, size: 18),
+                : Icon(
+                    IconlyBold.profile,
+                    color: context.colors.onSecondaryContainer,
+                    size: 18,
+                  ),
           );
           if (count > 0) {
             return AnymeXBadge(
@@ -638,25 +395,229 @@ class Header extends StatelessWidget {
       ),
     );
   }
-
-  void _showSortingSettings(
-          BuildContext context, LibraryController controller) =>
-      AnymeXSheet.custom(
-        LibrarySettingsSheet(controller: controller),
-        context,
-        showDragHandle: true,
-      );
 }
+
+class HeaderLogoButton extends StatelessWidget {
+  final double size;
+
+  const HeaderLogoButton({super.key, this.size = 36});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnymexOnTap(
+      onTap: () => SettingsSheet().showServiceSelector(context),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: context.colors.secondaryContainer.opaque(0.5),
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: AnymeXAnimatedLogo(
+            size: size,
+            color: context.colors.primary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HeaderActionButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final Color? color;
+  final Widget? badge;
+
+  const HeaderActionButton({
+    super.key,
+    required this.icon,
+    required this.onTap,
+    this.color,
+    this.badge,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: context.colors.secondaryContainer.opaque(0.5),
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(
+                icon,
+                color: color ?? context.colors.primary,
+                size: 18,
+              ),
+              if (badge != null)
+                Positioned(
+                  top: -4,
+                  right: -4,
+                  child: badge!,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HeaderSearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onClose;
+  final String hintText;
+
+  const HeaderSearchBar({
+    super.key,
+    required this.controller,
+    required this.onChanged,
+    required this.onClose,
+    this.hintText = 'Search...',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: onClose,
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: context.colors.secondaryContainer.opaque(0.5),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.arrow_back_ios_new,
+              color: context.colors.primary,
+              size: 16,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            onChanged: onChanged,
+            autofocus: true,
+            style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: TextStyle(
+                color: context.colors.onSurface.withOpacity(0.4),
+                fontSize: 14,
+                fontFamily: 'Poppins',
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              filled: true,
+              fillColor: context.colors.secondaryContainer.opaque(0.3),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(
+                  color: context.colors.primary.withOpacity(0.3),
+                  width: 1.0,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class HeaderTitle extends StatelessWidget {
+  final String title;
+  final Color? color;
+
+  const HeaderTitle({super.key, required this.title, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnymeXText(
+      title,
+      autoResize: true,
+      maxLines: 1,
+      size: 15,
+      variant: TextVariant.bold,
+      color: color,
+    );
+  }
+}
+
+class HeaderSubtitle extends StatelessWidget {
+  final String subtitle;
+  final Color? color;
+
+  const HeaderSubtitle({super.key, required this.subtitle, this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return AnymeXText(
+      subtitle,
+      autoResize: true,
+      maxLines: 1,
+      size: 11,
+      color: color ?? context.colors.onSurface.withOpacity(0.55),
+    );
+  }
+}
+
+class HeaderGreetingSubtitle extends StatelessWidget {
+  const HeaderGreetingSubtitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final greetingController = Get.find<GreetingController>();
+    return Obx(
+      () => AnymeXText(
+        greetingController.currentGreeting.value,
+        autoResize: true,
+        maxLines: 1,
+        size: 11,
+        color: context.colors.onSurface.withOpacity(0.55),
+      ),
+    );
+  }
+}
+
+void showLibrarySortSheet(BuildContext context, LibraryController controller) =>
+    AnymeXSheet.custom(
+      LibrarySettingsSheet(controller: controller),
+      context,
+      showDragHandle: true,
+    );
 
 class LibrarySettingsSheet extends StatefulWidget {
   final LibraryController controller;
   const LibrarySettingsSheet({super.key, required this.controller});
 
   @override
-  State<LibrarySettingsSheet> createState() => LibrarySettingsSheetState();
+  State<LibrarySettingsSheet> createState() => _LibrarySettingsSheetState();
 }
 
-class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
+class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   int _selectedIndex = 0;
@@ -757,8 +718,7 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
                 icon: Icons.sort_by_alpha,
-                onTap: () =>
-                    widget.controller.handleSortChange(SortType.title),
+                onTap: () => widget.controller.handleSortChange(SortType.title),
               ),
               SortTile(
                 title: _getProgressTitle(widget.controller),
@@ -795,8 +755,7 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
                 icon: Icons.sort_by_alpha,
-                onTap: () =>
-                    widget.controller.handleSortChange(SortType.title),
+                onTap: () => widget.controller.handleSortChange(SortType.title),
               ),
               SortTile(
                 title: _getLastReadTitle(widget.controller),
@@ -817,15 +776,6 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.rating),
               ),
               SortTile(
-                title: 'Popularity',
-                sortType: SortType.popularity,
-                currentSort: widget.controller.currentSort.value,
-                isAscending: widget.controller.isAscending.value,
-                icon: Icons.trending_up,
-                onTap: () =>
-                    widget.controller.handleSortChange(SortType.popularity),
-              ),
-              SortTile(
                 title: _getProgressTitle(widget.controller),
                 sortType: SortType.progress,
                 currentSort: widget.controller.currentSort.value,
@@ -840,8 +790,7 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
                 icon: Icons.calendar_today,
-                onTap: () =>
-                    widget.controller.handleSortChange(SortType.aired),
+                onTap: () => widget.controller.handleSortChange(SortType.aired),
               ),
             ];
 
@@ -912,104 +861,9 @@ class LibrarySettingsSheetState extends State<LibrarySettingsSheet>
   }
 
   String _getProgressTitle(LibraryController controller) {
-    return controller.type.value == ItemType.anime ? 'Watch Progress' : 'Read Progress';
-  }
-}
-
-class _FloatingHeaderWrapper extends StatelessWidget {
-  final Widget child;
-  final EdgeInsets? margin;
-  const _FloatingHeaderWrapper({required this.child, this.margin});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final settings = Get.find<Settings>();
-    final RxBool translucent = settings.transculentBar.obs;
-    final isDesktop = MediaQuery.sizeOf(context).width > 600;
-
-    final borderRadius = BorderRadius.circular(
-      isDesktop ? 24.multiplyRadius() : 28.multiplyRadius(),
-    );
-
-    return Container(
-      margin: margin ??
-          EdgeInsets.symmetric(
-            horizontal: isDesktop ? 24 : 16,
-            vertical: 8,
-          ),
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        border: Border.all(
-          color: theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
-          width: 0.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.opaque(0.08, iReallyMeanIt: true),
-            blurRadius: 24,
-            spreadRadius: 0,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: theme.colorScheme.primary.opaque(0.04, iReallyMeanIt: true),
-            blurRadius: 40,
-            spreadRadius: -8,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: borderRadius,
-        child: Obx(() {
-          final isTranslucent = translucent.value;
-          return BackdropFilter(
-            filter: isTranslucent
-                ? ImageFilter.blur(sigmaX: 10, sigmaY: 10)
-                : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isTranslucent
-                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.45)
-                    : theme.colorScheme.surfaceContainer
-                        .withValues(alpha: 0.92),
-                borderRadius: borderRadius,
-              ),
-              child: child,
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-class _PillIconButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  final Widget icon;
-  final BuildContext context;
-
-  const _PillIconButton({
-    required this.onPressed,
-    required this.icon,
-    required this.context,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: BoxDecoration(
-          color: context.colors.secondaryContainer.opaque(0.5),
-          shape: BoxShape.circle,
-        ),
-        child: Center(child: icon),
-      ),
-    );
+    return controller.type.value == ItemType.anime
+        ? 'Watch Progress'
+        : 'Read Progress';
   }
 }
 
@@ -1083,6 +937,75 @@ class SortTile extends StatelessWidget {
                 ),
               )
             : null,
+      ),
+    );
+  }
+}
+
+class _FloatingHeaderWrapper extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? margin;
+  const _FloatingHeaderWrapper({required this.child, this.margin});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final settings = Get.find<Settings>();
+    final RxBool translucent = settings.transculentBar.obs;
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
+
+    final borderRadius = BorderRadius.circular(
+      isDesktop ? 24.multiplyRadius() : 28.multiplyRadius(),
+    );
+
+    return Container(
+      margin: margin ??
+          EdgeInsets.symmetric(
+            horizontal: isDesktop ? 24 : 16,
+            vertical: 8,
+          ),
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        border: Border.all(
+          color: theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+          width: 0.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.opaque(0.08, iReallyMeanIt: true),
+            blurRadius: 24,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: theme.colorScheme.primary.opaque(0.04, iReallyMeanIt: true),
+            blurRadius: 40,
+            spreadRadius: -8,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: Obx(() {
+          final isTranslucent = translucent.value;
+          return BackdropFilter(
+            filter: isTranslucent
+                ? ImageFilter.blur(sigmaX: 10, sigmaY: 10)
+                : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: isTranslucent
+                    ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.45)
+                    : theme.colorScheme.surfaceContainer
+                        .withValues(alpha: 0.92),
+                borderRadius: borderRadius,
+              ),
+              child: child,
+            ),
+          );
+        }),
       ),
     );
   }

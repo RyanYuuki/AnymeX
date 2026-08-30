@@ -12,6 +12,8 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:anymex/screens/library/editor/history_editor.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -96,19 +98,190 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     );
   }
 
-  Widget _buildContent() {
-    if (_lists.isEmpty) {
-      return _buildEmptyListsState();
+  Stream<List<OfflineMedia>> _historyStream() {
+    if (widget.type == ItemType.anime) {
+      return offlineStorage.watchAnimeLibrary().map((items) => items
+          .where((e) =>
+              e.currentEpisode?.currentTrack != null ||
+              (e.watchedEpisodes != null && e.watchedEpisodes!.isNotEmpty))
+          .toList());
     }
+    if (widget.type == ItemType.manga) {
+      return offlineStorage.watchMangaLibrary().map((items) => items
+          .where((e) =>
+              e.currentChapter?.link != null ||
+              (e.readChapters != null && e.readChapters!.isNotEmpty))
+          .toList());
+    }
+    return offlineStorage.watchNovelLibrary().map((items) => items
+        .where((e) =>
+            e.currentChapter?.link != null ||
+            (e.readChapters != null && e.readChapters!.isNotEmpty))
+        .toList());
+  }
 
-    return ReorderableListView.builder(
-      onReorder: _isReordering ? _onReorder : (a, b) {},
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      itemCount: _lists.length,
-      buildDefaultDragHandles: false,
-      itemBuilder: (context, index) {
-        return _buildListCard(index);
+  void _confirmClearHistory(List<OfflineMedia> items) {
+    final isAnime = widget.type == ItemType.anime;
+    final label = isAnime ? 'watch history' : 'read history';
+
+    AnymeXDialog(
+      title: 'Clear History',
+      contentWidget: AnymeXText(
+        'Are you sure you want to clear all $label? This action cannot be undone.',
+        size: 14,
+      ),
+      confirmText: 'Clear All',
+      onConfirm: () async {
+        final ids = items
+            .map((e) => e.mediaId)
+            .whereType<String>()
+            .where((id) => id.isNotEmpty)
+            .toList();
+        final count = await offlineStorage.clearMediaHistoryBulk(
+          ids,
+          mediaType: widget.type,
+        );
+        snackBar(count > 0 ? 'History cleared' : 'No history to clear');
       },
+    ).show(context);
+  }
+
+  Widget _buildHistoryCard(ThemeData theme) {
+    final isAnime = widget.type == ItemType.anime;
+    final historyTitle = isAnime ? 'Watch History' : 'Read History';
+
+    return StreamBuilder<List<OfflineMedia>>(
+      stream: _historyStream(),
+      builder: (context, snapshot) {
+        final items = snapshot.data ?? [];
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainer.withOpacity(0.4),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: theme.colorScheme.outline.opaque(0.08, iReallyMeanIt: true),
+                width: 1.0,
+              ),
+            ),
+            child: InkWell(
+              onTap: () => navigate(() => HistoryEditor(type: widget.type)),
+              borderRadius: BorderRadius.circular(20),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        Icons.history_rounded,
+                        color: theme.colorScheme.primary,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymeXText(
+                            historyTitle,
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          AnymeXText(
+                            '${items.length} ${items.length == 1 ? 'item' : 'items'} in history',
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface.opaque(0.6),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (items.isNotEmpty)
+                      IconButton(
+                        onPressed: () => _confirmClearHistory(items),
+                        icon: Icon(
+                          Icons.delete_outline_rounded,
+                          color: theme.colorScheme.error,
+                          size: 20,
+                        ),
+                        tooltip: 'Clear History',
+                      ),
+                    Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: theme.colorScheme.onSurface.opaque(0.4),
+                      size: 16,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildContent() {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHistoryCard(theme),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AnymeXText(
+                'Custom Lists',
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              AnymeXText(
+                '${_lists.length} lists',
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface.opaque(0.6),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: _lists.isEmpty
+              ? _buildEmptyListsState()
+              : ReorderableListView.builder(
+                  onReorder: _isReordering ? _onReorder : (a, b) {},
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  itemCount: _lists.length,
+                  buildDefaultDragHandles: false,
+                  itemBuilder: (context, index) {
+                    return _buildListCard(index);
+                  },
+                ),
+        ),
+      ],
     );
   }
 

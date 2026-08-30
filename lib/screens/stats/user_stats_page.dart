@@ -12,9 +12,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
-import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
-import 'package:anymex/widgets/common/media_mode_selector.dart';
 import 'package:anymex/widgets/header/header.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -223,7 +221,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
               isVisible: _isAppBarVisibleExternally,
               scrollController: _scrollController,
               headerContent: Header(
-                type: PageType.stats,
+                title: 'Stats',
+                subtitle: 'Your watch & read statistics',
                 bottom: isLegacy ? _buildStatsModeChips(context) : null,
               ),
               visibleStatusBarStyle: SystemUiOverlayStyle(

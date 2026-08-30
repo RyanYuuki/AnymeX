@@ -7,6 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:anymex/screens/novel/search/search_page.dart';
+import 'package:anymex/utils/function.dart';
+
 class NovelHomePage extends StatefulWidget {
   const NovelHomePage({super.key});
 
@@ -38,7 +42,8 @@ class _NovelHomePageState extends State<NovelHomePage> {
     final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final statusBarHeight = MediaQuery.paddingOf(context).top;
     const appBarHeight = kToolbarHeight + 20;
-    final double bottomNavBarHeight = isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 65.0);
+    final double bottomNavBarHeight =
+        isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 65.0);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -67,7 +72,16 @@ class _NovelHomePageState extends State<NovelHomePage> {
           CustomAnimatedAppBar(
             isVisible: _isAppBarVisibleExternally,
             scrollController: _scrollController,
-            headerContent: const Header(type: PageType.novel),
+            headerContent: Header(
+              title: 'Novels',
+              subtitleWidget: const HeaderGreetingSubtitle(),
+              actions: [
+                HeaderActionButton(
+                  icon: IconlyLight.search,
+                  onTap: () => navigate(() => const NovelSearchPage()),
+                ),
+              ],
+            ),
             visibleStatusBarStyle: SystemUiOverlayStyle(
               statusBarIconBrightness:
                   Theme.of(context).brightness == Brightness.light
