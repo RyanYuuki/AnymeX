@@ -104,58 +104,6 @@ jobs:
           echo "Preview of formatted notes:"
           cat formatted_notes.txt
 
-      # You can now use ${{ env.FORMATTED_NOTES }} in your next Telegram/Discord steps
-
-      - name: Get and Categorize Assets with Sizes
-        id: categorize_assets
-        run: |
-          # Fetch release assets based on the latest tag
-          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-           -H "Accept: application/vnd.github.v3+json" \
-           "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ env.LATEST_TAG }}" -o release.json
-          
-          # Initialize environment variables
-          for VAR in apk_arm64 apk_armeabi apk_universal apk_x86_64 windows linux ios setup macos linuximg linuxrmp; do
-            echo "${VAR}_message=" >> $GITHUB_ENV
-          done
-          
-          # Process each asset
-          jq -r '.assets[] | "\(.browser_download_url) \(.size)"' release.json | while read -r LINE; do
-            ASSET_URL=$(echo "$LINE" | awk '{print $1}')
-            ASSET_SIZE=$(echo "$LINE" | awk '{print $2}')
-            SIZE_HR=$(awk -v size="$ASSET_SIZE" 'BEGIN{
-              split("B KB MB GB TB", unit);
-              for (i=1; size>=1024 && i<5; i++) size/=1024;
-              printf "%.2f %s", size, unit[i]
-            }')
-            FILE_NAME=$(basename "$ASSET_URL")
-            
-            # Categorize and set variables
-            if [[ "$FILE_NAME" == *"-arm64-v8a.apk" ]]; then
-              echo "apk_arm64_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *"-armeabi-v7a.apk" ]]; then
-              echo "apk_armeabi_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *"-universal.apk" ]]; then
-              echo "apk_universal_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *"-x86_64.apk" ]]; then
-              echo "apk_x86_64_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *.ipa ]]; then
-              echo "ios_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *"Linux.AppImage" ]]; then
-              echo "linuximg_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *"Linux.rpm" ]]; then
-              echo "linuxrmp_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV              
-            elif [[ "$FILE_NAME" == *"Linux.zip" ]]; then
-              echo "linux_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *"Installer.exe" ]]; then
-              echo "setup_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *"Windows.zip" ]]; then
-              echo "windows_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            elif [[ "$FILE_NAME" == *".dmg" ]]; then
-              echo "macos_message=[Download]($ASSET_URL) | $SIZE_HR" >> $GITHUB_ENV
-            fi
-          done
-          
       - name: Determine Webhook
         id: determine_webhook
         run: |
@@ -276,8 +224,6 @@ jobs:
               [ -f TPerformanceT.txt ] && [ -f perf_clean.txt ] && echo -n "$(cat TPerformanceT.txt) <blockquote>$(cat perf_clean.txt)</blockquote> "
               [ -f TChoresT.txt ] && [ -f chores_clean.txt ] && echo -n "$(cat TChoresT.txt) <blockquote>$(cat chores_clean.txt)</blockquote> "
               echo ""
-              echo "❓<a href='https://github.com/${{ github.repository }}/blob/main/INSTALLATION.md'>Don't know which version to download? Click here!</a>"
-              echo ""
               echo "📌 <a href='https://github.com/${{github.repository}}/releases/tag/${{ env.LATEST_TAG }}'>Full changelog</a>"
           } > output.txt
 
@@ -295,29 +241,6 @@ jobs:
               -d "text=$markdown_info_tel" \
               -d "parse_mode=HTML" \
               -d "disable_web_page_preview=true"
-              
-      - name: Send Assets to Telegram
-        run: |
-          MESSAGE="🎉 *${{ env.LATEST_TAG }} Released* 🎉
-          
-            🔹 ${{ env.apk_arm64_message }} | **APK (arm64)**
-            🔹 ${{ env.apk_armeabi_message }} | **APK (armeabi-v7a)**
-            🔹 ${{ env.apk_universal_message }} | **APK (universal)**
-            🔹 ${{ env.apk_x86_64_message }} | **APK (x86 & x64)**
-            🔹 ${{ env.windows_message }} | **Windows Zip**
-            🔹 ${{ env.setup_message }} | **Windows EXE**
-            🔹 ${{ env.linuximg_message }} | **Linux appimage**
-            🔹 ${{ env.linuxrmp_message }} | **Linux rmp**
-            🔹 ${{ env.linux_message }} | **Linux**
-            🔹 ${{ env.ios_message }} | **iOS**
-            🔹 ${{ env.macos_message }} | **macOS**"
-          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "chat_id": "${{ secrets.TELEGRAM_CHAT_ID }}",
-              "text": "'"$MESSAGE"'",
-              "parse_mode": "Markdown"
-            }'
 
       - name: Send message to Discord
         env:
@@ -340,19 +263,24 @@ jobs:
 
           # Ensure VERSION is not empty
           VERSION=${VERSION:-"${{env.LATEST_TAG}}"}
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${{ env.LATEST_TAG }}"
+
+          if [ -n "$role_mention" ]; then
+            MESSAGE_CONTENT="$role_mention AnymeX ${{ env.LATEST_TAG }} is out: $RELEASE_URL"
+          else
+            MESSAGE_CONTENT="AnymeX ${{ env.LATEST_TAG }} is out: $RELEASE_URL"
+          fi
       
           discord_data=$(jq -nc \
-                        --arg role_mention "$role_mention" \
+                        --arg content "$MESSAGE_CONTENT" \
                         --arg field_value "$FORMATTED_NOTES_CLEAN
 
-            [❓Don't know which version to download? Click here!](https://github.com/${{ github.repository }}/blob/main/INSTALLATION.md)  
-            
-            [📌 Full changelog](https://github.com/${{ github.repository }}/releases/tag/${{ env.LATEST_TAG }})" \
+            [📌 Full changelog]($RELEASE_URL)" \
                         --arg footer_text "Version $VERSION" \
                         --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
                         --argjson embed_color "$embed_color" \
                         '{
-                          "content": $role_mention,
+                          "content": $content,
                           "embeds": [
                             {
                               "title": "🚀 New Release: ${{env.LATEST_TAG}}",
@@ -373,22 +301,3 @@ jobs:
               -X POST \
               -d "$discord_data" \
               "$DISCORD_WEBHOOK_URL"
-
-      - name: Send Assets to Discord
-        run: |
-          MESSAGE="${{ env.LATEST_TAG }} Released
-            🔹 ${{ env.apk_arm64_message }} | **APK (arm64)**
-            🔹 ${{ env.apk_armeabi_message }} | **APK (armeabi-v7a)**
-            🔹 ${{ env.apk_universal_message }} | **APK (universal)**
-            🔹 ${{ env.apk_x86_64_message }} | **APK (x86 & x64)**
-            🔹 ${{ env.windows_message }} | **Windows Zip**
-            🔹 ${{ env.setup_message }} | **Windows EXE**
-            🔹 ${{ env.linuximg_message }} | **Linux appimage**
-            🔹 ${{ env.linuxrmp_message }} | **Linux rmp**
-            🔹 ${{ env.linux_message }} | **Linux**
-            🔹 ${{ env.ios_message }} | **iOS**
-            🔹 ${{ env.macos_message }} | **macOS**"
-          PAYLOAD=$(jq -n --arg content "$MESSAGE" '{ content: $content }')
-          curl -X POST "${{ env.DISCORD_WEBHOOK_URL }}" \
-            -H "Content-Type: application/json" \
-            -d "$PAYLOAD"
