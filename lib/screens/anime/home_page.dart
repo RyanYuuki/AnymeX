@@ -14,6 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:anymex/screens/search/search_view.dart';
+import 'package:anymex/screens/search/source_search_page.dart';
+import 'package:anymex/screens/manga/widgets/search_selector.dart';
+import 'package:anymex/screens/novel/search/search_page.dart';
+import 'package:anymex/utils/function.dart';
+
 class AnimeHomePage extends StatefulWidget {
   final ItemType? type;
   const AnimeHomePage({
@@ -88,14 +95,25 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
     }
   }
 
-  PageType _typeToPageType(ItemType type) {
-    switch (type) {
-      case ItemType.manga:
-        return PageType.manga;
-      case ItemType.novel:
-        return PageType.novel;
-      default:
-        return PageType.anime;
+  void _openSearch(BuildContext context, ItemType currentType,
+      ServiceHandler serviceHandler) {
+    if (serviceHandler.serviceType.value == ServicesType.extensions) {
+      navigateWithAnimation(() => SourceSearchPage(
+            initialTerm: '',
+            type: currentType,
+          ));
+    } else if (currentType == ItemType.manga) {
+      final hasNovelExts =
+          Get.find<SourceController>().installedNovelExtensions.isNotEmpty;
+      if (hasNovelExts) {
+        searchTypeSheet(context);
+      } else {
+        navigate(() => const SearchPage(searchTerm: '', isManga: true));
+      }
+    } else if (currentType == ItemType.novel) {
+      navigate(() => const NovelSearchPage());
+    } else {
+      navigate(() => const SearchPage(searchTerm: '', isManga: false));
     }
   }
 
@@ -110,16 +128,21 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
         isDesktop ? 20.0 : (MediaQuery.paddingOf(context).bottom + 65.0);
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
+        resizeToAvoidBottomInset: false,
+        extendBodyBehindAppBar: true,
+        body: Stack(children: [
           Obx(() {
             final isExtensions =
                 serviceHandler.serviceType.value == ServicesType.extensions;
             final currentType = widget.type ?? mediaModeController.mode;
 
             if (isExtensions) {
+              final sourceController = Get.find<SourceController>();
+              final sources = switch (currentType) {
+                ItemType.manga => sourceController.installedMangaExtensions,
+                ItemType.novel => sourceController.installedNovelExtensions,
+                _ => sourceController.installedExtensions,
+              };
               return SingleChildScrollView(
                 controller: _extensionsScrollController,
                 child: Column(
@@ -128,9 +151,8 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                     SizedBox(height: statusBarHeight + appBarHeight),
                     const SizedBox(height: 10),
                     Obx(() => InstalledExtensionsGridView(
-                          sources: Get.find<SourceController>()
-                              .installedExtensions
-                              .value,
+                          key: ValueKey(currentType),
+                          sources: sources.value,
                           itemType: currentType,
                         )),
                     SizedBox(height: bottomNavBarHeight + 60),
@@ -177,12 +199,29 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
             final index = widget.type != null
                 ? _typeToIndex(widget.type!)
                 : _typeToIndex(mediaModeController.mode);
-            final activeScrollController = _getActiveScrollController(isExtensions, index);
+            final activeScrollController =
+                _getActiveScrollController(isExtensions, index);
+
+            final String title = currentType == ItemType.novel
+                ? 'Novels'
+                : (serviceHandler.serviceType.value == ServicesType.simkl
+                    ? (currentType == ItemType.anime ? 'Movies' : 'Series')
+                    : (currentType == ItemType.anime ? 'Anime' : 'Manga'));
 
             return CustomAnimatedAppBar(
               isVisible: _isAppBarVisibleExternally,
               scrollController: activeScrollController,
-              headerContent: Header(type: _typeToPageType(currentType)),
+              headerContent: Header(
+                title: title,
+                subtitleWidget: const HeaderGreetingSubtitle(),
+                actions: [
+                  HeaderActionButton(
+                    icon: IconlyLight.search,
+                    onTap: () =>
+                        _openSearch(context, currentType, serviceHandler),
+                  ),
+                ],
+              ),
               visibleStatusBarStyle: SystemUiOverlayStyle(
                 statusBarIconBrightness:
                     Theme.of(context).brightness == Brightness.light
@@ -203,10 +242,8 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                 statusBarColor: Colors.transparent,
               ),
             );
-          }),
-        ],
-      ),
-    );
+          })
+        ]));
   }
 }
 

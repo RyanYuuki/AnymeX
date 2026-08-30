@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -37,10 +36,10 @@ class _HomePageState extends State<HomePage> {
       ValueNotifier<bool>(true);
   final List<Worker> _workers = [];
 
-  Widget _buildRecentlyOpenedSection(CacheController cacheController) {
+  Widget _buildNewEpisodesSection() {
+    final serviceHandler = Get.find<ServiceHandler>();
     return Obx(() {
       final entries = <(Media, int, int)>[];
-      final seenIds = <String>{};
 
       if (serviceHandler.isLoggedIn.value ||
           serviceHandler.animeList.isNotEmpty) {
@@ -62,119 +61,70 @@ class _HomePageState extends State<HomePage> {
                   item.watchingStatus?.toUpperCase() != 'COMPLETED');
 
           if (isWatching && latestReleased > watched) {
-            seenIds.add(item.id!);
             final media = CardData.fromTrackedMedia(item).data;
             entries.add((media, watched, latestReleased));
           }
         }
       }
 
-      final storedAnime = cacheController
-          .getStoredAnime()
-          .where((m) => m.mediaType == ItemType.anime || m.type == 'ANIME');
-
-      for (final m in storedAnime) {
-        if (seenIds.contains(m.id)) continue;
-
-        int latestReleased = 0;
-        if (m.nextAiringEpisode != null) {
-          final airingAt = m.nextAiringEpisode!.airingAt;
-          final isAired =
-              DateTime.now().millisecondsSinceEpoch ~/ 1000 >= airingAt;
-          latestReleased = isAired
-              ? m.nextAiringEpisode!.episode
-              : (m.nextAiringEpisode!.episode - 1);
-        } else if (m.status != null && m.status!.toUpperCase() == 'COMPLETED') {
-          latestReleased = int.tryParse(m.totalEpisodes ?? '') ?? 0;
-        }
-
-        int watched = 0;
-        final offline = Get.isRegistered<OfflineStorageController>()
-            ? Get.find<OfflineStorageController>().getAnimeById(m.id)
-            : null;
-        if (offline != null) {
-          if (offline.watchedEpisodes != null &&
-              offline.watchedEpisodes!.isNotEmpty) {
-            watched = offline.watchedEpisodes!.length;
-          } else if (offline.currentEpisode?.number != null) {
-            watched = int.tryParse(offline.currentEpisode!.number) ?? 0;
-          }
-        }
-
-        if (latestReleased > watched && watched > 0) {
-          seenIds.add(m.id);
-          entries.add((m, watched, latestReleased));
-        }
-      }
-
-      if (entries.isEmpty && kDebugMode) {
-        final recentAnime = cacheController
-            .getStoredAnime()
-            .where((m) => m.mediaType == ItemType.anime || m.type == 'ANIME')
+      if (entries.isEmpty &&
+          kDebugMode &&
+          serviceHandler.animeList.isNotEmpty) {
+        final animeList = serviceHandler.animeList
+            .where((i) => i.type?.toUpperCase() != 'MANGA' && i.id != null)
+            .take(3)
             .toList();
-
-        for (int i = 0; i < recentAnime.length; i++) {
-          final m = recentAnime[i];
+        for (int i = 0; i < animeList.length; i++) {
+          final item = animeList[i];
           final dummyWatched = (i + 1) * 3;
           final dummyLatest = dummyWatched + (i % 2 == 0 ? 1 : 2);
-          entries.add((m, dummyWatched, dummyLatest));
+          entries.add((
+            CardData.fromTrackedMedia(item).data,
+            dummyWatched,
+            dummyLatest
+          ));
         }
       }
 
       if (entries.isEmpty) {
-        final recentAnime = cacheController
-            .getStoredAnime()
-            .where((m) => m.mediaType == ItemType.anime || m.type == 'ANIME')
-            .toList();
+        return const SizedBox.shrink();
+      }
 
-        if (recentAnime.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Column(
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5.0),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: AnymeXText(
+                'New Episode Releases',
+                variant: TextVariant.semiBold,
+                size: 17,
+                color: context.colors.primary,
+                isMarquee: true,
+              ),
+            ),
+            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.only(bottom: 8.0),
               child: SizedBox(
-                height: 100,
+                height: 155,
                 child: RepaintBoundary(
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: recentAnime.length,
-                    itemBuilder: (context, i) =>
-                        RecentlyOpenedAnimeCard(media: recentAnime[i]),
+                    itemCount: entries.length,
+                    itemBuilder: (context, i) => NewEpisodeReleaseCard(
+                      media: entries[i].$1,
+                      watchedEpisode: entries[i].$2,
+                      latestReleasedEpisode: entries[i].$3,
+                    ),
                   ),
                 ),
               ),
             ),
           ],
-        );
-      }
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: SizedBox(
-              height: 100,
-              child: RepaintBoundary(
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: entries.length,
-                  itemBuilder: (context, i) => RecentlyOpenedAnimeCard(
-                    media: entries[i].$1,
-                    watchedEpisode: entries[i].$2,
-                    latestReleasedEpisode: entries[i].$3,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       );
     });
   }
@@ -182,13 +132,12 @@ class _HomePageState extends State<HomePage> {
   List<Widget> _buildHomeWidgets({
     required BuildContext context,
     required ServiceHandler serviceHandler,
-    required CacheController cacheController,
     required OfflineStorageController offlineStorageController,
     required Settings settings,
   }) {
     final baseWidgets = serviceHandler.homeWidgets(context);
     final localSections = <Widget>[
-      _buildRecentlyOpenedSection(cacheController),
+      _buildNewEpisodesSection(),
     ];
 
     int insertionIndex;
@@ -237,7 +186,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final cacheController = Get.find<CacheController>();
     final offlineStorageController = Get.find<OfflineStorageController>();
     final serviceHandler = Get.find<ServiceHandler>();
     final settings = Get.find<Settings>();
@@ -329,7 +277,6 @@ class _HomePageState extends State<HomePage> {
                         children: _buildHomeWidgets(
                           context: context,
                           serviceHandler: serviceHandler,
-                          cacheController: cacheController,
                           offlineStorageController: offlineStorageController,
                           settings: settings,
                         ),
@@ -351,7 +298,13 @@ class _HomePageState extends State<HomePage> {
               CustomAnimatedAppBar(
                 isVisible: _isAppBarVisibleExternally,
                 scrollController: _scrollController,
-                headerContent: const Header(type: PageType.home),
+                headerContent: Header(
+                  leading: const HeaderLogoButton(),
+                  title: 'AnymeX',
+                  titleColor: Theme.of(context).colorScheme.primary,
+                  subtitleWidget: const HeaderGreetingSubtitle(),
+                  actions: const [HeaderProfileAvatar()],
+                ),
                 visibleStatusBarStyle: SystemUiOverlayStyle(
                   statusBarIconBrightness:
                       Theme.of(context).brightness == Brightness.light

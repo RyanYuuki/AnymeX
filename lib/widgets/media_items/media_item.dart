@@ -62,6 +62,8 @@ class CardData {
       data: Media(
           id: data.id!,
           title: data.title ?? '??',
+          romajiTitle: data.romajiTitle ?? '',
+          rating: data.rating ?? '',
           poster: data.poster ?? '',
           mediaType: data.type == 'MANGA' ? ItemType.manga : ItemType.anime,
           serviceType: data.servicesType),

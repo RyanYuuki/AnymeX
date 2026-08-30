@@ -97,7 +97,20 @@ class _ExtensionScreenState extends State<ExtensionScreen>
         if (widget.isTabScreen) ...[
           if (isDesktop) ...[
             const SizedBox(height: 10),
-            const Header(type: PageType.extensions),
+            Header(
+              title: 'Extensions',
+              subtitle: 'Manage plugins & sources',
+              actions: [
+                HeaderActionButton(
+                  icon: Icons.build_outlined,
+                  onTap: () => navigate(() => const ExtensionTestPage()),
+                ),
+                HeaderActionButton(
+                  icon: HugeIcons.strokeRoundedGithub,
+                  onTap: () => navigate(() => const SettingsExtensions()),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
           ] else ...[
             SizedBox(height: statusBarHeight + appBarHeight),
@@ -161,7 +174,20 @@ class _ExtensionScreenState extends State<ExtensionScreen>
               CustomAnimatedAppBar(
                 isVisible: _isAppBarVisible,
                 scrollController: _appBarScrollController,
-                headerContent: const Header(type: PageType.extensions),
+                headerContent: Header(
+                  title: 'Extensions',
+                  subtitle: 'Manage plugins & sources',
+                  actions: [
+                    HeaderActionButton(
+                      icon: Icons.build_outlined,
+                      onTap: () => navigate(() => const ExtensionTestPage()),
+                    ),
+                    HeaderActionButton(
+                      icon: HugeIcons.strokeRoundedGithub,
+                      onTap: () => navigate(() => const SettingsExtensions()),
+                    ),
+                  ],
+                ),
                 visibleStatusBarStyle: SystemUiOverlayStyle(
                   statusBarIconBrightness:
                       Theme.of(context).brightness == Brightness.light

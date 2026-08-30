@@ -22,6 +22,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/widgets/common/installed_extensions_gridview.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/widgets/common/big_carousel_gate.dart';
@@ -406,7 +408,9 @@ class SimklService extends GetxController
       ].obs;
 
   @override
-  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+  RxList<Widget> novelWidgets(BuildContext context) {
+    return RxList.empty();
+  }
 
   @override
   bool get isDataLoaded =>

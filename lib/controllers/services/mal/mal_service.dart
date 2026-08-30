@@ -26,6 +26,8 @@ import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/widgets/common/installed_extensions_gridview.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
@@ -176,7 +178,16 @@ class MalService extends GetxController implements BaseService, OnlineService {
       ].obs;
 
   @override
-  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+  RxList<Widget> novelWidgets(BuildContext context) {
+    final sourceController = Get.find<SourceController>();
+    sourceController.initNovelExtensions();
+    return [
+      Obx(() => InstalledExtensionsGridView(
+            sources: sourceController.installedNovelExtensions.value,
+            itemType: ItemType.novel,
+          )),
+    ].obs;
+  }
 
   @override
   bool get isDataLoaded =>

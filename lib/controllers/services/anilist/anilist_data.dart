@@ -28,6 +28,8 @@ import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/widgets/common/installed_extensions_gridview.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
@@ -315,7 +317,16 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+  RxList<Widget> novelWidgets(BuildContext context) {
+    final sourceController = Get.find<SourceController>();
+    sourceController.initNovelExtensions();
+    return [
+      Obx(() => InstalledExtensionsGridView(
+            sources: sourceController.installedNovelExtensions.value,
+            itemType: ItemType.novel,
+          )),
+    ].obs;
+  }
 
   @override
   bool get isDataLoaded =>
@@ -1128,6 +1139,7 @@ averageScore
         final media = data['data']['Media'];
         cacheController.addCache(media);
         Logger.i('Primary Data Loaded for id: ${params.id}');
+        print('Fetched details for id: ${params.id}, media: $media');
         return Media.fromJson(media);
       } else if (response.statusCode == 429) {
         warningSnackBar('Chill for a min, you got rate limited.');
