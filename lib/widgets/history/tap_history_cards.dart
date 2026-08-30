@@ -1,10 +1,6 @@
-import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/manga/details_page.dart';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -16,13 +12,18 @@ import 'package:anymex/utils/theme_extensions.dart';
 
 class RecentlyOpenedAnimeCard extends StatelessWidget {
   final Media media;
+  final int? watchedEpisode;
+  final int? latestReleasedEpisode;
 
   const RecentlyOpenedAnimeCard({
     super.key,
     required this.media,
+    this.watchedEpisode,
+    this.latestReleasedEpisode,
   });
 
   String _getTimeAgo() {
+    if (media.createdAt == null) return 'Recently';
     final now = DateTime.now();
     final difference = now.difference(media.createdAt!);
 
@@ -40,30 +41,21 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
-    final heroTag = '${media.id}-recent-${media.createdAt?.millisecondsSinceEpoch ?? ''}';
+    final heroTag =
+        '${media.id}-recent-${media.createdAt?.millisecondsSinceEpoch ?? ''}';
+    final hasNewEpisode = latestReleasedEpisode != null &&
+        watchedEpisode != null &&
+        latestReleasedEpisode! > watchedEpisode!;
 
     return AnymexOnTap(
       onTap: () {
-        if (serviceHandler.serviceType.value == ServicesType.simkl) {
-          navigate(() =>
-              AnimeDetailsPage(media: media, tag: heroTag));
-          return;
-        }
-        if (media.type == "ANIME") {
-          navigate(() =>
-              AnimeDetailsPage(media: media, tag: heroTag));
-        } else {
-          navigate(() =>
-              media.mediaType == ItemType.novel
-              ? NovelDetailsPage(media: media)
-              : MangaDetailsPage(media: media, tag: heroTag));
-        }
+        navigate(() => AnimeDetailsPage(media: media, tag: heroTag));
       },
       child: Container(
         margin: const EdgeInsets.only(left: 15),
         width: getResponsiveSize(context,
-          mobileSize: MediaQuery.sizeOf(context).width / 1.5,
-          desktopSize: MediaQuery.sizeOf(context).width / 3),
+            mobileSize: MediaQuery.sizeOf(context).width / 1.45,
+            desktopSize: MediaQuery.sizeOf(context).width / 3),
         child: AnymeXCard(
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
@@ -78,7 +70,6 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
             height: 100,
             child: Row(
               children: [
-                // Poster image
                 Hero(
                   tag: heroTag,
                   transitionOnUserGestures: true,
@@ -98,100 +89,172 @@ class RecentlyOpenedAnimeCard extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                // Content
                 Expanded(
                   child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Title row
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: AnymeXText(media.title,
-                                        size: 14,
-                                        variant: TextVariant.bold,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        isMarquee: true,
-                                      ),
-                                    ),
-                                    if (media.rating != '?') ...[
-                                      const SizedBox(width: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 6, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: colorScheme.primary,
-                                          borderRadius: BorderRadius.circular(
-                                              6.multiplyRadius()),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.star,
-                                              color: colorScheme.onPrimary,
-                                              size: 12,
-                                            ),
-                                            const SizedBox(width: 2),
-                                            AnymeXText(media.rating,
-                                              color: colorScheme.onPrimary,
-                                              size: 11,
-                                              variant: TextVariant.bold,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ],
+                                Expanded(
+                                  child: AnymeXText(
+                                    media.displayTitle,
+                                    size: 13.5,
+                                    variant: TextVariant.bold,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    isMarquee: true,
+                                  ),
                                 ),
-
-                                const SizedBox(height: 4),
-
-                                // Time opened and type/format badge
-                                Row(
-                                  children: [
-                                    // Time opened text
-                                    Expanded(
-                                      child: AnymeXText('Opened ${_getTimeAgo()}',
-                                        size: 11,
-                                        color: colorScheme.onSurfaceVariant,
-                                        variant: TextVariant.regular,
-                                      ),
+                                if (media.rating != '?') ...[
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.primary,
+                                      borderRadius: BorderRadius.circular(
+                                          6.multiplyRadius()),
                                     ),
-
-                                    // Type badge (Anime, Movie, etc)
-                                    if (media.format != '?') ...[
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 6, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: colorScheme
-                                              .surfaceContainerHighest,
-                                          borderRadius: BorderRadius.circular(
-                                              4.multiplyRadius()),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                          color: colorScheme.onPrimary,
+                                          size: 11,
                                         ),
-                                        child: AnymeXText(media.format.toUpperCase(),
-                                          size: 10,
-                                          color: colorScheme.onSurfaceVariant,
+                                        const SizedBox(width: 2),
+                                        AnymeXText(
+                                          media.rating,
+                                          color: colorScheme.onPrimary,
+                                          size: 10.5,
+                                          variant: TextVariant.bold,
                                         ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
+                            const SizedBox(height: 5),
+                            if (hasNewEpisode)
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6, vertical: 2.5),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.secondary,
+                                      borderRadius:
+                                          const BorderRadius.horizontal(
+                                        left: Radius.circular(6),
+                                        right: Radius.circular(3),
+                                      ),
+                                    ),
+                                    child: AnymeXText(
+                                      'NEW EP',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins-SemiBold',
+                                        fontSize: 9.5,
+                                        color: colorScheme.secondary
+                                                    .computeLuminance() >
+                                                0.5
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6, vertical: 2.5),
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.tertiary,
+                                      borderRadius:
+                                          const BorderRadius.horizontal(
+                                        left: Radius.circular(3),
+                                        right: Radius.circular(6),
+                                      ),
+                                    ),
+                                    child: AnymeXText(
+                                      'EP $latestReleasedEpisode',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins-SemiBold',
+                                        fontSize: 9.5,
+                                        color: colorScheme.tertiary
+                                                    .computeLuminance() >
+                                                0.5
+                                            ? Colors.black
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                  if ((latestReleasedEpisode! -
+                                          watchedEpisode!) >
+                                      1) ...[
+                                    const SizedBox(width: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: colorScheme.primary.opaque(0.15),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: AnymeXText(
+                                        '+${latestReleasedEpisode! - watchedEpisode!} new',
+                                        size: 9.5,
+                                        variant: TextVariant.bold,
+                                        color: colorScheme.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              )
+                            else if (media.format.isNotEmpty &&
+                                media.format != '?')
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(
+                                      4.multiplyRadius()),
+                                ),
+                                child: AnymeXText(
+                                  media.format.toUpperCase(),
+                                  size: 9.5,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                          ],
+                        ),
+                        if (hasNewEpisode)
+                          AnymeXText(
+                            'Watched Ep $watchedEpisode • Ep $latestReleasedEpisode Out',
+                            size: 11,
+                            color: colorScheme.onSurfaceVariant,
+                            variant: TextVariant.regular,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        else
+                          AnymeXText(
+                            media.createdAt != null
+                                ? 'Opened ${_getTimeAgo()}'
+                                : 'Anime',
+                            size: 11,
+                            color: colorScheme.onSurfaceVariant,
+                            variant: TextVariant.regular,
                           ),
-                        ],
-                      )),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
