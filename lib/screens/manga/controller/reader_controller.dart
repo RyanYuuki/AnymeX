@@ -276,7 +276,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         loadedChapters.isNotEmpty ? loadedChapters.last : currentChapter.value;
     if (lastLoaded == null) return;
 
-    final curIdx = chapterList.indexOf(lastLoaded);
+    final curIdx = _findChapterIndex(lastLoaded);
     if (curIdx == -1) return;
 
     final nextIdx = getNextChapterIndex(curIdx);
@@ -744,6 +744,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final chapter = manualChapter ?? currentChapter.value;
     if (chapter == null) return;
 
+    if (chapter.title == null || chapter.title!.isEmpty) {
+      final matched = chapterList.firstWhereOrNull((c) =>
+          (c.link != null && c.link!.isNotEmpty && c.link == chapter.link) ||
+          (c.number != null && c.number == chapter.number));
+      if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
+        chapter.title = matched.title;
+      }
+    }
+
     final page = manualPage ?? currentPageIndex.value;
 
     if (_isValidPageNumber(page)) {
@@ -1010,7 +1019,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             ? loadedChapters.last
             : currentChapter.value;
         if (lastLoaded != null) {
-          final curIdx = chapterList.indexOf(lastLoaded);
+          final curIdx = _findChapterIndex(lastLoaded);
           if (curIdx == -1 || getNextChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
@@ -1030,7 +1039,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             ? loadedChapters.first
             : currentChapter.value;
         if (firstLoaded != null) {
-          final curIdx = chapterList.indexOf(firstLoaded);
+          final curIdx = _findChapterIndex(firstLoaded);
           if (curIdx == -1 || getPrevChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
@@ -1269,7 +1278,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         if (spread.isTransition && !spread.isNextTransition && !_isNavigating) {
           final curChapter = currentChapter.value;
           if (curChapter != null) {
-            final curIdx = chapterList.indexOf(curChapter);
+            final curIdx = _findChapterIndex(curChapter);
             if (curIdx != -1) {
               final prevIdx = getPrevChapterIndex(curIdx);
               if (prevIdx != -1) {
@@ -1420,6 +1429,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void _initTracking() async {
     final chapter = currentChapter.value;
     if (chapter == null || chapter.number == null) return;
+
+    if (chapter.title == null || chapter.title!.isEmpty) {
+      final matched = chapterList.firstWhereOrNull((c) =>
+          (c.link != null && c.link!.isNotEmpty && c.link == chapter.link) ||
+          c.number == chapter.number);
+      if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
+        chapter.title = matched.title;
+      }
+    }
 
     savedChapter.value =
         offlineStorageController.getReadChapter(media.id, chapter.number!);
@@ -1612,12 +1630,20 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     savePreferences();
   }
 
+  int _findChapterIndex(Chapter? chapter) {
+    if (chapter == null) return -1;
+    if (chapter.link != null && chapter.link!.isNotEmpty) {
+      final index = chapterList.indexWhere((c) => c.link == chapter.link);
+      if (index != -1) return index;
+    }
+    return chapterList.indexWhere((c) => c.number == chapter.number);
+  }
+
   void maybeShowChapterTransition(bool next) {
     final current = currentChapter.value;
     if (current == null) return;
 
-    final curIdx = chapterList.indexWhere(
-        (c) => c.number == current.number || c.link == current.link);
+    final curIdx = _findChapterIndex(current);
     if (curIdx == -1) return;
 
     final targetIdx = next ? curIdx + 1 : curIdx - 1;
@@ -1724,8 +1750,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     _performSave(reason: "Saving before chapter is changed");
 
-    final index = chapterList.indexWhere(
-        (c) => c.number == current.number || c.link == current.link);
+    final index = _findChapterIndex(current);
     if (index == -1) return;
 
     final newIndex = next ? getNextChapterIndex(index) : getPrevChapterIndex(index);
@@ -1755,8 +1780,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       return;
     }
 
-    final index = chapterList.indexWhere(
-        (c) => c.number == chapter.number || c.link == chapter.link);
+    final index = _findChapterIndex(chapter);
     if (index == -1) {
       canGoPrev.value = false;
       canGoNext.value = false;

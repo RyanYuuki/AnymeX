@@ -14,7 +14,10 @@ import 'package:anymex/widgets/header/header.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/history/tap_history_cards.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/widgets/media_items/media_item.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -36,9 +39,118 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildRecentlyOpenedSection(CacheController cacheController) {
     return Obx(() {
-      final data = cacheController.getStoredAnime();
-      if (data.isEmpty) {
-        return const SizedBox.shrink();
+      final entries = <(Media, int, int)>[];
+      final seenIds = <String>{};
+
+      if (serviceHandler.isLoggedIn.value ||
+          serviceHandler.animeList.isNotEmpty) {
+        for (final item in serviceHandler.animeList) {
+          if (item.type?.toUpperCase() == 'MANGA' || item.id == null) continue;
+          final watched = int.tryParse(item.episodeCount ?? '') ??
+              (item.userProgress ?? 0);
+          int latestReleased = 0;
+          if (item.releasedEpisodes != null &&
+              item.releasedEpisodes!.isNotEmpty) {
+            latestReleased = int.tryParse(item.releasedEpisodes!) ?? 0;
+          } else if (item.mediaStatus?.toUpperCase() == 'COMPLETED') {
+            latestReleased = int.tryParse(item.totalEpisodes ?? '') ?? 0;
+          }
+
+          final isWatching = item.watchingStatus?.toUpperCase() == 'CURRENT' ||
+              item.watchingStatus?.toUpperCase() == 'WATCHING' ||
+              (watched > 0 &&
+                  item.watchingStatus?.toUpperCase() != 'COMPLETED');
+
+          if (isWatching && latestReleased > watched) {
+            seenIds.add(item.id!);
+            final media = CardData.fromTrackedMedia(item).data;
+            entries.add((media, watched, latestReleased));
+          }
+        }
+      }
+
+      final storedAnime = cacheController
+          .getStoredAnime()
+          .where((m) => m.mediaType == ItemType.anime || m.type == 'ANIME');
+
+      for (final m in storedAnime) {
+        if (seenIds.contains(m.id)) continue;
+
+        int latestReleased = 0;
+        if (m.nextAiringEpisode != null) {
+          final airingAt = m.nextAiringEpisode!.airingAt;
+          final isAired =
+              DateTime.now().millisecondsSinceEpoch ~/ 1000 >= airingAt;
+          latestReleased = isAired
+              ? m.nextAiringEpisode!.episode
+              : (m.nextAiringEpisode!.episode - 1);
+        } else if (m.status != null && m.status!.toUpperCase() == 'COMPLETED') {
+          latestReleased = int.tryParse(m.totalEpisodes ?? '') ?? 0;
+        }
+
+        int watched = 0;
+        final offline = Get.isRegistered<OfflineStorageController>()
+            ? Get.find<OfflineStorageController>().getAnimeById(m.id)
+            : null;
+        if (offline != null) {
+          if (offline.watchedEpisodes != null &&
+              offline.watchedEpisodes!.isNotEmpty) {
+            watched = offline.watchedEpisodes!.length;
+          } else if (offline.currentEpisode?.number != null) {
+            watched = int.tryParse(offline.currentEpisode!.number) ?? 0;
+          }
+        }
+
+        if (latestReleased > watched && watched > 0) {
+          seenIds.add(m.id);
+          entries.add((m, watched, latestReleased));
+        }
+      }
+
+      if (entries.isEmpty && kDebugMode) {
+        final recentAnime = cacheController
+            .getStoredAnime()
+            .where((m) => m.mediaType == ItemType.anime || m.type == 'ANIME')
+            .toList();
+
+        for (int i = 0; i < recentAnime.length; i++) {
+          final m = recentAnime[i];
+          final dummyWatched = (i + 1) * 3;
+          final dummyLatest = dummyWatched + (i % 2 == 0 ? 1 : 2);
+          entries.add((m, dummyWatched, dummyLatest));
+        }
+      }
+
+      if (entries.isEmpty) {
+        final recentAnime = cacheController
+            .getStoredAnime()
+            .where((m) => m.mediaType == ItemType.anime || m.type == 'ANIME')
+            .toList();
+
+        if (recentAnime.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: SizedBox(
+                height: 100,
+                child: RepaintBoundary(
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: recentAnime.length,
+                    itemBuilder: (context, i) =>
+                        RecentlyOpenedAnimeCard(media: recentAnime[i]),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
       }
 
       return Column(
@@ -52,9 +164,12 @@ class _HomePageState extends State<HomePage> {
               child: RepaintBoundary(
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: data.length,
-                  itemBuilder: (context, i) =>
-                      RecentlyOpenedAnimeCard(media: data[i]),
+                  itemCount: entries.length,
+                  itemBuilder: (context, i) => RecentlyOpenedAnimeCard(
+                    media: entries[i].$1,
+                    watchedEpisode: entries[i].$2,
+                    latestReleasedEpisode: entries[i].$3,
+                  ),
                 ),
               ),
             ),

@@ -122,7 +122,6 @@ class EpisodeSection extends StatelessWidget {
       }
 
       final activeSource = sourceController.activeSource.value ?? installed.first;
-      final colors = context.colors;
       final titleText = searchedTitle is RxString
           ? searchedTitle.value
           : (searchedTitle is Rx ? searchedTitle.value : searchedTitle.toString());
@@ -147,64 +146,6 @@ class EpisodeSection extends StatelessWidget {
               await controller.fetchSourceDetailsFromMedia(
                   Media.froDMedia(manga, controller.media.value.mediaType));
             },
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest
-                  .opaque(0.2, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-              ),
-            ),
-            child: Row(
-              children: [
-                const Expanded(
-                  child: AnymeXText('Episodes',
-                    variant: TextVariant.bold,
-                    size: 18,
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => _showEpisodeSettingsDialog(context),
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceContainerHighest
-                            .opaque(0.35, iReallyMeanIt: true),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: colors.outline
-                              .opaque(0.15, iReallyMeanIt: true),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.settings_outlined,
-                            size: 16,
-                            color: colors.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          AnymeXText('Settings',
-                            size: 12,
-                            color: colors.primary,
-                            variant: TextVariant.bold,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
           const SizedBox(height: 12),
         ],
@@ -239,6 +180,7 @@ class EpisodeSection extends StatelessWidget {
           episodeList: episodes,
           anilistData: anilistData is Media ? anilistData : null,
           isSliverMode: true,
+          onSettingsTap: () => _showEpisodeSettingsDialog(context),
         );
       }
     });

@@ -21,6 +21,8 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -36,23 +38,27 @@ class EpisodeListBuilder extends StatefulWidget {
     required this.episodeList,
     required this.anilistData,
     this.isSliverMode = false,
+    this.onSettingsTap,
   });
 
   final List<Episode> episodeList;
   final Media? anilistData;
   final bool isSliverMode;
+  final VoidCallback? onSettingsTap;
 
   static Future<void> showServerSheet(
     BuildContext context, {
     required Episode episode,
     required List<Episode> episodeList,
     required Media anilistData,
+    bool bypassDialog = false,
   }) async {
     await AnymeXSheet.custom(
       ServerSheetContent(
         episode: episode,
         episodeList: episodeList,
         anilistData: anilistData,
+        bypassDialog: bypassDialog,
       ),
       context,
       showDragHandle: true,
@@ -66,8 +72,6 @@ class EpisodeListBuilder extends StatefulWidget {
 class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final selectedChunkIndex = 1.obs;
   final RxMap<String, String> selectedSortValues = <String, String>{}.obs;
-  final RxList<hive.Video> streamList = <hive.Video>[].obs;
-  final RxBool isServerStreamLoading = false.obs;
   final sourceController = Get.find<SourceController>();
   final auth = Get.find<ServiceHandler>();
   final offlineStorage = Get.find<OfflineStorageController>();
@@ -102,7 +106,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     });
 
     _offlineStorageListener = () {
-      final savedData = offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
+      final savedData =
+          offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
       if (savedData?.currentEpisode != null) {
         savedEpisode.value = savedData!.currentEpisode!;
         offlineWatchedEpisodes = savedData.watchedEpisodes ?? [];
@@ -153,11 +158,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       _isUpdatingChunk = true;
       try {
         final episodesToChunk = _episodesForSelectedSortKey();
-        final chunkedEpisodes = chunkEpisodes(episodesToChunk, calculateChunkSize(episodesToChunk));
+        final chunkedEpisodes =
+            chunkEpisodes(episodesToChunk, calculateChunkSize(episodesToChunk));
 
         if (chunkedEpisodes.length > 1) {
-          final progress = double.tryParse(continueEpisode.value.number)?.toInt() ?? 0;
-          final chunkIndex = findChunkIndexFromProgress(progress, chunkedEpisodes);
+          final progress =
+              double.tryParse(continueEpisode.value.number)?.toInt() ?? 0;
+          final chunkIndex =
+              findChunkIndexFromProgress(progress, chunkedEpisodes);
           final maxIndex = chunkedEpisodes.length - 1;
           final nextIndex = maxIndex < 1 ? 0 : chunkIndex.clamp(1, maxIndex);
           if (selectedChunkIndex.value != nextIndex) {
@@ -184,10 +192,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     if (isLogged.value && widget.anilistData != null) {
       final trackedMedia = auth.onlineService.animeList
           .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
-      trackerProgress = double.tryParse(trackedMedia?.episodeCount ?? '')?.toInt() ?? 0;
+      trackerProgress =
+          double.tryParse(trackedMedia?.episodeCount ?? '')?.toInt() ?? 0;
     }
 
-    final savedAnime = offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
+    final savedAnime =
+        offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
     offlineWatchedEpisodes = savedAnime?.watchedEpisodes ?? [];
 
     int localProgress = 0;
@@ -243,7 +253,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final epNum = episode.number.toInt();
     if (epNum > 0 && epNum <= userProgress.value) return true;
 
-    final inOfflineWatched = offlineWatchedEpisodes.any((e) => e.number == episode.number);
+    final inOfflineWatched =
+        offlineWatchedEpisodes.any((e) => e.number == episode.number);
     if (inOfflineWatched) return true;
 
     final ts = episode.timeStampInMilliseconds ?? 0;
@@ -261,7 +272,10 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           orElse: () => null,
         );
 
-    final target = savedEP ?? (episode.number == savedEpisode.value.number ? savedEpisode.value : null);
+    final target = savedEP ??
+        (episode.number == savedEpisode.value.number
+            ? savedEpisode.value
+            : null);
     if (target?.timeStampInMilliseconds != null &&
         target?.durationInMilliseconds != null &&
         target!.durationInMilliseconds! > 0) {
@@ -290,7 +304,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     }
 
     if (selectedSortValues.length != nextSelection.length ||
-        nextSelection.entries.any((e) => selectedSortValues[e.key] != e.value)) {
+        nextSelection.entries
+            .any((e) => selectedSortValues[e.key] != e.value)) {
       selectedSortValues.assignAll(nextSelection);
     }
   }
@@ -311,8 +326,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     selectedEpisode.value = episode;
     fetchServers(episode);
   }
-
-
 
   List<String> _availableValuesForKey(
     String key, {
@@ -337,8 +350,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
     if (values.isNotEmpty) return values;
 
-    final fallbackSection = (sections ?? buildEpisodeSortSections(widget.episodeList))
-        .firstWhereOrNull((section) => section.key == key);
+    final fallbackSection =
+        (sections ?? buildEpisodeSortSections(widget.episodeList))
+            .firstWhereOrNull((section) => section.key == key);
     return fallbackSection?.values ?? const [];
   }
 
@@ -367,372 +381,18 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   Future<void> fetchServers(Episode ep, {bool bypassDialog = false}) async {
-    streamList.clear();
-    isServerStreamLoading.value = true;
-    final sourceEpisode = DEpisode(
-      episodeNumber: ep.number,
-      url: ep.link,
-      sortMap: ep.sortMap.isEmpty ? null : ep.sortMap,
-    );
-
-    final scrapeToken =
-        "scrape_${DateTime.now().millisecondsSinceEpoch}_${ep.number}_${Random().nextInt(10000)}";
-
-    final activeSource = sourceController.activeSource.value;
-    if (activeSource == null) {
-      errorSnackBar('No active source selected');
-      return;
-    }
-
-    final methods = activeSource.methods;
-    final videoStream = methods.getVideoListStream(
-      sourceEpisode,
-      parameters: SourceParams(cancelToken: scrapeToken),
-    );
-    final videoFuture = videoStream == null
-        ? methods.getVideoList(
-            sourceEpisode,
-            parameters: SourceParams(cancelToken: scrapeToken),
-          )
-        : null;
-
-    final RxnString streamError = RxnString();
-    StreamSubscription? streamSubscription;
-
-    if (videoStream != null) {
-      streamSubscription = videoStream.listen(
-        (data) {
-          final nextVideo = hive.Video.fromVideo(data);
-          final alreadyExists = streamList.any((video) =>
-              video.quality == nextVideo.quality &&
-              video.originalUrl == nextVideo.originalUrl);
-          if (!alreadyExists) {
-            streamList.add(nextVideo);
-          }
-        },
-        onError: (e) {
-          streamError.value = e.toString();
-          isServerStreamLoading.value = false;
-        },
-        onDone: () {
-          isServerStreamLoading.value = false;
-        },
-      );
-    } else if (videoFuture != null) {
-      videoFuture.then((vids) {
-        isServerStreamLoading.value = false;
-        streamList.value = vids.map((e) => hive.Video.fromVideo(e)).toList();
-      }).catchError((e) {
-        isServerStreamLoading.value = false;
-        streamError.value = e.toString();
-      });
-    }
-
-    final mediaData = widget.anilistData ?? Media(serviceType: ServicesType.extensions);
-
-    AnymeXSheet.custom(
-      Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildSheetHeader(context.colors),
-          const Divider(height: 1, thickness: 0.5),
-          Flexible(
-            child: Obx(() {
-              if (isServerStreamLoading.value && streamList.isEmpty) {
-                return _buildScrapingLoadingState(videoStream != null);
-              } else if (streamError.value != null) {
-                return _buildErrorState(streamError.value!);
-              } else if (streamList.isEmpty && !isServerStreamLoading.value) {
-                return _buildEmptyState();
-              } else {
-                return _buildServerList(
-                  mediaData,
-                  bypassDialog,
-                  showBottomLoader: isServerStreamLoading.value,
-                );
-              }
-            }),
-          ),
-          const SizedBox(height: 12),
-        ],
-      ),
+    final mediaData =
+        widget.anilistData ?? Media(serviceType: ServicesType.extensions);
+    await EpisodeListBuilder.showServerSheet(
       context,
-      showDragHandle: true,
-    ).whenComplete(() {
-      streamSubscription?.cancel();
-      sourceController.activeSource.value?.cancelRequest(scrapeToken);
-      _initUserProgress();
-      if (mounted) setState(() {});
-    });
-
-    final dbId = '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
-    final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
-    if (savedTracking != null && !bypassDialog) {
-      snackBar("Long press an episode to reset the tracker.",
-          title: "Tracking Preference Applied");
-    }
-  }
-
-  Widget _buildSheetHeader(ColorScheme theme) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.play_arrow_rounded, size: 20, color: theme.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AnymeXText('Choose Quality',
-                  variant: TextVariant.bold,
-                  size: 16,
-                ),
-                AnymeXText('Select streaming server quality to watch',
-                  size: 12,
-                  color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
-                ),
-              ],
-            ),
-          ),
-          AnymexOnTap(
-            onTap: () => Navigator.pop(context),
-            child: Icon(Icons.close_rounded, color: theme.onSurface.opaque(0.5, iReallyMeanIt: true)),
-          ),
-        ],
-      ),
+      episode: ep,
+      episodeList: widget.episodeList,
+      anilistData: mediaData,
+      bypassDialog: bypassDialog,
     );
+    _initUserProgress();
+    if (mounted) setState(() {});
   }
-
-  Widget _buildScrapingLoadingState(bool fromSrc) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          ExpressiveLoadingIndicator(),
-          SizedBox(height: 16),
-          AnymeXText('Scanning for video streams...',
-            size: 16,
-            variant: TextVariant.semiBold,
-          ),
-          SizedBox(height: 8),
-          AnymeXText('This may take a few seconds',
-            size: 12,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(String errorMessage) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const SizedBox(height: 10),
-        const AnymeXText("Error Occurred",
-          variant: TextVariant.bold,
-          size: 18,
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.red.opaque(0.1, iReallyMeanIt: true),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: AnymeXText(errorMessage,
-            variant: TextVariant.regular,
-            size: 14,
-            textAlign: TextAlign.center,
-            color: Colors.red.opaque(0.8, iReallyMeanIt: true),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return const SizedBox(
-      height: 200,
-      child: Center(
-        child: AnymeXText("No servers available",
-          variant: TextVariant.bold,
-          size: 16,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildServerList(Media mediaData, bool bypassDialog, {bool showBottomLoader = false}) {
-    final theme = context.colors;
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.45,
-      ),
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        shrinkWrap: true,
-        itemCount: streamList.length + (showBottomLoader ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index == streamList.length) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: ExpressiveLoadingIndicator(),
-                  ),
-                  const SizedBox(width: 8),
-                  AnymeXText('Scanning for more servers...',
-                    size: 12,
-                    color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final video = streamList[index];
-          final quality = video.quality?.toUpperCase() ?? "UNKNOWN";
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: AnymexOnTap(
-              onTap: () async {
-                Navigator.pop(context);
-                final dbId = '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
-                
-                final isLoggedInOnline = auth.isLoggedIn.value &&
-                    auth.serviceType.value != ServicesType.extensions;
-
-                if (!isLoggedInOnline) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: selectedEpisode.value,
-                        episodeTracks: streamList,
-                        shouldTrack: false,
-                      ));
-                  _initUserProgress();
-                  if (mounted) setState(() {});
-                  return;
-                }
-
-                final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
-
-                if (savedTracking != null && !bypassDialog) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: selectedEpisode.value,
-                        episodeTracks: streamList,
-                        shouldTrack: savedTracking,
-                      ));
-                  _initUserProgress();
-                  if (mounted) setState(() {});
-                  return;
-                }
-
-                if (General.shouldAskForTrack.get(true) == false) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: selectedEpisode.value,
-                        episodeTracks: streamList,
-                      ));
-                  _initUserProgress();
-                  if (mounted) setState(() {});
-                  return;
-                }
-
-                final isExtension = mediaData.serviceType == ServicesType.extensions;
-                final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&
-                    Get.find<TrackBindingController>().hasAnyBinding(mediaData.id);
-
-                bool? shouldTrack;
-                if (isExtension) {
-                  shouldTrack = hasTrackBinding;
-                } else {
-                  shouldTrack = await showTrackingDialog(context, dbId: dbId);
-                }
-
-                if (shouldTrack != null) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: selectedEpisode.value,
-                        episodeTracks: streamList,
-                        shouldTrack: shouldTrack ?? false,
-                      ));
-                  _initUserProgress();
-                  if (mounted) setState(() {});
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: theme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: theme.outline.opaque(0.15, iReallyMeanIt: true),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
-                      ),
-                      child: Icon(Icons.play_arrow_rounded, size: 16, color: theme.primary),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymeXText(quality,
-                            variant: TextVariant.bold,
-                            size: 14,
-                          ),
-                          const SizedBox(height: 2),
-                          AnymeXText(sourceController.activeSource.value?.name?.toUpperCase() ?? '',
-                            variant: TextVariant.semiBold,
-                            size: 11,
-                            color: theme.onSurface.opaque(0.6, iReallyMeanIt: true),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -757,48 +417,124 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       _initSortGrouping();
       final currentStyle = EpisodeStyleRegistry.activeStyle;
       final episodesToShow = _episodesForSelectedSortKey();
-      final chunkedEpisodes = chunkEpisodes(episodesToShow, calculateChunkSize(episodesToShow));
+      final chunkedEpisodes =
+          chunkEpisodes(episodesToShow, calculateChunkSize(episodesToShow));
       final safeChunkIndex = chunkedEpisodes.isEmpty
           ? 0
           : selectedChunkIndex.value.clamp(0, chunkedEpisodes.length - 1);
-      final selectedEpisodes = chunkedEpisodes.isNotEmpty ? chunkedEpisodes[safeChunkIndex] : <Episode>[];
+      final selectedEpisodes = chunkedEpisodes.isNotEmpty
+          ? chunkedEpisodes[safeChunkIndex]
+          : <Episode>[];
 
       if (widget.isSliverMode) {
         return SliverMainAxisGroup(
           slivers: [
             SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...sortSections.map((section) {
-                    final values = _availableValuesForKey(section.key, sections: sortSections);
-                    if (values.length <= 1) return const SizedBox.shrink();
-
-                    return EpisodeSortKeySelector(
-                      title: section.title,
-                      labelPrefix: section.labelPrefix != "Type" ? section.labelPrefix : "",
-                      sortKeys: values,
-                      selectedSortKey: RxnString(selectedSortValues[section.key]),
-                      onSortKeySelected: (sortValue) {
-                        if (selectedSortValues[section.key] == sortValue) return;
-                        selectedSortValues[section.key] = sortValue;
-                        _initSortGrouping();
-                        selectedChunkIndex.value = 1;
-                      },
-                    );
-                  }),
-                  if (chunkedEpisodes.isNotEmpty)
-                    EpisodeChunkSelector(
-                      chunks: chunkedEpisodes,
-                      selectedChunkIndex: selectedChunkIndex,
-                      onChunkSelected: (index) {
-                        if (index != selectedChunkIndex.value) {
-                          selectedChunkIndex.value = index;
-                        }
-                      },
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceContainerHighest
+                      .opaque(0.2, iReallyMeanIt: true),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: context.colors.onSurface
+                        .opaque(0.08, iReallyMeanIt: true),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Expanded(
+                          child: AnymeXText(
+                            'Episodes',
+                            variant: TextVariant.bold,
+                            size: 18,
+                          ),
+                        ),
+                        if (widget.onSettingsTap != null)
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: widget.onSettingsTap,
+                              borderRadius: BorderRadius.circular(14),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: context.colors.surfaceContainerHighest
+                                      .opaque(0.35, iReallyMeanIt: true),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: context.colors.outline
+                                        .opaque(0.15, iReallyMeanIt: true),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.settings_outlined,
+                                      size: 16,
+                                      color: context.colors.primary,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    AnymeXText(
+                                      'Settings',
+                                      size: 12,
+                                      color: context.colors.primary,
+                                      variant: TextVariant.bold,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                  const SizedBox(height: 12),
-                ],
+                    ...sortSections.map((section) {
+                      final values = _availableValuesForKey(section.key,
+                          sections: sortSections);
+                      if (values.length <= 1) return const SizedBox.shrink();
+
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: EpisodeSortKeySelector(
+                          title: section.title,
+                          labelPrefix: section.labelPrefix != "Type"
+                              ? section.labelPrefix
+                              : "",
+                          sortKeys: values,
+                          selectedSortKey:
+                              RxnString(selectedSortValues[section.key]),
+                          onSortKeySelected: (sortValue) {
+                            if (selectedSortValues[section.key] == sortValue) {
+                              return;
+                            }
+                            selectedSortValues[section.key] = sortValue;
+                            _initSortGrouping();
+                            selectedChunkIndex.value = 1;
+                          },
+                        ),
+                      );
+                    }),
+                    if (chunkedEpisodes.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: EpisodeChunkSelector(
+                          chunks: chunkedEpisodes,
+                          selectedChunkIndex: selectedChunkIndex,
+                          onChunkSelected: (index) {
+                            if (index != selectedChunkIndex.value) {
+                              selectedChunkIndex.value = index;
+                            }
+                          },
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
             if (currentStyle.isGrid)
@@ -819,7 +555,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                 itemCount: selectedEpisodes.length,
                 itemBuilder: (context, index) {
                   final episode = selectedEpisodes[index];
-                  final isSelected = _areEpisodesEquivalent(selectedEpisode.value, episode);
+                  final isSelected =
+                      _areEpisodesEquivalent(selectedEpisode.value, episode);
                   final isWatched = _isEpisodeWatched(episode);
                   final prog = _calculateEpisodeProgress(episode);
 
@@ -833,8 +570,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     () => _handleEpisodeSelection(episode),
                     () {
                       selectedEpisode.value = episode;
-                      streamList.clear();
-                      isServerStreamLoading.value = false;
                       fetchServers(episode, bypassDialog: true);
                     },
                   );
@@ -845,7 +580,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                 itemCount: selectedEpisodes.length,
                 itemBuilder: (context, index) {
                   final episode = selectedEpisodes[index];
-                  final isSelected = _areEpisodesEquivalent(selectedEpisode.value, episode);
+                  final isSelected =
+                      _areEpisodesEquivalent(selectedEpisode.value, episode);
                   final isWatched = _isEpisodeWatched(episode);
                   final prog = _calculateEpisodeProgress(episode);
 
@@ -861,8 +597,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       () => _handleEpisodeSelection(episode),
                       () {
                         selectedEpisode.value = episode;
-                        streamList.clear();
-                        isServerStreamLoading.value = false;
                         fetchServers(episode, bypassDialog: true);
                       },
                     ),
@@ -876,34 +610,112 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ...sortSections.map((section) {
-            final values = _availableValuesForKey(section.key, sections: sortSections);
-            if (values.length <= 1) return const SizedBox.shrink();
-
-            return EpisodeSortKeySelector(
-              title: section.title,
-              labelPrefix: section.labelPrefix != "Type" ? section.labelPrefix : "",
-              sortKeys: values,
-              selectedSortKey: RxnString(selectedSortValues[section.key]),
-              onSortKeySelected: (sortValue) {
-                if (selectedSortValues[section.key] == sortValue) return;
-                selectedSortValues[section.key] = sortValue;
-                _initSortGrouping();
-                selectedChunkIndex.value = 1;
-              },
-            );
-          }),
-          if (chunkedEpisodes.isNotEmpty)
-            EpisodeChunkSelector(
-              chunks: chunkedEpisodes,
-              selectedChunkIndex: selectedChunkIndex,
-              onChunkSelected: (index) {
-                if (index != selectedChunkIndex.value) {
-                  selectedChunkIndex.value = index;
-                }
-              },
+          Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: context.colors.surfaceContainerHighest
+                  .opaque(0.2, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color:
+                    context.colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+              ),
             ),
-          const SizedBox(height: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Expanded(
+                      child: AnymeXText(
+                        'Episodes',
+                        variant: TextVariant.bold,
+                        size: 18,
+                      ),
+                    ),
+                    if (widget.onSettingsTap != null)
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: widget.onSettingsTap,
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: context.colors.surfaceContainerHighest
+                                  .opaque(0.35, iReallyMeanIt: true),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: context.colors.outline
+                                    .opaque(0.15, iReallyMeanIt: true),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.settings_outlined,
+                                  size: 16,
+                                  color: context.colors.primary,
+                                ),
+                                const SizedBox(width: 8),
+                                AnymeXText(
+                                  'Settings',
+                                  size: 12,
+                                  color: context.colors.primary,
+                                  variant: TextVariant.bold,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                ...sortSections.map((section) {
+                  final values = _availableValuesForKey(section.key,
+                      sections: sortSections);
+                  if (values.length <= 1) return const SizedBox.shrink();
+
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: EpisodeSortKeySelector(
+                      title: section.title,
+                      labelPrefix: section.labelPrefix != "Type"
+                          ? section.labelPrefix
+                          : "",
+                      sortKeys: values,
+                      selectedSortKey:
+                          RxnString(selectedSortValues[section.key]),
+                      onSortKeySelected: (sortValue) {
+                        if (selectedSortValues[section.key] == sortValue) {
+                          return;
+                        }
+                        selectedSortValues[section.key] = sortValue;
+                        _initSortGrouping();
+                        selectedChunkIndex.value = 1;
+                      },
+                    ),
+                  );
+                }),
+                if (chunkedEpisodes.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: EpisodeChunkSelector(
+                      chunks: chunkedEpisodes,
+                      selectedChunkIndex: selectedChunkIndex,
+                      onChunkSelected: (index) {
+                        if (index != selectedChunkIndex.value) {
+                          selectedChunkIndex.value = index;
+                        }
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
           ListView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
@@ -911,7 +723,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             itemCount: selectedEpisodes.length,
             itemBuilder: (context, index) {
               final episode = selectedEpisodes[index];
-              final isSelected = _areEpisodesEquivalent(selectedEpisode.value, episode);
+              final isSelected =
+                  _areEpisodesEquivalent(selectedEpisode.value, episode);
               final isWatched = _isEpisodeWatched(episode);
               final prog = _calculateEpisodeProgress(episode);
 
@@ -927,16 +740,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   () => _handleEpisodeSelection(episode),
                   () {
                     selectedEpisode.value = episode;
-                    streamList.clear();
-                    isServerStreamLoading.value = false;
                     fetchServers(episode, bypassDialog: true);
                   },
                 ),
               );
             },
           ),
-          ],
-        );
+        ],
+      );
     });
   }
 }
@@ -974,7 +785,8 @@ class ContinueEpisodeButton extends StatelessWidget {
             rawTitle.isEmpty ||
             rawTitle.toLowerCase() == 'movie' ||
             rawTitle.toLowerCase() == 'full movie';
-        final isMovieMedia = data.id.endsWith('*MOVIE') || data.mediaType == ItemType.anime;
+        final isMovieMedia =
+            data.id.endsWith('*MOVIE') || data.mediaType == ItemType.anime;
         final resolvedTitle = (isGenericMovie || isMovieMedia)
             ? (data.title.isNotEmpty ? data.title : "Episode ${episode.number}")
             : rawTitle;
@@ -1036,7 +848,8 @@ class ContinueEpisodeButton extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          AnymeXText(episodeLabel.toUpperCase(),
+                          AnymeXText(
+                            episodeLabel.toUpperCase(),
                             variant: TextVariant.semiBold,
                             color: textColor,
                             textAlign: TextAlign.center,
@@ -1088,12 +901,14 @@ class ServerSheetContent extends StatefulWidget {
   final Episode episode;
   final List<Episode> episodeList;
   final Media anilistData;
+  final bool bypassDialog;
 
   const ServerSheetContent({
     super.key,
     required this.episode,
     required this.episodeList,
     required this.anilistData,
+    this.bypassDialog = false,
   });
 
   @override
@@ -1105,12 +920,17 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
   final RxBool isServerStreamLoading = false.obs;
   final sourceController = Get.find<SourceController>();
   final RxnString streamError = RxnString();
+  late final RxBool rememberServer;
   StreamSubscription? streamSubscription;
   String? scrapeToken;
+  bool _hasAutoSelected = false;
 
   @override
   void initState() {
     super.initState();
+    final savedSticky =
+        DynamicKeys.stickyServer.get<String?>(widget.anilistData.id.toString());
+    rememberServer = (savedSticky != null && savedSticky.isNotEmpty).obs;
     fetchServers();
   }
 
@@ -1121,6 +941,38 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       sourceController.activeSource.value?.cancelRequest(scrapeToken!);
     }
     super.dispose();
+  }
+
+  void _checkAndAutoSelect({required bool isStreamCompleted}) {
+    if (_hasAutoSelected || !mounted) return;
+
+    final savedSticky =
+        DynamicKeys.stickyServer.get<String?>(widget.anilistData.id.toString());
+    if (savedSticky != null && savedSticky.isNotEmpty) {
+      final matched = streamList.firstWhereOrNull((video) {
+        final q = video.quality?.toUpperCase();
+        final saved = savedSticky.toUpperCase();
+        return q == saved || video.originalUrl == savedSticky;
+      });
+      if (matched != null) {
+        _hasAutoSelected = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _handleServerSelected(matched);
+          }
+        });
+        return;
+      }
+    }
+
+    if (isStreamCompleted && streamList.length == 1) {
+      _hasAutoSelected = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _handleServerSelected(streamList.first);
+        }
+      });
+    }
   }
 
   Future<void> fetchServers() async {
@@ -1163,6 +1015,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
               video.originalUrl == nextVideo.originalUrl);
           if (!alreadyExists) {
             streamList.add(nextVideo);
+            _checkAndAutoSelect(isStreamCompleted: false);
           }
         },
         onError: (e) {
@@ -1171,12 +1024,14 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
         },
         onDone: () {
           isServerStreamLoading.value = false;
+          _checkAndAutoSelect(isStreamCompleted: true);
         },
       );
     } else if (videoFuture != null) {
       videoFuture.then((vids) {
         isServerStreamLoading.value = false;
         streamList.value = vids.map((e) => hive.Video.fromVideo(e)).toList();
+        _checkAndAutoSelect(isStreamCompleted: true);
       }).catchError((e) {
         isServerStreamLoading.value = false;
         streamError.value = e.toString();
@@ -1184,9 +1039,86 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
     }
   }
 
+  Future<void> _handleServerSelected(hive.Video video) async {
+    final mediaId = widget.anilistData.id.toString();
+    if (rememberServer.value) {
+      DynamicKeys.stickyServer
+          .set(mediaId, video.quality ?? video.originalUrl ?? '');
+    }
+    if (mounted && Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+    final mediaData = widget.anilistData;
+    final dbId =
+        '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
+
+    final auth = Get.find<ServiceHandler>();
+    final isLoggedInOnline = auth.isLoggedIn.value &&
+        auth.serviceType.value != ServicesType.extensions;
+
+    if (!isLoggedInOnline) {
+      await navigate(() => WatchScreen(
+            episodeSrc: video,
+            episodeList: widget.episodeList,
+            anilistData: mediaData,
+            currentEpisode: widget.episode,
+            episodeTracks: streamList,
+            shouldTrack: false,
+          ));
+      return;
+    }
+
+    final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+
+    if (savedTracking != null && !widget.bypassDialog) {
+      await navigate(() => WatchScreen(
+            episodeSrc: video,
+            episodeList: widget.episodeList,
+            anilistData: mediaData,
+            currentEpisode: widget.episode,
+            episodeTracks: streamList,
+            shouldTrack: savedTracking,
+          ));
+      return;
+    }
+
+    if (General.shouldAskForTrack.get(true) == false) {
+      await navigate(() => WatchScreen(
+            episodeSrc: video,
+            episodeList: widget.episodeList,
+            anilistData: mediaData,
+            currentEpisode: widget.episode,
+            episodeTracks: streamList,
+          ));
+      return;
+    }
+
+    final isExtension = mediaData.serviceType == ServicesType.extensions;
+    final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&
+        Get.find<TrackBindingController>().hasAnyBinding(mediaData.id);
+
+    bool? shouldTrack;
+    if (isExtension) {
+      shouldTrack = hasTrackBinding;
+    } else {
+      shouldTrack = await showTrackingDialog(context, dbId: dbId);
+    }
+
+    if (shouldTrack != null) {
+      await navigate(() => WatchScreen(
+            episodeSrc: video,
+            episodeList: widget.episodeList,
+            anilistData: mediaData,
+            currentEpisode: widget.episode,
+            episodeTracks: streamList,
+            shouldTrack: shouldTrack!,
+          ));
+    }
+  }
+
   Widget _buildSheetHeader(ColorScheme theme) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
       child: Row(
         children: [
           Container(
@@ -1195,19 +1127,27 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
               color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Icons.play_arrow_rounded, size: 20, color: theme.primary),
+            child:
+                Icon(Icons.play_arrow_rounded, size: 20, color: theme.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText('Choose Quality',
+                AnymeXText(
+                  'Episode ${widget.episode.number}',
                   variant: TextVariant.bold,
+                  maxLines: 1,
                   size: 16,
                 ),
-                AnymeXText('Select streaming server quality to watch',
+                AnymeXText(
+                  (widget.episode.title != null &&
+                          widget.episode.title!.isNotEmpty)
+                      ? widget.episode.title!
+                      : 'Select streaming server quality to watch',
                   size: 12,
+                  maxLines: 1,
                   color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                 ),
               ],
@@ -1215,27 +1155,30 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
           ),
           AnymexOnTap(
             onTap: () => Navigator.pop(context),
-            child: Icon(Icons.close_rounded, color: theme.onSurface.opaque(0.5, iReallyMeanIt: true)),
+            child: Icon(Icons.close_rounded,
+                color: theme.onSurface.opaque(0.5, iReallyMeanIt: true)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildScrapingLoadingState(bool fromSrc) {
+  Widget _buildScrapingLoadingState() {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: Column(
+      child: const Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
-          AnymeXText('Scanning for video streams...',
+          AnymeXText(
+            'Scanning for video streams...',
             size: 16,
             variant: TextVariant.semiBold,
           ),
           SizedBox(height: 8),
-          AnymeXText('This may take a few seconds',
+          AnymeXText(
+            'This may take a few seconds',
             size: 12,
           ),
         ],
@@ -1248,7 +1191,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 10),
-        const AnymeXText("Error Occurred",
+        const AnymeXText(
+          "Error Occurred",
           variant: TextVariant.bold,
           size: 18,
         ),
@@ -1259,7 +1203,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
             color: Colors.red.opaque(0.1, iReallyMeanIt: true),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: AnymeXText(errorMessage,
+          child: AnymeXText(
+            errorMessage,
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
@@ -1274,7 +1219,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
     return const SizedBox(
       height: 200,
       child: Center(
-        child: AnymeXText("No servers available",
+        child: AnymeXText(
+          "No servers available",
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -1282,147 +1228,140 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
     );
   }
 
-  Widget _buildServerList(Media mediaData, bool bypassDialog, {bool showBottomLoader = false}) {
+  Widget _buildServerList(Media mediaData, {bool showBottomLoader = false}) {
     final theme = context.colors;
+    final mediaId = widget.anilistData.id.toString();
+    final savedSticky = DynamicKeys.stickyServer.get<String?>(mediaId);
+
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.45,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.5,
       ),
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        shrinkWrap: true,
-        itemCount: streamList.length + (showBottomLoader ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index == streamList.length) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+        child: AnymeXTileBuilder<hive.Video>(
+          lazy: true,
+          items: streamList,
+          isSelection: false,
+          getTitle: (video) => video.quality?.toUpperCase() ?? "UNKNOWN",
+          getSubtitleWidget: (video) {
+            final subsCount = video.subtitles?.length ?? 0;
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              decoration: BoxDecoration(
+                color: theme.secondary,
+                borderRadius: BorderRadius.circular(6),
+              ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: ExpressiveLoadingIndicator(),
+                  Icon(
+                    Icons.closed_caption_rounded,
+                    color: theme.onSecondary,
+                    size: 16,
                   ),
-                  const SizedBox(width: 8),
-                  AnymeXText('Scanning for more servers...',
-                    size: 12,
-                    color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
+                  2.width(),
+                  AnymeXText(
+                    subsCount.toString(),
+                    size: 10,
+                    variant: TextVariant.semiBold,
+                    color: theme.onSecondary,
                   ),
                 ],
               ),
             );
-          }
+          },
+          getLeading: (video) => Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.play_arrow_rounded,
+              size: 20,
+              color: theme.primary,
+            ),
+          ),
+          getTrailing: (video) {
+            final quality = video.quality?.toUpperCase() ?? "UNKNOWN";
+            final isSaved = savedSticky != null &&
+                savedSticky.isNotEmpty &&
+                (quality == savedSticky.toUpperCase() ||
+                    video.originalUrl == savedSticky);
 
-          final video = streamList[index];
-          final quality = video.quality?.toUpperCase() ?? "UNKNOWN";
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: AnymexOnTap(
-              onTap: () async {
-                Navigator.pop(context);
-                final dbId = '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
-                
-                final auth = Get.find<ServiceHandler>();
-                final isLoggedInOnline = auth.isLoggedIn.value &&
-                    auth.serviceType.value != ServicesType.extensions;
-
-                if (!isLoggedInOnline) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: widget.episode,
-                        episodeTracks: streamList,
-                        shouldTrack: false,
-                      ));
-                  return;
-                }
-
-                final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
-
-                if (savedTracking != null && !bypassDialog) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: widget.episode,
-                        episodeTracks: streamList,
-                        shouldTrack: savedTracking,
-                      ));
-                  return;
-                }
-
-                final isExtension = mediaData.serviceType == ServicesType.extensions;
-                final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&
-                    Get.find<TrackBindingController>().hasAnyBinding(mediaData.id);
-
-                bool? shouldTrack;
-                if (General.shouldAskForTrack.get(true) == false) {
-                  shouldTrack = true;
-                } else if (isExtension) {
-                  shouldTrack = hasTrackBinding;
-                } else {
-                  shouldTrack = await showTrackingDialog(context, dbId: dbId);
-                }
-
-                if (shouldTrack != null) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: widget.episode,
-                        episodeTracks: streamList,
-                        shouldTrack: shouldTrack ?? false,
-                      ));
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: theme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: theme.outline.opaque(0.15, iReallyMeanIt: true),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
-                      ),
-                      child: Icon(Icons.play_arrow_rounded, size: 16, color: theme.primary),
+            if (isSaved) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: theme.primary.opaque(0.15, iReallyMeanIt: true),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymeXText(quality,
-                            variant: TextVariant.bold,
-                            size: 14,
-                          ),
-                          const SizedBox(height: 2),
-                          AnymeXText(sourceController.activeSource.value?.name?.toUpperCase() ?? '',
-                            variant: TextVariant.semiBold,
-                            size: 11,
-                            color: theme.onSurface.opaque(0.6, iReallyMeanIt: true),
-                          ),
-                        ],
-                      ),
+                    child: const AnymeXText(
+                      'Default',
+                      size: 11,
+                      variant: TextVariant.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: theme.onSurface.opaque(0.4, iReallyMeanIt: true),
+                  ),
+                ],
+              );
+            }
+            return Icon(
+              Icons.chevron_right_rounded,
+              color: theme.onSurface.opaque(0.4, iReallyMeanIt: true),
+            );
+          },
+          headerChildren: [
+            Obx(
+              () => AnymeXTile.checkbox(
+                icon: Icons.bookmark_outline_rounded,
+                title: 'Remember Server',
+                subtitle: 'Auto-select this server quality for this anime',
+                value: rememberServer.value,
+                onChanged: (val) {
+                  rememberServer.value = val;
+                  if (!val) {
+                    DynamicKeys.stickyServer.set(mediaId, '');
+                  }
+                },
+              ),
+            ),
+          ],
+          onItemPressed: (video) => _handleServerSelected(video),
+          footerChildren: [
+            if (showBottomLoader)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: ExpressiveLoadingIndicator(),
+                    ),
+                    const SizedBox(width: 8),
+                    AnymeXText(
+                      'Scanning for more servers...',
+                      size: 12,
+                      color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                     ),
                   ],
                 ),
               ),
-            ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -1433,11 +1372,10 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildSheetHeader(context.colors),
-        const Divider(height: 1, thickness: 0.5),
         Flexible(
           child: Obx(() {
             if (isServerStreamLoading.value && streamList.isEmpty) {
-              return _buildScrapingLoadingState(scrapeToken != null);
+              return _buildScrapingLoadingState();
             } else if (streamError.value != null) {
               return _buildErrorState(streamError.value!);
             } else if (streamList.isEmpty && !isServerStreamLoading.value) {
@@ -1445,7 +1383,6 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
             } else {
               return _buildServerList(
                 widget.anilistData,
-                false,
                 showBottomLoader: isServerStreamLoading.value,
               );
             }
