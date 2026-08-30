@@ -27,6 +27,7 @@ import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/firebase_options.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';

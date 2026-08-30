@@ -597,6 +597,17 @@ class OfflineStorageController extends GetxController {
     List<Episode>? episodes,
     Episode? currentEpisode,
   ) async {
+    if (currentEpisode != null &&
+        (currentEpisode.title == null || currentEpisode.title!.isEmpty) &&
+        episodes != null) {
+      final matched = episodes.firstWhereOrNull((e) =>
+          (e.link != null && e.link!.isNotEmpty && e.link == currentEpisode.link) ||
+          e.number == currentEpisode.number);
+      if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
+        currentEpisode.title = matched.title;
+      }
+    }
+
     await _synchronizedWrite(original.id, () async {
       final existingAnime = getAnimeById(original.id);
 
@@ -628,6 +639,17 @@ class OfflineStorageController extends GetxController {
     List<Chapter>? chapters,
     Chapter? currentChapter,
   ) async {
+    if (currentChapter != null &&
+        (currentChapter.title == null || currentChapter.title!.isEmpty) &&
+        chapters != null) {
+      final matched = chapters.firstWhereOrNull((c) =>
+          (c.link != null && c.link!.isNotEmpty && c.link == currentChapter.link) ||
+          (c.number != null && c.number == currentChapter.number));
+      if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
+        currentChapter.title = matched.title;
+      }
+    }
+
     await _synchronizedWrite(original.id, () async {
       final existingManga = getMangaById(original.id);
 
@@ -658,6 +680,17 @@ class OfflineStorageController extends GetxController {
     Chapter? currentChapter,
     Source source,
   ) async {
+    if (currentChapter != null &&
+        (currentChapter.title == null || currentChapter.title!.isEmpty) &&
+        chapters != null) {
+      final matched = chapters.firstWhereOrNull((c) =>
+          (c.link != null && c.link!.isNotEmpty && c.link == currentChapter.link) ||
+          (c.number != null && c.number == currentChapter.number));
+      if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
+        currentChapter.title = matched.title;
+      }
+    }
+
     await _synchronizedWrite(original.id, () async {
       final existingNovel = getNovelById(original.id);
 
@@ -692,6 +725,16 @@ class OfflineStorageController extends GetxController {
         Logger.i(
             'Anime with ID: $animeId not found. Unable to add/update episode.');
         return;
+      }
+
+      if ((episode.title == null || episode.title!.isEmpty) &&
+          existingAnime.episodes != null) {
+        final matched = existingAnime.episodes!.firstWhereOrNull((e) =>
+            (e.link != null && e.link!.isNotEmpty && e.link == episode.link) ||
+            e.number == episode.number);
+        if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
+          episode.title = matched.title;
+        }
       }
 
       await isar.writeTxn(() async {
@@ -758,6 +801,16 @@ class OfflineStorageController extends GetxController {
         Logger.i(
             'Manga with ID: $mangaId not found. Unable to add/update chapter.');
         return;
+      }
+
+      if ((chapter.title == null || chapter.title!.isEmpty) &&
+          existingManga.chapters != null) {
+        final matched = existingManga.chapters!.firstWhereOrNull((c) =>
+            (c.link != null && c.link!.isNotEmpty && c.link == chapter.link) ||
+            (c.number != null && c.number == chapter.number));
+        if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
+          chapter.title = matched.title;
+        }
       }
 
       await isar.writeTxn(() async {

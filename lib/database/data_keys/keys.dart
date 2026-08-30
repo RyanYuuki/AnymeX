@@ -208,6 +208,7 @@ enum DynamicKeys {
   mappedMediaTitle,
   offlineVideoProgress,
   stickySource,
+  stickyServer,
   trackBindings;
 
   T get<T>(dynamic id, [T? defaultValue]) {

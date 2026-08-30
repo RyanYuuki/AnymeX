@@ -55,7 +55,7 @@ class UISettings {
     Map<String, bool>? homePageCardsSimkl,
     this.enableAnimation = true,
     this.disableGradient = false,
-    this.cardStyle = 2,
+    this.cardStyle = 0,
     this.historyCardStyle = 0,
     this.liquidMode = true,
     this.retainOriginalColor = false,

@@ -264,6 +264,10 @@ class Settings extends GetxController {
   }
 
   void showWelcomeDialog(BuildContext context) {
+    if (General.hasJoinedNewDiscord.get<bool>(false)) {
+      return;
+    }
+
     if (General.isFirstTime.get<bool>(true)) {
       showWelcomeDialogg(context);
       return;
@@ -279,6 +283,10 @@ class Settings extends GetxController {
   }
 
   void _checkAndShowJoinDialog(BuildContext context) {
+    if (General.hasJoinedNewDiscord.get<bool>(false)) {
+      return;
+    }
+
     final showOnline = showJoinDialog.value;
     if (showOnline) {
       showWelcomeDialogg(context);
