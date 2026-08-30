@@ -79,7 +79,6 @@ class ChapterSection extends StatelessWidget {
           ? searchedTitle.value
           : searchedTitle.toString();
       final controller = Get.find<MediaDetailsController>(tag: tag);
-      final colors = context.colors;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,66 +103,6 @@ class ChapterSection extends StatelessWidget {
                 Media.froDMedia(manga, (anilistData as Media).mediaType),
               );
             },
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest
-                  .opaque(0.2, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-              ),
-            ),
-            child: Row(
-              children: [
-                const Expanded(
-                  child: AnymeXText(
-                    'Chapters',
-                    variant: TextVariant.bold,
-                    size: 18,
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => _showChapterSettingsDialog(context),
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceContainerHighest
-                            .opaque(0.35, iReallyMeanIt: true),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color:
-                              colors.outline.opaque(0.15, iReallyMeanIt: true),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.settings_outlined,
-                            size: 16,
-                            color: colors.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          AnymeXText(
-                            'Settings',
-                            size: 12,
-                            color: colors.primary,
-                            variant: TextVariant.bold,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
           const SizedBox(height: 12),
         ],
@@ -196,6 +135,7 @@ class ChapterSection extends StatelessWidget {
         return ChapterListBuilder(
           chapterList: chapters,
           anilistData: anilistData is Media ? anilistData : null,
+          onSettingsTap: () => _showChapterSettingsDialog(context),
         );
       }
     });

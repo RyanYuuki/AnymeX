@@ -49,9 +49,11 @@ _ChapterTileData _computeTileData({
   required bool isLoggedInOnline,
 }) {
   final readChaptersList = savedMedia?.readChapters ?? <Chapter>[];
-  final savedChap =
-      readChaptersList.firstWhereOrNull((c) => c.number == chapter.number) ??
-          chapter;
+  Chapter? savedChap;
+  if (chapter.link != null && chapter.link!.isNotEmpty) {
+    savedChap = readChaptersList.firstWhereOrNull((c) => c.link == chapter.link);
+  }
+  savedChap ??= readChaptersList.firstWhereOrNull((c) => c.number == chapter.number) ?? chapter;
 
   final totalPages = savedChap.totalPages ?? 0;
   final currentPage = savedChap.pageNumber ?? 0;
@@ -80,11 +82,10 @@ _ChapterTileData _computeTileData({
   final lastRead = savedMedia?.currentChapter;
   Chapter? continueChapter;
   if (lastRead != null) {
-    continueChapter = allChapters.firstWhereOrNull(
-      (c) =>
-          (c.link != null && c.link == lastRead.link) ||
-          c.number == lastRead.number,
-    );
+    if (lastRead.link != null && lastRead.link!.isNotEmpty) {
+      continueChapter = allChapters.firstWhereOrNull((c) => c.link == lastRead.link);
+    }
+    continueChapter ??= allChapters.firstWhereOrNull((c) => c.number == lastRead.number);
   }
   continueChapter ??= allChapters.isNotEmpty ? allChapters.first : null;
 
@@ -108,11 +109,13 @@ _ChapterTileData _computeTileData({
 class ChapterListBuilder extends StatefulWidget {
   final List<Chapter> chapterList;
   final Media? anilistData;
+  final VoidCallback? onSettingsTap;
 
   const ChapterListBuilder({
     super.key,
     required this.chapterList,
     required this.anilistData,
+    this.onSettingsTap,
   });
 
   @override
@@ -286,31 +289,96 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
       return SliverMainAxisGroup(
         slivers: [
-          if (scanlatorsList.isNotEmpty)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ScanlatorsRanges(
-                  scanlators: scanlatorsList,
-                  selectedScanIndex: selectedScanlatorIndex,
-                  onScanIndexChanged: () {
-                    selectedChunkIndex.value = 0;
-                  },
+          SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: context.colors.surfaceContainerHighest
+                    .opaque(0.2, iReallyMeanIt: true),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: context.colors.onSurface
+                      .opaque(0.08, iReallyMeanIt: true),
                 ),
               ),
-            ),
-          if (chunks.length > 1)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ChapterRanges(
-                  chunks: chunks,
-                  selectedChunkIndex: selectedChunkIndex,
-                  onChunkSelected: (index) =>
-                      selectedChunkIndex.value = index,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: AnymeXText(
+                          'Chapters',
+                          variant: TextVariant.bold,
+                          size: 18,
+                        ),
+                      ),
+                      if (widget.onSettingsTap != null)
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: widget.onSettingsTap,
+                            borderRadius: BorderRadius.circular(14),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: context.colors.surfaceContainerHighest
+                                    .opaque(0.35, iReallyMeanIt: true),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: context.colors.outline
+                                      .opaque(0.15, iReallyMeanIt: true),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.settings_outlined,
+                                    size: 16,
+                                    color: context.colors.primary,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  AnymeXText(
+                                    'Settings',
+                                    size: 12,
+                                    color: context.colors.primary,
+                                    variant: TextVariant.bold,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  if (scanlatorsList.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: ScanlatorsRanges(
+                        scanlators: scanlatorsList,
+                        selectedScanIndex: selectedScanlatorIndex,
+                        onScanIndexChanged: () {
+                          selectedChunkIndex.value = 0;
+                        },
+                      ),
+                    ),
+                  if (chunks.length > 1)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: ChapterRanges(
+                        chunks: chunks,
+                        selectedChunkIndex: selectedChunkIndex,
+                        onChunkSelected: (index) =>
+                            selectedChunkIndex.value = index,
+                      ),
+                    ),
+                ],
               ),
             ),
+          ),
           if (settings.chapterStyle == 'grid')
             SliverGrid.builder(
               gridDelegate:

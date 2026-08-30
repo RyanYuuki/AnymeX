@@ -126,11 +126,11 @@ final List<_BottomControl> _bottomControls = [
       id: 'external_player',
       name: 'External Player',
       icon: Icons.launch_rounded),
-  const _BottomControl(
-      id: 'watch_together',
-      name: 'Watch Together',
-      icon: Icons.people_outline_rounded,
-      defaultPosition: 'right'),
+  // const _BottomControl(
+  //     id: 'watch_together',
+  //     name: 'Watch Together',
+  //     icon: Icons.people_outline_rounded,
+  //     defaultPosition: 'right'),
 ];
 
 class _SettingsPlayerState extends State<SettingsPlayer>

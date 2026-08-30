@@ -319,7 +319,11 @@ void showWelcomeDialogg(BuildContext context) {
                           ),
                         ),
                         onPressed: () {
-                          General.isFirstTime.set(false);
+                          if (General.isFirstTime.get<bool>(true) == false) {
+                            General.hasJoinedNewDiscord.set(true);
+                          } else {
+                            General.isFirstTime.set(false);
+                          }
                           Navigator.of(context).pop();
                         },
                         label: const AnymeXText(

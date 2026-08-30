@@ -10,6 +10,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
   final bool Function(T)? isSelected;
   final String Function(T) getTitle;
   final String Function(T)? getSubtitle;
+  final Widget Function(T)? getSubtitleWidget;
   final IconData Function(T)? getIcon;
   final Widget Function(T)? getLeading;
   final Widget Function(T)? getTrailing;
@@ -22,6 +23,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
   final int? maxLines;
   final bool lazy;
 
+  final List<Widget>? headerChildren;
   final List<Widget>? children;
 
   final List<Widget>? footerChildren;
@@ -34,6 +36,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     this.isSelected,
     required this.getTitle,
     this.getSubtitle,
+    this.getSubtitleWidget,
     this.getIcon,
     this.getLeading,
     this.getTrailing,
@@ -45,6 +48,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     this.getTitleStyle,
     this.getSubtitleStyle,
     this.lazy = false,
+    this.headerChildren,
     this.children,
     this.footerChildren,
   });
@@ -54,12 +58,12 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     final hasIcons = getIcon != null || getLeading != null;
     final separatorIndent = hasIcons ? 66.0 : 16.0;
     final colors = context.colors;
+    final resolvedHeaderChildren = headerChildren ?? children ?? [];
+    final footerItems = footerChildren ?? [];
 
     if (lazy) {
-      final headerChildren = children ?? [];
-      final footerItems = footerChildren ?? [];
       final totalCount =
-          headerChildren.length + items.length + footerItems.length;
+          resolvedHeaderChildren.length + items.length + footerItems.length;
 
       return Container(
         margin: EdgeInsets.zero,
@@ -98,14 +102,15 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
                 radius = BorderRadius.zero;
               }
 
-              if (index < headerChildren.length) {
+              if (index < resolvedHeaderChildren.length) {
                 return ClipRRect(
                   borderRadius: radius,
-                  child: headerChildren[index],
+                  child: resolvedHeaderChildren[index],
                 );
               }
 
-              final footerStartIndex = headerChildren.length + items.length;
+              final footerStartIndex =
+                  resolvedHeaderChildren.length + items.length;
               if (index >= footerStartIndex) {
                 return ClipRRect(
                   borderRadius: radius,
@@ -113,13 +118,14 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
                 );
               }
 
-              final itemIndex = index - headerChildren.length;
+              final itemIndex = index - resolvedHeaderChildren.length;
               final item = items[itemIndex];
 
               if (!isSelection) {
                 return AnymeXTile(
                   title: getTitle(item),
                   subtitle: getSubtitle?.call(item),
+                  subtitleWidget: getSubtitleWidget?.call(item),
                   icon: getIcon?.call(item),
                   leading: getLeading?.call(item),
                   trailing: getTrailing?.call(item),
@@ -167,14 +173,12 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
       );
     }
 
-    final headerChildren = children ?? [];
-    final footerItems = footerChildren ?? [];
-
     final itemWidgets = items.map((item) {
       if (!isSelection) {
         return AnymeXTile(
           title: getTitle(item),
           subtitle: getSubtitle?.call(item),
+          subtitleWidget: getSubtitleWidget?.call(item),
           icon: getIcon?.call(item),
           leading: getLeading?.call(item),
           trailing: getTrailing?.call(item),
@@ -219,7 +223,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
       margin: EdgeInsets.zero,
       separatorIndent: separatorIndent,
       children: [
-        ...headerChildren,
+        ...resolvedHeaderChildren,
         ...itemWidgets,
         ...footerItems,
       ],

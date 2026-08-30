@@ -10,6 +10,7 @@ class AnymeXTile extends StatelessWidget {
   final Widget? leading;
   final String title;
   final String? subtitle;
+  final Widget? subtitleWidget;
   final Widget? trailing;
   final VoidCallback? onTap;
   final Color? iconColor;
@@ -28,6 +29,7 @@ class AnymeXTile extends StatelessWidget {
     this.leading,
     required this.title,
     this.subtitle,
+    this.subtitleWidget,
     this.trailing,
     this.onTap,
     this.iconColor,
@@ -208,9 +210,9 @@ class AnymeXTile extends StatelessWidget {
             decoration: BoxDecoration(
               color: primary.withOpacity(0.12),
               borderRadius: BorderRadius.circular(10),
-
             ),
-            child: AnymeXText(formatValue(value),
+            child: AnymeXText(
+              formatValue(value),
               size: 12,
               variant: TextVariant.semiBold,
               color: primary,
@@ -281,7 +283,9 @@ class AnymeXTile extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: selected ? colors.primary : colors.onSurface.withOpacity(0.24),
+                color: selected
+                    ? colors.primary
+                    : colors.onSurface.withOpacity(0.24),
                 width: 2,
               ),
               color: selected ? colors.primary : Colors.transparent,
@@ -345,7 +349,8 @@ class AnymeXTile extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color: value ? colors.primary : colors.onSurface.withOpacity(0.24),
+                color:
+                    value ? colors.primary : colors.onSurface.withOpacity(0.24),
                 width: 2,
               ),
               color: value ? colors.primary : Colors.transparent,
@@ -362,7 +367,6 @@ class AnymeXTile extends StatelessWidget {
       ),
     );
   }
-
 
   static Widget segmented<T>({
     Key? key,
@@ -488,7 +492,8 @@ class AnymeXTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AnymeXText(title,
+                    AnymeXText(
+                      title,
                       size: 14.5,
                       maxLines: maxLines ?? 2,
                       variant: TextVariant.semiBold,
@@ -497,9 +502,12 @@ class AnymeXTile extends StatelessWidget {
                           : colors.onSurface.opaque(0.4, iReallyMeanIt: true),
                       style: titleStyle,
                     ),
-                    if (subtitle != null && subtitle!.isNotEmpty) ...[
+                    if (subtitleWidget != null) ...[
+                      subtitleWidget!,
+                    ] else if (subtitle != null && subtitle!.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      AnymeXText(subtitle!,
+                      AnymeXText(
+                        subtitle!,
                         size: 12,
                         variant: TextVariant.regular,
                         color:
@@ -543,9 +551,6 @@ class AnymeXTile extends StatelessWidget {
     );
   }
 }
-
-
-
 
 class _SegmentedContent<T> extends StatelessWidget {
   final T value;
