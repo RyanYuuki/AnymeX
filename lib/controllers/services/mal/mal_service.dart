@@ -11,6 +11,7 @@ import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
 import 'package:anymex/screens/community/community_recommendations_page.dart';
 import 'package:anymex/controllers/services/community_service.dart';
+import 'package:anymex/controllers/services/sequel_detector/missing_sequel_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -127,6 +128,16 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Top Anime", topAnimes),
                   buildSectionIfNotEmpty("Upcoming Anime", upcomingAnimes),
                   Obx(() {
+                    final controller =
+                        Get.find<MissingSequelController>();
+                    controller.ensureAnimeDetection();
+                    final sequels = controller.missingAnimeSequels;
+                    if (sequels.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return buildSection('Missing Sequels', sequels);
+                  }),
+                  Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityAnimes();
                     if (filteredList.isEmpty) {
@@ -159,6 +170,17 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   buildSectionIfNotEmpty("Top Manhua", topManhua,
                       isManga: true),
                   ...sourceController.novelSections,
+                  Obx(() {
+                    final controller =
+                        Get.find<MissingSequelController>();
+                    controller.ensureMangaDetection();
+                    final sequels = controller.missingMangaSequels;
+                    if (sequels.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return buildSection('Missing Sequels', sequels,
+                        type: ItemType.manga);
+                  }),
                   Obx(() {
                     final filteredList =
                         communityService.getFilteredCommunityMangas();
