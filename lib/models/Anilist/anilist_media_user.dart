@@ -31,6 +31,7 @@ class TrackedMedia {
   List<String> tags;
   int? startYear;
   int? updatedAt;
+  DateTime? latestEpisodeReleasedAt;
 
   String? romajiTitle;
 
@@ -73,6 +74,7 @@ class TrackedMedia {
     this.tags = const [],
     this.startYear,
     this.updatedAt,
+    this.latestEpisodeReleasedAt,
     this.startedAt,
     this.completedAt,
     this.isPrivate,
@@ -80,6 +82,7 @@ class TrackedMedia {
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
     final titleMap = json['media']?['title'];
+
     return TrackedMedia(
       id: json['media']['id']?.toString(),
       idMal: json['media']['idMal']?.toString(),

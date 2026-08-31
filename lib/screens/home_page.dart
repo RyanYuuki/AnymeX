@@ -43,8 +43,11 @@ class _HomePageState extends State<HomePage> {
 
       if (serviceHandler.isLoggedIn.value ||
           serviceHandler.animeList.isNotEmpty) {
+        final now = DateTime.now();
         for (final item in serviceHandler.animeList) {
           if (item.type?.toUpperCase() == 'MANGA' || item.id == null) continue;
+          if (item.watchingStatus?.toUpperCase() != 'CURRENT') continue;
+
           final watched = int.tryParse(item.episodeCount ?? '') ??
               (item.userProgress ?? 0);
           int latestReleased = 0;
@@ -55,16 +58,29 @@ class _HomePageState extends State<HomePage> {
             latestReleased = int.tryParse(item.totalEpisodes ?? '') ?? 0;
           }
 
-          final isWatching = item.watchingStatus?.toUpperCase() == 'CURRENT' ||
-              item.watchingStatus?.toUpperCase() == 'WATCHING' ||
-              (watched > 0 &&
-                  item.watchingStatus?.toUpperCase() != 'COMPLETED');
+          if (latestReleased <= watched) continue;
 
-          if (isWatching && latestReleased > watched) {
-            final media = CardData.fromTrackedMedia(item).data;
-            entries.add((media, watched, latestReleased));
+          final isStillAiring = item.mediaStatus?.toUpperCase() == 'RELEASING' ||
+              item.mediaStatus?.toUpperCase() == 'AIRING';
+          final releasedAt = item.latestEpisodeReleasedAt;
+          if (!isStillAiring &&
+              releasedAt != null &&
+              now.difference(releasedAt) > const Duration(days: 7)) {
+            continue;
           }
+
+          final media = CardData.fromTrackedMedia(item).data;
+          entries.add((media, watched, latestReleased));
         }
+
+        entries.sort((a, b) {
+          final aDate = a.$1.latestEpisodeReleasedAt;
+          final bDate = b.$1.latestEpisodeReleasedAt;
+          if (aDate == null && bDate == null) return 0;
+          if (aDate == null) return 1;
+          if (bDate == null) return -1;
+          return bDate.compareTo(aDate);
+        });
       }
 
       if (entries.isEmpty &&

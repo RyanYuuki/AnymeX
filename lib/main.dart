@@ -423,14 +423,11 @@ class FilterScreen extends StatefulWidget {
 }
 
 class _FilterScreenState extends State<FilterScreen> {
-  int _selectedIndex = 1;
-  int _mobileSelectedIndex = 0;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _mobileSelectedIndex = 0;
-    _selectedIndex = 1;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = Get.find<Settings>();
@@ -441,13 +438,13 @@ class _FilterScreenState extends State<FilterScreen> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      _selectedIndex = index - 1;
     });
   }
 
   void _onMobileItemTapped(int index) {
     setState(() {
-      _mobileSelectedIndex = index;
+      _selectedIndex = index;
     });
   }
 
@@ -644,7 +641,7 @@ class _FilterScreenState extends State<FilterScreen> {
             final isSimkl = authService.serviceType.value == ServicesType.simkl;
             final navTabs = _getNavTabs(authService, settings);
             final navRailWidth = settings.navBarStyle == 0 ? 120.0 : 120.0;
-            final validIndex = _selectedIndex.clamp(0, navTabs.length);
+            final validIndex = (_selectedIndex + 1).clamp(0, navTabs.length);
 
             return SizedBox(
                 width: navRailWidth,
@@ -712,7 +709,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 for (final tab in navTabs) _getWidgetForTab(tab),
               ];
               final validIndex =
-                  _selectedIndex.clamp(0, desktopRoutes.length - 1);
+                  (_selectedIndex + 1).clamp(0, desktopRoutes.length - 1);
               return LazyIndexedStack(
                 index: validIndex,
                 children: desktopRoutes,
@@ -732,7 +729,7 @@ class _FilterScreenState extends State<FilterScreen> {
       final mobileRoutes = [
         for (final tab in navTabs) _getWidgetForTab(tab),
       ];
-      final validIndex = _mobileSelectedIndex.clamp(0, mobileRoutes.length - 1);
+      final validIndex = _selectedIndex.clamp(0, mobileRoutes.length - 1);
 
       return PopScope(
         canPop: false,
@@ -741,7 +738,7 @@ class _FilterScreenState extends State<FilterScreen> {
           final homeIndex = navTabs.indexOf('Home');
           if (validIndex != homeIndex && homeIndex != -1) {
             setState(() {
-              _mobileSelectedIndex = homeIndex;
+              _selectedIndex = homeIndex;
             });
           } else {
             const MethodChannel("com.ryan.anymex/utils")

@@ -60,7 +60,7 @@ class Media {
   NextAiringEpisode? nextAiringEpisode;
   List<Ranking> rankings;
   ServicesType serviceType;
-  DateTime? createdAt;
+  DateTime? latestEpisodeReleasedAt;
   bool? isAdult;
   String? sourceName;
   String? sourceId;
@@ -120,8 +120,7 @@ class Media {
       this.synonyms = const [],
       this.tags = const [],
       this.externalLinks,
-      DateTime? createdAt})
-      : createdAt = DateTime.now();
+      this.latestEpisodeReleasedAt});
 
   OfflineMedia toOfflineMedia() {
     return OfflineMedia(
