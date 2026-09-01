@@ -23,9 +23,9 @@ class NewEpisodeReleaseCard extends StatelessWidget {
   });
 
   String _getTimeAgo() {
-    if (media.createdAt == null) return 'Recently';
+    if (media.latestEpisodeReleasedAt == null) return 'Recently';
     final now = DateTime.now();
-    final difference = now.difference(media.createdAt!);
+    final difference = now.difference(media.latestEpisodeReleasedAt!);
 
     if (difference.inDays == 0) {
       return 'Today';
@@ -45,14 +45,15 @@ class NewEpisodeReleaseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
     final heroTag =
-        '${media.id}-recent-${media.createdAt?.millisecondsSinceEpoch ?? ''}';
+        '${media.id}-recent-${media.latestEpisodeReleasedAt?.millisecondsSinceEpoch ?? ''}';
     final watched = watchedEpisode ?? 0;
     final latest = latestReleasedEpisode ?? watched;
     final behind = latest - watched;
 
     return AnymexOnTap(
       onTap: () {
-        navigate(() => AnimeDetailsPage(media: media, tag: heroTag));
+        navigate(() =>
+            AnimeDetailsPage(media: media, tag: heroTag, initialTabIndex: 1));
       },
       child: Container(
         margin: const EdgeInsets.only(left: 15),

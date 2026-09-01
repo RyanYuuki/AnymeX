@@ -66,7 +66,8 @@ class CardData {
           rating: data.rating ?? '',
           poster: data.poster ?? '',
           mediaType: data.type == 'MANGA' ? ItemType.manga : ItemType.anime,
-          serviceType: data.servicesType),
+          serviceType: data.servicesType,
+          latestEpisodeReleasedAt: data.latestEpisodeReleasedAt),
     );
   }
 

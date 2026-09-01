@@ -2041,12 +2041,63 @@ class AnilistAuth extends GetxController {
 
           currentlyWatching.value = currentlyWatching.value.removeDupes();
 
-          animeList.value = animeListt
+          final mappedAnimeList = animeListt
               .map((animeEntry) => TrackedMedia.fromJson(animeEntry))
               .toList()
               .reversed
               .toList()
               .removeDupes();
+
+          final airingIds = mappedAnimeList
+              .where((m) => m.releasedEpisodes != null && m.id != null)
+              .map((m) => int.tryParse(m.id!))
+              .whereType<int>()
+              .toSet()
+              .toList();
+
+          if (airingIds.isNotEmpty) {
+            final aliasFields = airingIds.map((id) => '''
+            s$id: Page(perPage: 1) {
+              airingSchedules(mediaId: $id, notYetAired: false, sort: TIME_DESC) {
+                airingAt
+              }
+            }
+            ''').join('\n');
+
+            final scheduleResponse = await http.post(
+              Uri.parse('https://graphql.anilist.co'),
+              headers: {
+                'Authorization': 'Bearer $token',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+              body: json.encode({'query': 'query { $aliasFields }'}),
+            );
+
+            if (scheduleResponse.statusCode == 200) {
+              final scheduleData =
+                  json.decode(scheduleResponse.body)['data'] as Map<String, dynamic>?;
+              if (scheduleData != null) {
+                for (final id in airingIds) {
+                  final schedules =
+                      scheduleData['s$id']?['airingSchedules'] as List<dynamic>?;
+                  if (schedules == null || schedules.isEmpty) continue;
+                  final airingAt = schedules.first['airingAt'] as int?;
+                  if (airingAt == null) continue;
+
+                  final releasedAt =
+                      DateTime.fromMillisecondsSinceEpoch(airingAt * 1000);
+                  for (final m in mappedAnimeList) {
+                    if (m.id == id.toString()) {
+                      m.latestEpisodeReleasedAt = releasedAt;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          animeList.value = mappedAnimeList;
           Logger.i("Anime List Fetched Successfully!");
         } else {
           Logger.i('Unexpected response structure: ${response.body}');
