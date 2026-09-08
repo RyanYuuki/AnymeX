@@ -16,7 +16,6 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/cards/media_cards.dart';
@@ -59,6 +58,7 @@ class CardData {
       totalEpisodes: data.effectiveTotal,
       score: data.score,
       type: data.type,
+      nextEpisode: data.nextAiringEpisode?.episode.toString(),
       data: Media(
           id: data.id!,
           title: data.title ?? '??',
@@ -66,6 +66,11 @@ class CardData {
           rating: data.rating ?? '',
           poster: data.poster ?? '',
           mediaType: data.type == 'MANGA' ? ItemType.manga : ItemType.anime,
+          nextAiringEpisode: data.nextAiringEpisode,
+          status: data.mediaStatus ?? '?',
+          format: data.format ?? '?',
+          totalEpisodes: data.effectiveTotal,
+          createdAt: data.endDate ?? data.startDate,
           serviceType: data.servicesType),
     );
   }
