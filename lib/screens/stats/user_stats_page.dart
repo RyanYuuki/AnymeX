@@ -311,11 +311,11 @@ class _UserStatsPageState extends State<UserStatsPage> {
 
     return Row(
       children: [
-        Expanded(child: SizedBox(height: 80, child: timeReadCard)),
+        Expanded(child: SizedBox(height: 94, child: timeReadCard)),
         const SizedBox(width: 8),
-        Expanded(child: SizedBox(height: 80, child: pagesCard)),
+        Expanded(child: SizedBox(height: 94, child: pagesCard)),
         const SizedBox(width: 8),
-        Expanded(child: SizedBox(height: 80, child: daysCard)),
+        Expanded(child: SizedBox(height: 94, child: daysCard)),
       ],
     );
   }
@@ -455,7 +455,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
     Widget? child,
   }) {
     return AnymeXCard(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Stack(
         children: [
           if (child != null && isChildOnRight)
@@ -476,13 +476,15 @@ class _UserStatsPageState extends State<UserStatsPage> {
                         size: 12,
                         color:
                             context.colors.onSurfaceVariant.withOpacity(0.5)),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 5),
                     Expanded(
                       child: AnymeXText(
                         title.toUpperCase(),
-                        size: 9,
+                        size: 8.5,
                         variant: TextVariant.bold,
                         color: context.colors.onSurfaceVariant.withOpacity(0.5),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -493,7 +495,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                     alignment: Alignment.centerLeft,
                     child: AnymeXText(
                       value,
-                      size: (child != null && isChildOnRight) ? 12 : 18,
+                      size: (child != null && isChildOnRight) ? 12 : 16.5,
                       variant: TextVariant.bold,
                       color: context.colors.onSurface,
                       maxLines: valueMaxLines,
