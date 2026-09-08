@@ -132,9 +132,11 @@ class ChapterSection extends StatelessWidget {
           ),
         );
       } else {
+        final controller = Get.find<MediaDetailsController>(tag: tag);
         return ChapterListBuilder(
           chapterList: chapters,
           anilistData: anilistData is Media ? anilistData : null,
+          selectedScanlatorIndex: controller.selectedScanlatorIndex,
           onSettingsTap: () => _showChapterSettingsDialog(context),
         );
       }

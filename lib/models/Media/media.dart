@@ -121,7 +121,7 @@ class Media {
       this.tags = const [],
       this.externalLinks,
       DateTime? createdAt})
-      : createdAt = DateTime.now();
+      : createdAt = createdAt ?? DateTime.now();
 
   OfflineMedia toOfflineMedia() {
     return OfflineMedia(

@@ -1088,10 +1088,15 @@ class AnilistAuth extends GetxController {
             averageScore
             genres
             tags { name }
-            startDate { year }
+            startDate { year month day }
+            endDate { year month day }
             title { userPreferred english romaji native }
             coverImage { large }
-            nextAiringEpisode { episode }
+            nextAiringEpisode {
+              episode
+              airingAt
+              timeUntilAiring
+            }
             mediaListEntry { id }
           }
         }
@@ -1971,12 +1976,20 @@ class AnilistAuth extends GetxController {
             nextAiringEpisode {
               episode
               airingAt
+              timeUntilAiring
             }
             averageScore
             type
             genres
             startDate {
               year
+              month
+              day
+            }
+            endDate {
+              year
+              month
+              day
             }
             coverImage {
               large

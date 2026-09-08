@@ -50,6 +50,34 @@ class MediaDetailsController extends GetxController {
   final RxList<Episode> rawEpisodes = <Episode>[].obs;
   final RxList<Episode> anifyEpisodes = <Episode>[].obs;
   final RxList<Chapter> chapterList = <Chapter>[].obs;
+  final RxInt selectedScanlatorIndex = 0.obs;
+
+  List<String> get scanlatorsList {
+    final Set<String> scanlatorsSet = {};
+    for (final ch in chapterList) {
+      if (ch.scanlator?.isNotEmpty == true) {
+        scanlatorsSet.add(ch.scanlator!);
+      }
+    }
+    return scanlatorsSet.toList();
+  }
+
+  String? get currentSelectedScanlator {
+    final list = scanlatorsList;
+    final index = selectedScanlatorIndex.value;
+    if (index == 0 || list.isEmpty || index - 1 >= list.length) {
+      return null;
+    }
+    return list[index - 1];
+  }
+
+  List<Chapter> get currentScanlatorChapters {
+    final scanlator = currentSelectedScanlator;
+    if (scanlator == null || scanlator.isEmpty) {
+      return chapterList;
+    }
+    return chapterList.where((c) => c.scanlator == scanlator).toList();
+  }
 
   final RxBool isLoading = true.obs;
   final RxBool isSyncing = false.obs;
@@ -732,13 +760,14 @@ class MediaDetailsController extends GetxController {
   }
 
   Chapter? getContinueChapter() {
-    if (chapterList.isEmpty) return null;
+    final chapters = currentScanlatorChapters;
+    if (chapters.isEmpty) return null;
 
     final offline = offlineMedia.value;
     final currentCh = offline?.currentChapter;
 
     if (currentCh != null) {
-      final index = chapterList.indexWhere((c) =>
+      final index = chapters.indexWhere((c) =>
           (c.link != null && c.link == currentCh.link) ||
           (c.number != null && c.number == currentCh.number));
 
@@ -751,33 +780,50 @@ class MediaDetailsController extends GetxController {
             (page >= total || page >= total - 1 || (page / total) >= 0.95);
 
         if (isComplete) {
-          final sortedChapters = List<Chapter>.from(chapterList)
+          final sortedChapters = List<Chapter>.from(chapters)
             ..sort((a, b) => (a.number ?? 0).compareTo(b.number ?? 0));
-          
+
           final sortedIndex = sortedChapters.indexWhere((c) =>
               (c.link != null && c.link == currentCh.link) ||
               (c.number != null && c.number == currentCh.number));
-              
+
           if (sortedIndex != -1 && sortedIndex + 1 < sortedChapters.length) {
             final nextCh = sortedChapters[sortedIndex + 1];
-            return chapterList.firstWhereOrNull((c) =>
-                (c.link != null && c.link == nextCh.link) ||
-                (c.number != null && c.number == nextCh.number)) ?? nextCh;
+            return chapters.firstWhereOrNull((c) =>
+                    (c.link != null && c.link == nextCh.link) ||
+                    (c.number != null && c.number == nextCh.number)) ??
+                nextCh;
           }
         }
-        return chapterList[index];
+        return chapters[index];
+      } else {
+        if (currentSelectedScanlator != null) {
+          return null;
+        }
       }
     }
 
     final progress = mediaProgress.value;
-    final nextNumber = progress + 1;
-    final nextCh =
-        chapterList.firstWhereOrNull((c) => c.number?.toInt() == nextNumber);
-    if (nextCh != null) return nextCh;
-    final currCh =
-        chapterList.firstWhereOrNull((c) => c.number?.toInt() == progress);
-    if (currCh != null) return currCh;
-    return chapterList.first;
+    if (progress > 0) {
+      final nextNumber = progress + 1;
+      final nextCh =
+          chapters.firstWhereOrNull((c) => c.number?.toInt() == nextNumber);
+      if (nextCh != null) return nextCh;
+      final currCh =
+          chapters.firstWhereOrNull((c) => c.number?.toInt() == progress);
+      if (currCh != null) return currCh;
+
+      if (currentSelectedScanlator != null) {
+        return null;
+      }
+    }
+
+    if (currentSelectedScanlator != null &&
+        (currentCh != null || progress > 0)) {
+      return null;
+    }
+
+    return chapters.first;
   }
 
   double getEpisodeProgress(Episode episode) {
