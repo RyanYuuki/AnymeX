@@ -41,6 +41,8 @@ class _CalendarState extends State<Calendar>
   List<DateTime> dateTabs = [];
   bool isGrid = true;
   bool isLoading = true;
+  bool hasError = false;
+  String? errorMessage;
   bool includeList = false;
 
   RxBool isDubMode = false.obs;
@@ -53,27 +55,7 @@ class _CalendarState extends State<Calendar>
   @override
   void initState() {
     super.initState();
-    final ids = serviceHandler.animeList.map((e) => e.id).toSet().toList();
-    
-    if (isSimkl) {
-      fetchSimklCalendarData(calendarData, isMovies: true).then((_) {
-        fetchSimklCalendarData(calendarData, isMovies: false).then((_) {
-          setState(() {
-            rawData.value = calendarData.map((e) => e).toList();
-            listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
-            isLoading = false;
-          });
-        });
-      });
-    } else {
-      fetchCalendarData(calendarData).then((_) {
-        setState(() {
-          rawData.value = calendarData.map((e) => e).toList();
-          listData.value = calendarData.where((e) => ids.contains(e.id)).toList();
-          isLoading = false;
-        });
-      });
-    }
+    _loadData();
 
     dateTabs =
         List.generate(7, (index) => DateTime.now().add(Duration(days: index)));
@@ -81,14 +63,75 @@ class _CalendarState extends State<Calendar>
     _tabController = TabController(length: dateTabs.length, vsync: this);
   }
 
+  void _loadData() {
+    setState(() {
+      isLoading = true;
+      hasError = false;
+      errorMessage = null;
+      calendarData.clear();
+      rawData.clear();
+      listData.clear();
+    });
+
+    final ids = serviceHandler.animeList.map((e) => e.id).toSet().toList();
+
+    if (isSimkl) {
+      fetchSimklCalendarData(calendarData, isMovies: true).then((_) {
+        return fetchSimklCalendarData(calendarData, isMovies: false);
+      }).then((_) {
+        if (!mounted) return;
+        setState(() {
+          rawData.value = calendarData.map((e) => e).toList();
+          listData.value =
+              calendarData.where((e) => ids.contains(e.id)).toList();
+          isLoading = false;
+          hasError = false;
+        });
+      }).catchError((e) {
+        if (!mounted) return;
+        setState(() {
+          isLoading = false;
+          hasError = true;
+          final raw = e.toString().replaceFirst('Exception: ', '').trim();
+          errorMessage =
+              raw.isNotEmpty ? raw : 'Failed to load Simkl calendar data';
+        });
+      });
+    } else {
+      fetchCalendarData(calendarData).then((_) {
+        if (!mounted) return;
+        setState(() {
+          rawData.value = calendarData.map((e) => e).toList();
+          listData.value =
+              calendarData.where((e) => ids.contains(e.id)).toList();
+          isLoading = false;
+          hasError = false;
+        });
+      }).catchError((e) {
+        if (!mounted) return;
+        setState(() {
+          isLoading = false;
+          hasError = true;
+          final raw = e.toString().replaceFirst('Exception: ', '').trim();
+          errorMessage =
+              raw.isNotEmpty ? raw : 'Failed to load AniList calendar data';
+        });
+      });
+    }
+  }
+
   Future<void> _toggleDub() async {
     if (!isAnilist) return;
-    
+
     isDubMode.value = !isDubMode.value;
     if (isDubMode.value && dubCache.isEmpty) {
       isFetching.value = true;
-      dubCache = await DubService.fetchDubSources();
-      isFetching.value = false;
+      try {
+        dubCache = await DubService.fetchDubSources();
+      } catch (_) {
+      } finally {
+        isFetching.value = false;
+      }
     }
   }
 
@@ -270,6 +313,9 @@ class _CalendarState extends State<Calendar>
 
               if (isLoading) {
                 return const Center(child: AnymeXProgressIndicator());
+              } else if (hasError &&
+                  (includeList ? listData : rawData).isEmpty) {
+                return _buildErrorState(context);
               } else if (filteredList.isEmpty) {
                 return const Center(child: AnymeXText("No Anime found"));
               }
@@ -300,8 +346,59 @@ class _CalendarState extends State<Calendar>
               );
             });
           }).toList(),
-        )
-);
+        ));
+  }
+
+  Widget _buildErrorState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: context.colors.error.opaque(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Iconsax.warning_2,
+                size: 48,
+                color: context.colors.error,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const AnymeXText.bold(
+              'Oops! Something went wrong',
+              size: 18,
+            ),
+            const SizedBox(height: 8),
+            AnymeXText.regular(
+              errorMessage ?? 'Failed to load calendar data',
+              textAlign: TextAlign.center,
+              size: 14,
+              color: Theme.of(context).colorScheme.onSurface.opaque(0.7),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _loadData,
+              icon: Icon(Iconsax.refresh, color: context.colors.onPrimary),
+              label: const AnymeXText.semiBold('Try Again', size: 14),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.colors.primary,
+                foregroundColor: context.colors.onPrimary,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

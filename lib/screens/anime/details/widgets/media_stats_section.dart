@@ -439,6 +439,21 @@ Widget buildProgressContainer(
   final pct =
       totalCount > 0 ? (currentProgress / totalCount).clamp(0.0, 1.0) : 0.0;
 
+  final relEp = controller.isAnime
+      ? (media.nextAiringEpisode != null
+          ? media.nextAiringEpisode!.episode - 1
+          : (int.tryParse(
+                  controller.trackedMedia.value?.releasedEpisodes ?? '') ??
+              0))
+      : 0;
+
+  final progressText = (controller.isAnime &&
+          relEp > 0 &&
+          totalCount > 0 &&
+          relEp != totalCount)
+      ? '$currentProgress / $relEp / $totalCount'
+      : '$currentProgress / ${totalCount > 0 ? totalCount : "?"}';
+
   return Container(
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
@@ -460,7 +475,7 @@ Widget buildProgressContainer(
               color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
             ),
             AnymeXText(
-              '$currentProgress / ${totalCount > 0 ? totalCount : "?"}',
+              progressText,
               size: 13,
               variant: TextVariant.bold,
               color: colors.primary,
