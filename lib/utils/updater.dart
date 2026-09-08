@@ -523,7 +523,9 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: AnymeXText(
-                          "v${widget.currentVersion}",
+                          widget.currentVersion.startsWith('v')
+                              ? widget.currentVersion
+                              : "v${widget.currentVersion}",
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -545,7 +547,9 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                               color: colorScheme.primary.opaque(0.3)),
                         ),
                         child: AnymeXText(
-                          "v${widget.newVersion}",
+                          widget.newVersion.startsWith('v')
+                              ? widget.newVersion
+                              : "v${widget.newVersion}",
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
