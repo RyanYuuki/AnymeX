@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter_iconly/flutter_iconly.dart';
-import 'package:anymex/screens/novel/search/search_page.dart';
+import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/utils/function.dart';
 
 class NovelHomePage extends StatefulWidget {
@@ -78,7 +78,10 @@ class _NovelHomePageState extends State<NovelHomePage> {
               actions: [
                 HeaderActionButton(
                   icon: IconlyLight.search,
-                  onTap: () => navigate(() => const NovelSearchPage()),
+                  onTap: () => navigate(() => const SearchPage(
+                        searchTerm: '',
+                        type: ItemType.novel,
+                      )),
                 ),
               ],
             ),

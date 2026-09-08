@@ -18,7 +18,6 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/search/source_search_page.dart';
 import 'package:anymex/screens/manga/widgets/search_selector.dart';
-import 'package:anymex/screens/novel/search/search_page.dart';
 import 'package:anymex/utils/function.dart';
 
 class AnimeHomePage extends StatefulWidget {
@@ -111,7 +110,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
         navigate(() => const SearchPage(searchTerm: '', isManga: true));
       }
     } else if (currentType == ItemType.novel) {
-      navigate(() => const NovelSearchPage());
+      navigate(() => const SearchPage(searchTerm: '', type: ItemType.novel));
     } else {
       navigate(() => const SearchPage(searchTerm: '', isManga: false));
     }

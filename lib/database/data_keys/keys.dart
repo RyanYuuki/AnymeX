@@ -182,8 +182,6 @@ enum AuthKeys {
   mangaBakaAuthToken,
 }
 
-enum SearchKeys { novelSearchedQueries }
-
 enum LibraryKeys { libraryLastType }
 
 enum TapZoneKeys {
