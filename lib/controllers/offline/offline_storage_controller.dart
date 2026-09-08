@@ -737,6 +737,7 @@ class OfflineStorageController extends GetxController {
         }
       }
 
+      bool isNewEpisode = false;
       await isar.writeTxn(() async {
         existingAnime.watchedEpisodes ??= [];
         episode.source = sourceController.activeSource.value?.name;
@@ -754,20 +755,23 @@ class OfflineStorageController extends GetxController {
         } else {
           existingAnime.watchedEpisodes!.add(episode);
           Logger.i('Added new episode: ${episode.title} for anime ID: $animeId');
-          Get.find<StatsTracker>().logWatch(
-            animeId,
-            existingAnime.name ?? 'Unknown',
-            0,
-            episodeCompleted: true,
-            poster: existingAnime.poster,
-            cover: existingAnime.cover,
-          );
+          isNewEpisode = true;
         }
 
         existingAnime.currentEpisode = episode;
 
         await isar.offlineMedias.put(existingAnime);
       });
+      if (isNewEpisode) {
+        Get.find<StatsTracker>().logWatch(
+          animeId,
+          existingAnime.name ?? 'Unknown',
+          0,
+          episodeCompleted: true,
+          poster: existingAnime.poster,
+          cover: existingAnime.cover,
+        );
+      }
       update();
 
       if (syncToCloud) {
@@ -813,6 +817,7 @@ class OfflineStorageController extends GetxController {
         }
       }
 
+      bool isNewChapter = false;
       await isar.writeTxn(() async {
         existingManga!.readChapters ??= [];
         chapter.sourceName =
@@ -830,23 +835,26 @@ class OfflineStorageController extends GetxController {
         } else {
           existingManga.readChapters!.add(chapter);
           Logger.i('Added new chapter: ${chapter.title} for manga ID: $mangaId');
-          Get.find<StatsTracker>().logRead(
-            mangaId,
-            existingManga.name ?? 'Unknown',
-            0,
-            chaptersCompleted: 1,
-            type: existingManga.mediaTypeIndex == ItemType.novel.index
-                ? 'novel'
-                : 'manga',
-            poster: existingManga.poster,
-            cover: existingManga.cover,
-          );
+          isNewChapter = true;
         }
 
         existingManga.currentChapter = chapter;
 
         await isar.offlineMedias.put(existingManga);
       });
+      if (isNewChapter) {
+        Get.find<StatsTracker>().logRead(
+          mangaId,
+          existingManga.name ?? 'Unknown',
+          0,
+          chaptersCompleted: 1,
+          type: existingManga.mediaTypeIndex == ItemType.novel.index
+              ? 'novel'
+              : 'manga',
+          poster: existingManga.poster,
+          cover: existingManga.cover,
+        );
+      }
       update();
 
       if (syncToCloud) {

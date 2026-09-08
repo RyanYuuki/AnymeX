@@ -12,6 +12,7 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/track.dart' as hive;
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/media_downloader.dart';
 import 'package:anymex/utils/download_isolate_pool.dart' as dl;
 import 'package:anymex/database/data_keys/keys.dart';
@@ -823,10 +824,8 @@ class DownloadController extends GetxController {
         final ext = _imageExtension(page.url);
         final idx = pages.indexOf(page);
         final fileName = 'page_${(idx + 1).toString().padLeft(3, '0')}$ext';
-        final Map<String, String> headers = page.headers?.map((k, v) => MapEntry(k, v.toString())) ?? {};
-        if (!headers.containsKey('Referer') && source.baseUrl != null) {
-          headers['Referer'] = source.baseUrl!;
-        }
+        final Map<String, String> rawHeaders = page.headers?.map((k, v) => MapEntry(k, v.toString())) ?? {};
+        final headers = getPageImageHeaders(rawHeaders, source.baseUrl);
         return dl.PageUrl(
           url: page.url,
           headers: headers,

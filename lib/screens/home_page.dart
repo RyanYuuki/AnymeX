@@ -55,10 +55,11 @@ class _HomePageState extends State<HomePage> {
             latestReleased = int.tryParse(item.totalEpisodes ?? '') ?? 0;
           }
 
-          final isWatching = item.watchingStatus?.toUpperCase() == 'CURRENT' ||
-              item.watchingStatus?.toUpperCase() == 'WATCHING' ||
-              (watched > 0 &&
-                  item.watchingStatus?.toUpperCase() != 'COMPLETED');
+          final status = item.watchingStatus?.toUpperCase();
+          final isWatching = status == 'CURRENT' ||
+              status == 'WATCHING' ||
+              status == 'REPEATING' ||
+              status == 'REWATCHING';
 
           if (isWatching && latestReleased > watched) {
             final media = CardData.fromTrackedMedia(item).data;
