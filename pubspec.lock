@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "03513e90d9fa9fe6a0f9e075a26ef52f2788f68c"
+      resolved-ref: "143e1d6b53e32adcd7bd3ef3575bf94621add3a9"
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
