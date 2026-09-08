@@ -283,6 +283,7 @@ void _initializeGetxController() async {
     Get.put(DownloadController(), permanent: true);
     Get.put(StatsTracker());
     Get.lazyPut(() => CacheController());
+    Get.lazyPut(() => MediaModeController());
   }, errorMessage: 'Failed to register GetX controllers');
 
   await safeCall(() => StorageManagerService().enforceImageCacheLimit(),
@@ -735,20 +736,20 @@ class _FilterScreenState extends State<FilterScreen> {
       final validIndex = _mobileSelectedIndex.clamp(0, mobileRoutes.length - 1);
 
       return PopScope(
-        canPop: false,
-        onPopInvoked: (bool didPop) async {
-          if (didPop) return;
-          final homeIndex = navTabs.indexOf('Home');
-          if (validIndex != homeIndex && homeIndex != -1) {
-            setState(() {
-              _mobileSelectedIndex = homeIndex;
-            });
-          } else {
-            const MethodChannel("com.ryan.anymex/utils")
-                .invokeMethod("exitApp");
-          }
-        },
-        child: Scaffold(
+          canPop: false,
+          onPopInvoked: (bool didPop) async {
+            if (didPop) return;
+            final homeIndex = navTabs.indexOf('Home');
+            if (validIndex != homeIndex && homeIndex != -1) {
+              setState(() {
+                _mobileSelectedIndex = homeIndex;
+              });
+            } else {
+              const MethodChannel("com.ryan.anymex/utils")
+                  .invokeMethod("exitApp");
+            }
+          },
+          child: Scaffold(
             resizeToAvoidBottomInset: false,
             body: Stack(
               children: [
@@ -763,7 +764,11 @@ class _FilterScreenState extends State<FilterScreen> {
                   child: ResponsiveNavBar(
                     isDesktop: false,
                     currentIndex: validIndex,
-                    margin: EdgeInsets.only(bottom: settings.bottomNavBarMargin, left: 32, right: 32, top: 10),
+                    margin: EdgeInsets.only(
+                        bottom: settings.bottomNavBarMargin,
+                        left: 32,
+                        right: 32,
+                        top: 10),
                     items: [
                       for (final tab in navTabs)
                         _getNavItemForTab(tab, isSimkl, _onMobileItemTapped,
@@ -774,7 +779,7 @@ class _FilterScreenState extends State<FilterScreen> {
               ],
             ),
             extendBody: true,
-      ));
+          ));
     });
   }
 }

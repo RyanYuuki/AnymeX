@@ -1,5 +1,7 @@
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/models/Media/media.dart';
 import 'package:get/get.dart';
 
 class TrackedMedia {
@@ -31,6 +33,9 @@ class TrackedMedia {
   List<String> tags;
   int? startYear;
   int? updatedAt;
+  NextAiringEpisode? nextAiringEpisode;
+  DateTime? startDate;
+  DateTime? endDate;
 
   String? romajiTitle;
 
@@ -44,6 +49,110 @@ class TrackedMedia {
       }
     }
     return title ?? '?';
+  }
+
+  int get effectiveProgress {
+    final online = int.tryParse(episodeCount ?? '') ?? (userProgress ?? 0);
+    if (!Get.isRegistered<OfflineStorageController>()) return online;
+    final offline = Get.find<OfflineStorageController>();
+    int local = 0;
+    if (type?.toUpperCase() == 'MANGA') {
+      final saved = offline.getMangaById(id ?? '');
+      final ch = saved?.currentChapter;
+      if (ch != null) {
+        final chNum = double.tryParse(ch.number.toString())?.toInt() ?? 0;
+        final page = ch.pageNumber;
+        final total = ch.totalPages;
+        final isComplete = page != null &&
+            total != null &&
+            total > 0 &&
+            (page >= total || page >= total - 1 || (page / total) >= 0.95);
+        local = isComplete ? chNum : (chNum > 0 ? chNum - 1 : 0);
+      }
+    } else {
+      final saved = offline.getAnimeById(id ?? '');
+      final ep = saved?.currentEpisode;
+      if (ep != null) {
+        final epNum = double.tryParse(ep.number.toString())?.toInt() ?? 0;
+        final ts = ep.timeStampInMilliseconds ?? 0;
+        final dur = ep.durationInMilliseconds ?? 0;
+        final markAsCompleted = Get.isRegistered<Settings>()
+            ? Get.find<Settings>().markAsCompleted
+            : 85.0;
+        if (dur > 0 && (ts / dur) * 100 >= markAsCompleted) {
+          local = epNum;
+        } else {
+          local = epNum > 0 ? epNum - 1 : 0;
+        }
+      }
+    }
+    return online > local ? online : local;
+  }
+
+  String get effectiveTotal {
+    if (type?.toUpperCase() == 'MANGA') {
+      if (chapterCount != null &&
+          chapterCount!.trim().isNotEmpty &&
+          chapterCount != '?' &&
+          chapterCount != '??' &&
+          chapterCount != '0') {
+        return chapterCount!.trim();
+      }
+      return '??';
+    }
+    if (totalEpisodes != null &&
+        totalEpisodes!.trim().isNotEmpty &&
+        totalEpisodes != '?' &&
+        totalEpisodes != '??' &&
+        totalEpisodes != '0') {
+      return totalEpisodes!.trim();
+    }
+    if (releasedEpisodes != null &&
+        releasedEpisodes!.trim().isNotEmpty &&
+        releasedEpisodes != '?' &&
+        releasedEpisodes != '??' &&
+        releasedEpisodes != '0') {
+      return releasedEpisodes!.trim();
+    }
+    return '??';
+  }
+
+  String get formattedProgress {
+    final cur = effectiveProgress;
+    if (type?.toUpperCase() == 'MANGA') {
+      final total = (chapterCount != null &&
+              chapterCount!.trim().isNotEmpty &&
+              chapterCount != '?' &&
+              chapterCount != '??' &&
+              chapterCount != '0')
+          ? chapterCount!.trim()
+          : '??';
+      return '$cur | $total';
+    }
+    final rel = (releasedEpisodes != null &&
+            releasedEpisodes!.trim().isNotEmpty &&
+            releasedEpisodes != '?' &&
+            releasedEpisodes != '??' &&
+            releasedEpisodes != '0')
+        ? releasedEpisodes!.trim()
+        : null;
+    final tot = (totalEpisodes != null &&
+            totalEpisodes!.trim().isNotEmpty &&
+            totalEpisodes != '?' &&
+            totalEpisodes != '??' &&
+            totalEpisodes != '0')
+        ? totalEpisodes!.trim()
+        : null;
+
+    if (rel != null && tot != null && rel != tot) {
+      return '$cur | $rel | $tot';
+    } else if (tot != null) {
+      return '$cur | $tot';
+    } else if (rel != null) {
+      return '$cur | $rel';
+    } else {
+      return '$cur | ??';
+    }
   }
 
   TrackedMedia({
@@ -76,6 +185,9 @@ class TrackedMedia {
     this.startedAt,
     this.completedAt,
     this.isPrivate,
+    this.nextAiringEpisode,
+    this.startDate,
+    this.endDate,
   });
 
   factory TrackedMedia.fromJson(Map<String, dynamic> json) {
@@ -92,10 +204,14 @@ class TrackedMedia {
           titleMap?['english'],
       poster: json['media']['coverImage']['large'],
       episodeCount: json['progress']?.toString(),
+      userProgress: (json['progress'] as num?)?.toInt(),
       chapterCount: json['media']['chapters']?.toString(),
       totalEpisodes: json['media']['episodes']?.toString(),
       releasedEpisodes: json['media']['nextAiringEpisode'] != null
           ? (json['media']['nextAiringEpisode']['episode'] - 1).toString()
+          : null,
+      nextAiringEpisode: json['media']?['nextAiringEpisode'] != null
+          ? NextAiringEpisode.fromJson(json['media']['nextAiringEpisode'])
           : null,
       rating:
           (double.tryParse(json['media']['averageScore']?.toString() ?? "0")! /
@@ -124,6 +240,8 @@ class TrackedMedia {
       updatedAt: json['updatedAt'] as int?,
       startedAt: _parseFuzzyDate(json['startedAt']),
       completedAt: _parseFuzzyDate(json['completedAt']),
+      startDate: _parseFuzzyDate(json['media']?['startDate']),
+      endDate: _parseFuzzyDate(json['media']?['endDate']),
       isPrivate: json['private'] as bool?,
     );
   }
@@ -252,9 +370,9 @@ class TrackedMedia {
 DateTime? _parseFuzzyDate(Map<String, dynamic>? date) {
   if (date == null) return null;
   final y = date['year'] as int?;
-  final mo = date['month'] as int?;
-  final d = date['day'] as int?;
-  if (y == null || mo == null || d == null) return null;
+  final mo = date['month'] as int? ?? 1;
+  final d = date['day'] as int? ?? 1;
+  if (y == null) return null;
   try { return DateTime(y, mo, d); } catch (_) { return null; }
 }
 

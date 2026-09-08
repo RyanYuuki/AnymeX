@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:get/get.dart';
@@ -89,7 +90,9 @@ Future<void> fetchCalendarData(RxList<Media> callbackData,
       await fetchCalendarData(callbackData, page: page + 1);
     }
   } else {
+    AnilistErrorHandler.handleResponse(response);
     Logger.i('Error: ${response.body}');
-    throw Exception('Failed to load AniList data: ${response.statusCode}');
+    final msg = AnilistErrorHandler.extractErrorMessage(response.body);
+    throw Exception(msg ?? 'Failed to load AniList data: ${response.statusCode}');
   }
 }

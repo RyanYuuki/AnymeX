@@ -73,12 +73,7 @@ extension TrackedMediaMapper on TrackedMedia {
         title: title,
         poster: poster,
         servicesType: servicesType,
-        extraData: switch (type) {
-          "ANIME" =>
-            "${episodeCount ?? "??"} | ${releasedEpisodes != null ? releasedEpisodes ?? "??" : totalEpisodes ?? "??"}",
-          "MANGA" => "${episodeCount ?? "??"} | ${chapterCount ?? "??"}",
-          _ => episodeCount ?? "??"
-        },
+        extraData: formattedProgress,
         releasing: mediaStatus == "RELEASING");
   }
 }

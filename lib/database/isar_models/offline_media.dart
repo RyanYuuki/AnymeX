@@ -51,6 +51,20 @@ class OfflineMedia {
   @ignore
   int get chapterCountInt => int.tryParse(totalChapters ?? '') ?? 0;
 
+  bool hasRequiredHistoryMedia([ItemType? type]) {
+    final t = type ?? itemType;
+    switch (t) {
+      case ItemType.anime:
+        return currentEpisode != null &&
+            currentEpisode!.currentTrack != null &&
+            episodes != null;
+      case ItemType.manga:
+        return currentChapter != null;
+      case ItemType.novel:
+        return currentChapter != null && chapters != null;
+    }
+  }
+
   String? description;
   String? poster;
   String? cover;
