@@ -53,20 +53,19 @@ dependencies:
     outlined_text: ^1.0.1
     media_kit:
         git:
-            url: https://github.com/Predidit/media-kit.git
-            ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+            url: https://github.com/RyanYuuki/media-kit.git
+            ref: main
             path: ./media_kit
     media_kit_video:
         git:
-            url: https://github.com/Predidit/media-kit.git
-            ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+            url: https://github.com/RyanYuuki/media-kit.git
+            ref: main
             path: ./media_kit_video
     media_kit_libs_video:
         git:
-            url: https://github.com/Predidit/media-kit.git
-            ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+            url: https://github.com/RyanYuuki/media-kit.git
+            ref: main
             path: ./libs/universal/media_kit_libs_video
-    media_kit_libs_windows_video: ^1.0.11
 
     package_info_plus: any
     path: ^1.9.0
@@ -149,39 +148,48 @@ dependency_overrides:
   flutter_inappwebview: 6.2.0-beta.2
   media_kit:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./media_kit
   media_kit_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./media_kit_video
   media_kit_libs_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/universal/media_kit_libs_video
   media_kit_libs_linux:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/linux/media_kit_libs_linux
   media_kit_libs_ios_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/ios/media_kit_libs_ios_video
   media_kit_libs_android_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/android/media_kit_libs_android_video
   media_kit_libs_windows_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/windows/media_kit_libs_windows_video
   media_kit_libs_macos_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/macos/media_kit_libs_macos_video
   media_kit_libs_ohos:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/ohos/media_kit_libs_ohos
 
 flutter_launcher_icons:
