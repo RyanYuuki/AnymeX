@@ -54,9 +54,9 @@ class CardData {
       id: data.id ?? '',
       title: data.title ?? '',
       poster: data.poster ?? '',
-      episodeCount: data.episodeCount,
+      episodeCount: data.effectiveProgress.toString(),
       rating: data.rating,
-      totalEpisodes: data.totalEpisodes ?? '?',
+      totalEpisodes: data.effectiveTotal,
       score: data.score,
       type: data.type,
       data: Media(
@@ -117,7 +117,9 @@ class GridAnimeCard extends StatelessWidget {
 
     final isOnlineList = variant == CardVariant.onlinelist;
     final extraData = isOnlineList
-        ? "${media.episodeCount ?? '??'} | ${media.totalEpisodes ?? '??'}"
+        ? (data is TrackedMedia
+            ? (data as TrackedMedia).formattedProgress
+            : "${media.episodeCount ?? '??'} | ${media.totalEpisodes ?? '??'}")
         : (media.score ?? media.rating ?? '');
 
     final carouselData = CarouselData(
