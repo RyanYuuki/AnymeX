@@ -123,6 +123,7 @@ class BigCarouselClassicState extends State<BigCarouselClassic> {
                       ? buildEmptyDescriptionState(colors)
                       : AnymeXText(
                           cleanDescription,
+                          maxLines: 1000,
                           style: TextStyle(
                             fontSize: 15.5,
                             height: 1.75,
