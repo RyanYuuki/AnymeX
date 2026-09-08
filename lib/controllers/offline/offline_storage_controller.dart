@@ -36,27 +36,25 @@ class OfflineStorageController extends GetxController {
 
   Future<void> _ensureDefaultListsExist() async {
     try {
-      await isar.writeTxn(() async {
-        for (final type in ItemType.values) {
-          final existing = await isar.customLists
-              .filter()
-              .listNameEqualTo('Default')
-              .mediaTypeIndexEqualTo(type.index)
-              .findFirst();
-          if (existing == null &&
-              isar.customLists
-                  .filter()
-                  .mediaTypeIndexEqualTo(type.index)
-                  .findAllSync()
-                  .isEmpty) {
-            await isar.customLists.put(CustomList(
-              listName: 'Default',
-              mediaIds: [],
-              mediaTypeIndex: type.index,
-            ));
-          }
+      final List<CustomList> listsToInsert = [];
+      for (final type in ItemType.values) {
+        final existingLists = await isar.customLists
+            .filter()
+            .mediaTypeIndexEqualTo(type.index)
+            .findAll();
+        if (existingLists.isEmpty) {
+          listsToInsert.add(CustomList(
+            listName: 'Default',
+            mediaIds: [],
+            mediaTypeIndex: type.index,
+          ));
         }
-      });
+      }
+      if (listsToInsert.isNotEmpty) {
+        await isar.writeTxn(() async {
+          await isar.customLists.putAll(listsToInsert);
+        });
+      }
     } catch (e) {
       Logger.e('Error ensuring default custom lists exist: $e');
     }
@@ -346,15 +344,20 @@ class OfflineStorageController extends GetxController {
     }
 
     final hadHistory = mediaType == ItemType.anime
-        ? media.currentEpisode != null
-        : media.currentChapter != null;
+        ? (media.currentEpisode != null ||
+            (media.watchedEpisodes != null &&
+                media.watchedEpisodes!.isNotEmpty))
+        : (media.currentChapter != null ||
+            (media.readChapters != null && media.readChapters!.isNotEmpty));
     if (!hadHistory) return false;
 
     await isar.writeTxn(() async {
       if (mediaType == ItemType.anime) {
         media.currentEpisode = null;
+        media.watchedEpisodes = [];
       } else {
         media.currentChapter = null;
+        media.readChapters = [];
       }
       await isar.offlineMedias.put(media);
     });
@@ -380,14 +383,20 @@ class OfflineStorageController extends GetxController {
     await isar.writeTxn(() async {
       for (final media in mediaItems) {
         final hasHistory = mediaType == ItemType.anime
-            ? media.currentEpisode != null
-            : media.currentChapter != null;
+            ? (media.currentEpisode != null ||
+                (media.watchedEpisodes != null &&
+                    media.watchedEpisodes!.isNotEmpty))
+            : (media.currentChapter != null ||
+                (media.readChapters != null &&
+                    media.readChapters!.isNotEmpty));
         if (!hasHistory) continue;
 
         if (mediaType == ItemType.anime) {
           media.currentEpisode = null;
+          media.watchedEpisodes = [];
         } else {
           media.currentChapter = null;
+          media.readChapters = [];
         }
 
         await isar.offlineMedias.put(media);
