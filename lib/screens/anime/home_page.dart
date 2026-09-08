@@ -7,8 +7,6 @@ import 'package:anymex/widgets/common/lazy_indexed_stack.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:anymex/widgets/header/header.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
-import 'package:anymex/widgets/common/media_mode_selector.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +36,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
   late ScrollController _extensionsScrollController;
   final ValueNotifier<bool> _isAppBarVisibleExternally =
       ValueNotifier<bool>(true);
+  Worker? _mediaModeWorker;
 
   @override
   void initState() {
@@ -46,6 +45,9 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
     _mangaScrollController = ScrollController();
     _novelScrollController = ScrollController();
     _extensionsScrollController = ScrollController();
+    _mediaModeWorker = ever(Get.find<MediaModeController>().rxMode, (_) {
+      _isAppBarVisibleExternally.value = true;
+    });
   }
 
   ScrollController _getActiveScrollController(bool isExtensions, int index) {
@@ -75,6 +77,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
 
   @override
   void dispose() {
+    _mediaModeWorker?.dispose();
     _animeScrollController.dispose();
     _mangaScrollController.dispose();
     _novelScrollController.dispose();
@@ -208,6 +211,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                     : (currentType == ItemType.anime ? 'Anime' : 'Manga'));
 
             return CustomAnimatedAppBar(
+              key: ValueKey('anime-home-appbar-$currentType-$isExtensions'),
               isVisible: _isAppBarVisibleExternally,
               scrollController: activeScrollController,
               headerContent: Header(

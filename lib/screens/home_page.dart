@@ -45,8 +45,7 @@ class _HomePageState extends State<HomePage> {
           serviceHandler.animeList.isNotEmpty) {
         for (final item in serviceHandler.animeList) {
           if (item.type?.toUpperCase() == 'MANGA' || item.id == null) continue;
-          final watched = int.tryParse(item.episodeCount ?? '') ??
-              (item.userProgress ?? 0);
+          final watched = item.effectiveProgress;
           int latestReleased = 0;
           if (item.releasedEpisodes != null &&
               item.releasedEpisodes!.isNotEmpty) {

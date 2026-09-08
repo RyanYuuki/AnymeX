@@ -66,6 +66,27 @@ class _CustomAnimatedAppBarState extends State<CustomAnimatedAppBar>
   }
 
   @override
+  void didUpdateWidget(CustomAnimatedAppBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.scrollController != oldWidget.scrollController) {
+      if (oldWidget.scrollController != null) {
+        oldWidget.scrollController!.removeListener(handleScroll);
+        oldWidget.scrollController!.removeListener(_onScrollChanged);
+      }
+      if (widget.scrollController != null) {
+        widget.scrollController!.addListener(handleScroll);
+        widget.scrollController!.addListener(_onScrollChanged);
+      }
+      isAppBarVisible.value = true;
+      final bool isAtTop = widget.scrollController != null &&
+              widget.scrollController!.hasClients
+          ? widget.scrollController!.offset <= widget.scrollThreshold
+          : true;
+      _isAtTopNotifier.value = isAtTop;
+    }
+  }
+
+  @override
   void dispose() {
     _getEffectiveIsVisibleNotifier().removeListener(_updateSystemOverlayStyle);
 
