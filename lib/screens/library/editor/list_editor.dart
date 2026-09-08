@@ -16,7 +16,8 @@ import 'package:anymex/screens/library/editor/history_editor.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:hugeicons/hugeicons.dart';
+import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 
 class CustomListsEditor extends StatefulWidget {
   final ItemType type;
@@ -49,7 +50,6 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
 
   void _saveListData() {
     offlineStorage.applyCustomListChanges(_lists, mediaType: widget.type);
-    _loadLists();
   }
 
   @override
@@ -101,22 +101,16 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
   Stream<List<OfflineMedia>> _historyStream() {
     if (widget.type == ItemType.anime) {
       return offlineStorage.watchAnimeLibrary().map((items) => items
-          .where((e) =>
-              e.currentEpisode?.currentTrack != null ||
-              (e.watchedEpisodes != null && e.watchedEpisodes!.isNotEmpty))
+          .where((e) => e.hasRequiredHistoryMedia(ItemType.anime))
           .toList());
     }
     if (widget.type == ItemType.manga) {
       return offlineStorage.watchMangaLibrary().map((items) => items
-          .where((e) =>
-              e.currentChapter?.link != null ||
-              (e.readChapters != null && e.readChapters!.isNotEmpty))
+          .where((e) => e.hasRequiredHistoryMedia(ItemType.manga))
           .toList());
     }
     return offlineStorage.watchNovelLibrary().map((items) => items
-        .where((e) =>
-            e.currentChapter?.link != null ||
-            (e.readChapters != null && e.readChapters!.isNotEmpty))
+        .where((e) => e.hasRequiredHistoryMedia(ItemType.novel))
         .toList());
   }
 
@@ -126,10 +120,8 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
 
     AnymeXDialog(
       title: 'Clear History',
-      contentWidget: AnymeXText(
-        'Are you sure you want to clear all $label? This action cannot be undone.',
-        size: 14,
-      ),
+      message:
+          'Are you sure you want to clear all $label? This action cannot be undone.',
       confirmText: 'Clear All',
       onConfirm: () async {
         final ids = items
@@ -146,6 +138,29 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     ).show(context);
   }
 
+  BorderRadius _getConnectiveBorderRadius(int index, int totalCount) {
+    if (totalCount <= 1) {
+      return BorderRadius.circular(18.multiplyRadius());
+    }
+    if (index == 0) {
+      return BorderRadius.only(
+        topLeft: Radius.circular(18.multiplyRadius()),
+        topRight: Radius.circular(18.multiplyRadius()),
+        bottomLeft: Radius.circular(5.multiplyRadius()),
+        bottomRight: Radius.circular(5.multiplyRadius()),
+      );
+    }
+    if (index == totalCount - 1) {
+      return BorderRadius.only(
+        bottomLeft: Radius.circular(18.multiplyRadius()),
+        bottomRight: Radius.circular(18.multiplyRadius()),
+        topLeft: Radius.circular(5.multiplyRadius()),
+        topRight: Radius.circular(5.multiplyRadius()),
+      );
+    }
+    return BorderRadius.circular(5.multiplyRadius());
+  }
+
   Widget _buildHistoryCard(ThemeData theme) {
     final isAnime = widget.type == ItemType.anime;
     final historyTitle = isAnime ? 'Watch History' : 'Read History';
@@ -154,85 +169,215 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       stream: _historyStream(),
       builder: (context, snapshot) {
         final items = snapshot.data ?? [];
+        final hasItems = items.isNotEmpty;
+        final leftRadius = BorderRadius.only(
+          topLeft: Radius.circular(18.multiplyRadius()),
+          bottomLeft: Radius.circular(18.multiplyRadius()),
+          topRight: Radius.circular(5.multiplyRadius()),
+          bottomRight: Radius.circular(5.multiplyRadius()),
+        );
+        final rightRadius = BorderRadius.only(
+          topRight: Radius.circular(18.multiplyRadius()),
+          bottomRight: Radius.circular(18.multiplyRadius()),
+          topLeft: Radius.circular(5.multiplyRadius()),
+          bottomLeft: Radius.circular(5.multiplyRadius()),
+        );
+
         return Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
           child: Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainer.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(20),
+              color: theme.colorScheme.surfaceContainer
+                  .opaque(0.45, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(18.multiplyRadius()),
               border: Border.all(
-                color: theme.colorScheme.outline.opaque(0.08, iReallyMeanIt: true),
-                width: 1.0,
+                color: theme.colorScheme.onSurface
+                    .opaque(0.08, iReallyMeanIt: true),
+                width: 0.8,
               ),
             ),
-            child: InkWell(
-              onTap: () => navigate(() => HistoryEditor(type: widget.type)),
-              borderRadius: BorderRadius.circular(20),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        Icons.history_rounded,
-                        color: theme.colorScheme.primary,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymeXText(
-                            historyTitle,
-                            style: TextStyle(
-                              color: theme.colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          AnymeXText(
-                            '${items.length} ${items.length == 1 ? 'item' : 'items'} in history',
-                            style: TextStyle(
-                              color: theme.colorScheme.onSurface.opaque(0.6),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (items.isNotEmpty)
-                      IconButton(
-                        onPressed: () => _confirmClearHistory(items),
-                        icon: Icon(
-                          Icons.delete_outline_rounded,
-                          color: theme.colorScheme.error,
-                          size: 20,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18.multiplyRadius()),
+              child: InkWell(
+                onTap: () => navigate(() => HistoryEditor(type: widget.type)),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.withOpacity(0.12),
+                          borderRadius:
+                              BorderRadius.circular(12.multiplyRadius()),
                         ),
-                        tooltip: 'Clear History',
+                        child: Icon(
+                          Icons.history_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 22,
+                        ),
                       ),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      color: theme.colorScheme.onSurface.opaque(0.4),
-                      size: 16,
-                    ),
-                  ],
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AnymeXText(
+                              historyTitle,
+                              size: 14.5,
+                              variant: TextVariant.semiBold,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                            const SizedBox(height: 2),
+                            AnymeXText(
+                              '${items.length} ${items.length == 1 ? 'item' : 'items'} in history',
+                              size: 12,
+                              color: theme.colorScheme.onSurface
+                                  .opaque(0.45, iReallyMeanIt: true),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (hasItems) ...[
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AnymexOnTap(
+                              scale: 0.92,
+                              onTap: () => _confirmClearHistory(items),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color:
+                                      theme.colorScheme.error.withOpacity(0.12),
+                                  borderRadius: leftRadius,
+                                  border: Border.all(
+                                    color: theme.colorScheme.error
+                                        .withOpacity(0.2),
+                                    width: 0.8,
+                                  ),
+                                ),
+                                child: Icon(
+                                  Iconsax.trash,
+                                  color: theme.colorScheme.error,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 3),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.surfaceContainerHighest
+                                    .opaque(0.4, iReallyMeanIt: true),
+                                borderRadius: rightRadius,
+                                border: Border.all(
+                                  color: theme.colorScheme.onSurface
+                                      .opaque(0.06, iReallyMeanIt: true),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: theme.colorScheme.onSurface
+                                    .opaque(0.4, iReallyMeanIt: true),
+                                size: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ] else ...[
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest
+                                .opaque(0.3, iReallyMeanIt: true),
+                            borderRadius:
+                                BorderRadius.circular(10.multiplyRadius()),
+                          ),
+                          child: Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: theme.colorScheme.onSurface
+                                .opaque(0.3, iReallyMeanIt: true),
+                            size: 14,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildCardActionButtons(int index) {
+    final theme = Theme.of(context);
+    final leftRadius = BorderRadius.only(
+      topLeft: Radius.circular(18.multiplyRadius()),
+      bottomLeft: Radius.circular(18.multiplyRadius()),
+      topRight: Radius.circular(5.multiplyRadius()),
+      bottomRight: Radius.circular(5.multiplyRadius()),
+    );
+    final rightRadius = BorderRadius.only(
+      topRight: Radius.circular(18.multiplyRadius()),
+      bottomRight: Radius.circular(18.multiplyRadius()),
+      topLeft: Radius.circular(5.multiplyRadius()),
+      bottomLeft: Radius.circular(5.multiplyRadius()),
+    );
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnymexOnTap(
+          scale: 0.92,
+          onTap: () => _showRenameDialog(index),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withOpacity(0.12),
+              borderRadius: leftRadius,
+              border: Border.all(
+                color: theme.colorScheme.primary.withOpacity(0.2),
+                width: 0.8,
+              ),
+            ),
+            child: Icon(
+              Iconsax.edit,
+              color: theme.colorScheme.primary,
+              size: 16,
+            ),
+          ),
+        ),
+        const SizedBox(width: 3),
+        AnymexOnTap(
+          scale: 0.92,
+          onTap: () => _showDeleteDialog(index),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.error.withOpacity(0.12),
+              borderRadius: rightRadius,
+              border: Border.all(
+                color: theme.colorScheme.error.withOpacity(0.2),
+                width: 0.8,
+              ),
+            ),
+            child: Icon(
+              Iconsax.trash,
+              color: theme.colorScheme.error,
+              size: 16,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -288,98 +433,68 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
   Widget _buildListCard(int index) {
     final theme = Theme.of(context);
     final listData = _lists[index];
+    final radius = _getConnectiveBorderRadius(index, _lists.length);
 
     return Container(
       key: ValueKey('list_$index'),
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 3.5),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(20),
+        color: theme.colorScheme.surfaceContainer
+            .opaque(0.45, iReallyMeanIt: true),
+        borderRadius: radius,
         border: Border.all(
-          color: theme.colorScheme.outline.opaque(0.08, iReallyMeanIt: true),
-          width: 1.0,
+          color: theme.colorScheme.onSurface
+              .opaque(0.08, iReallyMeanIt: true),
+          width: 0.8,
         ),
       ),
-      child: InkWell(
-        onTap: () => _openMediaEditorBottomSheet(context, index),
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              if (_isReordering) ...[
-                ReorderableDragStartListener(
-                  index: index,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    child: Icon(
-                      Icons.drag_handle_rounded,
-                      color: theme.colorScheme.onSurface.opaque(0.4),
-                      size: 24,
+      child: ClipRRect(
+        borderRadius: radius,
+        child: InkWell(
+          onTap: () => _openMediaEditorBottomSheet(context, index),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                if (_isReordering) ...[
+                  ReorderableDragStartListener(
+                    index: index,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        Icons.drag_handle_rounded,
+                        color: theme.colorScheme.onSurface.opaque(0.4),
+                        size: 20,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-              ],
-              _buildCoverPreview(listData),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnymeXText(
-                      listData.listName,
-                      style: TextStyle(
+                  const SizedBox(width: 14),
+                ],
+                _buildCoverPreview(listData),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        listData.listName,
+                        size: 14.5,
+                        variant: TextVariant.semiBold,
                         color: theme.colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        letterSpacing: -0.3,
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    AnymeXText(
-                      '${listData.listData.length} items',
-                      style: TextStyle(
-                        color: theme.colorScheme.onSurface.opaque(0.6),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                      const SizedBox(height: 2),
+                      AnymeXText(
+                        '${listData.listData.length} items',
+                        size: 12,
+                        color: theme.colorScheme.onSurface
+                            .opaque(0.45, iReallyMeanIt: true),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              if (!_isReordering) ...[
-                IconButton(
-                  onPressed: () => _showRenameDialog(index),
-                  icon: Icon(
-                    Iconsax.edit,
-                    color: theme.colorScheme.primary,
-                    size: 18,
-                  ),
-                  style: IconButton.styleFrom(
-                    backgroundColor:
-                        theme.colorScheme.primary.withOpacity(0.12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.all(8),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () => _showDeleteDialog(index),
-                  icon: Icon(Iconsax.trash,
-                      color: theme.colorScheme.error, size: 18),
-                  style: IconButton.styleFrom(
-                    backgroundColor: theme.colorScheme.error.withOpacity(0.12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.all(8),
-                  ),
-                ),
+                if (!_isReordering) _buildCardActionButtons(index),
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -390,24 +505,24 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     final theme = Theme.of(context);
     if (listData.listData.isEmpty) {
       return Container(
-        width: 50,
-        height: 50,
+        width: 42,
+        height: 42,
         decoration: BoxDecoration(
           color: theme.colorScheme.primary.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10.multiplyRadius()),
         ),
         child: Icon(
           Icons.playlist_play_rounded,
           color: theme.colorScheme.primary,
-          size: 28,
+          size: 22,
         ),
       );
     }
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(10.multiplyRadius()),
       child: AnymeXImage(
-        width: 50,
-        height: 50,
+        width: 42,
+        height: 42,
         imageUrl: listData.listData.first.poster ?? '',
       ),
     );
