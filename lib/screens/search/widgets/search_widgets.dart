@@ -1104,7 +1104,26 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
             constraints: const BoxConstraints(),
           ),
         ),
-        if (_isGenreGrid)
+        if (genres.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
+                width: 1,
+              ),
+              color: colorScheme.surface.opaque(0.5, iReallyMeanIt: true),
+            ),
+            child: AnymeXText(
+              'No genres available. AniList API may be temporarily down.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
+              ),
+            ),
+          )
+        else if (_isGenreGrid)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
@@ -1919,26 +1938,34 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: filtered.length,
-                    itemBuilder: (_, i) {
-                      final tag = filtered[i];
-                      final isSelected = selectedTags.contains(tag);
-                      return CheckboxListTile(
-                        title: AnymeXText(tag,
-                            style: theme.textTheme.bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w500)),
-                        value: isSelected,
-                        activeColor: colorScheme.primary,
-                        onChanged: (v) => setModalState(() => setState(() =>
-                            v == true
-                                ? selectedTags.add(tag)
-                                : selectedTags.remove(tag))),
-                      );
-                    },
-                  ),
+                  child: filtered.isEmpty
+                      ? _buildEmptyOptionsState(context,
+                          title: allTags.isEmpty
+                              ? 'No Tags Available'
+                              : 'No Matching Tags',
+                          message: allTags.isEmpty
+                              ? 'Could not load tags from AniList API.\nThe service may be temporarily unavailable or rate-limited.'
+                              : 'No tags match your search term.')
+                      : ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: filtered.length,
+                          itemBuilder: (_, i) {
+                            final tag = filtered[i];
+                            final isSelected = selectedTags.contains(tag);
+                            return CheckboxListTile(
+                              title: AnymeXText(tag,
+                                  style: theme.textTheme.bodyMedium
+                                      ?.copyWith(fontWeight: FontWeight.w500)),
+                              value: isSelected,
+                              activeColor: colorScheme.primary,
+                              onChanged: (v) => setModalState(() => setState(() =>
+                                  v == true
+                                      ? selectedTags.add(tag)
+                                      : selectedTags.remove(tag))),
+                            );
+                          },
+                        ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(20),
@@ -2013,6 +2040,9 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
   void _showStreamingSheet() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final hasServices = isManga
+        ? SearchFilterConstants.mangaReadableOnServices.isNotEmpty
+        : SearchFilterConstants.animeStreamingServices.isNotEmpty;
 
     showModalBottomSheet(
       context: context,
@@ -2070,17 +2100,22 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                   ),
                 ),
                 Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    physics: const BouncingScrollPhysics(),
-                    children: isManga
-                        ? _buildMangaStreamingList(
-                            theme, colorScheme, setModalState)
-                        : SearchFilterConstants.animeStreamingServices.entries
-                            .map((entry) => _buildCheckboxTile(
-                                entry, theme, colorScheme, setModalState))
-                            .toList(),
-                  ),
+                  child: !hasServices
+                      ? _buildEmptyOptionsState(context,
+                          title: 'No Services Available',
+                          message:
+                              'Could not load streaming services from AniList API.\nThe service may be temporarily unavailable or rate-limited.')
+                      : ListView(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          physics: const BouncingScrollPhysics(),
+                          children: isManga
+                              ? _buildMangaStreamingList(
+                                  theme, colorScheme, setModalState)
+                              : SearchFilterConstants.animeStreamingServices.entries
+                                  .map((entry) => _buildCheckboxTile(
+                                      entry, theme, colorScheme, setModalState))
+                                  .toList(),
+                        ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(20),
@@ -2094,6 +2129,46 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyOptionsState(BuildContext context,
+      {String title = 'No Options Available',
+      String message =
+          'Could not load options from AniList API.\nThe service may be temporarily unavailable or rate-limited.'}) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.cloud_off_rounded,
+              size: 48,
+              color: colorScheme.onSurface.opaque(0.4, iReallyMeanIt: true),
+            ),
+            const SizedBox(height: 12),
+            AnymeXText(
+              title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 6),
+            AnymeXText(
+              message,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -2203,30 +2278,32 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(20),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: options.length,
-                  itemBuilder: (context, index) {
-                    final option = options[index];
-                    final label = optionLabels[option] ?? option;
-                    final isSelected = selectedValue == option;
+                child: options.isEmpty
+                    ? _buildEmptyOptionsState(context)
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(20),
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: options.length,
+                        itemBuilder: (context, index) {
+                          final option = options[index];
+                          final label = optionLabels[option] ?? option;
+                          final isSelected = selectedValue == option;
 
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: FutureisticOptionTile(
-                        option: label,
-                        isSelected: isSelected,
-                        onTap: () {
-                          onSelected(option);
-                          Navigator.pop(context);
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: FutureisticOptionTile(
+                              option: label,
+                              isSelected: isSelected,
+                              onTap: () {
+                                onSelected(option);
+                                Navigator.pop(context);
+                              },
+                              colorScheme: colorScheme,
+                              theme: theme,
+                            ),
+                          );
                         },
-                        colorScheme: colorScheme,
-                        theme: theme,
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
