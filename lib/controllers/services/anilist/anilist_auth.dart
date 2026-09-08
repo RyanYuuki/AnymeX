@@ -7,6 +7,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
 import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -90,16 +91,11 @@ class AnilistAuth extends GetxController {
   }
 
   void _handle403(http.Response response) {
-    dynamic errorJson;
-    try {
-      errorJson = jsonDecode(response.body);
-    } catch (_) {}
-
-    const base = "Why is it 403";
-    final apiMessage = errorJson?['errors']?[0]?['message'] as String?;
+    AnilistErrorHandler.handleResponse(response);
+    final apiMessage = AnilistErrorHandler.extractErrorMessage(response.body);
     final message = apiMessage != null && apiMessage.isNotEmpty
-        ? "$base: $apiMessage"
-        : "$base: Forbidden (error 403)";
+        ? apiMessage
+        : "Forbidden (error 403)";
 
     throw Exception(message);
   }
@@ -137,10 +133,12 @@ class AnilistAuth extends GetxController {
       }
 
       if (response.statusCode != 429 || attempt >= maxRetries) {
+        if (response.statusCode != 200) {
+          AnilistErrorHandler.handleResponse(response);
+        }
         return response;
       }
 
-      // Parse Retry After header
       final retryAfter = response.headers['retry-after'];
       final waitSeconds = retryAfter != null
           ? (int.tryParse(retryAfter) ?? (2 << attempt))
@@ -153,6 +151,7 @@ class AnilistAuth extends GetxController {
 
       Logger.i(
           'AniList 429 rate limit hit, retry ${attempt + 1}/$maxRetries after ${waitSeconds}s');
+      AnilistErrorHandler.handleResponse(response);
       await Future.delayed(Duration(seconds: waitSeconds));
       attempt++;
     }
