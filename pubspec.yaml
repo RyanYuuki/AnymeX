@@ -112,12 +112,12 @@ dependencies:
     pointycastle: any
     # better_player_plus: any
     marquee: ^2.3.0
-    anymex_extension_runtime_bridge:
-        git:
-            url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
-            ref: main    
-    # anymex_extension_runtime_bridge: 
-    #     path: ../AnymeXExtensionRuntimeBridge
+    # anymex_extension_runtime_bridge:
+    #     git:
+    #         url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
+    #         ref: main    
+    anymex_extension_runtime_bridge: 
+        path: ../AnymeXExtensionRuntimeBridge
     jxl_coder: ^0.1.0
     thanos_snap_effect: ^0.0.9
     code_assets: ^1.2.1
