@@ -269,9 +269,17 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   final RxSet<String> loadingChapterLinks = <String>{}.obs;
+  DateTime? _lastInlineLoadTime;
 
   Future<void> loadNextChapterInline() async {
     if (!overscrollToChapter.value || _isNavigating) return;
+
+    final now = DateTime.now();
+    if (_lastInlineLoadTime != null &&
+        now.difference(_lastInlineLoadTime!) < const Duration(milliseconds: 1500)) {
+      return;
+    }
+    _lastInlineLoadTime = now;
 
     final lastLoaded =
         loadedChapters.isNotEmpty ? loadedChapters.last : currentChapter.value;
@@ -1377,8 +1385,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   void preloadNextPages(int currentIndex) {
     final limit = preloadPages.value;
     if (limit <= 0 || pageList.isEmpty) return;
-
-    final sourceController = Get.find<SourceController>();
 
     for (int i = 1; i <= limit; i++) {
       final nextIndex = currentIndex + i;

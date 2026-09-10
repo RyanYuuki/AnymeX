@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 /// Fetches an image from [url] using optional [headers], crops the white/black
 /// margins and returns the cropped bytes.
@@ -134,7 +135,111 @@ class _CroppedNetworkImageState extends State<CroppedNetworkImage> {
             alignment: widget.alignment,
           );
         }
-        return widget.placeholder ?? const SizedBox.shrink();
+        return _buildErrorWidget(context, () {
+          final headersKey =
+              widget.headers?.entries.map((e) => '${e.key}:${e.value}').join(';') ??
+                  '';
+          final cacheKey = '${widget.url}#$headersKey#${widget.cropThreshold}';
+          _cache.remove(cacheKey);
+          setState(() {
+            _futureBytes = _loadBytes();
+          });
+        });
+      },
+    );
+  }
+
+  Widget _buildErrorWidget(BuildContext context, VoidCallback onRetry) {
+    final colors = Theme.of(context).colorScheme;
+    final content = Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: colors.error.withOpacity(0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.broken_image_rounded,
+                color: colors.error,
+                size: 32,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const AnymeXText(
+              'Failed to load page',
+              variant: TextVariant.bold,
+              size: 14,
+            ),
+            const SizedBox(height: 6),
+            AnymeXText(
+              'Tap retry to attempt loading again',
+              size: 12,
+              color: colors.onSurfaceVariant,
+            ),
+            const SizedBox(height: 14),
+            InkWell(
+              onTap: onRetry,
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.refresh_rounded,
+                      size: 16,
+                      color: colors.onPrimary,
+                    ),
+                    const SizedBox(width: 8),
+                    AnymeXText(
+                      'Retry',
+                      variant: TextVariant.bold,
+                      size: 13,
+                      color: colors.onPrimary,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (widget.height != null && widget.width != null) {
+      return SizedBox(
+        width: widget.width,
+        height: widget.height,
+        child: content,
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenHeight = MediaQuery.of(context).size.height;
+        final targetHeight = constraints.hasBoundedHeight
+            ? constraints.maxHeight
+            : (constraints.hasBoundedWidth
+                ? constraints.maxWidth * 1.4
+                : screenHeight * 0.7);
+        return SizedBox(
+          width: constraints.hasBoundedWidth ? constraints.maxWidth : double.infinity,
+          height: targetHeight > 0 ? targetHeight : screenHeight * 0.7,
+          child: content,
+        );
       },
     );
   }
