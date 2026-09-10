@@ -16,6 +16,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -38,6 +39,8 @@ class _CalendarState extends State<Calendar>
   RxList<Media> listData = <Media>[].obs;
   RxList<Media> rawData = <Media>[].obs;
   late TabController _tabController;
+  late ScrollController _tabScrollController;
+  int _selectedTabIndex = 0;
   List<DateTime> dateTabs = [];
   bool isGrid = true;
   bool isLoading = true;
@@ -55,12 +58,14 @@ class _CalendarState extends State<Calendar>
   @override
   void initState() {
     super.initState();
+    _tabScrollController = ScrollController();
     _loadData();
 
     dateTabs =
         List.generate(7, (index) => DateTime.now().add(Duration(days: index)));
 
     _tabController = TabController(length: dateTabs.length, vsync: this);
+    _tabController.addListener(_onTabControllerChanged);
   }
 
   void _loadData() {
@@ -193,160 +198,315 @@ class _CalendarState extends State<Calendar>
     });
   }
 
+  void _onTabControllerChanged() {
+    if (!mounted) return;
+    if (_tabController.index != _selectedTabIndex) {
+      setState(() {
+        _selectedTabIndex = _tabController.index;
+      });
+      _scrollToTab(_selectedTabIndex);
+    }
+  }
+
+  void _scrollToTab(int index) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_tabScrollController.hasClients) return;
+      const tabEstimatedWidth = 140.0;
+      final screenWidth = MediaQuery.sizeOf(context).width;
+      final targetOffset = (index * (tabEstimatedWidth + 8)) -
+          (screenWidth / 2) +
+          (tabEstimatedWidth / 2);
+      final clampedOffset = targetOffset.clamp(
+        0.0,
+        _tabScrollController.position.maxScrollExtent,
+      );
+      _tabScrollController.animateTo(
+        clampedOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
   @override
   void dispose() {
+    _tabController.removeListener(_onTabControllerChanged);
     _tabController.dispose();
+    _tabScrollController.dispose();
     super.dispose();
+  }
+
+  BorderRadius _dateTabBorder(int index, bool isSelected) {
+    if (isSelected) {
+      return BorderRadius.circular(50.multiplyRadius());
+    }
+    if (index == 0) {
+      return BorderRadius.only(
+        topLeft: Radius.circular(16.multiplyRadius()),
+        bottomLeft: Radius.circular(16.multiplyRadius()),
+        topRight: Radius.circular(5.multiplyRadius()),
+        bottomRight: Radius.circular(5.multiplyRadius()),
+      );
+    }
+    if (index == dateTabs.length - 1) {
+      return BorderRadius.only(
+        topRight: Radius.circular(16.multiplyRadius()),
+        bottomRight: Radius.circular(16.multiplyRadius()),
+        topLeft: Radius.circular(5.multiplyRadius()),
+        bottomLeft: Radius.circular(5.multiplyRadius()),
+      );
+    }
+    return BorderRadius.circular(5.multiplyRadius());
+  }
+
+  Widget _buildHeaderActions(BuildContext context) {
+    return Obx(
+      () => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isAnilist)
+            IconButton(
+              onPressed: _toggleDub,
+              tooltip: isDubMode.value ? 'Show All Anime' : 'Dubbed Only',
+              icon: Icon(
+                isDubMode.value
+                    ? HugeIcons.strokeRoundedMicOff01
+                    : HugeIcons.strokeRoundedMic01,
+                color: isDubMode.value ? context.colors.primary : null,
+                size: 20,
+              ),
+            ),
+          if (serviceHandler.isLoggedIn.value)
+            IconButton(
+              onPressed: changeListType,
+              tooltip: includeList ? 'In My List' : 'All Anime',
+              icon: Icon(
+                !includeList ? Icons.book_rounded : Icons.text_snippet_sharp,
+                size: 20,
+              ),
+            ),
+          IconButton(
+            onPressed: changeLayout,
+            tooltip: isGrid ? 'List Layout' : 'Grid Layout',
+            icon: Icon(
+              isGrid ? Icons.grid_view_rounded : Icons.view_list,
+              size: 20,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDateTab(
+      BuildContext context, int index, DateTime date, bool isSelected) {
+    final theme = Theme.of(context);
+
+    return Obx(() {
+      var list = (includeList ? listData : rawData)
+          .where((media) => _isSameDate(media, date))
+          .toList();
+
+      if (isDubMode.value && isAnilist && !isFetching.value) {
+        list = list.where((m) => _getDubInfo(m) != null).toList();
+      }
+
+      final count = list.length;
+      final dayLabel = index == 0
+          ? 'Today'
+          : (index == 1 ? 'Tomorrow' : DateFormat('EEE').format(date));
+      final dateLabel = DateFormat('MMM d').format(date);
+
+      return AnymexOnTap(
+        margin: 0,
+        scale: 0.95,
+        onTap: () {
+          HapticFeedback.lightImpact();
+          _tabController.animateTo(index);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? theme.colorScheme.primary.opaque(0.18, iReallyMeanIt: true)
+                : theme.colorScheme.surfaceContainerHighest
+                    .opaque(0.3, iReallyMeanIt: true),
+            borderRadius: _dateTabBorder(index, isSelected),
+            border: Border.all(
+              color: isSelected
+                  ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                  : theme.colorScheme.onSurface
+                      .opaque(0.08, iReallyMeanIt: true),
+              width: 0.5,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnymeXText(
+                dayLabel,
+                variant: isSelected ? TextVariant.bold : TextVariant.semiBold,
+                size: 13,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface,
+              ),
+              const SizedBox(width: 4),
+              AnymeXText(
+                '• $dateLabel',
+                variant: TextVariant.regular,
+                size: 11.5,
+                color: isSelected
+                    ? theme.colorScheme.primary.opaque(0.8)
+                    : theme.colorScheme.onSurface.opaque(0.5),
+              ),
+              const SizedBox(width: 8),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.surfaceContainerHighest
+                          .opaque(0.5, iReallyMeanIt: true),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: AnymeXText(
+                  count.toString(),
+                  variant: TextVariant.bold,
+                  size: 11,
+                  color: isSelected
+                      ? theme.colorScheme.onPrimary
+                      : theme.colorScheme.onSurfaceVariant.opaque(0.8),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildTabsRow(BuildContext context) {
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
+    final h = isDesktop ? 24.0 : 16.0;
+
+    return SizedBox(
+      height: 42,
+      child: ListView.separated(
+        controller: _tabScrollController,
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: h),
+        itemCount: dateTabs.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 3),
+        itemBuilder: (context, index) {
+          final date = dateTabs[index];
+          final isSelected = _selectedTabIndex == index;
+          return _buildDateTab(context, index, date, isSelected);
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnymeXScaffold(
-  appBar: AppBar(
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.arrow_back_ios_new,
-                color: context.colors.primary,
-              )),
-          actions: [
-            if (isAnilist)
-              Obx(() => IconButton(
-                    onPressed: _toggleDub,
-                    tooltip: isDubMode.value ? "Show All" : "Show Dubs Only",
-                    icon: Icon(
-                      isDubMode.value
-                          ? HugeIcons.strokeRoundedMicOff01
-                          : HugeIcons.strokeRoundedMic01,
-                      color: isDubMode.value
-                          ? context.colors.primary
-                          : null,
-                    ),
-                  )),
-            if (isAnilist) const SizedBox(width: 10),
-            if (serviceHandler.isLoggedIn.value) ...[
-              IconButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        context.colors.surfaceContainer,
-                  ),
-                  onPressed: () {
-                    changeListType();
-                  },
-                  icon: Icon(!includeList
-                      ? Icons.book_rounded
-                      : Icons.text_snippet_sharp)),
-              const SizedBox(width: 10),
-            ],
-            IconButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      context.colors.surfaceContainer,
-                ),
-                onPressed: () {
-                  changeLayout();
-                },
-                icon: Icon(isGrid ? Icons.grid_view_rounded : Icons.view_list)),
-            const SizedBox(width: 10),
-          ],
-          automaticallyImplyLeading: false,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AnymeXText("Calendar",
-                color: context.colors.primary,
-                variant: TextVariant.semiBold,
-                size: 16,
-              ),
-              Obx(() {
-                if (isDubMode.value && isAnilist) {
-                  return AnymeXText(isFetching.value ? "Fetching..." : "Dubbed Only",
-                    variant: TextVariant.regular,
-                    size: 10,
-                    color: Colors.grey,
+    return Obx(() {
+      String subtitleText;
+      if (isDubMode.value && isAnilist) {
+        subtitleText =
+            isFetching.value ? 'Fetching dubs...' : 'Dubbed Only';
+      } else if (isSimkl) {
+        subtitleText = 'Simkl Schedule';
+      } else {
+        subtitleText = 'AniList Schedule';
+      }
+
+      return AnymeXScaffold(
+        showHeader: true,
+        headerTitle: 'Calendar',
+        headerSubtitle: subtitleText,
+        headerAction: _buildHeaderActions(context),
+        headerBottom: _buildTabsRow(context),
+        headerBottomHeight: 50.0,
+        body: Builder(
+          builder: (ctx) {
+            final headerHeight = AnymeXHeaderScope.of(ctx);
+
+            return TabBarView(
+              controller: _tabController,
+              children: dateTabs.map((date) {
+                return Obx(() {
+                  if (isFetching.value && isAnilist) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: headerHeight),
+                      child: const Center(child: AnymeXProgressIndicator()),
+                    );
+                  }
+
+                  var filteredList = (includeList ? listData : rawData)
+                      .where((media) => _isSameDate(media, date))
+                      .toList();
+
+                  if (isDubMode.value && isAnilist) {
+                    filteredList = filteredList
+                        .where((m) => _getDubInfo(m) != null)
+                        .toList();
+                  }
+
+                  if (isLoading) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: headerHeight),
+                      child: const Center(child: AnymeXProgressIndicator()),
+                    );
+                  } else if (hasError &&
+                      (includeList ? listData : rawData).isEmpty) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: headerHeight),
+                      child: _buildErrorState(context),
+                    );
+                  } else if (filteredList.isEmpty) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: headerHeight),
+                      child: const Center(child: AnymeXText("No Anime found")),
+                    );
+                  }
+
+                  return GridView.builder(
+                    padding: EdgeInsets.fromLTRB(10, headerHeight + 10, 10, 10),
+                    itemCount: filteredList.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: getResponsiveCrossAxisVal(
+                            MediaQuery.sizeOf(context).width,
+                            itemWidth: isGrid ? 120 : 400),
+                        mainAxisExtent: getResponsiveSize(context,
+                            mobileSize: isGrid ? 280 : 150,
+                            desktopSize: isGrid ? 280 : 180),
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 25),
+                    itemBuilder: (context, index) {
+                      final data = filteredList[index];
+                      final dubInfo = isDubMode.value && isAnilist
+                          ? _getDubInfo(data)
+                          : null;
+                      return isGrid
+                          ? GridAnimeCard(
+                              data: data,
+                              dubInfo: dubInfo,
+                              isDubMode: isDubMode.value && isAnilist)
+                          : BlurAnimeCard(data: data);
+                    },
                   );
-                }
-                return const SizedBox.shrink();
-              })
-            ],
-          ),
-          bottom: TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            tabs: dateTabs.map((date) {
-              return Obx(() {
-                var list = (includeList ? listData : rawData)
-                    .where((media) => _isSameDate(media, date))
-                    .toList();
-
-                if (isDubMode.value && isAnilist && !isFetching.value) {
-                  list = list.where((m) => _getDubInfo(m) != null).toList();
-                }
-
-                return Tab(
-                  child: AnymeXText(
-                    '${DateFormat('EEEE, MMM d').format(date)} (${list.length})',
-                    variant: TextVariant.bold,
-                  ),
-                );
-              });
-            }).toList(),
-          ),
+                });
+              }).toList(),
+            );
+          },
         ),
-  body: TabBarView(
-          controller: _tabController,
-          children: dateTabs.map((date) {
-            return Obx(() {
-              if (isFetching.value && isAnilist) {
-                return const Center(child: AnymeXProgressIndicator());
-              }
-
-              var filteredList = (includeList ? listData : rawData)
-                  .where((media) => _isSameDate(media, date))
-                  .toList();
-
-              if (isDubMode.value && isAnilist) {
-                filteredList =
-                    filteredList.where((m) => _getDubInfo(m) != null).toList();
-              }
-
-              if (isLoading) {
-                return const Center(child: AnymeXProgressIndicator());
-              } else if (hasError &&
-                  (includeList ? listData : rawData).isEmpty) {
-                return _buildErrorState(context);
-              } else if (filteredList.isEmpty) {
-                return const Center(child: AnymeXText("No Anime found"));
-              }
-
-              return GridView.builder(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                itemCount: filteredList.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: getResponsiveCrossAxisVal(
-                        MediaQuery.sizeOf(context).width,
-                        itemWidth: isGrid ? 120 : 400),
-                    mainAxisExtent: getResponsiveSize(context,
-                        mobileSize: isGrid ? 280 : 150,
-                        desktopSize: isGrid ? 280 : 180),
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 25),
-                itemBuilder: (context, index) {
-                  final data = filteredList[index];
-                  final dubInfo = isDubMode.value && isAnilist ? _getDubInfo(data) : null;
-                  return isGrid
-                      ? GridAnimeCard(
-                          data: data,
-                          dubInfo: dubInfo,
-                          isDubMode: isDubMode.value && isAnilist)
-                      : BlurAnimeCard(data: data);
-                },
-              );
-            });
-          }).toList(),
-        ));
+      );
+    });
   }
 
   Widget _buildErrorState(BuildContext context) {
