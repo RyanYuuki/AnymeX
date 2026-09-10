@@ -110,6 +110,9 @@ class MediaKitPlayer extends base.BasePlayer {
       }
       if (Platform.isAndroid) {
         await mpv.setProperty("volume-max", "100");
+        if (currentAo == 'auto') {
+          await mpv.setProperty("ao", "audiotrack");
+        }
       }
       await mpv.setProperty("hwdec", config.hwdec);
       await mpv.setProperty("autosync", "30");
@@ -121,7 +124,8 @@ class MediaKitPlayer extends base.BasePlayer {
         await mpv.setProperty("vd-lavc-threads", "4");
       }
       await mpv.setProperty("cache", "yes");
-      final savedAudioLayout = PlayerKeys.audioChannelLayout.get<String>('auto');
+      final savedAudioLayout =
+          PlayerKeys.audioChannelLayout.get<String>('auto');
       if (savedAudioLayout != 'auto') {
         await mpv.setProperty("audio-channels", savedAudioLayout);
       }
