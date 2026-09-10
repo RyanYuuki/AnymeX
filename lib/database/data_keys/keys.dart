@@ -307,3 +307,15 @@ enum DownloadKeys {
   hlsParallelSegments,
   enableJxlCompression,
 }
+
+enum DiscordRpcKeys {
+  hideNsfw,
+  showTimestamps,
+  animeWatchingFormat,
+  animeDetailsFormat,
+  mangaReadingFormat,
+  mangaDetailsFormat,
+  novelReadingFormat,
+  novelDetailsFormat,
+  idleFormat,
+}
