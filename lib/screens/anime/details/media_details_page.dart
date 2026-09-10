@@ -1,3 +1,4 @@
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/media_share.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details/controller/media_details_controller.dart';
@@ -475,7 +476,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
         if (ep == null) return const SizedBox.shrink();
         final matchedEp = controller.episodeList.firstWhereOrNull((e) =>
             (e.link != null && e.link!.isNotEmpty && e.link == ep.link) ||
-            e.number == ep.number);
+            e.isSameEpisode(ep));
         final title = (matchedEp?.title?.isNotEmpty == true)
             ? matchedEp!.title!
             : (ep.title?.isNotEmpty == true ? ep.title! : 'Episode ${ep.number}');

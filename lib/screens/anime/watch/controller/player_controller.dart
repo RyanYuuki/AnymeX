@@ -62,33 +62,33 @@ import '../../../../database/isar_models/track.dart' as model;
 
 extension PlayerControllerExtensions on PlayerController {
   bool get hasNextEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = episodeList
+        .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
     return index != -1 && index < episodeList.length - 1;
   }
 
   bool get hasPreviousEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = episodeList
+        .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
     return index > 0;
   }
 
   Episode? get nextEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = episodeList
+        .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
     if (index == -1 || index >= episodeList.length - 1) return null;
     return episodeList[index + 1];
   }
 
   Episode? get previousEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = episodeList
+        .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
     if (index <= 0) return null;
     return episodeList[index - 1];
   }
 
-  int get currentEpisodeIndex =>
-      episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+  int get currentEpisodeIndex => episodeList
+      .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
 }
 
 class PlayerController extends GetxController with WidgetsBindingObserver {
@@ -173,7 +173,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Episode? get savedEpisode => offlineStorage.getWatchedEpisode(
-      anilistData.id, currentEpisode.value.number.toString());
+      anilistData.id, currentEpisode.value.number.toString(),
+      episode: currentEpisode.value);
 
   final offlineStorage = Get.find<OfflineStorageController>();
 
@@ -1614,7 +1615,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       final data = await sourceController.activeSource.value!.methods
           .getVideoList(d.DEpisode(
-              episodeNumber: episode.number.toString(), url: episode.link));
+        episodeNumber: episode.number.toString(),
+        url: episode.link,
+        sortMap: episode.sortMap.isEmpty ? null : episode.sortMap,
+      ));
 
       if (data.isEmpty) {
         PlayerBottomSheets.hideLoader();
@@ -1682,29 +1686,35 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       return tracks.first;
     }
 
+    final prevIsDub = previousTrack.isDub;
     final scoredTracks = <Map<String, dynamic>>[];
 
     for (final track in tracks) {
       int score = 0;
-      final quality = track.quality!.toLowerCase();
-      final prevQuality = previousTrack.quality!.toLowerCase();
-      final isDub = prevQuality.contains('dub');
+      final quality = (track.quality ?? '').toLowerCase();
+      final prevQuality = (previousTrack.quality ?? '').toLowerCase();
+      final trackIsDub = track.isDub;
 
-      if ((isDub && quality.contains('dub')) ||
-          (!isDub && !quality.contains('dub'))) {
-        score += 4;
+      if (prevIsDub == trackIsDub) {
+        score += 100;
+      } else {
+        score -= 100;
       }
 
       final prevQualityRegex = RegExp(r'\d{3,4}p');
       final prevQualityMatch = prevQualityRegex.firstMatch(prevQuality);
       if (prevQualityMatch != null &&
           quality.contains(prevQualityMatch.group(0)!)) {
-        score += 2;
+        score += 20;
       }
 
-      final prevServer = prevQuality.split(' ').first;
-      if (quality.startsWith(prevServer)) {
-        score += 1;
+      final prevServer = prevQuality.split(' ').first.trim();
+      if (prevServer.isNotEmpty && quality.startsWith(prevServer)) {
+        score += 10;
+      }
+
+      if (prevQuality.isNotEmpty && quality == prevQuality) {
+        score += 50;
       }
 
       scoredTracks.add({'track': track, 'score': score});
@@ -2739,6 +2749,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         lastWatchedTime: DateTime.now().millisecondsSinceEpoch,
         source: episode.source,
         desc: episode.desc,
+        sortKeys: episode.sortKeys,
+        sortVals: episode.sortVals,
       );
 
       await offlineStorage.addOrUpdateAnime(

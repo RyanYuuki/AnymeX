@@ -611,7 +611,7 @@ class OfflineStorageController extends GetxController {
         episodes != null) {
       final matched = episodes.firstWhereOrNull((e) =>
           (e.link != null && e.link!.isNotEmpty && e.link == currentEpisode.link) ||
-          e.number == currentEpisode.number);
+          e.isSameEpisode(currentEpisode));
       if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
         currentEpisode.title = matched.title;
       }
@@ -740,7 +740,7 @@ class OfflineStorageController extends GetxController {
           existingAnime.episodes != null) {
         final matched = existingAnime.episodes!.firstWhereOrNull((e) =>
             (e.link != null && e.link!.isNotEmpty && e.link == episode.link) ||
-            e.number == episode.number);
+            e.isSameEpisode(episode));
         if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
           episode.title = matched.title;
         }
@@ -753,7 +753,7 @@ class OfflineStorageController extends GetxController {
         episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
 
         final index = existingAnime.watchedEpisodes!
-            .indexWhere((e) => e.number == episode.number);
+            .indexWhere((e) => e.isSameEpisode(episode));
         existingAnime.watchedEpisodes =
             List<Episode>.from(existingAnime.watchedEpisodes!);
 
@@ -792,9 +792,15 @@ class OfflineStorageController extends GetxController {
     });
   }
 
-  Episode? getWatchedEpisode(String anilistId, String episodeNumber) {
+  Episode? getWatchedEpisode(String anilistId, String episodeNumber,
+      {Episode? episode}) {
     final anime = getAnimeById(anilistId);
     if (anime?.watchedEpisodes == null) return null;
+
+    if (episode != null) {
+      return anime!.watchedEpisodes!
+          .firstWhereOrNull((e) => e.isSameEpisode(episode));
+    }
 
     return anime!.watchedEpisodes!
         .firstWhereOrNull((e) => e.number == episodeNumber);

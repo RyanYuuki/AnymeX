@@ -115,4 +115,37 @@ extension VideoExtension on Video {
       headerValues = value.values.toList();
     }
   }
+
+  bool get isDub {
+    final q = (quality ?? '').toLowerCase();
+    if (q.contains('dub') ||
+        (q.contains('english') && !q.contains('sub')) ||
+        (q.contains('eng') && !q.contains('sub'))) {
+      return true;
+    }
+    if (audios != null && audios!.isNotEmpty) {
+      for (final a in audios!) {
+        final label = (a.label ?? '').toLowerCase();
+        if (label.contains('dub') ||
+            (label.contains('english') && !label.contains('sub')) ||
+            (label.contains('eng') && !label.contains('sub'))) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+}
+
+bool isDubTrack(Video? video) {
+  if (video == null) return false;
+  return video.isDub;
+}
+
+bool isDubLabel(String? label) {
+  if (label == null || label.isEmpty) return false;
+  final s = label.toLowerCase();
+  return s.contains('dub') ||
+      (s.contains('english') && !s.contains('sub')) ||
+      (s.contains('eng') && !s.contains('sub'));
 }

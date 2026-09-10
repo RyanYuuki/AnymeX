@@ -747,6 +747,22 @@ class MediaDetailsController extends GetxController {
 
   Episode? getContinueEpisode() {
     if (episodeList.isEmpty) return null;
+    final offline = offlineMedia.value;
+    final currentEp = offline?.currentEpisode;
+
+    if (currentEp != null) {
+      final index = episodeList.indexWhere((e) => e.isSameEpisode(currentEp));
+      if (index != -1) {
+        final ts = currentEp.timeStampInMilliseconds ?? 0;
+        final dur = currentEp.durationInMilliseconds ?? 0;
+        final isComplete = dur > 0 && (ts / dur) * 100 >= 90;
+        if (isComplete && index + 1 < episodeList.length) {
+          return episodeList[index + 1];
+        }
+        return episodeList[index];
+      }
+    }
+
     final progress = mediaProgress.value;
     final nextNumber = progress + 1;
     final nextEp = episodeList.firstWhereOrNull((e) =>
@@ -830,7 +846,7 @@ class MediaDetailsController extends GetxController {
     final offline = offlineMedia.value;
     if (offline == null) return 0.0;
     final savedEP = (offline.watchedEpisodes ?? [])
-        .firstWhereOrNull((e) => e.number == episode.number);
+        .firstWhereOrNull((e) => e.isSameEpisode(episode));
     if (savedEP != null &&
         savedEP.timeStampInMilliseconds != null &&
         savedEP.durationInMilliseconds != null &&
@@ -839,7 +855,7 @@ class MediaDetailsController extends GetxController {
     }
     final currentEP = offline.currentEpisode;
     if (currentEP != null &&
-        currentEP.number == episode.number &&
+        currentEP.isSameEpisode(episode) &&
         currentEP.timeStampInMilliseconds != null &&
         currentEP.durationInMilliseconds != null &&
         currentEP.durationInMilliseconds! > 0) {
