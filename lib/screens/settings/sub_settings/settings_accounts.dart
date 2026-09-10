@@ -1,16 +1,12 @@
-import 'package:anymex/controllers/discord/discord_login.dart';
-import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/models/Service/online_service.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
-import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -61,13 +57,6 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                   customPadding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
                   children: [
                     SizedBox(height: AnymeXHeaderScope.of(ctx)),
-                    const AnymeXSectionBuilder(
-                      title: 'Social Presence',
-                      borderRadius: 24,
-                      children: [
-                        DiscordTile(),
-                      ],
-                    ),
                     AnymeXSectionBuilder(
                       title: 'Tracking Services',
                       children: services
@@ -85,227 +74,6 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
   }
 }
 
-class DiscordTile extends StatelessWidget {
-  const DiscordTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Obx(() {
-      final rpc = DiscordRPCController.instance;
-      final isDesktop = !rpc.isMobile;
-      final isLoggedIn = rpc.isLoggedIn;
-      final userData = isLoggedIn ? rpc.profile.value : null;
-
-      return Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: isLoggedIn
-                ? colors.primary.withOpacity(0.3)
-                : Colors.transparent,
-            width: 1.5,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  _buildAvatar(isDesktop ? null : userData?.avatarUrl,
-                      isLoggedIn, colors),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AnymeXText(isDesktop
-                              ? 'Discord Desktop'
-                              : (isLoggedIn
-                                  ? (userData?.displayName ?? 'Discord User')
-                                  : 'Connect Discord'),
-                          variant: TextVariant.bold,
-                          size: 16,
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 7,
-                              height: 7,
-                              decoration: BoxDecoration(
-                                color: isLoggedIn && rpc.isEnabled
-                                    ? const Color(0xFF43B581)
-                                    : colors.onSurfaceVariant,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            AnymeXText(isDesktop
-                                  ? (rpc.isConnected
-                                      ? 'Connected'
-                                      : 'Disconnected')
-                                  : (isLoggedIn
-                                      ? (rpc.isEnabled
-                                          ? 'Rich Presence Active'
-                                          : 'Rich Presence Disabled')
-                                      : 'Not Connected'),
-                              color: isLoggedIn && rpc.isEnabled
-                                  ? const Color(0xFF43B581)
-                                  : colors.onSurfaceVariant,
-                              size: 12,
-                              maxLines: 1,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (!isDesktop && isLoggedIn)
-                    GestureDetector(
-                      onTap: () => _showLogoutDialog(context, rpc),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: colors.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(
-                          IconlyBold.logout,
-                          color: colors.error,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  if (!isDesktop && !isLoggedIn)
-                    GestureDetector(
-                      onTap: () => context.showDiscordLogin(
-                          (token) => rpc.onLoginSuccess(token)),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF5865F2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const AnymeXText('Login',
-                          variant: TextVariant.bold,
-                          size: 13,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              if (isDesktop || isLoggedIn) ...[
-                const SizedBox(height: 16),
-                Container(
-                  height: 1,
-                  color: colors.outline.withOpacity(0.12),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const AnymeXText('Discord Rich Presence',
-                            variant: TextVariant.semiBold,
-                            size: 14,
-                          ),
-                          const SizedBox(height: 2),
-                          AnymeXText('Share your activity on Discord',
-                            size: 11,
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 40,
-                      child: Switch(
-                        value: rpc.isEnabled,
-                        onChanged: (e) => rpc.setEnabled(e),
-                        activeColor: colors.primary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
-          ),
-        ),
-      );
-    });
-  }
-
-  Widget _buildAvatar(String? url, bool isLoggedIn, dynamic colors) {
-    if (isLoggedIn && url != null) {
-      return Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: colors.primary.withOpacity(0.4),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            )
-          ],
-        ),
-        child: CircleAvatar(
-          radius: 28,
-          backgroundColor: colors.surfaceContainerHighest,
-          backgroundImage: CachedNetworkImageProvider(
-            url,
-            cacheManager: AnymeXCacheManager.instance,
-          ),
-        ),
-      );
-    }
-
-    return Container(
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        color: const Color(0xFF5865F2).withOpacity(0.2),
-        shape: BoxShape.circle,
-      ),
-      child: const Icon(IconlyBold.game, color: Color(0xFF5865F2), size: 28),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context, DiscordRPCController rpc) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: context.colors.surfaceContainer,
-        title: const AnymeXText("Disconnect Discord?", variant: TextVariant.bold),
-        content: const AnymeXText("Your rich presence activity will stop updating."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const AnymeXText("Cancel"),
-          ),
-          TextButton(
-            onPressed: () {
-              rpc.logout();
-              Navigator.pop(context);
-            },
-            child: AnymeXText("Disconnect",
-                style: TextStyle(color: context.colors.error)),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class TrackingServiceCard extends StatelessWidget {
   final String serviceIcon;

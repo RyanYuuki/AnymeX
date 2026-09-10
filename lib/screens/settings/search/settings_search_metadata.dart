@@ -25,6 +25,7 @@ class SettingsSearchMetadataItem {
 
 const settingsSearchCategoryIcons = <String, IconData>{
   'Accounts': IconlyLight.profile,
+  'Discord RPC': HugeIcons.strokeRoundedDiscord,
   'Common': HugeIcons.strokeRoundedBulb,
   'Backup & Restore': HugeIcons.strokeRoundedLibraries,
   'Storage Manager': Icons.storage_rounded,
@@ -40,6 +41,22 @@ const settingsSearchCategoryIcons = <String, IconData>{
 const settingsSearchIndex = <String, Map<String?, List<String>>>{
   'Accounts': {
     null: ['Anilist', 'MyAnimeList', 'Simkl', 'Anilist Settings'],
+  },
+  'Discord RPC': {
+    'General & Privacy': [
+      'Enable Discord RPC',
+      'Hide NSFW / 18+ Content',
+      'Show Timestamps',
+    ],
+    'Activity Phrasing': [
+      'Watching Anime',
+      'Viewing Anime Details',
+      'Reading Manga',
+      'Viewing Manga Details',
+      'Reading Novel',
+      'Viewing Novel Details',
+      'Browsing / Idle',
+    ],
   },
   'Common': {
     null: [

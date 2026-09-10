@@ -1,11 +1,11 @@
 import 'dart:convert';
 
+import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 
 const String url = 'https://graphql.anilist.co';
 
@@ -49,7 +49,7 @@ Future<void> fetchCalendarData(RxList<Media> callbackData,
   }
 ''';
 
-  final response = await http.post(
+  final response = await NetworkManager.instance.compatibleClient.post(
     Uri.parse(url),
     headers: {'Content-Type': 'application/json'},
     body: json.encode({

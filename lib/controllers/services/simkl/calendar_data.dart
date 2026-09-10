@@ -1,16 +1,16 @@
 import 'dart:convert';
 
+import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 
 Future<void> fetchSimklCalendarData(RxList<Media> callbackData, {bool isMovies = false}) async {
   final String url = isMovies 
       ? 'https://data.simkl.in/calendar/movie_release.json'
       : 'https://data.simkl.in/calendar/tv.json';
 
-  final response = await http.get(Uri.parse(url));
+  final response = await NetworkManager.instance.compatibleClient.get(Uri.parse(url));
 
   if (response.statusCode == 200) {
     final List<dynamic> schedules = json.decode(response.body);

@@ -11,6 +11,7 @@ class AnymeXHeader extends StatefulWidget {
   final String title;
   final String? subtitle;
   final Widget? action;
+  final Widget? bottom;
   final bool disablePrefix;
   final bool enableSearch;
   final TextEditingController? searchController;
@@ -24,6 +25,7 @@ class AnymeXHeader extends StatefulWidget {
     required this.title,
     this.subtitle,
     this.action,
+    this.bottom,
     this.disablePrefix = false,
     this.enableSearch = false,
     this.searchController,
@@ -113,16 +115,31 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
     final isDesktop = MediaQuery.sizeOf(context).width > 600;
     final h = isDesktop ? 24.0 : 16.0;
 
+    final mainRow = AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      child:
+          _isSearching ? _buildSearchRow(context) : _buildSplitRow(context),
+    );
+
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(h, 8, h, 8),
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          child:
-              _isSearching ? _buildSearchRow(context) : _buildSplitRow(context),
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: h),
+              child: mainRow,
+            ),
+            if (widget.bottom != null) ...[
+              const SizedBox(height: 8),
+              widget.bottom!,
+            ],
+          ],
         ),
       ),
     );
@@ -232,9 +249,8 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
                       color: theme.colorScheme.primary,
                       size: 20,
                     ),
-                  )
-                else if (widget.action != null)
-                  widget.action!,
+                  ),
+                if (widget.action != null) widget.action!,
               ],
             ),
           ),

@@ -41,6 +41,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:anymex/controllers/network/network_manager.dart';
 
 import 'package:anymex/controllers/services/anilist/anilist_api.dart';
 
@@ -49,6 +50,7 @@ Map<String, dynamic> _parseJson(String body) {
 }
 
 class AnilistData extends GetxController implements BaseService, OnlineService {
+  Client get _client => NetworkManager.instance.compatibleClient;
   final api = AnilistApi();
   final anilistAuth = Get.find<AnilistAuth>();
   final communityService = Get.find<CommunityService>();
@@ -320,7 +322,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     sourceController.initNovelExtensions();
     return [
       Obx(() => InstalledExtensionsGridView(
-            sources: sourceController.installedNovelExtensions.value,
+            sources: sourceController.installedNovelExtensions,
             itemType: ItemType.novel,
           )),
     ].obs;
@@ -482,7 +484,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
-    final response = await post(
+    final response = await _client.post(
       Uri.parse(url),
       headers: headers,
       body: json.encode({
@@ -675,7 +677,7 @@ averageScore
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
-    final response = await post(
+    final response = await _client.post(
       Uri.parse(url),
       headers: headers,
       body: json.encode({
@@ -765,7 +767,7 @@ averageScore
       }
       ''';
 
-      final response = await post(
+      final response = await NetworkManager.instance.compatibleClient.post(
         Uri.parse(url),
         headers: headers,
         body: json.encode({'query': query}),
@@ -855,7 +857,7 @@ averageScore
     }
     ''';
 
-    final response = await post(
+    final response = await NetworkManager.instance.compatibleClient.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'query': query}),
@@ -881,7 +883,7 @@ averageScore
     Logger.i("Fetching Anify metadata for animeId: $animeId");
 
     try {
-      final resp = await get(Uri.parse(
+      final resp = await NetworkManager.instance.compatibleClient.get(Uri.parse(
           "https://api.ani.zip/mappings?${serviceHandler.serviceType.value == ServicesType.anilist ? 'anilist_id' : 'mal_id'}=$animeId"));
 
       if (resp.statusCode != 200 || resp.body.isEmpty) {
@@ -1089,8 +1091,8 @@ averageScore
     };
 
     try {
-      final response =
-          await post(Uri.parse(url), headers: headers, body: jsonEncode(body));
+      final response = await NetworkManager.instance.compatibleClient.post(
+          Uri.parse(url), headers: headers, body: jsonEncode(body));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -1137,7 +1139,7 @@ averageScore
     };
 
     try {
-      final response = await post(
+      final response = await _client.post(
         Uri.parse(url),
         headers: headers,
         body: json.encode(body),
@@ -1181,7 +1183,7 @@ averageScore
     };
 
     try {
-      final response = await post(
+      final response = await _client.post(
         Uri.parse(url),
         headers: headers,
         body: json.encode(body),
@@ -1278,7 +1280,7 @@ averageScore
     };
 
     try {
-      var response = await post(
+      var response = await NetworkManager.instance.compatibleClient.post(
         Uri.parse(url),
         headers: headers,
         body: jsonEncode({'query': batchQuery, 'variables': variables}),
@@ -1288,7 +1290,7 @@ averageScore
         final retryAfter =
             int.tryParse(response.headers['retry-after'] ?? '') ?? 60;
         await Future.delayed(Duration(seconds: retryAfter));
-        response = await post(
+        response = await NetworkManager.instance.compatibleClient.post(
           Uri.parse(url),
           headers: headers,
           body: jsonEncode({'query': batchQuery, 'variables': variables}),
@@ -1496,7 +1498,7 @@ averageScore
 
     try {
       final type = isManga ? 'manga' : 'anime';
-      final response = await get(
+      final response = await NetworkManager.instance.compatibleClient.get(
         Uri.parse('https://api.jikan.moe/v4/genres/$type?filter=genres'),
       );
 
