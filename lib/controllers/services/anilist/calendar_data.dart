@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:get/get.dart';
@@ -49,9 +50,15 @@ Future<void> fetchCalendarData(RxList<Media> callbackData,
   }
 ''';
 
+  final token = AuthKeys.authToken.get<String?>();
+  final headers = {
+    'Content-Type': 'application/json',
+    if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+  };
+
   final response = await NetworkManager.instance.compatibleClient.post(
     Uri.parse(url),
-    headers: {'Content-Type': 'application/json'},
+    headers: headers,
     body: json.encode({
       'query': query,
       'variables': {

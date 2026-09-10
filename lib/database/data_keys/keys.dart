@@ -33,6 +33,7 @@ enum General {
   useAlternateTitle,
   unifiedLibrary,
   joinDialogShowCount,
+  wrongTitleIsCardView,
 }
 
 enum ThemeKeys {

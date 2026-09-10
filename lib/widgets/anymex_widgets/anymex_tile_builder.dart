@@ -21,6 +21,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
   final TextStyle Function(T)? getTitleStyle;
   final TextStyle Function(T)? getSubtitleStyle;
   final int? maxLines;
+  final bool autoResize;
   final bool lazy;
 
   final List<Widget>? headerChildren;
@@ -44,7 +45,8 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
     this.isRadio = true,
     this.isSelection = true,
     this.showChevron,
-    this.maxLines,
+    this.maxLines = 4,
+    this.autoResize = true,
     this.getTitleStyle,
     this.getSubtitleStyle,
     this.lazy = false,
@@ -132,6 +134,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
                   onTap: () => onItemPressed(item),
                   showChevron: showChevron?.call(item) ?? false,
                   maxLines: maxLines,
+                  autoResize: autoResize,
                   titleStyle: getTitleStyle?.call(item),
                   subtitleStyle: getSubtitleStyle?.call(item),
                   borderRadius: radius,
@@ -185,6 +188,7 @@ class AnymeXTileBuilder<T> extends StatelessWidget {
           onTap: () => onItemPressed(item),
           showChevron: showChevron?.call(item) ?? false,
           maxLines: maxLines,
+          autoResize: autoResize,
           titleStyle: getTitleStyle?.call(item),
           subtitleStyle: getSubtitleStyle?.call(item),
         ) as Widget;

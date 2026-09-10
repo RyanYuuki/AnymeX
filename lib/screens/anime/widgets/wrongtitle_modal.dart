@@ -1,3 +1,4 @@
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -44,7 +45,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
   final sourceController = Get.find<SourceController>();
   final RxString searchStatus = "".obs;
   Worker? _sourceWorker;
-  bool _isCardView = true;
+  late bool _isCardView = General.wrongTitleIsCardView.get<bool>(true);
 
   @override
   void initState() {
@@ -140,6 +141,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       setState(() {
                         _isCardView = !_isCardView;
                       });
+                      General.wrongTitleIsCardView.set(_isCardView);
                     },
                     icon: Icon(
                       _isCardView ? Icons.view_list_rounded : Icons.grid_view_rounded,
@@ -185,7 +187,7 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                         child: AnymeXTileBuilder<DMedia>(
                           items: results.whereType<DMedia>().toList(),
                           isSelection: false,
-                          maxLines: 3,
+                          maxLines: 5,
                           showChevron: (_) => false,
                           getTitle: (item) {
                             final source = widget.isNovel
