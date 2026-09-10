@@ -185,7 +185,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
 
   // 4. EXTRACT AND OPTIMIZE EPISODE ITEM BUILDING
   Widget _buildEpisodeItem(Episode episode, BuildContext context) {
-    final isSelected = widget.currentEpisode.number == episode.number;
+    final isSelected = widget.currentEpisode.isSameEpisode(episode);
     final watchedEpisode = episode.number.toInt() <= (_cachedUserProgress ?? 0);
 
     return RepaintBoundary(

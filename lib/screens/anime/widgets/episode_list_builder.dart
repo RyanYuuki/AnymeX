@@ -236,25 +236,41 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final saved = savedData?.currentEpisode;
     final nextSaved = saved ?? widget.episodeList[0];
 
-    if (savedEpisode.value.number != nextSaved.number) {
+    if (!savedEpisode.value.isSameEpisode(nextSaved)) {
       savedEpisode.value = nextSaved;
     }
 
-    final nextSelected = nextEpisode ?? fallbackEP ?? savedEpisode.value;
-    if (selectedEpisode.value.number != nextSelected.number) {
+    Episode nextSelected;
+    if (saved != null) {
+      final idx = widget.episodeList.indexWhere((e) => e.isSameEpisode(saved));
+      if (idx != -1) {
+        final ts = saved.timeStampInMilliseconds ?? 0;
+        final dur = saved.durationInMilliseconds ?? 0;
+        final isComplete =
+            dur > 0 && (ts / dur) * 100 >= settingsController.markAsCompleted;
+        if (isComplete && idx + 1 < widget.episodeList.length) {
+          nextSelected = widget.episodeList[idx + 1];
+        } else {
+          nextSelected = widget.episodeList[idx];
+        }
+      } else {
+        nextSelected = saved;
+      }
+    } else {
+      nextSelected = nextEpisode ?? fallbackEP ?? savedEpisode.value;
+    }
+
+    if (!selectedEpisode.value.isSameEpisode(nextSelected)) {
       selectedEpisode.value = nextSelected;
     }
-    if (continueEpisode.value.number != nextSelected.number) {
+    if (!continueEpisode.value.isSameEpisode(nextSelected)) {
       continueEpisode.value = nextSelected;
     }
   }
 
   bool _isEpisodeWatched(Episode episode) {
-    final epNum = episode.number.toInt();
-    if (epNum > 0 && epNum <= userProgress.value) return true;
-
     final inOfflineWatched =
-        offlineWatchedEpisodes.any((e) => e.number == episode.number);
+        offlineWatchedEpisodes.any((e) => e.isSameEpisode(episode));
     if (inOfflineWatched) return true;
 
     final ts = episode.timeStampInMilliseconds ?? 0;
@@ -263,17 +279,23 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       return true;
     }
 
+    final hasSortSections = widget.episodeList.any((e) => e.sortMap.isNotEmpty);
+    if (!hasSortSections) {
+      final epNum = episode.number.toInt();
+      if (epNum > 0 && epNum <= userProgress.value) return true;
+    }
+
     return false;
   }
 
   double _calculateEpisodeProgress(Episode episode) {
     final savedEP = offlineWatchedEpisodes.cast<Episode?>().firstWhere(
-          (e) => e?.number == episode.number,
+          (e) => e?.isSameEpisode(episode) ?? false,
           orElse: () => null,
         );
 
     final target = savedEP ??
-        (episode.number == savedEpisode.value.number
+        (savedEpisode.value.isSameEpisode(episode)
             ? savedEpisode.value
             : null);
     if (target?.timeStampInMilliseconds != null &&
@@ -286,6 +308,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   void _initSortGrouping() {
+    final savedData =
+        offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
+    final savedSortMap = savedData?.currentEpisode?.sortMap ?? {};
     final sections = buildEpisodeSortSections(widget.episodeList);
     final nextSelection = <String, String>{};
 
@@ -297,10 +322,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       );
       if (availableValues.isEmpty) continue;
 
-      final currentValue = selectedSortValues[section.key];
-      nextSelection[section.key] = availableValues.contains(currentValue)
-          ? currentValue!
-          : availableValues.first;
+      final currentValue =
+          selectedSortValues[section.key] ?? savedSortMap[section.key];
+      nextSelection[section.key] =
+          (currentValue != null && availableValues.contains(currentValue))
+              ? currentValue
+              : availableValues.first;
     }
 
     if (selectedSortValues.length != nextSelection.length ||
@@ -357,11 +384,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   bool _areEpisodesEquivalent(Episode first, Episode second) {
-    if (first.number != second.number) return false;
-    final firstSortMap = first.sortMap;
-    final secondSortMap = second.sortMap;
-    if (firstSortMap.isEmpty || secondSortMap.isEmpty) return true;
-    return mapEquals(firstSortMap, secondSortMap);
+    return first.isSameEpisode(second);
   }
 
   int _compareEpisodesByNumber(Episode first, Episode second) {
@@ -946,10 +969,19 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
   void _checkAndAutoSelect({required bool isStreamCompleted}) {
     if (_hasAutoSelected || !mounted) return;
 
-    final savedSticky =
-        DynamicKeys.stickyServer.get<String?>(widget.anilistData.id.toString());
+    final mediaId = widget.anilistData.id.toString();
+    final savedSticky = DynamicKeys.stickyServer.get<String?>(mediaId);
+
+    final offlineStorage = Get.find<OfflineStorageController>();
+    final savedAnime = offlineStorage.getAnimeById(mediaId);
+    final prevTrack = savedAnime?.currentEpisode?.currentTrack ??
+        savedAnime?.watchedEpisodes?.lastOrNull?.currentTrack;
+    final wasDub = hive.isDubTrack(prevTrack) ||
+        (savedSticky != null && hive.isDubLabel(savedSticky));
+
     if (savedSticky != null && savedSticky.isNotEmpty) {
       final matched = streamList.firstWhereOrNull((video) {
+        if (wasDub && !video.isDub) return false;
         final q = video.quality?.toUpperCase();
         final saved = savedSticky.toUpperCase();
         return q == saved || video.originalUrl == savedSticky;
@@ -965,13 +997,33 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       }
     }
 
-    if (isStreamCompleted && streamList.length == 1) {
-      _hasAutoSelected = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _handleServerSelected(streamList.first);
+    if (isStreamCompleted) {
+      if (wasDub) {
+        final dubTracks = streamList.where((v) => v.isDub).toList();
+        if (dubTracks.isNotEmpty) {
+          final bestDub = savedSticky != null
+              ? dubTracks.firstWhereOrNull((v) =>
+                      v.quality?.toUpperCase() == savedSticky.toUpperCase()) ??
+                  dubTracks.first
+              : dubTracks.first;
+          _hasAutoSelected = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _handleServerSelected(bestDub);
+            }
+          });
+          return;
         }
-      });
+      }
+
+      if (streamList.length == 1) {
+        _hasAutoSelected = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _handleServerSelected(streamList.first);
+          }
+        });
+      }
     }
   }
 
