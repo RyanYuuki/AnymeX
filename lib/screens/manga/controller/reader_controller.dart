@@ -15,6 +15,7 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/volume_key_handler.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -268,9 +269,17 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   final RxSet<String> loadingChapterLinks = <String>{}.obs;
+  DateTime? _lastInlineLoadTime;
 
   Future<void> loadNextChapterInline() async {
     if (!overscrollToChapter.value || _isNavigating) return;
+
+    final now = DateTime.now();
+    if (_lastInlineLoadTime != null &&
+        now.difference(_lastInlineLoadTime!) < const Duration(milliseconds: 1500)) {
+      return;
+    }
+    _lastInlineLoadTime = now;
 
     final lastLoaded =
         loadedChapters.isNotEmpty ? loadedChapters.last : currentChapter.value;
@@ -658,12 +667,23 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
                       Logger.i('Extension manga tracking failed: $e')));
             }
           } else {
+            final auth = Get.find<ServiceHandler>();
+            final currentItem = auth.mangaList.firstWhereOrNull(
+                (m) => m.id == media.id || m.mediaListId == media.id);
+            final currentStatus = (auth
+                        .onlineService.currentMedia.value.watchingStatus ??
+                    currentItem?.watchingStatus)
+                ?.toUpperCase();
+            final isPlanning =
+                currentStatus == 'PLANNING' || currentStatus == 'PLAN_TO_READ';
             final int currentOnlineProgress = int.tryParse(
-                    serviceHandler.onlineService.currentMedia.value.episodeCount ??
+                    auth.onlineService.currentMedia.value.episodeCount ??
+                        currentItem?.episodeCount ??
                         '0') ??
                 0;
-            if (newProgress > currentOnlineProgress) {
-              serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+            if (newProgress > currentOnlineProgress ||
+                (isPlanning && newProgress >= 1)) {
+              auth.onlineService.updateListEntry(UpdateListEntryParams(
                   listId: media.id,
                   status: "CURRENT",
                   progress: newProgress,
@@ -1366,8 +1386,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final limit = preloadPages.value;
     if (limit <= 0 || pageList.isEmpty) return;
 
-    final sourceController = Get.find<SourceController>();
-
     for (int i = 1; i <= limit; i++) {
       final nextIndex = currentIndex + i;
       if (nextIndex < 0 || nextIndex >= pageList.length) break;
@@ -1375,12 +1393,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       final page = pageList[nextIndex];
       final url = page.url;
       if (url.startsWith('http')) {
-        final headers = (page.headers?.isEmpty ?? true)
-            ? {
-                'Referer':
-                    sourceController.activeMangaSource.value?.baseUrl ?? ''
-              }
-            : page.headers;
+        final headers = getPageImageHeaders(page.headers);
 
         AnymeXCacheManager.instance
             .getSingleFile(url, headers: headers)
@@ -1467,13 +1480,24 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
+      final auth = Get.find<ServiceHandler>();
+      final currentItem = auth.mangaList.firstWhereOrNull(
+          (m) => m.id == media.id || m.mediaListId == media.id);
+      final currentStatus = (auth
+                  .onlineService.currentMedia.value.watchingStatus ??
+              currentItem?.watchingStatus)
+          ?.toUpperCase();
+      final isPlanning =
+          currentStatus == 'PLANNING' || currentStatus == 'PLAN_TO_READ';
       final int currentOnlineProgress = int.tryParse(
-              serviceHandler.onlineService.currentMedia.value.episodeCount ??
+              auth.onlineService.currentMedia.value.episodeCount ??
+                  currentItem?.episodeCount ??
                   '0') ??
           0;
 
-      if (newProgress > currentOnlineProgress) {
-        serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+      if (newProgress > currentOnlineProgress ||
+          (isPlanning && newProgress >= 1)) {
+        auth.onlineService.updateListEntry(UpdateListEntryParams(
             listId: media.id,
             status: "CURRENT",
             progress: newProgress,

@@ -57,8 +57,10 @@ class AnymeXSectionBuilder extends StatelessWidget {
           leading: child.leading,
           title: child.title,
           subtitle: child.subtitle,
+          subtitleWidget: child.subtitleWidget,
           trailing: child.trailing,
           onTap: child.onTap,
+          onLongPress: child.onLongPress,
           iconColor: child.iconColor,
           iconBackgroundColor: child.iconBackgroundColor,
           showChevron: child.showChevron,
@@ -66,6 +68,9 @@ class AnymeXSectionBuilder extends StatelessWidget {
           padding: child.padding,
           enabled: child.enabled,
           customContent: child.customContent,
+          maxLines: child.maxLines,
+          titleStyle: child.titleStyle,
+          subtitleStyle: child.subtitleStyle,
         );
       } else {
         tileWidget = ClipRRect(

@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
 import 'package:anymex/screens/anime/widgets/episode/episode_style_registry.dart';
@@ -275,15 +276,15 @@ class EpisodesPane extends StatelessWidget {
                           final isSelected = controller.isOffline.value
                               ? episode.link ==
                                   controller.selectedVideo.value?.url
-                              : episode.number == controller.currentEpisode.value.number;
-                          final offlineEpisodes = controller.offlineStorage
+                              : episode.isSameEpisode(controller.currentEpisode.value);
+                          final watchedEpisodes = controller.offlineStorage
                               .getAnimeById(controller.anilistData.id)
-                              ?.episodes;
-                          final isWatched = (offlineEpisodes ?? []).any((e) => e.number == episode.number);
+                              ?.watchedEpisodes;
+                          final isWatched = (watchedEpisodes ?? []).any((e) => e.isSameEpisode(episode));
                           
                           double progress = 0.0;
-                          if (offlineEpisodes != null) {
-                            final matching = offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
+                          if (watchedEpisodes != null) {
+                            final matching = watchedEpisodes.firstWhereOrNull((e) => e.isSameEpisode(episode));
                             if (matching != null && matching.durationInMilliseconds != null && matching.durationInMilliseconds! > 0) {
                               progress = (matching.timeStampInMilliseconds ?? 0) / matching.durationInMilliseconds!;
                             }
@@ -311,15 +312,15 @@ class EpisodesPane extends StatelessWidget {
                           final isSelected = controller.isOffline.value
                               ? episode.link ==
                                   controller.selectedVideo.value?.url
-                              : episode.number == controller.currentEpisode.value.number;
-                          final offlineEpisodes = controller.offlineStorage
+                              : episode.isSameEpisode(controller.currentEpisode.value);
+                          final watchedEpisodes = controller.offlineStorage
                               .getAnimeById(controller.anilistData.id)
-                              ?.episodes;
-                          final isWatched = (offlineEpisodes ?? []).any((e) => e.number == episode.number);
+                              ?.watchedEpisodes;
+                          final isWatched = (watchedEpisodes ?? []).any((e) => e.isSameEpisode(episode));
                           
                           double progress = 0.0;
-                          if (offlineEpisodes != null) {
-                            final matching = offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
+                          if (watchedEpisodes != null) {
+                            final matching = watchedEpisodes.firstWhereOrNull((e) => e.isSameEpisode(episode));
                             if (matching != null && matching.durationInMilliseconds != null && matching.durationInMilliseconds! > 0) {
                               progress = (matching.timeStampInMilliseconds ?? 0) / matching.durationInMilliseconds!;
                             }

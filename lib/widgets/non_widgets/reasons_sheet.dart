@@ -649,6 +649,8 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
             const SizedBox(height: 10),
             AnymeXText(
               reason.text,
+                maxLines: 9999,
+
               style: TextStyle(
                 fontSize: 13,
                 fontStyle: FontStyle.italic,

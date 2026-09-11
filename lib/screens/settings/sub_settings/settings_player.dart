@@ -17,10 +17,13 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 
 import 'package:anymex/screens/settings/sub_settings/widgets/settings_json_shared.dart';
+import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:anymex/utils/subtitle_style_renderer.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:file_picker/file_picker.dart';
 
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
@@ -160,12 +163,14 @@ class _SettingsPlayerState extends State<SettingsPlayer>
   bool _shouldApplyResizeModeOnClose = false;
   late bool _useLibass;
   late bool _useExternalPlayer;
+  List<String> _customFonts = [];
 
   @override
   void initState() {
     super.initState();
     speed.value = settings.speed;
     selectedStyleIndex.value = settings.playerStyle;
+    _loadCustomFonts();
 
     _leftButtonIds = [];
     _rightButtonIds = [];
@@ -685,32 +690,129 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     );
   }
 
+  Future<void> _loadCustomFonts() async {
+    final fonts = await ExternalFontLoader.getCustomFontNames();
+    if (mounted) {
+      setState(() {
+        _customFonts = fonts;
+      });
+    }
+  }
+
   void _showFontSelectionDialog() {
     AnymeXDialog(
       title: "Select Subtitle Font",
       onConfirm: () {},
       showCancelButton: false,
       confirmText: 'Close',
-      contentWidget: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: fontGroups.entries.map((group) {
-          return AnymeXSectionBuilder(
-              title: group.key,
-              children: group.value
-                  .map((font) => AnymeXTile.radio(
-                        selected:
-                            settings.playerSettings.value.subtitleFont == font,
-                        title: font,
-                        onTap: () {
+      contentWidget: StatefulBuilder(
+        builder: (dialogContext, setDialogState) {
+          final currentFont = settings.playerSettings.value.subtitleFont;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnymeXSectionBuilder(
+                title: 'Custom',
+                children: [
+                  AnymeXTile(
+                    icon: Icons.add_rounded,
+                    title: 'Import Custom Font',
+                    subtitle: 'Support .ttf and .otf files',
+                    onTap: () async {
+                      final result = await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['ttf', 'otf'],
+                      );
+                      if (result != null && result.files.single.path != null) {
+                        final fontName =
+                            await ExternalFontLoader.importCustomFont(
+                          result.files.single.path!,
+                        );
+                        if (fontName != null) {
                           final current = settings.playerSettings.value;
-                          current.subtitleFont = font;
-                          PlayerSettingsKeys.subtitleFont.set(font);
+                          current.subtitleFont = fontName;
+                          PlayerSettingsKeys.subtitleFont.set(fontName);
                           settings.playerSettings.refresh();
-                          Navigator.pop(context);
-                        },
-                      ))
-                  .toList());
-        }).toList(),
+                          final updated =
+                              await ExternalFontLoader.getCustomFontNames();
+                          if (mounted) {
+                            setState(() {
+                              _customFonts = updated;
+                            });
+                          }
+                          setDialogState(() {});
+                          snackBar('Imported font "$fontName"');
+                        } else {
+                          snackBar('Failed to load font file');
+                        }
+                      }
+                    },
+                  ),
+                  ..._customFonts.map((font) {
+                    return AnymeXTile.radio(
+                      selected: currentFont == font,
+                      title: font,
+                      titleStyle: TextStyle(fontFamily: font),
+                      subtitle: 'Hold to delete',
+                      onLongPress: () {
+                        AnymeXDialog(
+                          title: 'Delete Font',
+                          message: 'Are you sure you want to delete "$font"?',
+                          onConfirm: () async {
+                            await ExternalFontLoader.deleteCustomFont(font);
+                            if (settings.playerSettings.value.subtitleFont ==
+                                font) {
+                              final current = settings.playerSettings.value;
+                              current.subtitleFont = 'Default';
+                              PlayerSettingsKeys.subtitleFont.set('Default');
+                              settings.playerSettings.refresh();
+                            }
+                            final updated =
+                                await ExternalFontLoader.getCustomFontNames();
+                            if (mounted) {
+                              setState(() {
+                                _customFonts = updated;
+                              });
+                            }
+                            setDialogState(() {});
+                          },
+                        ).show(dialogContext);
+                      },
+                      onTap: () {
+                        final current = settings.playerSettings.value;
+                        current.subtitleFont = font;
+                        PlayerSettingsKeys.subtitleFont.set(font);
+                        settings.playerSettings.refresh();
+                        Navigator.pop(dialogContext);
+                      },
+                    );
+                  }),
+                ],
+              ),
+              ...fontGroups.entries.map((group) {
+                return AnymeXSectionBuilder(
+                  title: group.key,
+                  children: group.value
+                      .map((font) => AnymeXTile.radio(
+                            selected: currentFont == font,
+                            title: font,
+                            titleStyle: TextStyle(
+                              fontFamily: resolveSubtitleFontFamily(font),
+                            ),
+                            onTap: () {
+                              final current = settings.playerSettings.value;
+                              current.subtitleFont = font;
+                              PlayerSettingsKeys.subtitleFont.set(font);
+                              settings.playerSettings.refresh();
+                              Navigator.pop(dialogContext);
+                            },
+                          ))
+                      .toList(),
+                );
+              }),
+            ],
+          );
+        },
       ),
     ).show(context);
   }

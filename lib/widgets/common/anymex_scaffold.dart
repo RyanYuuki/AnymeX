@@ -4,7 +4,6 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_spring_transition.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +57,8 @@ class AnymeXScaffold extends StatelessWidget {
   final String? headerTitle;
   final String? headerSubtitle;
   final Widget? headerAction;
+  final Widget? headerBottom;
+  final double? headerBottomHeight;
   final bool headerEnableSearch;
   final TextEditingController? headerSearchController;
   final ValueChanged<String>? onHeaderSearchChanged;
@@ -97,6 +98,8 @@ class AnymeXScaffold extends StatelessWidget {
     this.headerTitle,
     this.headerSubtitle,
     this.headerAction,
+    this.headerBottom,
+    this.headerBottomHeight,
     this.headerEnableSearch = false,
     this.headerSearchController,
     this.onHeaderSearchChanged,
@@ -146,6 +149,8 @@ class AnymeXScaffold extends StatelessWidget {
             title: headerTitle ?? '',
             subtitle: headerSubtitle,
             action: headerAction,
+            headerBottom: headerBottom,
+            headerBottomHeight: headerBottomHeight,
             enableSearch: headerEnableSearch,
             searchController: headerSearchController,
             onSearchChanged: onHeaderSearchChanged,
@@ -540,6 +545,8 @@ class _HeaderBodyShell extends StatefulWidget {
   final String title;
   final String? subtitle;
   final Widget? action;
+  final Widget? headerBottom;
+  final double? headerBottomHeight;
   final bool enableSearch;
   final TextEditingController? searchController;
   final ValueChanged<String>? onSearchChanged;
@@ -552,6 +559,8 @@ class _HeaderBodyShell extends StatefulWidget {
     required this.title,
     this.subtitle,
     this.action,
+    this.headerBottom,
+    this.headerBottomHeight,
     this.enableSearch = false,
     this.searchController,
     this.onSearchChanged,
@@ -604,8 +613,12 @@ class _HeaderBodyShellState extends State<_HeaderBodyShell> {
   @override
   Widget build(BuildContext context) {
     final double headerContentHeight = widget.subtitle != null ? 80.0 : 64.0;
+    final double bottomHeight = widget.headerBottom != null
+        ? (widget.headerBottomHeight ?? 52.0)
+        : 0.0;
     final statusBarHeight = MediaQuery.paddingOf(context).top;
-    final totalHeaderHeight = headerContentHeight + statusBarHeight + 24.0;
+    final totalHeaderHeight =
+        headerContentHeight + statusBarHeight + 24.0 + bottomHeight;
 
     final childWithPadding = AnymeXHeaderScope(
       topPadding: totalHeaderHeight,
@@ -639,6 +652,7 @@ class _HeaderBodyShellState extends State<_HeaderBodyShell> {
                     title: widget.title,
                     subtitle: widget.subtitle,
                     action: widget.action,
+                    bottom: widget.headerBottom,
                     enableSearch: widget.enableSearch,
                     searchController: widget.searchController,
                     onSearchChanged: widget.onSearchChanged,

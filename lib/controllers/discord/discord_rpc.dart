@@ -241,6 +241,9 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> connect() async {
+    if (!_enabled.value) {
+      return;
+    }
     if (_isConnected.value) {
       print('Already connected to Discord RPC');
       return;
@@ -472,11 +475,36 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+  bool shouldHideNsfw(Media media) {
+    final hideNsfw = DiscordRpcKeys.hideNsfw.get<bool>(false);
+    if (!hideNsfw) return false;
+    if (media.isAdult == true) return true;
+    final genres = media.genres;
+    final adultKeywords = {'hentai', 'ecchi', 'erotica', 'adult', '18+'};
+    for (final g in genres) {
+      if (adultKeywords.contains(g.toLowerCase())) return true;
+    }
+    return false;
+  }
+
+  String formatPresenceString(String template, Map<String, String> variables) {
+    var result = template;
+    for (final entry in variables.entries) {
+      result = result.replaceAll(entry.key, entry.value);
+    }
+    return result;
+  }
+
   Future<void> updateAnimePresence({
     required Media anime,
     required Episode episode,
     required String totalEpisodes,
   }) async {
+    if (!_enabled.value) return;
+    if (shouldHideNsfw(anime)) {
+      await clearPresence();
+      return;
+    }
     if (!_isConnected.value) await connect();
     if (!_isConnected.value || !_canUseDesktopRpc('updateAnimePresence')) {
       print('Discord not connected');
@@ -496,6 +524,27 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     final coverUrl = anime.cover ?? anime.poster;
     final anilistUrl = 'https://anilist.co/anime/${anime.id}';
     final animeTitle = anime.title;
+    final showTimestamps = DiscordRpcKeys.showTimestamps.get<bool>(true);
+
+    final template =
+        DiscordRpcKeys.animeWatchingFormat.get<String>('Watching \$anime');
+    final formattedWatching = formatPresenceString(
+      template,
+      {
+        '\$anime': animeTitle,
+        '\$title': animeTitle,
+        '\$episode': episodeNumber,
+        '\$totalEpisodes': totalEpisodes,
+        '\$total': totalEpisodes,
+      },
+    );
+
+    final detailsText = formattedWatching.contains(episodeNumber)
+        ? animeTitle
+        : formattedWatching;
+    final stateText = formattedWatching.contains(episodeNumber)
+        ? formattedWatching
+        : 'Episode $episodeNumber ${!episodeName.toLowerCase().contains('episode') ? '– $episodeName' : ''}';
 
     if (isMobile) {
       final presencePayload = jsonEncode({
@@ -507,13 +556,13 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
               'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 3, // Watching
-              'details': animeTitle,
-              'state':
-                  'Episode $episodeNumber ${!episodeName.toLowerCase().contains('episode') ? '– $episodeName' : ''}',
-              'timestamps': {
-                'start': startTime.millisecondsSinceEpoch,
-                'end': endTime.millisecondsSinceEpoch,
-              },
+              'details': detailsText,
+              'state': stateText,
+              if (showTimestamps)
+                'timestamps': {
+                  'start': startTime.millisecondsSinceEpoch,
+                  'end': endTime.millisecondsSinceEpoch,
+                },
               'assets': {
                 'large_image': await _processImageUrl(coverUrl),
                 'large_text': animeTitle,
@@ -543,13 +592,14 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
         await _discordRPC!.setPresence(
           DiscordPresence(
             type: DiscordActivityType.watching,
-            details: animeTitle,
-            state:
-                'Episode $episodeNumber ${!episodeName.toLowerCase().contains('episode') ? '– $episodeName' : ''} - $totalEpisodes',
-            timestamps: DiscordTimestamps(
-              start: startTime.millisecondsSinceEpoch ~/ 1000,
-              end: endTime.millisecondsSinceEpoch ~/ 1000,
-            ),
+            details: detailsText,
+            state: '$stateText - $totalEpisodes',
+            timestamps: showTimestamps
+                ? DiscordTimestamps(
+                    start: startTime.millisecondsSinceEpoch ~/ 1000,
+                    end: endTime.millisecondsSinceEpoch ~/ 1000,
+                  )
+                : null,
             largeAsset: DiscordAsset(
               key: await _processImageUrl(coverUrl),
               text: animeTitle,
@@ -579,6 +629,11 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     required Episode episode,
     required String totalEpisodes,
   }) async {
+    if (!_enabled.value) return;
+    if (shouldHideNsfw(anime)) {
+      await clearPresence();
+      return;
+    }
     if (!_isConnected.value) await connect();
     if (!_isConnected.value ||
         !_canUseDesktopRpc('updateAnimePresencePaused')) {
@@ -591,6 +646,19 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     final anilistUrl = 'https://anilist.co/anime/${anime.id}';
     final animeTitle = anime.title;
 
+    final template =
+        DiscordRpcKeys.animeWatchingFormat.get<String>('Watching \$anime');
+    final formattedWatching = formatPresenceString(
+      template,
+      {
+        '\$anime': animeTitle,
+        '\$title': animeTitle,
+        '\$episode': episodeNumber,
+        '\$totalEpisodes': totalEpisodes,
+        '\$total': totalEpisodes,
+      },
+    );
+
     final currentSeconds =
         Duration(milliseconds: episode.timeStampInMilliseconds ?? 0).inSeconds;
     final totalSeconds =
@@ -598,6 +666,11 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     final timeDisplay = (currentSeconds > 0 && totalSeconds > 0)
         ? ' • ${_formatDuration(Duration(seconds: currentSeconds))} / ${_formatDuration(Duration(seconds: totalSeconds))}'
         : '';
+
+    final detailsText = formattedWatching.contains(episodeNumber)
+        ? animeTitle
+        : formattedWatching;
+    final stateText = 'Paused • Episode $episodeNumber$timeDisplay';
 
     if (isMobile) {
       final presencePayload = jsonEncode({
@@ -609,8 +682,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
               'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 3, // Watching
-              'details': animeTitle,
-              'state': 'Episode $episodeNumber$timeDisplay (Paused)',
+              'details': detailsText,
+              'state': stateText,
               'assets': {
                 'large_image': await _processImageUrl(coverUrl),
                 'large_text': animeTitle,
@@ -640,8 +713,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
         await _discordRPC!.setPresence(
           DiscordPresence(
             type: DiscordActivityType.watching,
-            details: animeTitle,
-            state: 'Episode $episodeNumber$timeDisplay (Paused)',
+            details: detailsText,
+            state: stateText,
             largeAsset: DiscordAsset(
               key: await _processImageUrl(coverUrl),
               text: animeTitle,
@@ -672,6 +745,11 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     required String totalChapters,
     int currentPage = 1,
   }) async {
+    if (!_enabled.value) return;
+    if (shouldHideNsfw(manga)) {
+      await clearPresence();
+      return;
+    }
     if (!_isConnected.value) await connect();
     if (!_isConnected.value || !_canUseDesktopRpc('updateMangaPresence')) {
       print('Discord not connected');
@@ -684,6 +762,28 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     final chapterNumber = chapter.number?.toString() ?? 'Unknown';
     final totalPages = chapter.totalPages ?? 1;
 
+    final template =
+        DiscordRpcKeys.mangaReadingFormat.get<String>('Reading \$manga');
+    final formattedReading = formatPresenceString(
+      template,
+      {
+        '\$manga': mangaTitle,
+        '\$title': mangaTitle,
+        '\$chapter': chapterNumber,
+        '\$totalChapters': totalChapters,
+        '\$total': totalChapters,
+        '\$page': currentPage.toString(),
+        '\$totalPages': totalPages.toString(),
+      },
+    );
+
+    final detailsText = formattedReading.contains(chapterNumber)
+        ? mangaTitle
+        : formattedReading;
+    final stateText = formattedReading.contains(chapterNumber)
+        ? formattedReading
+        : 'Chapter: $chapterNumber/$totalChapters • Page: $currentPage/$totalPages';
+
     if (isMobile) {
       final presencePayload = jsonEncode({
         'op': 3,
@@ -694,9 +794,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
               'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 0, // Playing
-              'details': mangaTitle,
-              'state':
-                  'Chapter: $chapterNumber/$totalChapters • Page: $currentPage/$totalPages',
+              'details': detailsText,
+              'state': stateText,
               'assets': {
                 'large_image': await _processImageUrl(coverUrl),
                 'large_text': mangaTitle,
@@ -726,9 +825,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
         await _discordRPC!.setPresence(
           DiscordPresence(
             type: DiscordActivityType.playing,
-            details: mangaTitle,
-            state:
-                'Chapter: $chapterNumber/$totalChapters • Page: $currentPage/$totalPages',
+            details: detailsText,
+            state: stateText,
             largeAsset: DiscordAsset(
               key: await _processImageUrl(coverUrl),
               text: mangaTitle,
@@ -754,6 +852,11 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> updateMediaPresence({required Media media}) async {
+    if (!_enabled.value) return;
+    if (shouldHideNsfw(media)) {
+      await clearPresence();
+      return;
+    }
     if (!_isConnected.value) await connect();
     if (!_isConnected.value || !_canUseDesktopRpc('updateMediaPresence')) {
       print('Discord not connected');
@@ -762,8 +865,28 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
 
     final anilistUrl =
         'https://anilist.co/${media.mediaType.isAnime ? 'anime' : 'manga'}/${media.id}';
-    final animeTitle = media.title;
+    final mediaTitle = media.title;
     final type = media.mediaType.name.capitalizeFirst ?? '';
+
+    final isAnime = media.mediaType.isAnime;
+    final isManga = media.mediaType.isManga;
+    final defaultTemplate = isAnime
+        ? DiscordRpcKeys.animeDetailsFormat.get<String>('Viewing \$anime')
+        : (isManga
+            ? DiscordRpcKeys.mangaDetailsFormat.get<String>('Viewing \$manga')
+            : DiscordRpcKeys.novelDetailsFormat.get<String>('Viewing \$novel'));
+
+    final formattedState = formatPresenceString(
+      defaultTemplate,
+      {
+        '\$anime': mediaTitle,
+        '\$manga': mediaTitle,
+        '\$novel': mediaTitle,
+        '\$media': mediaTitle,
+        '\$title': mediaTitle,
+        '\$type': type,
+      },
+    );
 
     if (isMobile) {
       final presencePayload = jsonEncode({
@@ -775,12 +898,12 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
               'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 0,
-              'details': animeTitle,
-              'state': 'Viewing $type',
+              'details': mediaTitle,
+              'state': formattedState,
               'assets': {
                 'large_image':
                     await _processImageUrl(media.cover ?? media.poster),
-                'large_text': animeTitle,
+                'large_text': mediaTitle,
                 'small_image': await _processImageUrl(_getAppIconUrl()),
                 'small_text': 'AnymeX',
               },
@@ -807,11 +930,11 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
         await _discordRPC!.setPresence(
           DiscordPresence(
             type: DiscordActivityType.watching,
-            details: animeTitle,
-            state: 'Viewing $type',
+            details: mediaTitle,
+            state: formattedState,
             largeAsset: DiscordAsset(
               key: await _processImageUrl(media.cover ?? media.poster),
-              text: animeTitle,
+              text: mediaTitle,
             ),
             smallAsset: DiscordAsset(
               key: await _processImageUrl(_getAppIconUrl()),
@@ -849,11 +972,23 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     String? activity,
     String? details,
   }) async {
+    if (!_enabled.value) return;
     if (!_isConnected.value) await connect();
     if (!_isConnected.value || !_canUseDesktopRpc('updateBrowsingPresence')) {
       print('Discord not connected');
       return;
     }
+
+    final template = DiscordRpcKeys.idleFormat.get<String>('Browsing \$status');
+    final formattedState = formatPresenceString(
+      template,
+      {
+        '\$status': details ?? activity ?? 'AnymeX',
+        '\$title': activity ?? 'Using AnymeX',
+      },
+    );
+
+    final detailsText = activity ?? 'Using AnymeX';
 
     if (isMobile) {
       final presencePayload = jsonEncode({
@@ -865,8 +1000,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
               'application_id': _applicationId,
               'name': 'AnymeX',
               'type': 0,
-              'details': activity ?? 'Browsing Stuff',
-              'state': details ?? 'Idle',
+              'details': detailsText,
+              'state': formattedState,
               'assets': {
                 'large_image': await _processImageUrl(_getAppIconUrl()),
                 'large_text': 'AnymeX - Anime & Manga',
@@ -892,8 +1027,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
         await _discordRPC!.setPresence(
           DiscordPresence(
             type: DiscordActivityType.playing,
-            details: activity ?? 'Browsing Stuff',
-            state: details ?? 'Idle',
+            details: detailsText,
+            state: formattedState,
             largeAsset: DiscordAsset(
               key: await _processImageUrl(_getAppIconUrl()),
               text: 'AnymeX - Anime & Manga',
@@ -908,10 +1043,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> clearPresence() async {
-    if (!_isConnected.value || !_canUseDesktopRpc('clearPresence')) {
-      print('Discord not connected');
-      return;
-    }
+    if (!_isConnected.value) return;
 
     if (isMobile) {
       final payload = {
@@ -926,11 +1058,13 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
       _gatewaySocket?.add(jsonEncode(payload));
       print('Presence cleared successfully');
     } else {
-      try {
-        await _discordRPC!.clearPresence();
-        print('Presence cleared successfully');
-      } catch (e) {
-        print('Error clearing presence: $e');
+      if (_discordRPC != null) {
+        try {
+          await _discordRPC!.clearPresence();
+          print('Presence cleared successfully');
+        } catch (e) {
+          print('Error clearing presence: $e');
+        }
       }
     }
   }

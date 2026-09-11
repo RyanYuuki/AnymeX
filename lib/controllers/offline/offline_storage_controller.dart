@@ -36,27 +36,25 @@ class OfflineStorageController extends GetxController {
 
   Future<void> _ensureDefaultListsExist() async {
     try {
-      await isar.writeTxn(() async {
-        for (final type in ItemType.values) {
-          final existing = await isar.customLists
-              .filter()
-              .listNameEqualTo('Default')
-              .mediaTypeIndexEqualTo(type.index)
-              .findFirst();
-          if (existing == null &&
-              isar.customLists
-                  .filter()
-                  .mediaTypeIndexEqualTo(type.index)
-                  .findAllSync()
-                  .isEmpty) {
-            await isar.customLists.put(CustomList(
-              listName: 'Default',
-              mediaIds: [],
-              mediaTypeIndex: type.index,
-            ));
-          }
+      final List<CustomList> listsToInsert = [];
+      for (final type in ItemType.values) {
+        final existingLists = await isar.customLists
+            .filter()
+            .mediaTypeIndexEqualTo(type.index)
+            .findAll();
+        if (existingLists.isEmpty) {
+          listsToInsert.add(CustomList(
+            listName: 'Default',
+            mediaIds: [],
+            mediaTypeIndex: type.index,
+          ));
         }
-      });
+      }
+      if (listsToInsert.isNotEmpty) {
+        await isar.writeTxn(() async {
+          await isar.customLists.putAll(listsToInsert);
+        });
+      }
     } catch (e) {
       Logger.e('Error ensuring default custom lists exist: $e');
     }
@@ -346,15 +344,20 @@ class OfflineStorageController extends GetxController {
     }
 
     final hadHistory = mediaType == ItemType.anime
-        ? media.currentEpisode != null
-        : media.currentChapter != null;
+        ? (media.currentEpisode != null ||
+            (media.watchedEpisodes != null &&
+                media.watchedEpisodes!.isNotEmpty))
+        : (media.currentChapter != null ||
+            (media.readChapters != null && media.readChapters!.isNotEmpty));
     if (!hadHistory) return false;
 
     await isar.writeTxn(() async {
       if (mediaType == ItemType.anime) {
         media.currentEpisode = null;
+        media.watchedEpisodes = [];
       } else {
         media.currentChapter = null;
+        media.readChapters = [];
       }
       await isar.offlineMedias.put(media);
     });
@@ -380,14 +383,20 @@ class OfflineStorageController extends GetxController {
     await isar.writeTxn(() async {
       for (final media in mediaItems) {
         final hasHistory = mediaType == ItemType.anime
-            ? media.currentEpisode != null
-            : media.currentChapter != null;
+            ? (media.currentEpisode != null ||
+                (media.watchedEpisodes != null &&
+                    media.watchedEpisodes!.isNotEmpty))
+            : (media.currentChapter != null ||
+                (media.readChapters != null &&
+                    media.readChapters!.isNotEmpty));
         if (!hasHistory) continue;
 
         if (mediaType == ItemType.anime) {
           media.currentEpisode = null;
+          media.watchedEpisodes = [];
         } else {
           media.currentChapter = null;
+          media.readChapters = [];
         }
 
         await isar.offlineMedias.put(media);
@@ -602,7 +611,7 @@ class OfflineStorageController extends GetxController {
         episodes != null) {
       final matched = episodes.firstWhereOrNull((e) =>
           (e.link != null && e.link!.isNotEmpty && e.link == currentEpisode.link) ||
-          e.number == currentEpisode.number);
+          e.isSameEpisode(currentEpisode));
       if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
         currentEpisode.title = matched.title;
       }
@@ -731,19 +740,20 @@ class OfflineStorageController extends GetxController {
           existingAnime.episodes != null) {
         final matched = existingAnime.episodes!.firstWhereOrNull((e) =>
             (e.link != null && e.link!.isNotEmpty && e.link == episode.link) ||
-            e.number == episode.number);
+            e.isSameEpisode(episode));
         if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
           episode.title = matched.title;
         }
       }
 
+      bool isNewEpisode = false;
       await isar.writeTxn(() async {
         existingAnime.watchedEpisodes ??= [];
         episode.source = sourceController.activeSource.value?.name;
         episode.lastWatchedTime = DateTime.now().millisecondsSinceEpoch;
 
         final index = existingAnime.watchedEpisodes!
-            .indexWhere((e) => e.number == episode.number);
+            .indexWhere((e) => e.isSameEpisode(episode));
         existingAnime.watchedEpisodes =
             List<Episode>.from(existingAnime.watchedEpisodes!);
 
@@ -754,20 +764,23 @@ class OfflineStorageController extends GetxController {
         } else {
           existingAnime.watchedEpisodes!.add(episode);
           Logger.i('Added new episode: ${episode.title} for anime ID: $animeId');
-          Get.find<StatsTracker>().logWatch(
-            animeId,
-            existingAnime.name ?? 'Unknown',
-            0,
-            episodeCompleted: true,
-            poster: existingAnime.poster,
-            cover: existingAnime.cover,
-          );
+          isNewEpisode = true;
         }
 
         existingAnime.currentEpisode = episode;
 
         await isar.offlineMedias.put(existingAnime);
       });
+      if (isNewEpisode) {
+        Get.find<StatsTracker>().logWatch(
+          animeId,
+          existingAnime.name ?? 'Unknown',
+          0,
+          episodeCompleted: true,
+          poster: existingAnime.poster,
+          cover: existingAnime.cover,
+        );
+      }
       update();
 
       if (syncToCloud) {
@@ -779,9 +792,15 @@ class OfflineStorageController extends GetxController {
     });
   }
 
-  Episode? getWatchedEpisode(String anilistId, String episodeNumber) {
+  Episode? getWatchedEpisode(String anilistId, String episodeNumber,
+      {Episode? episode}) {
     final anime = getAnimeById(anilistId);
     if (anime?.watchedEpisodes == null) return null;
+
+    if (episode != null) {
+      return anime!.watchedEpisodes!
+          .firstWhereOrNull((e) => e.isSameEpisode(episode));
+    }
 
     return anime!.watchedEpisodes!
         .firstWhereOrNull((e) => e.number == episodeNumber);
@@ -813,6 +832,7 @@ class OfflineStorageController extends GetxController {
         }
       }
 
+      bool isNewChapter = false;
       await isar.writeTxn(() async {
         existingManga!.readChapters ??= [];
         chapter.sourceName =
@@ -830,23 +850,26 @@ class OfflineStorageController extends GetxController {
         } else {
           existingManga.readChapters!.add(chapter);
           Logger.i('Added new chapter: ${chapter.title} for manga ID: $mangaId');
-          Get.find<StatsTracker>().logRead(
-            mangaId,
-            existingManga.name ?? 'Unknown',
-            0,
-            chaptersCompleted: 1,
-            type: existingManga.mediaTypeIndex == ItemType.novel.index
-                ? 'novel'
-                : 'manga',
-            poster: existingManga.poster,
-            cover: existingManga.cover,
-          );
+          isNewChapter = true;
         }
 
         existingManga.currentChapter = chapter;
 
         await isar.offlineMedias.put(existingManga);
       });
+      if (isNewChapter) {
+        Get.find<StatsTracker>().logRead(
+          mangaId,
+          existingManga.name ?? 'Unknown',
+          0,
+          chaptersCompleted: 1,
+          type: existingManga.mediaTypeIndex == ItemType.novel.index
+              ? 'novel'
+              : 'manga',
+          poster: existingManga.poster,
+          cover: existingManga.cover,
+        );
+      }
       update();
 
       if (syncToCloud) {

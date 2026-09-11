@@ -1,5 +1,6 @@
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_discord.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
@@ -86,6 +87,7 @@ String settingsEntryId({
 
 final categoryRoutes = <String, Widget Function()>{
   'Accounts': () => const SettingsAccounts(),
+  'Discord RPC': () => const SettingsDiscord(),
   'Common': () => const SettingsCommon(),
   'Backup & Restore': () => const BackupRestorePage(),
   'Storage Manager': () => const SettingsStorageManager(),

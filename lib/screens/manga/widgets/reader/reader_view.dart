@@ -8,6 +8,7 @@ import 'package:anymex/screens/manga/widgets/reader/reader_color_overlay.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_page_actions_dialog.dart';
 import 'package:anymex/widgets/subsampling_scale_image_view/subsampling_image_provider.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/gestures.dart';
@@ -357,13 +358,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
           child: SubsamplingImageProvider(
             page: PageUrl(
               page.url,
-              headers: (page.headers?.isEmpty ?? true)
-                  ? {
-                      'Referer':
-                          sourceController.activeMangaSource.value?.baseUrl ??
-                              ''
-                    }
-                  : page.headers,
+              headers: getPageImageHeaders(page.headers),
             ),
             width: calculatedWidth,
             fit: fitMode,

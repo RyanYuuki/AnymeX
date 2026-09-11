@@ -109,12 +109,14 @@ _ChapterTileData _computeTileData({
 class ChapterListBuilder extends StatefulWidget {
   final List<Chapter> chapterList;
   final Media? anilistData;
+  final RxInt? selectedScanlatorIndex;
   final VoidCallback? onSettingsTap;
 
   const ChapterListBuilder({
     super.key,
     required this.chapterList,
     required this.anilistData,
+    this.selectedScanlatorIndex,
     this.onSettingsTap,
   });
 
@@ -124,7 +126,7 @@ class ChapterListBuilder extends StatefulWidget {
 
 class _ChapterListBuilderState extends State<ChapterListBuilder> {
   final RxInt selectedChunkIndex = 0.obs;
-  final RxInt selectedScanlatorIndex = 0.obs;
+  late final RxInt selectedScanlatorIndex;
   final _offlineStorage = Get.find<OfflineStorageController>();
   final _auth = Get.find<ServiceHandler>();
   final _sourceController = Get.find<SourceController>();
@@ -137,6 +139,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
   @override
   void initState() {
     super.initState();
+    selectedScanlatorIndex = widget.selectedScanlatorIndex ?? 0.obs;
     _resolveComputedState();
     _offlineStorageListener = () {
       _resolveComputedState();

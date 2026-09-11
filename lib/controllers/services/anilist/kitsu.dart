@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/utils/logger.dart';
 
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 
 class Kitsu {
   static Future<List<Episode>> fetchKitsuEpisodes(
@@ -57,12 +57,12 @@ class Kitsu {
     };
 
     try {
-      final response = await post(
+      final response = await NetworkManager.instance.compatibleClient.post(
         Uri.parse('https://kitsu.io/api/graphql'),
         headers: headers,
         body: jsonEncode({"query": query}),
       );
-      final json = await jsonDecode(response.body);
+      final json = jsonDecode(response.body);
       return json;
     } catch (e) {
       debugPrint("Error fetching Kitsu data: $e");

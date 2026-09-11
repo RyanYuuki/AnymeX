@@ -33,6 +33,7 @@ enum General {
   useAlternateTitle,
   unifiedLibrary,
   joinDialogShowCount,
+  wrongTitleIsCardView,
 }
 
 enum ThemeKeys {
@@ -182,8 +183,6 @@ enum AuthKeys {
   mangaBakaAuthToken,
 }
 
-enum SearchKeys { novelSearchedQueries }
-
 enum LibraryKeys { libraryLastType }
 
 enum TapZoneKeys {
@@ -308,4 +307,16 @@ enum DownloadKeys {
   downloadChunks,
   hlsParallelSegments,
   enableJxlCompression,
+}
+
+enum DiscordRpcKeys {
+  hideNsfw,
+  showTimestamps,
+  animeWatchingFormat,
+  animeDetailsFormat,
+  mangaReadingFormat,
+  mangaDetailsFormat,
+  novelReadingFormat,
+  novelDetailsFormat,
+  idleFormat,
 }

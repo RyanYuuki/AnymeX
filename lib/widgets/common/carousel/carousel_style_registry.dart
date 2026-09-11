@@ -60,7 +60,7 @@ class CarouselStyleRegistry {
     return style.builder(key: key, data: data, carouselType: carouselType);
   }
 
-  static Widget _buildClassic({
+  static BigCarouselClassic _buildClassic({
     Key? key,
     required List<Media> data,
     required CarouselType carouselType,

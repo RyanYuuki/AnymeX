@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:anymex/controllers/network/network_manager.dart';
+import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/character.dart';
@@ -37,11 +38,17 @@ class AnilistApi {
       );
 
       if (response.statusCode == 200) {
-        return json.decode(response.body) as Map<String, dynamic>?;
+        final decoded = json.decode(response.body) as Map<String, dynamic>?;
+        if (decoded != null && decoded['errors'] != null) {
+          AnilistErrorHandler.handleResponse(response);
+        }
+        return decoded;
       } else {
+        AnilistErrorHandler.handleResponse(response);
         Logger.i('AniList GraphQL Error: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
+      AnilistErrorHandler.handleError(e);
       Logger.i('Error posting AniList query: $e');
     }
     return null;

@@ -120,16 +120,9 @@ class LibraryController extends GetxController {
 
     _streamSubscription = stream.listen((items) {
       if (selectedListIndex.value == -1) {
-        List<OfflineMedia> filtered;
-        if (type.value.isAnime) {
-          filtered = items
-              .where((e) => e.currentEpisode?.currentTrack != null)
-              .toList();
-        } else {
-          filtered = items
-              .where((e) => e.currentChapter?.link != null)
-              .toList();
-        }
+        final filtered = items
+            .where((e) => e.hasRequiredHistoryMedia(type.value))
+            .toList();
         rawItems.value = filtered;
       } else {
         rawItems.value = items;
@@ -358,14 +351,9 @@ class LibraryController extends GetxController {
 
   Stream<List<OfflineMedia>> getHistoryStream() {
     return getLibraryStream().asyncMap((items) async {
-      List<OfflineMedia> filtered;
-      if (type.value.isAnime) {
-        filtered = items
-            .where((e) => e.currentEpisode?.currentTrack != null)
-            .toList();
-      } else {
-        filtered = items.where((e) => e.currentChapter?.link != null).toList();
-      }
+      final filtered = items
+          .where((e) => e.hasRequiredHistoryMedia(type.value))
+          .toList();
       final searched = applySearch(filtered, searchQuery.value);
       return applySorting(searched);
     });

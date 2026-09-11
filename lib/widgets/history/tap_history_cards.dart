@@ -22,22 +22,59 @@ class NewEpisodeReleaseCard extends StatelessWidget {
     this.latestReleasedEpisode,
   });
 
-  String _getTimeAgo() {
-    if (media.createdAt == null) return 'Recently';
-    final now = DateTime.now();
-    final difference = now.difference(media.createdAt!);
+  DateTime? _getReleaseDate() {
+    if (media.nextAiringEpisode != null &&
+        media.nextAiringEpisode!.airingAt > 0) {
+      final nextAiringSec = media.nextAiringEpisode!.airingAt;
+      final nextAiringDate =
+          DateTime.fromMillisecondsSinceEpoch(nextAiringSec * 1000);
+      final now = DateTime.now();
+      if (nextAiringDate.isBefore(now)) {
+        return nextAiringDate;
+      }
+      final nextEp = media.nextAiringEpisode!.episode;
+      final currentEp = latestReleasedEpisode ?? (nextEp - 1);
+      final epDiff = (nextEp - currentEp).clamp(0, 52);
+      final releasedSec = nextAiringSec - (epDiff * 7 * 86400);
+      final date = DateTime.fromMillisecondsSinceEpoch(releasedSec * 1000);
+      if (date.isAfter(now)) {
+        return date.subtract(const Duration(days: 7));
+      }
+      return date;
+    }
+    if (media.createdAt != null) {
+      final now = DateTime.now();
+      if (media.createdAt!.isBefore(now)) {
+        return media.createdAt;
+      }
+    }
+    return null;
+  }
 
-    if (difference.inDays == 0) {
+  String? _getReleaseDateText() {
+    final releaseDate = _getReleaseDate();
+    if (releaseDate == null) return null;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final aDate =
+        DateTime(releaseDate.year, releaseDate.month, releaseDate.day);
+    final diffDays = today.difference(aDate).inDays;
+
+    if (diffDays <= 0) {
       return 'Today';
-    } else if (difference.inDays == 1) {
+    } else if (diffDays == 1) {
       return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
-    } else if (difference.inDays < 30) {
-      final weeks = difference.inDays ~/ 7;
+    } else if (diffDays <= 7) {
+      return '$diffDays days ago';
+    } else if (diffDays < 30) {
+      final weeks = diffDays ~/ 7;
       return '$weeks week${weeks == 1 ? '' : 's'} ago';
+    } else if (diffDays < 365) {
+      final months = diffDays ~/ 30;
+      return '$months month${months == 1 ? '' : 's'} ago';
     } else {
-      return 'Recently';
+      final years = diffDays ~/ 365;
+      return '$years year${years == 1 ? '' : 's'} ago';
     }
   }
 
@@ -206,27 +243,29 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 3),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.newspaper_outlined,
-                                  size: 13,
-                                  color: colorScheme.onSurfaceVariant
-                                      .withOpacity(0.7),
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: AnymeXText(
-                                    'Released ${_getTimeAgo()}',
-                                    size: 11.5,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    color: colorScheme.onSurfaceVariant,
+                            if (_getReleaseDateText() != null) ...[
+                              const SizedBox(height: 3),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.newspaper_outlined,
+                                    size: 13,
+                                    color: colorScheme.onSurfaceVariant
+                                        .withOpacity(0.7),
                                   ),
-                                ),
-                              ],
-                            ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: AnymeXText(
+                                      'Released ${_getReleaseDateText()}',
+                                      size: 11.5,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ],
                         ),
                       ],

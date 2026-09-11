@@ -45,8 +45,7 @@ class _HomePageState extends State<HomePage> {
           serviceHandler.animeList.isNotEmpty) {
         for (final item in serviceHandler.animeList) {
           if (item.type?.toUpperCase() == 'MANGA' || item.id == null) continue;
-          final watched = int.tryParse(item.episodeCount ?? '') ??
-              (item.userProgress ?? 0);
+          final watched = item.effectiveProgress;
           int latestReleased = 0;
           if (item.releasedEpisodes != null &&
               item.releasedEpisodes!.isNotEmpty) {
@@ -55,10 +54,11 @@ class _HomePageState extends State<HomePage> {
             latestReleased = int.tryParse(item.totalEpisodes ?? '') ?? 0;
           }
 
-          final isWatching = item.watchingStatus?.toUpperCase() == 'CURRENT' ||
-              item.watchingStatus?.toUpperCase() == 'WATCHING' ||
-              (watched > 0 &&
-                  item.watchingStatus?.toUpperCase() != 'COMPLETED');
+          final status = item.watchingStatus?.toUpperCase();
+          final isWatching = status == 'CURRENT' ||
+              status == 'WATCHING' ||
+              status == 'REPEATING' ||
+              status == 'REWATCHING';
 
           if (isWatching && latestReleased > watched) {
             final media = CardData.fromTrackedMedia(item).data;

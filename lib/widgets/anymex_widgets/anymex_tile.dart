@@ -13,6 +13,7 @@ class AnymeXTile extends StatelessWidget {
   final Widget? subtitleWidget;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final Color? iconColor;
   final Color? iconBackgroundColor;
   final bool showChevron;
@@ -22,6 +23,8 @@ class AnymeXTile extends StatelessWidget {
   final Widget? customContent;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
+  final int? maxLines;
+  final bool autoResize;
 
   const AnymeXTile({
     super.key,
@@ -32,6 +35,7 @@ class AnymeXTile extends StatelessWidget {
     this.subtitleWidget,
     this.trailing,
     this.onTap,
+    this.onLongPress,
     this.iconColor,
     this.iconBackgroundColor,
     this.showChevron = true,
@@ -39,12 +43,11 @@ class AnymeXTile extends StatelessWidget {
     this.padding,
     this.enabled = true,
     this.customContent,
-    this.maxLines,
+    this.maxLines = 4,
+    this.autoResize = true,
     this.titleStyle,
     this.subtitleStyle,
   });
-
-  final int? maxLines;
 
   static Widget _buildSwitch(
     BuildContext context,
@@ -250,6 +253,7 @@ class AnymeXTile extends StatelessWidget {
     String? subtitle,
     required bool selected,
     required VoidCallback? onTap,
+    VoidCallback? onLongPress,
     Color? iconColor,
     Color? iconBackgroundColor,
     BorderRadius? borderRadius,
@@ -271,6 +275,7 @@ class AnymeXTile extends StatelessWidget {
       enabled: enabled,
       showChevron: false,
       onTap: enabled ? onTap : null,
+      onLongPress: enabled ? onLongPress : null,
       titleStyle: titleStyle,
       subtitleStyle: subtitleStyle,
       trailing: Builder(
@@ -495,7 +500,8 @@ class AnymeXTile extends StatelessWidget {
                     AnymeXText(
                       title,
                       size: 14.5,
-                      maxLines: maxLines ?? 2,
+                      maxLines: maxLines ?? 4,
+                      autoResize: autoResize,
                       variant: TextVariant.semiBold,
                       color: enabled
                           ? colors.onSurface
@@ -531,7 +537,7 @@ class AnymeXTile extends StatelessWidget {
       ),
     );
 
-    if (onTap != null && enabled) {
+    if ((onTap != null || onLongPress != null) && enabled) {
       return Material(
         color: Colors.transparent,
         borderRadius: radius,
@@ -539,6 +545,7 @@ class AnymeXTile extends StatelessWidget {
           margin: 0,
           scale: 0.98,
           onTap: onTap,
+          onLongPress: onLongPress,
           child: contentWidget,
         ),
       );
