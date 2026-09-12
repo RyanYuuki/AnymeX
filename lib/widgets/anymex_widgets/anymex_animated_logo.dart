@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:anymex/controllers/custom_logo/custom_logo_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -14,6 +16,8 @@ class AnymeXAnimatedLogo extends StatefulWidget {
   final Color? color;
   final Gradient? gradient;
   final LogoAnimationType? forceAnimationType;
+  final String? forceCustomLogoPath;
+  final bool? useOriginalSize;
 
   const AnymeXAnimatedLogo({
     super.key,
@@ -23,6 +27,8 @@ class AnymeXAnimatedLogo extends StatefulWidget {
     this.color,
     this.gradient,
     this.forceAnimationType,
+    this.forceCustomLogoPath,
+    this.useOriginalSize,
   });
 
   @override
@@ -34,13 +40,20 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   late AnimationController _controller;
   late Animation<double> _animation;
   late LogoAnimationType _animationType;
+  String? _customLogoPath;
+  int _replayKeyCounter = 0;
 
   @override
   void initState() {
     super.initState();
     _animationType = widget.forceAnimationType ?? _getStoredAnimationType();
+    if (widget.forceCustomLogoPath != null) {
+      _customLogoPath = widget.forceCustomLogoPath;
+    } else if (widget.forceAnimationType == null) {
+      _customLogoPath = CustomLogoService.getSelectedCustomLogoPath();
+    }
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: _getDurationForAnimationType(_animationType),
       vsync: this,
     );
 
@@ -62,12 +75,23 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       final index = ThemeKeys.logoAnimationType.get<int>(0);
       return LogoAnimationType.fromIndex(index);
     } catch (e) {
-      return LogoAnimationType.bottomToTop;
+      return LogoAnimationType.smokeTrace;
+    }
+  }
+
+  Duration _getDurationForAnimationType(LogoAnimationType type) {
+    switch (type) {
+      case LogoAnimationType.smokeTrace:
+        return const Duration(milliseconds: 5600);
+      default:
+        return const Duration(milliseconds: 2000);
     }
   }
 
   Curve _getCurveForAnimationType(LogoAnimationType type) {
     switch (type) {
+      case LogoAnimationType.smokeTrace:
+        return Curves.linear;
       case LogoAnimationType.bottomToTop:
       case LogoAnimationType.wave:
         return Curves.easeInOut;
@@ -116,6 +140,9 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   }
 
   void replay() {
+    setState(() {
+      _replayKeyCounter++;
+    });
     _controller.reset();
     _startAnimation();
   }
@@ -126,16 +153,48 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     super.dispose();
   }
 
+  bool _shouldUseOriginalSize() {
+    if (widget.useOriginalSize != null) {
+      return widget.useOriginalSize!;
+    }
+    // Don't auto-expand inside small headers, titlebars or about dialog
+    if (widget.size < 150) {
+      return false;
+    }
+    if (_customLogoPath != null) {
+      final logos = CustomLogoService.getCustomLogos();
+      try {
+        final match = logos.firstWhere((l) => l.filePath == _customLogoPath);
+        return match.useOriginalSize;
+      } catch (_) {}
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isOriginal = _shouldUseOriginalSize();
+    final isCustom =
+        _customLogoPath != null && File(_customLogoPath!).existsSync();
+
+    if (isCustom && isOriginal) {
+      return AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) =>
+            _buildCustomLogoFile(_customLogoPath!, useOriginalSize: true),
+      );
+    }
+
     return SizedBox(
       width: widget.size,
       height: widget.size,
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {
-          // Don't show anything during initial delay
-          if (_animation.value < 0.05) {
+          // Don't show anything during initial delay (except smokeTrace or custom logo which starts immediately)
+          if (_animation.value < 0.05 &&
+              _animationType != LogoAnimationType.smokeTrace &&
+              _customLogoPath == null) {
             return const SizedBox.shrink();
           }
           return _buildAnimatedLogo();
@@ -145,6 +204,10 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   }
 
   Widget _buildAnimatedLogo() {
+    if (_customLogoPath != null && File(_customLogoPath!).existsSync()) {
+      return _buildCustomLogoFile(_customLogoPath!);
+    }
+
     switch (_animationType) {
       case LogoAnimationType.bottomToTop:
         return _buildBottomToTopLogo();
@@ -186,7 +249,83 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         return _buildHologramLogo();
       case LogoAnimationType.vortex:
         return _buildVortexLogo();
+      case LogoAnimationType.smokeTrace:
+        return _buildSmokeTraceLogo();
     }
+  }
+
+  // custom logo file
+  Widget _buildCustomLogoFile(String filePath,
+      {bool useOriginalSize = false}) {
+    Widget content = Image.file(
+      File(filePath),
+      key: ValueKey('custom_logo_${filePath}_$_replayKeyCounter'),
+      width: useOriginalSize ? null : widget.size,
+      height: useOriginalSize ? null : widget.size,
+      fit: useOriginalSize ? BoxFit.scaleDown : BoxFit.contain,
+      gaplessPlayback: true,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildBaseLogo(100);
+      },
+    );
+
+    if (widget.gradient != null) {
+      content = ShaderMask(
+        shaderCallback: (bounds) => widget.gradient!.createShader(bounds),
+        blendMode: BlendMode.modulate,
+        child: content,
+      );
+    } else if (widget.color != null) {
+      content = ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          widget.color!,
+          BlendMode.modulate,
+        ),
+        child: content,
+      );
+    }
+
+    return content;
+  }
+
+  // smoke trace (animated GIF/WebP)
+  Widget _buildSmokeTraceLogo() {
+    Widget content = Image.asset(
+      'assets/images/logo_smoke.webp',
+      key: ValueKey('smoke_logo_$_replayKeyCounter'),
+      width: widget.size,
+      height: widget.size,
+      fit: BoxFit.contain,
+      gaplessPlayback: true,
+      errorBuilder: (context, error, stackTrace) {
+        return Image.asset(
+          'assets/images/logo_smoke.gif',
+          key: ValueKey('smoke_logo_gif_$_replayKeyCounter'),
+          width: widget.size,
+          height: widget.size,
+          fit: BoxFit.contain,
+          gaplessPlayback: true,
+        );
+      },
+    );
+
+    if (widget.gradient != null) {
+      content = ShaderMask(
+        shaderCallback: (bounds) => widget.gradient!.createShader(bounds),
+        blendMode: BlendMode.modulate,
+        child: content,
+      );
+    } else if (widget.color != null) {
+      content = ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          widget.color!,
+          BlendMode.modulate,
+        ),
+        child: content,
+      );
+    }
+
+    return content;
   }
 
   // bottom to top
@@ -1253,9 +1392,6 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   Widget _buildBaseLogo(double fillHeight) {
     final theme = Theme.of(context);
-    final bool useGradient = widget.gradient != null || widget.color == null;
-
-    String strokeFill;
     String fillGradientDef;
 
     if (widget.gradient != null) {
@@ -1263,14 +1399,11 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
           ? (widget.gradient as LinearGradient).colors
           : [theme.colorScheme.primary, theme.colorScheme.tertiary];
 
-      strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient(colors, fillHeight);
     } else if (widget.color != null) {
-      strokeFill = 'url(#logoGradient)';
       fillGradientDef =
           _createFillGradient([widget.color!, widget.color!], fillHeight);
     } else {
-      strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient([
         theme.colorScheme.primary,
         theme.colorScheme.secondary,
