@@ -77,12 +77,20 @@ const settingsSearchIndex = <String, Map<String?, List<String>>>{
   'Security & App Lock': {
     'App Protection': [
       'App Lock',
-      'Change PIN',
+      'Lock Type',
+      'Change PIN / Pattern',
       'Biometric Unlock',
+    ],
+    'Customization & Recovery': [
+      'Pattern Dot Style',
+      'Show Pattern Trail',
+      'Allow Emergency Reset',
+      'Secret Emergency Trigger',
     ],
     'Lock Behavior': [
       'Lock After',
       'Privacy Screen in App Switcher',
+      'Haptic Feedback',
     ],
   },
   'UI': {
@@ -375,10 +383,17 @@ const settingsSearchTitleIcons = <String, IconData>{
   'Features/Issues': Icons.bug_report,
   'Forks': Icons.call_split_rounded,
   'App Lock': Icons.lock_outline_rounded,
+  'Lock Type': Icons.lock_clock_rounded,
   'Change PIN': Icons.password_rounded,
+  'Change PIN / Pattern': Icons.password_rounded,
   'Biometric Unlock': Icons.fingerprint_rounded,
   'Lock After': Icons.timer_outlined,
   'Privacy Screen in App Switcher': Icons.shield_outlined,
+  'Pattern Dot Style': Icons.scatter_plot_rounded,
+  'Show Pattern Trail': Icons.gesture_rounded,
+  'Allow Emergency Reset': Icons.restore_rounded,
+  'Secret Emergency Trigger': Icons.key_rounded,
+  'Haptic Feedback': Icons.vibration_rounded,
 };
 
 const settingsSearchTitleAssetIcons = <String, String>{

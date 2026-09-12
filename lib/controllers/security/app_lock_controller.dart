@@ -19,6 +19,13 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
   final RxInt timeoutSeconds = 0.obs;
   final RxBool hideInRecentApps = true.obs;
   final RxBool showPrivacyShield = false.obs;
+  final RxBool hapticsEnabled = true.obs;
+  final Rx<AppLockType> lockType = AppLockType.pin4.obs;
+  final RxBool allowEmergencyReset = true.obs;
+  final RxString secretPinDigit = '0'.obs;
+  final RxInt secretPatternDot = 4.obs;
+  final Rx<PatternDotStyle> patternDotStyle = PatternDotStyle.circle.obs;
+  final RxBool showPatternTrail = true.obs;
 
   final RxBool isBiometricsSupported = false.obs;
   final RxList<BiometricType> availableBiometrics = <BiometricType>[].obs;
@@ -58,6 +65,21 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
       biometricsEnabled.value = AppLockKeys.biometricsEnabled.get<bool>(false);
       timeoutSeconds.value = AppLockKeys.timeoutSeconds.get<int>(0);
       hideInRecentApps.value = AppLockKeys.hideInRecentApps.get<bool>(true);
+      hapticsEnabled.value = AppLockKeys.hapticsEnabled.get<bool>(true);
+      allowEmergencyReset.value = AppLockKeys.allowEmergencyReset.get<bool>(true);
+      secretPinDigit.value = AppLockKeys.secretPinDigit.get<String>('0');
+      secretPatternDot.value = AppLockKeys.secretPatternDot.get<int>(4);
+      showPatternTrail.value = AppLockKeys.showPatternTrail.get<bool>(true);
+
+      final styleIndex = AppLockKeys.patternDotStyle.get<int>(0);
+      patternDotStyle.value = (styleIndex >= 0 && styleIndex < PatternDotStyle.values.length)
+          ? PatternDotStyle.values[styleIndex]
+          : PatternDotStyle.circle;
+
+      final typeIndex = AppLockKeys.lockType.get<int>(0);
+      lockType.value = (typeIndex >= 0 && typeIndex < AppLockType.values.length)
+          ? AppLockType.values[typeIndex]
+          : AppLockType.pin4;
 
       if (isEnabled.value && timeoutSeconds.value != -2) {
         isLocked.value = true;
@@ -127,6 +149,64 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     hideInRecentApps.value = hide;
   }
 
+  void setHapticsEnabled(bool enabled) {
+    AppLockKeys.hapticsEnabled.set(enabled);
+    hapticsEnabled.value = enabled;
+  }
+
+  void vibrateLight() {
+    if (hapticsEnabled.value) {
+      HapticFeedback.lightImpact();
+    }
+  }
+
+  void vibrateMedium() {
+    if (hapticsEnabled.value) {
+      HapticFeedback.mediumImpact();
+    }
+  }
+
+  void vibrateError() {
+    if (hapticsEnabled.value) {
+      HapticFeedback.vibrate();
+    }
+  }
+
+  void setLockType(AppLockType type) {
+    AppLockKeys.lockType.set(type.index);
+    lockType.value = type;
+  }
+
+  void setAllowEmergencyReset(bool val) {
+    AppLockKeys.allowEmergencyReset.set(val);
+    allowEmergencyReset.value = val;
+  }
+
+  void setSecretPinDigit(String digit) {
+    AppLockKeys.secretPinDigit.set(digit);
+    secretPinDigit.value = digit;
+  }
+
+  void setSecretPatternDot(int dotIndex) {
+    AppLockKeys.secretPatternDot.set(dotIndex);
+    secretPatternDot.value = dotIndex;
+  }
+
+  void setPatternDotStyle(PatternDotStyle style) {
+    AppLockKeys.patternDotStyle.set(style.index);
+    patternDotStyle.value = style;
+  }
+
+  void setShowPatternTrail(bool show) {
+    AppLockKeys.showPatternTrail.set(show);
+    showPatternTrail.value = show;
+  }
+
+  void emergencyReset() {
+    if (!allowEmergencyReset.value) return;
+    disableAppLock();
+  }
+
   void lockManually() {
     if (isEnabled.value) {
       isLocked.value = true;
@@ -143,7 +223,7 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
       _cooldownTimer?.cancel();
       isLocked.value = false;
       showPrivacyShield.value = false;
-      HapticFeedback.mediumImpact();
+      vibrateMedium();
       return true;
     } else {
       failedAttempts.value++;
@@ -151,7 +231,7 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
         _startCooldown(30);
         failedAttempts.value = 0;
       }
-      HapticFeedback.vibrate();
+      vibrateError();
       return false;
     }
   }

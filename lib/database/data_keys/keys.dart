@@ -36,12 +36,33 @@ enum General {
   wrongTitleIsCardView,
 }
 
+enum AppLockType {
+  pin4,
+  pin6,
+  pattern,
+}
+
+enum PatternDotStyle {
+  circle,
+  glow,
+  diamond,
+  heart,
+  star,
+}
+
 enum AppLockKeys {
   isEnabled,
   pinHash,
+  lockType,
   biometricsEnabled,
   timeoutSeconds,
   hideInRecentApps,
+  hapticsEnabled,
+  allowEmergencyReset,
+  secretPinDigit,
+  secretPatternDot,
+  patternDotStyle,
+  showPatternTrail,
 }
 
 enum ThemeKeys {
