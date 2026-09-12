@@ -36,6 +36,7 @@ const settingsSearchCategoryIcons = <String, IconData>{
   'Extensions': Icons.extension_rounded,
   'Logs': HugeIcons.strokeRoundedFile01,
   'About': HugeIcons.strokeRoundedInformationCircle,
+  'Security & App Lock': Icons.lock_outline_rounded,
 };
 
 const settingsSearchIndex = <String, Map<String?, List<String>>>{
@@ -72,6 +73,17 @@ const settingsSearchIndex = <String, Map<String?, List<String>>>{
   },
   'Storage Manager': {
     null: ['Auto-clear threshold', 'Clear image cache now', 'Factory reset'],
+  },
+  'Security & App Lock': {
+    'App Protection': [
+      'App Lock',
+      'Change PIN',
+      'Biometric Unlock',
+    ],
+    'Lock Behavior': [
+      'Lock After',
+      'Privacy Screen in App Switcher',
+    ],
   },
   'UI': {
     'Common': [
@@ -362,6 +374,11 @@ const settingsSearchTitleIcons = <String, IconData>{
   'Ko-fi': HugeIcons.strokeRoundedCoffee01,
   'Features/Issues': Icons.bug_report,
   'Forks': Icons.call_split_rounded,
+  'App Lock': Icons.lock_outline_rounded,
+  'Change PIN': Icons.password_rounded,
+  'Biometric Unlock': Icons.fingerprint_rounded,
+  'Lock After': Icons.timer_outlined,
+  'Privacy Screen in App Switcher': Icons.shield_outlined,
 };
 
 const settingsSearchTitleAssetIcons = <String, String>{

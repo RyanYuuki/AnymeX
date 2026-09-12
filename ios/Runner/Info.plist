@@ -14,6 +14,8 @@
     <string>This app needs access to photo library to save backup files</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>This app needs access to save backup files to your photo library</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>AnymeX uses Face ID to securely unlock the app</string>
     <key>UISupportsDocumentBrowser</key>
     <true/>
     <key>LSSupportsOpeningDocumentsInPlace</key>

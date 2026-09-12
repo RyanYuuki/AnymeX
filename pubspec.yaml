@@ -49,6 +49,7 @@ dependencies:
     kenburns_nullsafety: ^1.0.1
     subtitle: any
     cross_platform_video_thumbnails: ^0.1.0
+    local_auth: ^3.0.2
 
     outlined_text: ^1.0.1
     media_kit:

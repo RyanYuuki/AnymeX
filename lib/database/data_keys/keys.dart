@@ -36,6 +36,14 @@ enum General {
   wrongTitleIsCardView,
 }
 
+enum AppLockKeys {
+  isEnabled,
+  pinHash,
+  biometricsEnabled,
+  timeoutSeconds,
+  hideInRecentApps,
+}
+
 enum ThemeKeys {
   isLightMode,
   isSystemMode,
