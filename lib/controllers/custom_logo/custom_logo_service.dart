@@ -101,79 +101,126 @@ class CustomLogoService {
     return logos.any((l) => l.name.trim().toLowerCase() == clean);
   }
 
+  static Future<PlatformFile?> pickLogoFile() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['gif', 'webp', 'png', 'jpg', 'jpeg'],
+      allowMultiple: false,
+    );
+    if (result == null || result.files.isEmpty) return null;
+    final file = result.files.first;
+    if (file.path == null) return null;
+    if (file.size > maxFileSizeBytes) {
+      throw Exception(
+          'File size exceeds 20MB limit (${(file.size / (1024 * 1024)).toStringAsFixed(1)} MB)');
+    }
+    return file;
+  }
+
+  static Future<CustomLogo> savePickedLogoFile({
+    required PlatformFile file,
+    required String name,
+    CustomLogoSizeMode sizeMode = CustomLogoSizeMode.defaultSize,
+    double customScale = 1.0,
+  }) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) {
+      throw Exception('Logo name cannot be empty.');
+    }
+    if (logoNameExists(trimmedName)) {
+      throw Exception('A logo named "$trimmedName" already exists.');
+    }
+
+    final originalPath = file.path;
+    if (originalPath == null) {
+      throw Exception('File path is invalid.');
+    }
+
+    final appDocDir = await getApplicationDocumentsDirectory();
+    final logosDir = Directory(p.join(appDocDir.path, 'custom_logos'));
+    if (!await logosDir.exists()) {
+      await logosDir.create(recursive: true);
+    }
+
+    final ext = p.extension(originalPath).toLowerCase();
+    final id = DateTime.now().millisecondsSinceEpoch.toString();
+    final targetFileName = 'logo_$id$ext';
+    final targetPath = p.join(logosDir.path, targetFileName);
+
+    await File(originalPath).copy(targetPath);
+
+    final newLogo = CustomLogo(
+      id: id,
+      name: trimmedName,
+      filePath: targetPath,
+      fileSizeBytes: file.size,
+      createdAt: DateTime.now(),
+      sizeMode: sizeMode,
+      customScale: customScale,
+    );
+
+    final currentLogos = getCustomLogos();
+    currentLogos.insert(0, newLogo);
+    _saveCustomLogos(currentLogos);
+
+    // Auto-select newly added logo
+    selectCustomLogo(id);
+
+    return newLogo;
+  }
+
+  static Future<CustomLogo?> updateCustomLogo(
+    String id, {
+    String? name,
+    CustomLogoSizeMode? sizeMode,
+    double? customScale,
+  }) async {
+    final logos = getCustomLogos();
+    final index = logos.indexWhere((l) => l.id == id);
+    if (index == -1) return null;
+
+    final current = logos[index];
+    if (name != null) {
+      final clean = name.trim();
+      if (clean.isEmpty) {
+        throw Exception('Logo name cannot be empty.');
+      }
+      final duplicate = logos.any((l) =>
+          l.id != id && l.name.trim().toLowerCase() == clean.toLowerCase());
+      if (duplicate) {
+        throw Exception('A logo named "$clean" already exists.');
+      }
+    }
+
+    final updated = current.copyWith(
+      name: name?.trim(),
+      sizeMode: sizeMode,
+      customScale: customScale,
+    );
+
+    logos[index] = updated;
+    _saveCustomLogos(logos);
+    return updated;
+  }
+
   static Future<CustomLogo?> pickAndSaveCustomLogo(
     String name, {
     CustomLogoSizeMode sizeMode = CustomLogoSizeMode.defaultSize,
     double customScale = 1.0,
     bool? useOriginalSize,
   }) async {
-    try {
-      final trimmedName = name.trim();
-      if (trimmedName.isEmpty) {
-        throw Exception('Logo name cannot be empty.');
-      }
-      if (logoNameExists(trimmedName)) {
-        throw Exception('A logo named "$trimmedName" already exists.');
-      }
-
-      final effectiveMode = sizeMode != CustomLogoSizeMode.defaultSize
+    final file = await pickLogoFile();
+    if (file == null) return null;
+    return savePickedLogoFile(
+      file: file,
+      name: name,
+      sizeMode: sizeMode != CustomLogoSizeMode.defaultSize
           ? sizeMode
           : ((useOriginalSize ?? false)
               ? CustomLogoSizeMode.originalSize
-              : CustomLogoSizeMode.defaultSize);
-
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['gif', 'webp', 'png', 'jpg', 'jpeg'],
-        allowMultiple: false,
-      );
-
-      if (result == null || result.files.isEmpty) return null;
-      final file = result.files.first;
-      final originalPath = file.path;
-      if (originalPath == null) return null;
-
-      final fileSize = file.size;
-      if (fileSize > maxFileSizeBytes) {
-        throw Exception(
-            'File size exceeds 20MB limit (${(fileSize / (1024 * 1024)).toStringAsFixed(1)} MB)');
-      }
-
-      final appDocDir = await getApplicationDocumentsDirectory();
-      final logosDir = Directory(p.join(appDocDir.path, 'custom_logos'));
-      if (!await logosDir.exists()) {
-        await logosDir.create(recursive: true);
-      }
-
-      final ext = p.extension(originalPath).toLowerCase();
-      final id = DateTime.now().millisecondsSinceEpoch.toString();
-      final targetFileName = 'logo_$id$ext';
-      final targetPath = p.join(logosDir.path, targetFileName);
-
-      await File(originalPath).copy(targetPath);
-
-      final newLogo = CustomLogo(
-        id: id,
-        name: trimmedName,
-        filePath: targetPath,
-        fileSizeBytes: fileSize,
-        createdAt: DateTime.now(),
-        sizeMode: effectiveMode,
-        customScale: customScale,
-      );
-
-      final currentLogos = getCustomLogos();
-      currentLogos.insert(0, newLogo);
-      _saveCustomLogos(currentLogos);
-
-      // Auto-select newly added logo
-      selectCustomLogo(id);
-
-      return newLogo;
-    } catch (e) {
-      Logger.e('Failed to pick and save custom logo: $e');
-      rethrow;
-    }
+              : CustomLogoSizeMode.defaultSize),
+      customScale: customScale,
+    );
   }
 
   static Future<void> deleteCustomLogo(String id) async {

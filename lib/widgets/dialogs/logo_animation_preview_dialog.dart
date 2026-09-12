@@ -7,6 +7,7 @@ import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/custom_logo_model.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
@@ -98,6 +99,8 @@ class _LogoAnimationPreviewDialogState
     final nameController = TextEditingController(text: defaultName);
     CustomLogoSizeMode sizeMode = CustomLogoSizeMode.defaultSize;
     double customScale = 1.0;
+    PlatformFile? selectedFile;
+    bool isPicking = false;
 
     showDialog(
       context: context,
@@ -115,152 +118,305 @@ class _LogoAnimationPreviewDialogState
 
             return AnymeXDialog(
               title: 'Add Custom Logo',
-              confirmText: 'Choose File',
-              isConfirmEnabled: !isDuplicate && !isEmpty,
-              contentWidget: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const AnymeXText(
-                    'Give your logo a name:',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: nameController,
-                    onChanged: (_) {
-                      setDialogState(() {});
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'e.g. My Anime Logo',
-                      errorText: errorText,
-                      filled: true,
-                      fillColor: dialogContext.colors.surfaceContainer,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: Colors.redAccent, width: 1),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide:
-                            const BorderSide(color: Colors.redAccent, width: 1.5),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  AnymeXContainer(
-                    radius: 10,
-                    color: dialogContext.colors.surfaceContainer,
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const AnymeXText(
-                          'Size Mode:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
+              confirmText: 'Save Logo',
+              isConfirmEnabled: selectedFile != null && !isDuplicate && !isEmpty,
+              contentWidget: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (selectedFile == null)
+                      InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: isPicking
+                            ? null
+                            : () async {
+                                setDialogState(() => isPicking = true);
+                                try {
+                                  final file =
+                                      await CustomLogoService.pickLogoFile();
+                                  if (file != null) {
+                                    setDialogState(() => selectedFile = file);
+                                  }
+                                } catch (e) {
+                                  snackBar(e
+                                      .toString()
+                                      .replaceAll('Exception: ', ''));
+                                } finally {
+                                  setDialogState(() => isPicking = false);
+                                }
+                              },
+                        child: AnymeXContainer(
+                          radius: 12,
+                          color: dialogContext.colors.surfaceContainer,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 16),
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  isPicking
+                                      ? Icons.hourglass_top_rounded
+                                      : Icons.cloud_upload_outlined,
+                                  size: 36,
+                                  color: dialogContext.colors.primary,
+                                ),
+                                const SizedBox(height: 8),
+                                AnymeXText(
+                                  isPicking
+                                      ? 'Opening file picker...'
+                                      : 'Tap to Choose Logo File',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                AnymeXText(
+                                  'PNG, JPG, WEBP, GIF (Max 20MB)',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color:
+                                        dialogContext.colors.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Row(
+                      )
+                    else
+                      AnymeXContainer(
+                        radius: 12,
+                        color: dialogContext.colors.surfaceContainer,
+                        padding: const EdgeInsets.all(10),
+                        child: Row(
                           children: [
-                            AnymeXSegmentedButton(
-                              isSelected: sizeMode ==
-                                  CustomLogoSizeMode.defaultSize,
-                              title: 'Default',
-                              icon: Icons.crop_square,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              onTap: () {
-                                setDialogState(() {
-                                  sizeMode = CustomLogoSizeMode.defaultSize;
-                                });
-                              },
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                width: 44,
+                                height: 44,
+                                color: dialogContext
+                                    .colors.surfaceContainerHighest,
+                                child: selectedFile!.path != null &&
+                                        !selectedFile!.path!
+                                            .toLowerCase()
+                                            .endsWith('.gif')
+                                    ? Image.file(
+                                        File(selectedFile!.path!),
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Icon(
+                                          Icons.image_outlined,
+                                          color: dialogContext.colors.primary,
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.image_outlined,
+                                        color: dialogContext.colors.primary,
+                                      ),
+                              ),
                             ),
-                            const SizedBox(width: 6),
-                            AnymeXSegmentedButton(
-                              isSelected: sizeMode ==
-                                  CustomLogoSizeMode.originalSize,
-                              title: 'Original',
-                              icon: Icons.aspect_ratio,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              onTap: () {
-                                setDialogState(() {
-                                  sizeMode = CustomLogoSizeMode.originalSize;
-                                });
-                              },
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AnymeXText(
+                                    selectedFile!.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 2),
+                                  AnymeXText(
+                                    '${(selectedFile!.size / (1024 * 1024)).toStringAsFixed(2)} MB',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: dialogContext
+                                          .colors.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SizedBox(width: 6),
-                            AnymeXSegmentedButton(
-                              isSelected: sizeMode ==
-                                  CustomLogoSizeMode.customScale,
-                              title: 'Custom',
-                              icon: Icons.zoom_in,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              onTap: () {
+                            IconButton(
+                              tooltip: 'Change File',
+                              icon: Icon(
+                                Icons.sync_rounded,
+                                size: 20,
+                                color: dialogContext.colors.primary,
+                              ),
+                              onPressed: isPicking
+                                  ? null
+                                  : () async {
+                                      setDialogState(() => isPicking = true);
+                                      try {
+                                        final file = await CustomLogoService
+                                            .pickLogoFile();
+                                        if (file != null) {
+                                          setDialogState(
+                                              () => selectedFile = file);
+                                        }
+                                      } catch (e) {
+                                        snackBar(e
+                                            .toString()
+                                            .replaceAll('Exception: ', ''));
+                                      } finally {
+                                        setDialogState(
+                                            () => isPicking = false);
+                                      }
+                                    },
+                            ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 12),
+                    const AnymeXText(
+                      'Logo Name:',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: nameController,
+                      onChanged: (_) {
+                        setDialogState(() {});
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'e.g. My Anime Logo',
+                        errorText: errorText,
+                        filled: true,
+                        fillColor: dialogContext.colors.surfaceContainer,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                              color: Colors.redAccent, width: 1),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                              color: Colors.redAccent, width: 1.5),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    AnymeXContainer(
+                      radius: 10,
+                      color: dialogContext.colors.surfaceContainer,
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AnymeXText(
+                            'Size Mode:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              AnymeXSegmentedButton(
+                                isSelected: sizeMode ==
+                                    CustomLogoSizeMode.defaultSize,
+                                title: 'Default',
+                                icon: Icons.crop_square,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                onTap: () {
+                                  setDialogState(() {
+                                    sizeMode = CustomLogoSizeMode.defaultSize;
+                                  });
+                                },
+                              ),
+                              const SizedBox(width: 6),
+                              AnymeXSegmentedButton(
+                                isSelected: sizeMode ==
+                                    CustomLogoSizeMode.originalSize,
+                                title: 'Original',
+                                icon: Icons.aspect_ratio,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                onTap: () {
+                                  setDialogState(() {
+                                    sizeMode =
+                                        CustomLogoSizeMode.originalSize;
+                                  });
+                                },
+                              ),
+                              const SizedBox(width: 6),
+                              AnymeXSegmentedButton(
+                                isSelected: sizeMode ==
+                                    CustomLogoSizeMode.customScale,
+                                title: 'Custom',
+                                icon: Icons.zoom_in,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                onTap: () {
+                                  setDialogState(() {
+                                    sizeMode = CustomLogoSizeMode.customScale;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          if (sizeMode == CustomLogoSizeMode.customScale) ...[
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const AnymeXText(
+                                  'Scale Factor',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                AnymeXText(
+                                  '${(customScale * 100).toInt()}% (${(customScale * 200).toInt()}px)',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: dialogContext.colors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            AnymeXSliderM3(
+                              value: customScale.clamp(0.5, 3.0),
+                              min: 0.5,
+                              max: 3.0,
+                              divisions: 25,
+                              onChanged: (val) {
                                 setDialogState(() {
-                                  sizeMode = CustomLogoSizeMode.customScale;
+                                  customScale = val;
                                 });
                               },
                             ),
                           ],
-                        ),
-                        if (sizeMode == CustomLogoSizeMode.customScale) ...[
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const AnymeXText(
-                                'Scale Factor',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              AnymeXText(
-                                '${(customScale * 100).toInt()}% (${(customScale * 200).toInt()}px)',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: dialogContext.colors.primary,
-                                ),
-                              ),
-                            ],
-                          ),
-                          AnymeXSliderM3(
-                            value: customScale.clamp(0.5, 3.0),
-                            min: 0.5,
-                            max: 3.0,
-                            divisions: 25,
-                            onChanged: (val) {
-                              setDialogState(() {
-                                customScale = val;
-                              });
-                            },
-                          ),
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  AnymeXText(
-                    'Supported: .gif, .webp, .png, .jpg (Max: 20 MB)',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: dialogContext.colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               onConfirm: () async {
+                if (selectedFile == null) {
+                  snackBar('Please choose a logo file.');
+                  return;
+                }
                 final currentName = nameController.text.trim();
                 if (currentName.isEmpty ||
                     _customLogos.any((l) =>
@@ -270,19 +426,281 @@ class _LogoAnimationPreviewDialogState
                   return;
                 }
                 try {
-                  final newLogo =
-                      await CustomLogoService.pickAndSaveCustomLogo(
-                    currentName,
+                  final newLogo = await CustomLogoService.savePickedLogoFile(
+                    file: selectedFile!,
+                    name: currentName,
                     sizeMode: sizeMode,
                     customScale: customScale,
                   );
-                  if (newLogo != null && mounted) {
+                  if (mounted) {
                     setState(() {
                       _customLogos = CustomLogoService.getCustomLogos();
                       _selectedCustomLogoId = newLogo.id;
                       _logoKey = UniqueKey();
                     });
                     snackBar('Added "${newLogo.name}" successfully!');
+                  }
+                } catch (e) {
+                  snackBar(e.toString().replaceAll('Exception: ', ''));
+                }
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showEditCustomLogoDialog(CustomLogo logo) {
+    final nameController = TextEditingController(text: logo.name);
+    CustomLogoSizeMode sizeMode = logo.sizeMode;
+    double customScale = logo.customScale;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            final trimmedName = nameController.text.trim();
+            final isEmpty = trimmedName.isEmpty;
+            final isDuplicate = _customLogos.any(
+              (l) =>
+                  l.id != logo.id &&
+                  l.name.trim().toLowerCase() == trimmedName.toLowerCase(),
+            );
+            final String? errorText = isDuplicate
+                ? 'A logo with this name already exists'
+                : (isEmpty ? 'Name cannot be empty' : null);
+
+            return AnymeXDialog(
+              title: 'Edit Logo Settings',
+              confirmText: 'Save Changes',
+              isConfirmEnabled: !isDuplicate && !isEmpty,
+              contentWidget: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymeXContainer(
+                      radius: 12,
+                      color: dialogContext.colors.surfaceContainer,
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              color: dialogContext
+                                  .colors.surfaceContainerHighest,
+                              child: File(logo.filePath).existsSync() &&
+                                      !logo.filePath
+                                          .toLowerCase()
+                                          .endsWith('.gif')
+                                  ? Image.file(
+                                      File(logo.filePath),
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Icon(
+                                        Icons.image_outlined,
+                                        color: dialogContext.colors.primary,
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.image_outlined,
+                                      color: dialogContext.colors.primary,
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AnymeXText(
+                                  logo.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 2),
+                                AnymeXText(
+                                  logo.formattedSize,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: dialogContext
+                                        .colors.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const AnymeXText(
+                      'Logo Name:',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: nameController,
+                      onChanged: (_) {
+                        setDialogState(() {});
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'e.g. My Anime Logo',
+                        errorText: errorText,
+                        filled: true,
+                        fillColor: dialogContext.colors.surfaceContainer,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                              color: Colors.redAccent, width: 1),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                              color: Colors.redAccent, width: 1.5),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    AnymeXContainer(
+                      radius: 10,
+                      color: dialogContext.colors.surfaceContainer,
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AnymeXText(
+                            'Size Mode:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              AnymeXSegmentedButton(
+                                isSelected: sizeMode ==
+                                    CustomLogoSizeMode.defaultSize,
+                                title: 'Default',
+                                icon: Icons.crop_square,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                onTap: () {
+                                  setDialogState(() {
+                                    sizeMode = CustomLogoSizeMode.defaultSize;
+                                  });
+                                },
+                              ),
+                              const SizedBox(width: 6),
+                              AnymeXSegmentedButton(
+                                isSelected: sizeMode ==
+                                    CustomLogoSizeMode.originalSize,
+                                title: 'Original',
+                                icon: Icons.aspect_ratio,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                onTap: () {
+                                  setDialogState(() {
+                                    sizeMode =
+                                        CustomLogoSizeMode.originalSize;
+                                  });
+                                },
+                              ),
+                              const SizedBox(width: 6),
+                              AnymeXSegmentedButton(
+                                isSelected: sizeMode ==
+                                    CustomLogoSizeMode.customScale,
+                                title: 'Custom',
+                                icon: Icons.zoom_in,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                onTap: () {
+                                  setDialogState(() {
+                                    sizeMode = CustomLogoSizeMode.customScale;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          if (sizeMode == CustomLogoSizeMode.customScale) ...[
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const AnymeXText(
+                                  'Scale Factor',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                AnymeXText(
+                                  '${(customScale * 100).toInt()}% (${(customScale * 200).toInt()}px)',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: dialogContext.colors.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            AnymeXSliderM3(
+                              value: customScale.clamp(0.5, 3.0),
+                              min: 0.5,
+                              max: 3.0,
+                              divisions: 25,
+                              onChanged: (val) {
+                                setDialogState(() {
+                                  customScale = val;
+                                });
+                              },
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onConfirm: () async {
+                final currentName = nameController.text.trim();
+                if (currentName.isEmpty ||
+                    _customLogos.any((l) =>
+                        l.id != logo.id &&
+                        l.name.trim().toLowerCase() ==
+                            currentName.toLowerCase())) {
+                  snackBar('A logo with this name already exists.');
+                  return;
+                }
+                try {
+                  final updated = await CustomLogoService.updateCustomLogo(
+                    logo.id,
+                    name: currentName,
+                    sizeMode: sizeMode,
+                    customScale: customScale,
+                  );
+                  if (updated != null && mounted) {
+                    setState(() {
+                      _customLogos = CustomLogoService.getCustomLogos();
+                      _logoKey = UniqueKey();
+                    });
+                    snackBar('Updated "${updated.name}" successfully!');
                   }
                 } catch (e) {
                   snackBar(e.toString().replaceAll('Exception: ', ''));
@@ -357,124 +775,6 @@ class _LogoAnimationPreviewDialogState
     return logo;
   }
 
-  Widget _buildCustomLogoControls(CustomLogo activeCustomLogo) {
-    return AnymeXContainer(
-      radius: 12,
-      margin: const EdgeInsets.only(top: 4, bottom: 8),
-      padding: const EdgeInsets.all(12),
-      color: context.colors.surfaceContainer,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const AnymeXText(
-                'Size Mode',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-              if (activeCustomLogo.sizeMode == CustomLogoSizeMode.customScale)
-                AnymeXText(
-                  '${(activeCustomLogo.customScale * 100).toInt()}% (${(activeCustomLogo.customScale * 200).toInt()}px)',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: context.colors.primary,
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              AnymeXSegmentedButton(
-                isSelected: activeCustomLogo.sizeMode ==
-                    CustomLogoSizeMode.defaultSize,
-                title: 'Default',
-                icon: Icons.crop_square,
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                onTap: () {
-                  CustomLogoService.setSizeMode(
-                      activeCustomLogo.id, CustomLogoSizeMode.defaultSize);
-                  setState(() {
-                    _customLogos = CustomLogoService.getCustomLogos();
-                    _logoKey = UniqueKey();
-                  });
-                },
-              ),
-              const SizedBox(width: 8),
-              AnymeXSegmentedButton(
-                isSelected: activeCustomLogo.sizeMode ==
-                    CustomLogoSizeMode.originalSize,
-                title: 'Original',
-                icon: Icons.aspect_ratio,
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                onTap: () {
-                  CustomLogoService.setSizeMode(
-                      activeCustomLogo.id, CustomLogoSizeMode.originalSize);
-                  setState(() {
-                    _customLogos = CustomLogoService.getCustomLogos();
-                    _logoKey = UniqueKey();
-                  });
-                },
-              ),
-              const SizedBox(width: 8),
-              AnymeXSegmentedButton(
-                isSelected: activeCustomLogo.sizeMode ==
-                    CustomLogoSizeMode.customScale,
-                title: 'Custom',
-                icon: Icons.zoom_in,
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                onTap: () {
-                  CustomLogoService.setSizeMode(
-                      activeCustomLogo.id, CustomLogoSizeMode.customScale);
-                  setState(() {
-                    _customLogos = CustomLogoService.getCustomLogos();
-                    _logoKey = UniqueKey();
-                  });
-                },
-              ),
-            ],
-          ),
-          if (activeCustomLogo.sizeMode == CustomLogoSizeMode.customScale) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: AnymeXSliderM3(
-                    value: activeCustomLogo.customScale.clamp(0.5, 3.0),
-                    min: 0.5,
-                    max: 3.0,
-                    divisions: 25,
-                    onChanged: (val) {
-                      setState(() {
-                        CustomLogoService.setCustomScale(
-                            activeCustomLogo.id, val);
-                        _customLogos = CustomLogoService.getCustomLogos();
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.restart_alt, size: 20),
-                  tooltip: 'Reset to 100% (200px)',
-                  onPressed: () {
-                    setState(() {
-                      CustomLogoService.setCustomScale(
-                          activeCustomLogo.id, 1.0);
-                      _customLogos = CustomLogoService.getCustomLogos();
-                    });
-                  },
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
   Widget _buildPortraitLayout() {
     final activeCustomPath = _getActiveCustomLogoPath();
     final activeCustomLogo = _getActiveCustomLogo();
@@ -499,9 +799,7 @@ class _LogoAnimationPreviewDialogState
               label: const AnymeXText('Replay'),
               onPressed: _replayAnimation,
             ),
-            if (activeCustomLogo != null)
-              _buildCustomLogoControls(activeCustomLogo),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             const Align(
               alignment: Alignment.centerLeft,
               child: AnymeXText(
@@ -553,8 +851,6 @@ class _LogoAnimationPreviewDialogState
                     label: const AnymeXText('Replay'),
                     onPressed: _replayAnimation,
                   ),
-                  if (activeCustomLogo != null)
-                    _buildCustomLogoControls(activeCustomLogo),
                 ],
               ),
             ),
@@ -738,8 +1034,15 @@ class _LogoAnimationPreviewDialogState
                               color: context.colors.primary, size: 20),
                         ),
                       IconButton(
+                        icon: Icon(Icons.tune_rounded,
+                            size: 20, color: context.colors.primary),
+                        tooltip: 'Edit Logo Settings',
+                        onPressed: () => _showEditCustomLogoDialog(logo),
+                      ),
+                      IconButton(
                         icon: const Icon(Icons.delete_outline_rounded,
                             size: 20, color: Colors.redAccent),
+                        tooltip: 'Delete Logo',
                         onPressed: () => _confirmDeleteCustomLogo(logo),
                       ),
                     ],
