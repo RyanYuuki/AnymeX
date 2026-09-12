@@ -242,61 +242,116 @@ jobs:
               -d "parse_mode=HTML" \
               -d "disable_web_page_preview=true"
 
-      - name: Send message to Discord
+      # ==========================================
+      # OLD DISCORD STEP (COMMENTED OUT)
+      # ==========================================
+      # - name: Send message to Discord
+      #   env:
+      #     DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
+      #   run: |
+      #     FORMATTED_NOTES_CLEAN=$(echo "$FORMATTED_NOTES" | sed -E 's/\): [^:]+:/) :/g')
+      #
+      #     # Mention the role based on the release name
+      #     if [[ "${{ env.LATEST_TAG }}" == *alpha* ]]; then
+      #       role_mention=""  # Role ID for alpha channel
+      #     elif [[ "${{ env.LATEST_TAG }}" == *beta* ]]; then
+      #       role_mention="<@&1496768971096064140>"  # Role ID for beta channel
+      #     else
+      #       role_mention="<@&1497202483485741184>"  # Default role ID
+      #     fi
+      #
+      #     default_color="#1ac4c5"
+      #     hex_to_decimal() { printf '%d' "0x${1#"#"}"; }
+      #     embed_color=$(hex_to_decimal "$default_color")
+      #
+      #     # Ensure VERSION is not empty
+      #     VERSION=${VERSION:-"${{env.LATEST_TAG}}"}
+      #     RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${{ env.LATEST_TAG }}"
+      #
+      #     if [ -n "$role_mention" ]; then
+      #       MESSAGE_CONTENT="$role_mention AnymeX ${{ env.LATEST_TAG }} is out: $RELEASE_URL"
+      #     else
+      #       MESSAGE_CONTENT="AnymeX ${{ env.LATEST_TAG }} is out: $RELEASE_URL"
+      #     fi
+      #
+      #     discord_data=$(jq -nc \
+      #                   --arg content "$MESSAGE_CONTENT" \
+      #                   --arg field_value "$FORMATTED_NOTES_CLEAN
+      #
+      #       [📌 Full changelog]($RELEASE_URL)" \
+      #                   --arg footer_text "Version $VERSION" \
+      #                   --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
+      #                   --argjson embed_color "$embed_color" \
+      #                   '{
+      #                     "content": $content,
+      #                     "embeds": [
+      #                       {
+      #                         "title": "🚀 New Release: ${{env.LATEST_TAG}}",
+      #                         "color": $embed_color,
+      #                         "description": $field_value,
+      #                         "footer": {
+      #                           "text": $footer_text
+      #                         },
+      #                         "timestamp": $timestamp
+      #                       }
+      #                     ]
+      #                   }')
+      #
+      #     echo "Debug: Final Discord payload is: $discord_data"
+      #
+      #     # Send the message to Discord using the webhook
+      #     curl -H "Content-Type: application/json" \
+      #         -X POST \
+      #         -d "$discord_data" \
+      #         "$DISCORD_WEBHOOK_URL"
+      # ==========================================
+
+      - name: Send simple announcement to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ env.DISCORD_WEBHOOK_URL }}
         run: |
-          FORMATTED_NOTES_CLEAN=$(echo "$FORMATTED_NOTES" | sed -E 's/\): [^:]+:/) :/g')
-          
-          # Mention the role based on the release name
           if [[ "${{ env.LATEST_TAG }}" == *alpha* ]]; then
-            role_mention=""  # Role ID for alpha channel
+            role_mention=""
+            release_title="New Alpha Release: ${{ env.LATEST_TAG }}"
+            release_desc="Alpha update is out, grab it from <#1542832151492563048>"
           elif [[ "${{ env.LATEST_TAG }}" == *beta* ]]; then
-            role_mention="<@&1496768971096064140>"  # Role ID for beta channel
+            role_mention="<@&1496768971096064140>"
+            release_title="New Beta Release: ${{ env.LATEST_TAG }}"
+            release_desc="Beta update is out, grab it from <#1542832151492563048>"
           else
-            role_mention="<@&1497202483485741184>"  # Default role ID
+            role_mention="@everyone"
+            release_title="New Release: ${{ env.LATEST_TAG }}"
+            release_desc="New update is out, grab it from <#1542832151492563048>"
           fi
-        
-          default_color="#1ac4c5"
-          hex_to_decimal() { printf '%d' "0x${1#"#"}"; }
-          embed_color=$(hex_to_decimal "$default_color")
 
-          # Ensure VERSION is not empty
-          VERSION=${VERSION:-"${{env.LATEST_TAG}}"}
-          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${{ env.LATEST_TAG }}"
+          embed_color=1754309
 
-          if [ -n "$role_mention" ]; then
-            MESSAGE_CONTENT="$role_mention AnymeX ${{ env.LATEST_TAG }} is out: $RELEASE_URL"
-          else
-            MESSAGE_CONTENT="AnymeX ${{ env.LATEST_TAG }} is out: $RELEASE_URL"
-          fi
-      
           discord_data=$(jq -nc \
-                        --arg content "$MESSAGE_CONTENT" \
-                        --arg field_value "$FORMATTED_NOTES_CLEAN
-
-            [📌 Full changelog]($RELEASE_URL)" \
-                        --arg footer_text "Version $VERSION" \
+                        --arg role_mention "$role_mention" \
+                        --arg title "$release_title" \
+                        --arg desc "$release_desc" \
                         --arg timestamp "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)" \
                         --argjson embed_color "$embed_color" \
                         '{
-                          "content": $content,
+                          "username": "Ryan >_<",
+                          "avatar_url": "https://cdn.discordapp.com/avatars/535831876766793738/64d0a7798e3ccad244bd5a5d734164de.png",
+                          "content": $role_mention,
                           "embeds": [
                             {
-                              "title": "🚀 New Release: ${{env.LATEST_TAG}}",
-                              "color": $embed_color,
-                              "description": $field_value,
-                              "footer": {
-                                "text": $footer_text
+                              "author": {
+                                "name": "Ryan >_<",
+                                "icon_url": "https://cdn.discordapp.com/avatars/535831876766793738/64d0a7798e3ccad244bd5a5d734164de.png"
                               },
+                              "title": $title,
+                              "description": $desc,
+                              "color": $embed_color,
                               "timestamp": $timestamp
                             }
                           ]
                         }')
 
-          echo "Debug: Final Discord payload is: $discord_data"
+          echo "Debug: Discord payload is: $discord_data"
 
-          # Send the message to Discord using the webhook
           curl -H "Content-Type: application/json" \
               -X POST \
               -d "$discord_data" \
