@@ -66,63 +66,180 @@ class _LogoAnimationPreviewDialogState
     return null;
   }
 
+  CustomLogo? _getActiveCustomLogo() {
+    if (_selectedCustomLogoId == null || _selectedCustomLogoId!.isEmpty) {
+      return null;
+    }
+    try {
+      return _customLogos.firstWhere(
+        (l) => l.id == _selectedCustomLogoId,
+      );
+    } catch (_) {}
+    return null;
+  }
+
+  String _getNextDefaultLogoName() {
+    final existingNames =
+        _customLogos.map((l) => l.name.trim().toLowerCase()).toSet();
+    if (!existingNames.contains('my animated logo')) {
+      return 'My Animated Logo';
+    }
+    int index = 1;
+    while (existingNames.contains('my animated logo $index')) {
+      index++;
+    }
+    return 'My Animated Logo $index';
+  }
+
   void _showAddCustomLogoDialog() {
-    final nameController = TextEditingController(text: 'My Animated Logo');
-    AnymeXDialog(
-      title: 'Add Custom Logo',
-      confirmText: 'Choose File',
-      contentWidget: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const AnymeXText(
-            'Give your logo a name:',
-            style: TextStyle(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: nameController,
-            decoration: InputDecoration(
-              hintText: 'e.g. My Anime Logo',
-              filled: true,
-              fillColor: context.colors.surfaceContainer,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
+    final defaultName = _getNextDefaultLogoName();
+    final nameController = TextEditingController(text: defaultName);
+    bool useOriginalSize = false;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            final trimmedName = nameController.text.trim();
+            final isEmpty = trimmedName.isEmpty;
+            final isDuplicate = _customLogos.any(
+              (l) => l.name.trim().toLowerCase() == trimmedName.toLowerCase(),
+            );
+            final String? errorText = isDuplicate
+                ? 'A logo with this name already exists'
+                : (isEmpty ? 'Name cannot be empty' : null);
+
+            return AnymeXDialog(
+              title: 'Add Custom Logo',
+              confirmText: 'Choose File',
+              isConfirmEnabled: !isDuplicate && !isEmpty,
+              contentWidget: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const AnymeXText(
+                    'Give your logo a name:',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: nameController,
+                    onChanged: (_) {
+                      setDialogState(() {});
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'e.g. My Anime Logo',
+                      errorText: errorText,
+                      filled: true,
+                      fillColor: dialogContext.colors.surfaceContainer,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: Colors.redAccent, width: 1),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide:
+                            const BorderSide(color: Colors.redAccent, width: 1.5),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  AnymeXContainer(
+                    radius: 10,
+                    color: dialogContext.colors.surfaceContainer,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const AnymeXText(
+                                'Use Original Size',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              AnymeXText(
+                                useOriginalSize
+                                    ? 'Preserve natural dimensions'
+                                    : 'Default (centered 200px)',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: dialogContext.colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Switch(
+                          value: useOriginalSize,
+                          onChanged: (val) {
+                            setDialogState(() {
+                              useOriginalSize = val;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  AnymeXText(
+                    'Supported: .gif, .webp, .png, .jpg (Max: 20 MB)',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: dialogContext.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            ),
-          ),
-          const SizedBox(height: 12),
-          AnymeXText(
-            'Supported: .gif, .webp, .png, .jpg (Max: 20 MB)',
-            style: TextStyle(
-              fontSize: 12,
-              color: context.colors.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-      onConfirm: () async {
-        Navigator.pop(context);
-        try {
-          final newLogo = await CustomLogoService.pickAndSaveCustomLogo(
-            nameController.text,
-          );
-          if (newLogo != null && mounted) {
-            setState(() {
-              _customLogos = CustomLogoService.getCustomLogos();
-              _selectedCustomLogoId = newLogo.id;
-              _logoKey = UniqueKey();
-            });
-            snackBar('Added "${newLogo.name}" successfully!');
-          }
-        } catch (e) {
-          snackBar(e.toString().replaceAll('Exception: ', ''));
-        }
+              onConfirm: () async {
+                final currentName = nameController.text.trim();
+                if (currentName.isEmpty ||
+                    _customLogos.any((l) =>
+                        l.name.trim().toLowerCase() ==
+                        currentName.toLowerCase())) {
+                  snackBar('A logo with this name already exists.');
+                  return;
+                }
+                try {
+                  final newLogo = await CustomLogoService.pickAndSaveCustomLogo(
+                    currentName,
+                    useOriginalSize: useOriginalSize,
+                  );
+                  if (newLogo != null && mounted) {
+                    setState(() {
+                      _customLogos = CustomLogoService.getCustomLogos();
+                      _selectedCustomLogoId = newLogo.id;
+                      _logoKey = UniqueKey();
+                    });
+                    snackBar('Added "${newLogo.name}" successfully!');
+                  }
+                } catch (e) {
+                  snackBar(e.toString().replaceAll('Exception: ', ''));
+                }
+              },
+            );
+          },
+        );
       },
-    ).show(context);
+    );
   }
 
   void _confirmDeleteCustomLogo(CustomLogo logo) {
@@ -160,6 +277,8 @@ class _LogoAnimationPreviewDialogState
 
   Widget _buildPortraitLayout() {
     final activeCustomPath = _getActiveCustomLogoPath();
+    final activeCustomLogo = _getActiveCustomLogo();
+    final useOriginalSize = activeCustomLogo?.useOriginalSize ?? false;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -169,11 +288,13 @@ class _LogoAnimationPreviewDialogState
             AnymeXContainer(
               height: 180,
               radius: 16,
+              clipBehavior: Clip.antiAlias,
               color: context.colors.surfaceContainer,
               child: Center(
                 child: AnymeXAnimatedLogo(
                   key: _logoKey,
                   size: 120,
+                  useOriginalSize: useOriginalSize ? true : null,
                   autoPlay: true,
                   forceCustomLogoPath: activeCustomPath,
                   forceAnimationType:
@@ -211,6 +332,8 @@ class _LogoAnimationPreviewDialogState
 
   Widget _buildLandscapeLayout() {
     final activeCustomPath = _getActiveCustomLogoPath();
+    final activeCustomLogo = _getActiveCustomLogo();
+    final useOriginalSize = activeCustomLogo?.useOriginalSize ?? false;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -225,11 +348,13 @@ class _LogoAnimationPreviewDialogState
                 AnymeXContainer(
                   height: 200,
                   radius: 16,
+                  clipBehavior: Clip.antiAlias,
                   color: context.colors.surfaceContainer,
                   child: Center(
                     child: AnymeXAnimatedLogo(
                       key: _logoKey,
                       size: 140,
+                      useOriginalSize: useOriginalSize ? true : null,
                       autoPlay: true,
                       forceCustomLogoPath: activeCustomPath,
                       forceAnimationType:
@@ -353,11 +478,70 @@ class _LogoAnimationPreviewDialogState
                           isSelected ? FontWeight.bold : FontWeight.w600,
                     ),
                   ),
-                  subtitle: AnymeXText(
-                    '${logo.formattedSize} • Tap to apply',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: context.colors.onSurfaceVariant,
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Row(
+                      children: [
+                        AnymeXText(
+                          '${logo.formattedSize} • ',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: context.colors.onSurfaceVariant,
+                          ),
+                        ),
+                        InkWell(
+                          borderRadius: BorderRadius.circular(6),
+                          onTap: () {
+                            final newOriginal = !logo.useOriginalSize;
+                            CustomLogoService.setOriginalSize(
+                                logo.id, newOriginal);
+                            setState(() {
+                              _customLogos = CustomLogoService.getCustomLogos();
+                              _logoKey = UniqueKey();
+                            });
+                            snackBar(newOriginal
+                                ? 'Size: Original / Natural'
+                                : 'Size: Default (200px)');
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: logo.useOriginalSize
+                                  ? context.colors.primary.withOpacity(0.2)
+                                  : context.colors.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  logo.useOriginalSize
+                                      ? Icons.aspect_ratio
+                                      : Icons.crop_square,
+                                  size: 11,
+                                  color: logo.useOriginalSize
+                                      ? context.colors.primary
+                                      : context.colors.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 3),
+                                AnymeXText(
+                                  logo.useOriginalSize
+                                      ? 'Original Size'
+                                      : 'Default',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w600,
+                                    color: logo.useOriginalSize
+                                        ? context.colors.primary
+                                        : context.colors.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   trailing: Row(

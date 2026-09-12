@@ -67,8 +67,35 @@ class CustomLogoService {
     ThemeKeys.selectedCustomLogoId.set('');
   }
 
-  static Future<CustomLogo?> pickAndSaveCustomLogo(String name) async {
+  static void setOriginalSize(String id, bool useOriginalSize) {
+    final logos = getCustomLogos();
+    final index = logos.indexWhere((l) => l.id == id);
+    if (index != -1) {
+      logos[index] = logos[index].copyWith(useOriginalSize: useOriginalSize);
+      _saveCustomLogos(logos);
+    }
+  }
+
+  static bool logoNameExists(String name) {
+    final clean = name.trim().toLowerCase();
+    if (clean.isEmpty) return false;
+    final logos = getCustomLogos();
+    return logos.any((l) => l.name.trim().toLowerCase() == clean);
+  }
+
+  static Future<CustomLogo?> pickAndSaveCustomLogo(
+    String name, {
+    bool useOriginalSize = false,
+  }) async {
     try {
+      final trimmedName = name.trim();
+      if (trimmedName.isEmpty) {
+        throw Exception('Logo name cannot be empty.');
+      }
+      if (logoNameExists(trimmedName)) {
+        throw Exception('A logo named "$trimmedName" already exists.');
+      }
+
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['gif', 'webp', 'png', 'jpg', 'jpeg'],
@@ -105,6 +132,7 @@ class CustomLogoService {
         filePath: targetPath,
         fileSizeBytes: fileSize,
         createdAt: DateTime.now(),
+        useOriginalSize: useOriginalSize,
       );
 
       final currentLogos = getCustomLogos();

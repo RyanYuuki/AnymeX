@@ -5,12 +5,15 @@ class CustomLogo {
   final int fileSizeBytes;
   final DateTime createdAt;
 
+  final bool useOriginalSize;
+
   const CustomLogo({
     required this.id,
     required this.name,
     required this.filePath,
     required this.fileSizeBytes,
     required this.createdAt,
+    this.useOriginalSize = false,
   });
 
   String get formattedSize {
@@ -23,12 +26,31 @@ class CustomLogo {
     }
   }
 
+  CustomLogo copyWith({
+    String? id,
+    String? name,
+    String? filePath,
+    int? fileSizeBytes,
+    DateTime? createdAt,
+    bool? useOriginalSize,
+  }) {
+    return CustomLogo(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      filePath: filePath ?? this.filePath,
+      fileSizeBytes: fileSizeBytes ?? this.fileSizeBytes,
+      createdAt: createdAt ?? this.createdAt,
+      useOriginalSize: useOriginalSize ?? this.useOriginalSize,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
         'filePath': filePath,
         'fileSizeBytes': fileSizeBytes,
         'createdAt': createdAt.toIso8601String(),
+        'useOriginalSize': useOriginalSize,
       };
 
   factory CustomLogo.fromJson(Map<String, dynamic> json) {
@@ -40,6 +62,7 @@ class CustomLogo {
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
           : DateTime.now(),
+      useOriginalSize: json['useOriginalSize'] as bool? ?? false,
     );
   }
 }

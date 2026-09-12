@@ -17,6 +17,7 @@ class AnymeXAnimatedLogo extends StatefulWidget {
   final Gradient? gradient;
   final LogoAnimationType? forceAnimationType;
   final String? forceCustomLogoPath;
+  final bool? useOriginalSize;
 
   const AnymeXAnimatedLogo({
     super.key,
@@ -27,6 +28,7 @@ class AnymeXAnimatedLogo extends StatefulWidget {
     this.gradient,
     this.forceAnimationType,
     this.forceCustomLogoPath,
+    this.useOriginalSize,
   });
 
   @override
@@ -151,8 +153,38 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     super.dispose();
   }
 
+  bool _shouldUseOriginalSize() {
+    if (widget.useOriginalSize != null) {
+      return widget.useOriginalSize!;
+    }
+    // Don't auto-expand inside small headers, titlebars or about dialog
+    if (widget.size < 150) {
+      return false;
+    }
+    if (_customLogoPath != null) {
+      final logos = CustomLogoService.getCustomLogos();
+      try {
+        final match = logos.firstWhere((l) => l.filePath == _customLogoPath);
+        return match.useOriginalSize;
+      } catch (_) {}
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isOriginal = _shouldUseOriginalSize();
+    final isCustom =
+        _customLogoPath != null && File(_customLogoPath!).existsSync();
+
+    if (isCustom && isOriginal) {
+      return AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) =>
+            _buildCustomLogoFile(_customLogoPath!, useOriginalSize: true),
+      );
+    }
+
     return SizedBox(
       width: widget.size,
       height: widget.size,
@@ -223,13 +255,14 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   }
 
   // custom logo file
-  Widget _buildCustomLogoFile(String filePath) {
+  Widget _buildCustomLogoFile(String filePath,
+      {bool useOriginalSize = false}) {
     Widget content = Image.file(
       File(filePath),
       key: ValueKey('custom_logo_${filePath}_$_replayKeyCounter'),
-      width: widget.size,
-      height: widget.size,
-      fit: BoxFit.contain,
+      width: useOriginalSize ? null : widget.size,
+      height: useOriginalSize ? null : widget.size,
+      fit: useOriginalSize ? BoxFit.scaleDown : BoxFit.contain,
       gaplessPlayback: true,
       errorBuilder: (context, error, stackTrace) {
         return _buildBaseLogo(100);
