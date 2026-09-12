@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:anymex/controllers/custom_logo/custom_logo_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -14,6 +16,7 @@ class AnymeXAnimatedLogo extends StatefulWidget {
   final Color? color;
   final Gradient? gradient;
   final LogoAnimationType? forceAnimationType;
+  final String? forceCustomLogoPath;
 
   const AnymeXAnimatedLogo({
     super.key,
@@ -23,6 +26,7 @@ class AnymeXAnimatedLogo extends StatefulWidget {
     this.color,
     this.gradient,
     this.forceAnimationType,
+    this.forceCustomLogoPath,
   });
 
   @override
@@ -34,12 +38,18 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   late AnimationController _controller;
   late Animation<double> _animation;
   late LogoAnimationType _animationType;
+  String? _customLogoPath;
   int _replayKeyCounter = 0;
 
   @override
   void initState() {
     super.initState();
     _animationType = widget.forceAnimationType ?? _getStoredAnimationType();
+    if (widget.forceCustomLogoPath != null) {
+      _customLogoPath = widget.forceCustomLogoPath;
+    } else if (widget.forceAnimationType == null) {
+      _customLogoPath = CustomLogoService.getSelectedCustomLogoPath();
+    }
     _controller = AnimationController(
       duration: _getDurationForAnimationType(_animationType),
       vsync: this,
@@ -149,9 +159,10 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {
-          // Don't show anything during initial delay (except smokeTrace which starts immediately)
+          // Don't show anything during initial delay (except smokeTrace or custom logo which starts immediately)
           if (_animation.value < 0.05 &&
-              _animationType != LogoAnimationType.smokeTrace) {
+              _animationType != LogoAnimationType.smokeTrace &&
+              _customLogoPath == null) {
             return const SizedBox.shrink();
           }
           return _buildAnimatedLogo();
@@ -161,6 +172,10 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   }
 
   Widget _buildAnimatedLogo() {
+    if (_customLogoPath != null && File(_customLogoPath!).existsSync()) {
+      return _buildCustomLogoFile(_customLogoPath!);
+    }
+
     switch (_animationType) {
       case LogoAnimationType.bottomToTop:
         return _buildBottomToTopLogo();
@@ -205,6 +220,39 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       case LogoAnimationType.smokeTrace:
         return _buildSmokeTraceLogo();
     }
+  }
+
+  // custom logo file
+  Widget _buildCustomLogoFile(String filePath) {
+    Widget content = Image.file(
+      File(filePath),
+      key: ValueKey('custom_logo_${filePath}_$_replayKeyCounter'),
+      width: widget.size,
+      height: widget.size,
+      fit: BoxFit.contain,
+      gaplessPlayback: true,
+      errorBuilder: (context, error, stackTrace) {
+        return _buildBaseLogo(100);
+      },
+    );
+
+    if (widget.gradient != null) {
+      content = ShaderMask(
+        shaderCallback: (bounds) => widget.gradient!.createShader(bounds),
+        blendMode: BlendMode.modulate,
+        child: content,
+      );
+    } else if (widget.color != null) {
+      content = ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          widget.color!,
+          BlendMode.modulate,
+        ),
+        child: content,
+      );
+    }
+
+    return content;
   }
 
   // smoke trace (animated GIF/WebP)
