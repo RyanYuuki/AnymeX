@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
@@ -22,6 +23,10 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
   final RxBool isBiometricsSupported = false.obs;
   final RxList<BiometricType> availableBiometrics = <BiometricType>[].obs;
 
+  final RxInt failedAttempts = 0.obs;
+  final RxInt cooldownSecondsRemaining = 0.obs;
+  Timer? _cooldownTimer;
+
   DateTime? _lastBackgroundTime;
   bool _isAuthenticating = false;
 
@@ -42,6 +47,7 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
+    _cooldownTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
@@ -53,7 +59,7 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
       timeoutSeconds.value = AppLockKeys.timeoutSeconds.get<int>(0);
       hideInRecentApps.value = AppLockKeys.hideInRecentApps.get<bool>(true);
 
-      if (isEnabled.value) {
+      if (isEnabled.value && timeoutSeconds.value != -2) {
         isLocked.value = true;
       }
     } catch (e) {
@@ -128,21 +134,46 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
   }
 
   bool unlockWithPin(String pin) {
+    if (cooldownSecondsRemaining.value > 0) {
+      return false;
+    }
     if (verifyPin(pin)) {
+      failedAttempts.value = 0;
+      cooldownSecondsRemaining.value = 0;
+      _cooldownTimer?.cancel();
       isLocked.value = false;
       showPrivacyShield.value = false;
       HapticFeedback.mediumImpact();
       return true;
     } else {
+      failedAttempts.value++;
+      if (failedAttempts.value >= 5) {
+        _startCooldown(30);
+        failedAttempts.value = 0;
+      }
       HapticFeedback.vibrate();
       return false;
     }
+  }
+
+  void _startCooldown(int seconds) {
+    cooldownSecondsRemaining.value = seconds;
+    _cooldownTimer?.cancel();
+    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (cooldownSecondsRemaining.value > 1) {
+        cooldownSecondsRemaining.value--;
+      } else {
+        cooldownSecondsRemaining.value = 0;
+        timer.cancel();
+      }
+    });
   }
 
   Future<bool> unlockWithBiometrics() async {
     if (!isEnabled.value || !biometricsEnabled.value || !isBiometricsSupported.value) {
       return false;
     }
+    if (cooldownSecondsRemaining.value > 0) return false;
     if (_isAuthenticating) return false;
 
     try {
@@ -154,6 +185,9 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
       );
 
       if (didAuthenticate) {
+        failedAttempts.value = 0;
+        cooldownSecondsRemaining.value = 0;
+        _cooldownTimer?.cancel();
         isLocked.value = false;
         showPrivacyShield.value = false;
         HapticFeedback.mediumImpact();
@@ -187,7 +221,7 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     } else if (state == AppLifecycleState.resumed) {
       showPrivacyShield.value = false;
 
-      if (!isLocked.value && _lastBackgroundTime != null) {
+      if (timeoutSeconds.value >= 0 && !isLocked.value && _lastBackgroundTime != null) {
         final elapsedSeconds =
             DateTime.now().difference(_lastBackgroundTime!).inSeconds;
         if (elapsedSeconds >= timeoutSeconds.value) {
@@ -195,9 +229,12 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
         }
       }
 
-      if (isLocked.value && biometricsEnabled.value && isBiometricsSupported.value) {
+      if (isLocked.value &&
+          biometricsEnabled.value &&
+          isBiometricsSupported.value &&
+          cooldownSecondsRemaining.value == 0) {
         Future.delayed(const Duration(milliseconds: 300), () {
-          if (isLocked.value && !_isAuthenticating) {
+          if (isLocked.value && !_isAuthenticating && cooldownSecondsRemaining.value == 0) {
             unlockWithBiometrics();
           }
         });

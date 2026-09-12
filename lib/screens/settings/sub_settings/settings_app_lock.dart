@@ -27,6 +27,10 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
     {'title': '2 minutes', 'seconds': 120, 'subtitle': 'Lock after 2 minutes in background'},
     {'title': '5 minutes', 'seconds': 300, 'subtitle': 'Lock after 5 minutes in background'},
     {'title': '15 minutes', 'seconds': 900, 'subtitle': 'Lock after 15 minutes in background'},
+    {'title': '30 minutes', 'seconds': 1800, 'subtitle': 'Lock after 30 minutes in background'},
+    {'title': '1 hour', 'seconds': 3600, 'subtitle': 'Lock after 1 hour in background'},
+    {'title': 'On App Restart Only', 'seconds': -1, 'subtitle': 'Only lock when app is closed and reopened'},
+    {'title': 'Never', 'seconds': -2, 'subtitle': 'Never auto-lock (lock manually only)'},
   ];
 
   String _getTimeoutTitle(int seconds) {
@@ -241,8 +245,13 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
       builder: (dialogCtx) => AnymeXDialog(
         title: 'Auto-Lock Timeout',
         confirmText: 'Done',
-        contentWidget: Column(
-          mainAxisSize: MainAxisSize.min,
+        contentWidget: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * 0.55,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
           children: _timeoutOptions.map((opt) {
             final seconds = opt['seconds'] as int;
             final title = opt['title'] as String;
@@ -301,6 +310,8 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
               );
             });
           }).toList(),
+            ),
+          ),
         ),
         onConfirm: () {},
       ),

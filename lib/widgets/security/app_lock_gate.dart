@@ -145,6 +145,8 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
   }
 
   void _onDigitPressed(String digit) {
+    final controller = Get.find<AppLockController>();
+    if (controller.cooldownSecondsRemaining.value > 0) return;
     if (_enteredPin.length >= 4) return;
 
     HapticFeedback.lightImpact();
@@ -160,6 +162,8 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
   }
 
   void _onBackspacePressed() {
+    final controller = Get.find<AppLockController>();
+    if (controller.cooldownSecondsRemaining.value > 0) return;
     if (_enteredPin.isEmpty) return;
 
     HapticFeedback.lightImpact();
@@ -177,7 +181,9 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
     if (!success) {
       setState(() {
         _isError = true;
-        _errorMessage = 'Incorrect PIN';
+        _errorMessage = controller.cooldownSecondsRemaining.value > 0
+            ? 'Too many attempts. Try again later.'
+            : 'Incorrect PIN';
       });
       _shakeController.forward(from: 0.0);
       Future.delayed(const Duration(milliseconds: 300), () {
@@ -191,6 +197,10 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
   }
 
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
+    final controller = Get.find<AppLockController>();
+    if (controller.cooldownSecondsRemaining.value > 0) {
+      return KeyEventResult.ignored;
+    }
     if (event is KeyDownEvent) {
       final key = event.logicalKey;
       if (key == LogicalKeyboardKey.backspace) {
@@ -211,129 +221,143 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
     final colors = context.colors;
     final controller = Get.find<AppLockController>();
 
-    return Focus(
-      focusNode: _focusNode,
-      autofocus: true,
-      onKeyEvent: _handleKeyEvent,
-      child: Material(
-        color: Colors.transparent,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-              child: Container(
-                color: colors.surface.withOpacity(0.92),
+    return Obx(() {
+      final isCooldown = controller.cooldownSecondsRemaining.value > 0;
+      final statusText = isCooldown
+          ? 'Too many attempts. Try again in ${controller.cooldownSecondsRemaining.value}s'
+          : (_errorMessage ?? 'Enter your 4-digit PIN');
+      final isErrorState = _isError || isCooldown;
+
+      return Focus(
+        focusNode: _focusNode,
+        autofocus: true,
+        onKeyEvent: _handleKeyEvent,
+        child: Material(
+          color: Colors.transparent,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                child: Container(
+                  color: colors.surface.withOpacity(0.92),
+                ),
               ),
-            ),
-            SafeArea(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 360),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colors.primary.withOpacity(0.12),
-                            border: Border.all(
-                              color: colors.primary.withOpacity(0.35),
-                              width: 2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: colors.primary.withOpacity(0.18),
-                                blurRadius: 20,
-                                spreadRadius: 2,
+              SafeArea(
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 360),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: (isCooldown ? Colors.redAccent : colors.primary).withOpacity(0.12),
+                              border: Border.all(
+                                color: (isCooldown ? Colors.redAccent : colors.primary).withOpacity(0.35),
+                                width: 2,
                               ),
-                            ],
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (isCooldown ? Colors.redAccent : colors.primary).withOpacity(0.18),
+                                  blurRadius: 20,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              isCooldown ? Icons.hourglass_top_rounded : Icons.lock_rounded,
+                              size: 40,
+                              color: isCooldown ? Colors.redAccent : colors.primary,
+                            ),
                           ),
-                          child: Icon(
-                            Icons.lock_rounded,
-                            size: 40,
-                            color: colors.primary,
+                          const SizedBox(height: 20),
+                          AnymeXText(
+                            'AnymeX Locked',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: colors.onSurface,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        AnymeXText(
-                          'AnymeX Locked',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: colors.onSurface,
+                          const SizedBox(height: 6),
+                          AnymeXText(
+                            statusText,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: isErrorState ? Colors.redAccent : colors.onSurfaceVariant,
+                              fontWeight: isErrorState ? FontWeight.w600 : FontWeight.normal,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        AnymeXText(
-                          _errorMessage ?? 'Enter your 4-digit PIN',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: _isError ? Colors.redAccent : colors.onSurfaceVariant,
-                            fontWeight: _isError ? FontWeight.w600 : FontWeight.normal,
-                          ),
-                        ),
-                        const SizedBox(height: 28),
-                        AnimatedBuilder(
-                          animation: _shakeAnimation,
-                          builder: (context, child) {
-                            return Transform.translate(
-                              offset: Offset(_shakeAnimation.value, 0),
-                              child: child,
-                            );
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(4, (index) {
-                              final isFilled = index < _enteredPin.length;
-                              return AnimatedContainer(
-                                duration: const Duration(milliseconds: 160),
-                                margin: const EdgeInsets.symmetric(horizontal: 10),
-                                width: 16,
-                                height: 16,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: _isError
-                                      ? Colors.redAccent
-                                      : (isFilled ? colors.primary : Colors.transparent),
-                                  border: Border.all(
+                          const SizedBox(height: 28),
+                          AnimatedBuilder(
+                            animation: _shakeAnimation,
+                            builder: (context, child) {
+                              return Transform.translate(
+                                offset: Offset(_shakeAnimation.value, 0),
+                                child: child,
+                              );
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(4, (index) {
+                                final isFilled = index < _enteredPin.length;
+                                return AnimatedContainer(
+                                  duration: const Duration(milliseconds: 160),
+                                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                                  width: 16,
+                                  height: 16,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
                                     color: _isError
                                         ? Colors.redAccent
-                                        : (isFilled
-                                            ? colors.primary
-                                            : colors.onSurfaceVariant.withOpacity(0.4)),
-                                    width: 2,
+                                        : (isFilled ? colors.primary : Colors.transparent),
+                                    border: Border.all(
+                                      color: _isError
+                                          ? Colors.redAccent
+                                          : (isFilled
+                                              ? colors.primary
+                                              : colors.onSurfaceVariant.withOpacity(0.4)),
+                                      width: 2,
+                                    ),
+                                    boxShadow: isFilled && !_isError
+                                        ? [
+                                            BoxShadow(
+                                              color: colors.primary.withOpacity(0.4),
+                                              blurRadius: 8,
+                                              spreadRadius: 1,
+                                            ),
+                                          ]
+                                        : null,
                                   ),
-                                  boxShadow: isFilled && !_isError
-                                      ? [
-                                          BoxShadow(
-                                            color: colors.primary.withOpacity(0.4),
-                                            blurRadius: 8,
-                                            spreadRadius: 1,
-                                          ),
-                                        ]
-                                      : null,
-                                ),
-                              );
-                            }),
+                                );
+                              }),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 36),
-                        _buildKeypad(context, controller),
-                      ],
+                          const SizedBox(height: 36),
+                          Opacity(
+                            opacity: isCooldown ? 0.35 : 1.0,
+                            child: IgnorePointer(
+                              ignoring: isCooldown,
+                              child: _buildKeypad(context, controller),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildKeypad(BuildContext context, AppLockController controller) {
