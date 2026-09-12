@@ -11,7 +11,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_segmented_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
@@ -329,51 +328,15 @@ class _LogoAnimationPreviewDialogState
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              AnymeXSegmentedButton(
-                                isSelected: sizeMode ==
-                                    CustomLogoSizeMode.defaultSize,
-                                title: 'Default',
-                                icon: Icons.crop_square,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                onTap: () {
-                                  setDialogState(() {
-                                    sizeMode = CustomLogoSizeMode.defaultSize;
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 6),
-                              AnymeXSegmentedButton(
-                                isSelected: sizeMode ==
-                                    CustomLogoSizeMode.originalSize,
-                                title: 'Original',
-                                icon: Icons.aspect_ratio,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                onTap: () {
-                                  setDialogState(() {
-                                    sizeMode =
-                                        CustomLogoSizeMode.originalSize;
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 6),
-                              AnymeXSegmentedButton(
-                                isSelected: sizeMode ==
-                                    CustomLogoSizeMode.customScale,
-                                title: 'Custom',
-                                icon: Icons.zoom_in,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                onTap: () {
-                                  setDialogState(() {
-                                    sizeMode = CustomLogoSizeMode.customScale;
-                                  });
-                                },
-                              ),
-                            ],
+                          _buildSegmentedModeBar(
+                            context: dialogContext,
+                            currentMode: sizeMode,
+                            customScale: customScale,
+                            onModeChanged: (newMode) {
+                              setDialogState(() {
+                                sizeMode = newMode;
+                              });
+                            },
                           ),
                           if (sizeMode == CustomLogoSizeMode.customScale) ...[
                             const SizedBox(height: 10),
@@ -595,51 +558,15 @@ class _LogoAnimationPreviewDialogState
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              AnymeXSegmentedButton(
-                                isSelected: sizeMode ==
-                                    CustomLogoSizeMode.defaultSize,
-                                title: 'Default',
-                                icon: Icons.crop_square,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                onTap: () {
-                                  setDialogState(() {
-                                    sizeMode = CustomLogoSizeMode.defaultSize;
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 6),
-                              AnymeXSegmentedButton(
-                                isSelected: sizeMode ==
-                                    CustomLogoSizeMode.originalSize,
-                                title: 'Original',
-                                icon: Icons.aspect_ratio,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                onTap: () {
-                                  setDialogState(() {
-                                    sizeMode =
-                                        CustomLogoSizeMode.originalSize;
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 6),
-                              AnymeXSegmentedButton(
-                                isSelected: sizeMode ==
-                                    CustomLogoSizeMode.customScale,
-                                title: 'Custom',
-                                icon: Icons.zoom_in,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                onTap: () {
-                                  setDialogState(() {
-                                    sizeMode = CustomLogoSizeMode.customScale;
-                                  });
-                                },
-                              ),
-                            ],
+                          _buildSegmentedModeBar(
+                            context: dialogContext,
+                            currentMode: sizeMode,
+                            customScale: customScale,
+                            onModeChanged: (newMode) {
+                              setDialogState(() {
+                                sizeMode = newMode;
+                              });
+                            },
                           ),
                           if (sizeMode == CustomLogoSizeMode.customScale) ...[
                             const SizedBox(height: 10),
@@ -737,12 +664,10 @@ class _LogoAnimationPreviewDialogState
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final isLandscape = screenWidth > screenHeight;
 
     return SizedBox(
-      height: screenHeight * 0.5,
-      child: isLandscape ? _buildLandscapeLayout() : _buildPortraitLayout(),
+      height: (screenHeight * 0.65).clamp(440.0, 620.0),
+      child: _buildLayout(),
     );
   }
 
@@ -775,108 +700,144 @@ class _LogoAnimationPreviewDialogState
     return logo;
   }
 
-  Widget _buildPortraitLayout() {
+  Widget _buildSegmentedModeBar({
+    required BuildContext context,
+    required CustomLogoSizeMode currentMode,
+    required double customScale,
+    required ValueChanged<CustomLogoSizeMode> onModeChanged,
+  }) {
+    return Container(
+      height: 38,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: context.colors.surfaceContainerHighest.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildSegmentItem(
+              context: context,
+              title: 'Default',
+              isSelected: currentMode == CustomLogoSizeMode.defaultSize,
+              onTap: () => onModeChanged(CustomLogoSizeMode.defaultSize),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: _buildSegmentItem(
+              context: context,
+              title: 'Original',
+              isSelected: currentMode == CustomLogoSizeMode.originalSize,
+              onTap: () => onModeChanged(CustomLogoSizeMode.originalSize),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: _buildSegmentItem(
+              context: context,
+              title: currentMode == CustomLogoSizeMode.customScale
+                  ? 'Custom (${(customScale * 100).toInt()}%)'
+                  : 'Custom',
+              isSelected: currentMode == CustomLogoSizeMode.customScale,
+              onTap: () => onModeChanged(CustomLogoSizeMode.customScale),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSegmentItem({
+    required BuildContext context,
+    required String title,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isSelected ? context.colors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+            child: AnymeXText(
+              title,
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                color: isSelected
+                    ? context.colors.onPrimary
+                    : context.colors.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLayout() {
     final activeCustomPath = _getActiveCustomLogoPath();
     final activeCustomLogo = _getActiveCustomLogo();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Column(
-          children: [
-            AnymeXContainer(
-              height: 180,
-              radius: 16,
-              clipBehavior: Clip.antiAlias,
-              color: context.colors.surfaceContainer,
-              child: Center(
-                child: _buildPreviewLogo(120, activeCustomPath, activeCustomLogo),
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextButton.icon(
-              icon: const Icon(Icons.replay, size: 18),
-              label: const AnymeXText('Replay'),
-              onPressed: _replayAnimation,
-            ),
-            const SizedBox(height: 8),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: AnymeXText(
-                'Select Animation Style',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
+        AnymeXContainer(
+          height: 160,
+          radius: 16,
+          clipBehavior: Clip.antiAlias,
+          color: context.colors.surfaceContainer,
+          child: Center(
+            child: _buildPreviewLogo(120, activeCustomPath, activeCustomLogo),
+          ),
         ),
+        const SizedBox(height: 8),
+        if (activeCustomLogo != null) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: _buildSegmentedModeBar(
+              context: context,
+              currentMode: activeCustomLogo.sizeMode,
+              customScale: activeCustomLogo.customScale,
+              onModeChanged: (newMode) {
+                CustomLogoService.setSizeMode(activeCustomLogo.id, newMode);
+                setState(() {
+                  _customLogos = CustomLogoService.getCustomLogos();
+                  _logoKey = UniqueKey();
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 6),
+        ],
+        Center(
+          child: TextButton.icon(
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            icon: const Icon(Icons.replay_rounded, size: 16),
+            label: const AnymeXText('Replay',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+            onPressed: _replayAnimation,
+          ),
+        ),
+        const SizedBox(height: 10),
         Expanded(
           child: _buildAnimationList(),
         ),
-        const SizedBox(height: 12),
       ],
-    );
-  }
-
-  Widget _buildLandscapeLayout() {
-    final activeCustomPath = _getActiveCustomLogoPath();
-    final activeCustomLogo = _getActiveCustomLogo();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnymeXContainer(
-                    height: 200,
-                    radius: 16,
-                    clipBehavior: Clip.antiAlias,
-                    color: context.colors.surfaceContainer,
-                    child: Center(
-                      child: _buildPreviewLogo(140, activeCustomPath, activeCustomLogo),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton.icon(
-                    icon: const Icon(Icons.replay, size: 18),
-                    label: const AnymeXText('Replay'),
-                    onPressed: _replayAnimation,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            flex: 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AnymeXText(
-                  'Select Animation Style',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: _buildAnimationList(),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
