@@ -1,11 +1,28 @@
+enum CustomLogoSizeMode {
+  defaultSize,
+  originalSize,
+  customScale;
+
+  String get displayName {
+    switch (this) {
+      case CustomLogoSizeMode.defaultSize:
+        return 'Default';
+      case CustomLogoSizeMode.originalSize:
+        return 'Original';
+      case CustomLogoSizeMode.customScale:
+        return 'Custom';
+    }
+  }
+}
+
 class CustomLogo {
   final String id;
   final String name;
   final String filePath;
   final int fileSizeBytes;
   final DateTime createdAt;
-
-  final bool useOriginalSize;
+  final CustomLogoSizeMode sizeMode;
+  final double customScale;
 
   const CustomLogo({
     required this.id,
@@ -13,8 +30,12 @@ class CustomLogo {
     required this.filePath,
     required this.fileSizeBytes,
     required this.createdAt,
-    this.useOriginalSize = false,
+    this.sizeMode = CustomLogoSizeMode.defaultSize,
+    this.customScale = 1.0,
   });
+
+  bool get useOriginalSize => sizeMode == CustomLogoSizeMode.originalSize;
+  bool get isCustomScale => sizeMode == CustomLogoSizeMode.customScale;
 
   String get formattedSize {
     if (fileSizeBytes < 1024) {
@@ -32,7 +53,8 @@ class CustomLogo {
     String? filePath,
     int? fileSizeBytes,
     DateTime? createdAt,
-    bool? useOriginalSize,
+    CustomLogoSizeMode? sizeMode,
+    double? customScale,
   }) {
     return CustomLogo(
       id: id ?? this.id,
@@ -40,7 +62,8 @@ class CustomLogo {
       filePath: filePath ?? this.filePath,
       fileSizeBytes: fileSizeBytes ?? this.fileSizeBytes,
       createdAt: createdAt ?? this.createdAt,
-      useOriginalSize: useOriginalSize ?? this.useOriginalSize,
+      sizeMode: sizeMode ?? this.sizeMode,
+      customScale: customScale ?? this.customScale,
     );
   }
 
@@ -50,7 +73,8 @@ class CustomLogo {
         'filePath': filePath,
         'fileSizeBytes': fileSizeBytes,
         'createdAt': createdAt.toIso8601String(),
-        'useOriginalSize': useOriginalSize,
+        'sizeMode': sizeMode.name,
+        'customScale': customScale,
       };
 
   factory CustomLogo.fromJson(Map<String, dynamic> json) {
@@ -62,7 +86,15 @@ class CustomLogo {
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'] as String) ?? DateTime.now()
           : DateTime.now(),
-      useOriginalSize: json['useOriginalSize'] as bool? ?? false,
+      sizeMode: json['sizeMode'] != null
+          ? CustomLogoSizeMode.values.firstWhere(
+              (m) => m.name == json['sizeMode'],
+              orElse: () => CustomLogoSizeMode.defaultSize,
+            )
+          : ((json['useOriginalSize'] as bool? ?? false)
+              ? CustomLogoSizeMode.originalSize
+              : CustomLogoSizeMode.defaultSize),
+      customScale: (json['customScale'] as num?)?.toDouble() ?? 1.0,
     );
   }
 }

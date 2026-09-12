@@ -67,13 +67,31 @@ class CustomLogoService {
     ThemeKeys.selectedCustomLogoId.set('');
   }
 
-  static void setOriginalSize(String id, bool useOriginalSize) {
+  static void setSizeMode(String id, CustomLogoSizeMode sizeMode) {
     final logos = getCustomLogos();
     final index = logos.indexWhere((l) => l.id == id);
     if (index != -1) {
-      logos[index] = logos[index].copyWith(useOriginalSize: useOriginalSize);
+      logos[index] = logos[index].copyWith(sizeMode: sizeMode);
       _saveCustomLogos(logos);
     }
+  }
+
+  static void setCustomScale(String id, double scale) {
+    final logos = getCustomLogos();
+    final index = logos.indexWhere((l) => l.id == id);
+    if (index != -1) {
+      logos[index] = logos[index].copyWith(customScale: scale);
+      _saveCustomLogos(logos);
+    }
+  }
+
+  static void setOriginalSize(String id, bool useOriginalSize) {
+    setSizeMode(
+      id,
+      useOriginalSize
+          ? CustomLogoSizeMode.originalSize
+          : CustomLogoSizeMode.defaultSize,
+    );
   }
 
   static bool logoNameExists(String name) {
@@ -85,7 +103,9 @@ class CustomLogoService {
 
   static Future<CustomLogo?> pickAndSaveCustomLogo(
     String name, {
-    bool useOriginalSize = false,
+    CustomLogoSizeMode sizeMode = CustomLogoSizeMode.defaultSize,
+    double customScale = 1.0,
+    bool? useOriginalSize,
   }) async {
     try {
       final trimmedName = name.trim();
@@ -95,6 +115,12 @@ class CustomLogoService {
       if (logoNameExists(trimmedName)) {
         throw Exception('A logo named "$trimmedName" already exists.');
       }
+
+      final effectiveMode = sizeMode != CustomLogoSizeMode.defaultSize
+          ? sizeMode
+          : ((useOriginalSize ?? false)
+              ? CustomLogoSizeMode.originalSize
+              : CustomLogoSizeMode.defaultSize);
 
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -128,11 +154,12 @@ class CustomLogoService {
 
       final newLogo = CustomLogo(
         id: id,
-        name: name.trim().isEmpty ? 'Custom Logo' : name.trim(),
+        name: trimmedName,
         filePath: targetPath,
         fileSizeBytes: fileSize,
         createdAt: DateTime.now(),
-        useOriginalSize: useOriginalSize,
+        sizeMode: effectiveMode,
+        customScale: customScale,
       );
 
       final currentLogos = getCustomLogos();

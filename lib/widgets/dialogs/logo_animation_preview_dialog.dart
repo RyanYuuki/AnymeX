@@ -10,8 +10,10 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_segmented_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
+import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 
@@ -94,7 +96,8 @@ class _LogoAnimationPreviewDialogState
   void _showAddCustomLogoDialog() {
     final defaultName = _getNextDefaultLogoName();
     final nameController = TextEditingController(text: defaultName);
-    bool useOriginalSize = false;
+    CustomLogoSizeMode sizeMode = CustomLogoSizeMode.defaultSize;
+    double customScale = 1.0;
 
     showDialog(
       context: context,
@@ -159,43 +162,91 @@ class _LogoAnimationPreviewDialogState
                   AnymeXContainer(
                     radius: 10,
                     color: dialogContext.colors.surfaceContainer,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        const AnymeXText(
+                          'Size Mode:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            AnymeXSegmentedButton(
+                              isSelected: sizeMode ==
+                                  CustomLogoSizeMode.defaultSize,
+                              title: 'Default',
+                              icon: Icons.crop_square,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              onTap: () {
+                                setDialogState(() {
+                                  sizeMode = CustomLogoSizeMode.defaultSize;
+                                });
+                              },
+                            ),
+                            const SizedBox(width: 6),
+                            AnymeXSegmentedButton(
+                              isSelected: sizeMode ==
+                                  CustomLogoSizeMode.originalSize,
+                              title: 'Original',
+                              icon: Icons.aspect_ratio,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              onTap: () {
+                                setDialogState(() {
+                                  sizeMode = CustomLogoSizeMode.originalSize;
+                                });
+                              },
+                            ),
+                            const SizedBox(width: 6),
+                            AnymeXSegmentedButton(
+                              isSelected: sizeMode ==
+                                  CustomLogoSizeMode.customScale,
+                              title: 'Custom',
+                              icon: Icons.zoom_in,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              onTap: () {
+                                setDialogState(() {
+                                  sizeMode = CustomLogoSizeMode.customScale;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        if (sizeMode == CustomLogoSizeMode.customScale) ...[
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               const AnymeXText(
-                                'Use Original Size',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 13,
-                                ),
+                                'Scale Factor',
+                                style: TextStyle(fontSize: 12),
                               ),
-                              const SizedBox(height: 2),
                               AnymeXText(
-                                useOriginalSize
-                                    ? 'Preserve natural dimensions'
-                                    : 'Default (centered 200px)',
+                                '${(customScale * 100).toInt()}% (${(customScale * 200).toInt()}px)',
                                 style: TextStyle(
-                                  fontSize: 11,
-                                  color: dialogContext.colors.onSurfaceVariant,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: dialogContext.colors.primary,
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        Switch(
-                          value: useOriginalSize,
-                          onChanged: (val) {
-                            setDialogState(() {
-                              useOriginalSize = val;
-                            });
-                          },
-                        ),
+                          AnymeXSliderM3(
+                            value: customScale.clamp(0.5, 3.0),
+                            min: 0.5,
+                            max: 3.0,
+                            divisions: 25,
+                            onChanged: (val) {
+                              setDialogState(() {
+                                customScale = val;
+                              });
+                            },
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -219,9 +270,11 @@ class _LogoAnimationPreviewDialogState
                   return;
                 }
                 try {
-                  final newLogo = await CustomLogoService.pickAndSaveCustomLogo(
+                  final newLogo =
+                      await CustomLogoService.pickAndSaveCustomLogo(
                     currentName,
-                    useOriginalSize: useOriginalSize,
+                    sizeMode: sizeMode,
+                    customScale: customScale,
                   );
                   if (newLogo != null && mounted) {
                     setState(() {
@@ -275,10 +328,156 @@ class _LogoAnimationPreviewDialogState
     );
   }
 
+  Widget _buildPreviewLogo(
+      double size, String? activeCustomPath, CustomLogo? activeCustomLogo) {
+    final isOriginal =
+        activeCustomLogo?.sizeMode == CustomLogoSizeMode.originalSize;
+    final isCustomScale =
+        activeCustomLogo?.sizeMode == CustomLogoSizeMode.customScale;
+    final customScale = activeCustomLogo?.customScale ?? 1.0;
+
+    Widget logo = AnymeXAnimatedLogo(
+      key: _logoKey,
+      size: size,
+      useOriginalSize: isOriginal ? true : null,
+      autoPlay: true,
+      forceCustomLogoPath: activeCustomPath,
+      forceAnimationType:
+          activeCustomPath == null ? _selectedAnimation : null,
+    );
+
+    if (isCustomScale) {
+      logo = Transform.scale(
+        scale: customScale,
+        alignment: Alignment.center,
+        child: logo,
+      );
+    }
+
+    return logo;
+  }
+
+  Widget _buildCustomLogoControls(CustomLogo activeCustomLogo) {
+    return AnymeXContainer(
+      radius: 12,
+      margin: const EdgeInsets.only(top: 4, bottom: 8),
+      padding: const EdgeInsets.all(12),
+      color: context.colors.surfaceContainer,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const AnymeXText(
+                'Size Mode',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              if (activeCustomLogo.sizeMode == CustomLogoSizeMode.customScale)
+                AnymeXText(
+                  '${(activeCustomLogo.customScale * 100).toInt()}% (${(activeCustomLogo.customScale * 200).toInt()}px)',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: context.colors.primary,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              AnymeXSegmentedButton(
+                isSelected: activeCustomLogo.sizeMode ==
+                    CustomLogoSizeMode.defaultSize,
+                title: 'Default',
+                icon: Icons.crop_square,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                onTap: () {
+                  CustomLogoService.setSizeMode(
+                      activeCustomLogo.id, CustomLogoSizeMode.defaultSize);
+                  setState(() {
+                    _customLogos = CustomLogoService.getCustomLogos();
+                    _logoKey = UniqueKey();
+                  });
+                },
+              ),
+              const SizedBox(width: 8),
+              AnymeXSegmentedButton(
+                isSelected: activeCustomLogo.sizeMode ==
+                    CustomLogoSizeMode.originalSize,
+                title: 'Original',
+                icon: Icons.aspect_ratio,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                onTap: () {
+                  CustomLogoService.setSizeMode(
+                      activeCustomLogo.id, CustomLogoSizeMode.originalSize);
+                  setState(() {
+                    _customLogos = CustomLogoService.getCustomLogos();
+                    _logoKey = UniqueKey();
+                  });
+                },
+              ),
+              const SizedBox(width: 8),
+              AnymeXSegmentedButton(
+                isSelected: activeCustomLogo.sizeMode ==
+                    CustomLogoSizeMode.customScale,
+                title: 'Custom',
+                icon: Icons.zoom_in,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                onTap: () {
+                  CustomLogoService.setSizeMode(
+                      activeCustomLogo.id, CustomLogoSizeMode.customScale);
+                  setState(() {
+                    _customLogos = CustomLogoService.getCustomLogos();
+                    _logoKey = UniqueKey();
+                  });
+                },
+              ),
+            ],
+          ),
+          if (activeCustomLogo.sizeMode == CustomLogoSizeMode.customScale) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: AnymeXSliderM3(
+                    value: activeCustomLogo.customScale.clamp(0.5, 3.0),
+                    min: 0.5,
+                    max: 3.0,
+                    divisions: 25,
+                    onChanged: (val) {
+                      setState(() {
+                        CustomLogoService.setCustomScale(
+                            activeCustomLogo.id, val);
+                        _customLogos = CustomLogoService.getCustomLogos();
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.restart_alt, size: 20),
+                  tooltip: 'Reset to 100% (200px)',
+                  onPressed: () {
+                    setState(() {
+                      CustomLogoService.setCustomScale(
+                          activeCustomLogo.id, 1.0);
+                      _customLogos = CustomLogoService.getCustomLogos();
+                    });
+                  },
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _buildPortraitLayout() {
     final activeCustomPath = _getActiveCustomLogoPath();
     final activeCustomLogo = _getActiveCustomLogo();
-    final useOriginalSize = activeCustomLogo?.useOriginalSize ?? false;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -291,15 +490,7 @@ class _LogoAnimationPreviewDialogState
               clipBehavior: Clip.antiAlias,
               color: context.colors.surfaceContainer,
               child: Center(
-                child: AnymeXAnimatedLogo(
-                  key: _logoKey,
-                  size: 120,
-                  useOriginalSize: useOriginalSize ? true : null,
-                  autoPlay: true,
-                  forceCustomLogoPath: activeCustomPath,
-                  forceAnimationType:
-                      activeCustomPath == null ? _selectedAnimation : null,
-                ),
+                child: _buildPreviewLogo(120, activeCustomPath, activeCustomLogo),
               ),
             ),
             const SizedBox(height: 8),
@@ -308,7 +499,9 @@ class _LogoAnimationPreviewDialogState
               label: const AnymeXText('Replay'),
               onPressed: _replayAnimation,
             ),
-            const SizedBox(height: 16),
+            if (activeCustomLogo != null)
+              _buildCustomLogoControls(activeCustomLogo),
+            const SizedBox(height: 12),
             const Align(
               alignment: Alignment.centerLeft,
               child: AnymeXText(
@@ -333,7 +526,6 @@ class _LogoAnimationPreviewDialogState
   Widget _buildLandscapeLayout() {
     final activeCustomPath = _getActiveCustomLogoPath();
     final activeCustomLogo = _getActiveCustomLogo();
-    final useOriginalSize = activeCustomLogo?.useOriginalSize ?? false;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -342,33 +534,29 @@ class _LogoAnimationPreviewDialogState
         children: [
           Expanded(
             flex: 2,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AnymeXContainer(
-                  height: 200,
-                  radius: 16,
-                  clipBehavior: Clip.antiAlias,
-                  color: context.colors.surfaceContainer,
-                  child: Center(
-                    child: AnymeXAnimatedLogo(
-                      key: _logoKey,
-                      size: 140,
-                      useOriginalSize: useOriginalSize ? true : null,
-                      autoPlay: true,
-                      forceCustomLogoPath: activeCustomPath,
-                      forceAnimationType:
-                          activeCustomPath == null ? _selectedAnimation : null,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnymeXContainer(
+                    height: 200,
+                    radius: 16,
+                    clipBehavior: Clip.antiAlias,
+                    color: context.colors.surfaceContainer,
+                    child: Center(
+                      child: _buildPreviewLogo(140, activeCustomPath, activeCustomLogo),
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                TextButton.icon(
-                  icon: const Icon(Icons.replay, size: 18),
-                  label: const AnymeXText('Replay'),
-                  onPressed: _replayAnimation,
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  TextButton.icon(
+                    icon: const Icon(Icons.replay, size: 18),
+                    label: const AnymeXText('Replay'),
+                    onPressed: _replayAnimation,
+                  ),
+                  if (activeCustomLogo != null)
+                    _buildCustomLogoControls(activeCustomLogo),
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 20),
@@ -489,56 +677,52 @@ class _LogoAnimationPreviewDialogState
                             color: context.colors.onSurfaceVariant,
                           ),
                         ),
-                        InkWell(
-                          borderRadius: BorderRadius.circular(6),
-                          onTap: () {
-                            final newOriginal = !logo.useOriginalSize;
-                            CustomLogoService.setOriginalSize(
-                                logo.id, newOriginal);
-                            setState(() {
-                              _customLogos = CustomLogoService.getCustomLogos();
-                              _logoKey = UniqueKey();
-                            });
-                            snackBar(newOriginal
-                                ? 'Size: Original / Natural'
-                                : 'Size: Default (200px)');
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: logo.useOriginalSize
-                                  ? context.colors.primary.withOpacity(0.2)
-                                  : context.colors.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  logo.useOriginalSize
-                                      ? Icons.aspect_ratio
-                                      : Icons.crop_square,
-                                  size: 11,
-                                  color: logo.useOriginalSize
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: logo.sizeMode !=
+                                    CustomLogoSizeMode.defaultSize
+                                ? context.colors.primary.withOpacity(0.2)
+                                : context.colors.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                logo.sizeMode ==
+                                        CustomLogoSizeMode.originalSize
+                                    ? Icons.aspect_ratio
+                                    : (logo.sizeMode ==
+                                            CustomLogoSizeMode.customScale
+                                        ? Icons.zoom_in
+                                        : Icons.crop_square),
+                                size: 11,
+                                color: logo.sizeMode !=
+                                        CustomLogoSizeMode.defaultSize
+                                    ? context.colors.primary
+                                    : context.colors.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 3),
+                              AnymeXText(
+                                logo.sizeMode ==
+                                        CustomLogoSizeMode.originalSize
+                                    ? 'Original'
+                                    : (logo.sizeMode ==
+                                            CustomLogoSizeMode.customScale
+                                        ? 'Custom (${(logo.customScale * 100).toInt()}%)'
+                                        : 'Default'),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: logo.sizeMode !=
+                                          CustomLogoSizeMode.defaultSize
                                       ? context.colors.primary
                                       : context.colors.onSurfaceVariant,
                                 ),
-                                const SizedBox(width: 3),
-                                AnymeXText(
-                                  logo.useOriginalSize
-                                      ? 'Original Size'
-                                      : 'Default',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color: logo.useOriginalSize
-                                        ? context.colors.primary
-                                        : context.colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
