@@ -3,10 +3,12 @@ library;
 import 'dart:io';
 
 import 'package:anymex/controllers/custom_logo/custom_logo_service.dart';
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/custom_logo_model.dart';
 import 'package:anymex/models/logo_animation_type.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
@@ -164,12 +166,10 @@ class _LogoAnimationPreviewDialogState
       children: [
         Column(
           children: [
-            Container(
+            AnymeXContainer(
               height: 180,
-              decoration: BoxDecoration(
-                color: context.colors.surfaceContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
+              radius: 16,
+              color: context.colors.surfaceContainer,
               child: Center(
                 child: AnymeXAnimatedLogo(
                   key: _logoKey,
@@ -222,12 +222,10 @@ class _LogoAnimationPreviewDialogState
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
+                AnymeXContainer(
                   height: 200,
-                  decoration: BoxDecoration(
-                    color: context.colors.surfaceContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  radius: 16,
+                  color: context.colors.surfaceContainer,
                   child: Center(
                     child: AnymeXAnimatedLogo(
                       key: _logoKey,
@@ -279,34 +277,35 @@ class _LogoAnimationPreviewDialogState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Add Custom Logo Button
-          InkWell(
-            onTap: _showAddCustomLogoDialog,
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: context.colors.primary.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: context.colors.primary.withOpacity(0.35),
-                  width: 1.5,
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add_photo_alternate_rounded,
-                      color: context.colors.primary, size: 20),
-                  const SizedBox(width: 8),
-                  AnymeXText(
-                    'Add Custom Logo (.gif, .webp)',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: context.colors.primary,
-                      fontSize: 14,
+          AnymeXContainer(
+            radius: 12,
+            color: context.colors.primary.withOpacity(0.12),
+            border: Border.all(
+              color: context.colors.primary.withOpacity(0.35),
+              width: 1.5,
+            ),
+            child: InkWell(
+              onTap: _showAddCustomLogoDialog,
+              borderRadius: BorderRadius.circular(12.multiplyRadius()),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.add_photo_alternate_rounded,
+                        color: context.colors.primary, size: 20),
+                    const SizedBox(width: 8),
+                    AnymeXText(
+                      'Add Custom Logo (.gif, .webp)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: context.colors.primary,
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -320,19 +319,17 @@ class _LogoAnimationPreviewDialogState
             ...List.generate(_customLogos.length, (index) {
               final logo = _customLogos[index];
               final isSelected = _selectedCustomLogoId == logo.id;
-              return Container(
+              return AnymeXContainer(
+                radius: 12,
                 margin: const EdgeInsets.only(bottom: 8),
-                decoration: BoxDecoration(
+                color: isSelected
+                    ? context.colors.primary.withOpacity(0.15)
+                    : context.colors.surfaceContainer,
+                border: Border.all(
                   color: isSelected
-                      ? context.colors.primary.withOpacity(0.15)
-                      : context.colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected
-                        ? context.colors.primary
-                        : Colors.transparent,
-                    width: 1.5,
-                  ),
+                      ? context.colors.primary
+                      : Colors.transparent,
+                  width: 1.5,
                 ),
                 child: ListTile(
                   contentPadding:

@@ -1,5 +1,7 @@
 /// Logo Animation Types
 enum LogoAnimationType {
+  smokeTrace('Smoke Trace', 'Luminous smoke streams trace and reveal the embossed logo'),
+
   // Core Professional Animations
   bottomToTop('Bottom Fill', 'Fills the logo from bottom to top with gradient mask'),
   fadeIn('Fade In', 'Smoothly fades in with subtle scale'),
@@ -24,8 +26,7 @@ enum LogoAnimationType {
   matrixRain('Matrix Rain', 'Digital rain code forms logo cyberpunk-style'),
   shatter('Shatter', 'Glass shards explode outward then reform dramatically'),
   hologram('Hologram', 'Futuristic holographic projection with scan lines and flicker'),
-  vortex('Vortex', 'Logo emerges from spinning dimensional vortex with depth'),
-  smokeTrace('Smoke Trace', 'Luminous smoke streams trace and reveal the embossed logo');
+  vortex('Vortex', 'Logo emerges from spinning dimensional vortex with depth');
   
   final String displayName;
   final String description;
@@ -34,7 +35,7 @@ enum LogoAnimationType {
   
   static LogoAnimationType fromIndex(int index) {
     if (index < 0 || index >= LogoAnimationType.values.length) {
-      return LogoAnimationType.bottomToTop;
+      return LogoAnimationType.smokeTrace;
     }
     return LogoAnimationType.values[index];
   }
