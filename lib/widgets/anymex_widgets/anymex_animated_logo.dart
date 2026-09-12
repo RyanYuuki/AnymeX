@@ -1359,9 +1359,6 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
 
   Widget _buildBaseLogo(double fillHeight) {
     final theme = Theme.of(context);
-    final bool useGradient = widget.gradient != null || widget.color == null;
-
-    String strokeFill;
     String fillGradientDef;
 
     if (widget.gradient != null) {
@@ -1369,14 +1366,11 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
           ? (widget.gradient as LinearGradient).colors
           : [theme.colorScheme.primary, theme.colorScheme.tertiary];
 
-      strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient(colors, fillHeight);
     } else if (widget.color != null) {
-      strokeFill = 'url(#logoGradient)';
       fillGradientDef =
           _createFillGradient([widget.color!, widget.color!], fillHeight);
     } else {
-      strokeFill = 'url(#logoGradient)';
       fillGradientDef = _createFillGradient([
         theme.colorScheme.primary,
         theme.colorScheme.secondary,
