@@ -328,10 +328,9 @@ class _LogoAnimationPreviewDialogState
                             ),
                           ),
                           const SizedBox(height: 8),
-                          _buildVerticalModeSelector(
+                          _buildIconOnlySizeModeSelector(
                             context: dialogContext,
                             currentMode: sizeMode,
-                            customScale: customScale,
                             onModeChanged: (newMode) {
                               setDialogState(() {
                                 sizeMode = newMode;
@@ -558,10 +557,9 @@ class _LogoAnimationPreviewDialogState
                             ),
                           ),
                           const SizedBox(height: 8),
-                          _buildVerticalModeSelector(
+                          _buildIconOnlySizeModeSelector(
                             context: dialogContext,
                             currentMode: sizeMode,
-                            customScale: customScale,
                             onModeChanged: (newMode) {
                               setDialogState(() {
                                 sizeMode = newMode;
@@ -700,124 +698,13 @@ class _LogoAnimationPreviewDialogState
     return logo;
   }
 
-  Widget _buildVerticalModeSelector({
+  Widget _buildIconOnlySizeModeSelector({
     required BuildContext context,
     required CustomLogoSizeMode currentMode,
-    required double customScale,
-    required ValueChanged<CustomLogoSizeMode> onModeChanged,
-  }) {
-    return Column(
-      children: [
-        _buildVerticalModeOption(
-          context: context,
-          title: 'Default Size',
-          subtitle: 'Standard responsive fit (200px)',
-          icon: Icons.crop_square_rounded,
-          isSelected: currentMode == CustomLogoSizeMode.defaultSize,
-          onTap: () => onModeChanged(CustomLogoSizeMode.defaultSize),
-        ),
-        const SizedBox(height: 6),
-        _buildVerticalModeOption(
-          context: context,
-          title: 'Original Size',
-          subtitle: 'Native unscaled dimensions',
-          icon: Icons.aspect_ratio_rounded,
-          isSelected: currentMode == CustomLogoSizeMode.originalSize,
-          onTap: () => onModeChanged(CustomLogoSizeMode.originalSize),
-        ),
-        const SizedBox(height: 6),
-        _buildVerticalModeOption(
-          context: context,
-          title: 'Custom Scale',
-          subtitle: 'Manual scale (${(customScale * 100).toInt()}%)',
-          icon: Icons.zoom_in_rounded,
-          isSelected: currentMode == CustomLogoSizeMode.customScale,
-          onTap: () => onModeChanged(CustomLogoSizeMode.customScale),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVerticalModeOption({
-    required BuildContext context,
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final colors = context.colors;
-    return InkWell(
-      borderRadius: BorderRadius.circular(10),
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? colors.primary.withOpacity(0.12)
-              : colors.surfaceContainerHighest.withOpacity(0.35),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isSelected ? colors.primary : Colors.transparent,
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              isSelected
-                  ? Icons.radio_button_checked_rounded
-                  : Icons.radio_button_unchecked_rounded,
-              color: isSelected ? colors.primary : colors.onSurfaceVariant,
-              size: 18,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnymeXText(
-                    title,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.w600,
-                      color: isSelected ? colors.primary : colors.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 1),
-                  AnymeXText(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              icon,
-              size: 18,
-              color: isSelected
-                  ? colors.primary
-                  : colors.onSurfaceVariant.withOpacity(0.6),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSegmentedModeBar({
-    required BuildContext context,
-    required CustomLogoSizeMode currentMode,
-    required double customScale,
     required ValueChanged<CustomLogoSizeMode> onModeChanged,
   }) {
     return Container(
-      height: 38,
+      height: 40,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: context.colors.surfaceContainerHighest.withOpacity(0.5),
@@ -826,29 +713,30 @@ class _LogoAnimationPreviewDialogState
       child: Row(
         children: [
           Expanded(
-            child: _buildSegmentItem(
+            child: _buildIconSegmentItem(
               context: context,
-              title: 'Default',
+              icon: Icons.crop_square_rounded,
+              tooltip: 'Default Size (200px)',
               isSelected: currentMode == CustomLogoSizeMode.defaultSize,
               onTap: () => onModeChanged(CustomLogoSizeMode.defaultSize),
             ),
           ),
           const SizedBox(width: 4),
           Expanded(
-            child: _buildSegmentItem(
+            child: _buildIconSegmentItem(
               context: context,
-              title: 'Original',
+              icon: Icons.aspect_ratio_rounded,
+              tooltip: 'Original Size',
               isSelected: currentMode == CustomLogoSizeMode.originalSize,
               onTap: () => onModeChanged(CustomLogoSizeMode.originalSize),
             ),
           ),
           const SizedBox(width: 4),
           Expanded(
-            child: _buildSegmentItem(
+            child: _buildIconSegmentItem(
               context: context,
-              title: currentMode == CustomLogoSizeMode.customScale
-                  ? 'Custom (${(customScale * 100).toInt()}%)'
-                  : 'Custom',
+              icon: Icons.zoom_in_rounded,
+              tooltip: 'Custom Scale',
               isSelected: currentMode == CustomLogoSizeMode.customScale,
               onTap: () => onModeChanged(CustomLogoSizeMode.customScale),
             ),
@@ -858,37 +746,31 @@ class _LogoAnimationPreviewDialogState
     );
   }
 
-  Widget _buildSegmentItem({
+  Widget _buildIconSegmentItem({
     required BuildContext context,
-    required String title,
+    required IconData icon,
+    required String tooltip,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(8),
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: isSelected ? context.colors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-            child: AnymeXText(
-              title,
-              maxLines: 1,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected
-                    ? context.colors.onPrimary
-                    : context.colors.onSurfaceVariant,
-              ),
-            ),
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isSelected ? context.colors.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            size: 20,
+            color: isSelected
+                ? context.colors.onPrimary
+                : context.colors.onSurfaceVariant,
           ),
         ),
       ),
@@ -915,10 +797,9 @@ class _LogoAnimationPreviewDialogState
         if (activeCustomLogo != null) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: _buildSegmentedModeBar(
+            child: _buildIconOnlySizeModeSelector(
               context: context,
               currentMode: activeCustomLogo.sizeMode,
-              customScale: activeCustomLogo.customScale,
               onModeChanged: (newMode) {
                 CustomLogoService.setSizeMode(activeCustomLogo.id, newMode);
                 setState(() {
