@@ -34,13 +34,14 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   late AnimationController _controller;
   late Animation<double> _animation;
   late LogoAnimationType _animationType;
+  int _replayKeyCounter = 0;
 
   @override
   void initState() {
     super.initState();
     _animationType = widget.forceAnimationType ?? _getStoredAnimationType();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: _getDurationForAnimationType(_animationType),
       vsync: this,
     );
 
@@ -66,8 +67,19 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
     }
   }
 
+  Duration _getDurationForAnimationType(LogoAnimationType type) {
+    switch (type) {
+      case LogoAnimationType.smokeTrace:
+        return const Duration(milliseconds: 3800);
+      default:
+        return const Duration(milliseconds: 2000);
+    }
+  }
+
   Curve _getCurveForAnimationType(LogoAnimationType type) {
     switch (type) {
+      case LogoAnimationType.smokeTrace:
+        return Curves.linear;
       case LogoAnimationType.bottomToTop:
       case LogoAnimationType.wave:
         return Curves.easeInOut;
@@ -116,6 +128,9 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   }
 
   void replay() {
+    setState(() {
+      _replayKeyCounter++;
+    });
     _controller.reset();
     _startAnimation();
   }
@@ -134,8 +149,9 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       child: AnimatedBuilder(
         animation: _animation,
         builder: (context, child) {
-          // Don't show anything during initial delay
-          if (_animation.value < 0.05) {
+          // Don't show anything during initial delay (except smokeTrace which starts immediately)
+          if (_animation.value < 0.05 &&
+              _animationType != LogoAnimationType.smokeTrace) {
             return const SizedBox.shrink();
           }
           return _buildAnimatedLogo();
@@ -186,7 +202,49 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
         return _buildHologramLogo();
       case LogoAnimationType.vortex:
         return _buildVortexLogo();
+      case LogoAnimationType.smokeTrace:
+        return _buildSmokeTraceLogo();
     }
+  }
+
+  // smoke trace (animated GIF/WebP)
+  Widget _buildSmokeTraceLogo() {
+    Widget content = Image.asset(
+      'assets/images/logo_smoke.webp',
+      key: ValueKey('smoke_logo_$_replayKeyCounter'),
+      width: widget.size,
+      height: widget.size,
+      fit: BoxFit.contain,
+      gaplessPlayback: true,
+      errorBuilder: (context, error, stackTrace) {
+        return Image.asset(
+          'assets/images/logo_smoke.gif',
+          key: ValueKey('smoke_logo_gif_$_replayKeyCounter'),
+          width: widget.size,
+          height: widget.size,
+          fit: BoxFit.contain,
+          gaplessPlayback: true,
+        );
+      },
+    );
+
+    if (widget.gradient != null) {
+      content = ShaderMask(
+        shaderCallback: (bounds) => widget.gradient!.createShader(bounds),
+        blendMode: BlendMode.modulate,
+        child: content,
+      );
+    } else if (widget.color != null) {
+      content = ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          widget.color!,
+          BlendMode.modulate,
+        ),
+        child: content,
+      );
+    }
+
+    return content;
   }
 
   // bottom to top

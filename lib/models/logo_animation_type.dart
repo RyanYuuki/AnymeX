@@ -24,7 +24,8 @@ enum LogoAnimationType {
   matrixRain('Matrix Rain', 'Digital rain code forms logo cyberpunk-style'),
   shatter('Shatter', 'Glass shards explode outward then reform dramatically'),
   hologram('Hologram', 'Futuristic holographic projection with scan lines and flicker'),
-  vortex('Vortex', 'Logo emerges from spinning dimensional vortex with depth');
+  vortex('Vortex', 'Logo emerges from spinning dimensional vortex with depth'),
+  smokeTrace('Smoke Trace', 'Luminous smoke streams trace and reveal the embossed logo');
   
   final String displayName;
   final String description;
