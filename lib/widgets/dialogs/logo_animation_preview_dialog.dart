@@ -328,7 +328,7 @@ class _LogoAnimationPreviewDialogState
                             ),
                           ),
                           const SizedBox(height: 8),
-                          _buildSegmentedModeBar(
+                          _buildVerticalModeSelector(
                             context: dialogContext,
                             currentMode: sizeMode,
                             customScale: customScale,
@@ -558,7 +558,7 @@ class _LogoAnimationPreviewDialogState
                             ),
                           ),
                           const SizedBox(height: 8),
-                          _buildSegmentedModeBar(
+                          _buildVerticalModeSelector(
                             context: dialogContext,
                             currentMode: sizeMode,
                             customScale: customScale,
@@ -698,6 +698,116 @@ class _LogoAnimationPreviewDialogState
     }
 
     return logo;
+  }
+
+  Widget _buildVerticalModeSelector({
+    required BuildContext context,
+    required CustomLogoSizeMode currentMode,
+    required double customScale,
+    required ValueChanged<CustomLogoSizeMode> onModeChanged,
+  }) {
+    return Column(
+      children: [
+        _buildVerticalModeOption(
+          context: context,
+          title: 'Default Size',
+          subtitle: 'Standard responsive fit (200px)',
+          icon: Icons.crop_square_rounded,
+          isSelected: currentMode == CustomLogoSizeMode.defaultSize,
+          onTap: () => onModeChanged(CustomLogoSizeMode.defaultSize),
+        ),
+        const SizedBox(height: 6),
+        _buildVerticalModeOption(
+          context: context,
+          title: 'Original Size',
+          subtitle: 'Native unscaled dimensions',
+          icon: Icons.aspect_ratio_rounded,
+          isSelected: currentMode == CustomLogoSizeMode.originalSize,
+          onTap: () => onModeChanged(CustomLogoSizeMode.originalSize),
+        ),
+        const SizedBox(height: 6),
+        _buildVerticalModeOption(
+          context: context,
+          title: 'Custom Scale',
+          subtitle: 'Manual scale (${(customScale * 100).toInt()}%)',
+          icon: Icons.zoom_in_rounded,
+          isSelected: currentMode == CustomLogoSizeMode.customScale,
+          onTap: () => onModeChanged(CustomLogoSizeMode.customScale),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVerticalModeOption({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final colors = context.colors;
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? colors.primary.withOpacity(0.12)
+              : colors.surfaceContainerHighest.withOpacity(0.35),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isSelected ? colors.primary : Colors.transparent,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              isSelected
+                  ? Icons.radio_button_checked_rounded
+                  : Icons.radio_button_unchecked_rounded,
+              color: isSelected ? colors.primary : colors.onSurfaceVariant,
+              size: 18,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnymeXText(
+                    title,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.w600,
+                      color: isSelected ? colors.primary : colors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 1),
+                  AnymeXText(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected
+                  ? colors.primary
+                  : colors.onSurfaceVariant.withOpacity(0.6),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildSegmentedModeBar({
