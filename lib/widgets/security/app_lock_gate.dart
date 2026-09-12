@@ -141,7 +141,11 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
         if (controller.biometricsEnabled.value &&
             controller.isBiometricsSupported.value &&
             controller.cooldownSecondsRemaining.value == 0) {
-          controller.unlockWithBiometrics();
+          Future.delayed(const Duration(milliseconds: 200), () {
+            if (mounted && controller.isLocked.value) {
+              controller.unlockWithBiometrics();
+            }
+          });
         }
       }
     });
