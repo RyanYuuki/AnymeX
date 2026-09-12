@@ -80,7 +80,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
   Duration _getDurationForAnimationType(LogoAnimationType type) {
     switch (type) {
       case LogoAnimationType.smokeTrace:
-        return const Duration(milliseconds: 3800);
+        return const Duration(milliseconds: 5600);
       default:
         return const Duration(milliseconds: 2000);
     }
