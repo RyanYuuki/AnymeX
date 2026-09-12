@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
@@ -27,7 +25,6 @@ import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/firebase_options.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
@@ -41,7 +38,6 @@ import 'package:anymex/screens/novel/home_page.dart';
 import 'package:anymex/widgets/common/lazy_indexed_stack.dart';
 import 'package:anymex/widgets/common/media_mode_selector.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/logger.dart';
@@ -52,9 +48,10 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
+import 'package:anymex/controllers/security/app_lock_controller.dart';
+import 'package:anymex/widgets/security/app_lock_gate.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
@@ -284,6 +281,7 @@ void _initializeGetxController() async {
     Get.put(StatsTracker());
     Get.lazyPut(() => CacheController());
     Get.lazyPut(() => MediaModeController());
+    Get.put(AppLockController(), permanent: true);
   }, errorMessage: 'Failed to register GetX controllers');
 
   await safeCall(() => StorageManagerService().enforceImageCacheLimit(),
@@ -382,11 +380,12 @@ class _MainAppState extends State<MainApp> {
             return child!;
           }
           final isDesktop = Platform.isWindows;
+          final content = AppLockGate(child: child!);
 
           if (isDesktop) {
             return Stack(
               children: [
-                RepaintBoundary(child: child!),
+                RepaintBoundary(child: content),
                 Positioned(
                   top: 0,
                   left: 0,
@@ -402,7 +401,7 @@ class _MainAppState extends State<MainApp> {
           }
           return Stack(
             children: [
-              child!,
+              content,
               // const FpsMeter(),
             ],
           );

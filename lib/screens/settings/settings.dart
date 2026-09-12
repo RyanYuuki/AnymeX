@@ -12,6 +12,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_app_lock.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -188,6 +189,12 @@ class _SettingsPageState extends State<SettingsPage> {
               description:
                   "Manage cached images, thresholds, and reset app data",
               destination: SettingsStorageManager.new,
+            ),
+            _buildTile(
+              icon: Icons.lock_outline_rounded,
+              title: "Security & App Lock",
+              description: "Protect app with PIN, Biometrics & Auto-Lock",
+              destination: SettingsAppLock.new,
             ),
           ],
         ),
