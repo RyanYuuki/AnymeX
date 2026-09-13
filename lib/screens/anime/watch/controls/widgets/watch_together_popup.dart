@@ -7,7 +7,6 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -18,8 +17,7 @@ import 'package:get/get.dart';
 /// Watch Party room creation as a player sidebar.
 ///
 /// Mirrors [SourcePopup] / [AudioPopup]: an [EpisodeSidePane] hosting a
-/// [WatchSettingsPane] with an [AnymeXTabBar] to switch between
-/// creating and joining a room. All creation/join logic is preserved
+/// [WatchSettingsPane] for creating a room. All creation logic is preserved
 /// from the previous bottom-sheet implementation.
 class WatchTogetherPopup extends StatelessWidget {
   final PlayerController controller;
@@ -70,9 +68,6 @@ class _WatchTogetherPopupContentState
     extends State<_WatchTogetherPopupContent> {
   bool _isCreating = false;
   String? _error;
-  String _joinCode = '';
-  String _joinPassword = '';
-  bool _joinMode = false;
   double _maxMembers = 10;
   String _password = '';
   bool _isPrivate = false;
@@ -83,7 +78,6 @@ class _WatchTogetherPopupContentState
     return WatchSettingsPane(
       title: 'Watch Party',
       onClose: widget.onClose,
-      tabBar: _buildTabBar(),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         child: Column(
@@ -91,28 +85,13 @@ class _WatchTogetherPopupContentState
           children: [
             _buildContextCard(context),
             const SizedBox(height: 16),
-            if (_joinMode) _buildJoinFields(context) else _buildCreateFields(context),
+            _buildCreateFields(context),
             if (_error != null) ...[
               const SizedBox(height: 12),
               _buildErrorBox(context, _error!),
             ],
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: AnymeXTabBar(
-        selectTabs: const ['Create Room', 'Join Room'],
-        selectedIndex: _joinMode ? 1 : 0,
-        icons: const [Icons.add_rounded, Icons.login_rounded],
-        onTabSelected: (index) => setState(() {
-          _joinMode = index == 1;
-          _error = null;
-        }),
       ),
     );
   }
@@ -134,67 +113,6 @@ class _WatchTogetherPopupContentState
         ],
       );
     });
-  }
-
-  Widget _buildJoinFields(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildField(
-          cs,
-          label: 'Room Code',
-          hint: 'e.g. ABC123',
-          prefixIcon: Icons.vpn_key_rounded,
-          letterSpacing: 2,
-          onChanged: (v) => _joinCode = v.toUpperCase(),
-          textCapitalization: TextCapitalization.characters,
-          formatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
-            LengthLimitingTextInputFormatter(6),
-          ],
-          onSubmitted: (_) => _joinRoom(),
-        ),
-        const SizedBox(height: 12),
-        _buildField(
-          cs,
-          label: 'Password (if required)',
-          prefixIcon: Icons.lock_outline_rounded,
-          obscureText: _obscurePassword,
-          suffixIcon: _buildVisibilityToggle(cs),
-          onChanged: (v) => _joinPassword = v,
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton.icon(
-            onPressed: _isCreating ? null : _joinRoom,
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            icon: _isCreating
-                ? SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: cs.onPrimary,
-                    ),
-                  )
-                : const Icon(Icons.login_rounded, size: 18),
-            label: AnymeXText(
-              _isCreating ? 'Joining...' : 'Join Room',
-              variant: TextVariant.semiBold,
-              size: 14,
-              color: cs.onPrimary,
-            ),
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildCreateFields(BuildContext context) {
@@ -237,29 +155,6 @@ class _WatchTogetherPopupContentState
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: cs.primary.opaque(0.08),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: cs.primary.opaque(0.15)),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.info_outline_rounded, size: 16, color: cs.primary),
-              const SizedBox(width: 10),
-              Expanded(
-                child: AnymeXText(
-                  'Share the code or invite link with friends.',
-                  size: 12,
-                  color: cs.onSurface.opaque(0.6),
-                  maxLines: 3,
-                ),
-              ),
-            ],
-          ),
         ),
         const SizedBox(height: 16),
         SizedBox(
@@ -465,65 +360,6 @@ class _WatchTogetherPopupContentState
     if (url.contains('.mpd')) return 'dash';
     if (url.contains('.mp4') || url.contains('.mkv')) return 'mp4';
     return 'other';
-  }
-
-  Future<void> _joinRoom() async {
-    final watchium = Get.find<WatchiumService>();
-    if (_isCreating || watchium.isJoining.value) {
-      Logger.d('Join room from player pane skipped: already in progress',
-          'WATCHIUM_UI');
-      return;
-    }
-    final code = _joinCode.trim().toUpperCase();
-    final suppliedPassword = _joinPassword.trim();
-    if (code.length != 6) {
-      Logger.w('Join room from player pane: invalid code length ${code.length}',
-          'WATCHIUM_UI');
-      setState(() => _error = 'Room code must be 6 characters');
-      return;
-    }
-
-    Logger.i('Join room from player pane: $code', 'WATCHIUM_UI');
-    setState(() {
-      _isCreating = true;
-      _error = null;
-    });
-
-    try {
-      final preview = await watchium.getRoomInfo(code);
-      if (!mounted) return;
-      if (preview == null) {
-        Logger.w(
-            'Join room from player pane: room $code not found', 'WATCHIUM_UI');
-        setState(() => _error = 'Room not found or expired');
-        return;
-      }
-      if (preview.hasPassword && suppliedPassword.isEmpty) {
-        Logger.i('Join room from player pane: room $code requires a password',
-            'WATCHIUM_UI');
-        setState(() => _error =
-            'This room requires a password. Please enter it above.');
-        return;
-      }
-
-      final ok = await watchium.joinRoom(
-        code,
-        password: suppliedPassword.isEmpty ? null : suppliedPassword,
-      );
-      if (ok && mounted) {
-        Logger.i('Join room succeeded', 'WATCHIUM_UI');
-        widget.onClose();
-      } else if (mounted) {
-        final err = watchium.error.value;
-        Logger.w('Join room failed: $err', 'WATCHIUM_UI');
-        setState(() => _error = err.isEmpty ? 'Failed to join room' : err);
-      }
-    } catch (e) {
-      Logger.e('Join room exception', error: e, loggerName: 'WATCHIUM_UI');
-      if (mounted) setState(() => _error = e.toString());
-    } finally {
-      if (mounted) setState(() => _isCreating = false);
-    }
   }
 
   void _showCodeSheet(String code) {
