@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rhttp/rhttp.dart';
@@ -28,7 +27,6 @@ import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/firebase_options.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
@@ -41,6 +39,7 @@ import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/screens/novel/home_page.dart';
 import 'package:anymex/widgets/common/lazy_indexed_stack.dart';
 import 'package:anymex/widgets/common/media_mode_selector.dart';
+import 'package:anymex/widgets/common/home_continue_button.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
 import 'package:anymex/services/fcm_service.dart';
 import 'package:anymex/services/commentum_service.dart';
@@ -53,7 +52,6 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
@@ -491,8 +489,15 @@ class _FilterScreenState extends State<FilterScreen> {
       {bool isDesktop = false}) {
     final settings = Get.find<Settings>();
     Widget? subWidget;
+    final mediaModeController = Get.isRegistered<MediaModeController>()
+        ? Get.find<MediaModeController>()
+        : Get.put(MediaModeController());
 
-    if (!settings.useLegacyNavbar) {
+    if (tabKey == 'Home') {
+      if (!isDesktop && mediaModeController.animeHistory.isNotEmpty) {
+        subWidget = const HomeContinueWatchingBar();
+      }
+    } else if (!settings.useLegacyNavbar) {
       if (tabKey == 'Discover') {
         subWidget = MediaModeSelector(
           isVertical: isDesktop,

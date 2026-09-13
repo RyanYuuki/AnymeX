@@ -322,7 +322,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     sourceController.initNovelExtensions();
     return [
       Obx(() => InstalledExtensionsGridView(
-            sources: sourceController.installedNovelExtensions,
+            sources: sourceController.installedNovelExtensions.value,
             itemType: ItemType.novel,
           )),
     ].obs;
