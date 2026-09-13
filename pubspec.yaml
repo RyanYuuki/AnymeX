@@ -33,7 +33,6 @@ dependencies:
     flutter_web_auth_2: 5.0.3 
     get: ^4.7.3
     grouped_list: ^6.0.0
-    google_fonts: ^6.2.1
     hive: ^2.2.3
     hive_flutter: ^1.1.0
     html: any
@@ -105,6 +104,7 @@ dependencies:
     dart_discord_presence: ^1.2.0
     firebase_core: ^4.4.0
     firebase_analytics: ^12.1.1
+    firebase_messaging: ^16.6.0
     background_downloader: ^9.5.2
     auto_size_text: ^3.0.0
     vibration: ^3.1.5
@@ -224,18 +224,12 @@ flutter:
         - .env
 
     fonts:
-        - family: Poppins
+        - family: Linotte
           fonts:
               - asset: assets/fonts/Linotte-Regular.otf
                 weight: 400
-
-        - family: Poppins-SemiBold
-          fonts:
               - asset: assets/fonts/Linotte-SemiBold.otf
                 weight: 600
-
-        - family: Poppins-Bold
-          fonts:
               - asset: assets/fonts/Linotte-Bold.otf
                 weight: 700
 
