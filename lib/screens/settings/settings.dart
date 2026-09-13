@@ -13,6 +13,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_app_lock.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_incognito.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -195,6 +196,12 @@ class _SettingsPageState extends State<SettingsPage> {
               title: "Security & App Lock",
               description: "Protect app with PIN, Biometrics & Auto-Lock",
               destination: SettingsAppLock.new,
+            ),
+            _buildTile(
+              icon: Icons.visibility_off_rounded,
+              title: "Incognito & Privacy",
+              description: "Zero-trace browsing, pause tracking & auto-wipe",
+              destination: SettingsIncognito.new,
             ),
           ],
         ),

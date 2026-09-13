@@ -51,6 +51,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
 import 'package:anymex/controllers/security/app_lock_controller.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:anymex/widgets/security/app_lock_gate.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -282,6 +283,7 @@ void _initializeGetxController() async {
     Get.lazyPut(() => CacheController());
     Get.lazyPut(() => MediaModeController());
     Get.put(AppLockController(), permanent: true);
+    Get.put(IncognitoController(), permanent: true);
   }, errorMessage: 'Failed to register GetX controllers');
 
   await safeCall(() => StorageManagerService().enforceImageCacheLimit(),

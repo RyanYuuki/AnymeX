@@ -67,6 +67,16 @@ enum AppLockKeys {
   lockOnNotificationShade,
 }
 
+enum IncognitoKeys {
+  isIncognito,
+  pauseOnlineTracking,
+  pauseLocalHistory,
+  pauseSearchHistory,
+  hideHomeRecent,
+  pauseDiscordRpc,
+  autoExitOnClose,
+}
+
 enum ThemeKeys {
   isLightMode,
   isSystemMode,

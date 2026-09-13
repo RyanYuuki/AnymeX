@@ -4,6 +4,7 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
@@ -39,6 +40,10 @@ class _HomePageState extends State<HomePage> {
   Widget _buildNewEpisodesSection() {
     final serviceHandler = Get.find<ServiceHandler>();
     return Obx(() {
+      if (Get.isRegistered<IncognitoController>() &&
+          Get.find<IncognitoController>().shouldHideHomeRecent) {
+        return const SizedBox.shrink();
+      }
       final entries = <(Media, int, int)>[];
 
       if (serviceHandler.isLoggedIn.value ||

@@ -37,6 +37,7 @@ const settingsSearchCategoryIcons = <String, IconData>{
   'Logs': HugeIcons.strokeRoundedFile01,
   'About': HugeIcons.strokeRoundedInformationCircle,
   'Security & App Lock': Icons.lock_outline_rounded,
+  'Incognito & Privacy': Icons.visibility_off_rounded,
 };
 
 const settingsSearchIndex = <String, Map<String?, List<String>>>{
@@ -91,6 +92,22 @@ const settingsSearchIndex = <String, Map<String?, List<String>>>{
       'Lock After',
       'Privacy Screen in App Switcher',
       'Haptic Feedback',
+    ],
+  },
+  'Incognito & Privacy': {
+    'Private Browsing': [
+      'Incognito Mode',
+    ],
+    'Privacy Controls': [
+      'Stop Online Tracking',
+      "Don't Save Watch & Read History",
+      "Don't Save Search Queries",
+      'Hide Continue Watching on Home',
+      'Pause Discord Rich Presence',
+    ],
+    'Session & Data': [
+      'Auto-Exit on App Close',
+      'Clear Incognito Session Now',
     ],
   },
   'UI': {
@@ -394,6 +411,14 @@ const settingsSearchTitleIcons = <String, IconData>{
   'Allow Emergency Reset': Icons.restore_rounded,
   'Secret Emergency Trigger': Icons.key_rounded,
   'Haptic Feedback': Icons.vibration_rounded,
+  'Incognito Mode': Icons.visibility_off_rounded,
+  'Stop Online Tracking': Icons.cloud_off_rounded,
+  "Don't Save Watch & Read History": Icons.history_toggle_off_rounded,
+  "Don't Save Search Queries": Icons.search_off_rounded,
+  'Hide Continue Watching on Home': Icons.hide_image_outlined,
+  'Pause Discord Rich Presence': Icons.sports_esports_rounded,
+  'Auto-Exit on App Close': Icons.exit_to_app_rounded,
+  'Clear Incognito Session Now': Icons.delete_sweep_rounded,
 };
 
 const settingsSearchTitleAssetIcons = <String, String>{

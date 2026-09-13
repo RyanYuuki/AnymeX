@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:anymex/controllers/stats/stats_tracker.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -640,10 +641,14 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       _saveTracking(syncToCloud: false);
       final chapter = currentChapter.value;
       if (chapter == null) return;
+      final shouldSync = !Get.isRegistered<IncognitoController>() ||
+          Get.find<IncognitoController>().shouldSyncTrackers;
 
-      unawaited(_syncCloudProgressOnExit(chapter));
+      if (shouldSync) {
+        unawaited(_syncCloudProgressOnExit(chapter));
+      }
 
-      if (!shouldTrack) return;
+      if (!shouldTrack || !shouldSync) return;
       if (chapter.pageNumber != null &&
           chapter.totalPages != null &&
           chapter.number != null &&

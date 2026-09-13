@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -178,6 +179,10 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   void _saveHistory() {
+    if (Get.isRegistered<IncognitoController>() &&
+        !Get.find<IncognitoController>().shouldSaveSearch) {
+      return;
+    }
     DynamicKeys.searchHistory.set(
       '${effectiveType.name}_${serviceHandler.serviceType.value.name}',
       _searchedTerms.toList(),
@@ -272,7 +277,12 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       }
     });
 
-    if (searchQuery.isNotEmpty && !_searchedTerms.contains(searchQuery)) {
+    final shouldSave = !Get.isRegistered<IncognitoController>() ||
+        Get.find<IncognitoController>().shouldSaveSearch;
+
+    if (shouldSave &&
+        searchQuery.isNotEmpty &&
+        !_searchedTerms.contains(searchQuery)) {
       _searchedTerms.add(searchQuery);
       _saveHistory();
     }

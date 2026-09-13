@@ -11,6 +11,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex/controllers/stats/stats_tracker.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:get/get.dart';
 import 'package:isar_community/isar.dart';
 
@@ -24,6 +25,13 @@ class OfflineStorageController extends GetxController {
   GistSyncController? get _syncCtrl => Get.isRegistered<GistSyncController>()
       ? Get.find<GistSyncController>()
       : null;
+
+  IncognitoController? get _incognitoCtrl =>
+      Get.isRegistered<IncognitoController>()
+          ? Get.find<IncognitoController>()
+          : null;
+
+  bool get _isHistoryPaused => _incognitoCtrl?.shouldRecordHistory == false;
 
   final Map<String, Future<void>> _activeWrites = {};
 
@@ -606,6 +614,19 @@ class OfflineStorageController extends GetxController {
     List<Episode>? episodes,
     Episode? currentEpisode,
   ) async {
+    if (_isHistoryPaused) {
+      _incognitoCtrl?.saveSessionData('anime_${original.id}', {
+        'original': original,
+        'episodes': episodes,
+        'currentEpisode': currentEpisode,
+      });
+      if (currentEpisode != null) {
+        _incognitoCtrl?.saveSessionData(
+            'anime_ep_${original.id}', currentEpisode);
+      }
+      return;
+    }
+
     if (currentEpisode != null &&
         (currentEpisode.title == null || currentEpisode.title!.isEmpty) &&
         episodes != null) {
@@ -648,6 +669,19 @@ class OfflineStorageController extends GetxController {
     List<Chapter>? chapters,
     Chapter? currentChapter,
   ) async {
+    if (_isHistoryPaused) {
+      _incognitoCtrl?.saveSessionData('manga_${original.id}', {
+        'original': original,
+        'chapters': chapters,
+        'currentChapter': currentChapter,
+      });
+      if (currentChapter != null) {
+        _incognitoCtrl?.saveSessionData(
+            'manga_ch_${original.id}', currentChapter);
+      }
+      return;
+    }
+
     if (currentChapter != null &&
         (currentChapter.title == null || currentChapter.title!.isEmpty) &&
         chapters != null) {
@@ -689,6 +723,20 @@ class OfflineStorageController extends GetxController {
     Chapter? currentChapter,
     Source source,
   ) async {
+    if (_isHistoryPaused) {
+      _incognitoCtrl?.saveSessionData('novel_${original.id}', {
+        'original': original,
+        'chapters': chapters,
+        'currentChapter': currentChapter,
+        'source': source,
+      });
+      if (currentChapter != null) {
+        _incognitoCtrl?.saveSessionData(
+            'novel_ch_${original.id}', currentChapter);
+      }
+      return;
+    }
+
     if (currentChapter != null &&
         (currentChapter.title == null || currentChapter.title!.isEmpty) &&
         chapters != null) {
@@ -728,6 +776,11 @@ class OfflineStorageController extends GetxController {
     Episode episode, {
     bool syncToCloud = true,
   }) async {
+    if (_isHistoryPaused) {
+      _incognitoCtrl?.saveSessionData('anime_ep_$animeId', episode);
+      return;
+    }
+
     await _synchronizedWrite(animeId, () async {
       final existingAnime = getAnimeById(animeId);
       if (existingAnime == null) {
@@ -794,6 +847,16 @@ class OfflineStorageController extends GetxController {
 
   Episode? getWatchedEpisode(String anilistId, String episodeNumber,
       {Episode? episode}) {
+    if (_isHistoryPaused) {
+      final sessionEp = _incognitoCtrl?.getSessionData('anime_ep_$anilistId');
+      if (sessionEp is Episode) {
+        if (episode != null && sessionEp.isSameEpisode(episode)) return sessionEp;
+        if (sessionEp.number.toString() == episodeNumber.toString()) {
+          return sessionEp;
+        }
+      }
+    }
+
     final anime = getAnimeById(anilistId);
     if (anime?.watchedEpisodes == null) return null;
 
@@ -812,6 +875,11 @@ class OfflineStorageController extends GetxController {
     Source? source,
     bool syncToCloud = true,
   }) async {
+    if (_isHistoryPaused) {
+      _incognitoCtrl?.saveSessionData('manga_ch_$mangaId', chapter);
+      return;
+    }
+
     await _synchronizedWrite(mangaId, () async {
       OfflineMedia? existingManga = getMangaById(mangaId);
       existingManga ??= getNovelById(mangaId);
@@ -883,6 +951,11 @@ class OfflineStorageController extends GetxController {
   }
 
   Chapter? getReadChapter(String anilistId, double number) {
+    if (_isHistoryPaused) {
+      final sessionCh = _incognitoCtrl?.getSessionData('manga_ch_$anilistId');
+      if (sessionCh is Chapter && sessionCh.number == number) return sessionCh;
+    }
+
     final manga = getMangaById(anilistId);
     if (manga?.readChapters == null) return null;
 
@@ -890,6 +963,11 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<void> addOrUpdateNovelChapter(String novelId, Chapter chapter) async {
+    if (_isHistoryPaused) {
+      _incognitoCtrl?.saveSessionData('novel_ch_$novelId', chapter);
+      return;
+    }
+
     final existingNovel = getNovelById(novelId);
     if (existingNovel == null) {
       Logger.i(
@@ -922,6 +1000,11 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<Chapter?> getReadNovelChapter(String novelId, double number) async {
+    if (_isHistoryPaused) {
+      final sessionCh = _incognitoCtrl?.getSessionData('novel_ch_$novelId');
+      if (sessionCh is Chapter && sessionCh.number == number) return sessionCh;
+    }
+
     final novel = getNovelById(novelId);
     if (novel?.readChapters == null) return null;
 
