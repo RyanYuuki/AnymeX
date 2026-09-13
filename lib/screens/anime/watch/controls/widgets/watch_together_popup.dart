@@ -5,7 +5,6 @@ import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -19,13 +18,49 @@ import 'package:get/get.dart';
 /// Mirrors [SourcePopup] / [AudioPopup]: an [EpisodeSidePane] hosting a
 /// [WatchSettingsPane] for creating a room. All creation logic is preserved
 /// from the previous bottom-sheet implementation.
-class WatchTogetherPopup extends StatelessWidget {
+class WatchTogetherPopup extends StatefulWidget {
   final PlayerController controller;
 
   const WatchTogetherPopup({super.key, required this.controller});
 
+  @override
+  State<WatchTogetherPopup> createState() => _WatchTogetherPopupState();
+}
+
+class _WatchTogetherPopupState extends State<WatchTogetherPopup> {
+  String? _createdCode;
+  String? _shareUrl;
+  bool _createdPrivate = false;
+
   void _closePane() {
-    controller.isWatchTogetherPaneOpened.value = false;
+    _createdCode = null;
+    _shareUrl = null;
+    _createdPrivate = false;
+    widget.controller.isWatchTogetherPaneOpened.value = false;
+  }
+
+  void _handleCreated(String code, String shareUrl, bool wasPrivate) {
+    setState(() {
+      _createdCode = code;
+      _shareUrl = shareUrl;
+      _createdPrivate = wasPrivate;
+    });
+  }
+
+  void _openParty() {
+    WatchiumService? watchium;
+    try {
+      watchium = Get.find<WatchiumService>();
+    } catch (_) {
+      watchium = null;
+    }
+    setState(() {
+      _createdCode = null;
+      _shareUrl = null;
+      _createdPrivate = false;
+    });
+    widget.controller.isWatchTogetherPaneOpened.value = false;
+    watchium?.isPartyPaneOpened.value = true;
   }
 
   @override
@@ -38,12 +73,20 @@ class WatchTogetherPopup extends StatelessWidget {
         watchium = null;
       }
       final inRoom = watchium?.inRoom.value ?? false;
+      // Keep the pane open for the success state right after creation,
+      // even though creating the room also joins it (inRoom becomes true).
       return EpisodeSidePane(
-        isVisible: controller.isWatchTogetherPaneOpened.value && !inRoom,
+        isVisible: widget.controller.isWatchTogetherPaneOpened.value &&
+            (!inRoom || _createdCode != null),
         onOverlayTap: _closePane,
         child: _WatchTogetherPopupContent(
-          controller: controller,
+          controller: widget.controller,
           onClose: _closePane,
+          createdCode: _createdCode,
+          shareUrl: _shareUrl,
+          createdPrivate: _createdPrivate,
+          onCreated: _handleCreated,
+          onOpenParty: _openParty,
         ),
       );
     });
@@ -53,10 +96,20 @@ class WatchTogetherPopup extends StatelessWidget {
 class _WatchTogetherPopupContent extends StatefulWidget {
   final PlayerController controller;
   final VoidCallback onClose;
+  final String? createdCode;
+  final String? shareUrl;
+  final bool createdPrivate;
+  final void Function(String code, String shareUrl, bool wasPrivate) onCreated;
+  final VoidCallback onOpenParty;
 
   const _WatchTogetherPopupContent({
     required this.controller,
     required this.onClose,
+    required this.createdCode,
+    required this.shareUrl,
+    required this.createdPrivate,
+    required this.onCreated,
+    required this.onOpenParty,
   });
 
   @override
@@ -75,23 +128,30 @@ class _WatchTogetherPopupContentState
 
   @override
   Widget build(BuildContext context) {
+    final createdCode = widget.createdCode;
     return WatchSettingsPane(
-      title: 'Watch Party',
+      title: createdCode == null ? 'Watch Party' : 'Room Created!',
       onClose: widget.onClose,
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildContextCard(context),
-            const SizedBox(height: 16),
-            _buildCreateFields(context),
-            if (_error != null) ...[
-              const SizedBox(height: 12),
-              _buildErrorBox(context, _error!),
-            ],
-          ],
-        ),
+        child: createdCode == null
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildContextCard(context),
+                  const SizedBox(height: 16),
+                  _buildCreateFields(context),
+                  if (_error != null) ...[
+                    const SizedBox(height: 12),
+                    _buildErrorBox(context, _error!),
+                  ],
+                ],
+              )
+            : _buildSuccessView(
+                context,
+                createdCode,
+                widget.shareUrl ?? '',
+              ),
       ),
     );
   }
@@ -113,6 +173,188 @@ class _WatchTogetherPopupContentState
         ],
       );
     });
+  }
+
+  Widget _buildSuccessView(
+      BuildContext context, String code, String shareUrl) {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildContextCard(context),
+        const SizedBox(height: 20),
+        Center(
+          child: Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                  color: Colors.green.withValues(alpha: 0.3)),
+            ),
+            child: const Icon(Icons.check_rounded,
+                color: Colors.green, size: 28),
+          ),
+        ),
+        const SizedBox(height: 12),
+        AnymeXText(
+          'Share the code below with friends to watch together',
+          size: 12,
+          color: cs.onSurface.opaque(0.5),
+          maxLines: 2,
+          textAlign: TextAlign.center,
+        ),
+        if (widget.createdPrivate) ...[
+          const SizedBox(height: 8),
+          Center(
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                    color: Colors.orange.withValues(alpha: 0.3)),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.lock_rounded,
+                      size: 12, color: Colors.orange),
+                  SizedBox(width: 4),
+                  AnymeXText(
+                    'Private room',
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.orange,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+        const SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.only(left: 12, bottom: 8),
+          child: AnymeXText('ROOM CODE',
+            size: 11.5,
+            variant: TextVariant.bold,
+            color: cs.onSurface.opaque(0.45),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: cs.onSurface.opaque(0.08, iReallyMeanIt: true),
+              width: 0.8,
+            ),
+          ),
+          child: SelectableText(
+            code,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Poppins-Bold',
+              fontSize: 30,
+              letterSpacing: 6,
+              color: cs.primary,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: code));
+              successSnackBar('Room code copied to clipboard',
+                  title: 'Copied');
+            },
+            style: OutlinedButton.styleFrom(
+              foregroundColor: cs.primary,
+              side: BorderSide(color: cs.primary.opaque(0.4)),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.copy_rounded, size: 16),
+            label: const AnymeXText(
+              'Copy Code',
+              variant: TextVariant.semiBold,
+              size: 13,
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        AnymeXSectionBuilder(
+          margin: EdgeInsets.zero,
+          title: 'Invite Link',
+          children: [
+            AnymeXTile(
+              icon: Icons.link_rounded,
+              iconColor: Colors.purple,
+              title: 'Invite Link',
+              subtitleWidget: AnymeXText(
+                shareUrl,
+                size: 12,
+                color: cs.primary,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+              trailing: GestureDetector(
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: shareUrl));
+                  successSnackBar('Invite link copied!', title: 'Copied');
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.copy_rounded,
+                    size: 18,
+                    color: cs.onSurface.opaque(0.7, iReallyMeanIt: true),
+                  ),
+                ),
+              ),
+              onTap: () {
+                Clipboard.setData(ClipboardData(text: shareUrl));
+                successSnackBar('Invite link copied!', title: 'Copied');
+              },
+              showChevron: false,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: widget.onOpenParty,
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: const Icon(Icons.people_rounded, size: 18),
+            label: AnymeXText(
+              'Open Party Chat',
+              variant: TextVariant.semiBold,
+              size: 14,
+              color: cs.onPrimary,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildCreateFields(BuildContext context) {
@@ -339,8 +581,11 @@ class _WatchTogetherPopupContentState
 
       if (code != null) {
         Logger.i('Room created: $code', 'WATCHIUM_UI');
-        widget.onClose();
-        _showCodeSheet(code);
+        final shareUrl = '${watchium.serverUrl}/join/$code?anymex';
+        if (mounted) {
+          setState(() => _error = null);
+          widget.onCreated(code, shareUrl, _password.isNotEmpty);
+        }
       } else if (mounted) {
         final err = watchium.error.value;
         Logger.w('Room creation failed: $err', 'WATCHIUM_UI');
@@ -360,150 +605,5 @@ class _WatchTogetherPopupContentState
     if (url.contains('.mpd')) return 'dash';
     if (url.contains('.mp4') || url.contains('.mkv')) return 'mp4';
     return 'other';
-  }
-
-  void _showCodeSheet(String code) {
-    final watchium = Get.find<WatchiumService>();
-    final shareUrl = '${watchium.serverUrl}/join/$code?anymex';
-    final ctx = Get.context;
-    if (ctx == null) return;
-    final cs = Theme.of(ctx).colorScheme;
-
-    AnymeXSheet.custom(
-      Padding(
-        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.check_rounded,
-                      color: Colors.green, size: 22),
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: AnymeXText(
-                    'Room Created!',
-                    variant: TextVariant.bold,
-                    size: 16,
-                  ),
-                ),
-                if (_password.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                      border:
-                          Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.lock_rounded,
-                            size: 12, color: Colors.orange),
-                        SizedBox(width: 4),
-                        AnymeXText(
-                          'Private',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.orange,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 14),
-            AnymeXText(
-              'Share this code with friends:',
-              size: 12,
-              color: cs.onSurface.opaque(0.5),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: cs.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: cs.outline.opaque(0.15)),
-              ),
-              child: SelectableText(
-                code,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Poppins-Bold',
-                  fontSize: 30,
-                  letterSpacing: 6,
-                  color: cs.primary,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: code));
-                      successSnackBar('Room code copied to clipboard',
-                          title: 'Copied');
-                    },
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: cs.primary,
-                      side: BorderSide(color: cs.primary.opaque(0.4)),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    icon: const Icon(Icons.copy_rounded, size: 16),
-                    label: const AnymeXText(
-                      'Copy Code',
-                      variant: TextVariant.semiBold,
-                      size: 13,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: FilledButton.icon(
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: shareUrl));
-                      successSnackBar('Invite link copied!', title: 'Copied');
-                    },
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    icon: const Icon(Icons.link_rounded, size: 16),
-                    label: const AnymeXText(
-                      'Copy Link',
-                      variant: TextVariant.semiBold,
-                      size: 13,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      ctx,
-      showDragHandle: true,
-    );
   }
 }
