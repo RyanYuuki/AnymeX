@@ -6,7 +6,6 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
-import 'package:anymex/widgets/watchium/watchium_create_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -339,29 +338,52 @@ class BottomControls extends StatelessWidget {
         tooltip: 'External Player',
         compact: true,
       ),
-      // 'watch_together': Obx(() {
-      //   final watchium = Get.find<WatchiumService>();
-      //   return ControlButton(
-      //     icon: watchium.inRoom.value
-      //         ? Icons.people_rounded
-      //         : Icons.people_outline_rounded,
-      //     onPressed: () {
-      //       if (watchium.inRoom.value) {
-      //         watchium.isPartyPaneOpened.value =
-      //             !watchium.isPartyPaneOpened.value;
-      //       } else {
-      //         showWatchiumCreateSheet(
-      //           context: Get.context!,
-      //           playerController: controller,
-      //         );
-      //       }
-      //     },
-      //     tooltip: watchium.inRoom.value
-      //         ? 'Watch Together (In Room)'
-      //         : 'Watch Together',
-      //     compact: true,
-      //   );
-      // }),
+      'watch_together': Obx(() {
+        final watchium = Get.find<WatchiumService>();
+        final inRoom = watchium.inRoom.value;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ControlButton(
+              icon: inRoom
+                  ? Icons.people_rounded
+                  : Icons.people_outline_rounded,
+              onPressed: () {
+                if (inRoom) {
+                  watchium.isPartyPaneOpened.value =
+                      !watchium.isPartyPaneOpened.value;
+                } else {
+                  controller.isWatchTogetherPaneOpened.value =
+                      !controller.isWatchTogetherPaneOpened.value;
+                }
+              },
+              tooltip: inRoom
+                  ? 'Watch Together (In Room)'
+                  : 'Watch Together',
+              compact: true,
+            ),
+            if (inRoom)
+              Positioned(
+                right: 1,
+                top: 1,
+                child: IgnorePointer(
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      }),
       'cast': ControlButton(
         icon: Icons.cast_rounded,
         onPressed: () => CastDeviceDialog.show(context, controller),

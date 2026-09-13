@@ -222,6 +222,7 @@ class WatchiumRoomState {
   final bool announcementMode;
   final int maxMembers;
   final int createdAt;
+  final bool hasPassword;
 
   WatchiumRoomState({
     required this.code,
@@ -234,6 +235,7 @@ class WatchiumRoomState {
     required this.announcementMode,
     required this.maxMembers,
     required this.createdAt,
+    this.hasPassword = false,
   });
 
   factory WatchiumRoomState.fromJson(Map<String, dynamic> json) {
@@ -257,6 +259,7 @@ class WatchiumRoomState {
       announcementMode: settings?['announcementMode'] as bool? ?? false,
       maxMembers: json['maxMembers'] as int? ?? 10,
       createdAt: json['createdAt'] as int? ?? 0,
+      hasPassword: json['hasPassword'] as bool? ?? false,
     );
   }
 }

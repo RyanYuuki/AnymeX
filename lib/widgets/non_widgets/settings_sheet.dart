@@ -398,14 +398,14 @@ class SettingsSheet extends StatelessWidget {
           navigate(() => const WatchOffline());
         },
       ),
-      // _SheetMenuItem(
-      //   icon: Icons.people_rounded,
-      //   label: 'Watch Together',
-      //   onTap: () {
-      //     Get.back();
-      //     navigate(() => const WatchiumPage());
-      //   },
-      // ),
+      _SheetMenuItem(
+        icon: Icons.people_rounded,
+        label: 'Watch Together',
+        onTap: () {
+          Get.back();
+          navigate(() => const WatchiumPage());
+        },
+      ),
       _SheetMenuItem(
         icon: Iconsax.setting,
         label: 'Settings',

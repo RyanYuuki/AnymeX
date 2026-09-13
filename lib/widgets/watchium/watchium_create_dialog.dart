@@ -12,16 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-/// Shows the create/join watch party sheet from inside the player.
 Future<void> showWatchiumCreateSheet({
   required BuildContext context,
   required PlayerController playerController,
-}) {
-  return AnymeXSheet.custom(
-    WatchiumCreateSheet(playerController: playerController),
-    context,
-    showDragHandle: true,
-  );
+}) async {
+  playerController.isWatchTogetherPaneOpened.value = true;
 }
 
 class WatchiumCreateSheet extends StatefulWidget {
@@ -530,25 +525,46 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
   }
 
   Future<void> _joinRoom() async {
-    if (_joinCode.length != 6) {
-      Logger.w(
-          'Join room from dialog: invalid code length ${_joinCode.length}',
+    final watchium = Get.find<WatchiumService>();
+    if (_isCreating || watchium.isJoining.value) {
+      Logger.d('Join room from dialog skipped: already in progress',
+          'WATCHIUM_UI');
+      return;
+    }
+    final code = _joinCode.trim().toUpperCase();
+    final suppliedPassword = _joinPassword.trim();
+    if (code.length != 6) {
+      Logger.w('Join room from dialog: invalid code length ${code.length}',
           'WATCHIUM_UI');
       setState(() => _error = 'Room code must be 6 characters');
       return;
     }
 
-    Logger.i('Join room from dialog: $_joinCode', 'WATCHIUM_UI');
+    Logger.i('Join room from dialog: $code', 'WATCHIUM_UI');
     setState(() {
       _isCreating = true;
       _error = null;
     });
 
     try {
-      final watchium = Get.find<WatchiumService>();
+      final preview = await watchium.getRoomInfo(code);
+      if (!mounted) return;
+      if (preview == null) {
+        Logger.w('Join room from dialog: room $code not found', 'WATCHIUM_UI');
+        setState(() => _error = 'Room not found or expired');
+        return;
+      }
+      if (preview.hasPassword && suppliedPassword.isEmpty) {
+        Logger.i('Join room from dialog: room $code requires a password',
+            'WATCHIUM_UI');
+        setState(() => _error =
+            'This room requires a password. Please enter it above.');
+        return;
+      }
+
       final ok = await watchium.joinRoom(
-        _joinCode,
-        password: _joinPassword.isEmpty ? null : _joinPassword,
+        code,
+        password: suppliedPassword.isEmpty ? null : suppliedPassword,
       );
       if (ok && mounted) {
         Logger.i('Join room succeeded', 'WATCHIUM_UI');
@@ -556,7 +572,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
       } else if (mounted) {
         final err = watchium.error.value;
         Logger.w('Join room failed: $err', 'WATCHIUM_UI');
-        setState(() => _error = err);
+        setState(
+            () => _error = err.isEmpty ? 'Failed to join room' : err);
       }
     } catch (e) {
       Logger.e('Join room exception', error: e, loggerName: 'WATCHIUM_UI');

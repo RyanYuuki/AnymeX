@@ -259,6 +259,7 @@ class WatchiumService extends GetxController {
         announcementMode: current.announcementMode,
         maxMembers: current.maxMembers,
         createdAt: current.createdAt,
+        hasPassword: current.hasPassword,
       );
       Logger.d(
           'party:sync received, positionSec=${pb['positionSec']}, isPlaying=${pb['isPlaying']}',
@@ -284,6 +285,7 @@ class WatchiumService extends GetxController {
         announcementMode: current.announcementMode,
         maxMembers: current.maxMembers,
         createdAt: current.createdAt,
+        hasPassword: current.hasPassword,
       );
       Logger.d(
           'party:content received, anime=${content.animeTitle}, episode=${content.episodeNumber}',
@@ -310,6 +312,7 @@ class WatchiumService extends GetxController {
         announcementMode: current.announcementMode,
         maxMembers: current.maxMembers,
         createdAt: current.createdAt,
+        hasPassword: current.hasPassword,
       );
 
       final nowHost = newHostUserId == _userId;
@@ -405,6 +408,7 @@ class WatchiumService extends GetxController {
         announcementMode: newAnnouncementMode,
         maxMembers: current.maxMembers,
         createdAt: current.createdAt,
+        hasPassword: current.hasPassword,
       );
       Logger.i(
           'party:settings: chatDisabled=$newChatDisabled, announcementMode=$newAnnouncementMode (changedBy=$changedBy, key=$changedByKey)',
@@ -455,6 +459,8 @@ class WatchiumService extends GetxController {
 
     if (roomState.value == null) {
       _currentRoomCode = null;
+      _roomPassword = null;
+      _pendingPassword = null;
       _updateInRoom();
     }
   }
@@ -473,6 +479,10 @@ class WatchiumService extends GetxController {
     int maxMembers = 10,
     String? password,
   }) async {
+    if (isJoining.value) {
+      Logger.w('Create room skipped: already joining', 'WATCHIUM');
+      return null;
+    }
     Logger.i('Creating room: anime="$animeTitle", episode=$episodeNumber',
         'WATCHIUM');
     try {
@@ -517,6 +527,8 @@ class WatchiumService extends GetxController {
       roomCode.value = code;
       Logger.i('Room created, code=$code', 'WATCHIUM');
 
+      _pendingPassword =
+          (password != null && password.trim().isNotEmpty) ? password.trim() : null;
       _connectSocket();
       final joined = await _waitForJoin(code);
       if (!joined) {
@@ -535,35 +547,48 @@ class WatchiumService extends GetxController {
   }
 
   Future<bool> joinRoom(String code, {String? password}) async {
-    Logger.i('Joining room: code=$code', 'WATCHIUM');
+    final normalizedCode = code.trim().toUpperCase();
+    final normalizedPassword =
+        (password != null && password.trim().isNotEmpty)
+            ? password.trim()
+            : null;
+    Logger.i('Joining room: code=$normalizedCode', 'WATCHIUM');
+    if (isJoining.value || _joinCompleter != null) {
+      Logger.w('Join room $normalizedCode skipped: already joining', 'WATCHIUM');
+      error.value = 'Already joining a room, please wait';
+      return false;
+    }
     try {
       final ok = await login();
       if (!ok) return false;
 
-      if (_currentRoomCode == code && inRoom.value && roomState.value != null) {
-        Logger.d('Already in room $code', 'WATCHIUM');
+      if (_currentRoomCode == normalizedCode &&
+          inRoom.value &&
+          roomState.value != null) {
+        Logger.d('Already in room $normalizedCode', 'WATCHIUM');
         error.value = 'You are already in this room';
         return false;
       }
 
-      if (_currentRoomCode != null && _currentRoomCode != code) {
+      if (_currentRoomCode != null && _currentRoomCode != normalizedCode) {
         Logger.i(
-            'Already in room $_currentRoomCode, cannot join $code', 'WATCHIUM');
+            'Already in room $_currentRoomCode, cannot join $normalizedCode',
+            'WATCHIUM');
         error.value = 'You are already in another room. Leave it first.';
         return false;
       }
 
-      roomCode.value = code;
-      _pendingPassword = password;
+      roomCode.value = normalizedCode;
+      _pendingPassword = normalizedPassword;
       _connectSocket();
 
-      final joined = await _waitForJoin(code);
+      final joined = await _waitForJoin(normalizedCode);
       if (!joined) {
-        Logger.w('Join room $code failed: ${error.value}', 'WATCHIUM');
+        Logger.w('Join room $normalizedCode failed: ${error.value}', 'WATCHIUM');
         return false;
       }
 
-      Logger.i('Join room $code successful', 'WATCHIUM');
+      Logger.i('Join room $normalizedCode successful', 'WATCHIUM');
       return true;
     } catch (e) {
       error.value = 'Failed to join room: $e';
@@ -573,6 +598,11 @@ class WatchiumService extends GetxController {
   }
 
   Future<bool> _waitForJoin(String code) async {
+    if (_joinCompleter != null) {
+      Logger.w('_waitForJoin skipped: join already in progress for $code',
+          'WATCHIUM');
+      return false;
+    }
     if (_socket?.connected != true) {
       Logger.d('Waiting for socket to connect...', 'WATCHIUM');
       for (int i = 0; i < 50; i++) {
@@ -610,9 +640,12 @@ class WatchiumService extends GetxController {
 
     if (!result) {
       isJoining.value = false;
+      _joinCompleter = null;
 
       if (roomState.value == null || roomState.value!.code != code) {
         _currentRoomCode = null;
+        _roomPassword = null;
+        _pendingPassword = null;
         _updateInRoom();
       }
     }
@@ -868,13 +901,14 @@ class WatchiumService extends GetxController {
   }
 
   Future<WatchiumRoomState?> getRoomInfo(String code) async {
-    Logger.d('Getting room info for code=$code', 'WATCHIUM');
+    final normalizedCode = code.trim().toUpperCase();
+    Logger.d('Getting room info for code=$normalizedCode', 'WATCHIUM');
     try {
       final ok = await login();
       if (!ok) return null;
 
       final response = await http.get(
-        Uri.parse('$serverUrl/api/watch-party/$code'),
+        Uri.parse('$serverUrl/api/watch-party/$normalizedCode'),
         headers: {
           'Authorization': 'Bearer $_token',
           if (_apiToken.isNotEmpty) 'X-API-Token': _apiToken,
@@ -888,7 +922,7 @@ class WatchiumService extends GetxController {
       }
 
       final data = jsonDecode(response.body) as Map<String, dynamic>;
-      Logger.d('Room info retrieved for code=$code', 'WATCHIUM');
+      Logger.d('Room info retrieved for code=$normalizedCode', 'WATCHIUM');
       return WatchiumRoomState.fromJson(data);
     } catch (e) {
       Logger.e('Get room info exception', error: e, loggerName: 'WATCHIUM');
@@ -896,11 +930,65 @@ class WatchiumService extends GetxController {
     }
   }
 
+  final RxString pendingDeepLinkCode = ''.obs;
+  Completer<bool>? _deepLinkJoinCompleter;
+
   Future<bool> handleDeepLinkJoin(String code, {String? password}) async {
-    Logger.i('Deep link join: code=$code', 'WATCHIUM');
-    final ok = await joinRoom(code, password: password);
-    if (!ok) return false;
-    return true;
+    final normalizedCode = code.trim().toUpperCase();
+    final suppliedPassword = password?.trim() ?? '';
+    Logger.i('Deep link join: code=$normalizedCode', 'WATCHIUM');
+
+    if (suppliedPassword.isNotEmpty) {
+      return joinRoom(normalizedCode, password: suppliedPassword);
+    }
+
+    final info = await getRoomInfo(normalizedCode);
+    if (info == null) {
+      error.value = 'Room not found or expired';
+      return false;
+    }
+
+    if (!info.hasPassword) {
+      final ok = await joinRoom(normalizedCode);
+      if (ok) return true;
+
+      final joinErr = error.value;
+      if (joinErr == 'Incorrect password' ||
+          joinErr == 'Password required' ||
+          joinErr.toLowerCase().contains('password')) {
+        Logger.i(
+            'Deep link join: room $normalizedCode requires a password on join, routing to Active Rooms flow',
+            'WATCHIUM');
+        pendingDeepLinkCode.value = normalizedCode;
+        _deepLinkJoinCompleter = Completer<bool>();
+        return await _deepLinkJoinCompleter!.future;
+      }
+      return false;
+    }
+
+    if (_currentRoomCode == normalizedCode &&
+        inRoom.value &&
+        roomState.value != null) {
+      return true;
+    }
+    Logger.i(
+        'Deep link join: room $normalizedCode requires a password, routing to Active Rooms flow',
+        'WATCHIUM');
+    error.value = 'Password required';
+    pendingDeepLinkCode.value = normalizedCode;
+    _deepLinkJoinCompleter = Completer<bool>();
+
+    final result = await _deepLinkJoinCompleter!.future;
+    return result;
+  }
+
+  void completeDeepLinkJoin(bool success) {
+    if (_deepLinkJoinCompleter != null &&
+        !_deepLinkJoinCompleter!.isCompleted) {
+      _deepLinkJoinCompleter!.complete(success);
+    }
+    _deepLinkJoinCompleter = null;
+    pendingDeepLinkCode.value = '';
   }
 
   @override
