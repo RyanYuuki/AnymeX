@@ -7,7 +7,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/watchium/watchium_party_settings.dart';
 
 import 'dart:async';
@@ -834,183 +833,201 @@ class _WatchiumPartyPopupContentState
 
       final isHost = widget.watchium.isHost.value;
 
-      return Padding(
+      return ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: AnymeXTileBuilder<WatchiumMember>(
-          items: state.members,
-          isSelection: false,
-          lazy: true,
-          getTitle: (member) {
-            final isSelf = member.userId == widget.watchium.currentUserId;
-            return isSelf ? '${member.username} (You)' : member.username;
-          },
-          getSubtitle: (member) =>
-              member.online ? 'Online' : 'Offline',
-          getLeading: (member) => Stack(
-            clipBehavior: Clip.none,
-            children: [
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: cs.primary.opaque(0.15, iReallyMeanIt: true),
-                backgroundImage: member.avatarUrl != null
-                    ? NetworkImage(member.avatarUrl!)
-                    : null,
-                child: member.avatarUrl == null
-                    ? Icon(Icons.person,
-                        size: 18,
-                        color: cs.primary.opaque(0.7, iReallyMeanIt: true))
-                    : null,
-              ),
-              Positioned(
-                right: -2,
-                bottom: -2,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: member.online
-                        ? Colors.green
-                        : cs.onSurface.opaque(0.4, iReallyMeanIt: true),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                        color: cs.surfaceContainerHighest, width: 2),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          getTrailing: (member) {
-            final isSelf = member.userId == widget.watchium.currentUserId;
-            final isCohost = member.role == 'cohost';
-            final canKick = (isHost || isCohost) &&
-                !isSelf &&
-                member.role != 'host';
-            final canManage = isHost && !isSelf && member.role != 'host';
+        itemCount: state.members.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        itemBuilder: (context, index) {
+          final member = state.members[index];
+          final isSelf = member.userId == widget.watchium.currentUserId;
+          final title =
+              isSelf ? '${member.username} (You)' : member.username;
+          final subtitle = member.online ? 'Online' : 'Offline';
 
-            final List<Widget> badges = [];
-            if (member.role == 'host') {
-              badges.add(const Icon(
-                Iconsax.crown5,
-                color: Colors.amber,
-                size: 16,
-              ));
-            }
-            if (isCohost) {
-              badges.add(Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.orange.opaque(0.12, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                      color:
-                          Colors.orange.opaque(0.3, iReallyMeanIt: true)),
-                ),
-                child: const AnymeXText(
-                  'CO-HOST',
-                  size: 9,
-                  variant: TextVariant.semiBold,
-                  color: Colors.orange,
-                ),
-              ));
-            }
-
-            Widget? action;
-            if (canManage) {
-              action = PopupMenuButton<String>(
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: cs.surfaceContainerHigh,
-                    borderRadius: BorderRadius.circular(12),
+          return Container(
+            decoration: BoxDecoration(
+              color: cs.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(18.0),
+              border: Border.all(
+                color: cs.onSurface.opaque(0.08, iReallyMeanIt: true),
+                width: 0.8,
+              ),
+            ),
+            child: AnymeXTile(
+              title: title,
+              subtitle: subtitle,
+              leading: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor:
+                        cs.primary.opaque(0.15, iReallyMeanIt: true),
+                    backgroundImage: member.avatarUrl != null
+                        ? NetworkImage(member.avatarUrl!)
+                        : null,
+                    child: member.avatarUrl == null
+                        ? Icon(Icons.person,
+                            size: 18,
+                            color: cs.primary.opaque(0.7, iReallyMeanIt: true))
+                        : null,
                   ),
-                  child: Icon(Icons.more_vert,
-                      size: 18, color: cs.onSurface),
-                ),
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: 'kick',
-                    child: Row(
-                      children: [
-                        Icon(Icons.person_remove_rounded,
-                            color: Colors.red, size: 18),
-                        SizedBox(width: 10),
-                        AnymeXText('Remove Member'),
-                      ],
-                    ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'transfer',
-                    child: Row(
-                      children: [
-                        Icon(Icons.workspace_premium,
-                            color: Colors.amber, size: 18),
-                        SizedBox(width: 10),
-                        AnymeXText('Transfer Host'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: member.role == 'cohost' ? 'demote' : 'promote',
-                    child: Row(
-                      children: [
-                        Icon(
-                          member.role == 'cohost'
-                              ? Icons.remove_circle_outline
-                              : Icons.shield,
-                          color: Colors.orange,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 10),
-                        AnymeXText(
-                          member.role == 'cohost'
-                              ? 'Remove Co-host'
-                              : 'Make Co-host',
-                        ),
-                      ],
+                  Positioned(
+                    right: -2,
+                    bottom: -2,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: member.online
+                            ? Colors.green
+                            : cs.onSurface.opaque(0.4, iReallyMeanIt: true),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: cs.surfaceContainerHighest, width: 2),
+                      ),
                     ),
                   ),
                 ],
-                onSelected: (value) => _handleMemberAction(value, member),
-              );
-            } else if (canKick) {
-              action = GestureDetector(
-                onTap: () => _confirmKick(member),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: cs.error.opaque(0.1, iReallyMeanIt: true),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: cs.error.opaque(0.2, iReallyMeanIt: true)),
-                  ),
-                  child: Icon(Icons.person_remove_rounded,
-                      size: 18, color: cs.error),
-                ),
-              );
-            }
-
-            if (badges.isEmpty && action == null) {
-              return const SizedBox.shrink();
-            }
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ...badges.map((b) => Padding(
-                      padding: const EdgeInsets.only(left: 6),
-                      child: b,
-                    )),
-                if (action != null) ...[
-                  const SizedBox(width: 4),
-                  action,
-                ],
-              ],
-            );
-          },
-          onItemPressed: (_) {},
-        ),
+              ),
+              trailing: _buildMemberTrailing(cs, member, isHost, isSelf),
+              onTap: () {},
+              showChevron: false,
+              borderRadius: BorderRadius.circular(18.0),
+            ),
+          );
+        },
       );
     });
+  }
+
+  Widget _buildMemberTrailing(
+    ColorScheme cs,
+    WatchiumMember member,
+    bool isHost,
+    bool isSelf,
+  ) {
+    final isCohost = member.role == 'cohost';
+    final canKick =
+        (isHost || isCohost) && !isSelf && member.role != 'host';
+    final canManage = isHost && !isSelf && member.role != 'host';
+
+    final List<Widget> badges = [];
+    if (member.role == 'host') {
+      badges.add(const Icon(
+        Iconsax.crown5,
+        color: Colors.amber,
+        size: 16,
+      ));
+    }
+    if (isCohost) {
+      badges.add(Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          color: Colors.orange.opaque(0.12, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(6),
+          border:
+              Border.all(color: Colors.orange.opaque(0.3, iReallyMeanIt: true)),
+        ),
+        child: const AnymeXText(
+          'CO-HOST',
+          size: 9,
+          variant: TextVariant.semiBold,
+          color: Colors.orange,
+        ),
+      ));
+    }
+
+    Widget? action;
+    if (canManage) {
+      action = PopupMenuButton<String>(
+        icon: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(Icons.more_vert, size: 18, color: cs.onSurface),
+        ),
+        itemBuilder: (context) => [
+          const PopupMenuItem(
+            value: 'kick',
+            child: Row(
+              children: [
+                Icon(Icons.person_remove_rounded,
+                    color: Colors.red, size: 18),
+                SizedBox(width: 10),
+                AnymeXText('Remove Member'),
+              ],
+            ),
+          ),
+          const PopupMenuItem(
+            value: 'transfer',
+            child: Row(
+              children: [
+                Icon(Icons.workspace_premium,
+                    color: Colors.amber, size: 18),
+                SizedBox(width: 10),
+                AnymeXText('Transfer Host'),
+              ],
+            ),
+          ),
+          PopupMenuItem(
+            value: member.role == 'cohost' ? 'demote' : 'promote',
+            child: Row(
+              children: [
+                Icon(
+                  member.role == 'cohost'
+                      ? Icons.remove_circle_outline
+                      : Icons.shield,
+                  color: Colors.orange,
+                  size: 18,
+                ),
+                const SizedBox(width: 10),
+                AnymeXText(
+                  member.role == 'cohost'
+                      ? 'Remove Co-host'
+                      : 'Make Co-host',
+                ),
+              ],
+            ),
+          ),
+        ],
+        onSelected: (value) => _handleMemberAction(value, member),
+      );
+    } else if (canKick) {
+      action = GestureDetector(
+        onTap: () => _confirmKick(member),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: cs.error.opaque(0.1, iReallyMeanIt: true),
+            borderRadius: BorderRadius.circular(12),
+            border:
+                Border.all(color: cs.error.opaque(0.2, iReallyMeanIt: true)),
+          ),
+          child: Icon(Icons.person_remove_rounded,
+              size: 18, color: cs.error),
+        ),
+      );
+    }
+
+    if (badges.isEmpty && action == null) {
+      return const SizedBox.shrink();
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ...badges.map((b) => Padding(
+              padding: const EdgeInsets.only(left: 6),
+              child: b,
+            )),
+        if (action != null) ...[
+          const SizedBox(width: 4),
+          action,
+        ],
+      ],
+    );
   }
 
   void _handleMemberAction(String action, WatchiumMember member) {
