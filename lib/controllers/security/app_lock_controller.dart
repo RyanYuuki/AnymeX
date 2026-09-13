@@ -60,6 +60,8 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
         return 'Face ID / Touch ID';
       } else if (Platform.isMacOS) {
         return 'Touch ID';
+      } else if (Platform.isWindows) {
+        return 'Windows Hello';
       } else if (Platform.isAndroid) {
         if (availableBiometrics.contains(BiometricType.face) &&
             !availableBiometrics.contains(BiometricType.fingerprint)) {
@@ -75,6 +77,8 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     try {
       if (Platform.isIOS && availableBiometrics.contains(BiometricType.face)) {
         return Icons.face_rounded;
+      } else if (Platform.isWindows) {
+        return Icons.desktop_windows_rounded;
       }
     } catch (_) {}
     return Icons.fingerprint_rounded;
