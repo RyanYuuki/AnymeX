@@ -1,12 +1,16 @@
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/watchium/watchium_party_settings.dart';
 
 import 'dart:async';
-import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -140,119 +144,100 @@ class _WatchiumPartyPopupContentState
 
   @override
   Widget build(BuildContext context) {
-    final theme = context.theme;
-    final cs = theme.colorScheme;
+    if (_showSettings) {
+      return WatchSettingsPane(
+        title: 'Party Settings',
+        onClose: widget.onClose,
+        actions: [
+          IconButton(
+            onPressed: () => setState(() => _showSettings = false),
+            style: IconButton.styleFrom(
+              backgroundColor: context.colors.surfaceContainerHigh,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: Icon(Icons.arrow_back_rounded,
+                color: context.colors.onSurface),
+          ),
+        ],
+        child: WatchiumPartySettings(
+          onBack: () => setState(() => _showSettings = false),
+        ),
+      );
+    }
 
-    return Column(
-      children: _showSettings
-          ? [
-              Expanded(
-                child: WatchiumPartySettings(
-                  onBack: () => setState(() => _showSettings = false),
-                ),
-              ),
-            ]
-          : [
-              _buildHeader(cs, theme),
-              _buildTabBar(cs, theme),
-              Expanded(
-                child: _currentTab == _PartyTab.chat
-                    ? _buildChat(cs, theme)
-                    : _currentTab == _PartyTab.members
-                        ? _buildMembersList(cs, theme)
-                        : _buildInfo(cs, theme),
-              ),
-            ],
+    final cs = context.colors;
+    return WatchSettingsPane(
+      title: 'Watch Party',
+      subtitle: _buildHeaderSubtitle(cs),
+      onClose: widget.onClose,
+      actions: [
+        IconButton(
+          onPressed: () => setState(() => _showSettings = true),
+          style: IconButton.styleFrom(
+            backgroundColor: cs.surfaceContainerHigh,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          icon: Icon(Icons.settings_rounded, color: cs.primary),
+        ),
+        IconButton(
+          onPressed: _leaveRoom,
+          style: IconButton.styleFrom(
+            backgroundColor: cs.surfaceContainerHigh,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          icon: Icon(Icons.exit_to_app_rounded, color: cs.error),
+        ),
+      ],
+      tabBar: _buildTabBar(),
+      child: _currentTab == _PartyTab.chat
+          ? _buildChat(cs, context.theme)
+          : _currentTab == _PartyTab.members
+              ? _buildMembersList(cs, context.theme)
+              : _buildInfo(cs, context.theme),
     );
   }
 
-  Widget _buildHeader(ColorScheme cs, ThemeData theme) {
-    final state = widget.watchium.roomState.value;
-    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
-
-    return Container(
-      padding: EdgeInsets.fromLTRB(16, isDesktop ? 16 + 40 : 16, 16, 16),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.withOpacity(0.3),
-        border: Border(
-          bottom: BorderSide(color: cs.outline.withOpacity(0.15)),
+  /// Room code + online count shown directly under the "Watch Party" title,
+  /// matching the pre-redesign header placement.
+  Widget _buildHeaderSubtitle(ColorScheme cs) {
+    return Obx(() {
+      final state = widget.watchium.roomState.value;
+      if (state == null) return const SizedBox.shrink();
+      final online = state.members.where((m) => m.online).length;
+      return GestureDetector(
+        onTap: () => _copyToClipboard(state.code, 'Room code'),
+        behavior: HitTestBehavior.opaque,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 7,
+              height: 7,
+              decoration: const BoxDecoration(
+                color: Colors.green,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Flexible(
+              child: AnymeXText(
+                'Room ${state.code}  ·  $online online',
+                size: 12,
+                color: cs.onSurface.opaque(0.5, iReallyMeanIt: true),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
         ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: cs.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.live_tv_rounded, color: cs.primary, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnymeXText(
-                  'Watch Party',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontFamily: 'Poppins-SemiBold',
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                if (state != null)
-                  AnymeXText(
-                    'Room ${state.code}  ·  ${state.members.where((m) => m.online).length} online',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontFamily: 'Poppins',
-                      color: cs.onSurface.withOpacity(0.6),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: _leaveRoom,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: cs.error.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: cs.error.withOpacity(0.2)),
-              ),
-              child: Icon(Icons.exit_to_app, size: 20, color: cs.error),
-            ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () => setState(() => _showSettings = true),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: cs.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: cs.primary.withOpacity(0.2)),
-              ),
-              child: Icon(Icons.settings_rounded,
-                  size: 20, color: cs.primary),
-            ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: widget.onClose,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: cs.surfaceContainerHighest.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.close,
-                  size: 20, color: cs.onSurface.withOpacity(0.7)),
-            ),
-          ),
-        ],
-      ),
-    );
+      );
+    });
   }
 
   void _leaveRoom() {
@@ -267,7 +252,8 @@ class _WatchiumPartyPopupContentState
       context: ctx,
       builder: (ctx) => AlertDialog(
         title: const AnymeXText('Leave Watch Together?'),
-        content: const AnymeXText('You will leave the room and stop watching with everyone.'),
+        content: const AnymeXText(
+            'You will leave the room and stop watching with everyone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -285,126 +271,34 @@ class _WatchiumPartyPopupContentState
     }
   }
 
-  Widget _buildTabBar(ColorScheme cs, ThemeData theme) {
-    const tabs = [
-      (
-        label: 'Chat',
-        icon: Icons.chat_bubble_rounded,
-        tab: _PartyTab.chat
-      ),
-      (
-        label: 'Members',
-        icon: Icons.people_rounded,
-        tab: _PartyTab.members
-      ),
-      (
-        label: 'Info',
-        icon: Icons.info_outline_rounded,
-        tab: _PartyTab.info
-      ),
-    ];
-    final total = tabs.length;
-    final currentIndex = tabs.indexWhere((t) => t.tab == _currentTab);
-    final alignX = -1.0 + (2.0 * currentIndex / (total - 1));
-
+  Widget _buildTabBar() {
+    final activeIndex = switch (_currentTab) {
+      _PartyTab.chat => 0,
+      _PartyTab.members => 1,
+      _PartyTab.info => 2,
+    };
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: SizedBox(
-        height: 54,
-        child: Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: cs.surfaceContainerHighest.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: cs.outline.withOpacity(0.1)),
-          ),
-          child: Stack(
-            children: [
-              AnimatedAlign(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutQuint,
-                alignment: Alignment(alignX, 0),
-                child: FractionallySizedBox(
-                  widthFactor: 1 / total,
-                  heightFactor: 1,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: cs.primary,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: cs.primary.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  for (final t in tabs)
-                    Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          if (_currentTab != t.tab) {
-                            HapticFeedback.lightImpact();
-                            setState(() => _currentTab = t.tab);
-                            if (t.tab == _PartyTab.chat) {
-                              _jumpToBottomAfterFrame();
-                            }
-                          }
-                        },
-                        child: AnimatedScale(
-                          scale: _currentTab == t.tab ? 1.05 : 1.0,
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                          child: AnimatedOpacity(
-                            opacity: _currentTab == t.tab ? 1.0 : 0.7,
-                            duration: const Duration(milliseconds: 200),
-                            child: SizedBox.expand(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    t.icon,
-                                    size: 16,
-                                    color: _currentTab == t.tab
-                                        ? cs.onPrimary
-                                        : cs.onSurfaceVariant,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Flexible(
-                                    child: AnimatedDefaultTextStyle(
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins-SemiBold',
-                                        fontSize: 14,
-                                        color: _currentTab == t.tab
-                                            ? cs.onPrimary
-                                            : cs.onSurfaceVariant,
-                                      ),
-                                      child: AnymeXText(
-                                        t.label,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: AnymeXTabBar(
+        selectTabs: const ['Chat', 'Members', 'Info'],
+        selectedIndex: activeIndex,
+        icons: const [
+          Icons.chat_bubble_rounded,
+          Icons.people_rounded,
+          Icons.info_outline_rounded,
+        ],
+        onTabSelected: (index) {
+          setState(() {
+            _currentTab = switch (index) {
+              1 => _PartyTab.members,
+              2 => _PartyTab.info,
+              _ => _PartyTab.chat,
+            };
+          });
+          if (_currentTab == _PartyTab.chat) {
+            _jumpToBottomAfterFrame();
+          }
+        },
       ),
     );
   }
@@ -421,50 +315,17 @@ class _WatchiumPartyPopupContentState
               ...messages,
               ...reactions,
             ]..sort((a, b) {
-              final aTs = a is WatchiumChatMessage ? a.ts : (a as WatchiumReaction).ts;
-              final bTs = b is WatchiumChatMessage ? b.ts : (b as WatchiumReaction).ts;
-              return aTs.compareTo(bTs);
-            });
+                final aTs = a is WatchiumChatMessage
+                    ? a.ts
+                    : (a as WatchiumReaction).ts;
+                final bTs = b is WatchiumChatMessage
+                    ? b.ts
+                    : (b as WatchiumReaction).ts;
+                return aTs.compareTo(bTs);
+              });
             if (items.isEmpty) {
-              return Container(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: cs.surfaceContainer.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.chat_bubble_outline_rounded,
-                            size: 48,
-                            color: cs.onSurface.withValues(alpha: 0.3)),
-                        const SizedBox(height: 16),
-                        AnymeXText(
-                          'No messages yet',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            color: cs.onSurface.withValues(alpha: 0.6),
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        AnymeXText(
-                          'Be the first to say something!',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            color: cs.onSurface.withValues(alpha: 0.4),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
+              return _buildEmpty(
+                  cs, theme, Icons.chat_bubble_outline_rounded, 'No messages yet');
             }
             return Stack(
               children: [
@@ -492,6 +353,12 @@ class _WatchiumPartyPopupContentState
                     final isFirstInGroup = !prevIsSameUser;
                     final isLastInGroup = !nextIsSameUser;
                     final isSingle = isFirstInGroup && isLastInGroup;
+                    // Constrain bubbles to the pane width so they stay
+                    // comfortable on both narrow phones and wide desktop panes.
+                    final screenWidth = MediaQuery.of(context).size.width;
+                    final isWide = screenWidth > 600;
+                    final maxBubbleWidth =
+                        screenWidth * (isWide ? 0.28 : 0.42);
                     return GestureDetector(
                       onLongPress: () => _showReactionPicker(context),
                       child: Padding(
@@ -515,41 +382,40 @@ class _WatchiumPartyPopupContentState
                                       CircleAvatar(
                                         radius: 10,
                                         backgroundColor: cs.surfaceContainer
-                                            .withValues(alpha: 0.4),
+                                            .opaque(0.45, iReallyMeanIt: true),
                                         backgroundImage: msg.avatarUrl != null
                                             ? NetworkImage(msg.avatarUrl!)
                                             : null,
                                         child: msg.avatarUrl == null
                                             ? Icon(Icons.person,
                                                 size: 12,
-                                                color: cs.onSurface
-                                                    .withOpacity(0.6))
+                                                color: cs.onSurface.opaque(
+                                                    0.5,
+                                                    iReallyMeanIt: true))
                                             : null,
                                       ),
                                       const SizedBox(width: 6),
                                       AnymeXText(
                                         msg.username,
-                                        style: TextStyle(
-                                          fontFamily: 'Poppins-SemiBold',
-                                          fontSize: 10,
-                                          color: cs.primary,
-                                        ),
+                                        size: 10,
+                                        variant: TextVariant.semiBold,
+                                        color: cs.primary,
                                       ),
                                     ],
                                   ),
                                 ),
                               Container(
                                 constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width * 0.45,
+                                  maxWidth: maxBubbleWidth,
                                 ),
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 14, vertical: 10),
                                 decoration: BoxDecoration(
                                   color: isSelf
-                                      ? cs.primary.withValues(alpha: 0.2)
-                                      : cs.surfaceContainerHighest
-                                          .opaque(0.35, iReallyMeanIt: true),
+                                      ? cs.primary.opaque(0.18,
+                                          iReallyMeanIt: true)
+                                      : cs.surfaceContainer.opaque(0.45,
+                                          iReallyMeanIt: true),
                                   borderRadius: _bubbleRadius(
                                     isSelf: isSelf,
                                     isFirst: isFirstInGroup,
@@ -558,19 +424,17 @@ class _WatchiumPartyPopupContentState
                                   ),
                                   border: Border.all(
                                     color: isSelf
-                                        ? cs.primary.withValues(alpha: 0.35)
-                                        : cs.onSurface
-                                            .opaque(0.08, iReallyMeanIt: true),
-                                    width: 0.5,
+                                        ? cs.primary.opaque(0.3,
+                                            iReallyMeanIt: true)
+                                        : cs.onSurface.opaque(0.08,
+                                            iReallyMeanIt: true),
+                                    width: 0.8,
                                   ),
                                 ),
                                 child: AnymeXText(
                                   msg.text,
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 13,
-                                    color: cs.onSurface,
-                                  ),
+                                  size: 13,
+                                  color: cs.onSurface,
                                 ),
                               ),
                             ],
@@ -600,7 +464,8 @@ class _WatchiumPartyPopupContentState
                               borderRadius: BorderRadius.circular(18),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.3),
+                                  color: Colors.black.opaque(0.3,
+                                      iReallyMeanIt: true),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -620,7 +485,7 @@ class _WatchiumPartyPopupContentState
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: _buildQuickReactionBar(cs),
+          child: _buildQuickReactionBar(cs, theme),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -630,20 +495,50 @@ class _WatchiumPartyPopupContentState
     );
   }
 
-  Widget _buildQuickReactionBar(ColorScheme cs) {
+  Widget _buildEmpty(ColorScheme cs, ThemeData theme, IconData icon,
+      String message,
+      {String? subtitle}) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 48, color: cs.onSurface.opaque(0.3, iReallyMeanIt: true)),
+          const SizedBox(height: 16),
+          AnymeXText(
+            message,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: cs.onSurface.opaque(0.5, iReallyMeanIt: true),
+            ),
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 4),
+            AnymeXText(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: cs.onSurface.opaque(0.35, iReallyMeanIt: true),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickReactionBar(ColorScheme cs, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnymeXText(
-          'QUICK REACTIONS',
-          style: TextStyle(
-            fontFamily: 'Poppins-SemiBold',
-            fontSize: 10,
-            letterSpacing: 1.2,
-            color: cs.onSurface.withValues(alpha: 0.4),
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          child: AnymeXText(
+            'QUICK REACTIONS',
+            style: theme.textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: cs.primary,
+            ),
           ),
         ),
-        const SizedBox(height: 8),
         SizedBox(
           height: 40,
           child: ListView.separated(
@@ -660,10 +555,12 @@ class _WatchiumPartyPopupContentState
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: cs.surfaceContainer.withValues(alpha: 0.2),
+                    color: cs.surfaceContainerHighest.opaque(0.5,
+                        iReallyMeanIt: true),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: cs.outline.withValues(alpha: 0.3)),
+                        color:
+                            cs.outline.opaque(0.2, iReallyMeanIt: true)),
                   ),
                   alignment: Alignment.center,
                   child: AnymeXText(
@@ -688,19 +585,22 @@ class _WatchiumPartyPopupContentState
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        color: Colors.red.withValues(alpha: 0.1),
+        decoration: BoxDecoration(
+          color: cs.error.opaque(0.1, iReallyMeanIt: true),
+          border: Border(
+            bottom: BorderSide(
+                color: cs.error.opaque(0.2, iReallyMeanIt: true)),
+          ),
+        ),
         child: Row(
           children: [
-            Icon(Icons.voice_over_off, size: 14, color: Colors.red.withValues(alpha: 0.8)),
+            Icon(Icons.voice_over_off_rounded, size: 14, color: cs.error),
             const SizedBox(width: 8),
             Expanded(
               child: AnymeXText(
                 'Chat has been disabled by the host',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 11,
-                  color: Colors.red.withValues(alpha: 0.8),
-                ),
+                size: 11,
+                color: cs.error,
               ),
             ),
           ],
@@ -712,19 +612,23 @@ class _WatchiumPartyPopupContentState
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        color: Colors.amber.withValues(alpha: 0.1),
+        decoration: BoxDecoration(
+          color: Colors.amber.opaque(0.1, iReallyMeanIt: true),
+          border: Border(
+            bottom: BorderSide(
+                color: Colors.amber.opaque(0.2, iReallyMeanIt: true)),
+          ),
+        ),
         child: Row(
           children: [
-            Icon(Icons.campaign_outlined, size: 14, color: Colors.amber.withValues(alpha: 0.8)),
+            Icon(Icons.campaign_outlined,
+                size: 14, color: Colors.amber.opaque(0.9, iReallyMeanIt: true)),
             const SizedBox(width: 8),
             Expanded(
               child: AnymeXText(
                 'Announcement mode — only host and co-hosts can send messages',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 11,
-                  color: Colors.amber.withValues(alpha: 0.8),
-                ),
+                size: 11,
+                color: Colors.amber.opaque(0.9, iReallyMeanIt: true),
               ),
             ),
           ],
@@ -736,19 +640,23 @@ class _WatchiumPartyPopupContentState
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        color: Colors.amber.withValues(alpha: 0.08),
+        decoration: BoxDecoration(
+          color: Colors.amber.opaque(0.08, iReallyMeanIt: true),
+          border: Border(
+            bottom: BorderSide(
+                color: Colors.amber.opaque(0.2, iReallyMeanIt: true)),
+          ),
+        ),
         child: Row(
           children: [
-            Icon(Icons.campaign_outlined, size: 14, color: Colors.amber.withValues(alpha: 0.6)),
+            Icon(Icons.campaign_outlined,
+                size: 14, color: Colors.amber.opaque(0.8, iReallyMeanIt: true)),
             const SizedBox(width: 8),
             Expanded(
               child: AnymeXText(
                 'Announcement mode active — members can only read',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 11,
-                  color: Colors.amber.withValues(alpha: 0.6),
-                ),
+                size: 11,
+                color: Colors.amber.opaque(0.8, iReallyMeanIt: true),
               ),
             ),
           ],
@@ -777,60 +685,68 @@ class _WatchiumPartyPopupContentState
       return Row(
         children: [
           Expanded(
-            child: Container(
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                color: cs.surfaceContainer.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
+            child: TextField(
+              controller: _chatController,
+              focusNode: _chatFocusNode,
+              enabled: !isMuted,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 13,
+                color: isMuted
+                    ? cs.onSurface.opaque(0.4, iReallyMeanIt: true)
+                    : cs.onSurface,
               ),
-              child: TextField(
-                controller: _chatController,
-                focusNode: _chatFocusNode,
-                enabled: !isMuted,
-                style: TextStyle(
+              decoration: InputDecoration(
+                hintText: hintText,
+                hintStyle: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 13,
-                  color: isMuted
-                      ? cs.onSurface.withValues(alpha: 0.4)
-                      : cs.onSurface,
+                  color: cs.onSurface.opaque(0.35, iReallyMeanIt: true),
                 ),
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  hintStyle: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 13,
-                    color: isMuted
-                        ? cs.onSurface.withValues(alpha: 0.3)
-                        : cs.onSurface.withValues(alpha: 0.4),
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 13),
+                filled: true,
+                fillColor: cs.surfaceContainerLow,
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 14, vertical: 13),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
-                textInputAction: TextInputAction.send,
-                onSubmitted: isMuted ? null : (_) => _sendChat(),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: cs.outlineVariant),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: cs.primary, width: 1.5),
+                ),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                      color: cs.outline.opaque(0.2, iReallyMeanIt: true)),
+                ),
               ),
+              textInputAction: TextInputAction.send,
+              onSubmitted: isMuted ? null : (_) => _sendChat(),
             ),
           ),
           const SizedBox(width: 8),
-          GestureDetector(
-            onTap: isMuted ? null : _sendChat,
-            child: Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: isMuted
-                    ? cs.onSurface.withValues(alpha: 0.1)
-                    : cs.primary.withValues(alpha: 0.3),
+          IconButton(
+            onPressed: isMuted ? null : _sendChat,
+            style: IconButton.styleFrom(
+              backgroundColor:
+                  isMuted ? cs.surfaceContainerHigh : cs.primary,
+              disabledBackgroundColor: cs.surfaceContainerHigh,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                Icons.send_rounded,
-                color: isMuted
-                    ? cs.onSurface.withValues(alpha: 0.3)
-                    : cs.primary,
-                size: 20,
-              ),
+              fixedSize: const Size(46, 46),
+            ),
+            icon: Icon(
+              Icons.send_rounded,
+              color: isMuted
+                  ? cs.onSurface.opaque(0.35, iReallyMeanIt: true)
+                  : cs.onPrimary,
+              size: 20,
             ),
           ),
         ],
@@ -847,11 +763,11 @@ class _WatchiumPartyPopupContentState
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: cs.primary.withValues(alpha: 0.12),
+            color: cs.primary.opaque(0.12, iReallyMeanIt: true),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: cs.primary.withValues(alpha: 0.25),
-              width: 0.5,
+              color: cs.primary.opaque(0.25, iReallyMeanIt: true),
+              width: 0.8,
             ),
           ),
           child: Row(
@@ -861,11 +777,9 @@ class _WatchiumPartyPopupContentState
               const SizedBox(width: 6),
               AnymeXText(
                 r.username,
-                style: TextStyle(
-                  fontFamily: 'Poppins-SemiBold',
-                  fontSize: 11,
-                  color: cs.primary,
-                ),
+                size: 11,
+                variant: TextVariant.semiBold,
+                color: cs.primary,
               ),
             ],
           ),
@@ -913,202 +827,188 @@ class _WatchiumPartyPopupContentState
       final state = widget.watchium.roomState.value;
       if (state == null) return const SizedBox.shrink();
 
+      if (state.members.isEmpty) {
+        return _buildEmpty(
+            cs, theme, Icons.people_outline_rounded, 'No members yet');
+      }
+
       final isHost = widget.watchium.isHost.value;
 
-      return ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: state.members.length,
-        itemBuilder: (context, index) {
-          final member = state.members[index];
-          final isSelf = member.userId == widget.watchium.currentUserId;
-          final isCohost = member.role == 'cohost';
-          final canKick = (isHost || isCohost) && !isSelf && member.role != 'host';
-          final canManage = isHost && !isSelf && member.role != 'host';
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: cs.surfaceContainerHighest
-                    .opaque(0.35, iReallyMeanIt: true),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: cs.onSurface.opaque(0.08, iReallyMeanIt: true),
-                  width: 0.5,
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: AnymeXTileBuilder<WatchiumMember>(
+          items: state.members,
+          isSelection: false,
+          lazy: true,
+          getTitle: (member) {
+            final isSelf = member.userId == widget.watchium.currentUserId;
+            return isSelf ? '${member.username} (You)' : member.username;
+          },
+          getSubtitle: (member) =>
+              member.online ? 'Online' : 'Offline',
+          getLeading: (member) => Stack(
+            clipBehavior: Clip.none,
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: cs.primary.opaque(0.15, iReallyMeanIt: true),
+                backgroundImage: member.avatarUrl != null
+                    ? NetworkImage(member.avatarUrl!)
+                    : null,
+                child: member.avatarUrl == null
+                    ? Icon(Icons.person,
+                        size: 18,
+                        color: cs.primary.opaque(0.7, iReallyMeanIt: true))
+                    : null,
+              ),
+              Positioned(
+                right: -2,
+                bottom: -2,
+                child: Container(
+                  width: 10,
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: member.online
+                        ? Colors.green
+                        : cs.onSurface.opaque(0.4, iReallyMeanIt: true),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                        color: cs.surfaceContainerHighest, width: 2),
+                  ),
                 ),
               ),
-              child: Row(
-                children: [
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: cs.primary.withValues(alpha: 0.15),
-                        backgroundImage: member.avatarUrl != null
-                            ? NetworkImage(member.avatarUrl!)
-                            : null,
-                        child: member.avatarUrl == null
-                            ? Icon(Icons.person,
-                                size: 18,
-                                color: cs.primary.withValues(alpha: 0.7))
-                            : null,
-                      ),
-                      Positioned(
-                        right: -2,
-                        bottom: -2,
-                        child: Container(
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: member.online
-                                ? Colors.green
-                                : cs.onSurface.withValues(alpha: 0.4),
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: cs.surfaceContainerHighest,
-                                width: 2),
-                          ),
-                        ),
-                      ),
-                    ],
+            ],
+          ),
+          getTrailing: (member) {
+            final isSelf = member.userId == widget.watchium.currentUserId;
+            final isCohost = member.role == 'cohost';
+            final canKick = (isHost || isCohost) &&
+                !isSelf &&
+                member.role != 'host';
+            final canManage = isHost && !isSelf && member.role != 'host';
+
+            final List<Widget> badges = [];
+            if (member.role == 'host') {
+              badges.add(const Icon(
+                Iconsax.crown5,
+                color: Colors.amber,
+                size: 16,
+              ));
+            }
+            if (isCohost) {
+              badges.add(Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.orange.opaque(0.12, iReallyMeanIt: true),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                      color:
+                          Colors.orange.opaque(0.3, iReallyMeanIt: true)),
+                ),
+                child: const AnymeXText(
+                  'CO-HOST',
+                  size: 9,
+                  variant: TextVariant.semiBold,
+                  color: Colors.orange,
+                ),
+              ));
+            }
+
+            Widget? action;
+            if (canManage) {
+              action = PopupMenuButton<String>(
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
+                  child: Icon(Icons.more_vert,
+                      size: 18, color: cs.onSurface),
+                ),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'kick',
+                    child: Row(
                       children: [
-                        Row(
-                          children: [
-                            if (member.role == 'host') ...[
-                              const Icon(
-                                Iconsax.crown5,
-                                color: Colors.amber,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 6),
-                            ],
-                            Flexible(
-                              child: AnymeXText(
-                                isSelf
-                                    ? '${member.username} (You)'
-                                    : member.username,
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-SemiBold',
-                                  fontSize: 14,
-                                  color: cs.onSurface,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (isCohost) ...[
-                              const SizedBox(width: 6),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: Colors.orange,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: const AnymeXText(
-                                  'CO-HOST',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-SemiBold',
-                                    fontSize: 10,
-                                    color: Colors.orange,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ],
+                        Icon(Icons.person_remove_rounded,
+                            color: Colors.red, size: 18),
+                        SizedBox(width: 10),
+                        AnymeXText('Remove Member'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'transfer',
+                    child: Row(
+                      children: [
+                        Icon(Icons.workspace_premium,
+                            color: Colors.amber, size: 18),
+                        SizedBox(width: 10),
+                        AnymeXText('Transfer Host'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: member.role == 'cohost' ? 'demote' : 'promote',
+                    child: Row(
+                      children: [
+                        Icon(
+                          member.role == 'cohost'
+                              ? Icons.remove_circle_outline
+                              : Icons.shield,
+                          color: Colors.orange,
+                          size: 18,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(width: 10),
                         AnymeXText(
-                          member.online ? 'Online' : 'Offline',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 11,
-                            color: member.online
-                                ? Colors.green.withValues(alpha: 0.8)
-                                : cs.onSurface.withValues(alpha: 0.4),
-                          ),
+                          member.role == 'cohost'
+                              ? 'Remove Co-host'
+                              : 'Make Co-host',
                         ),
                       ],
                     ),
                   ),
-                  if (canManage)
-                    PopupMenuButton<String>(
-                      icon: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: cs.surfaceContainerHighest
-                              .opaque(0.5, iReallyMeanIt: true),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(Icons.more_vert, size: 18, color: cs.onSurface),
-                      ),
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'kick',
-                          child: Row(
-                            children: [
-                              Icon(Icons.person_remove_rounded, color: Colors.red, size: 18),
-                              SizedBox(width: 10),
-                              AnymeXText('Remove Member'),
-                            ],
-                          ),
-                        ),
-                        const PopupMenuItem(
-                          value: 'transfer',
-                          child: Row(
-                            children: [
-                              Icon(Icons.workspace_premium, color: Colors.amber, size: 18),
-                              SizedBox(width: 10),
-                              AnymeXText('Transfer Host'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: member.role == 'cohost' ? 'demote' : 'promote',
-                          child: Row(
-                            children: [
-                              Icon(
-                                member.role == 'cohost'
-                                    ? Icons.remove_circle_outline
-                                    : Icons.shield,
-                                color: Colors.orange,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 10),
-                              AnymeXText(
-                                member.role == 'cohost' ? 'Remove Co-host' : 'Make Co-host',
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
- onSelected: (value) => _handleMemberAction(value, member),
-                    )
-                  else if (canKick)
-                    GestureDetector(
-                      onTap: () => _confirmKick(member),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: cs.error.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(Icons.person_remove_rounded,
-                            size: 18, color: cs.error),
-                      ),
-                    ),
                 ],
-              ),
-            ),
-          );
-        },
+                onSelected: (value) => _handleMemberAction(value, member),
+              );
+            } else if (canKick) {
+              action = GestureDetector(
+                onTap: () => _confirmKick(member),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: cs.error.opaque(0.1, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: cs.error.opaque(0.2, iReallyMeanIt: true)),
+                  ),
+                  child: Icon(Icons.person_remove_rounded,
+                      size: 18, color: cs.error),
+                ),
+              );
+            }
+
+            if (badges.isEmpty && action == null) {
+              return const SizedBox.shrink();
+            }
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ...badges.map((b) => Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: b,
+                    )),
+                if (action != null) ...[
+                  const SizedBox(width: 4),
+                  action,
+                ],
+              ],
+            );
+          },
+          onItemPressed: (_) {},
+        ),
       );
     });
   }
@@ -1135,7 +1035,8 @@ class _WatchiumPartyPopupContentState
       context: context,
       builder: (ctx) => AlertDialog(
         title: const AnymeXText('Transfer host'),
-        content: AnymeXText('Make ${member.username} the new host? You\'ll become a regular member.'),
+        content: AnymeXText(
+            'Make ${member.username} the new host? You\'ll become a regular member.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -1161,7 +1062,8 @@ class _WatchiumPartyPopupContentState
       context: context,
       builder: (ctx) => AlertDialog(
         title: const AnymeXText('Remove member'),
-        content: AnymeXText('Remove ${member.username} from this watch party?'),
+        content:
+            AnymeXText('Remove ${member.username} from this watch party?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -1220,193 +1122,90 @@ class _WatchiumPartyPopupContentState
       final code = state.code;
       final watchium = widget.watchium;
       final inviteUrl = '${watchium.serverUrl}/join/$code?anymex';
-      final memberCount = state.members.where((m) => m.online).length;
+      final onlineCount = state.members.where((m) => m.online).length;
 
       return ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         children: [
-          // ── Room access section ──
-          _infoSectionHeader(cs, 'Room Access'),
-          const SizedBox(height: 8),
-          _buildInfoCard(
-            cs,
-            icon: Icons.vpn_key_rounded,
-            iconColor: cs.primary,
-            title: 'Room Code',
-            value: AnymeXText(
-              code,
-              style: TextStyle(
-                fontFamily: 'Poppins-SemiBold',
-                fontSize: 14,
-                letterSpacing: 2,
-                color: cs.onSurface,
+          AnymeXSectionBuilder(
+            margin: EdgeInsets.zero,
+            title: 'Room Access',
+            children: [
+              AnymeXTile(
+                icon: Icons.vpn_key_rounded,
+                title: 'Room Code',
+                subtitleWidget: AnymeXText(
+                  code,
+                  size: 14,
+                  variant: TextVariant.semiBold,
+                  color: cs.onSurface,
+                  style: const TextStyle(letterSpacing: 2),
+                ),
+                trailing: _buildCopyButton(
+                  cs,
+                  onTap: () => _copyToClipboard(code, 'Room code'),
+                ),
+                onTap: () => _copyToClipboard(code, 'Room code'),
+                showChevron: false,
               ),
-            ),
-            trailing: _buildCopyButton(
-              cs,
-              onTap: () => _copyToClipboard(code, 'Room code'),
-            ),
-            onTap: () => _copyToClipboard(code, 'Room code'),
-          ),
-          const SizedBox(height: 8),
-          _buildInfoCard(
-            cs,
-            icon: Icons.link_rounded,
-            iconColor: Colors.purple,
-            title: 'Invite Link',
-            value: AnymeXText(
-              inviteUrl,
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 12,
-                color: cs.primary,
+              AnymeXTile(
+                icon: Icons.link_rounded,
+                iconColor: Colors.purple,
+                title: 'Invite Link',
+                subtitleWidget: AnymeXText(
+                  inviteUrl,
+                  size: 12,
+                  color: cs.primary,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+                trailing: _buildCopyButton(
+                  cs,
+                  onTap: () => _copyToClipboard(inviteUrl, 'Invite link'),
+                ),
+                onTap: () => _copyToClipboard(inviteUrl, 'Invite link'),
+                showChevron: false,
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            trailing: _buildCopyButton(
-              cs,
-              onTap: () => _copyToClipboard(inviteUrl, 'Invite link'),
-            ),
-            onTap: () => _copyToClipboard(inviteUrl, 'Invite link'),
+            ],
           ),
-
           const SizedBox(height: 20),
-
-          // ── Activity section ──
-          _infoSectionHeader(cs, 'Activity'),
-          const SizedBox(height: 8),
-          _buildInfoCard(
-            cs,
-            icon: Icons.schedule_rounded,
-            iconColor: Colors.blue,
-            title: 'Room Duration',
-            value: AnymeXText(
-              durationStr,
-              style: TextStyle(
-                fontFamily: 'Poppins-SemiBold',
-                fontSize: 14,
-                color: cs.onSurface,
+          AnymeXSectionBuilder(
+            margin: EdgeInsets.zero,
+            title: 'Activity',
+            children: [
+              AnymeXTile(
+                icon: Icons.schedule_rounded,
+                iconColor: Colors.blue,
+                title: 'Room Duration',
+                subtitle: durationStr,
+                showChevron: false,
               ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          _buildInfoCard(
-            cs,
-            icon: Icons.people_rounded,
-            iconColor: Colors.green.withValues(alpha: 0.8),
-            title: 'Watching Now',
-            value: AnymeXText(
-              '$memberCount / ${state.maxMembers} members',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 11,
-                color: cs.onSurface.withValues(alpha: 0.5),
+              AnymeXTile(
+                icon: Icons.people_rounded,
+                iconColor: Colors.green.opaque(0.8, iReallyMeanIt: true),
+                title: 'Watching Now',
+                subtitle: '$onlineCount / ${state.maxMembers} members',
+                showChevron: false,
               ),
-            ),
+            ],
           ),
-
           const SizedBox(height: 20),
-
-          // ── Details section ──
-          _infoSectionHeader(cs, 'Details'),
-          const SizedBox(height: 8),
-          _buildInfoCard(
-            cs,
-            icon: Icons.calendar_today_rounded,
-            iconColor: Colors.amber,
-            title: 'Created',
-            value: AnymeXText(
-              _formatDateTime(createdAt),
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 11,
-                color: cs.onSurface.withValues(alpha: 0.5),
+          AnymeXSectionBuilder(
+            margin: EdgeInsets.zero,
+            title: 'Details',
+            children: [
+              AnymeXTile(
+                icon: Icons.calendar_today_rounded,
+                iconColor: Colors.amber,
+                title: 'Created',
+                subtitle: _formatDateTime(createdAt),
+                showChevron: false,
               ),
-            ),
+            ],
           ),
         ],
       );
     });
-  }
-
-  Widget _infoSectionHeader(ColorScheme cs, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 2),
-      child: AnymeXText(
-        title,
-        style: TextStyle(
-          fontFamily: 'Poppins-SemiBold',
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: cs.onSurface.withValues(alpha: 0.45),
-          letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(
-    ColorScheme cs, {
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required Widget value,
-    Widget? trailing,
-    VoidCallback? onTap,
-  }) {
-    final card = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.opaque(0.35, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: cs.onSurface.opaque(0.08, iReallyMeanIt: true),
-          width: 0.5,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, size: 20, color: iconColor),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnymeXText(
-                  title,
-                  style: TextStyle(
-                    fontFamily: 'Poppins-SemiBold',
-                    fontSize: 14,
-                    color: cs.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                value,
-              ],
-            ),
-          ),
-          if (trailing != null) ...[
-            const SizedBox(width: 8),
-            trailing,
-          ],
-        ],
-      ),
-    );
-
-    if (onTap == null) return card;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: card,
-    );
   }
 
   Widget _buildCopyButton(ColorScheme cs, {required VoidCallback onTap}) {
@@ -1415,13 +1214,13 @@ class _WatchiumPartyPopupContentState
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest.opaque(0.5, iReallyMeanIt: true),
+          color: cs.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
           Icons.copy_rounded,
           size: 18,
-          color: cs.onSurface.withValues(alpha: 0.7),
+          color: cs.onSurface.opaque(0.7, iReallyMeanIt: true),
         ),
       ),
     );

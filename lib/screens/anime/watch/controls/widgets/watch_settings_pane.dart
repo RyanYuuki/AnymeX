@@ -4,6 +4,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class WatchSettingsPane extends StatelessWidget {
   final String title;
+  final Widget? subtitle;
   final VoidCallback onClose;
   final Widget? tabBar;
   final List<Widget>? actions;
@@ -12,6 +13,7 @@ class WatchSettingsPane extends StatelessWidget {
   const WatchSettingsPane({
     super.key,
     required this.title,
+    this.subtitle,
     required this.onClose,
     this.tabBar,
     this.actions,
@@ -33,14 +35,24 @@ class WatchSettingsPane extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: AnymeXText(
-                  title,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontFamily: 'Poppins-SemiBold',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
-                    color: cs.onSurface,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnymeXText(
+                      title,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontFamily: 'Poppins-SemiBold',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                        color: cs.onSurface,
+                      ),
+                    ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 2),
+                      subtitle!,
+                    ],
+                  ],
                 ),
               ),
               if (actions != null) ...[

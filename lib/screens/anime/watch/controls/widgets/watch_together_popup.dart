@@ -118,50 +118,20 @@ class _WatchTogetherPopupContentState
   }
 
   Widget _buildContextCard(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final animeTitle = widget.controller.anilistData.title;
     return Obx(() {
       final episode = widget.controller.currentEpisode.value;
       final epLabel = 'Episode ${episode.number}';
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: cs.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: cs.outline.opaque(0.2)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: cs.primary.opaque(0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(Icons.live_tv_rounded, size: 18, color: cs.primary),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnymeXText(
-                    animeTitle,
-                    variant: TextVariant.semiBold,
-                    size: 13,
-                    maxLines: 1,
-                  ),
-                  AnymeXText(
-                    epLabel,
-                    size: 11,
-                    color: cs.onSurface.opaque(0.45),
-                    maxLines: 1,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      return AnymeXSectionBuilder(
+        margin: EdgeInsets.zero,
+        children: [
+          AnymeXTile(
+            icon: Icons.live_tv_rounded,
+            title: animeTitle,
+            subtitle: epLabel,
+            showChevron: false,
+          ),
+        ],
       );
     });
   }
@@ -202,7 +172,7 @@ class _WatchTogetherPopupContentState
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             icon: _isCreating
@@ -299,7 +269,7 @@ class _WatchTogetherPopupContentState
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
             icon: _isCreating
@@ -403,10 +373,11 @@ class _WatchTogetherPopupContentState
   Widget _buildErrorBox(BuildContext context, String message) {
     final cs = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: cs.error.opaque(0.1),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: cs.error.opaque(0.2)),
       ),
       child: Row(
         children: [
