@@ -930,11 +930,65 @@ class WatchiumService extends GetxController {
     }
   }
 
+  final RxString pendingDeepLinkCode = ''.obs;
+  Completer<bool>? _deepLinkJoinCompleter;
+
   Future<bool> handleDeepLinkJoin(String code, {String? password}) async {
-    Logger.i('Deep link join: code=$code', 'WATCHIUM');
-    final ok = await joinRoom(code, password: password);
-    if (!ok) return false;
-    return true;
+    final normalizedCode = code.trim().toUpperCase();
+    final suppliedPassword = password?.trim() ?? '';
+    Logger.i('Deep link join: code=$normalizedCode', 'WATCHIUM');
+
+    if (suppliedPassword.isNotEmpty) {
+      return joinRoom(normalizedCode, password: suppliedPassword);
+    }
+
+    final info = await getRoomInfo(normalizedCode);
+    if (info == null) {
+      error.value = 'Room not found or expired';
+      return false;
+    }
+
+    if (!info.hasPassword) {
+      final ok = await joinRoom(normalizedCode);
+      if (ok) return true;
+
+      final joinErr = error.value;
+      if (joinErr == 'Incorrect password' ||
+          joinErr == 'Password required' ||
+          joinErr.toLowerCase().contains('password')) {
+        Logger.i(
+            'Deep link join: room $normalizedCode requires a password on join, routing to Active Rooms flow',
+            'WATCHIUM');
+        pendingDeepLinkCode.value = normalizedCode;
+        _deepLinkJoinCompleter = Completer<bool>();
+        return await _deepLinkJoinCompleter!.future;
+      }
+      return false;
+    }
+
+    if (_currentRoomCode == normalizedCode &&
+        inRoom.value &&
+        roomState.value != null) {
+      return true;
+    }
+    Logger.i(
+        'Deep link join: room $normalizedCode requires a password, routing to Active Rooms flow',
+        'WATCHIUM');
+    error.value = 'Password required';
+    pendingDeepLinkCode.value = normalizedCode;
+    _deepLinkJoinCompleter = Completer<bool>();
+
+    final result = await _deepLinkJoinCompleter!.future;
+    return result;
+  }
+
+  void completeDeepLinkJoin(bool success) {
+    if (_deepLinkJoinCompleter != null &&
+        !_deepLinkJoinCompleter!.isCompleted) {
+      _deepLinkJoinCompleter!.complete(success);
+    }
+    _deepLinkJoinCompleter = null;
+    pendingDeepLinkCode.value = '';
   }
 
   @override

@@ -30,6 +30,9 @@ class _WatchiumPageState extends State<WatchiumPage> {
   bool _isLoading = false;
   String? _error;
 
+  Worker? _deepLinkWorker;
+  String? _handlingDeepLinkCode;
+
   @override
   void initState() {
     super.initState();
@@ -40,13 +43,79 @@ class _WatchiumPageState extends State<WatchiumPage> {
     _joinCodeController.addListener(() {
       if (mounted) setState(() {});
     });
+    _deepLinkWorker =
+        ever<String>(_watchium.pendingDeepLinkCode, (code) {
+      if (code.isNotEmpty && mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _handleDeepLinkRoom(code);
+        });
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final pending = _watchium.pendingDeepLinkCode.value;
+      if (pending.isNotEmpty && mounted) {
+        _handleDeepLinkRoom(pending);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _deepLinkWorker?.dispose();
+
+    if (_handlingDeepLinkCode != null &&
+        _watchium.pendingDeepLinkCode.value == _handlingDeepLinkCode) {
+      _watchium.completeDeepLinkJoin(false);
+    }
+    _handlingDeepLinkCode = null;
     _joinCodeController.dispose();
     _codeFocusNode.dispose();
     super.dispose();
+  }
+
+  /// Handles a deeplinked room by reusing the exact Active Rooms join flow.
+  Future<void> _handleDeepLinkRoom(String code) async {
+    final normalized = code.trim().toUpperCase();
+    if (!mounted) return;
+    final route = ModalRoute.of(context);
+    if (route != null && !route.isCurrent) return;
+    if (_handlingDeepLinkCode == normalized) return;
+    if (_handlingDeepLinkCode != null) return;
+    _handlingDeepLinkCode = normalized;
+    try {
+      int waits = 0;
+      while (_isLoading && mounted && waits < 100) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        waits++;
+      }
+      if (!mounted) {
+        _watchium.completeDeepLinkJoin(false);
+        return;
+      }
+      WatchiumRoomState? room;
+      try {
+        room = _watchium.publicRooms.firstWhere(
+          (r) => r.code.trim().toUpperCase() == normalized,
+        );
+      } catch (_) {
+        room = null;
+      }
+      room ??= await _watchium.getRoomInfo(normalized);
+      if (!mounted) {
+        _watchium.completeDeepLinkJoin(false);
+        return;
+      }
+      if (room == null) {
+        _watchium.completeDeepLinkJoin(false);
+        return;
+      }
+      final success = await _joinRoomFromCard(room, fromDeepLink: true);
+      try {
+        _watchium.completeDeepLinkJoin(success);
+      } catch (_) {}
+    } finally {
+      _handlingDeepLinkCode = null;
+    }
   }
 
   Future<void> _loadRooms() async {
@@ -165,13 +234,14 @@ class _WatchiumPageState extends State<WatchiumPage> {
     }
   }
 
-  void _showPasswordDialog(String code, {String? initialError}) {
+  Future<bool> _showPasswordDialog(String code,
+      {String? initialError, bool fromDeepLink = false}) async {
     final pwController = TextEditingController();
     bool obscure = true;
     bool joining = false;
     String? dialogError = initialError;
 
-    Get.dialog(
+    final result = await Get.dialog<bool>(
       Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -199,8 +269,12 @@ class _WatchiumPageState extends State<WatchiumPage> {
               if (ok) {
                 Logger.i('Join room $code succeeded (dialog password)',
                     'WATCHIUM_UI');
-                Get.back();
-                _handleJoinSuccess(code);
+                Get.back(result: true);
+                // For deeplinked rooms the deeplink handler shows the
+                // successful-join state; avoid showing it twice.
+                if (!fromDeepLink) {
+                  _handleJoinSuccess(code);
+                }
               } else {
                 final err = _watchium.error.value;
                 Logger.w('Join room $code failed (dialog password): $err',
@@ -253,8 +327,9 @@ class _WatchiumPageState extends State<WatchiumPage> {
                         ),
                       ),
                       IconButton(
-                        onPressed:
-                            joining ? null : () => Get.back(),
+                        onPressed: joining
+                            ? null
+                            : () => Get.back(result: false),
                         icon: Icon(Icons.close_rounded,
                             color: cs.onSurface.opaque(0.5)),
                       ),
@@ -346,8 +421,9 @@ class _WatchiumPageState extends State<WatchiumPage> {
                     children: [
                       Expanded(
                         child: TextButton(
-                          onPressed:
-                              joining ? null : () => Get.back(),
+                          onPressed: joining
+                              ? null
+                              : () => Get.back(result: false),
                           child: const AnymeXText('Cancel'),
                         ),
                       ),
@@ -389,6 +465,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
       ),
       barrierDismissible: true,
     );
+    return result == true;
   }
 
   @override
@@ -960,19 +1037,19 @@ class _WatchiumPageState extends State<WatchiumPage> {
     });
   }
 
-  Future<void> _joinRoomFromCard(WatchiumRoomState room) async {
+  Future<bool> _joinRoomFromCard(WatchiumRoomState room,
+      {bool fromDeepLink = false}) async {
     Logger.i('Join room from card: ${room.code}', 'WATCHIUM_UI');
     if (_isLoading || _watchium.isJoining.value) {
       Logger.d('Join room from card skipped: already in progress',
           'WATCHIUM_UI');
-      return;
+      return false;
     }
     final code = room.code.trim().toUpperCase();
     if (room.hasPassword) {
       Logger.i('Room $code requires a password (from list), showing UI',
           'WATCHIUM_UI');
-      _showPasswordDialog(code);
-      return;
+      return await _showPasswordDialog(code, fromDeepLink: fromDeepLink);
     }
     setState(() => _isLoading = true);
     WatchiumRoomState? preview;
@@ -982,16 +1059,17 @@ class _WatchiumPageState extends State<WatchiumPage> {
       Logger.w('Resolve room $code failed: $e', 'WATCHIUM_UI');
       preview = null;
     }
-    if (!mounted) return;
+    if (!mounted) return false;
     if (preview == null) {
       setState(() => _isLoading = false);
-      errorSnackBar('Room not found or expired');
-      return;
+      if (!fromDeepLink) {
+        errorSnackBar('Room not found or expired');
+      }
+      return false;
     }
     if (preview.hasPassword) {
       setState(() => _isLoading = false);
-      _showPasswordDialog(code);
-      return;
+      return await _showPasswordDialog(code, fromDeepLink: fromDeepLink);
     }
     bool ok = false;
     try {
@@ -1000,15 +1078,24 @@ class _WatchiumPageState extends State<WatchiumPage> {
       if (mounted) setState(() => _isLoading = false);
     }
     if (ok) {
-      _handleJoinSuccess(code);
+      if (!fromDeepLink) {
+        _handleJoinSuccess(code);
+      }
+      return true;
     } else if (mounted) {
       final err = _watchium.error.value;
-      if (err == 'Incorrect password') {
-        _showPasswordDialog(code);
-        return;
+      if (err == 'Incorrect password' ||
+          (fromDeepLink &&
+              (err == 'Password required' ||
+                  err.toLowerCase().contains('password')))) {
+        return await _showPasswordDialog(code, fromDeepLink: fromDeepLink);
       }
-      errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
+      if (!fromDeepLink) {
+        errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
+      }
+      return false;
     }
+    return false;
   }
 
   String _timeAgo(int createdAtMs) {
