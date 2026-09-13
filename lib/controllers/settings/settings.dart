@@ -13,6 +13,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/updater.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme_registry.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -87,8 +88,12 @@ class Settings extends GetxController {
     selectedProfile = PlayerUiKeys.selectedProfile.get<String>("MID-END");
     playerControlThemeRx.value =
         PlayerUiKeys.playerControlTheme.get<String>('default');
-    mediaIndicatorThemeRx.value =
+    final savedIndicatorTheme =
         PlayerUiKeys.mediaIndicatorTheme.get<String>('default');
+    mediaIndicatorThemeRx.value = MediaIndicatorThemeRegistry.themes
+            .any((t) => t.id == savedIndicatorTheme)
+        ? savedIndicatorTheme
+        : 'default';
     readerControlThemeRx.value =
         ReaderKeys.readerControlTheme.get<String>('default');
     chapterStyleRx.value = ReaderKeys.chapterStyle.get<String>('compact');
@@ -186,8 +191,9 @@ class Settings extends GetxController {
         if (data['telegram'] != null) {
           telegramUrl.value = data['telegram'];
         }
-        if (data['showJoinDialog'] != null) {
-          showJoinDialog.value = data['showJoinDialog'] as bool;
+        final joinVal = data['showJoinDialog'];
+        if (joinVal != null) {
+          showJoinDialog.value = joinVal as bool;
         }
       }
     } catch (e) {
@@ -264,10 +270,6 @@ class Settings extends GetxController {
   }
 
   void showWelcomeDialog(BuildContext context) {
-    if (General.hasJoinedNewDiscord.get<bool>(false)) {
-      return;
-    }
-
     if (General.isFirstTime.get<bool>(true)) {
       showWelcomeDialogg(context);
       return;
@@ -283,18 +285,14 @@ class Settings extends GetxController {
   }
 
   void _checkAndShowJoinDialog(BuildContext context) {
-    if (General.hasJoinedNewDiscord.get<bool>(false)) {
-      return;
-    }
-
     final showOnline = showJoinDialog.value;
     if (showOnline) {
-      showWelcomeDialogg(context);
+      showDiscordJoinDialog(context);
     } else {
       final count = General.joinDialogShowCount.get<int>(0);
       if (count < 3) {
         General.joinDialogShowCount.set(count + 1);
-        showWelcomeDialogg(context);
+        showDiscordJoinDialog(context);
       }
     }
   }

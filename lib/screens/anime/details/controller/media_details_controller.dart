@@ -141,7 +141,7 @@ class MediaDetailsController extends GetxController {
 
     searchedTitle.value = "Searching: ${initialMedia.title}...";
     selectedEpisodeStyle.value =
-        PlayerUiKeys.mediaIndicatorTheme.get<String>('compact');
+        PlayerUiKeys.episodeStyle.get<String>('compact');
 
     _restorePreferredSource();
     _initActiveSource();
@@ -179,7 +179,7 @@ class MediaDetailsController extends GetxController {
 
   void setEpisodeStyle(String styleId) {
     selectedEpisodeStyle.value = styleId;
-    PlayerUiKeys.mediaIndicatorTheme.set(styleId);
+    PlayerUiKeys.episodeStyle.set(styleId);
   }
 
   void _restorePreferredSource() {
