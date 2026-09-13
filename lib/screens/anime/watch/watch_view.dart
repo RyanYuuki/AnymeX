@@ -19,7 +19,6 @@ import 'package:anymex/widgets/watchium/watchium_live_overlays.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
-import 'package:anymex/widgets/watchium/watchium_overlay.dart';
 import 'package:anymex/widgets/watchium/watchium_party_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -227,7 +226,6 @@ class _WatchScreenState extends State<WatchScreen> {
                   left: 0,
                   child: WatchiumPartyPopup(),
                 ),
-                const WatchiumOverlay(),
                 const _WatchiumOverlays(),
               ],
             ],

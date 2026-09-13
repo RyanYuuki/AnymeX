@@ -341,25 +341,50 @@ class BottomControls extends StatelessWidget {
       ),
       'watch_together': Obx(() {
         final watchium = Get.find<WatchiumService>();
-        return ControlButton(
-          icon: watchium.inRoom.value
-              ? Icons.people_rounded
-              : Icons.people_outline_rounded,
-          onPressed: () {
-            if (watchium.inRoom.value) {
-              watchium.isPartyPaneOpened.value =
-                  !watchium.isPartyPaneOpened.value;
-            } else {
-              showWatchiumCreateSheet(
-                context: Get.context!,
-                playerController: controller,
-              );
-            }
-          },
-          tooltip: watchium.inRoom.value
-              ? 'Watch Together (In Room)'
-              : 'Watch Together',
-          compact: true,
+        final inRoom = watchium.inRoom.value;
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ControlButton(
+              icon: inRoom
+                  ? Icons.people_rounded
+                  : Icons.people_outline_rounded,
+              onPressed: () {
+                if (inRoom) {
+                  watchium.isPartyPaneOpened.value =
+                      !watchium.isPartyPaneOpened.value;
+                } else {
+                  showWatchiumCreateSheet(
+                    context: Get.context!,
+                    playerController: controller,
+                  );
+                }
+              },
+              tooltip: inRoom
+                  ? 'Watch Together (In Room)'
+                  : 'Watch Together',
+              compact: true,
+            ),
+            if (inRoom)
+              Positioned(
+                right: 1,
+                top: 1,
+                child: IgnorePointer(
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 1.5,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
         );
       }),
       'cast': ControlButton(
