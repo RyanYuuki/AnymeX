@@ -1029,10 +1029,32 @@ class _WatchiumPageState extends State<WatchiumPage> {
         );
       }
 
-      return Column(
-        children: _watchium.publicRooms.map((room) {
-          return _buildRoomCard(theme, room);
-        }).toList(),
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final screenWidth = MediaQuery.sizeOf(context).width;
+          final orientation = MediaQuery.orientationOf(context);
+          final isDesktop = screenWidth > 600;
+          final crossAxisCount =
+              (isDesktop || orientation == Orientation.landscape) ? 3 : 1;
+
+          const spacing = 12.0;
+          final availableWidth = constraints.maxWidth;
+          final itemWidth = crossAxisCount == 1
+              ? availableWidth
+              : (availableWidth - spacing * (crossAxisCount - 1)) /
+                  crossAxisCount;
+
+          return Wrap(
+            spacing: spacing,
+            runSpacing: spacing,
+            children: _watchium.publicRooms.map((room) {
+              return SizedBox(
+                width: itemWidth,
+                child: _buildRoomCard(theme, room),
+              );
+            }).toList(),
+          );
+        },
       );
     });
   }
@@ -1127,7 +1149,6 @@ class _WatchiumPageState extends State<WatchiumPage> {
     final remainingCount = otherMembers.length - maxShowAvatars;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: cs.surfaceContainer,
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
@@ -1176,6 +1197,45 @@ class _WatchiumPageState extends State<WatchiumPage> {
                         ],
                         stops: const [0.0, 0.45, 1.0],
                       ),
+                    ),
+                  ),
+                ),
+
+                // Privacy badge — top left
+                Positioned(
+                  top: 10,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.opaque(0.5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          room.hasPassword
+                              ? Icons.lock_rounded
+                              : Icons.lock_open_rounded,
+                          size: 12,
+                          color: room.hasPassword
+                              ? Colors.orangeAccent
+                              : Colors.white70,
+                        ),
+                        const SizedBox(width: 4),
+                        AnymeXText(
+                          room.hasPassword ? 'Private' : 'Open',
+                          style: TextStyle(
+                            color: room.hasPassword
+                                ? Colors.orangeAccent
+                                : Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
