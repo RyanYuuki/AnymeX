@@ -670,40 +670,12 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
                             if (controller.biometricsEnabled.value &&
                                 controller.isBiometricsSupported.value) ...[
                               const SizedBox(height: 20),
-                              Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () => controller.unlockWithBiometrics(),
-                                  borderRadius: BorderRadius.circular(24),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 12),
-                                    decoration: BoxDecoration(
-                                      color: colors.surfaceContainerHighest
-                                          .withOpacity(0.5),
-                                      borderRadius: BorderRadius.circular(24),
-                                      border: Border.all(
-                                        color: colors.outline.withOpacity(0.2),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(controller.biometricIcon,
-                                            size: 20, color: colors.primary),
-                                        const SizedBox(width: 8),
-                                        AnymeXText(
-                                          'Unlock with ${controller.biometricDisplayName}',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                            color: colors.onSurface,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                              _buildIconButton(
+                                context,
+                                icon: controller.biometricIcon,
+                                tooltip:
+                                    'Unlock with ${controller.biometricDisplayName}',
+                                onTap: () => controller.unlockWithBiometrics(),
                               ),
                             ],
                           ],
