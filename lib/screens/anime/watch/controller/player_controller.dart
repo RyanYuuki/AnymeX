@@ -892,18 +892,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _initializeSwipeStuffs() async {
     try {
-      VolumeController.instance.showSystemUI = false;
-      volume.value = await VolumeController.instance.getVolume();
+      if (Platform.isAndroid || Platform.isIOS) {
+        VolumeController.instance.showSystemUI = false;
+        volume.value = await VolumeController.instance.getVolume();
+      } else {
+        volume.value = _basePlayer.state.volume;
+      }
     } catch (_) {}
 
     try {
-      brightness.value = await ScreenBrightness.instance.application;
-      _subscriptions
-          .add(ScreenBrightness.instance.onCurrentBrightnessChanged.listen(
-        (value) {
-          brightness.value = value;
-        },
-      ));
+      if (Platform.isAndroid || Platform.isIOS) {
+        brightness.value = await ScreenBrightness.instance.application;
+        _subscriptions
+            .add(ScreenBrightness.instance.onCurrentBrightnessChanged.listen(
+          (value) {
+            brightness.value = value;
+          },
+        ));
+      }
     } catch (_) {}
   }
 
@@ -1951,7 +1957,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     TorrentStreamResolver.stopActiveStream();
 
-    ScreenBrightness.instance.resetApplicationScreenBrightness();
+    try {
+      if (Platform.isAndroid || Platform.isIOS) {
+        await ScreenBrightness.instance.resetApplicationScreenBrightness();
+      }
+    } catch (_) {}
   }
 
   void _revertOrientations() {
@@ -2148,13 +2158,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     volumeIndicator.value = false;
     _volumeTimer?.cancel();
 
-    unawaited(
-      ScreenBrightness.instance
-          .setApplicationScreenBrightness(value)
-          .catchError((e) {
-        Logger.e("Error setting brightness: $e");
-      }),
-    );
+    if (Platform.isAndroid || Platform.isIOS) {
+      unawaited(
+        ScreenBrightness.instance
+            .setApplicationScreenBrightness(value)
+            .catchError((e) {
+          Logger.e("Error setting brightness: $e");
+        }),
+      );
+    }
 
     if (!isDragging) {
       _hideBrightnessIndicatorAfterDelay();
