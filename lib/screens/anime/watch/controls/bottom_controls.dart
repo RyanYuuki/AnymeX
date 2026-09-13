@@ -6,7 +6,6 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
-import 'package:anymex/widgets/watchium/watchium_create_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -354,10 +353,8 @@ class BottomControls extends StatelessWidget {
                   watchium.isPartyPaneOpened.value =
                       !watchium.isPartyPaneOpened.value;
                 } else {
-                  showWatchiumCreateSheet(
-                    context: Get.context!,
-                    playerController: controller,
-                  );
+                  controller.isWatchTogetherPaneOpened.value =
+                      !controller.isWatchTogetherPaneOpened.value;
                 }
               },
               tooltip: inRoom

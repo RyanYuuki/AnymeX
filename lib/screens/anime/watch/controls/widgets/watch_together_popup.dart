@@ -1,37 +1,73 @@
 import 'package:anymex/controllers/watchium/watchium_models.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-Future<void> showWatchiumCreateSheet({
-  required BuildContext context,
-  required PlayerController playerController,
-}) async {
-  playerController.isWatchTogetherPaneOpened.value = true;
+/// Watch Party room creation as a player sidebar.
+///
+/// Mirrors [SourcePopup] / [AudioPopup]: an [EpisodeSidePane] hosting a
+/// [WatchSettingsPane] with an [AnymeXTabBar] to switch between
+/// creating and joining a room. All creation/join logic is preserved
+/// from the previous bottom-sheet implementation.
+class WatchTogetherPopup extends StatelessWidget {
+  final PlayerController controller;
+
+  const WatchTogetherPopup({super.key, required this.controller});
+
+  void _closePane() {
+    controller.isWatchTogetherPaneOpened.value = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      WatchiumService? watchium;
+      try {
+        watchium = Get.find<WatchiumService>();
+      } catch (_) {
+        watchium = null;
+      }
+      final inRoom = watchium?.inRoom.value ?? false;
+      return EpisodeSidePane(
+        isVisible: controller.isWatchTogetherPaneOpened.value && !inRoom,
+        onOverlayTap: _closePane,
+        child: _WatchTogetherPopupContent(
+          controller: controller,
+          onClose: _closePane,
+        ),
+      );
+    });
+  }
 }
 
-class WatchiumCreateSheet extends StatefulWidget {
-  final PlayerController playerController;
+class _WatchTogetherPopupContent extends StatefulWidget {
+  final PlayerController controller;
+  final VoidCallback onClose;
 
-  const WatchiumCreateSheet({
-    super.key,
-    required this.playerController,
+  const _WatchTogetherPopupContent({
+    required this.controller,
+    required this.onClose,
   });
 
   @override
-  State<WatchiumCreateSheet> createState() => _WatchiumCreateSheetState();
+  State<_WatchTogetherPopupContent> createState() =>
+      _WatchTogetherPopupContentState();
 }
 
-class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
+class _WatchTogetherPopupContentState
+    extends State<_WatchTogetherPopupContent> {
   bool _isCreating = false;
   String? _error;
   String _joinCode = '';
@@ -44,99 +80,99 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = context.colors;
-    final animeTitle = widget.playerController.anilistData.title;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _buildHeader(cs, animeTitle),
-        const Divider(height: 1, thickness: 0.5),
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.62,
-          ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildTabBar(cs),
-                const SizedBox(height: 16),
-                if (_joinMode) _buildJoinFields(cs) else _buildCreateFields(cs),
-                if (_error != null) ...[
-                  const SizedBox(height: 12),
-                  _buildErrorBox(cs, _error!),
-                ],
-              ],
-            ),
-          ),
+    return WatchSettingsPane(
+      title: 'Watch Party',
+      onClose: widget.onClose,
+      tabBar: _buildTabBar(),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildContextCard(context),
+            const SizedBox(height: 16),
+            if (_joinMode) _buildJoinFields(context) else _buildCreateFields(context),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              _buildErrorBox(context, _error!),
+            ],
+          ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildHeader(ColorScheme cs, String animeTitle) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 4, 12),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: cs.primaryContainer.opaque(0.3),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(Icons.live_tv_rounded, size: 20, color: cs.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AnymeXText('Watch Together',
-                  variant: TextVariant.bold,
-                  size: 16,
-                ),
-                AnymeXText(animeTitle,
-                  size: 12,
-                  color: cs.onSurface.opaque(0.5),
-                  maxLines: 1,
-                ),
-              ],
-            ),
-          ),
-          AnymexOnTap(
-            onTap: () => Navigator.pop(context),
-            child:
-                Icon(Icons.close_rounded, color: cs.onSurface.opaque(0.5)),
-          ),
-        ],
       ),
     );
   }
 
-  Widget _buildTabBar(ColorScheme cs) {
-    return AnymeXTabBar(
-      selectTabs: const ['Create Room', 'Join Room'],
-      selectedIndex: _joinMode ? 1 : 0,
-      icons: const [Icons.add_rounded, Icons.login_rounded],
-      height: 46,
-      activeColor: cs.primary,
-      activeTextColor: cs.onPrimary,
-      inactiveTextColor: cs.onSurfaceVariant,
-      onTabSelected: (index) => setState(() => _joinMode = index == 1),
+  Widget _buildTabBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: AnymeXTabBar(
+        selectTabs: const ['Create Room', 'Join Room'],
+        selectedIndex: _joinMode ? 1 : 0,
+        icons: const [Icons.add_rounded, Icons.login_rounded],
+        onTabSelected: (index) => setState(() {
+          _joinMode = index == 1;
+          _error = null;
+        }),
+      ),
     );
   }
 
-  Widget _buildJoinFields(ColorScheme cs) {
+  Widget _buildContextCard(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final animeTitle = widget.controller.anilistData.title;
+    return Obx(() {
+      final episode = widget.controller.currentEpisode.value;
+      final epLabel = 'Episode ${episode.number}';
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: cs.outline.opaque(0.2)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: cs.primary.opaque(0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(Icons.live_tv_rounded, size: 18, color: cs.primary),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnymeXText(
+                    animeTitle,
+                    variant: TextVariant.semiBold,
+                    size: 13,
+                    maxLines: 1,
+                  ),
+                  AnymeXText(
+                    epLabel,
+                    size: 11,
+                    color: cs.onSurface.opaque(0.45),
+                    maxLines: 1,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildJoinFields(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buildField(
           cs,
-          controller: null,
           label: 'Room Code',
           hint: 'e.g. ABC123',
           prefixIcon: Icons.vpn_key_rounded,
@@ -152,7 +188,6 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
         const SizedBox(height: 12),
         _buildField(
           cs,
-          controller: null,
           label: 'Password (if required)',
           prefixIcon: Icons.lock_outline_rounded,
           obscureText: _obscurePassword,
@@ -180,7 +215,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                     ),
                   )
                 : const Icon(Icons.login_rounded, size: 18),
-            label: AnymeXText(_isCreating ? 'Joining...' : 'Join Room',
+            label: AnymeXText(
+              _isCreating ? 'Joining...' : 'Join Room',
               variant: TextVariant.semiBold,
               size: 14,
               color: cs.onPrimary,
@@ -191,114 +227,47 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
     );
   }
 
-  Widget _buildCreateFields(ColorScheme cs) {
+  Widget _buildCreateFields(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
+        AnymeXSectionBuilder(
+          margin: EdgeInsets.zero,
+          title: 'Room Settings',
           children: [
-            Icon(Icons.people_alt_rounded,
-                size: 18, color: cs.onSurface.opaque(0.7)),
-            const SizedBox(width: 8),
-            const AnymeXText('Max Members',
-              variant: TextVariant.semiBold,
-              size: 13,
+            AnymeXTile.slider(
+              icon: Icons.people_alt_rounded,
+              title: 'Max Members',
+              subtitle: 'How many friends can join',
+              value: _maxMembers,
+              min: 2,
+              max: 50,
+              divisions: 48,
+              valueTransformer: (v) => v.toInt().toString(),
+              onChanged: (v) => setState(() => _maxMembers = v),
             ),
-            const Spacer(),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-              decoration: BoxDecoration(
-                color: cs.primary.opaque(0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: AnymeXText('${_maxMembers.toInt()}',
-                variant: TextVariant.bold,
-                size: 12,
-                color: cs.primary,
+            AnymeXTile.toggle(
+              icon: Icons.lock_outline_rounded,
+              title: 'Private Room',
+              subtitle: 'Friends need a password to join',
+              value: _isPrivate,
+              onChanged: (v) => setState(() {
+                _isPrivate = v;
+                if (!v) _password = '';
+              }),
+              child: _buildField(
+                cs,
+                label: 'Room Password',
+                hint: 'Set a password for your room',
+                prefixIcon: Icons.password_rounded,
+                obscureText: _obscurePassword,
+                suffixIcon: _buildVisibilityToggle(cs),
+                onChanged: (v) => _password = v,
               ),
             ),
           ],
         ),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: cs.primary,
-            inactiveTrackColor: cs.surfaceContainerHighest,
-            thumbColor: cs.primary,
-            overlayColor: cs.primary.withValues(alpha: 0.15),
-            trackHeight: 4,
-          ),
-          child: Slider(
-            value: _maxMembers,
-            min: 2,
-            max: 50,
-            divisions: 48,
-            label: '${_maxMembers.toInt()}',
-            onChanged: (v) => setState(() => _maxMembers = v),
-          ),
-        ),
-        const SizedBox(height: 8),
-        AnymexOnTap(
-          onTap: () => setState(() {
-            _isPrivate = !_isPrivate;
-            if (!_isPrivate) _password = '';
-          }),
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: cs.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: cs.outline.opaque(0.2)),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.lock_outline_rounded,
-                    size: 18, color: cs.onSurface.opaque(0.7)),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const AnymeXText('Private Room',
-                        variant: TextVariant.semiBold,
-                        size: 13,
-                      ),
-                      AnymeXText('Friends need a password to join',
-                        size: 11,
-                        color: cs.onSurface.opaque(0.4),
-                      ),
-                    ],
-                  ),
-                ),
-                Switch(
-                  value: _isPrivate,
-                  onChanged: (v) => setState(() {
-                    _isPrivate = v;
-                    if (!v) _password = '';
-                  }),
-                ),
-              ],
-            ),
-          ),
-        ),
-        if (_isPrivate) ...[
-          const SizedBox(height: 12),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-            child: _buildField(
-              cs,
-              controller: null,
-              label: 'Room Password',
-              hint: 'Set a password for your room',
-              prefixIcon: Icons.password_rounded,
-              obscureText: _obscurePassword,
-              suffixIcon: _buildVisibilityToggle(cs),
-              onChanged: (v) => _password = v,
-            ),
-          ),
-        ],
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(12),
@@ -309,13 +278,14 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
           ),
           child: Row(
             children: [
-              Icon(Icons.info_outline_rounded,
-                  size: 16, color: cs.primary),
+              Icon(Icons.info_outline_rounded, size: 16, color: cs.primary),
               const SizedBox(width: 10),
               Expanded(
-                child: AnymeXText('Share the code or invite link with friends.',
+                child: AnymeXText(
+                  'Share the code or invite link with friends.',
                   size: 12,
                   color: cs.onSurface.opaque(0.6),
+                  maxLines: 3,
                 ),
               ),
             ],
@@ -342,7 +312,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                     ),
                   )
                 : const Icon(Icons.add_rounded, size: 18),
-            label: AnymeXText(_isCreating ? 'Creating...' : 'Create Room',
+            label: AnymeXText(
+              _isCreating ? 'Creating...' : 'Create Room',
               variant: TextVariant.semiBold,
               size: 14,
               color: cs.onPrimary,
@@ -355,7 +326,6 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
 
   Widget _buildField(
     ColorScheme cs, {
-    required TextEditingController? controller,
     required String label,
     String? hint,
     IconData? prefixIcon,
@@ -368,7 +338,6 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
     double letterSpacing = 0,
   }) {
     return TextField(
-      controller: controller,
       onChanged: onChanged,
       onSubmitted: onSubmitted,
       obscureText: obscureText,
@@ -421,7 +390,9 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
   Widget _buildVisibilityToggle(ColorScheme cs) {
     return IconButton(
       icon: Icon(
-        _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+        _obscurePassword
+            ? Icons.visibility_off_rounded
+            : Icons.visibility_rounded,
         size: 18,
         color: cs.onSurface.opaque(0.5),
       ),
@@ -429,7 +400,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
     );
   }
 
-  Widget _buildErrorBox(ColorScheme cs, String message) {
+  Widget _buildErrorBox(BuildContext context, String message) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -441,7 +413,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
           Icon(Icons.error_outline_rounded, size: 16, color: cs.error),
           const SizedBox(width: 8),
           Expanded(
-            child: AnymeXText(message,
+            child: AnymeXText(
+              message,
               size: 12,
               color: cs.error,
               maxLines: 3,
@@ -453,7 +426,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
   }
 
   Future<void> _createRoom() async {
-    Logger.i('Create room from dialog', 'WATCHIUM_UI');
+    Logger.i('Create room from player pane', 'WATCHIUM_UI');
     setState(() {
       _isCreating = true;
       _error = null;
@@ -461,11 +434,10 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
 
     try {
       final watchium = Get.find<WatchiumService>();
-      final episode = widget.playerController.currentEpisode.value;
-      final anilistData = widget.playerController.anilistData;
-      final episodeTracks = widget.playerController.episodeTracks;
+      final episode = widget.controller.currentEpisode.value;
+      final anilistData = widget.controller.anilistData;
+      final episodeTracks = widget.controller.episodeTracks;
 
-      // Build server list with full video data
       final servers = episodeTracks.asMap().entries.map((entry) {
         final video = entry.value;
         return WatchiumAnimeServer(
@@ -489,7 +461,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
 
       final code = await watchium.createRoom(
         animeTitle: anilistData.title,
-        episodeNumber: int.tryParse(episode.number) ?? 1,
+        episodeNumber: int.tryParse(episode.number.toString()) ?? 1,
         anilistId: int.tryParse(anilistData.id),
         malId: int.tryParse(anilistData.idMal),
         animeCoverImage: anilistData.cover,
@@ -501,7 +473,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
 
       if (code != null) {
         Logger.i('Room created: $code', 'WATCHIUM_UI');
-        if (mounted) Navigator.pop(context);
+        widget.onClose();
         _showCodeSheet(code);
       } else if (mounted) {
         final err = watchium.error.value;
@@ -527,20 +499,20 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
   Future<void> _joinRoom() async {
     final watchium = Get.find<WatchiumService>();
     if (_isCreating || watchium.isJoining.value) {
-      Logger.d('Join room from dialog skipped: already in progress',
+      Logger.d('Join room from player pane skipped: already in progress',
           'WATCHIUM_UI');
       return;
     }
     final code = _joinCode.trim().toUpperCase();
     final suppliedPassword = _joinPassword.trim();
     if (code.length != 6) {
-      Logger.w('Join room from dialog: invalid code length ${code.length}',
+      Logger.w('Join room from player pane: invalid code length ${code.length}',
           'WATCHIUM_UI');
       setState(() => _error = 'Room code must be 6 characters');
       return;
     }
 
-    Logger.i('Join room from dialog: $code', 'WATCHIUM_UI');
+    Logger.i('Join room from player pane: $code', 'WATCHIUM_UI');
     setState(() {
       _isCreating = true;
       _error = null;
@@ -550,12 +522,13 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
       final preview = await watchium.getRoomInfo(code);
       if (!mounted) return;
       if (preview == null) {
-        Logger.w('Join room from dialog: room $code not found', 'WATCHIUM_UI');
+        Logger.w(
+            'Join room from player pane: room $code not found', 'WATCHIUM_UI');
         setState(() => _error = 'Room not found or expired');
         return;
       }
       if (preview.hasPassword && suppliedPassword.isEmpty) {
-        Logger.i('Join room from dialog: room $code requires a password',
+        Logger.i('Join room from player pane: room $code requires a password',
             'WATCHIUM_UI');
         setState(() => _error =
             'This room requires a password. Please enter it above.');
@@ -568,12 +541,11 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
       );
       if (ok && mounted) {
         Logger.i('Join room succeeded', 'WATCHIUM_UI');
-        Navigator.pop(context);
+        widget.onClose();
       } else if (mounted) {
         final err = watchium.error.value;
         Logger.w('Join room failed: $err', 'WATCHIUM_UI');
-        setState(
-            () => _error = err.isEmpty ? 'Failed to join room' : err);
+        setState(() => _error = err.isEmpty ? 'Failed to join room' : err);
       }
     } catch (e) {
       Logger.e('Join room exception', error: e, loggerName: 'WATCHIUM_UI');
@@ -586,7 +558,9 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
   void _showCodeSheet(String code) {
     final watchium = Get.find<WatchiumService>();
     final shareUrl = '${watchium.serverUrl}/join/$code?anymex';
-    final cs = Theme.of(Get.context!).colorScheme;
+    final ctx = Get.context;
+    if (ctx == null) return;
+    final cs = Theme.of(ctx).colorScheme;
 
     AnymeXSheet.custom(
       Padding(
@@ -607,7 +581,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                 ),
                 const SizedBox(width: 12),
                 const Expanded(
-                  child: AnymeXText('Room Created!',
+                  child: AnymeXText(
+                    'Room Created!',
                     variant: TextVariant.bold,
                     size: 16,
                   ),
@@ -642,7 +617,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
               ],
             ),
             const SizedBox(height: 14),
-            AnymeXText('Share this code with friends:',
+            AnymeXText(
+              'Share this code with friends:',
               size: 12,
               color: cs.onSurface.opaque(0.5),
             ),
@@ -673,7 +649,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: code));
-                      successSnackBar('Room code copied to clipboard', title: 'Copied');
+                      successSnackBar('Room code copied to clipboard',
+                          title: 'Copied');
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: cs.primary,
@@ -684,7 +661,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                       ),
                     ),
                     icon: const Icon(Icons.copy_rounded, size: 16),
-                    label: const AnymeXText('Copy Code',
+                    label: const AnymeXText(
+                      'Copy Code',
                       variant: TextVariant.semiBold,
                       size: 13,
                     ),
@@ -704,7 +682,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                       ),
                     ),
                     icon: const Icon(Icons.link_rounded, size: 16),
-                    label: const AnymeXText('Copy Link',
+                    label: const AnymeXText(
+                      'Copy Link',
                       variant: TextVariant.semiBold,
                       size: 13,
                       color: Colors.white,
@@ -716,7 +695,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
           ],
         ),
       ),
-      Get.context!,
+      ctx,
       showDragHandle: true,
     );
   }
