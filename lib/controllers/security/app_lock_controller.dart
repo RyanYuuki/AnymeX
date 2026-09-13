@@ -36,6 +36,8 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
 
   DateTime? _lastBackgroundTime;
   bool _isAuthenticating = false;
+  bool _isAppInBackground = false;
+  Timer? _backgroundLockTimer;
 
   static const String _salt = 'anymex_security_salt_2026_x';
 
@@ -57,6 +59,7 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
   @override
   void onClose() {
     _cooldownTimer?.cancel();
+    _backgroundLockTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
@@ -140,6 +143,8 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     AppLockKeys.biometricsEnabled.set(false);
     AppLockKeys.pinHash.delete();
     AppLockKeys.lastBackgroundTimestamp.delete();
+    _backgroundLockTimer?.cancel();
+    _isAppInBackground = false;
     isEnabled.value = false;
     biometricsEnabled.value = false;
     isLocked.value = false;
@@ -158,6 +163,7 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
   }
 
   void setTimeoutSeconds(int seconds) {
+    _backgroundLockTimer?.cancel();
     AppLockKeys.timeoutSeconds.set(seconds);
     timeoutSeconds.value = seconds;
   }
@@ -239,6 +245,8 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
       failedAttempts.value = 0;
       cooldownSecondsRemaining.value = 0;
       _cooldownTimer?.cancel();
+      _backgroundLockTimer?.cancel();
+      _isAppInBackground = false;
       isLocked.value = false;
       showPrivacyShield.value = false;
       _lastBackgroundTime = null;
@@ -304,6 +312,8 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
       failedAttempts.value = 0;
       cooldownSecondsRemaining.value = 0;
       _cooldownTimer?.cancel();
+      _backgroundLockTimer?.cancel();
+      _isAppInBackground = false;
       isLocked.value = false;
       showPrivacyShield.value = false;
       _lastBackgroundTime = null;
@@ -322,19 +332,31 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
-      final now = DateTime.now();
-      _lastBackgroundTime = now;
-      AppLockKeys.lastBackgroundTimestamp.set(now.millisecondsSinceEpoch);
+      if (!_isAppInBackground) {
+        _isAppInBackground = true;
+        final now = DateTime.now();
+        _lastBackgroundTime = now;
+        AppLockKeys.lastBackgroundTimestamp.set(now.millisecondsSinceEpoch);
 
-      if (hideInRecentApps.value) {
-        showPrivacyShield.value = true;
-      }
+        if (hideInRecentApps.value) {
+          showPrivacyShield.value = true;
+        }
 
-      if (timeoutSeconds.value == 0) {
-        isLocked.value = true;
+        if (timeoutSeconds.value == 0) {
+          isLocked.value = true;
+        } else if (timeoutSeconds.value > 0 && !isLocked.value) {
+          _backgroundLockTimer?.cancel();
+          _backgroundLockTimer =
+              Timer(Duration(seconds: timeoutSeconds.value), () {
+            if (_isAppInBackground && timeoutSeconds.value > 0) {
+              isLocked.value = true;
+            }
+          });
+        }
       }
     } else if (state == AppLifecycleState.resumed) {
-      showPrivacyShield.value = false;
+      _isAppInBackground = false;
+      _backgroundLockTimer?.cancel();
 
       if (timeoutSeconds.value > 0 && !isLocked.value) {
         final lastBg = _lastBackgroundTime?.millisecondsSinceEpoch ??
@@ -347,6 +369,8 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
           }
         }
       }
+
+      showPrivacyShield.value = false;
     }
   }
 }
