@@ -5,9 +5,9 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
 import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
@@ -319,6 +319,16 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     }
   }
 
+  Future<void> _openReleasesPage() async {
+    final uri = Uri.parse(
+        'https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge/releases');
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {
+      snackBar('Could not open releases page');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -421,6 +431,13 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                   onTap: _showRollbackDialog,
                                 ),
                               ],
+                              AnymeXTile(
+                                icon: Icons.open_in_new_rounded,
+                                title: 'Runtime Host Releases',
+                                subtitle:
+                                    'Visit GitHub releases page for changelogs and manual downloads',
+                                onTap: _openReleasesPage,
+                              ),
                             ],
                           );
                         }),

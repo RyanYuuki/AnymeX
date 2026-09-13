@@ -14,15 +14,22 @@ class NewEpisodeReleaseCard extends StatelessWidget {
   final Media media;
   final int? watchedEpisode;
   final int? latestReleasedEpisode;
+  final DateTime? releaseDate;
 
   const NewEpisodeReleaseCard({
     super.key,
     required this.media,
     this.watchedEpisode,
     this.latestReleasedEpisode,
+    this.releaseDate,
   });
 
-  DateTime? _getReleaseDate() {
+  static DateTime? calculateReleaseDate({
+    required Media media,
+    int? latestReleasedEpisode,
+    DateTime? itemEndDate,
+    String? mediaStatus,
+  }) {
     if (media.nextAiringEpisode != null &&
         media.nextAiringEpisode!.airingAt > 0) {
       final nextAiringSec = media.nextAiringEpisode!.airingAt;
@@ -42,13 +49,29 @@ class NewEpisodeReleaseCard extends StatelessWidget {
       }
       return date;
     }
-    if (media.createdAt != null) {
+    if (itemEndDate != null) {
+      final now = DateTime.now();
+      if (itemEndDate.isBefore(now)) {
+        return itemEndDate;
+      }
+    }
+    final status = mediaStatus?.toUpperCase();
+    final isCompleted = status == 'COMPLETED' || status == 'FINISHED';
+    if (!isCompleted && media.createdAt != null) {
       final now = DateTime.now();
       if (media.createdAt!.isBefore(now)) {
         return media.createdAt;
       }
     }
     return null;
+  }
+
+  DateTime? _getReleaseDate() {
+    if (releaseDate != null) return releaseDate;
+    return calculateReleaseDate(
+      media: media,
+      latestReleasedEpisode: latestReleasedEpisode,
+    );
   }
 
   String? _getReleaseDateText() {
