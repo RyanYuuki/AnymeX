@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:crypto/crypto.dart';
@@ -47,6 +48,37 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
   }
 
   bool get isAuthenticating => _isAuthenticating;
+
+  String get biometricDisplayName {
+    try {
+      if (Platform.isIOS) {
+        if (availableBiometrics.contains(BiometricType.face)) {
+          return 'Face ID';
+        } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+          return 'Touch ID';
+        }
+        return 'Face ID / Touch ID';
+      } else if (Platform.isMacOS) {
+        return 'Touch ID';
+      } else if (Platform.isAndroid) {
+        if (availableBiometrics.contains(BiometricType.face) &&
+            !availableBiometrics.contains(BiometricType.fingerprint)) {
+          return 'Face Unlock';
+        }
+        return 'Fingerprint / Face Unlock';
+      }
+    } catch (_) {}
+    return 'Biometric Unlock';
+  }
+
+  IconData get biometricIcon {
+    try {
+      if (Platform.isIOS && availableBiometrics.contains(BiometricType.face)) {
+        return Icons.face_rounded;
+      }
+    } catch (_) {}
+    return Icons.fingerprint_rounded;
+  }
 
   @override
   void onInit() {

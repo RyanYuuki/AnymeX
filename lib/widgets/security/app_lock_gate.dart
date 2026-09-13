@@ -669,8 +669,9 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
                               const SizedBox(height: 16),
                               _buildIconButton(
                                 context,
-                                icon: Icons.fingerprint_rounded,
-                                tooltip: 'Unlock with Biometrics',
+                                icon: controller.biometricIcon,
+                                tooltip:
+                                    'Unlock with ${controller.biometricDisplayName}',
                                 onTap: () => controller.unlockWithBiometrics(),
                               ),
                             ],
@@ -741,8 +742,9 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
                   controller.isBiometricsSupported.value) {
                 return _buildIconButton(
                   context,
-                  icon: Icons.fingerprint_rounded,
-                  tooltip: 'Unlock with Biometrics',
+                  icon: controller.biometricIcon,
+                  tooltip:
+                      'Unlock with ${controller.biometricDisplayName}',
                   onTap: () => controller.unlockWithBiometrics(),
                 );
               }

@@ -1034,10 +1034,10 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
                       ),
                       if (_controller.isBiometricsSupported.value)
                         AnymeXTile(
-                          icon: Icons.fingerprint_rounded,
-                          title: 'Biometric Unlock',
+                          icon: _controller.biometricIcon,
+                          title: _controller.biometricDisplayName,
                           subtitle:
-                              'Unlock quickly using Fingerprint or Face ID',
+                              'Unlock quickly using ${_controller.biometricDisplayName}',
                           trailing: Switch(
                             value: _controller.biometricsEnabled.value,
                             onChanged: (val) async {
