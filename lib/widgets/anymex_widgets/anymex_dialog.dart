@@ -92,8 +92,8 @@ class AnymeXDialog extends StatelessWidget {
                     child: Container(
                       width: getResponsiveValue(
                         context,
-                        mobileValue: Get.width * 0.8,
-                        desktopValue: 400.0,
+                        mobileValue: Get.width * 0.9,
+                        desktopValue: 440.0,
                       ),
                       constraints: BoxConstraints(
                         maxHeight: MediaQuery.sizeOf(context).height * (isLandscape ? 0.95 : 0.85),
