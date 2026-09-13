@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 class WatchiumPartyPopup extends StatelessWidget {
   const WatchiumPartyPopup({super.key});
@@ -433,30 +434,34 @@ class _WatchiumPartyPopupContentState
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.chat_bubble_outline_rounded,
-                          size: 48, color: cs.onSurface.withValues(alpha: 0.3)),
-                      const SizedBox(height: 16),
-                      AnymeXText(
-                        'No messages yet',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: cs.onSurface.withValues(alpha: 0.6),
-                          fontSize: 14,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.chat_bubble_outline_rounded,
+                            size: 48,
+                            color: cs.onSurface.withValues(alpha: 0.3)),
+                        const SizedBox(height: 16),
+                        AnymeXText(
+                          'No messages yet',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: cs.onSurface.withValues(alpha: 0.6),
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      AnymeXText(
-                        'Be the first to say something!',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: cs.onSurface.withValues(alpha: 0.4),
-                          fontSize: 12,
+                        const SizedBox(height: 4),
+                        AnymeXText(
+                          'Be the first to say something!',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: cs.onSurface.withValues(alpha: 0.4),
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -1204,109 +1209,221 @@ class _WatchiumPartyPopupContentState
   }
 
   Widget _buildInfo(ColorScheme cs, ThemeData theme) {
-    final state = widget.watchium.roomState.value;
-    if (state == null) return const SizedBox.shrink();
+    return Obx(() {
+      final state = widget.watchium.roomState.value;
+      if (state == null) return const SizedBox.shrink();
 
-    final createdAt = DateTime.fromMillisecondsSinceEpoch(state.createdAt);
-    final now = DateTime.now();
-    final duration = now.difference(createdAt);
-    final durationStr = _formatDuration(duration);
-    final code = state.code;
-    final watchium = widget.watchium;
-    final inviteUrl = '${watchium.serverUrl}/join/$code?anymex';
-    final memberCount = state.members.where((m) => m.online).length;
+      final createdAt = DateTime.fromMillisecondsSinceEpoch(state.createdAt);
+      final now = DateTime.now();
+      final duration = now.difference(createdAt);
+      final durationStr = _formatDuration(duration);
+      final code = state.code;
+      final watchium = widget.watchium;
+      final inviteUrl = '${watchium.serverUrl}/join/$code?anymex';
+      final memberCount = state.members.where((m) => m.online).length;
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-      children: [
-        // Room code
-        _InfoSection(
-          icon: Icons.vpn_key_rounded,
-          iconColor: cs.primary,
-          children: [
-            AnymeXText('Room Code', style: TextStyle(color: cs.outline, fontSize: 12)),
-            const SizedBox(height: 6),
-            _CopyableRow(
-              label: code,
+      return ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // ── Room access section ──
+          _infoSectionHeader(cs, 'Room Access'),
+          const SizedBox(height: 8),
+          _buildInfoCard(
+            cs,
+            icon: Icons.vpn_key_rounded,
+            iconColor: cs.primary,
+            title: 'Room Code',
+            value: AnymeXText(
+              code,
+              style: TextStyle(
+                fontFamily: 'Poppins-SemiBold',
+                fontSize: 14,
+                letterSpacing: 2,
+                color: cs.onSurface,
+              ),
+            ),
+            trailing: _buildCopyButton(
+              cs,
               onTap: () => _copyToClipboard(code, 'Room code'),
-              cs: cs,
             ),
-          ],
-        ),
-        const SizedBox(height: 20),
-
-        // Invite link
-        _InfoSection(
-          icon: Icons.link_rounded,
-          iconColor: cs.tertiary,
-          children: [
-            AnymeXText('Invite Link', style: TextStyle(color: cs.outline, fontSize: 12)),
-            const SizedBox(height: 6),
-            _CopyableRow(
-              label: inviteUrl,
+            onTap: () => _copyToClipboard(code, 'Room code'),
+          ),
+          const SizedBox(height: 8),
+          _buildInfoCard(
+            cs,
+            icon: Icons.link_rounded,
+            iconColor: Colors.purple,
+            title: 'Invite Link',
+            value: AnymeXText(
+              inviteUrl,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 12,
+                color: cs.primary,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            trailing: _buildCopyButton(
+              cs,
               onTap: () => _copyToClipboard(inviteUrl, 'Invite link'),
-              cs: cs,
-              isLink: true,
             ),
-          ],
-        ),
-        const SizedBox(height: 20),
+            onTap: () => _copyToClipboard(inviteUrl, 'Invite link'),
+          ),
 
-        // Duration
-        _InfoSection(
-          icon: Icons.schedule_rounded,
-          iconColor: cs.secondary,
-          children: [
-            AnymeXText('Room Duration', style: TextStyle(color: cs.outline, fontSize: 12)),
-            const SizedBox(height: 6),
-            AnymeXText(
+          const SizedBox(height: 20),
+
+          // ── Activity section ──
+          _infoSectionHeader(cs, 'Activity'),
+          const SizedBox(height: 8),
+          _buildInfoCard(
+            cs,
+            icon: Icons.schedule_rounded,
+            iconColor: Colors.blue,
+            title: 'Room Duration',
+            value: AnymeXText(
               durationStr,
               style: TextStyle(
+                fontFamily: 'Poppins-SemiBold',
+                fontSize: 14,
                 color: cs.onSurface,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 20),
-
-        // Members count
-        _InfoSection(
-          icon: Icons.people_rounded,
-          iconColor: cs.primaryContainer,
-          children: [
-            AnymeXText('Watching Now', style: TextStyle(color: cs.outline, fontSize: 12)),
-            const SizedBox(height: 6),
-            AnymeXText(
+          ),
+          const SizedBox(height: 8),
+          _buildInfoCard(
+            cs,
+            icon: Icons.people_rounded,
+            iconColor: Colors.green.withValues(alpha: 0.8),
+            title: 'Watching Now',
+            value: AnymeXText(
               '$memberCount / ${state.maxMembers} members',
               style: TextStyle(
-                color: cs.onSurface,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontFamily: 'Poppins',
+                fontSize: 11,
+                color: cs.onSurface.withValues(alpha: 0.5),
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 20),
+          ),
 
-        // Created at
-        _InfoSection(
-          icon: Icons.calendar_today_rounded,
-          iconColor: cs.outline,
-          children: [
-            AnymeXText('Created', style: TextStyle(color: cs.outline, fontSize: 12)),
-            const SizedBox(height: 6),
-            AnymeXText(
+          const SizedBox(height: 20),
+
+          // ── Details section ──
+          _infoSectionHeader(cs, 'Details'),
+          const SizedBox(height: 8),
+          _buildInfoCard(
+            cs,
+            icon: Icons.calendar_today_rounded,
+            iconColor: Colors.amber,
+            title: 'Created',
+            value: AnymeXText(
               _formatDateTime(createdAt),
               style: TextStyle(
-                color: cs.onSurface,
-                fontSize: 14,
+                fontFamily: 'Poppins',
+                fontSize: 11,
+                color: cs.onSurface.withValues(alpha: 0.5),
               ),
             ),
-          ],
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _infoSectionHeader(ColorScheme cs, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 2),
+      child: AnymeXText(
+        title,
+        style: TextStyle(
+          fontFamily: 'Poppins-SemiBold',
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: cs.onSurface.withValues(alpha: 0.45),
+          letterSpacing: 0.5,
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(
+    ColorScheme cs, {
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required Widget value,
+    Widget? trailing,
+    VoidCallback? onTap,
+  }) {
+    final card = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest.opaque(0.35, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: cs.onSurface.opaque(0.08, iReallyMeanIt: true),
+          width: 0.5,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 20, color: iconColor),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AnymeXText(
+                  title,
+                  style: TextStyle(
+                    fontFamily: 'Poppins-SemiBold',
+                    fontSize: 14,
+                    color: cs.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                value,
+              ],
+            ),
+          ),
+          if (trailing != null) ...[
+            const SizedBox(width: 8),
+            trailing,
+          ],
+        ],
+      ),
+    );
+
+    if (onTap == null) return card;
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: card,
+    );
+  }
+
+  Widget _buildCopyButton(ColorScheme cs, {required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerHighest.opaque(0.5, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          Icons.copy_rounded,
+          size: 18,
+          color: cs.onSurface.withValues(alpha: 0.7),
+        ),
+      ),
     );
   }
 
@@ -1325,92 +1442,6 @@ class _WatchiumPartyPopupContentState
 
   void _copyToClipboard(String text, String label) {
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: AnymeXText('$label copied'),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-}
-
-class _InfoSection extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final List<Widget> children;
-
-  const _InfoSection({
-    required this.icon,
-    required this.iconColor,
-    required this.children,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: iconColor, size: 18),
-        ),
-        const SizedBox(width: 14),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: children)),
-      ],
-    );
-  }
-}
-
-class _CopyableRow extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  final ColorScheme cs;
-  final bool isLink;
-
-  const _CopyableRow({
-    required this.label,
-    required this.onTap,
-    required this.cs,
-    this.isLink = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: cs.outline.withOpacity(0.15)),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: AnymeXText(
-                label,
-                style: TextStyle(
-                  color: isLink ? cs.primary : cs.onSurface,
-                  fontSize: isLink ? 11 : 15,
-                  fontWeight: isLink ? FontWeight.w400 : FontWeight.w600,
-                  letterSpacing: isLink ? 0 : 2,
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Icon(Icons.copy_rounded, size: 16, color: cs.outline),
-          ],
-        ),
-      ),
-    );
+    snackBar('$label copied');
   }
 }
