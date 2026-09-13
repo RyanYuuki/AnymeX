@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:anymex/controllers/security/app_lock_controller.dart';
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
@@ -115,6 +115,8 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
 
   Timer? _longPressTimer;
   double _longPressProgress = 0.0;
+  bool _longPressTriggered = false;
+  bool _showEmergencyResetOverlay = false;
 
   @override
   void initState() {
@@ -240,6 +242,7 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
     final controller = Get.find<AppLockController>();
     _longPressTimer?.cancel();
     _longPressProgress = 0.0;
+    _longPressTriggered = false;
     const totalTicks = 50; // 50 * 100ms = 5000ms = 5s
     int tick = 0;
 
@@ -255,9 +258,14 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
       }
       if (tick >= totalTicks) {
         t.cancel();
+        _longPressTriggered = true;
         _cancelLongPressTimer();
         controller.vibrateMedium();
-        _showSecretResetDialog(context, controller);
+        if (mounted) {
+          setState(() {
+            _showEmergencyResetOverlay = true;
+          });
+        }
       }
     });
   }
@@ -271,29 +279,155 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
     }
   }
 
-  void _showSecretResetDialog(BuildContext context, AppLockController controller) {
-    showDialog(
-      context: context,
-      builder: (dialogCtx) => AnymeXDialog(
-        title: 'Emergency Reset',
-        confirmText: 'Reset App Lock',
-        contentWidget: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AnymeXText(
-              'Emergency bypass activated.\n\n'
-              'Resetting App Lock will remove your passcode protection.\n'
-              'Your downloaded files, library, and settings will remain completely safe.\n\n'
-              'Do you want to reset App Lock now?',
-              style: TextStyle(fontSize: 13, height: 1.4),
+  Widget _buildEmergencyResetModal(
+      BuildContext context, AppLockController controller) {
+    final colors = context.colors;
+    final buttonRadius = 30.multiplyRadius();
+    final radius = 50.multiplyRadius();
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        setState(() {
+          _showEmergencyResetOverlay = false;
+        });
+      },
+      child: Container(
+        color: Colors.black.withOpacity(0.55),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                width: MediaQuery.sizeOf(context).width * 0.85 > 400
+                    ? 400
+                    : MediaQuery.sizeOf(context).width * 0.85,
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainer,
+                  borderRadius: BorderRadius.circular(radius),
+                  border: Border.all(
+                    color: colors.onSurface.withOpacity(0.08),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.35),
+                      blurRadius: 30,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.redAccent.withOpacity(0.12),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.warning_amber_rounded,
+                          color: Colors.redAccent,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    AnymeXText(
+                      'Emergency Reset',
+                      size: 20,
+                      variant: TextVariant.semiBold,
+                      color: colors.onSurface,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    AnymeXText(
+                      'Emergency bypass activated.\n\n'
+                      'Resetting App Lock will remove your passcode protection.\n\n'
+                      'Your downloaded files, library, and settings will remain completely safe.\n\n'
+                      'Do you want to reset App Lock now?',
+                      size: 13,
+                      color: colors.onSurfaceVariant,
+                      textAlign: TextAlign.center,
+                      maxLines: 10,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(buttonRadius),
+                            onTap: () {
+                              setState(() {
+                                _showEmergencyResetOverlay = false;
+                              });
+                            },
+                            child: Container(
+                              height: 48,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: colors.surfaceContainerHighest,
+                                borderRadius:
+                                    BorderRadius.circular(buttonRadius),
+                              ),
+                              child: AnymeXText(
+                                'Cancel',
+                                size: 14,
+                                color: colors.onSurface,
+                                variant: TextVariant.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(buttonRadius),
+                            onTap: () {
+                              setState(() {
+                                _showEmergencyResetOverlay = false;
+                              });
+                              controller.emergencyReset();
+                              snackBar('App Lock has been reset.');
+                            },
+                            child: Container(
+                              height: 48,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                borderRadius:
+                                    BorderRadius.circular(buttonRadius),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.redAccent.withOpacity(0.25),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const AnymeXText(
+                                'Reset Lock',
+                                size: 14,
+                                color: Colors.white,
+                                variant: TextVariant.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ],
+          ),
         ),
-        onConfirm: () {
-          controller.emergencyReset();
-          snackBar('App Lock has been reset.');
-        },
       ),
     );
   }
@@ -491,7 +625,9 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
                                     }
                                   },
                                   onSecretDotLongPress: () {
-                                    _showSecretResetDialog(context, controller);
+                                    setState(() {
+                                      _showEmergencyResetOverlay = true;
+                                    });
                                   },
                                 ),
                               ),
@@ -500,8 +636,11 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
                           if (controller.allowEmergencyReset.value) ...[
                             const SizedBox(height: 16),
                             TextButton(
-                              onPressed: () =>
-                                  _showSecretResetDialog(context, controller),
+                              onPressed: () {
+                                setState(() {
+                                  _showEmergencyResetOverlay = true;
+                                });
+                              },
                               style: TextButton.styleFrom(
                                 foregroundColor:
                                     colors.onSurfaceVariant.withOpacity(0.8),
@@ -527,6 +666,8 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
                   ),
                 ),
               ),
+              if (_showEmergencyResetOverlay)
+                _buildEmergencyResetModal(context, controller),
             ],
           ),
         ),
@@ -648,10 +789,18 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
     return GestureDetector(
       onTapDown: (_) => _startLongPressTimer(),
       onTapUp: (_) {
+        if (_longPressTriggered) {
+          _longPressTriggered = false;
+          _cancelLongPressTimer();
+          return;
+        }
         _cancelLongPressTimer();
         _onDigitPressed(digit);
       },
-      onTapCancel: _cancelLongPressTimer,
+      onTapCancel: () {
+        _longPressTriggered = false;
+        _cancelLongPressTimer();
+      },
       child: Stack(
         alignment: Alignment.center,
         children: [

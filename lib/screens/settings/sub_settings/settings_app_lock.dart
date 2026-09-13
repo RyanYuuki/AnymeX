@@ -86,12 +86,131 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
     return 'Dot ${dotIndex + 1}';
   }
 
+  void _showInitialLockTypeDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AnymeXDialog(
+        title: 'Choose Lock Type',
+        showCancelButton: false,
+        confirmText: 'Cancel',
+        contentWidget: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: AnymeXText(
+                'Select how you would like to secure AnymeX:',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: context.colors.onSurfaceVariant,
+                ),
+              ),
+            ),
+            _buildInitialLockTypeOption(
+              dialogCtx,
+              title: '4-Digit PIN',
+              subtitle: 'Fast and convenient numeric lock',
+              icon: Icons.pin_rounded,
+              onTap: () {
+                Navigator.of(dialogCtx).pop();
+                _showSetPinDialog(isInitialEnable: true, pinLength: 4);
+              },
+            ),
+            _buildInitialLockTypeOption(
+              dialogCtx,
+              title: '6-Digit PIN',
+              subtitle: 'Enhanced security numeric passcode',
+              icon: Icons.password_rounded,
+              onTap: () {
+                Navigator.of(dialogCtx).pop();
+                _showSetPinDialog(isInitialEnable: true, pinLength: 6);
+              },
+            ),
+            _buildInitialLockTypeOption(
+              dialogCtx,
+              title: 'Pattern Lock (3×3 Grid)',
+              subtitle: 'Gesture-based connected pattern',
+              icon: Icons.pattern_rounded,
+              onTap: () {
+                Navigator.of(dialogCtx).pop();
+                _showSetPatternDialog(isInitialEnable: true);
+              },
+            ),
+          ],
+        ),
+        onConfirm: () {},
+      ),
+    );
+  }
+
+  Widget _buildInitialLockTypeOption(
+    BuildContext dialogCtx, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.colors.primary.withOpacity(0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: context.colors.primary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnymeXText(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  AnymeXText(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: context.colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: context.colors.onSurfaceVariant,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showLockTypeDialog() {
     showDialog(
       context: context,
       builder: (dialogCtx) => AnymeXDialog(
         title: 'Select Lock Type',
-        confirmText: 'Done',
+        showCancelButton: false,
+        confirmText: 'Cancel',
         contentWidget: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -281,6 +400,7 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
       builder: (dialogCtx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AnymeXDialog(
           title: isInitialEnable ? 'Set Pattern Lock' : 'Change Pattern Lock',
+          showCancelButton: false,
           confirmText: 'Cancel',
           onConfirm: () {},
           contentWidget: Column(
@@ -379,6 +499,7 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
         builder: (dialogCtx) => StatefulBuilder(
           builder: (ctx, setDialogState) => AnymeXDialog(
             title: 'Disable App Lock',
+            showCancelButton: false,
             confirmText: 'Cancel',
             onConfirm: () {},
             contentWidget: Column(
@@ -480,6 +601,7 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
         builder: (dialogCtx) => StatefulBuilder(
           builder: (ctx, setDialogState) => AnymeXDialog(
             title: 'Verify Current Pattern',
+            showCancelButton: false,
             confirmText: 'Cancel',
             onConfirm: () {},
             contentWidget: Column(
@@ -578,7 +700,8 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
       context: context,
       builder: (dialogCtx) => AnymeXDialog(
         title: 'Pattern Dot Style',
-        confirmText: 'Done',
+        showCancelButton: false,
+        confirmText: 'Cancel',
         contentWidget: Column(
           mainAxisSize: MainAxisSize.min,
           children: PatternDotStyle.values.map((style) {
@@ -635,7 +758,8 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
       context: context,
       builder: (dialogCtx) => AnymeXDialog(
         title: 'Emergency Secret Key',
-        confirmText: 'Done',
+        showCancelButton: false,
+        confirmText: 'Cancel',
         contentWidget: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -698,7 +822,8 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
       context: context,
       builder: (dialogCtx) => AnymeXDialog(
         title: 'Emergency Secret Dot',
-        confirmText: 'Done',
+        showCancelButton: false,
+        confirmText: 'Cancel',
         contentWidget: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -774,7 +899,8 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
       context: context,
       builder: (dialogCtx) => AnymeXDialog(
         title: 'Auto-Lock Timeout',
-        confirmText: 'Done',
+        showCancelButton: false,
+        confirmText: 'Cancel',
         contentWidget: ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.sizeOf(context).height * 0.55,
@@ -879,18 +1005,7 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
                         value: _controller.isEnabled.value,
                         onChanged: (val) {
                           if (val) {
-                            if (_controller.lockType.value ==
-                                AppLockType.pattern) {
-                              _showSetPatternDialog(isInitialEnable: true);
-                            } else {
-                              final pinLength = _controller.lockType.value ==
-                                      AppLockType.pin6
-                                  ? 6
-                                  : 4;
-                              _showSetPinDialog(
-                                  isInitialEnable: true,
-                                  pinLength: pinLength);
-                            }
+                            _showInitialLockTypeDialog();
                           } else {
                             _showDisableLockDialog();
                           }
@@ -928,7 +1043,10 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
                             onChanged: (val) async {
                               if (val) {
                                 final verified =
-                                    await _controller.unlockWithBiometrics();
+                                    await _controller.authenticateBiometric(
+                                  reason:
+                                      'Scan fingerprint or face to enable Biometric Unlock',
+                                );
                                 if (verified) {
                                   _controller.setBiometricsEnabled(true);
                                   snackBar('Biometric unlock enabled');

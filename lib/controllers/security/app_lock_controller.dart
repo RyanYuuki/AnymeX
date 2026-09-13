@@ -81,8 +81,22 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
           ? AppLockType.values[typeIndex]
           : AppLockType.pin4;
 
-      if (isEnabled.value && timeoutSeconds.value != -2) {
-        isLocked.value = true;
+      final timeout = timeoutSeconds.value;
+      if (isEnabled.value) {
+        if (timeout == -2) {
+          isLocked.value = false;
+        } else if (timeout == -1 || timeout == 0) {
+          isLocked.value = true;
+        } else if (timeout > 0) {
+          final lastBg = AppLockKeys.lastBackgroundTimestamp.get<int>(0);
+          if (lastBg > 0) {
+            final elapsedSeconds =
+                (DateTime.now().millisecondsSinceEpoch - lastBg) ~/ 1000;
+            isLocked.value = elapsedSeconds >= timeout;
+          } else {
+            isLocked.value = true;
+          }
+        }
       }
     } catch (e) {
       Logger.e('Error loading app lock settings: $e');
@@ -123,10 +137,12 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     AppLockKeys.isEnabled.set(false);
     AppLockKeys.biometricsEnabled.set(false);
     AppLockKeys.pinHash.delete();
+    AppLockKeys.lastBackgroundTimestamp.delete();
     isEnabled.value = false;
     biometricsEnabled.value = false;
     isLocked.value = false;
     showPrivacyShield.value = false;
+    _lastBackgroundTime = null;
   }
 
   void updatePin(String newPin) {
@@ -223,6 +239,8 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
       _cooldownTimer?.cancel();
       isLocked.value = false;
       showPrivacyShield.value = false;
+      _lastBackgroundTime = null;
+      AppLockKeys.lastBackgroundTimestamp.delete();
       vibrateMedium();
       return true;
     } else {
@@ -249,6 +267,26 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     });
   }
 
+  Future<bool> authenticateBiometric({String reason = 'Authenticate to continue'}) async {
+    if (!isBiometricsSupported.value) return false;
+    if (_isAuthenticating) return false;
+
+    try {
+      _isAuthenticating = true;
+      final didAuthenticate = await _localAuth.authenticate(
+        localizedReason: reason,
+        biometricOnly: true,
+        persistAcrossBackgrounding: true,
+      );
+      return didAuthenticate;
+    } catch (e) {
+      Logger.d('Biometric authentication error: $e');
+      return false;
+    } finally {
+      _isAuthenticating = false;
+    }
+  }
+
   Future<bool> unlockWithBiometrics() async {
     if (!isEnabled.value || !biometricsEnabled.value || !isBiometricsSupported.value) {
       return false;
@@ -256,40 +294,35 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     if (cooldownSecondsRemaining.value > 0) return false;
     if (_isAuthenticating) return false;
 
-    try {
-      _isAuthenticating = true;
-      final didAuthenticate = await _localAuth.authenticate(
-        localizedReason: 'Authenticate to unlock AnymeX',
-        biometricOnly: true,
-        persistAcrossBackgrounding: true,
-      );
+    final success = await authenticateBiometric(
+      reason: 'Authenticate to unlock AnymeX',
+    );
 
-      if (didAuthenticate) {
-        failedAttempts.value = 0;
-        cooldownSecondsRemaining.value = 0;
-        _cooldownTimer?.cancel();
-        isLocked.value = false;
-        showPrivacyShield.value = false;
-        HapticFeedback.mediumImpact();
-        return true;
-      }
-      return false;
-    } catch (e) {
-      Logger.d('Biometric authentication failed: $e');
-      return false;
-    } finally {
-      _isAuthenticating = false;
+    if (success) {
+      failedAttempts.value = 0;
+      cooldownSecondsRemaining.value = 0;
+      _cooldownTimer?.cancel();
+      isLocked.value = false;
+      showPrivacyShield.value = false;
+      _lastBackgroundTime = null;
+      AppLockKeys.lastBackgroundTimestamp.delete();
+      HapticFeedback.mediumImpact();
+      return true;
     }
+    return false;
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (!isEnabled.value) return;
+    if (_isAuthenticating) return;
 
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
-      _lastBackgroundTime = DateTime.now();
+      final now = DateTime.now();
+      _lastBackgroundTime = now;
+      AppLockKeys.lastBackgroundTimestamp.set(now.millisecondsSinceEpoch);
 
       if (hideInRecentApps.value) {
         showPrivacyShield.value = true;
@@ -301,11 +334,15 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     } else if (state == AppLifecycleState.resumed) {
       showPrivacyShield.value = false;
 
-      if (timeoutSeconds.value >= 0 && !isLocked.value && _lastBackgroundTime != null) {
-        final elapsedSeconds =
-            DateTime.now().difference(_lastBackgroundTime!).inSeconds;
-        if (elapsedSeconds >= timeoutSeconds.value) {
-          isLocked.value = true;
+      if (timeoutSeconds.value > 0 && !isLocked.value) {
+        final lastBg = _lastBackgroundTime?.millisecondsSinceEpoch ??
+            AppLockKeys.lastBackgroundTimestamp.get<int>(0);
+        if (lastBg > 0) {
+          final elapsedSeconds =
+              (DateTime.now().millisecondsSinceEpoch - lastBg) ~/ 1000;
+          if (elapsedSeconds >= timeoutSeconds.value) {
+            isLocked.value = true;
+          }
         }
       }
 

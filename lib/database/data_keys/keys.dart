@@ -63,6 +63,7 @@ enum AppLockKeys {
   secretPatternDot,
   patternDotStyle,
   showPatternTrail,
+  lastBackgroundTimestamp,
 }
 
 enum ThemeKeys {
