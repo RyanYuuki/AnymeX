@@ -1187,6 +1187,18 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
                         ),
                       ),
                       AnymeXTile(
+                        icon: Icons.notifications_paused_outlined,
+                        title: 'Lock on Notification Shade',
+                        subtitle:
+                            'Also lock when pulling down the status bar or notification panel',
+                        trailing: Switch(
+                          value: _controller.lockOnNotificationShade.value,
+                          onChanged: (val) {
+                            _controller.setLockOnNotificationShade(val);
+                          },
+                        ),
+                      ),
+                      AnymeXTile(
                         icon: Icons.vibration_rounded,
                         title: 'Haptic Feedback',
                         subtitle:
@@ -1247,8 +1259,26 @@ class _PatternSetupCanvasState extends State<_PatternSetupCanvas> {
   final List<int> _selectedDots = [];
   Offset? _currentTouch;
 
+  Offset? _lastTouchPos;
+
+  int? _getIntermediateDot(int a, int b) {
+    final rowA = a ~/ 3, colA = a % 3;
+    final rowB = b ~/ 3, colB = b % 3;
+    final dRow = (rowA - rowB).abs();
+    final dCol = (colA - colB).abs();
+    if ((dRow == 0 && dCol == 2) ||
+        (dRow == 2 && dCol == 0) ||
+        (dRow == 2 && dCol == 2)) {
+      final midRow = (rowA + rowB) ~/ 2;
+      final midCol = (colA + colB) ~/ 2;
+      return midRow * 3 + midCol;
+    }
+    return null;
+  }
+
   void _onPanStart(DragStartDetails details, BoxConstraints constraints) {
-    _handleTouch(details.localPosition, constraints.maxWidth);
+    _lastTouchPos = details.localPosition;
+    _handleTouch(details.localPosition, constraints.maxWidth, isStart: true);
   }
 
   void _onPanUpdate(DragUpdateDetails details, BoxConstraints constraints) {
@@ -1256,6 +1286,7 @@ class _PatternSetupCanvasState extends State<_PatternSetupCanvas> {
   }
 
   void _onPanEnd(DragEndDetails details) {
+    _lastTouchPos = null;
     if (_selectedDots.isNotEmpty) {
       widget.onPatternComplete(List<int>.from(_selectedDots));
     }
@@ -1265,32 +1296,72 @@ class _PatternSetupCanvasState extends State<_PatternSetupCanvas> {
     });
   }
 
-  void _handleTouch(Offset localPos, double size) {
+  void _handleTouch(Offset localPos, double size, {bool isStart = false}) {
     final cellSize = size / 3;
-    for (int i = 0; i < 9; i++) {
-      final row = i ~/ 3;
-      final col = i % 3;
-      final center = Offset((col + 0.5) * cellSize, (row + 0.5) * cellSize);
-      if ((localPos - center).distance <= 28) {
-        if (!_selectedDots.contains(i)) {
-          final controller = Get.find<AppLockController>();
-          controller.vibrateLight();
-          setState(() {
-            _selectedDots.add(i);
-            _currentTouch = localPos;
-          });
+    const hitRadius = 40.0;
+
+    int? checkHit(Offset pos) {
+      for (int i = 0; i < 9; i++) {
+        final row = i ~/ 3;
+        final col = i % 3;
+        final center = Offset((col + 0.5) * cellSize, (row + 0.5) * cellSize);
+        if ((pos - center).distance <= hitRadius) {
+          return i;
         }
-        return;
+      }
+      return null;
+    }
+
+    final List<int> newlyHitDots = [];
+    if (!isStart && _lastTouchPos != null) {
+      final dist = (localPos - _lastTouchPos!).distance;
+      final steps = (dist / 14).ceil().clamp(1, 10);
+      for (int s = 1; s <= steps; s++) {
+        final samplePos = Offset.lerp(_lastTouchPos!, localPos, s / steps)!;
+        final hit = checkHit(samplePos);
+        if (hit != null &&
+            !_selectedDots.contains(hit) &&
+            !newlyHitDots.contains(hit)) {
+          newlyHitDots.add(hit);
+        }
+      }
+    } else {
+      final hit = checkHit(localPos);
+      if (hit != null && !_selectedDots.contains(hit)) {
+        newlyHitDots.add(hit);
       }
     }
-    setState(() {
-      _currentTouch = localPos;
-    });
+
+    _lastTouchPos = localPos;
+
+    if (newlyHitDots.isNotEmpty) {
+      final controller = Get.find<AppLockController>();
+      controller.vibrateLight();
+      setState(() {
+        for (final hit in newlyHitDots) {
+          if (_selectedDots.isNotEmpty) {
+            final last = _selectedDots.last;
+            final intermediate = _getIntermediateDot(last, hit);
+            if (intermediate != null && !_selectedDots.contains(intermediate)) {
+              _selectedDots.add(intermediate);
+            }
+          }
+          if (!_selectedDots.contains(hit)) {
+            _selectedDots.add(hit);
+          }
+        }
+        _currentTouch = localPos;
+      });
+    } else {
+      setState(() {
+        _currentTouch = localPos;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    const double size = 240;
+    const double size = 260;
     return Center(
       child: SizedBox(
         width: size,

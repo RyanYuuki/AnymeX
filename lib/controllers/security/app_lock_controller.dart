@@ -27,6 +27,7 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
   final RxInt secretPatternDot = 4.obs;
   final Rx<PatternDotStyle> patternDotStyle = PatternDotStyle.circle.obs;
   final RxBool showPatternTrail = true.obs;
+  final RxBool lockOnNotificationShade = false.obs;
 
   final RxBool isBiometricsSupported = false.obs;
   final RxList<BiometricType> availableBiometrics = <BiometricType>[].obs;
@@ -111,6 +112,8 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
       secretPinDigit.value = AppLockKeys.secretPinDigit.get<String>('0');
       secretPatternDot.value = AppLockKeys.secretPatternDot.get<int>(4);
       showPatternTrail.value = AppLockKeys.showPatternTrail.get<bool>(true);
+      lockOnNotificationShade.value =
+          AppLockKeys.lockOnNotificationShade.get<bool>(false);
 
       final styleIndex = AppLockKeys.patternDotStyle.get<int>(0);
       patternDotStyle.value = (styleIndex >= 0 && styleIndex < PatternDotStyle.values.length)
@@ -262,6 +265,11 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     showPatternTrail.value = show;
   }
 
+  void setLockOnNotificationShade(bool val) {
+    AppLockKeys.lockOnNotificationShade.set(val);
+    lockOnNotificationShade.value = val;
+  }
+
   void emergencyReset() {
     if (!allowEmergencyReset.value) return;
     disableAppLock();
@@ -365,9 +373,18 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     if (!isEnabled.value) return;
     if (_isAuthenticating) return;
 
-    if (state == AppLifecycleState.inactive ||
-        state == AppLifecycleState.paused ||
+    if (state == AppLifecycleState.inactive) {
+      // Inactive happens when pulling down notification shade, quick settings,
+      // volume slider, or opening recent apps switcher.
+      if (hideInRecentApps.value) {
+        showPrivacyShield.value = true;
+      }
+      if (lockOnNotificationShade.value && timeoutSeconds.value == 0) {
+        isLocked.value = true;
+      }
+    } else if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.hidden) {
+      // Paused / hidden means user actually pressed Home, switched apps, or turned off screen.
       if (!_isAppInBackground) {
         _isAppInBackground = true;
         final now = DateTime.now();
@@ -391,10 +408,11 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
         }
       }
     } else if (state == AppLifecycleState.resumed) {
+      final wasInBackground = _isAppInBackground;
       _isAppInBackground = false;
       _backgroundLockTimer?.cancel();
 
-      if (timeoutSeconds.value > 0 && !isLocked.value) {
+      if (wasInBackground && timeoutSeconds.value > 0 && !isLocked.value) {
         final lastBg = _lastBackgroundTime?.millisecondsSinceEpoch ??
             AppLockKeys.lastBackgroundTimestamp.get<int>(0);
         if (lastBg > 0) {

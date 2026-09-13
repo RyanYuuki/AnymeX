@@ -502,22 +502,25 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
               ),
               SafeArea(
                 child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 360),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Stack(
-                            clipBehavior: Clip.none,
-                            alignment: Alignment.center,
-                            children: [
-                              const AnymeXAnimatedLogo(
-                                size: 85,
-                                autoPlay: true,
-                              ),
-                              Positioned(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 360),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Stack(
+                              clipBehavior: Clip.none,
+                              alignment: Alignment.center,
+                              children: [
+                                const AnymeXAnimatedLogo(
+                                  size: 85,
+                                  autoPlay: true,
+                                ),
+                                Positioned(
                                 right: -4,
                                 bottom: -4,
                                 child: Container(
@@ -666,13 +669,41 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
                             ),
                             if (controller.biometricsEnabled.value &&
                                 controller.isBiometricsSupported.value) ...[
-                              const SizedBox(height: 16),
-                              _buildIconButton(
-                                context,
-                                icon: controller.biometricIcon,
-                                tooltip:
-                                    'Unlock with ${controller.biometricDisplayName}',
-                                onTap: () => controller.unlockWithBiometrics(),
+                              const SizedBox(height: 20),
+                              Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () => controller.unlockWithBiometrics(),
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
+                                    decoration: BoxDecoration(
+                                      color: colors.surfaceContainerHighest
+                                          .withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(24),
+                                      border: Border.all(
+                                        color: colors.outline.withOpacity(0.2),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(controller.biometricIcon,
+                                            size: 20, color: colors.primary),
+                                        const SizedBox(width: 8),
+                                        AnymeXText(
+                                          'Unlock with ${controller.biometricDisplayName}',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: colors.onSurface,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ],
@@ -682,7 +713,8 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
                   ),
                 ),
               ),
-              if (_showEmergencyResetOverlay)
+            ),
+            if (_showEmergencyResetOverlay)
                 _buildEmergencyResetModal(context, controller),
             ],
           ),
@@ -903,13 +935,31 @@ class _PatternLockViewState extends State<_PatternLockView> {
   Timer? _secretDotTimer;
   double _secretDotProgress = 0.0;
 
+  Offset? _lastTouchPos;
+
   @override
   void dispose() {
     _secretDotTimer?.cancel();
     super.dispose();
   }
 
+  int? _getIntermediateDot(int a, int b) {
+    final rowA = a ~/ 3, colA = a % 3;
+    final rowB = b ~/ 3, colB = b % 3;
+    final dRow = (rowA - rowB).abs();
+    final dCol = (colA - colB).abs();
+    if ((dRow == 0 && dCol == 2) ||
+        (dRow == 2 && dCol == 0) ||
+        (dRow == 2 && dCol == 2)) {
+      final midRow = (rowA + rowB) ~/ 2;
+      final midCol = (colA + colB) ~/ 2;
+      return midRow * 3 + midCol;
+    }
+    return null;
+  }
+
   void _onPanStart(DragStartDetails details, BoxConstraints constraints) {
+    _lastTouchPos = details.localPosition;
     _handleTouch(details.localPosition, constraints.maxWidth, isStart: true);
   }
 
@@ -920,6 +970,7 @@ class _PatternLockViewState extends State<_PatternLockView> {
   void _onPanEnd(DragEndDetails details) {
     _secretDotTimer?.cancel();
     _secretDotProgress = 0.0;
+    _lastTouchPos = null;
 
     if (_selectedDots.length >= 4) {
       final patternString = _selectedDots.join('-');
@@ -935,32 +986,68 @@ class _PatternLockViewState extends State<_PatternLockView> {
   void _handleTouch(Offset localPos, double size, {bool isStart = false}) {
     final controller = Get.find<AppLockController>();
     final cellSize = size / 3;
+    const hitRadius = 40.0;
 
-    int? hitIndex;
-    for (int i = 0; i < 9; i++) {
-      final row = i ~/ 3;
-      final col = i % 3;
-      final center = Offset((col + 0.5) * cellSize, (row + 0.5) * cellSize);
-      if ((localPos - center).distance <= 32) {
-        hitIndex = i;
-        break;
+    int? checkHit(Offset pos) {
+      for (int i = 0; i < 9; i++) {
+        final row = i ~/ 3;
+        final col = i % 3;
+        final center = Offset((col + 0.5) * cellSize, (row + 0.5) * cellSize);
+        if ((pos - center).distance <= hitRadius) {
+          return i;
+        }
+      }
+      return null;
+    }
+
+    final List<int> newlyHitDots = [];
+    if (!isStart && _lastTouchPos != null) {
+      final dist = (localPos - _lastTouchPos!).distance;
+      final steps = (dist / 14).ceil().clamp(1, 10);
+      for (int s = 1; s <= steps; s++) {
+        final samplePos = Offset.lerp(_lastTouchPos!, localPos, s / steps)!;
+        final hit = checkHit(samplePos);
+        if (hit != null &&
+            !_selectedDots.contains(hit) &&
+            !newlyHitDots.contains(hit)) {
+          newlyHitDots.add(hit);
+        }
+      }
+    } else {
+      final hit = checkHit(localPos);
+      if (hit != null && !_selectedDots.contains(hit)) {
+        newlyHitDots.add(hit);
       }
     }
 
+    _lastTouchPos = localPos;
+
     final secretDot = controller.secretPatternDot.value;
     final allowReset = controller.allowEmergencyReset.value;
+    final startHit = checkHit(localPos);
 
-    if (allowReset && isStart && hitIndex == secretDot) {
+    if (allowReset && isStart && startHit == secretDot) {
       _startSecretDotLongPressTimer();
-    } else if (hitIndex != secretDot) {
+    } else if (startHit != secretDot) {
       _secretDotTimer?.cancel();
       _secretDotProgress = 0.0;
     }
 
-    if (hitIndex != null && !_selectedDots.contains(hitIndex)) {
+    if (newlyHitDots.isNotEmpty) {
       controller.vibrateLight();
       setState(() {
-        _selectedDots.add(hitIndex!);
+        for (final hit in newlyHitDots) {
+          if (_selectedDots.isNotEmpty) {
+            final last = _selectedDots.last;
+            final intermediate = _getIntermediateDot(last, hit);
+            if (intermediate != null && !_selectedDots.contains(intermediate)) {
+              _selectedDots.add(intermediate);
+            }
+          }
+          if (!_selectedDots.contains(hit)) {
+            _selectedDots.add(hit);
+          }
+        }
         _currentTouch = localPos;
       });
     } else {
@@ -999,7 +1086,7 @@ class _PatternLockViewState extends State<_PatternLockView> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final controller = Get.find<AppLockController>();
-    const double size = 280;
+    const double size = 260;
 
     return Center(
       child: SizedBox(
