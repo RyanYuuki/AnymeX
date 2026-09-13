@@ -9,6 +9,8 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_app_lock.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_incognito.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_downloads.dart';
 import 'package:anymex/screens/settings/search/settings_search_metadata.dart';
@@ -91,6 +93,8 @@ final categoryRoutes = <String, Widget Function()>{
   'Common': () => const SettingsCommon(),
   'Backup & Restore': () => const BackupRestorePage(),
   'Storage Manager': () => const SettingsStorageManager(),
+  'Security & App Lock': () => const SettingsAppLock(),
+  'Incognito & Privacy': () => const SettingsIncognito(),
   'UI': () => const SettingsUi(),
   'Player': () => const SettingsPlayer(),
   'Reader': () => const SettingsReader(),
