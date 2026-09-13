@@ -320,12 +320,17 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
 
   Widget _buildCardActionButtons(int index) {
     final theme = Theme.of(context);
+    final listData = _lists[index];
+    final isHidden = offlineStorage.isCustomListHidden(
+        listData.listName, widget.type.index);
+
     final leftRadius = BorderRadius.only(
       topLeft: Radius.circular(18.multiplyRadius()),
       bottomLeft: Radius.circular(18.multiplyRadius()),
       topRight: Radius.circular(5.multiplyRadius()),
       bottomRight: Radius.circular(5.multiplyRadius()),
     );
+    final middleRadius = BorderRadius.circular(5.multiplyRadius());
     final rightRadius = BorderRadius.only(
       topRight: Radius.circular(18.multiplyRadius()),
       bottomRight: Radius.circular(18.multiplyRadius()),
@@ -352,6 +357,48 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             child: Icon(
               Iconsax.edit,
               color: theme.colorScheme.primary,
+              size: 16,
+            ),
+          ),
+        ),
+        const SizedBox(width: 3),
+        AnymexOnTap(
+          scale: 0.92,
+          onTap: () async {
+            await offlineStorage.toggleCustomListHidden(
+              listData.listName,
+              widget.type.index,
+            );
+            setState(() {});
+            HapticFeedback.lightImpact();
+            snackBar(
+              isHidden
+                  ? '"${listData.listName}" is now visible in Library'
+                  : '"${listData.listName}" is now hidden from Library',
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: isHidden
+                  ? Colors.amber.withOpacity(0.14)
+                  : theme.colorScheme.surfaceContainerHighest
+                      .opaque(0.4, iReallyMeanIt: true),
+              borderRadius: middleRadius,
+              border: Border.all(
+                color: isHidden
+                    ? Colors.amber.withOpacity(0.35)
+                    : theme.colorScheme.onSurface
+                        .opaque(0.08, iReallyMeanIt: true),
+                width: 0.8,
+              ),
+            ),
+            child: Icon(
+              isHidden ? Iconsax.eye_slash : Iconsax.eye,
+              color: isHidden
+                  ? Colors.amber
+                  : theme.colorScheme.onSurface
+                      .opaque(0.65, iReallyMeanIt: true),
               size: 16,
             ),
           ),
@@ -434,6 +481,8 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     final theme = Theme.of(context);
     final listData = _lists[index];
     final radius = _getConnectiveBorderRadius(index, _lists.length);
+    final isHidden = offlineStorage.isCustomListHidden(
+        listData.listName, widget.type.index);
 
     return Container(
       key: ValueKey('list_$index'),
@@ -476,11 +525,54 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymeXText(
-                        listData.listName,
-                        size: 14.5,
-                        variant: TextVariant.semiBold,
-                        color: theme.colorScheme.onSurface,
+                      Row(
+                        children: [
+                          Flexible(
+                            child: AnymeXText(
+                              listData.listName,
+                              size: 14.5,
+                              variant: TextVariant.semiBold,
+                              color: isHidden
+                                  ? theme.colorScheme.onSurface
+                                      .opaque(0.65, iReallyMeanIt: true)
+                                  : theme.colorScheme.onSurface,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (isHidden) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.amber.withOpacity(0.15),
+                                borderRadius:
+                                    BorderRadius.circular(6.multiplyRadius()),
+                                border: Border.all(
+                                  color: Colors.amber.withOpacity(0.3),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Iconsax.eye_slash,
+                                    size: 10,
+                                    color: Colors.amber,
+                                  ),
+                                  SizedBox(width: 3),
+                                  AnymeXText(
+                                    'Hidden',
+                                    size: 10,
+                                    variant: TextVariant.semiBold,
+                                    color: Colors.amber,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
@@ -653,10 +745,14 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             return;
           }
 
+          final oldName = _lists[index].listName;
+          final newName = controller.text;
           setState(() {
-            _lists[index].listName = controller.text;
+            _lists[index].listName = newName;
           });
           _saveListData();
+          offlineStorage.renameCustomListHiddenKey(
+              oldName, newName, widget.type.index);
           HapticFeedback.lightImpact();
         }
       },
@@ -670,10 +766,13 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           'Are you sure you want to delete "${_lists[index].listName}"? This action cannot be undone.',
       confirmText: 'Delete',
       onConfirm: () {
+        final deletedName = _lists[index].listName;
         setState(() {
           _lists.removeAt(index);
           _saveListData();
         });
+        offlineStorage.removeCustomListHiddenKey(
+            deletedName, widget.type.index);
         HapticFeedback.mediumImpact();
       },
     ).show(context);

@@ -34,6 +34,7 @@ enum General {
   unifiedLibrary,
   joinDialogShowCount,
   wrongTitleIsCardView,
+  hiddenCustomLists,
 }
 
 enum AppLockType {

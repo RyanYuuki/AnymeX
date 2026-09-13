@@ -4,6 +4,7 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/main.dart';
@@ -33,11 +34,63 @@ class OfflineStorageController extends GetxController {
 
   bool get _isHistoryPaused => _incognitoCtrl?.shouldRecordHistory == false;
 
+  final RxList<String> hiddenCustomListKeys = <String>[].obs;
+
+  void _loadHiddenCustomLists() {
+    final saved = General.hiddenCustomLists.get<List<dynamic>>([]);
+    hiddenCustomListKeys.value = saved.map((e) => e.toString()).toList();
+  }
+
+  bool isCustomListHidden(String? listName, int mediaTypeIndex) {
+    if (listName == null || listName.isEmpty) return false;
+    return hiddenCustomListKeys.contains('${mediaTypeIndex}_$listName');
+  }
+
+  Future<void> toggleCustomListHidden(
+      String? listName, int mediaTypeIndex) async {
+    if (listName == null || listName.isEmpty) return;
+    final key = '${mediaTypeIndex}_$listName';
+    if (hiddenCustomListKeys.contains(key)) {
+      hiddenCustomListKeys.remove(key);
+    } else {
+      hiddenCustomListKeys.add(key);
+    }
+    General.hiddenCustomLists.set(hiddenCustomListKeys.toList());
+    update();
+  }
+
+  void removeCustomListHiddenKey(String? listName, int mediaTypeIndex) {
+    if (listName == null || listName.isEmpty) return;
+    final key = '${mediaTypeIndex}_$listName';
+    if (hiddenCustomListKeys.remove(key)) {
+      General.hiddenCustomLists.set(hiddenCustomListKeys.toList());
+      update();
+    }
+  }
+
+  void renameCustomListHiddenKey(
+      String? oldName, String? newName, int mediaTypeIndex) {
+    if (oldName == null ||
+        newName == null ||
+        oldName.isEmpty ||
+        newName.isEmpty ||
+        oldName == newName) {
+      return;
+    }
+    final oldKey = '${mediaTypeIndex}_$oldName';
+    if (hiddenCustomListKeys.remove(oldKey)) {
+      hiddenCustomListKeys.add('${mediaTypeIndex}_$newName');
+      General.hiddenCustomLists.set(hiddenCustomListKeys.toList());
+      update();
+    }
+  }
+
   final Map<String, Future<void>> _activeWrites = {};
 
   @override
   void onInit() {
     super.onInit();
+    _loadHiddenCustomLists();
     _cleanupDuplicateOfflineMedias();
     _ensureDefaultListsExist();
   }
@@ -463,6 +516,12 @@ class OfflineStorageController extends GetxController {
       await isar.customLists.delete(list.id);
     });
 
+    final key = '${mediaType.index}_$listName';
+    if (hiddenCustomListKeys.contains(key)) {
+      hiddenCustomListKeys.remove(key);
+      General.hiddenCustomLists.set(hiddenCustomListKeys.toList());
+    }
+
     Logger.i('Removed custom list: $listName');
   }
 
@@ -483,6 +542,13 @@ class OfflineStorageController extends GetxController {
       list.listName = newName;
       await isar.customLists.put(list);
     });
+
+    final oldKey = '${mediaType.index}_$oldName';
+    if (hiddenCustomListKeys.contains(oldKey)) {
+      hiddenCustomListKeys.remove(oldKey);
+      hiddenCustomListKeys.add('${mediaType.index}_$newName');
+      General.hiddenCustomLists.set(hiddenCustomListKeys.toList());
+    }
 
     Logger.i('Renamed list: $oldName -> $newName');
   }
