@@ -107,14 +107,14 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
         style: TextStyle(
           color: theme.colorScheme.onSurface,
           fontSize: 14,
-          fontFamily: 'Poppins',
+          fontFamily: 'Linotte',
         ),
         decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: TextStyle(
             color: theme.colorScheme.onSurface.opaque(0.45, iReallyMeanIt: true),
             fontSize: 14,
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
           ),
           filled: true,
           fillColor: theme.colorScheme.surfaceContainerHighest.opaque(0.35),
@@ -213,7 +213,7 @@ class TappableSearchBar extends StatelessWidget {
                       color: theme.colorScheme.onSurface
                           .opaque(0.45, iReallyMeanIt: true),
                       fontSize: 14,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                     ),
                   ),
                 ),

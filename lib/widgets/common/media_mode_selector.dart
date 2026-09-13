@@ -532,7 +532,7 @@ class MediaModeSelector extends StatelessWidget {
                       Text(
                         label,
                         style: TextStyle(
-                          fontFamily: 'Poppins',
+                          fontFamily: 'Linotte',
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
                           color: theme.colorScheme.onPrimary,
@@ -578,7 +578,7 @@ class MediaModeSelector extends StatelessWidget {
             Text(
               text,
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
                 fontSize: 11,
                 color: theme.colorScheme.onPrimary,
@@ -657,7 +657,7 @@ class MediaModeSelector extends StatelessWidget {
                       Text(
                         label,
                         style: TextStyle(
-                          fontFamily: 'Poppins',
+                          fontFamily: 'Linotte',
                           fontWeight: FontWeight.bold,
                           fontSize: 11,
                           color: theme.colorScheme.onPrimary,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,7 +42,7 @@ import 'package:anymex/screens/novel/home_page.dart';
 import 'package:anymex/widgets/common/lazy_indexed_stack.dart';
 import 'package:anymex/widgets/common/media_mode_selector.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
-import 'package:anymex/utils/function.dart';
+import 'package:anymex/services/fcm_service.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/logger.dart';
@@ -185,6 +186,8 @@ void main(List<String> args) async {
                 options: DefaultFirebaseOptions.currentPlatform,
               ),
           errorMessage: 'Failed to initialize Firebase');
+      await safeCall(() => FcmService.init(),
+          errorMessage: 'Failed to initialize FCM');
     }
 
     if (Platform.isWindows || Platform.isLinux) {
@@ -284,6 +287,7 @@ void _initializeGetxController() async {
     Get.put(StatsTracker());
     Get.lazyPut(() => CacheController());
     Get.lazyPut(() => MediaModeController());
+    Get.lazyPut(() => DownloadSearchController());
   }, errorMessage: 'Failed to register GetX controllers');
 
   await safeCall(() => StorageManagerService().enforceImageCacheLimit(),

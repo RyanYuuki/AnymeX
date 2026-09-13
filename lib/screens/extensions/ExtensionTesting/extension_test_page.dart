@@ -78,7 +78,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
         AnymeXText(
           'Extension Type',
           style: TextStyle(
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
             fontSize: 16,
             color: theme.onSurface,
@@ -144,7 +144,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
           child: AnymeXText(
             label,
             style: TextStyle(
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
               fontWeight: FontWeight.w600,
               fontSize: 14,
               color: isSelected ? theme.primary : theme.onSurface,
@@ -162,7 +162,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
         AnymeXText(
           'Test Type',
           style: TextStyle(
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
             fontSize: 16,
             color: theme.onSurface,
@@ -210,7 +210,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
           child: AnymeXText(
             label,
             style: TextStyle(
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
               fontWeight: FontWeight.w600,
               fontSize: 14,
               color: isSelected ? theme.primary : theme.onSurface,
@@ -228,7 +228,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
         AnymeXText(
           'Search Query',
           style: TextStyle(
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
             fontSize: 16,
             color: theme.onSurface,
@@ -244,7 +244,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
           child: TextField(
             controller: searchController,
             style: TextStyle(
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
               color: theme.onSurface,
             ),
             decoration: InputDecoration(
@@ -252,7 +252,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               fillColor: theme.surfaceContainer.withValues(alpha: 0.2),
               hintText: 'Enter search query',
               hintStyle: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 color: theme.onSurface.withValues(alpha: 0.4),
               ),
               border: InputBorder.none,
@@ -277,7 +277,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
             AnymeXText(
               'Select Extensions',
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
                 color: theme.onSurface,
@@ -296,7 +296,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                 child: AnymeXText(
                   allSelected ? 'Deselect all' : 'Select all',
                   style: TextStyle(
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                     fontSize: 14,
                     color: theme.primary,
                   ),
@@ -320,7 +320,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                   'No extensions installed',
                   style: TextStyle(
                     color: theme.onSurface.withValues(alpha: 0.6),
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                   ),
                 ),
               ),
@@ -357,7 +357,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               child: AnymeXText(
                 source.name ?? 'Unknown',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontSize: 14,
                   color: theme.onSurface,
                 ),
@@ -435,7 +435,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
             child: const AnymeXText(
               'Start Test',
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -466,7 +466,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
                   'No tests running',
                   style: TextStyle(
                     color: theme.onSurface.withValues(alpha: 0.6),
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                     fontSize: 16,
                   ),
                 ),
@@ -482,7 +482,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
           AnymeXText(
             'Test Results',
             style: TextStyle(
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
               fontWeight: FontWeight.bold,
               fontSize: 16,
               color: theme.onSurface,

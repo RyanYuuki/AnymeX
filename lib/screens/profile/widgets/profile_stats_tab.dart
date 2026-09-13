@@ -367,7 +367,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
               color:
                   selected ? c.onPrimary : c.onSurfaceVariant.withOpacity(0.7),
             ),

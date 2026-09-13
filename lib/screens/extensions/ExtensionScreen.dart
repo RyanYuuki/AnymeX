@@ -275,7 +275,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                 hintStyle: TextStyle(
                   color: context.colors.onSurface.withOpacity(0.4),
                   fontSize: 14,
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                 ),
                 prefixIcon: Icon(
                   Icons.search_rounded,
@@ -547,7 +547,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
             AnymeXText(
               label,
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 color: isSelected

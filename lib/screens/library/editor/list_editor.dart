@@ -57,6 +57,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     final theme = Theme.of(context);
 
     return AnymeXScaffold(
+      resizeToAvoidBottomInset: false,
       showHeader: true,
       headerTitle: 'Custom Lists',
       headerSubtitle: '${_lists.length} lists total',

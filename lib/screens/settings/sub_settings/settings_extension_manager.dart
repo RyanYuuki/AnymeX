@@ -261,7 +261,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                             AnymeXText(
                               release.title,
                               style: TextStyle(
-                                fontFamily: 'Poppins',
+                                fontFamily: 'Linotte',
                                 fontSize: 14,
                                 fontWeight: isCurrent
                                     ? FontWeight.bold
@@ -273,7 +273,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                             AnymeXText(
                               release.tagName,
                               style: TextStyle(
-                                fontFamily: 'Poppins',
+                                fontFamily: 'Linotte',
                                 fontSize: 12,
                                 color: theme.colorScheme.onSurface
                                     .withOpacity(0.6),

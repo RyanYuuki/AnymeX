@@ -329,7 +329,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                     AnymeXText('Sort By',
                         style: TextStyle(
                           fontSize: 16,
-                          fontFamily: 'Poppins-Bold',
+                          fontFamily: 'Linotte',
                           fontWeight: FontWeight.bold,
                           color: colors.onSurface,
                         )),
@@ -422,7 +422,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                   AnymeXText('Filter by Genre',
                       style: TextStyle(
                         fontSize: 16,
-                        fontFamily: 'Poppins-Bold',
+                        fontFamily: 'Linotte',
                         fontWeight: FontWeight.bold,
                         color: colors.onSurface,
                       )),

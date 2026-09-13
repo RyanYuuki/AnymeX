@@ -403,7 +403,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                                           const Duration(milliseconds: 200),
                                       style: TextStyle(
                                         fontSize: 13,
-                                        fontFamily: 'Poppins',
+                                        fontFamily: 'Linotte',
                                         fontWeight: selected
                                             ? FontWeight.w700
                                             : FontWeight.w400,

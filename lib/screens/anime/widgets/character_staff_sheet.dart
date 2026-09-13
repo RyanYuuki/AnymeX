@@ -1180,7 +1180,7 @@ class _CharacterStaffSheetContentState
                                   color: theme.primary,
                                   fontSize: 8,
                                   fontWeight: FontWeight.w900,
-                                  fontFamily: 'Poppins',
+                                  fontFamily: 'Linotte',
                                   letterSpacing: 0.5,
                                   shadows: [
                                     Shadow(
@@ -1243,7 +1243,7 @@ class _CharacterStaffSheetContentState
                                   color: Colors.white,
                                   fontSize: 8,
                                   fontWeight: FontWeight.w900,
-                                  fontFamily: 'Poppins',
+                                  fontFamily: 'Linotte',
                                   letterSpacing: 0.5,
                                 ),
                               ),
@@ -1289,7 +1289,7 @@ class _CharacterStaffSheetContentState
             p: TextStyle(
               fontSize: 14,
               color: theme.onSurface.withOpacity(0.8),
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
             ),
             strong: TextStyle(
               fontWeight: FontWeight.bold,
@@ -1316,7 +1316,7 @@ class _CharacterStaffSheetContentState
           p: TextStyle(
             fontSize: 14,
             color: theme.onSurface.withOpacity(0.8),
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
           ),
           strong: TextStyle(
             fontWeight: FontWeight.bold,
@@ -1379,7 +1379,7 @@ class _SpoilerWidgetState extends State<SpoilerWidget> {
                   p: TextStyle(
                     fontSize: 14,
                     color: theme.colorScheme.onSurface.withOpacity(0.8),
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                   ),
                   strong: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -1503,7 +1503,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
                   p: TextStyle(
                     fontSize: 14,
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                   ),
                   blockSpacing: 0,
                 ),

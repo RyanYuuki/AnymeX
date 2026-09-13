@@ -24,10 +24,11 @@ class EpisodeChunkSelector extends StatelessWidget {
         scrollPadding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
         items: List.generate(chunks.length, (index) {
           final label = index == 0
-              ? 'All (${chunks[0].length})'
-              : '${formatEpisodeNumberLabel(chunks[index].first.number)} - ${formatEpisodeNumberLabel(chunks[index].last.number)} (${chunks[index].length})';
+              ? 'All'
+              : '${formatEpisodeNumberLabel(chunks[index].first.number)} - ${formatEpisodeNumberLabel(chunks[index].last.number)}';
           return PillItem(
             label: label,
+            count: chunks[index].length,
             isSelected: selected == index,
             onTap: () => onChunkSelected(index),
           );
@@ -63,7 +64,7 @@ class EpisodeSortKeySelector extends StatelessWidget {
           child: AnymeXText(
             title,
             style: TextStyle(
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
               fontWeight: FontWeight.w700,
               color: Theme.of(context).colorScheme.onSurface,
             ),
