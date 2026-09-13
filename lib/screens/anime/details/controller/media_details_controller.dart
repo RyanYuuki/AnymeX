@@ -579,6 +579,17 @@ class MediaDetailsController extends GetxController {
   }
 
   List<Episode> _renewEpisodeData(List<Episode> episodes) {
+    for (final episode in episodes) {
+      final info = parseEpisodeInfo(episode.number, episode.title);
+      if (info.number.isNotEmpty && info.number != episode.number) {
+        episode.number = info.number;
+      }
+      if (info.season != null && episode.sortMap['season'] == null && episode.sortMap['Season'] == null) {
+        final map = Map<String, String>.from(episode.sortMap);
+        map['season'] = info.season!;
+        episode.headers = map;
+      }
+    }
     if (episodes.any((episode) => episode.sortMap.isNotEmpty)) {
       return episodes;
     }

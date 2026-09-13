@@ -1,8 +1,12 @@
 import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+
+export 'package:anymex/utils/function.dart'
+    show formatEpisodeNumberLabel, parseEpisodeInfo, EpisodeInfo;
 
 class EpisodeChunkSelector extends StatelessWidget {
   final RxInt selectedChunkIndex;
@@ -25,7 +29,7 @@ class EpisodeChunkSelector extends StatelessWidget {
         items: List.generate(chunks.length, (index) {
           final label = index == 0
               ? 'All'
-              : '${formatEpisodeNumberLabel(chunks[index].first.number)} - ${formatEpisodeNumberLabel(chunks[index].last.number)}';
+              : '${formatEpisodeNumberLabel(chunks[index].first.number, title: chunks[index].first.title)} - ${formatEpisodeNumberLabel(chunks[index].last.number, title: chunks[index].last.title)}';
           return PillItem(
             label: label,
             count: chunks[index].length,
@@ -156,19 +160,3 @@ int compareEpisodeSortValues(String first, String second) {
   return first.compareTo(second);
 }
 
-String formatEpisodeNumberLabel(dynamic rawNumber) {
-  if (rawNumber == null) return '';
-  final parsed = double.tryParse(rawNumber.toString().trim());
-  if (parsed == null) return rawNumber.toString();
-
-  if (parsed == parsed.toInt()) {
-    return parsed.toInt().toString();
-  }
-
-  final rounded = double.parse(parsed.toStringAsFixed(2));
-  if (rounded == rounded.toInt()) {
-    return rounded.toInt().toString();
-  }
-
-  return rounded.toString().replaceAll(RegExp(r'\.?0+$'), '');
-}

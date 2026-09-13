@@ -17,6 +17,7 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
@@ -118,7 +119,7 @@ Widget _buildDynamicTabBar({
                                   duration: const Duration(milliseconds: 200),
                                   style: TextStyle(
                                     fontSize: height == 54 ? 13 : 12,
-                                    fontFamily: 'Poppins',
+                                    fontFamily: 'Linotte',
                                     fontWeight: selected
                                         ? FontWeight.w700
                                         : FontWeight.w400,
@@ -1478,130 +1479,120 @@ class _DownloadScreenState extends State<DownloadScreen> {
     final allSources = controller.mediaType.value == 0
         ? sourceController.installedExtensions
         : sourceController.installedMangaExtensions;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: theme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          border: Border.all(color: theme.outline.opaque(0.1), width: 1),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AnymeXText('Search Extensions',
-                      variant: TextVariant.bold,
-                      size: 20,
-                    ),
-                    AnymeXText('${allSources.length} available',
-                      size: 13,
-                      color: theme.onSurface.opaque(0.6),
-                    ),
-                  ],
-                ),
-                TextButton(
-                  onPressed: () {
-                    if (controller.disabledSourceIds.isEmpty) {
-                      controller.disabledSourceIds
-                          .addAll(allSources.map((s) => s.id ?? ''));
-                    } else {
-                      controller.disabledSourceIds.clear();
-                    }
-                  },
-                  child: Obx(() => AnymeXText(controller.disabledSourceIds.isEmpty
-                            ? 'Disable All'
-                            : 'Enable All',
-                        color: theme.primary,
-                        variant: TextVariant.semiBold,
-                      )),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.sizeOf(context).height * 0.6,
-              ),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: allSources.length,
-                itemBuilder: (context, index) {
-                  final source = allSources[index];
-                  final sourceId = source.id ?? '';
-                  return Obx(() {
-                    final isEnabled =
-                        !controller.disabledSourceIds.contains(sourceId);
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      decoration: BoxDecoration(
-                        color: isEnabled
-                            ? theme.primaryContainer.opaque(0.15)
-                            : theme.surfaceContainer.opaque(0.3),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: isEnabled
-                              ? theme.primary.opaque(0.3)
-                              : theme.outline.opaque(0.1),
-                        ),
-                      ),
-                      child: ListTile(
-                        onTap: () => controller.toggleSource(sourceId),
-                        leading: Icon(
-                          Icons.extension_rounded,
-                          color: isEnabled
-                              ? theme.primary
-                              : theme.onSurface.opaque(0.4),
-                        ),
-                        title: AnymeXText(source.name ?? 'Unknown',
-                          variant: TextVariant.semiBold,
-                          color: isEnabled
-                              ? theme.onSurface
-                              : theme.onSurface.opaque(0.5),
-                        ),
-                        trailing: Switch(
-                          value: isEnabled,
-                          activeColor: theme.primary,
-                          onChanged: (_) => controller.toggleSource(sourceId),
-                        ),
-                      ),
-                    );
-                  });
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.primary,
-                  foregroundColor: theme.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+    AnymeXSheet.custom(
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const AnymeXText('Search Extensions',
+                    variant: TextVariant.bold,
+                    size: 20,
                   ),
-                  elevation: 0,
+                  AnymeXText('${allSources.length} available',
+                    size: 13,
+                    color: theme.onSurface.opaque(0.6),
+                  ),
+                ],
+              ),
+              TextButton(
+                onPressed: () {
+                  if (controller.disabledSourceIds.isEmpty) {
+                    controller.disabledSourceIds
+                        .addAll(allSources.map((s) => s.id ?? ''));
+                  } else {
+                    controller.disabledSourceIds.clear();
+                  }
+                },
+                child: Obx(() => AnymeXText(controller.disabledSourceIds.isEmpty
+                          ? 'Disable All'
+                          : 'Enable All',
+                      color: theme.primary,
+                      variant: TextVariant.semiBold,
+                    )),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.6,
+            ),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: allSources.length,
+              itemBuilder: (context, index) {
+                final source = allSources[index];
+                final sourceId = source.id ?? '';
+                return Obx(() {
+                  final isEnabled =
+                      !controller.disabledSourceIds.contains(sourceId);
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: isEnabled
+                          ? theme.primaryContainer.opaque(0.15)
+                          : theme.surfaceContainer.opaque(0.3),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: isEnabled
+                            ? theme.primary.opaque(0.3)
+                            : theme.outline.opaque(0.1),
+                      ),
+                    ),
+                    child: ListTile(
+                      onTap: () => controller.toggleSource(sourceId),
+                      leading: Icon(
+                        Icons.extension_rounded,
+                        color: isEnabled
+                            ? theme.primary
+                            : theme.onSurface.opaque(0.4),
+                      ),
+                      title: AnymeXText(source.name ?? 'Unknown',
+                        variant: TextVariant.semiBold,
+                        color: isEnabled
+                            ? theme.onSurface
+                            : theme.onSurface.opaque(0.5),
+                      ),
+                      trailing: Switch(
+                        value: isEnabled,
+                        activeColor: theme.primary,
+                        onChanged: (_) => controller.toggleSource(sourceId),
+                      ),
+                    ),
+                  );
+                });
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.primary,
+                foregroundColor: theme.onPrimary,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                child: const AnymeXText('Done',
-                  variant: TextVariant.bold,
-                ),
+                elevation: 0,
+              ),
+              child: const AnymeXText('Done',
+                variant: TextVariant.bold,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+      context,
+      showDragHandle: true,
     );
   }
 

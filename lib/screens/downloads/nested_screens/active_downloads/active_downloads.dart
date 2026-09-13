@@ -6,6 +6,7 @@ import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide Video;
@@ -370,70 +371,62 @@ class ActiveDownloads extends StatelessWidget {
     );
     final videoStream = source.methods.getVideoListStream(deEpisode);
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: context.colors.surface,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        if (videoStream != null) {
-          return _ServerSheetStreamBody(
-            stream: videoStream,
-            task: task,
-            onServerSelected: (server) {
-              Get.find<DownloadController>()
-                  .manualSelectServerForTask(task, server);
-              Navigator.pop(context);
-            },
-          );
-        } else {
-          return FutureBuilder<List<Video>>(
-            future: source.methods
-                .getVideoList(deEpisode)
-                .then((list) => list.map((v) => Video.fromVideo(v)).toList()),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return const SizedBox(
+    AnymeXSheet.custom(
+      Builder(
+        builder: (context) {
+          if (videoStream != null) {
+            return _ServerSheetStreamBody(
+              stream: videoStream,
+              task: task,
+              onServerSelected: (server) {
+                Get.find<DownloadController>()
+                    .manualSelectServerForTask(task, server);
+                Navigator.pop(context);
+              },
+            );
+          } else {
+            return FutureBuilder<List<Video>>(
+              future: source.methods
+                  .getVideoList(deEpisode)
+                  .then((list) => list.map((v) => Video.fromVideo(v)).toList()),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const SizedBox(
+                      height: 240,
+                      child: Center(child: CircularProgressIndicator()));
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return SizedBox(
                     height: 240,
-                    child: Center(child: CircularProgressIndicator()));
-              }
-              if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return SizedBox(
-                  height: 240,
-                  child: Center(
-                    child: AnymeXText('No servers found.',
-                        color: context.colors.onSurface.opaque(0.5)),
-                  ),
+                    child: Center(
+                      child: AnymeXText('No servers found.',
+                          color: context.colors.onSurface.opaque(0.5)),
+                    ),
+                  );
+                }
+                return _ServerListBody(
+                  servers: snapshot.data!,
+                  task: task,
+                  onServerSelected: (server) {
+                    Get.find<DownloadController>()
+                        .manualSelectServerForTask(task, server);
+                    Navigator.pop(context);
+                  },
                 );
-              }
-              return _ServerListBody(
-                servers: snapshot.data!,
-                task: task,
-                onServerSelected: (server) {
-                  Get.find<DownloadController>()
-                      .manualSelectServerForTask(task, server);
-                  Navigator.pop(context);
-                },
-              );
-            },
-          );
-        }
-      },
+              },
+            );
+          }
+        },
+      ),
+      context,
+      showDragHandle: true,
     );
   }
 
   void _showServerSheet(
       BuildContext context, ActiveDownloadTask task, List<Video> servers) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: context.colors.surface,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => _ServerListBody(
+    AnymeXSheet.custom(
+      _ServerListBody(
         servers: servers,
         task: task,
         onServerSelected: (server) {
@@ -441,6 +434,8 @@ class ActiveDownloads extends StatelessWidget {
           Navigator.pop(context);
         },
       ),
+      context,
+      showDragHandle: true,
     );
   }
 }
@@ -515,29 +510,20 @@ class _ServerListBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.5,
-      minChildSize: 0.3,
-      maxChildSize: 0.9,
-      builder: (_, controller) => Column(
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.7,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 8),
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: theme.onSurface.opaque(0.2),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 14),
             child: AnymeXText('Select Server', variant: TextVariant.bold, size: 18),
           ),
-          Expanded(
+          Flexible(
             child: ListView.builder(
-              controller: controller,
+              shrinkWrap: true,
               itemCount: servers.length,
               itemBuilder: (context, index) {
                 final server = servers[index];
@@ -553,7 +539,7 @@ class _ServerListBody extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
         ],
       ),
     );
@@ -599,22 +585,13 @@ class _ServerSheetStreamBodyState extends State<_ServerSheetStreamBody> {
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.5,
-      minChildSize: 0.3,
-      maxChildSize: 0.9,
-      builder: (_, controller) => Column(
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.7,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 8),
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: theme.onSurface.opaque(0.2),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Row(
@@ -636,19 +613,22 @@ class _ServerSheetStreamBodyState extends State<_ServerSheetStreamBody> {
             ),
           ),
           if (_servers.isEmpty && !_done)
-            const Expanded(
-                child: Center(child: CircularProgressIndicator()))
+            const SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator()),
+            )
           else if (_servers.isEmpty && _done)
-            Expanded(
+            SizedBox(
+              height: 180,
               child: Center(
                 child: AnymeXText('No servers found.',
                     color: theme.onSurface.opaque(0.5)),
               ),
             )
           else
-            Expanded(
+            Flexible(
               child: ListView.builder(
-                controller: controller,
+                shrinkWrap: true,
                 itemCount: _servers.length,
                 itemBuilder: (context, index) {
                   final server = _servers[index];
@@ -664,7 +644,7 @@ class _ServerSheetStreamBodyState extends State<_ServerSheetStreamBody> {
                 },
               ),
             ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
         ],
       ),
     );

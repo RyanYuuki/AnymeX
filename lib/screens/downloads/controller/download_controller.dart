@@ -29,6 +29,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:anymex/utils/background_service_handler.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 class DownloadController extends GetxController {
   final RxList<ActiveDownloadTask> activeTasks = <ActiveDownloadTask>[].obs;
@@ -70,6 +71,9 @@ class DownloadController extends GetxController {
     String epNumber,
     Map<String, String> sortMap,
   ) {
+    if (isEpisodeDownloaded(ext, title, epNumber, sortMap)) {
+      return const DownloadItemState(status: DownloadItemStatus.downloaded);
+    }
     final active = getActiveEpisodeTask(
       ext: ext,
       title: title,
@@ -84,14 +88,19 @@ class DownloadController extends GetxController {
           taskId: active.taskId,
         );
       }
+      if (active.status == DownloadStatus.failed) {
+        return DownloadItemState(
+          status: DownloadItemStatus.failed,
+          progress: active.progress,
+          taskId: active.taskId,
+          errorMessage: active.errorMessage,
+        );
+      }
       return DownloadItemState(
         status: DownloadItemStatus.queued,
         progress: active.progress,
         taskId: active.taskId,
       );
-    }
-    if (isEpisodeDownloaded(ext, title, epNumber, sortMap)) {
-      return const DownloadItemState(status: DownloadItemStatus.downloaded);
     }
     return const DownloadItemState(status: DownloadItemStatus.notDownloaded);
   }
@@ -101,6 +110,9 @@ class DownloadController extends GetxController {
     String title,
     double? chapterNum,
   ) {
+    if (isChapterDownloaded(ext, title, chapterNum)) {
+      return const DownloadItemState(status: DownloadItemStatus.downloaded);
+    }
     final active = getActiveMangaTask(
       ext: ext,
       title: title,
@@ -114,14 +126,19 @@ class DownloadController extends GetxController {
           taskId: active.taskId,
         );
       }
+      if (active.status == MangaDownloadStatus.failed) {
+        return DownloadItemState(
+          status: DownloadItemStatus.failed,
+          progress: active.progress,
+          taskId: active.taskId,
+          errorMessage: active.errorMessage,
+        );
+      }
       return DownloadItemState(
         status: DownloadItemStatus.queued,
         progress: active.progress,
         taskId: active.taskId,
       );
-    }
-    if (isChapterDownloaded(ext, title, chapterNum)) {
-      return const DownloadItemState(status: DownloadItemStatus.downloaded);
     }
     return const DownloadItemState(status: DownloadItemStatus.notDownloaded);
   }
@@ -166,8 +183,7 @@ class DownloadController extends GetxController {
           t.episode.number == epNumber &&
           _mapsEqual(t.episode.sortMap, sortMap) &&
           t.status != DownloadStatus.completed &&
-          t.status != DownloadStatus.cancelled &&
-          t.status != DownloadStatus.failed,
+          t.status != DownloadStatus.cancelled,
     );
   }
 
@@ -184,8 +200,7 @@ class DownloadController extends GetxController {
           t.extensionName.toLowerCase() == sExt.toLowerCase() &&
           t.chapter.number == chapterNum &&
           t.status != MangaDownloadStatus.completed &&
-          t.status != MangaDownloadStatus.cancelled &&
-          t.status != MangaDownloadStatus.failed,
+          t.status != MangaDownloadStatus.cancelled,
     );
   }
 
@@ -630,6 +645,13 @@ class DownloadController extends GetxController {
     List<hive.Track>? videoSubtitles,
     required OfflineMedia media,
   }) {
+    activeTasks.removeWhere((t) =>
+        t.mediaTitle.toLowerCase() == sanitizedTitle.toLowerCase() &&
+        t.extensionName.toLowerCase() == sanitizedExt.toLowerCase() &&
+        t.episode.number == episode.number &&
+        _mapsEqual(t.episode.sortMap, episode.sortMap) &&
+        t.status == DownloadStatus.failed);
+
     final taskId = MediaDownloader.buildTaskId(
       extensionName: sanitizedExt,
       mediaTitle: sanitizedTitle,
@@ -923,6 +945,12 @@ class DownloadController extends GetxController {
     required String sanitizedExt,
     required OfflineMedia media,
   }) {
+    activeMangaTasks.removeWhere((t) =>
+        t.mediaTitle.toLowerCase() == sanitizedTitle.toLowerCase() &&
+        t.extensionName.toLowerCase() == sanitizedExt.toLowerCase() &&
+        t.chapter.number == chapter.number &&
+        t.status == MangaDownloadStatus.failed);
+
     final chapterNum = chapter.number?.toString() ?? '0';
     final taskId =
         'manga_${sanitizedExt}_${sanitizedTitle}_ch${chapterNum}_${DateTime.now().millisecondsSinceEpoch % 100000}_${Random().nextInt(9999)}';
@@ -965,6 +993,7 @@ class DownloadController extends GetxController {
       if (chapterUrl == null || chapterUrl.isEmpty) {
         task.status = MangaDownloadStatus.failed;
         task.errorMessage = 'Chapter has no URL';
+        snackBar('Download failed: ${task.chapterDisplay} has no URL');
         activeMangaTasks.refresh();
         return;
       }
@@ -976,6 +1005,7 @@ class DownloadController extends GetxController {
       if (pages.isEmpty) {
         task.status = MangaDownloadStatus.failed;
         task.errorMessage = 'No pages found for this chapter';
+        snackBar('Download failed: No pages found for ${task.chapterDisplay}');
         activeMangaTasks.refresh();
         return;
       }
@@ -1030,6 +1060,7 @@ class DownloadController extends GetxController {
     } catch (e) {
       task.status = MangaDownloadStatus.failed;
       task.errorMessage = e.toString();
+      snackBar('Download failed: ${task.chapterDisplay}');
     } finally {
       activeMangaTasks.refresh();
       _saveMangaActiveTasks();

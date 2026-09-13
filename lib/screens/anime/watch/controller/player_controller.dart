@@ -1689,6 +1689,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (previousTrack == null) {
+      final savedAnime = offlineStorage.getAnimeById(anilistData.id);
+      final prevTrack = savedAnime?.currentEpisode?.currentTrack ??
+          savedAnime?.watchedEpisodes?.lastOrNull?.currentTrack;
+      if (prevTrack != null && prevTrack.isDub) {
+        final dubTrack = tracks.firstWhereOrNull((t) => t.isDub);
+        if (dubTrack != null) return dubTrack;
+      }
       return tracks.first;
     }
 
