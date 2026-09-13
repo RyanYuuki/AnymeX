@@ -87,6 +87,8 @@ enum ThemeKeys {
   customColorIndex,
   logoAnimationType,
   customHexColor,
+  customLogos,
+  selectedCustomLogoId,
 }
 
 enum PlayerKeys { useLibass, useMediaKit, useExternalPlayer, audioChannelLayout }
