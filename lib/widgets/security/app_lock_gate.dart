@@ -104,7 +104,7 @@ class _AppLockOverlayView extends StatefulWidget {
 }
 
 class _AppLockOverlayViewState extends State<_AppLockOverlayView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final FocusNode _focusNode = FocusNode();
   String _enteredPin = '';
   bool _isError = false;
@@ -117,10 +117,12 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
   double _longPressProgress = 0.0;
   bool _longPressTriggered = false;
   bool _showEmergencyResetOverlay = false;
+  bool _hasAutoPromptedBiometrics = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _shakeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
@@ -139,26 +141,56 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _focusNode.requestFocus();
-        final controller = Get.find<AppLockController>();
-        if (controller.biometricsEnabled.value &&
-            controller.isBiometricsSupported.value &&
-            controller.cooldownSecondsRemaining.value == 0) {
-          Future.delayed(const Duration(milliseconds: 200), () {
-            if (mounted && controller.isLocked.value) {
-              controller.unlockWithBiometrics();
-            }
-          });
-        }
+        _attemptAutoBiometrics();
       }
     });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _longPressTimer?.cancel();
     _focusNode.dispose();
     _shakeController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final controller = Get.find<AppLockController>();
+    if (controller.isAuthenticating) return;
+
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      _hasAutoPromptedBiometrics = false;
+    } else if (state == AppLifecycleState.resumed) {
+      if (mounted && controller.isLocked.value && !_hasAutoPromptedBiometrics) {
+        _attemptAutoBiometrics();
+      }
+    }
+  }
+
+  Future<void> _attemptAutoBiometrics() async {
+    if (_hasAutoPromptedBiometrics) return;
+    final controller = Get.find<AppLockController>();
+    if (!controller.isLocked.value || !controller.biometricsEnabled.value) return;
+    if (controller.cooldownSecondsRemaining.value > 0) return;
+
+    if (!controller.isBiometricsSupported.value) {
+      await controller.checkBiometricSupport();
+    }
+
+    if (!mounted ||
+        _hasAutoPromptedBiometrics ||
+        !controller.isLocked.value ||
+        !controller.biometricsEnabled.value ||
+        !controller.isBiometricsSupported.value ||
+        controller.cooldownSecondsRemaining.value > 0) {
+      return;
+    }
+
+    _hasAutoPromptedBiometrics = true;
+    await controller.unlockWithBiometrics();
   }
 
   int get _requiredPinLength {
@@ -632,33 +664,16 @@ class _AppLockOverlayViewState extends State<_AppLockOverlayView>
                                 ),
                               ),
                             ),
-                          ],
-                          if (controller.allowEmergencyReset.value) ...[
-                            const SizedBox(height: 16),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _showEmergencyResetOverlay = true;
-                                });
-                              },
-                              style: TextButton.styleFrom(
-                                foregroundColor:
-                                    colors.onSurfaceVariant.withOpacity(0.8),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
+                            if (controller.biometricsEnabled.value &&
+                                controller.isBiometricsSupported.value) ...[
+                              const SizedBox(height: 16),
+                              _buildIconButton(
+                                context,
+                                icon: Icons.fingerprint_rounded,
+                                tooltip: 'Unlock with Biometrics',
+                                onTap: () => controller.unlockWithBiometrics(),
                               ),
-                              child: AnymeXText(
-                                isPattern
-                                    ? 'Forgot Pattern?'
-                                    : 'Forgot PIN / Passcode?',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  color:
-                                      colors.onSurfaceVariant.withOpacity(0.8),
-                                ),
-                              ),
-                            ),
+                            ],
                           ],
                         ],
                       ),

@@ -44,12 +44,14 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     return sha256.convert(bytes).toString();
   }
 
+  bool get isAuthenticating => _isAuthenticating;
+
   @override
   void onInit() {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     _loadSettings();
-    _checkBiometricSupport();
+    checkBiometricSupport();
   }
 
   @override
@@ -103,7 +105,7 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _checkBiometricSupport() async {
+  Future<void> checkBiometricSupport() async {
     try {
       final isSupported = await _localAuth.isDeviceSupported();
       final canCheck = await _localAuth.canCheckBiometrics;
@@ -344,17 +346,6 @@ class AppLockController extends GetxController with WidgetsBindingObserver {
             isLocked.value = true;
           }
         }
-      }
-
-      if (isLocked.value &&
-          biometricsEnabled.value &&
-          isBiometricsSupported.value &&
-          cooldownSecondsRemaining.value == 0) {
-        Future.delayed(const Duration(milliseconds: 300), () {
-          if (isLocked.value && !_isAuthenticating && cooldownSecondsRemaining.value == 0) {
-            unlockWithBiometrics();
-          }
-        });
       }
     }
   }

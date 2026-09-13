@@ -1098,7 +1098,7 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
                         icon: Icons.restore_rounded,
                         title: 'Allow Emergency Reset',
                         subtitle:
-                            'Enable "Forgot Passcode" and secret 5s hold bypass',
+                            'Enable secret 5s hold bypass to safely reset lock',
                         trailing: Switch(
                           value: _controller.allowEmergencyReset.value,
                           onChanged: (val) {
@@ -1118,10 +1118,10 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
                           )
                         else
                           AnymeXTile(
-                            icon: Icons.dialpad_rounded,
+                            icon: Icons.pin_drop_rounded,
                             title: 'Secret Emergency Key',
                             subtitle:
-                                'Key: "${_controller.secretPinDigit.value}"',
+                                'Key ${_controller.secretPinDigit.value} (press & hold for 5s)',
                             onTap: _showSecretPinDigitPicker,
                           ),
                         Container(
@@ -1129,11 +1129,11 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
                               horizontal: 16, vertical: 8),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: context.colors.surfaceContainerHighest
-                                .withOpacity(0.3),
+                            color: context.colors.primary.withOpacity(0.08),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: context.colors.outline.withOpacity(0.15),
+                              color: context.colors.primary.withOpacity(0.18),
+                              width: 1,
                             ),
                           ),
                           child: Row(
@@ -1149,8 +1149,8 @@ class _SettingsAppLockState extends State<SettingsAppLock> {
                                 child: AnymeXText(
                                   _controller.lockType.value ==
                                           AppLockType.pattern
-                                      ? 'If forgotten, tap "Forgot Pattern?" or press & hold ${_getPatternDotName(_controller.secretPatternDot.value)} for 5s to safely reset. Your downloads, library, and account logins will be preserved.'
-                                      : 'If forgotten, tap "Forgot PIN?" or press & hold "${_controller.secretPinDigit.value}" for 5s to safely reset. Your downloads, library, and account logins will be preserved.',
+                                      ? 'If forgotten, press & hold ${_getPatternDotName(_controller.secretPatternDot.value)} for 5s to safely reset. Your downloads, library, and account logins will be preserved.'
+                                      : 'If forgotten, press & hold "${_controller.secretPinDigit.value}" for 5s to safely reset. Your downloads, library, and account logins will be preserved.',
                                   style: TextStyle(
                                     fontSize: 11,
                                     height: 1.4,
