@@ -347,7 +347,9 @@ class ExternalFontLoader {
       if (await localFile.exists()) {
         fontData = await localFile.readAsBytes();
       } else {
-        final response = await http.get(Uri.parse('$baseUrl$fontName'));
+        final response = await http
+            .get(Uri.parse('$baseUrl$fontName'))
+            .timeout(const Duration(seconds: 5));
         if (response.statusCode == 200) {
           fontData = response.bodyBytes;
           await localFile.parent.create(recursive: true);

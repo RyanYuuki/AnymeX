@@ -287,6 +287,53 @@ Episode DEpisodeToEpisode(DEpisode chapter) {
   );
 }
 
+int? extractSeason(Episode? episode) {
+  if (episode == null) return null;
+  final sortMap = episode.sortMap;
+  for (final entry in sortMap.entries) {
+    if (entry.key.toLowerCase().contains('season')) {
+      final match = RegExp(r'\d+').firstMatch(entry.value);
+      if (match != null) {
+        final parsed = int.tryParse(match.group(0)!);
+        if (parsed != null && parsed > 0) return parsed;
+      }
+      final keyMatch = RegExp(r'\d+').firstMatch(entry.key);
+      if (keyMatch != null) {
+        final parsed = int.tryParse(keyMatch.group(0)!);
+        if (parsed != null && parsed > 0) return parsed;
+      }
+    }
+  }
+  for (final key in episode.sortKeys ?? <String>[]) {
+    if (key.toLowerCase().contains('season') ||
+        RegExp(r'\bs\d+\b', caseSensitive: false).hasMatch(key)) {
+      final match = RegExp(r'\d+').firstMatch(key);
+      if (match != null) {
+        final parsed = int.tryParse(match.group(0)!);
+        if (parsed != null && parsed > 0) return parsed;
+      }
+    }
+  }
+  for (final val in episode.sortVals ?? <String>[]) {
+    if (val.toLowerCase().contains('season')) {
+      final match = RegExp(r'\d+').firstMatch(val);
+      if (match != null) {
+        final parsed = int.tryParse(match.group(0)!);
+        if (parsed != null && parsed > 0) return parsed;
+      }
+    }
+  }
+  if (episode.title != null && episode.title!.isNotEmpty) {
+    final match = RegExp(r'(?:s|season)\s*(\d+)', caseSensitive: false)
+        .firstMatch(episode.title!);
+    if (match != null) {
+      final parsed = int.tryParse(match.group(1)!);
+      if (parsed != null && parsed > 0) return parsed;
+    }
+  }
+  return null;
+}
+
 String calcTime(String timestamp, {String format = "dd-MM-yyyy"}) {
   if (timestamp.trim().isEmpty) return "";
 
