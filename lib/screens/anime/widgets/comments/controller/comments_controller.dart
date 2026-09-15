@@ -282,13 +282,20 @@ class CommentSectionController extends GetxController
   }
 
   static String formatCommentMedia(String text) {
+    // NOTE: Dart RegExp does NOT support lookbehind (?<!...) — it throws
+    // FormatException at construction time, which made every comment/reply
+    // fail before the request was even sent. The "don't double-wrap URLs
+    // that are already inside src=..." check is done in the callback below.
     final imgUrlPattern = RegExp(
-      r'(?<!src=["''])(https?:\/\/[^\s<>"{}|\\^`\[\]]+\.(?:png|jpg|jpeg|gif|webp|webm)(?:\?[^\s<>"{}|\\^`\[\]]*)?|https?:\/\/(?:media\.)?(?:tenor|giphy)\.com\/[^\s<>"{}|\\^`\[\]]+)',
+      r'''(https?:\/\/[^\s<>"{}|\\^`\[\]]+\.(?:png|jpg|jpeg|gif|webp|webm)(?:\?[^\s<>"{}|\\^`\[\]]*)?|https?:\/\/(?:media\.)?(?:tenor|giphy)\.com\/[^\s<>"{}|\\^`\[\]]+)''',
       caseSensitive: false,
     );
 
     return text.replaceAllMapped(imgUrlPattern, (match) {
       final url = match.group(0)!;
+      final before = text.substring(0, match.start);
+      final alreadyInTag = before.endsWith('src="') || before.endsWith("src='");
+      if (alreadyInTag) return url;
       return '<img src="$url" width="auto" height="auto">';
     });
   }
