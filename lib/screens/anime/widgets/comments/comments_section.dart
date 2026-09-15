@@ -1371,19 +1371,6 @@ class _CommentSectionState extends State<CommentSection> {
                     Icon(Icons.lock_rounded,
                         size: 11, color: colorScheme.error),
                   ],
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => _showCommentContextMenu(
-                        context, reply, controller, isOwnComment, canModerate),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Icon(
-                        Icons.more_horiz_rounded,
-                        size: 16,
-                        color: colorScheme.onSurfaceVariant.opaque(0.6),
-                      ),
-                    ),
-                  ),
                 ],
               ),
               if (reply.tag.isNotEmpty && reply.tag != 'General')
@@ -1448,6 +1435,21 @@ class _CommentSectionState extends State<CommentSection> {
                           isActive: reply.userVote == -1,
                           onTap: () => controller.handleVote(reply, -1),
                           colorScheme: colorScheme,
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () => _showCommentContextMenu(
+                              context, reply, controller, isOwnComment,
+                              canModerate),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 4),
+                            child: Icon(
+                              Icons.more_horiz_rounded,
+                              size: 14,
+                              color: colorScheme.onSurfaceVariant.opaque(0.6),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -1694,19 +1696,6 @@ class _CommentSectionState extends State<CommentSection> {
                     Icon(Icons.lock_rounded,
                         size: 12, color: colorScheme.error),
                   ],
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () => _showCommentContextMenu(
-                        context, comment, controller, isOwnComment, canModerate),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Icon(
-                        Icons.more_horiz_rounded,
-                        size: 18,
-                        color: colorScheme.onSurfaceVariant.opaque(0.6),
-                      ),
-                    ),
-                  ),
                 ],
               ),
               if (comment.tag.isNotEmpty && comment.tag != 'General')
@@ -1790,6 +1779,21 @@ class _CommentSectionState extends State<CommentSection> {
                           isActive: comment.userVote == -1,
                           onTap: () => controller.handleVote(comment, -1),
                           colorScheme: colorScheme,
+                        ),
+                        const SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () => _showCommentContextMenu(
+                              context, comment, controller, isOwnComment,
+                              canModerate),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 4, vertical: 4),
+                            child: Icon(
+                              Icons.more_horiz_rounded,
+                              size: 16,
+                              color: colorScheme.onSurfaceVariant.opaque(0.6),
+                            ),
+                          ),
                         ),
                       ],
                     ),
