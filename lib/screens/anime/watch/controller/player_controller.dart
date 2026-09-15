@@ -38,6 +38,7 @@ import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/color_profiler.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/sub_parser.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
@@ -2814,13 +2815,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
         if (newProgress <= 0) return;
 
+        final detectedSeason = extractSeason(currentEpisode.value);
         await trackCtrl.pushProgress(mediaId, newProgress,
             isAnime: true,
             status: hasCrossedLimit && !hasNextEpisode
                 ? 'COMPLETED'
-                : null);
+                : null,
+            season: detectedSeason);
         Logger.i(
-            'Extension tracking completed for episode $currEpisodeNum, progress: $newProgress');
+            'Extension tracking completed for episode $currEpisodeNum (season $detectedSeason), progress: $newProgress');
       } catch (e) {
         Logger.i('Failed to track extension media: $e');
       }
@@ -2846,10 +2849,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
+      final detectedSeason = extractSeason(currentEpisode.value);
       await service.updateListEntry(UpdateListEntryParams(
           listId: anilistData.id,
           progress: newProgress,
           isAnime: true,
+          season: detectedSeason,
           status: hasCrossedLimit &&
                   anilistData.status == 'COMPLETED' &&
                   !hasNextEpisode
