@@ -38,6 +38,13 @@ class CommentSectionController extends GetxController
   final RxBool isInputExpanded = false.obs;
   final RxBool isRefreshing = false.obs;
 
+  final RxInt currentPage = 1.obs;
+  final RxInt totalPages = 1.obs;
+  final RxInt totalCommentsCount = 0.obs;
+  final RxBool hasMore = false.obs;
+  final RxBool isLoadingMore = false.obs;
+  final List<Comment> _rawCommentsPool = [];
+
   final RxSet<String> votingComments = <String>{}.obs;
   final RxString currentSort = 'newest'.obs;
   final RxString replyingToCommentId = ''.obs;
@@ -129,17 +136,73 @@ class CommentSectionController extends GetxController
     if (media.uniqueId.isEmpty) return;
 
     isLoading.value = true;
+    currentPage.value = 1;
+    _rawCommentsPool.clear();
+
     try {
-      final fetchedComments = await commentsDB.fetchComments(media.uniqueId,
+      final pageResult = await commentsDB.fetchCommentsPageResult(
+        media.uniqueId,
+        sort: currentSort.value,
+        page: 1,
+        limit: 50,
+      );
+
+      _rawCommentsPool.addAll(pageResult.comments);
+      currentPage.value = pageResult.page;
+      totalPages.value = pageResult.totalPages;
+      totalCommentsCount.value = pageResult.total;
+      hasMore.value = pageResult.hasMore;
+
+      final organized = commentsDB.organizeComments(_rawCommentsPool,
           sort: currentSort.value);
-      comments.assignAll(fetchedComments);
-      print(
-          'Loaded ${fetchedComments.length} comments for media: $media.uniqueId');
+      comments.assignAll(organized);
     } catch (e) {
       print('Error loading comments: $e');
       snackBar('Failed to load comments. Please try again.');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreComments() async {
+    if (media.uniqueId.isEmpty ||
+        isLoading.value ||
+        isLoadingMore.value ||
+        !hasMore.value) {
+      return;
+    }
+
+    isLoadingMore.value = true;
+    final nextPage = currentPage.value + 1;
+
+    try {
+      final pageResult = await commentsDB.commentumService.fetchCommentsPage(
+        media.uniqueId,
+        page: nextPage,
+        limit: 50,
+        sort: currentSort.value,
+      );
+
+      currentPage.value = pageResult.page;
+      totalPages.value = pageResult.totalPages;
+      totalCommentsCount.value = pageResult.total;
+      hasMore.value = pageResult.hasMore;
+
+      final existingIds = _rawCommentsPool.map((c) => c.id).toSet();
+      for (final comment in pageResult.comments) {
+        if (!existingIds.contains(comment.id)) {
+          _rawCommentsPool.add(comment);
+          existingIds.add(comment.id);
+        }
+      }
+
+      final organized = commentsDB.organizeComments(_rawCommentsPool,
+          sort: currentSort.value);
+      comments.assignAll(organized);
+    } catch (e) {
+      print('Error loading more comments: $e');
+    } finally {
+      isLoadingMore.value = false;
     }
   }
 
@@ -153,17 +216,29 @@ class CommentSectionController extends GetxController
     try {
       await _checkUserRole();
 
-      final fetchedComments = await commentsDB.fetchComments(media.uniqueId,
-          sort: currentSort.value);
+      currentPage.value = 1;
+      _rawCommentsPool.clear();
 
-      comments.assignAll(fetchedComments);
+      final pageResult = await commentsDB.fetchCommentsPageResult(
+        media.uniqueId,
+        sort: currentSort.value,
+        page: 1,
+        limit: 50,
+      );
+
+      _rawCommentsPool.addAll(pageResult.comments);
+      currentPage.value = pageResult.page;
+      totalPages.value = pageResult.totalPages;
+      totalCommentsCount.value = pageResult.total;
+      hasMore.value = pageResult.hasMore;
+
+      final organized = commentsDB.organizeComments(_rawCommentsPool,
+          sort: currentSort.value);
+      comments.assignAll(organized);
 
       if (!silent) {
-        final commentCount = fetchedComments.length;
-        snackBar('$commentCount comments loaded');
+        snackBar('${totalCommentsCount.value} comments loaded');
       }
-      print(
-          'Refreshed ${fetchedComments.length} comments for media: $media.uniqueId');
     } catch (e) {
       print('Error refreshing comments: $e');
       if (!silent) {
@@ -180,10 +255,22 @@ class CommentSectionController extends GetxController
     if (media.uniqueId.isEmpty) return;
 
     try {
-      final fetchedComments = await commentsDB.fetchComments(media.uniqueId,
+      final pageResult = await commentsDB.fetchCommentsPageResult(
+        media.uniqueId,
+        sort: currentSort.value,
+        page: 1,
+        limit: (currentPage.value * 50).clamp(50, 200),
+      );
+
+      _rawCommentsPool.clear();
+      _rawCommentsPool.addAll(pageResult.comments);
+      totalCommentsCount.value = pageResult.total;
+      totalPages.value = pageResult.totalPages;
+      hasMore.value = pageResult.hasMore;
+
+      final organized = commentsDB.organizeComments(_rawCommentsPool,
           sort: currentSort.value);
-      comments.assignAll(fetchedComments);
-      print('Background refreshed ${fetchedComments.length} comments');
+      comments.assignAll(organized);
     } catch (e) {
       print('Error in background refresh: $e');
     }
@@ -192,6 +279,18 @@ class CommentSectionController extends GetxController
   Future<void> forceRefresh() async {
     await _checkUserRole();
     await refreshComments(silent: false);
+  }
+
+  static String formatCommentMedia(String text) {
+    final imgUrlPattern = RegExp(
+      r'(?<!src=["''])(https?:\/\/[^\s<>"{}|\\^`\[\]]+\.(?:png|jpg|jpeg|gif|webp|webm)(?:\?[^\s<>"{}|\\^`\[\]]*)?|https?:\/\/(?:media\.)?(?:tenor|giphy)\.com\/[^\s<>"{}|\\^`\[\]]+)',
+      caseSensitive: false,
+    );
+
+    return text.replaceAllMapped(imgUrlPattern, (match) {
+      final url = match.group(0)!;
+      return '<img src="$url" width="auto" height="auto">';
+    });
   }
 
   Future<void> addReply(Comment parentComment, String replyContent) async {
@@ -205,8 +304,9 @@ class CommentSectionController extends GetxController
         return;
       }
 
+      final formattedReply = formatCommentMedia(replyContent.trim());
       final newComment = await commentsDB.addComment(
-        comment: replyContent.trim(),
+        comment: formattedReply,
         mediaId: media.uniqueId,
         media: media,
         tag: tagController.value.text.trim(),
@@ -233,8 +333,9 @@ class CommentSectionController extends GetxController
 
     isSubmitting.value = true;
     try {
+      final formattedComment = formatCommentMedia(commentController.text.trim());
       final newComment = await commentsDB.addComment(
-        comment: commentController.text.trim(),
+        comment: formattedComment,
         mediaId: media.uniqueId,
         media: media,
         tag: tagController.value.text.trim(),

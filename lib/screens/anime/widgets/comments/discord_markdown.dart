@@ -35,35 +35,89 @@ class DiscordMarkdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final lines = text.split('\n');
 
-    // Collect image URLs that should render as thumbnails below text.
-    final imageUrls = <String>[];
-    for (final line in lines) {
-      imageUrls.addAll(_extractImageUrls(line));
+    final collectedImages = <CommentMediaImage>[];
+    final processedLines = <String>[];
+
+    for (final rawLine in lines) {
+      String line = rawLine;
+
+      // 1. Extract markdown linked images [![alt](img_url)](target_url)
+      line = line.replaceAllMapped(_linkedMarkdownImgPattern, (match) {
+        final url = match.group(1);
+        if (url != null && url.isNotEmpty) {
+          collectedImages.add(CommentMediaImage(url: url));
+        }
+        return '';
+      });
+
+      // 2. Extract standard markdown images ![alt](url)
+      line = line.replaceAllMapped(_markdownImgPattern, (match) {
+        final url = match.group(1);
+        if (url != null && url.isNotEmpty) {
+          collectedImages.add(CommentMediaImage(url: url));
+        }
+        return '';
+      });
+
+      // 3. Extract <img ...> tags (including <img src=""..."" width=""auto"" height=""auto"">)
+      line = line.replaceAllMapped(_imgTagPattern, (match) {
+        final img = _parseImgTag(match.group(1) ?? '');
+        if (img != null) {
+          collectedImages.add(img);
+        }
+        return '';
+      });
+
+      // Strip enclosing <a> and </a> tags that wrapped images
+      line = line.replaceAll(_htmlAnchorPattern, '');
+
+      // 4. Extract standalone image URLs
+      for (final match in _rawUrlPattern.allMatches(line)) {
+        final u = match.group(1)!;
+        if (_isImageUrl(u) && !collectedImages.any((img) => img.url == u)) {
+          collectedImages.add(CommentMediaImage(url: u));
+        }
+      }
+
+      // Strip extracted image URLs from line text so raw links don't clutter comments
+      line = line.replaceAllMapped(_rawUrlPattern, (match) {
+        final u = match.group(1)!;
+        if (_isImageUrl(u)) {
+          return '';
+        }
+        return u;
+      });
+
+      // Clean trailing artifact quotes if tag had double quotes like ">"
+      line = line.replaceAll(RegExp(r'["'']?>\s*$'), '');
+
+      processedLines.add(line);
     }
 
-    final nonEmptyLines = lines.where((l) => l.trim().isNotEmpty).toList();
+    final hasTextContent = processedLines.any((l) => l.trim().isNotEmpty);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (nonEmptyLines.isEmpty)
-          const SizedBox.shrink()
-        else
-          ...nonEmptyLines.map((line) {
+        if (hasTextContent)
+          ...processedLines.map((line) {
+            if (line.trim().isEmpty) {
+              return const SizedBox(height: 6);
+            }
             if (line.trimLeft().startsWith('>')) {
               return _buildBlockquote(line, context);
             }
             return _buildInlineText(line, context);
           }),
-        if (imageUrls.isNotEmpty) ...[
-          const SizedBox(height: 8),
+        if (collectedImages.isNotEmpty) ...[
+          if (hasTextContent) const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: imageUrls
-                .map((url) => _ImageThumbnail(
-                      url: url,
+            children: collectedImages
+                .map((img) => _ImageThumbnail(
+                      image: img,
                       colorScheme: colorScheme,
                     ))
                 .toList(),
@@ -101,6 +155,7 @@ class DiscordMarkdown extends StatelessWidget {
           ),
         ),
         child: RichText(
+          softWrap: true,
           text: TextSpan(
             style: baseStyle.copyWith(
               color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
@@ -116,6 +171,7 @@ class DiscordMarkdown extends StatelessWidget {
   Widget _buildInlineText(String line, BuildContext context) {
     final spans = _parseInlineSpans(line, context);
     return RichText(
+      softWrap: true,
       text: TextSpan(
         style: baseStyle.copyWith(
           color: colorScheme.onSurface,
@@ -293,6 +349,28 @@ class DiscordMarkdown extends StatelessWidget {
   // Helpers
   // ---------------------------------------------------------------------------
 
+  static final RegExp _linkedMarkdownImgPattern = RegExp(
+    r'\[!\[.*?\]\((https?:\/\/[^\s\)]+)\)\]\((https?:\/\/[^\s\)]+)\)',
+  );
+
+  static final RegExp _markdownImgPattern = RegExp(
+    r'!\[.*?\]\((https?:\/\/[^\s\)]+)\)',
+  );
+
+  static final RegExp _imgTagPattern = RegExp(
+    r'<img\s+([^>]+)>["'']?',
+    caseSensitive: false,
+  );
+
+  static final RegExp _htmlAnchorPattern = RegExp(
+    r'<\/?a(?:\s+[^>]*)?>',
+    caseSensitive: false,
+  );
+
+  static final RegExp _rawUrlPattern = RegExp(
+    r'(https?:\/\/[^\s<>"{}|\\^`\[\]]+)',
+  );
+
   static bool _isImageUrl(String url) {
     final lower = url.toLowerCase();
     return lower.endsWith('.png') ||
@@ -301,21 +379,68 @@ class DiscordMarkdown extends StatelessWidget {
         lower.endsWith('.gif') ||
         lower.endsWith('.webp') ||
         lower.endsWith('.webm') ||
+        lower.contains('.png?') ||
+        lower.contains('.jpg?') ||
+        lower.contains('.jpeg?') ||
+        lower.contains('.gif?') ||
+        lower.contains('.webp?') ||
         lower.contains('giphy.com') ||
         lower.contains('tenor.com') ||
         lower.contains('media.tenor.co') ||
-        lower.contains('media.giphy.com');
+        lower.contains('media.giphy.com') ||
+        lower.contains('klipy.com') ||
+        lower.contains('catbox.moe') ||
+        lower.contains('discordapp.com') ||
+        lower.contains('wikia.nocookie.net') ||
+        lower.contains('imgur.com');
   }
 
-  static List<String> _extractImageUrls(String line) {
-    final urls = <String>[];
-    final urlPattern = RegExp(r'(https?:\/\/[^\s<>"{}|\\^`\[\]]+)');
-    for (final match in urlPattern.allMatches(line)) {
-      if (_isImageUrl(match.group(1)!)) {
-        urls.add(match.group(1)!);
+  static CommentMediaImage? _parseImgTag(String tagAttributes) {
+    final srcMatch = RegExp(
+      r'src=["'']{1,2}([^"''\s>]+)["'']{1,2}',
+      caseSensitive: false,
+    ).firstMatch(tagAttributes);
+
+    if (srcMatch == null) return null;
+    var url = srcMatch.group(1)?.trim();
+    if (url == null || url.isEmpty || (!url.startsWith('http://') && !url.startsWith('https://'))) {
+      return null;
+    }
+
+    // Clean trailing slash from file extension if present (e.g. .jpg/ -> .jpg)
+    if (url.endsWith('/') &&
+        (url.endsWith('.jpg/') ||
+            url.endsWith('.png/') ||
+            url.endsWith('.gif/') ||
+            url.endsWith('.webp/'))) {
+      url = url.substring(0, url.length - 1);
+    }
+
+    double? width;
+    final widthMatch = RegExp(
+      r'width=["'']{1,2}([^"''\s>]+)["'']{1,2}',
+      caseSensitive: false,
+    ).firstMatch(tagAttributes);
+    if (widthMatch != null) {
+      final val = widthMatch.group(1)?.toLowerCase().replaceAll('px', '').trim();
+      if (val != null && val != 'auto') {
+        width = double.tryParse(val);
       }
     }
-    return urls;
+
+    double? height;
+    final heightMatch = RegExp(
+      r'height=["'']{1,2}([^"''\s>]+)["'']{1,2}',
+      caseSensitive: false,
+    ).firstMatch(tagAttributes);
+    if (heightMatch != null) {
+      final val = heightMatch.group(1)?.toLowerCase().replaceAll('px', '').trim();
+      if (val != null && val != 'auto') {
+        height = double.tryParse(val);
+      }
+    }
+
+    return CommentMediaImage(url: url, width: width, height: height);
   }
 
   Future<void> _openUrl(String url) async {
@@ -423,67 +548,95 @@ class _InlineSpoilerState extends State<InlineSpoiler>
 }
 
 // ---------------------------------------------------------------------------
-// _ImageThumbnail – inline image preview with full-size viewer
+// CommentMediaImage data model
+// ---------------------------------------------------------------------------
+
+class CommentMediaImage {
+  final String url;
+  final double? width;
+  final double? height;
+
+  const CommentMediaImage({
+    required this.url,
+    this.width,
+    this.height,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// _ImageThumbnail – inline image preview with auto-sizing & full-size viewer
 // ---------------------------------------------------------------------------
 
 class _ImageThumbnail extends StatelessWidget {
   const _ImageThumbnail({
-    required this.url,
+    required this.image,
     required this.colorScheme,
-    this.maxHeight = 200.0,
-    this.maxWidth = 280.0,
+    this.defaultMaxHeight = 180.0,
+    this.defaultMaxWidth = 260.0,
   });
 
-  final String url;
+  final CommentMediaImage image;
   final ColorScheme colorScheme;
-  final double maxHeight;
-  final double maxWidth;
+  final double defaultMaxHeight;
+  final double defaultMaxWidth;
 
   @override
   Widget build(BuildContext context) {
+    final targetWidth = image.width != null ? image.width!.clamp(40.0, defaultMaxWidth) : null;
+    final targetHeight = image.height != null ? image.height!.clamp(40.0, defaultMaxHeight) : null;
+
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: maxHeight,
-          maxWidth: maxWidth,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.15),
+          border: Border.all(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.25),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: GestureDetector(
-          onTap: () => _openFullSizeViewer(context),
-          child: CachedNetworkImage(
-            imageUrl: url,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
-              height: 100,
-              width: 150,
-              decoration: BoxDecoration(
-                color:
-                    colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: targetWidth ?? defaultMaxWidth,
+            maxHeight: targetHeight ?? defaultMaxHeight,
+          ),
+          child: GestureDetector(
+            onTap: () => _openFullSizeViewer(context),
+            child: CachedNetworkImage(
+              imageUrl: image.url,
+              fit: BoxFit.contain,
+              placeholder: (context, url) => Container(
+                height: 90,
+                width: 130,
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                    ),
                   ),
                 ),
               ),
-            ),
-            errorWidget: (context, url, error) => Container(
-              height: 60,
-              width: 120,
-              decoration: BoxDecoration(
-                color: colorScheme.errorContainer.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.broken_image_outlined,
-                  color: colorScheme.error.withValues(alpha: 0.6),
-                  size: 24,
+              errorWidget: (context, url, error) => Container(
+                height: 60,
+                width: 120,
+                decoration: BoxDecoration(
+                  color: colorScheme.errorContainer.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.broken_image_outlined,
+                    color: colorScheme.error.withValues(alpha: 0.6),
+                    size: 22,
+                  ),
                 ),
               ),
             ),
@@ -497,7 +650,7 @@ class _ImageThumbnail extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => _FullScreenImageViewer(
-          imageUrls: [url],
+          imageUrls: [image.url],
           initialIndex: 0,
         ),
       ),
@@ -769,10 +922,10 @@ class MarkdownFormattingToolbar extends StatelessWidget {
     final offset =
         selection.baseOffset >= 0 ? selection.baseOffset : text.length;
 
-    const template = 'https://';
+    const template = '<img src="https://" width="auto" height="auto">';
     controller.text = text.replaceRange(offset, offset, template);
     controller.selection =
-        TextSelection.collapsed(offset: offset + template.length);
+        TextSelection.collapsed(offset: offset + 18);
   }
 }
 

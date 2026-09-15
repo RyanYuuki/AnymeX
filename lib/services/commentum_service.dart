@@ -75,7 +75,34 @@ class CommentumService extends GetxController {
 
   String get _clientType => serviceHandler.serviceType.value.name;
 
-  Future<List<Comment>> fetchComments(String mediaId,
+class CommentsPageResult {
+  final List<Comment> comments;
+  final int total;
+  final int totalPages;
+  final int page;
+  final int limit;
+
+  const CommentsPageResult({
+    required this.comments,
+    required this.total,
+    required this.totalPages,
+    required this.page,
+    required this.limit,
+  });
+
+  bool get hasMore => page < totalPages;
+
+  factory CommentsPageResult.empty({int page = 1, int limit = 50}) =>
+      CommentsPageResult(
+        comments: const [],
+        total: 0,
+        totalPages: 0,
+        page: page,
+        limit: limit,
+      );
+}
+
+  Future<CommentsPageResult> fetchCommentsPage(String mediaId,
       {int page = 1, int limit = 50, String sort = 'newest'}) async {
     try {
       final response = await http.get(
@@ -89,18 +116,39 @@ class CommentumService extends GetxController {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final commentsList = data['comments'] as List<dynamic>? ?? [];
+        final pagination = data['pagination'] as Map<String, dynamic>? ?? {};
 
-        return commentsList
+        final comments = commentsList
             .map((commentData) => _mapCommentumToAnymeXComment(commentData))
             .toList();
+
+        final total = (pagination['total'] as num?)?.toInt() ?? comments.length;
+        final totalPages = (pagination['totalPages'] as num?)?.toInt() ??
+            (limit > 0 ? (total / limit).ceil() : 1);
+        final currentPage = (pagination['page'] as num?)?.toInt() ?? page;
+
+        return CommentsPageResult(
+          comments: comments,
+          total: total,
+          totalPages: totalPages,
+          page: currentPage,
+          limit: limit,
+        );
       } else {
         Logger.i('Failed to fetch comments: ${response.statusCode}');
-        return [];
+        return CommentsPageResult.empty(page: page, limit: limit);
       }
     } catch (e) {
       Logger.i('Error fetching comments: $e');
-      return [];
+      return CommentsPageResult.empty(page: page, limit: limit);
     }
+  }
+
+  Future<List<Comment>> fetchComments(String mediaId,
+      {int page = 1, int limit = 50, String sort = 'newest'}) async {
+    final pageResult = await fetchCommentsPage(mediaId,
+        page: page, limit: limit, sort: sort);
+    return pageResult.comments;
   }
 
   Future<Comment?> createComment({

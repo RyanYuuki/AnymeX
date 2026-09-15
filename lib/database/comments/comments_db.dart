@@ -12,28 +12,38 @@ class CommentsDatabase {
 
   void log(String msg) => {};
 
-  Future<List<Comment>> fetchComments(String mediaId,
+  Future<CommentsPageResult> fetchCommentsPageResult(String mediaId,
       {String sort = 'newest', int page = 1, int limit = 50}) async {
     try {
       log("Fetching comments for media: $mediaId (sort: $sort, page: $page)");
-      // Always fetch from backend as newest (backend sorts by created_at desc)
-      // Client-side sorting handles top/controversial since backend ignores orderBy
-      final comments = await commentumService.fetchComments(mediaId,
-          page: page, limit: limit);
-      log("Fetched ${comments.length} comments");
+      final pageResult = await commentumService.fetchCommentsPage(mediaId,
+          page: page, limit: limit, sort: sort);
+      log("Fetched ${pageResult.comments.length} comments (total: ${pageResult.total})");
 
-      final organizedComments = _organizeComments(comments, sort: sort);
-      log("Organized into ${organizedComments.length} top-level comments with replies");
+      final organizedComments = organizeComments(pageResult.comments, sort: sort);
 
-      return organizedComments;
+      return CommentsPageResult(
+        comments: organizedComments,
+        total: pageResult.total,
+        totalPages: pageResult.totalPages,
+        page: pageResult.page,
+        limit: pageResult.limit,
+      );
     } catch (e) {
       log("Error fetching comments: $e");
       snackBar('Error fetching comments');
-      return [];
+      return CommentsPageResult.empty(page: page, limit: limit);
     }
   }
 
-  List<Comment> _organizeComments(List<Comment> comments, {String sort = 'newest'}) {
+  Future<List<Comment>> fetchComments(String mediaId,
+      {String sort = 'newest', int page = 1, int limit = 50}) async {
+    final result = await fetchCommentsPageResult(mediaId,
+        sort: sort, page: page, limit: limit);
+    return result.comments;
+  }
+
+  List<Comment> organizeComments(List<Comment> comments, {String sort = 'newest'}) {
     log("Organizing ${comments.length} comments with sort: $sort");
 
     final Map<int, Comment> commentMap = {};

@@ -23,7 +23,25 @@ class NotificationController extends GetxController {
     if (selectedFilter.value == 'mention') return 'user_mentioned';
     return selectedFilter.value;
   }
+
   final RxBool showUnreadOnly = false.obs;
+
+  int countForCategory(String category) {
+    if (category == 'all') return notifications.length;
+    return notifications.where((n) {
+      if (category == 'mention') return n.type == 'user_mentioned';
+      return n.typeCategory == category;
+    }).length;
+  }
+
+  int unreadCountForCategory(String category) {
+    return notifications.where((n) {
+      if (n.isRead) return false;
+      if (category == 'all') return true;
+      if (category == 'mention') return n.type == 'user_mentioned';
+      return n.typeCategory == category;
+    }).length;
+  }
 
   @override
   void onInit() {

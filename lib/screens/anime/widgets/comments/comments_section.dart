@@ -40,6 +40,7 @@ class _CommentSectionState extends State<CommentSection> {
   final Map<String, TextEditingController> _replyControllers = {};
   final Map<String, FocusNode> _replyFocusNodes = {};
   final Map<String, int> _visibleReplyCount = {};
+  final Set<String> _collapsedThreads = <String>{};
   final GlobalKey _targetCommentKey = GlobalKey();
   bool _hasScrolledToTarget = false;
 
@@ -236,65 +237,76 @@ class _CommentSectionState extends State<CommentSection> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-      decoration: BoxDecoration(
-        color: colorScheme.surface.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.opaque(0.05, iReallyMeanIt: true),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context, controller),
-          if (controller.isLoggedIn)
-            _buildCommentInput(context, controller)
-          else
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              margin: const EdgeInsets.all(16),
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color:
-                    colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: controller.commentFocusNode.hasFocus
-                      ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                      : colorScheme.outlineVariant
-                          .opaque(0.3, iReallyMeanIt: true),
-                  width: 1.5,
-                ),
-                boxShadow: controller.commentFocusNode.hasFocus
-                    ? [
-                        BoxShadow(
-                          color: colorScheme.primary
-                              .opaque(0.1, iReallyMeanIt: true),
-                          blurRadius: 16,
-                          offset: const Offset(0, 4),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Text(
-                'You need to be logged in to comment.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification.metrics.extentAfter < 350 &&
+            !controller.isLoadingMore.value &&
+            controller.hasMore.value &&
+            !controller.isLoading.value) {
+          controller.loadMoreComments();
+        }
+        return false;
+      },
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+        decoration: BoxDecoration(
+          color: colorScheme.surface.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: colorScheme.shadow.opaque(0.05, iReallyMeanIt: true),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
             ),
-          const SizedBox(height: 8),
-          _buildCommentsList(context, controller),
-        ],
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(context, controller),
+            if (controller.isLoggedIn)
+              _buildCommentInput(context, controller)
+            else
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                margin: const EdgeInsets.all(16),
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color:
+                      colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: controller.commentFocusNode.hasFocus
+                        ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                        : colorScheme.outlineVariant
+                            .opaque(0.3, iReallyMeanIt: true),
+                    width: 1.5,
+                  ),
+                  boxShadow: controller.commentFocusNode.hasFocus
+                      ? [
+                          BoxShadow(
+                            color: colorScheme.primary
+                                .opaque(0.1, iReallyMeanIt: true),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Text(
+                  'You need to be logged in to comment.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            const SizedBox(height: 8),
+            _buildCommentsList(context, controller),
+          ],
+        ),
       ),
     );
   }
@@ -373,7 +385,9 @@ class _CommentSectionState extends State<CommentSection> {
               ),
               const SizedBox(height: 4),
               AnymexText(
-                text: _getTotalCommentCount(controller.comments),
+                text: controller.totalCommentsCount.value > 0
+                    ? '${controller.totalCommentsCount.value} comments'
+                    : _getTotalCommentCount(controller.comments),
                 color: colorScheme.onSurfaceVariant,
                 size: 13,
                 autoResize: true,
@@ -837,23 +851,94 @@ class _CommentSectionState extends State<CommentSection> {
         );
       }
 
-      return ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-        itemCount: controller.comments.length,
-        separatorBuilder: (context, index) => Container(
-          height: 1,
-          margin: const EdgeInsets.only(left: 56, top: 24, bottom: 24),
-          decoration: BoxDecoration(
-            color: colorScheme.outlineVariant.opaque(0.2),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+            itemCount: controller.comments.length,
+            separatorBuilder: (context, index) => Container(
+              height: 1,
+              margin: const EdgeInsets.only(left: 48, top: 16, bottom: 16),
+              decoration: BoxDecoration(
+                color: colorScheme.outlineVariant.opaque(0.15),
+              ),
+            ),
+            itemBuilder: (context, index) {
+              return _buildCommentWithReplies(
+                  context, controller.comments[index], controller, 0,
+                  isParentLocked: false);
+            },
           ),
-        ),
-        itemBuilder: (context, index) {
-          return _buildCommentWithReplies(
-              context, controller.comments[index], controller, 0,
-              isParentLocked: false);
-        },
+          Obx(() {
+            if (controller.isLoadingMore.value) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Loading more comments...',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            if (!controller.hasMore.value && controller.comments.isNotEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 1,
+                        color: colorScheme.outlineVariant.opaque(0.25),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "You're all caught up",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colorScheme.onSurfaceVariant.opaque(0.6),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        width: 32,
+                        height: 1,
+                        color: colorScheme.outlineVariant.opaque(0.25),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
+        ],
       );
     });
   }
@@ -1003,23 +1088,25 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   Widget _buildRepliesSection(BuildContext context, Comment comment,
-      CommentSectionController controller, bool effectiveLocked) {
+      CommentSectionController controller, bool effectiveLocked, {int depth = 0}) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final allReplies = _flattenReplies(comment);
-    final totalReplies = allReplies.length;
-    final visibleCount = _visibleReplyCount[comment.id] ?? 0;
+    final replies = comment.replies ?? [];
+    final totalReplies = _countReplies(comment);
+    final isCollapsed = _collapsedThreads.contains(comment.id);
 
-    if (visibleCount == 0) {
+    if (replies.isEmpty) return const SizedBox.shrink();
+
+    if (isCollapsed) {
       return Padding(
-        padding: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.only(left: 14, top: 8),
         child: InkWell(
-          onTap: () => setState(() => _visibleReplyCount[comment.id] = 3),
+          onTap: () => setState(() => _collapsedThreads.remove(comment.id)),
           borderRadius: BorderRadius.circular(8),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerLow.opaque(0.3),
+              color: colorScheme.surfaceContainerLow.opaque(0.5),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: colorScheme.outlineVariant.opaque(0.2),
@@ -1028,14 +1115,15 @@ class _CommentSectionState extends State<CommentSection> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.chat_bubble_outline_rounded,
+                Icon(Icons.unfold_more_rounded,
                     size: 14, color: colorScheme.primary),
                 const SizedBox(width: 6),
                 Text(
-                  'View Replies ($totalReplies)',
+                  '[+] $totalReplies replies collapsed',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.primary,
                     fontWeight: FontWeight.w600,
+                    fontSize: 11,
                   ),
                 ),
               ],
@@ -1045,75 +1133,116 @@ class _CommentSectionState extends State<CommentSection> {
       );
     }
 
-    final visibleReplies = allReplies.take(visibleCount).toList();
-    final remainingCount = totalReplies - visibleCount;
+    final visibleCount = _visibleReplyCount[comment.id] ?? (depth >= 2 ? 2 : 4);
+    final visibleReplies = replies.take(visibleCount).toList();
+    final remainingCount = replies.length - visibleCount;
+
+    // Indentation step clamped for deep nests to prevent narrow columns
+    final indentLeft = depth >= 3 ? 4.0 : 10.0;
 
     return Padding(
-      padding: const EdgeInsets.only(left: 16, top: 8),
+      padding: EdgeInsets.only(left: indentLeft, top: 8),
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(
-              width: 2,
+            // Vertical thread connector line with tap-to-collapse
+            GestureDetector(
+              onTap: () => setState(() => _collapsedThreads.add(comment.id)),
+              behavior: HitTestBehavior.opaque,
               child: Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant.opaque(0.4),
-                  borderRadius: BorderRadius.circular(1),
+                width: 18,
+                alignment: Alignment.center,
+                child: Container(
+                  width: 2,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.opaque(0.3),
+                    borderRadius: BorderRadius.circular(1),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 4),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ...visibleReplies.asMap().entries.map((entry) {
-                    final reply = entry.value;
-                    final parentUsername = _findParentUsername(reply, comment);
-                    final parentRole = _findParentRole(reply, comment);
+                  ...visibleReplies.map((reply) {
                     return Padding(
-                      padding: EdgeInsets.only(
-                        bottom: entry.key < visibleReplies.length - 1 ? 10 : 0,
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _buildCommentWithReplies(
+                        context,
+                        reply,
+                        controller,
+                        depth + 1,
+                        isParentLocked: effectiveLocked,
                       ),
-                      child: _buildReplyItem(context, reply, controller,
-                          parentUsername, effectiveLocked,
-                          depth: 2, parentRole: parentRole),
                     );
                   }),
-                  if (remainingCount > 0) ...[
-                    const SizedBox(height: 8),
-                    InkWell(
-                      onTap: () => setState(() {
-                        _visibleReplyCount[comment.id] =
-                            (_visibleReplyCount[comment.id] ?? 3) + 3;
-                      }),
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerLow.opaque(0.3),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: colorScheme.outlineVariant.opaque(0.2),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'View More Replies ($remainingCount)',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.w600,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2, bottom: 4),
+                    child: Row(
+                      children: [
+                        if (remainingCount > 0) ...[
+                          InkWell(
+                            onTap: () => setState(() {
+                              _visibleReplyCount[comment.id] =
+                                  (_visibleReplyCount[comment.id] ?? 4) + 4;
+                            }),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainerLow.opaque(0.4),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: colorScheme.outlineVariant.opaque(0.2),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Show more replies ($remainingCount)',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.primary,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        InkWell(
+                          onTap: () => setState(() => _collapsedThreads.add(comment.id)),
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.remove_circle_outline_rounded,
+                                    size: 13, color: colorScheme.onSurfaceVariant.opaque(0.7)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Collapse',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant.opaque(0.7),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ],
               ),
             ),
@@ -1192,46 +1321,67 @@ class _CommentSectionState extends State<CommentSection> {
                   if (reply.userRole != null && reply.userRole != 'user') ...[
                     _buildRoleBadge(context, reply.userRole!),
                   ],
-                  GestureDetector(
-                    onTap: () => _showUserProfileSheet(context, reply),
+                  Flexible(
+                    child: GestureDetector(
+                      onTap: () => _showUserProfileSheet(context, reply),
+                      child: Text(
+                        reply.username,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color:
+                              reply.userRole != null && reply.userRole != 'user'
+                                  ? _getRoleColor(reply.userRole!)
+                                  : colorScheme.onSurface,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.arrow_right, size: 18, color: colorScheme.primary),
+                  const SizedBox(width: 2),
+                  Flexible(
                     child: Text(
-                      reply.username,
+                      parentUsername,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color:
-                            reply.userRole != null && reply.userRole != 'user'
-                                ? _getRoleColor(reply.userRole!)
-                                : colorScheme.onSurface,
+                        color: parentRole != null && parentRole != 'user'
+                            ? _getRoleColor(parentRole)
+                            : colorScheme.primary,
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
-                  Icon(Icons.arrow_right, size: 20, color: colorScheme.primary),
-                  const SizedBox(width: 2),
-                  Text(
-                    parentUsername,
-                    style: TextStyle(
-                      color: parentRole != null && parentRole != 'user'
-                          ? _getRoleColor(parentRole)
-                          : colorScheme.primary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  if (reply.edited == true)
+                  if (reply.edited == true) ...[
+                    const SizedBox(width: 4),
                     Text(
-                      ' (edited)',
+                      '(edited)',
                       style: TextStyle(
                         color: colorScheme.onSurfaceVariant.opaque(0.6),
                         fontSize: 10,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                  if (isLocked)
+                  ],
+                  if (isLocked) ...[
+                    const SizedBox(width: 4),
                     Icon(Icons.lock_rounded,
                         size: 11, color: colorScheme.error),
+                  ],
                   const Spacer(),
+                  GestureDetector(
+                    onTap: () => _showCommentContextMenu(
+                        context, reply, controller, isOwnComment, canModerate),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Icon(
+                        Icons.more_horiz_rounded,
+                        size: 16,
+                        color: colorScheme.onSurfaceVariant.opaque(0.6),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               if (reply.tag.isNotEmpty && reply.tag != 'General')
@@ -1495,7 +1645,8 @@ class _CommentSectionState extends State<CommentSection> {
                   UserProfilePage(userId: int.tryParse(comment.userId) ?? 0));
             }
           },
-          child: _buildCommentAvatar(context, comment, size: 36),
+          child: _buildCommentAvatar(context, comment,
+              size: depth == 0 ? 36.0 : (depth == 1 ? 28.0 : 22.0)),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -1508,34 +1659,52 @@ class _CommentSectionState extends State<CommentSection> {
                       comment.userRole != 'user') ...[
                     _buildRoleBadge(context, comment.userRole!),
                   ],
-                  GestureDetector(
-                    onTap: () => _showUserProfileSheet(context, comment),
-                    child: Text(
-                      comment.username,
-                      style: TextStyle(
-                        color: comment.userRole != null &&
-                                comment.userRole != 'user'
-                            ? _getRoleColor(comment.userRole!)
-                            : colorScheme.onSurface,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
+                  Flexible(
+                    child: GestureDetector(
+                      onTap: () => _showUserProfileSheet(context, comment),
+                      child: Text(
+                        comment.username,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: comment.userRole != null &&
+                                  comment.userRole != 'user'
+                              ? _getRoleColor(comment.userRole!)
+                              : colorScheme.onSurface,
+                          fontSize: depth == 0 ? 14 : 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  if (comment.edited == true)
+                  if (comment.edited == true) ...[
+                    const SizedBox(width: 4),
                     Text(
-                      ' (edited)',
+                      '(edited)',
                       style: TextStyle(
                         color: colorScheme.onSurfaceVariant.opaque(0.6),
                         fontSize: 10,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                  if (isLocked)
+                  ],
+                  if (isLocked) ...[
+                    const SizedBox(width: 4),
                     Icon(Icons.lock_rounded,
                         size: 12, color: colorScheme.error),
+                  ],
                   const Spacer(),
+                  GestureDetector(
+                    onTap: () => _showCommentContextMenu(
+                        context, comment, controller, isOwnComment, canModerate),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Icon(
+                        Icons.more_horiz_rounded,
+                        size: 18,
+                        color: colorScheme.onSurfaceVariant.opaque(0.6),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               if (comment.tag.isNotEmpty && comment.tag != 'General')
