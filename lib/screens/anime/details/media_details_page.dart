@@ -41,6 +41,7 @@ class MediaDetailsPage extends StatefulWidget {
   final String tag;
   final Source? source;
   final int initialTabIndex;
+  final String? scrollToCommentId;
 
   const MediaDetailsPage({
     super.key,
@@ -48,6 +49,7 @@ class MediaDetailsPage extends StatefulWidget {
     required this.tag,
     this.source,
     this.initialTabIndex = 0,
+    this.scrollToCommentId,
   });
 
   @override
@@ -442,6 +444,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
             child: Center(
               child: CommentSection(
                 media: controller.media.value,
+                scrollToCommentId: widget.scrollToCommentId,
               ),
             ),
           ),

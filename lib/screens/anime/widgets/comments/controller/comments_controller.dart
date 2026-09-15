@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/database/comments/model/user_points.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/commentum_service.dart';
@@ -37,12 +38,23 @@ class CommentSectionController extends GetxController
   final RxBool isInputExpanded = false.obs;
   final RxBool isRefreshing = false.obs;
 
+  final RxInt currentPage = 1.obs;
+  final RxInt totalPages = 1.obs;
+  final RxInt totalCommentsCount = 0.obs;
+  final RxBool hasMore = false.obs;
+  final RxBool isLoadingMore = false.obs;
+  final List<Comment> _rawCommentsPool = [];
+
   final RxSet<String> votingComments = <String>{}.obs;
+  final RxString currentSort = 'newest'.obs;
+  final RxString replyingToCommentId = ''.obs;
 
   final RxBool isModerator = false.obs;
   final RxBool isAdmin = false.obs;
   final RxBool isSuperAdmin = false.obs;
   final RxString currentUserRole = 'user'.obs;
+
+  final RxMap<String, UserPoints> userPointsCache = <String, UserPoints>{}.obs;
 
   late AnimationController expandController;
   late AnimationController fadeController;
@@ -103,7 +115,8 @@ class CommentSectionController extends GetxController
       isSuperAdmin.value = await commentumService.isSuperAdmin();
 
       if (isSuperAdmin.value) {
-        currentUserRole.value = 'super_admin';
+        final rawRole = commentumService.currentUserRole.value;
+        currentUserRole.value = rawRole == 'owner' ? 'owner' : 'super_admin';
       } else if (isAdmin.value) {
         currentUserRole.value = 'admin';
       } else if (isModerator.value) {
@@ -123,16 +136,81 @@ class CommentSectionController extends GetxController
     if (media.uniqueId.isEmpty) return;
 
     isLoading.value = true;
+    currentPage.value = 1;
+    _rawCommentsPool.clear();
+
     try {
-      final fetchedComments = await commentsDB.fetchComments(media.uniqueId);
-      comments.assignAll(fetchedComments);
-      print(
-          'Loaded ${fetchedComments.length} comments for media: $media.uniqueId');
+      final pageResult = await commentsDB.fetchCommentsPageResult(
+        media.uniqueId,
+        sort: currentSort.value,
+        page: 1,
+        limit: 50,
+      );
+
+      _rawCommentsPool.addAll(pageResult.comments);
+      currentPage.value = pageResult.page;
+      totalPages.value = pageResult.totalPages;
+      totalCommentsCount.value = pageResult.total;
+      hasMore.value = pageResult.hasMore;
+
+      final organized = commentsDB.organizeComments(_rawCommentsPool,
+          sort: currentSort.value);
+      comments.assignAll(organized);
     } catch (e) {
       print('Error loading comments: $e');
       snackBar('Failed to load comments. Please try again.');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreComments() async {
+    if (media.uniqueId.isEmpty ||
+        isLoading.value ||
+        isLoadingMore.value ||
+        !hasMore.value) {
+      return;
+    }
+
+    isLoadingMore.value = true;
+    final nextPage = currentPage.value + 1;
+
+    try {
+      final pageResult = await commentsDB.commentumService.fetchCommentsPage(
+        media.uniqueId,
+        page: nextPage,
+        limit: 50,
+        sort: currentSort.value,
+      );
+
+      currentPage.value = pageResult.page;
+      totalPages.value = pageResult.totalPages;
+      totalCommentsCount.value = pageResult.total;
+      hasMore.value = pageResult.hasMore;
+
+      final existingIds = _rawCommentsPool.map((c) => c.id).toSet();
+      var added = 0;
+      for (final comment in pageResult.comments) {
+        if (!existingIds.contains(comment.id)) {
+          _rawCommentsPool.add(comment);
+          existingIds.add(comment.id);
+          added++;
+        }
+      }
+
+      // Backend totalPages counts replies too, so it can report more pages
+      // than exist for top-level comments (and windows shift after
+      // backgroundRefresh). Stop once a page yields nothing new instead of
+      // endlessly fetching empty/duplicate pages.
+      hasMore.value = pageResult.hasMore && added > 0;
+
+      final organized = commentsDB.organizeComments(_rawCommentsPool,
+          sort: currentSort.value);
+      comments.assignAll(organized);
+    } catch (e) {
+      print('Error loading more comments: $e');
+    } finally {
+      isLoadingMore.value = false;
     }
   }
 
@@ -146,16 +224,29 @@ class CommentSectionController extends GetxController
     try {
       await _checkUserRole();
 
-      final fetchedComments = await commentsDB.fetchComments(media.uniqueId);
+      currentPage.value = 1;
+      _rawCommentsPool.clear();
 
-      comments.assignAll(fetchedComments);
+      final pageResult = await commentsDB.fetchCommentsPageResult(
+        media.uniqueId,
+        sort: currentSort.value,
+        page: 1,
+        limit: 50,
+      );
+
+      _rawCommentsPool.addAll(pageResult.comments);
+      currentPage.value = pageResult.page;
+      totalPages.value = pageResult.totalPages;
+      totalCommentsCount.value = pageResult.total;
+      hasMore.value = pageResult.hasMore;
+
+      final organized = commentsDB.organizeComments(_rawCommentsPool,
+          sort: currentSort.value);
+      comments.assignAll(organized);
 
       if (!silent) {
-        final commentCount = fetchedComments.length;
-        snackBar('$commentCount comments loaded');
+        snackBar('${totalCommentsCount.value} comments loaded');
       }
-      print(
-          'Refreshed ${fetchedComments.length} comments for media: $media.uniqueId');
     } catch (e) {
       print('Error refreshing comments: $e');
       if (!silent) {
@@ -172,9 +263,22 @@ class CommentSectionController extends GetxController
     if (media.uniqueId.isEmpty) return;
 
     try {
-      final fetchedComments = await commentsDB.fetchComments(media.uniqueId);
-      comments.assignAll(fetchedComments);
-      print('Background refreshed ${fetchedComments.length} comments');
+      final pageResult = await commentsDB.fetchCommentsPageResult(
+        media.uniqueId,
+        sort: currentSort.value,
+        page: 1,
+        limit: (currentPage.value * 50).clamp(50, 200),
+      );
+
+      _rawCommentsPool.clear();
+      _rawCommentsPool.addAll(pageResult.comments);
+      totalCommentsCount.value = pageResult.total;
+      totalPages.value = pageResult.totalPages;
+      hasMore.value = pageResult.hasMore;
+
+      final organized = commentsDB.organizeComments(_rawCommentsPool,
+          sort: currentSort.value);
+      comments.assignAll(organized);
     } catch (e) {
       print('Error in background refresh: $e');
     }
@@ -185,44 +289,68 @@ class CommentSectionController extends GetxController
     await refreshComments(silent: false);
   }
 
-  // Future<void> addReply(Comment parentComment, String replyContent) async {
-  //   if (replyContent.trim().isEmpty || isSubmitting.value) return;
+  static String formatCommentMedia(String text) {
+    // NOTE: Dart RegExp does NOT support lookbehind (?<!...) — it throws
+    // FormatException at construction time, which made every comment/reply
+    // fail before the request was even sent. The "don't double-wrap URLs
+    // that are already inside src=..." check is done in the callback below.
+    final imgUrlPattern = RegExp(
+      r'''(https?:\/\/[^\s<>"{}|\\^`\[\]]+\.(?:png|jpg|jpeg|gif|webp|webm)(?:\?[^\s<>"{}|\\^`\[\]]*)?|https?:\/\/(?:media\.)?(?:tenor|giphy)\.com\/[^\s<>"{}|\\^`\[\]]+)''',
+      caseSensitive: false,
+    );
 
-  //   isSubmitting.value = true;
-  //   try {
-  //     final parentCommentId = int.tryParse(parentComment.id) ?? 0;
-  //     if (parentCommentId == 0) {
-  //       snackBar( 'Invalid parent comment ID');
-  //       return;
-  //     }
+    return text.replaceAllMapped(imgUrlPattern, (match) {
+      final url = match.group(0)!;
+      final before = text.substring(0, match.start);
+      final alreadyInTag = before.endsWith('src="') || before.endsWith("src='");
+      if (alreadyInTag) return url;
+      return '<img src="$url" width="auto" height="auto">';
+    });
+  }
 
-  //     final newComment = await commentsDB.addComment(
-  //       comment: replyContent.trim(),
-  //       mediaId: media.uniqueId,
-  //       tag: tag ?? 'General',
-  //       parentId: parentCommentId,
-  //     );
+  Future<void> addReply(Comment parentComment, String replyContent) async {
+    if (replyContent.trim().isEmpty || isSubmitting.value) return;
 
-  //     if (newComment != null) {
-  //       await backgroundRefresh();
-  //       snackBar(', 'Your reply has been posted successfully');
-  //     }
+    isSubmitting.value = true;
+    try {
+      final parentCommentId = int.tryParse(parentComment.id) ?? 0;
+      if (parentCommentId == 0) {
+        snackBar('Invalid parent comment ID');
+        return;
+      }
 
-  //     HapticFeedback.lightImpact();
-  //   } catch (e) {
-  //     snackBar( 'Failed to post reply. Please try again.');
-  //   } finally {
-  //     isSubmitting.value = false;
-  //   }
-  // }
+      final formattedReply = formatCommentMedia(replyContent.trim());
+      final newComment = await commentsDB.addComment(
+        comment: formattedReply,
+        mediaId: media.uniqueId,
+        media: media,
+        tag: tagController.value.text.trim(),
+        parentId: parentCommentId,
+      );
+
+      if (newComment != null) {
+        await backgroundRefresh();
+        snackBar('Reply posted successfully');
+      } else {
+        snackBar('Failed to post reply');
+      }
+
+      HapticFeedback.lightImpact();
+    } catch (e) {
+      snackBar('Failed to post reply. Please try again.');
+    } finally {
+      isSubmitting.value = false;
+    }
+  }
 
   Future<void> addComment() async {
     if (commentController.text.trim().isEmpty || isSubmitting.value) return;
 
     isSubmitting.value = true;
     try {
+      final formattedComment = formatCommentMedia(commentController.text.trim());
       final newComment = await commentsDB.addComment(
-        comment: commentController.text.trim(),
+        comment: formattedComment,
         mediaId: media.uniqueId,
         media: media,
         tag: tagController.value.text.trim(),
@@ -245,9 +373,49 @@ class CommentSectionController extends GetxController
   void clearInputs() {
     commentController.clear();
     isInputExpanded.value = false;
+    replyingToCommentId.value = '';
     expandController.reverse();
     fadeController.reverse();
     commentFocusNode.unfocus();
+  }
+
+  void setSort(String sort) {
+    currentSort.value = sort;
+    refreshComments(silent: false);
+  }
+
+  void toggleReply(String commentId) {
+    if (replyingToCommentId.value == commentId) {
+      replyingToCommentId.value = '';
+    } else {
+      replyingToCommentId.value = commentId;
+    }
+  }
+
+  bool isReplyingTo(String commentId) {
+    return replyingToCommentId.value == commentId;
+  }
+
+  Comment? findCommentById(String commentId) {
+    for (final comment in comments) {
+      if (comment.id == commentId) return comment;
+      if (comment.replies != null) {
+        final found = _findReplyById(comment.replies!, commentId);
+        if (found != null) return found;
+      }
+    }
+    return null;
+  }
+
+  Comment? _findReplyById(List<Comment> replies, String commentId) {
+    for (final reply in replies) {
+      if (reply.id == commentId) return reply;
+      if (reply.replies != null) {
+        final found = _findReplyById(reply.replies!, commentId);
+        if (found != null) return found;
+      }
+    }
+    return null;
   }
 
   Future<void> handleVote(Comment comment, int newVote) async {
@@ -263,55 +431,54 @@ class CommentSectionController extends GetxController
 
     votingComments.add(comment.id);
 
-    final index = comments.indexWhere((c) => c.id == comment.id);
-    if (index == -1) {
+    final found = findCommentById(comment.id);
+    if (found == null) {
       votingComments.remove(comment.id);
       return;
     }
 
-    final originalLikes = comment.likes;
-    final originalDislikes = comment.dislikes;
-    final originalUserVote = comment.userVote;
+    final originalLikes = found.likes;
+    final originalDislikes = found.dislikes;
+    final originalUserVote = found.userVote;
 
-    final updatedComment = _createUpdatedComment(comment, newVote);
-    comments[index] = updatedComment;
+    _updateCommentVoteInPlace(found, newVote);
 
     try {
-      final commentId = int.tryParse(comment.id) ?? 0;
+      final commentId = int.tryParse(found.id) ?? 0;
       if (commentId == 0) {
-        throw Exception("Invalid comment ID: ${comment.id}");
+        throw Exception("Invalid comment ID: ${found.id}");
       }
 
       final result = await commentsDB.likeOrDislikeComment(
           commentId, originalUserVote, newVote);
 
       if (result == null) {
-        comment.likes = originalLikes;
-        comment.dislikes = originalDislikes;
-        comment.userVote = originalUserVote;
-        comments[index] = comment;
+        found.likes = originalLikes;
+        found.dislikes = originalDislikes;
+        found.userVote = originalUserVote;
+        comments.refresh();
         snackBar('Failed to update vote. Please try again.');
       } else {
         await backgroundRefresh();
       }
     } catch (e) {
-      comment.likes = originalLikes;
-      comment.dislikes = originalDislikes;
-      comment.userVote = originalUserVote;
-      comments[index] = comment;
+      found.likes = originalLikes;
+      found.dislikes = originalDislikes;
+      found.userVote = originalUserVote;
+      comments.refresh();
       snackBar('Failed to update vote. Please try again.');
     } finally {
       votingComments.remove(comment.id);
     }
   }
 
-  Comment _createUpdatedComment(Comment original, int newVote) {
-    int newLikes = original.likes;
-    int newDislikes = original.dislikes;
+  void _updateCommentVoteInPlace(Comment comment, int newVote) {
+    int newLikes = comment.likes;
+    int newDislikes = comment.dislikes;
 
-    if (original.userVote == 1) {
+    if (comment.userVote == 1) {
       newLikes--;
-    } else if (original.userVote == -1) {
+    } else if (comment.userVote == -1) {
       newDislikes--;
     }
 
@@ -321,40 +488,10 @@ class CommentSectionController extends GetxController
       newDislikes++;
     }
 
-    newLikes = newLikes < 0 ? 0 : newLikes;
-    newDislikes = newDislikes < 0 ? 0 : newDislikes;
-
-    return Comment(
-      id: original.id,
-      userId: original.userId,
-      commentText: original.commentText,
-      contentId: original.contentId,
-      tag: original.tag,
-      likes: newLikes,
-      dislikes: newDislikes,
-      userVote: newVote,
-      username: original.username,
-      avatarUrl: original.avatarUrl,
-      createdAt: original.createdAt,
-      updatedAt: original.updatedAt,
-      deleted: original.deleted,
-      pinned: original.pinned,
-      locked: original.locked,
-      edited: original.edited,
-      editCount: original.editCount,
-      editHistory: original.editHistory,
-      reported: original.reported,
-      reportCount: original.reportCount,
-      reportStatus: original.reportStatus,
-      userBanned: original.userBanned,
-      userMutedUntil: original.userMutedUntil,
-      userShadowBanned: original.userShadowBanned,
-      userWarnings: original.userWarnings,
-      moderatedBy: original.moderatedBy,
-      moderationReason: original.moderationReason,
-      parentId: original.parentId,
-      replies: original.replies,
-    );
+    comment.likes = newLikes < 0 ? 0 : newLikes;
+    comment.dislikes = newDislikes < 0 ? 0 : newDislikes;
+    comment.userVote = newVote;
+    comments.refresh();
   }
 
   Future<void> editComment(Comment comment, String newContent) async {
@@ -387,7 +524,15 @@ class CommentSectionController extends GetxController
         return;
       }
 
-      final success = await commentsDB.deleteComment(commentId);
+      // If mod+ deleting someone else's comment, pass their userId for mod_delete
+      final isOwnComment = comment.userId == profile.id?.toString();
+      final shouldModDelete = !isOwnComment && canModerate();
+      final targetUserId = shouldModDelete ? comment.userId : null;
+
+      final success = await commentsDB.deleteComment(
+        commentId,
+        userId: targetUserId,
+      );
 
       if (success) {
         await backgroundRefresh();
@@ -478,6 +623,44 @@ class CommentSectionController extends GetxController
     }
   }
 
+  Future<List<Map<String, dynamic>>> getReportsQueue() async {
+    return await commentsDB.getReportsQueue();
+  }
+
+  Future<bool> resolveReport({
+    required int commentId,
+    required String reporterId,
+    required String resolution,
+    String? reviewNotes,
+  }) async {
+    return await commentsDB.resolveReport(
+      commentId: commentId,
+      reporterId: reporterId,
+      resolution: resolution,
+      reviewNotes: reviewNotes,
+    );
+  }
+
+  Future<Map<String, dynamic>?> getUserInfoFromDb(String targetUserId,
+      {String? targetClientType}) async {
+    return await commentsDB.getUserInfo(
+      targetUserId: targetUserId,
+      targetClientType: targetClientType ?? serviceHandler.serviceType.value.name,
+    );
+  }
+
+  Future<Map<String, dynamic>?> getUserHistoryFromDb(String targetUserId,
+      {String? targetClientType}) async {
+    return await commentsDB.getUserHistory(
+      targetUserId: targetUserId,
+      targetClientType: targetClientType ?? serviceHandler.serviceType.value.name,
+    );
+  }
+
+  Future<Map<String, dynamic>?> getUserStatsFromDb() async {
+    return await commentsDB.getUserStats();
+  }
+
   bool canEditComment(Comment comment) {
     return comment.userId == profile.id?.toString();
   }
@@ -490,11 +673,11 @@ class CommentSectionController extends GetxController
   }
 
   bool canModerate() {
-    return isModerator.value || isAdmin.value;
+    return isModerator.value || isAdmin.value || isSuperAdmin.value;
   }
 
   bool canManageUsers() {
-    return isAdmin.value;
+    return isAdmin.value || isSuperAdmin.value;
   }
 
   void onMediaChanged(Media newMedia, TrackedMedia trackedMedia) {
@@ -511,5 +694,24 @@ class CommentSectionController extends GetxController
   void onUserAuthChanged() {
     _checkUserRole();
     refreshComments(silent: false);
+  }
+
+  UserPoints? getUserPoints(String userId) {
+    return userPointsCache[userId];
+  }
+
+  Future<UserPoints?> fetchUserPoints(String userId) async {
+    if (userPointsCache.containsKey(userId)) {
+      return userPointsCache[userId];
+    }
+    try {
+      final points = await commentsDB.getUserPoints(targetUserId: userId);
+      if (points != null) {
+        userPointsCache[userId] = points;
+      }
+      return points;
+    } catch (_) {
+      return null;
+    }
   }
 }
