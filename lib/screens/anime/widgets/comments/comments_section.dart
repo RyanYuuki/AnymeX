@@ -3395,10 +3395,11 @@ class _SpoilerTextState extends State<_SpoilerText> {
       return DiscordMarkdown(
         text: widget.text,
         colorScheme: widget.colorScheme,
+        fontSize: widget.fontSize,
         baseStyle: TextStyle(
           color: widget.colorScheme.onSurface,
           fontWeight: FontWeight.w500,
-          height: 1.5,
+          height: 1.45,
           fontSize: widget.fontSize,
         ),
       );
@@ -3408,10 +3409,11 @@ class _SpoilerTextState extends State<_SpoilerText> {
       return DiscordMarkdown(
         text: widget.text,
         colorScheme: widget.colorScheme,
+        fontSize: widget.fontSize,
         baseStyle: TextStyle(
           color: widget.colorScheme.onSurface,
           fontWeight: FontWeight.w500,
-          height: 1.5,
+          height: 1.45,
           fontSize: widget.fontSize,
         ),
       );

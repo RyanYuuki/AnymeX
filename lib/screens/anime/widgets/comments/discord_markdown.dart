@@ -23,13 +23,15 @@ class DiscordMarkdown extends StatelessWidget {
     required this.text,
     required this.colorScheme,
     required this.baseStyle,
-    this.fontSize = 16,
+    this.fontSize,
   });
 
   final String text;
   final ColorScheme colorScheme;
   final TextStyle baseStyle;
-  final double fontSize;
+  final double? fontSize;
+
+  double get resolvedFontSize => fontSize ?? baseStyle.fontSize ?? 14.0;
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +161,7 @@ class DiscordMarkdown extends StatelessWidget {
           text: TextSpan(
             style: baseStyle.copyWith(
               color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-              fontSize: fontSize,
+              fontSize: resolvedFontSize,
             ),
             children: spans,
           ),
@@ -175,7 +177,7 @@ class DiscordMarkdown extends StatelessWidget {
       text: TextSpan(
         style: baseStyle.copyWith(
           color: colorScheme.onSurface,
-          fontSize: fontSize,
+          fontSize: resolvedFontSize,
         ),
         children: spans,
       ),
@@ -218,7 +220,7 @@ class DiscordMarkdown extends StatelessWidget {
             text: TextSpan(
               style: baseStyle.copyWith(
                 color: colorScheme.onSurface,
-                fontSize: fontSize,
+                fontSize: resolvedFontSize,
               ),
               children: _parseInlineSpans(match.group(1)!, context),
             ),
@@ -236,7 +238,7 @@ class DiscordMarkdown extends StatelessWidget {
         text: match.group(1)!,
         style: TextStyle(
           fontFamily: 'monospace',
-          fontSize: fontSize * 0.9,
+          fontSize: resolvedFontSize * 0.9,
           backgroundColor:
               colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           color: colorScheme.onSurface,
@@ -311,7 +313,7 @@ class DiscordMarkdown extends StatelessWidget {
           text: url,
           style: TextStyle(
             color: colorScheme.primary,
-            fontSize: _isImageUrl(url) ? fontSize * 0.85 : null,
+            fontSize: _isImageUrl(url) ? resolvedFontSize * 0.85 : null,
             decoration: TextDecoration.underline,
           ),
           recognizer: TapGestureRecognizer()..onTap = () => _openUrl(url),
