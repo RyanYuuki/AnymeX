@@ -107,7 +107,7 @@ $prebuiltBase = Join-Path $ltDirFullName "prebuilt\windows"
 $prebuiltDll  = Join-Path $prebuiltBase "$Arch\libtorrent_flutter.dll"
 
 if (Test-Path $prebuiltDll) {
-    Write-Host "libtorrent_flutter prebuilt already exists at $prebuiltDll — nothing to do." -ForegroundColor Green
+    Write-Host "libtorrent_flutter prebuilt already exists at $prebuiltDll - nothing to do." -ForegroundColor Green
     exit 0
 }
 
