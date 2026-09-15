@@ -184,8 +184,6 @@ void main(List<String> args) async {
                 options: DefaultFirebaseOptions.currentPlatform,
               ),
           errorMessage: 'Failed to initialize Firebase');
-      await safeCall(() => FcmService.init(),
-          errorMessage: 'Failed to initialize FCM');
     }
 
     if (Platform.isWindows || Platform.isLinux) {
@@ -343,6 +341,13 @@ class _MainAppState extends State<MainApp> {
         .addListener(() => _isFullScreen = AnymeXTitleBar.isFullScreen.value);
 
     focusNode = FocusNode();
+
+    if (!Platform.isLinux) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        safeCall(() => FcmService.init(),
+            errorMessage: 'Failed to initialize FCM');
+      });
+    }
 
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
