@@ -3391,31 +3391,21 @@ class _SpoilerTextState extends State<_SpoilerText> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.isSpoiler) {
-      return DiscordMarkdown(
-        text: widget.text,
-        colorScheme: widget.colorScheme,
-        fontSize: widget.fontSize,
-        baseStyle: TextStyle(
-          color: widget.colorScheme.onSurface,
-          fontWeight: FontWeight.w500,
-          height: 1.45,
+    final textStyle = widget.theme.textTheme.bodyMedium?.copyWith(
           fontSize: widget.fontSize,
-        ),
-      );
-    }
+          color: widget.colorScheme.onSurface,
+        ) ??
+        TextStyle(
+          color: widget.colorScheme.onSurface,
+          fontSize: widget.fontSize,
+        );
 
-    if (_isRevealed) {
+    if (!widget.isSpoiler || _isRevealed) {
       return DiscordMarkdown(
         text: widget.text,
         colorScheme: widget.colorScheme,
         fontSize: widget.fontSize,
-        baseStyle: TextStyle(
-          color: widget.colorScheme.onSurface,
-          fontWeight: FontWeight.w500,
-          height: 1.45,
-          fontSize: widget.fontSize,
-        ),
+        baseStyle: textStyle,
       );
     }
 
