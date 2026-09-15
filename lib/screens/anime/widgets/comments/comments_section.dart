@@ -46,6 +46,13 @@ class _CommentSectionState extends State<CommentSection> {
   final GlobalKey _targetCommentKey = GlobalKey();
   bool _hasScrolledToTarget = false;
 
+  /// The comments list renders with shrinkWrap + NeverScrollableScrollPhysics
+  /// inside the page's CustomScrollView, so scroll notifications never reach
+  /// the NotificationListener in build() — they bubble upward from the
+  /// scrollable, away from its children. Load-more therefore has to observe
+  /// the nearest ancestor Scrollable's position directly.
+  ScrollPosition? _ancestorScrollPosition;
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +68,31 @@ class _CommentSectionState extends State<CommentSection> {
     }
 
     _setupScrollToComment();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _attachAncestorScrollListener();
+  }
+
+  void _attachAncestorScrollListener() {
+    final position = Scrollable.maybeOf(context)?.position;
+    if (identical(position, _ancestorScrollPosition)) return;
+    _ancestorScrollPosition?.removeListener(_onAncestorScroll);
+    _ancestorScrollPosition = position;
+    position?.addListener(_onAncestorScroll);
+  }
+
+  void _onAncestorScroll() {
+    final position = _ancestorScrollPosition;
+    if (position == null) return;
+    if (position.extentAfter < 350 &&
+        !controller.isLoadingMore.value &&
+        controller.hasMore.value &&
+        !controller.isLoading.value) {
+      controller.loadMoreComments();
+    }
   }
 
   /// After comments load, scroll to the target comment if specified
@@ -174,6 +206,7 @@ class _CommentSectionState extends State<CommentSection> {
 
   @override
   void dispose() {
+    _ancestorScrollPosition?.removeListener(_onAncestorScroll);
     for (final c in _replyControllers.values) {
       c.dispose();
     }

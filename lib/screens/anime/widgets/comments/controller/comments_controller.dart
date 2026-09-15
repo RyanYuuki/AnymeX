@@ -189,12 +189,20 @@ class CommentSectionController extends GetxController
       hasMore.value = pageResult.hasMore;
 
       final existingIds = _rawCommentsPool.map((c) => c.id).toSet();
+      var added = 0;
       for (final comment in pageResult.comments) {
         if (!existingIds.contains(comment.id)) {
           _rawCommentsPool.add(comment);
           existingIds.add(comment.id);
+          added++;
         }
       }
+
+      // Backend totalPages counts replies too, so it can report more pages
+      // than exist for top-level comments (and windows shift after
+      // backgroundRefresh). Stop once a page yields nothing new instead of
+      // endlessly fetching empty/duplicate pages.
+      hasMore.value = pageResult.hasMore && added > 0;
 
       final organized = commentsDB.organizeComments(_rawCommentsPool,
           sort: currentSort.value);
