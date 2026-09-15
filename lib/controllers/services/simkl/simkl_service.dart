@@ -183,10 +183,6 @@ class SimklService extends GetxController
   @override
   RxList<Widget> homeWidgets(BuildContext context) {
     final settings = Get.find<Settings>();
-    final acceptedLists = settings.homePageCardsSimkl.entries
-        .where((entry) => entry.value)
-        .map<String>((entry) => entry.key)
-        .toList();
 
     return [
       if (isLoggedIn.value)
@@ -283,8 +279,14 @@ class SimklService extends GetxController
         );
       }),
       const SizedBox(height: 25),
-      if (isLoggedIn.value && acceptedLists.isNotEmpty)
+      if (isLoggedIn.value)
         Obx(() {
+          settings.uiSettings.value;
+          final acceptedLists = settings.homePageCardsSimkl.entries
+              .where((entry) => entry.value)
+              .map<String>((entry) => entry.key)
+              .toList();
+          if (acceptedLists.isEmpty) return const SizedBox.shrink();
           mangaList.length;
           animeList.length;
           return Column(
