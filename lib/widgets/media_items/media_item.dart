@@ -16,7 +16,6 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/models/models_convertor/carousel/carousel_data.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/widgets/common/cards/media_cards.dart';
@@ -54,16 +53,24 @@ class CardData {
       id: data.id ?? '',
       title: data.title ?? '',
       poster: data.poster ?? '',
-      episodeCount: data.episodeCount,
+      episodeCount: data.effectiveProgress.toString(),
       rating: data.rating,
-      totalEpisodes: data.totalEpisodes ?? '?',
+      totalEpisodes: data.effectiveTotal,
       score: data.score,
       type: data.type,
+      nextEpisode: data.nextAiringEpisode?.episode.toString(),
       data: Media(
           id: data.id!,
           title: data.title ?? '??',
+          romajiTitle: data.romajiTitle ?? '',
+          rating: data.rating ?? '',
           poster: data.poster ?? '',
           mediaType: data.type == 'MANGA' ? ItemType.manga : ItemType.anime,
+          nextAiringEpisode: data.nextAiringEpisode,
+          status: data.mediaStatus ?? '?',
+          format: data.format ?? '?',
+          totalEpisodes: data.effectiveTotal,
+          createdAt: data.endDate ?? data.startDate,
           serviceType: data.servicesType),
     );
   }
@@ -96,11 +103,13 @@ class GridAnimeCard extends StatelessWidget {
     required this.isManga,
     this.variant,
     this.type,
+    this.tagPrefix,
   });
   final dynamic data;
   final bool isManga;
   final CardVariant? variant;
   final ItemType? type;
+  final String? tagPrefix;
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +122,9 @@ class GridAnimeCard extends StatelessWidget {
 
     final isOnlineList = variant == CardVariant.onlinelist;
     final extraData = isOnlineList
-        ? "${media.episodeCount ?? '??'} | ${media.totalEpisodes ?? '??'}"
+        ? (data is TrackedMedia
+            ? (data as TrackedMedia).formattedProgress
+            : "${media.episodeCount ?? '??'} | ${media.totalEpisodes ?? '??'}")
         : (media.score ?? media.rating ?? '');
 
     final carouselData = CarouselData(
@@ -128,7 +139,8 @@ class GridAnimeCard extends StatelessWidget {
       servicesType: media.data.serviceType,
     );
 
-    final heroTag = '${media.id}-${itemType.name}-grid-card';
+    final prefix = tagPrefix != null ? '${tagPrefix!}-' : '';
+    final heroTag = '$prefix${media.id}-${itemType.name}-grid-card';
 
     final cardWidget = MediaCardGate(
       itemData: carouselData,

@@ -54,7 +54,7 @@ class AnymeXSegmentedButton extends StatelessWidget {
                     AnymeXText(
                       title ?? '',
                       style: TextStyle(
-                        fontFamily: "Poppins-Bold",
+                        fontFamily: 'Linotte',
                         fontSize: 16,
                         color:
                             isSelected ? context.colors.onPrimary : Colors.grey,

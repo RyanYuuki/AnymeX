@@ -123,7 +123,7 @@ class _InstalledExtensionsGridViewState
                     AnymeXText(
                       '${filteredSources.length}',
                       style: TextStyle(
-                        fontFamily: 'Poppins-Bold',
+                        fontFamily: 'Linotte',
                         fontSize: 13,
                         color: context.colors.primary,
                       ),
@@ -282,7 +282,7 @@ class _ExtensionCard extends StatelessWidget {
                         child: AnymeXText(
                           source.name ?? 'Unknown',
                           style: TextStyle(
-                            fontFamily: 'Poppins-SemiBold',
+                            fontFamily: 'Linotte',
                             fontSize: 14,
                             color: theme.colorScheme.onSurface,
                           ),
@@ -307,7 +307,7 @@ class _ExtensionCard extends StatelessWidget {
                           child: AnymeXText(
                             source.lang!.toUpperCase(),
                             style: TextStyle(
-                              fontFamily: 'Poppins-SemiBold',
+                              fontFamily: 'Linotte',
                               fontSize: 10,
                               color: theme.colorScheme.primary,
                             ),

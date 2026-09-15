@@ -83,14 +83,14 @@ class PlayerCoreVisualSettings {
     // await _safeSet(mpv, 'hwdec', settings['hwdec']);
     await _safeSet(mpv, 'video-sync', settings['videoSync']);
     await _safeSet(mpv, 'interpolation', _boolToMpv(settings['interpolation']));
-    await _safeSet(
-        mpv, 'cache-secs', (settings['cacheSeconds'] as num?)?.toInt() ?? 30);
+    final cacheMinutes = (settings['cacheMinutes'] as num?)?.toInt() ?? 5;
+    await _safeSet(mpv, 'cache-secs', cacheMinutes * 60);
     await _safeSet(mpv, 'demuxer-readahead-secs',
-        (settings['demuxerReadaheadSeconds'] as num?)?.toInt() ?? 20);
+        (settings['demuxerReadaheadSeconds'] as num?)?.toInt() ?? 30);
     await _safeSet(
       mpv,
       'demuxer-max-bytes',
-      ((settings['demuxerMaxBytesMb'] as num?)?.toInt() ?? 64) * 1024 * 1024,
+      ((settings['demuxerMaxBytesMb'] as num?)?.toInt() ?? 128) * 1024 * 1024,
     );
     await _safeSet(mpv, 'vd-lavc-threads',
         (settings['vdLavcThreads'] as num?)?.toInt() ?? 0);

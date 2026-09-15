@@ -15,6 +15,7 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/services/volume_key_handler.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -245,6 +246,17 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _syncPageToSpread();
   }
 
+  String _getChapterKey(Chapter? chapter) {
+    if (chapter == null) return '';
+    if (chapter.link != null && chapter.link!.isNotEmpty) {
+      return chapter.link!;
+    }
+    if (chapter.localPath != null && chapter.localPath!.isNotEmpty) {
+      return chapter.localPath!;
+    }
+    return chapter.number?.toString() ?? '';
+  }
+
   Future<List<PageUrl>> _fetchChapterPages(Chapter chapter) async {
     if (chapter.localPath != null &&
         Directory(chapter.localPath!).existsSync()) {
@@ -260,7 +272,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           .toList();
       files.sort((a, b) => a.path.compareTo(b.path));
       return files.map((f) => PageUrl(f.path)).toList();
-    } else if (chapter.link != null) {
+    } else if (chapter.link != null && chapter.link!.isNotEmpty) {
       return await sourceController.activeMangaSource.value!.methods
           .getPageList(DEpisode(episodeNumber: '1', url: chapter.link!));
     }
@@ -268,36 +280,49 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }
 
   final RxSet<String> loadingChapterLinks = <String>{}.obs;
+  DateTime? _lastInlineLoadTime;
 
   Future<void> loadNextChapterInline() async {
     if (!overscrollToChapter.value || _isNavigating) return;
+
+    final now = DateTime.now();
+    if (_lastInlineLoadTime != null &&
+        now.difference(_lastInlineLoadTime!) < const Duration(milliseconds: 1500)) {
+      return;
+    }
+    _lastInlineLoadTime = now;
 
     final lastLoaded =
         loadedChapters.isNotEmpty ? loadedChapters.last : currentChapter.value;
     if (lastLoaded == null) return;
 
-    final curIdx = chapterList.indexOf(lastLoaded);
+    final curIdx = _findChapterIndex(lastLoaded);
     if (curIdx == -1) return;
 
     final nextIdx = getNextChapterIndex(curIdx);
     if (nextIdx == -1) return;
 
     final nextChapterObj = chapterList[nextIdx];
+    final nextChapterKey = _getChapterKey(nextChapterObj);
     if (loadedChapters.contains(nextChapterObj) ||
-        loadingChapterLinks.contains(nextChapterObj.link)) {
+        (nextChapterKey.isNotEmpty && loadingChapterLinks.contains(nextChapterKey))) {
       return;
     }
 
-    loadingChapterLinks.add(nextChapterObj.link ?? '');
+    if (nextChapterKey.isNotEmpty) {
+      loadingChapterLinks.add(nextChapterKey);
+    }
 
     try {
       final nextPages = await _fetchChapterPages(nextChapterObj);
       if (nextPages.isEmpty) {
-        loadingChapterLinks.remove(nextChapterObj.link);
+        if (nextChapterKey.isNotEmpty) {
+          loadingChapterLinks.remove(nextChapterKey);
+        }
         return;
       }
 
-      loadedChapterPages[nextChapterObj.link!] = nextPages;
+      loadedChapterPages[nextChapterKey] = nextPages;
 
       final List<ReaderPage> newSpreads = [];
       if (!isDualPage) {
@@ -327,7 +352,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         print("Error loading next chapter inline: $e");
       }
     } finally {
-      loadingChapterLinks.remove(nextChapterObj.link);
+      if (nextChapterKey.isNotEmpty) {
+        loadingChapterLinks.remove(nextChapterKey);
+      }
     }
   }
 
@@ -658,12 +685,23 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
                       Logger.i('Extension manga tracking failed: $e')));
             }
           } else {
+            final auth = Get.find<ServiceHandler>();
+            final currentItem = auth.mangaList.firstWhereOrNull(
+                (m) => m.id == media.id || m.mediaListId == media.id);
+            final currentStatus = (auth
+                        .onlineService.currentMedia.value.watchingStatus ??
+                    currentItem?.watchingStatus)
+                ?.toUpperCase();
+            final isPlanning =
+                currentStatus == 'PLANNING' || currentStatus == 'PLAN_TO_READ';
             final int currentOnlineProgress = int.tryParse(
-                    serviceHandler.onlineService.currentMedia.value.episodeCount ??
+                    auth.onlineService.currentMedia.value.episodeCount ??
+                        currentItem?.episodeCount ??
                         '0') ??
                 0;
-            if (newProgress > currentOnlineProgress) {
-              serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+            if (newProgress > currentOnlineProgress ||
+                (isPlanning && newProgress >= 1)) {
+              auth.onlineService.updateListEntry(UpdateListEntryParams(
                   listId: media.id,
                   status: "CURRENT",
                   progress: newProgress,
@@ -743,6 +781,16 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   }) {
     final chapter = manualChapter ?? currentChapter.value;
     if (chapter == null) return;
+
+    if (chapter.title == null || chapter.title!.isEmpty) {
+      final matched = chapterList.firstWhereOrNull((c) =>
+          (c.localPath != null && c.localPath!.isNotEmpty && c.localPath == chapter.localPath) ||
+          (c.link != null && c.link!.isNotEmpty && c.link == chapter.link) ||
+          (c.number != null && c.number == chapter.number));
+      if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
+        chapter.title = matched.title;
+      }
+    }
 
     final page = manualPage ?? currentPageIndex.value;
 
@@ -843,8 +891,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     currentPageIndex.value = initialAtBottom ? 999999 : 1;
 
     final chapter = currentChapter.value;
-    if (chapter?.link != null) {
-      await fetchImages(chapter!.link!, initialAtBottom: initialAtBottom);
+    final hasLocal = chapter?.localPath != null &&
+        Directory(chapter!.localPath!).existsSync();
+    final hasLink = chapter?.link != null && chapter!.link!.isNotEmpty;
+    if (hasLocal || hasLink) {
+      await fetchImages(chapter.link ?? chapter.localPath ?? '',
+          initialAtBottom: initialAtBottom);
     } else {
       _isNavigating = false;
     }
@@ -1010,7 +1062,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             ? loadedChapters.last
             : currentChapter.value;
         if (lastLoaded != null) {
-          final curIdx = chapterList.indexOf(lastLoaded);
+          final curIdx = _findChapterIndex(lastLoaded);
           if (curIdx == -1 || getNextChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
@@ -1030,7 +1082,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
             ? loadedChapters.first
             : currentChapter.value;
         if (firstLoaded != null) {
-          final curIdx = chapterList.indexOf(firstLoaded);
+          final curIdx = _findChapterIndex(firstLoaded);
           if (curIdx == -1 || getPrevChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
@@ -1269,7 +1321,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         if (spread.isTransition && !spread.isNextTransition && !_isNavigating) {
           final curChapter = currentChapter.value;
           if (curChapter != null) {
-            final curIdx = chapterList.indexOf(curChapter);
+            final curIdx = _findChapterIndex(curChapter);
             if (curIdx != -1) {
               final prevIdx = getPrevChapterIndex(curIdx);
               if (prevIdx != -1) {
@@ -1357,8 +1409,6 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final limit = preloadPages.value;
     if (limit <= 0 || pageList.isEmpty) return;
 
-    final sourceController = Get.find<SourceController>();
-
     for (int i = 1; i <= limit; i++) {
       final nextIndex = currentIndex + i;
       if (nextIndex < 0 || nextIndex >= pageList.length) break;
@@ -1366,12 +1416,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       final page = pageList[nextIndex];
       final url = page.url;
       if (url.startsWith('http')) {
-        final headers = (page.headers?.isEmpty ?? true)
-            ? {
-                'Referer':
-                    sourceController.activeMangaSource.value?.baseUrl ?? ''
-              }
-            : page.headers;
+        final headers = getPageImageHeaders(page.headers);
 
         AnymeXCacheManager.instance
             .getSingleFile(url, headers: headers)
@@ -1412,14 +1457,27 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         chapter: currentChapter.value!,
         totalChapters: chapterList.length.toString());
 
-    if (curCh.link != null) {
-      fetchImages(curCh.link!);
+    final hasLocal = curCh.localPath != null &&
+        Directory(curCh.localPath!).existsSync();
+    final hasLink = curCh.link != null && curCh.link!.isNotEmpty;
+    if (hasLocal || hasLink) {
+      fetchImages(curCh.link ?? curCh.localPath ?? '');
     }
   }
 
   void _initTracking() async {
     final chapter = currentChapter.value;
     if (chapter == null || chapter.number == null) return;
+
+    if (chapter.title == null || chapter.title!.isEmpty) {
+      final matched = chapterList.firstWhereOrNull((c) =>
+          (c.localPath != null && c.localPath!.isNotEmpty && c.localPath == chapter.localPath) ||
+          (c.link != null && c.link!.isNotEmpty && c.link == chapter.link) ||
+          c.number == chapter.number);
+      if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
+        chapter.title = matched.title;
+      }
+    }
 
     savedChapter.value =
         offlineStorageController.getReadChapter(media.id, chapter.number!);
@@ -1449,13 +1507,24 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
+      final auth = Get.find<ServiceHandler>();
+      final currentItem = auth.mangaList.firstWhereOrNull(
+          (m) => m.id == media.id || m.mediaListId == media.id);
+      final currentStatus = (auth
+                  .onlineService.currentMedia.value.watchingStatus ??
+              currentItem?.watchingStatus)
+          ?.toUpperCase();
+      final isPlanning =
+          currentStatus == 'PLANNING' || currentStatus == 'PLAN_TO_READ';
       final int currentOnlineProgress = int.tryParse(
-              serviceHandler.onlineService.currentMedia.value.episodeCount ??
+              auth.onlineService.currentMedia.value.episodeCount ??
+                  currentItem?.episodeCount ??
                   '0') ??
           0;
 
-      if (newProgress > currentOnlineProgress) {
-        serviceHandler.onlineService.updateListEntry(UpdateListEntryParams(
+      if (newProgress > currentOnlineProgress ||
+          (isPlanning && newProgress >= 1)) {
+        auth.onlineService.updateListEntry(UpdateListEntryParams(
             listId: media.id,
             status: "CURRENT",
             progress: newProgress,
@@ -1612,12 +1681,24 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     savePreferences();
   }
 
+  int _findChapterIndex(Chapter? chapter) {
+    if (chapter == null) return -1;
+    if (chapter.localPath != null && chapter.localPath!.isNotEmpty) {
+      final index = chapterList.indexWhere((c) => c.localPath == chapter.localPath);
+      if (index != -1) return index;
+    }
+    if (chapter.link != null && chapter.link!.isNotEmpty) {
+      final index = chapterList.indexWhere((c) => c.link == chapter.link);
+      if (index != -1) return index;
+    }
+    return chapterList.indexWhere((c) => c.number == chapter.number);
+  }
+
   void maybeShowChapterTransition(bool next) {
     final current = currentChapter.value;
     if (current == null) return;
 
-    final curIdx = chapterList.indexWhere(
-        (c) => c.number == current.number || c.link == current.link);
+    final curIdx = _findChapterIndex(current);
     if (curIdx == -1) return;
 
     final targetIdx = next ? curIdx + 1 : curIdx - 1;
@@ -1652,7 +1733,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final activeChapter = currentChapter.value;
     if (activeChapter == null) return;
 
-    final activePages = loadedChapterPages[activeChapter.link] ?? [];
+    final activeKey = _getChapterKey(activeChapter);
+    final activePages = loadedChapterPages[activeKey] ?? pageList;
     if (index < 0 || index >= activePages.length) return;
 
     final pageNumber = index + 1;
@@ -1724,8 +1806,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     _performSave(reason: "Saving before chapter is changed");
 
-    final index = chapterList.indexWhere(
-        (c) => c.number == current.number || c.link == current.link);
+    final index = _findChapterIndex(current);
     if (index == -1) return;
 
     final newIndex = next ? getNextChapterIndex(index) : getPrevChapterIndex(index);
@@ -1755,8 +1836,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       return;
     }
 
-    final index = chapterList.indexWhere(
-        (c) => c.number == chapter.number || c.link == chapter.link);
+    final index = _findChapterIndex(chapter);
     if (index == -1) {
       canGoPrev.value = false;
       canGoNext.value = false;
@@ -1808,10 +1888,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
         loadedChapters.clear();
         loadedChapterPages.clear();
-        if (currentChapter.value != null &&
-            currentChapter.value!.link != null) {
-          loadedChapters.add(currentChapter.value!);
-          loadedChapterPages[currentChapter.value!.link!] = data;
+        if (currentChapter.value != null) {
+          final curKey = _getChapterKey(currentChapter.value);
+          if (curKey.isNotEmpty) {
+            loadedChapters.add(currentChapter.value!);
+            loadedChapterPages[curKey] = data;
+          }
         }
 
         _computeSpreads();
@@ -1853,8 +1935,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void retryFetchImages() {
     final chapter = currentChapter.value;
-    if (chapter?.link != null) {
-      fetchImages(chapter!.link!);
+    if (chapter != null) {
+      final key = _getChapterKey(chapter);
+      if (key.isNotEmpty) {
+        fetchImages(key);
+      }
     }
   }
 
@@ -1980,7 +2065,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     } else {
       final activeChapter = currentChapter.value;
       final activePages = activeChapter != null
-          ? (loadedChapterPages[activeChapter.link] ?? pageList)
+          ? (loadedChapterPages[_getChapterKey(activeChapter)] ?? pageList)
           : pageList;
       if (currentPageIndex.value >= activePages.length) {
         chapterNavigator(true);

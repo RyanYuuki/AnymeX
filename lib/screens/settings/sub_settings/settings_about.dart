@@ -303,14 +303,14 @@ class _AboutPageState extends State<AboutPage> {
                                 const Icon(HugeIcons.strokeRoundedAlertSquare),
                             title: "Comment Policy",
                           ),
-                          CustomListTile(
-                            onTap: () async {
-                              await showPolicySheet(
-                                  context, PolicyType.watchTogetherPolicy);
-                            },
-                            leading: const Icon(Icons.people_rounded),
-                            title: "Watch Together Policy",
-                          ),
+                          // CustomListTile(
+                          //   onTap: () async {
+                          //     await showPolicySheet(
+                          //         context, PolicyType.watchTogetherPolicy);
+                          //   },
+                          //   leading: const Icon(Icons.people_rounded),
+                          //   title: "Watch Together Policy",
+                          // ),
                           CustomListTile(
                             onTap: () async {
                               snackBar('Checking for updates!');

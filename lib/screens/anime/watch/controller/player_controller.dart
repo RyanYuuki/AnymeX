@@ -62,33 +62,33 @@ import '../../../../database/isar_models/track.dart' as model;
 
 extension PlayerControllerExtensions on PlayerController {
   bool get hasNextEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = episodeList
+        .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
     return index != -1 && index < episodeList.length - 1;
   }
 
   bool get hasPreviousEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = episodeList
+        .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
     return index > 0;
   }
 
   Episode? get nextEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = episodeList
+        .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
     if (index == -1 || index >= episodeList.length - 1) return null;
     return episodeList[index + 1];
   }
 
   Episode? get previousEpisode {
-    final index =
-        episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+    final index = episodeList
+        .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
     if (index <= 0) return null;
     return episodeList[index - 1];
   }
 
-  int get currentEpisodeIndex =>
-      episodeList.indexWhere((e) => e.number == currentEpisode.value.number);
+  int get currentEpisodeIndex => episodeList
+      .indexWhere((e) => e.isSameEpisode(currentEpisode.value));
 }
 
 class PlayerController extends GetxController with WidgetsBindingObserver {
@@ -173,7 +173,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   Episode? get savedEpisode => offlineStorage.getWatchedEpisode(
-      anilistData.id, currentEpisode.value.number.toString());
+      anilistData.id, currentEpisode.value.number.toString(),
+      episode: currentEpisode.value);
 
   final offlineStorage = Get.find<OfflineStorageController>();
 
@@ -891,18 +892,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _initializeSwipeStuffs() async {
     try {
-      VolumeController.instance.showSystemUI = false;
-      volume.value = await VolumeController.instance.getVolume();
+      if (Platform.isAndroid || Platform.isIOS) {
+        VolumeController.instance.showSystemUI = false;
+        volume.value = await VolumeController.instance.getVolume();
+      } else {
+        volume.value = _basePlayer.state.volume;
+      }
     } catch (_) {}
 
     try {
-      brightness.value = await ScreenBrightness.instance.application;
-      _subscriptions
-          .add(ScreenBrightness.instance.onCurrentBrightnessChanged.listen(
-        (value) {
-          brightness.value = value;
-        },
-      ));
+      if (Platform.isAndroid || Platform.isIOS) {
+        brightness.value = await ScreenBrightness.instance.application;
+        _subscriptions
+            .add(ScreenBrightness.instance.onCurrentBrightnessChanged.listen(
+          (value) {
+            brightness.value = value;
+          },
+        ));
+      }
     } catch (_) {}
   }
 
@@ -1614,7 +1621,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
       final data = await sourceController.activeSource.value!.methods
           .getVideoList(d.DEpisode(
-              episodeNumber: episode.number.toString(), url: episode.link));
+        episodeNumber: episode.number.toString(),
+        url: episode.link,
+        sortMap: episode.sortMap.isEmpty ? null : episode.sortMap,
+      ));
 
       if (data.isEmpty) {
         PlayerBottomSheets.hideLoader();
@@ -1679,32 +1689,45 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (previousTrack == null) {
+      final savedAnime = offlineStorage.getAnimeById(anilistData.id);
+      final prevTrack = savedAnime?.currentEpisode?.currentTrack ??
+          savedAnime?.watchedEpisodes?.lastOrNull?.currentTrack;
+      if (prevTrack != null && prevTrack.isDub) {
+        final dubTrack = tracks.firstWhereOrNull((t) => t.isDub);
+        if (dubTrack != null) return dubTrack;
+      }
       return tracks.first;
     }
 
+    final prevIsDub = previousTrack.isDub;
     final scoredTracks = <Map<String, dynamic>>[];
 
     for (final track in tracks) {
       int score = 0;
-      final quality = track.quality!.toLowerCase();
-      final prevQuality = previousTrack.quality!.toLowerCase();
-      final isDub = prevQuality.contains('dub');
+      final quality = (track.quality ?? '').toLowerCase();
+      final prevQuality = (previousTrack.quality ?? '').toLowerCase();
+      final trackIsDub = track.isDub;
 
-      if ((isDub && quality.contains('dub')) ||
-          (!isDub && !quality.contains('dub'))) {
-        score += 4;
+      if (prevIsDub == trackIsDub) {
+        score += 100;
+      } else {
+        score -= 100;
       }
 
       final prevQualityRegex = RegExp(r'\d{3,4}p');
       final prevQualityMatch = prevQualityRegex.firstMatch(prevQuality);
       if (prevQualityMatch != null &&
           quality.contains(prevQualityMatch.group(0)!)) {
-        score += 2;
+        score += 20;
       }
 
-      final prevServer = prevQuality.split(' ').first;
-      if (quality.startsWith(prevServer)) {
-        score += 1;
+      final prevServer = prevQuality.split(' ').first.trim();
+      if (prevServer.isNotEmpty && quality.startsWith(prevServer)) {
+        score += 10;
+      }
+
+      if (prevQuality.isNotEmpty && quality == prevQuality) {
+        score += 50;
       }
 
       scoredTracks.add({'track': track, 'score': score});
@@ -1941,7 +1964,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     TorrentStreamResolver.stopActiveStream();
 
-    ScreenBrightness.instance.resetApplicationScreenBrightness();
+    try {
+      if (Platform.isAndroid || Platform.isIOS) {
+        await ScreenBrightness.instance.resetApplicationScreenBrightness();
+      }
+    } catch (_) {}
   }
 
   void _revertOrientations() {
@@ -2138,13 +2165,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     volumeIndicator.value = false;
     _volumeTimer?.cancel();
 
-    unawaited(
-      ScreenBrightness.instance
-          .setApplicationScreenBrightness(value)
-          .catchError((e) {
-        Logger.e("Error setting brightness: $e");
-      }),
-    );
+    if (Platform.isAndroid || Platform.isIOS) {
+      unawaited(
+        ScreenBrightness.instance
+            .setApplicationScreenBrightness(value)
+            .catchError((e) {
+          Logger.e("Error setting brightness: $e");
+        }),
+      );
+    }
 
     if (!isDragging) {
       _hideBrightnessIndicatorAfterDelay();
@@ -2739,6 +2768,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         lastWatchedTime: DateTime.now().millisecondsSinceEpoch,
         source: episode.source,
         desc: episode.desc,
+        sortKeys: episode.sortKeys,
+        sortVals: episode.sortVals,
       );
 
       await offlineStorage.addOrUpdateAnime(

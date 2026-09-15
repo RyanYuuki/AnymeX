@@ -7,6 +7,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
 import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
@@ -24,10 +25,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnilistAuth extends GetxController {
+  http.Client get _client => NetworkManager.instance.compatibleClient;
   RxBool isLoggedIn = false.obs;
   Rx<Profile> profileData = Profile().obs;
   final offlineStorage = Get.find<OfflineStorageController>();
@@ -90,16 +93,11 @@ class AnilistAuth extends GetxController {
   }
 
   void _handle403(http.Response response) {
-    dynamic errorJson;
-    try {
-      errorJson = jsonDecode(response.body);
-    } catch (_) {}
-
-    const base = "Why is it 403";
-    final apiMessage = errorJson?['errors']?[0]?['message'] as String?;
+    AnilistErrorHandler.handleResponse(response);
+    final apiMessage = AnilistErrorHandler.extractErrorMessage(response.body);
     final message = apiMessage != null && apiMessage.isNotEmpty
-        ? "$base: $apiMessage"
-        : "$base: Forbidden (error 403)";
+        ? apiMessage
+        : "Forbidden (error 403)";
 
     throw Exception(message);
   }
@@ -121,7 +119,7 @@ class AnilistAuth extends GetxController {
         }
       }
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse(url),
         headers: headers,
         body: json.encode(body),
@@ -137,10 +135,12 @@ class AnilistAuth extends GetxController {
       }
 
       if (response.statusCode != 429 || attempt >= maxRetries) {
+        if (response.statusCode != 200) {
+          AnilistErrorHandler.handleResponse(response);
+        }
         return response;
       }
 
-      // Parse Retry After header
       final retryAfter = response.headers['retry-after'];
       final waitSeconds = retryAfter != null
           ? (int.tryParse(retryAfter) ?? (2 << attempt))
@@ -153,6 +153,7 @@ class AnilistAuth extends GetxController {
 
       Logger.i(
           'AniList 429 rate limit hit, retry ${attempt + 1}/$maxRetries after ${waitSeconds}s');
+      AnilistErrorHandler.handleResponse(response);
       await Future.delayed(Duration(seconds: waitSeconds));
       attempt++;
     }
@@ -258,7 +259,7 @@ class AnilistAuth extends GetxController {
         title: AnymeXText(
           'Login with Token',
           style: TextStyle(
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
             color: theme.onSurface,
           ),
@@ -270,7 +271,7 @@ class AnilistAuth extends GetxController {
             AnymeXText(
               'Please paste the token from the browser',
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 color: theme.onSurface.opaque(0.7),
               ),
             ),
@@ -280,7 +281,7 @@ class AnilistAuth extends GetxController {
               decoration: InputDecoration(
                 hintText: 'Enter token here',
                 hintStyle: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   color: theme.onSurface.opaque(0.5),
                 ),
                 filled: true,
@@ -295,7 +296,7 @@ class AnilistAuth extends GetxController {
                 ),
               ),
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 color: theme.onSurface,
               ),
               maxLines: 3,
@@ -308,7 +309,7 @@ class AnilistAuth extends GetxController {
             child: AnymeXText(
               'Cancel',
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 color: theme.onSurface.opaque(0.7),
               ),
             ),
@@ -343,7 +344,7 @@ class AnilistAuth extends GetxController {
             child: AnymeXText(
               'Login',
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
                 color: theme.onPrimaryContainer,
               ),
@@ -356,7 +357,7 @@ class AnilistAuth extends GetxController {
 
   Future<void> _exchangeCodeForToken(
       String code, String clientId, String clientSecret) async {
-    final response = await http.post(
+    final response = await _client.post(
       Uri.parse('https://anilist.co/api/v2/oauth/token'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -505,7 +506,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1089,10 +1090,15 @@ class AnilistAuth extends GetxController {
             averageScore
             genres
             tags { name }
-            startDate { year }
+            startDate { year month day }
+            endDate { year month day }
             title { userPreferred english romaji native }
             coverImage { large }
-            nextAiringEpisode { episode }
+            nextAiringEpisode {
+              episode
+              airingAt
+              timeUntilAiring
+            }
             mediaListEntry { id }
           }
         }
@@ -1477,7 +1483,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1510,7 +1516,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1543,7 +1549,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1576,7 +1582,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1609,7 +1615,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1705,7 +1711,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1744,7 +1750,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1785,7 +1791,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1824,7 +1830,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1867,7 +1873,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1906,7 +1912,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -1972,12 +1978,20 @@ class AnilistAuth extends GetxController {
             nextAiringEpisode {
               episode
               airingAt
+              timeUntilAiring
             }
             averageScore
             type
             genres
             startDate {
               year
+              month
+              day
+            }
+            endDate {
+              year
+              month
+              day
             }
             coverImage {
               large
@@ -2006,7 +2020,7 @@ class AnilistAuth extends GetxController {
         throw Exception('Failed to get user ID');
       }
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -2090,7 +2104,7 @@ class AnilistAuth extends GetxController {
      
       if (matched == null || matched.mediaListId == null || matched.id == matched.mediaListId) {
         try {
-          final res = await http.post(
+          final res = await _client.post(
             Uri.parse('https://graphql.anilist.co'),
             headers: {
               'Authorization': 'Bearer $token',
@@ -2127,7 +2141,7 @@ class AnilistAuth extends GetxController {
         return;
       }
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -2240,7 +2254,7 @@ class AnilistAuth extends GetxController {
         variables['private'] = isPrivate;
       }
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -2361,7 +2375,7 @@ class AnilistAuth extends GetxController {
         throw Exception('Failed to get user ID');
       }
 
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -2440,7 +2454,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -2495,7 +2509,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -2556,7 +2570,7 @@ class AnilistAuth extends GetxController {
   ''';
 
     try {
-      final response = await http.post(
+      final response = await _client.post(
         Uri.parse('https://graphql.anilist.co'),
         headers: {
           'Authorization': 'Bearer $token',

@@ -85,7 +85,8 @@ class EpisodeSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                 ],
-                const AnymeXText('Layout Style',
+                const AnymeXText(
+                  'Layout Style',
                   variant: TextVariant.bold,
                   size: 14,
                 ),
@@ -121,11 +122,13 @@ class EpisodeSection extends StatelessWidget {
         return const NoSourceSelectedWidget();
       }
 
-      final activeSource = sourceController.activeSource.value ?? installed.first;
-      final colors = context.colors;
+      final activeSource =
+          sourceController.activeSource.value ?? installed.first;
       final titleText = searchedTitle is RxString
           ? searchedTitle.value
-          : (searchedTitle is Rx ? searchedTitle.value : searchedTitle.toString());
+          : (searchedTitle is Rx
+              ? searchedTitle.value
+              : searchedTitle.toString());
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,64 +151,6 @@ class EpisodeSection extends StatelessWidget {
                   Media.froDMedia(manga, controller.media.value.mediaType));
             },
           ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest
-                  .opaque(0.2, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-              ),
-            ),
-            child: Row(
-              children: [
-                const Expanded(
-                  child: AnymeXText('Episodes',
-                    variant: TextVariant.bold,
-                    size: 18,
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => _showEpisodeSettingsDialog(context),
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceContainerHighest
-                            .opaque(0.35, iReallyMeanIt: true),
-                        borderRadius: BorderRadius.circular(14),
-                        border: Border.all(
-                          color: colors.outline
-                              .opaque(0.15, iReallyMeanIt: true),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.settings_outlined,
-                            size: 16,
-                            color: colors.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          AnymeXText('Settings',
-                            size: 12,
-                            color: colors.primary,
-                            variant: TextVariant.bold,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
           const SizedBox(height: 12),
         ],
       );
@@ -214,8 +159,7 @@ class EpisodeSection extends StatelessWidget {
 
   Widget _buildEpisodeListSliver(BuildContext context) {
     return Obx(() {
-      final episodes =
-          Get.find<MediaDetailsController>(tag: tag).episodeList;
+      final episodes = Get.find<MediaDetailsController>(tag: tag).episodeList;
       if (episodeError.value) {
         return const SliverToBoxAdapter(
           child: Center(
@@ -239,6 +183,7 @@ class EpisodeSection extends StatelessWidget {
           episodeList: episodes,
           anilistData: anilistData is Media ? anilistData : null,
           isSliverMode: true,
+          onSettingsTap: () => _showEpisodeSettingsDialog(context),
         );
       }
     });
@@ -246,18 +191,20 @@ class EpisodeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final installed = sourceController.installedExtensions.isNotEmpty;
+
     if (isSliverMode) {
       return SliverMainAxisGroup(
         slivers: [
           SliverPadding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             sliver: SliverToBoxAdapter(child: _buildHeader(context)),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: _buildEpisodeListSliver(context),
-          ),
+          if (installed)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: _buildEpisodeListSliver(context),
+            ),
         ],
       );
     }
@@ -323,15 +270,16 @@ class _ProviderOptionTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText(title,
+                    AnymeXText(
+                      title,
                       variant: TextVariant.semiBold,
                       size: 13,
                     ),
                     const SizedBox(height: 2),
-                    AnymeXText(subtitle,
+                    AnymeXText(
+                      subtitle,
                       size: 11,
-                      color: colors.onSurface
-                          .opaque(0.6, iReallyMeanIt: true),
+                      color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                     ),
                   ],
                 ),

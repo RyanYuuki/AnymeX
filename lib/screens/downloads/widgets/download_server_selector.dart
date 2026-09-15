@@ -12,6 +12,8 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/screens/downloads/widgets/download_permission_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class DownloadServerSelector extends StatefulWidget {
@@ -32,15 +34,18 @@ class DownloadServerSelector extends StatefulWidget {
     required Source source,
     required OfflineMedia media,
   }) async {
-    final result = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => DownloadServerSelector(
+    if (!await DownloadPermissionDialog.checkAndPrompt(context)) {
+      return false;
+    }
+    if (!context.mounted) return false;
+    final result = await AnymeXSheet.custom<bool>(
+      DownloadServerSelector(
         episodes: episodes,
         source: source,
         media: media,
       ),
+      context,
+      showDragHandle: true,
     );
     return result ?? false;
   }
@@ -166,15 +171,13 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.85,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildHandle(theme),
           _buildHeader(theme),
           const Divider(height: 1, thickness: 0.5),
           Flexible(child: _buildBody(theme)),
@@ -183,16 +186,6 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
       ),
     );
   }
-
-  Widget _buildHandle(ColorScheme theme) => Container(
-        width: 40,
-        height: 4,
-        margin: const EdgeInsets.only(top: 12, bottom: 8),
-        decoration: BoxDecoration(
-          color: theme.onSurface.opaque(0.2),
-          borderRadius: BorderRadius.circular(4),
-        ),
-      );
 
   Widget _buildHeader(ColorScheme theme) {
     return Padding(

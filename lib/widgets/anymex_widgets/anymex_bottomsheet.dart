@@ -122,7 +122,7 @@ Widget loginSheetHelper({
               child: AnymeXText(
                 title,
                 style: const TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),

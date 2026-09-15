@@ -434,11 +434,11 @@ class _ListEditorModalState extends State<ListEditorModal> {
         : statusLabel;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
         left: 20,
         right: 20,
         top: 16,
-        bottom: MediaQuery.viewInsetsOf(context).bottom + 24,
+        bottom: 24,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -264,14 +264,27 @@ class ChipTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Get.find<Settings>();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
       child: Obx(() {
         final lists = controller.customLists;
         final selectedIndex = controller.selectedListIndex.value;
         final isUnified = General.unifiedLibrary.get<bool>(true);
+        final isLegacy = settings.useLegacyNavbar;
 
         final pillItems = <PillItem>[];
+        if (isLegacy) {
+          pillItems.add(
+            PillItem(
+              icon: Iconsax.clock,
+              label: 'History',
+              isSelected: selectedIndex == -1,
+              onTap: () => controller.selectList(-1),
+            ),
+          );
+        }
+
         for (int i = 0; i < lists.length; i++) {
           final list = lists[i];
           final listName = list.listName ?? '';
@@ -321,21 +334,22 @@ class LibrarySegmentedControl extends StatelessWidget {
               ? [ItemType.anime]
               : [ItemType.anime, ItemType.manga, ItemType.novel];
 
-      final currentIndex = availableTypes.indexOf(controller.type.value);
+      final items = availableTypes.map((itemType) {
+        return PillItem(
+          icon: _getTypeIcon(itemType),
+          label: _getTypeLabel(itemType),
+          isSelected: controller.type.value == itemType,
+          onTap: () => controller.switchCategory(itemType),
+        );
+      }).toList();
 
-      return AnymeXTabBar(
-        selectTabs:
-            availableTypes.map((itemType) => _getTypeLabel(itemType)).toList(),
-        selectedIndex: currentIndex < 0 ? 0 : currentIndex,
-        height: 52,
-        icons:
-            availableTypes.map((itemType) => _getTypeIcon(itemType)).toList(),
-        activeColor: context.colors.secondary,
-        activeTextColor: context.colors.onSecondary,
-        inactiveTextColor: context.colors.onSurfaceVariant,
-        onTabSelected: (index) {
-          controller.switchCategory(availableTypes[index]);
-        },
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: AnymeXPills(
+          expandEqually: true,
+          scrollPadding: EdgeInsets.zero,
+          items: items,
+        ),
       );
     });
   }
@@ -350,7 +364,7 @@ class LibrarySegmentedControl extends StatelessWidget {
         case ItemType.manga:
           return 'Manga';
         case ItemType.novel:
-          return 'Novels';
+          return 'Novel';
       }
     }
   }
@@ -362,11 +376,9 @@ class LibrarySegmentedControl extends StatelessWidget {
       case ItemType.manga:
         return serviceHandler.serviceType.value == ServicesType.simkl
             ? Iconsax.monitor
-            : Icons.menu_book_outlined;
-      case ItemType.novel:
-        return serviceHandler.serviceType.value == ServicesType.simkl
-            ? Icons.library_books
             : Iconsax.book;
+      case ItemType.novel:
+        return Icons.auto_stories_rounded;
     }
   }
 }

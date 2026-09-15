@@ -1,7 +1,7 @@
 name: anymex
 description: "An Multiservice Tracking Client"
 publish_to: "https://github.com/RyanYuuki/AnymeX"
-version: 3.1.6+38
+version: 3.1.7+39
 
 environment:
     sdk: ">=3.4.4 <4.0.0"
@@ -33,7 +33,6 @@ dependencies:
     flutter_web_auth_2: 5.0.3 
     get: ^4.7.3
     grouped_list: ^6.0.0
-    google_fonts: ^6.2.1
     hive: ^2.2.3
     hive_flutter: ^1.1.0
     html: any
@@ -53,20 +52,19 @@ dependencies:
     outlined_text: ^1.0.1
     media_kit:
         git:
-            url: https://github.com/Predidit/media-kit.git
-            ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+            url: https://github.com/RyanYuuki/media-kit.git
+            ref: main
             path: ./media_kit
     media_kit_video:
         git:
-            url: https://github.com/Predidit/media-kit.git
-            ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+            url: https://github.com/RyanYuuki/media-kit.git
+            ref: main
             path: ./media_kit_video
     media_kit_libs_video:
         git:
-            url: https://github.com/Predidit/media-kit.git
-            ref: 11d02cb804b8faf944137834a1b0ac80880a4079
+            url: https://github.com/RyanYuuki/media-kit.git
+            ref: main
             path: ./libs/universal/media_kit_libs_video
-    media_kit_libs_windows_video: ^1.0.11
 
     package_info_plus: any
     path: ^1.9.0
@@ -106,7 +104,7 @@ dependencies:
     dart_discord_presence: ^1.2.0
     firebase_core: ^4.4.0
     firebase_analytics: ^12.1.1
-    firebase_messaging: ^16.1.1
+    firebase_messaging: ^16.6.0
     flutter_local_notifications: ^17.2.2
     background_downloader: ^9.5.2
     auto_size_text: ^3.0.0
@@ -151,39 +149,48 @@ dependency_overrides:
   flutter_inappwebview: 6.2.0-beta.2
   media_kit:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./media_kit
   media_kit_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./media_kit_video
   media_kit_libs_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/universal/media_kit_libs_video
   media_kit_libs_linux:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/linux/media_kit_libs_linux
   media_kit_libs_ios_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/ios/media_kit_libs_ios_video
   media_kit_libs_android_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/android/media_kit_libs_android_video
   media_kit_libs_windows_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/windows/media_kit_libs_windows_video
   media_kit_libs_macos_video:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/macos/media_kit_libs_macos_video
   media_kit_libs_ohos:
     git:
-      url: https://github.com/Predidit/media-kit.git
+      url: https://github.com/RyanYuuki/media-kit.git
+      ref: main
       path: ./libs/ohos/media_kit_libs_ohos
 
 flutter_launcher_icons:
@@ -218,18 +225,12 @@ flutter:
         - .env
 
     fonts:
-        - family: Poppins
+        - family: Linotte
           fonts:
               - asset: assets/fonts/Linotte-Regular.otf
                 weight: 400
-
-        - family: Poppins-SemiBold
-          fonts:
               - asset: assets/fonts/Linotte-SemiBold.otf
                 weight: 600
-
-        - family: Poppins-Bold
-          fonts:
               - asset: assets/fonts/Linotte-Bold.otf
                 weight: 700
 
@@ -237,6 +238,6 @@ inno_bundle:
     id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c
     publisher: Ryan Yuuki
     name: AnymeX
-    version: 3.1.6
+    version: 3.1.7
     admin: auto
     installer_icon: ./anymex.ico

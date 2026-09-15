@@ -1730,7 +1730,7 @@ class _MoreOptionsPillContent extends StatelessWidget {
                     'Extension Settings',
                     style: TextStyle(
                       fontSize: 13,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       fontWeight: FontWeight.w500,
                       color: colors.onSurface,
                     ),
@@ -1749,7 +1749,7 @@ class _MoreOptionsPillContent extends StatelessWidget {
                     'Open Webview',
                     style: TextStyle(
                       fontSize: 13,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       fontWeight: FontWeight.w500,
                       color: colors.onSurface,
                     ),

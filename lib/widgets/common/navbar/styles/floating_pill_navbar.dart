@@ -49,7 +49,52 @@ class _FloatingPillNavBar extends StatefulWidget {
   State<_FloatingPillNavBar> createState() => _FloatingPillNavBarState();
 }
 
-class _FloatingPillNavBarState extends State<_FloatingPillNavBar> {
+class _FloatingPillNavBarState extends State<_FloatingPillNavBar>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _subWidgetController;
+  late CurvedAnimation _subWidgetCurve;
+
+  bool _hasSubWidget(int index) {
+    final itemCount = widget.items.length;
+    if (index < 0 || index >= itemCount) return false;
+    final item = widget.items[index];
+    return item.subWidget != null ||
+        (item.subItems != null && item.subItems!.isNotEmpty);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _subWidgetController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      value: _hasSubWidget(widget.currentIndex) ? 1.0 : 0.0,
+    );
+    _subWidgetCurve = CurvedAnimation(
+      parent: _subWidgetController,
+      curve: Curves.fastOutSlowIn,
+    );
+  }
+
+  @override
+  void didUpdateWidget(_FloatingPillNavBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.currentIndex != widget.currentIndex) {
+      if (_hasSubWidget(widget.currentIndex)) {
+        _subWidgetController.forward();
+      } else {
+        _subWidgetController.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _subWidgetCurve.dispose();
+    _subWidgetController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -76,53 +121,53 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar> {
             bottom: (widget.isDesktop ? 0 : 12) + bottomPadding,
           );
 
-    final mainContent = SizedBox(
-      width: widget.isDesktop
-          ? double.infinity
-          : MediaQuery.of(context).size.width * 0.85,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        margin: finalMargin,
-        decoration: BoxDecoration(
-          borderRadius: borderRadius,
-          border: Border.all(
-            color: theme.colorScheme.onSurface
-                .opaque(0.12, iReallyMeanIt: true),
-            width: 0.8,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.opaque(0.12, iReallyMeanIt: true),
-              blurRadius: 24,
-              spreadRadius: 0,
-              offset: const Offset(0, 6),
+    final mainContent = RepaintBoundary(
+      child: SizedBox(
+        width: widget.isDesktop
+            ? double.infinity
+            : MediaQuery.of(context).size.width * 0.85,
+        child: Container(
+          margin: finalMargin,
+          decoration: BoxDecoration(
+            borderRadius: borderRadius,
+            border: Border.all(
+              color: theme.colorScheme.onSurface
+                  .opaque(0.12, iReallyMeanIt: true),
+              width: 0.8,
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: borderRadius,
-          child: Obx(() {
-            final isTranslucent = translucent.value;
-            return BackdropFilter(
-              filter: isTranslucent
-                  ? ImageFilter.blur(sigmaX: 25, sigmaY: 25)
-                  : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isTranslucent
-                      ? theme.colorScheme.surfaceContainer
-                          .withValues(alpha: 0.6)
-                      : theme.colorScheme.surfaceContainer
-                          .withValues(alpha: 0.95),
-                  borderRadius: borderRadius,
-                ),
-                child: widget.isDesktop
-                    ? _buildDesktopLayout(theme)
-                    : _buildMobileLayout(context, theme),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.opaque(0.12, iReallyMeanIt: true),
+                blurRadius: 24,
+                spreadRadius: 0,
+                offset: const Offset(0, 6),
               ),
-            );
-          }),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: borderRadius,
+            child: Obx(() {
+              final isTranslucent = translucent.value;
+              return BackdropFilter(
+                filter: isTranslucent
+                    ? ImageFilter.blur(sigmaX: 25, sigmaY: 25)
+                    : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: isTranslucent
+                        ? theme.colorScheme.surfaceContainer
+                            .withValues(alpha: 0.6)
+                        : theme.colorScheme.surfaceContainer
+                            .withValues(alpha: 0.95),
+                    borderRadius: borderRadius,
+                  ),
+                  child: widget.isDesktop
+                      ? _buildDesktopLayout(theme)
+                      : _buildMobileLayout(context, theme),
+                ),
+              );
+            }),
+          ),
         ),
       ),
     );
@@ -144,39 +189,83 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar> {
     const double unselectedFlex = 1.0;
     final totalFlex = selectedFlex + unselectedFlex * (itemCount - 1);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      child: SizedBox(
-        height: 52,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final totalWidth = constraints.maxWidth;
-            return Row(
-              children: List.generate(itemCount, (index) {
-                final isSelected = widget.currentIndex == index;
-                final flex = isSelected ? selectedFlex : unselectedFlex;
-                final targetWidth = totalWidth * flex / totalFlex;
+    final currentItem =
+        (widget.currentIndex >= 0 && widget.currentIndex < itemCount)
+            ? widget.items[widget.currentIndex]
+            : null;
+    final hasSubWidget = currentItem != null &&
+        (currentItem.subWidget != null ||
+            (currentItem.subItems != null && currentItem.subItems!.isNotEmpty));
 
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 450),
-                  curve: const Cubic(0.34, 1.56, 0.64, 1.0),
-                  width: targetWidth,
-                  child: GestureDetector(
-                    onTap: () => widget.items[index].onTap(index),
-                    behavior: HitTestBehavior.opaque,
-                    child: _FloatingPillNavItem(
-                      item: widget.items[index],
-                      isSelected: isSelected,
-                      theme: theme,
-                      isVertical: false,
-                    ),
-                  ),
-                );
-              }),
-            );
-          },
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedBuilder(
+          animation: _subWidgetCurve,
+          builder: (context, child) => ClipRect(
+            child: Align(
+              alignment: Alignment.topCenter,
+              heightFactor: _subWidgetCurve.value,
+              child: child,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 2),
+            child: hasSubWidget
+                ? (currentItem.subWidget != null
+                    ? currentItem.subWidget!
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            for (final sub in currentItem.subItems!)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4),
+                                child: _buildSubNavItem(theme, sub),
+                              ),
+                          ],
+                        ),
+                      ))
+                : const SizedBox.shrink(),
+          ),
         ),
-      ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          child: SizedBox(
+            height: 52,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final totalWidth = constraints.maxWidth;
+                return Row(
+                  children: List.generate(itemCount, (index) {
+                    final isSelected = widget.currentIndex == index;
+                    final flex = isSelected ? selectedFlex : unselectedFlex;
+                    final targetWidth = totalWidth * flex / totalFlex;
+
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 450),
+                      curve: const Cubic(0.34, 1.56, 0.64, 1.0),
+                      width: targetWidth,
+                      child: GestureDetector(
+                        onTap: () => widget.items[index].onTap(index),
+                        behavior: HitTestBehavior.opaque,
+                        child: _FloatingPillNavItem(
+                          item: widget.items[index],
+                          isSelected: isSelected,
+                          theme: theme,
+                          isVertical: false,
+                        ),
+                      ),
+                    );
+                  }),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 

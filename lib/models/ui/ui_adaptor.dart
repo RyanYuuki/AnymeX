@@ -35,6 +35,7 @@ class UISettings {
   int navBarStyle;
   String appFontFamily;
   double bottomNavBarMargin;
+  bool useLegacyNavbar;
 
   UISettings({
     this.glowMultiplier = 1.0,
@@ -54,7 +55,7 @@ class UISettings {
     Map<String, bool>? homePageCardsSimkl,
     this.enableAnimation = true,
     this.disableGradient = false,
-    this.cardStyle = 2,
+    this.cardStyle = 0,
     this.historyCardStyle = 0,
     this.liquidMode = true,
     this.retainOriginalColor = false,
@@ -69,6 +70,7 @@ class UISettings {
     this.navBarStyle = 1,
     this.appFontFamily = '',
     this.bottomNavBarMargin = 32.0,
+    this.useLegacyNavbar = true,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -206,6 +208,8 @@ class UISettings {
           UISettingsKeys.appFontFamily.get<String>(uiDefaults.appFontFamily),
       bottomNavBarMargin: UISettingsKeys.bottomNavBarMargin
           .get<double>(uiDefaults.bottomNavBarMargin),
+      useLegacyNavbar: UISettingsKeys.useLegacyNavbar
+          .get<bool>(uiDefaults.useLegacyNavbar),
     );
   }
 }

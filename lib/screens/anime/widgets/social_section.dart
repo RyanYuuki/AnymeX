@@ -158,7 +158,7 @@ class SocialSection extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                   ),
                   children: [
                     TextSpan(

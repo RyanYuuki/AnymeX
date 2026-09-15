@@ -32,6 +32,8 @@ enum General {
   navigationTabOrder,
   useAlternateTitle,
   unifiedLibrary,
+  joinDialogShowCount,
+  wrongTitleIsCardView,
 }
 
 enum ThemeKeys {
@@ -43,6 +45,8 @@ enum ThemeKeys {
   customColorIndex,
   logoAnimationType,
   customHexColor,
+  customLogos,
+  selectedCustomLogoId,
 }
 
 enum PlayerKeys { useLibass, useMediaKit, useExternalPlayer, audioChannelLayout }
@@ -53,6 +57,7 @@ enum PlayerUiKeys {
   playerControlTheme,
   playerControlThemesJson,
   mediaIndicatorTheme,
+  episodeStyle,
   mpvCoreSettings,
   betterPlayerCoreSettings,
   mpvVisualSettings,
@@ -181,8 +186,6 @@ enum AuthKeys {
   mangaBakaAuthToken,
 }
 
-enum SearchKeys { novelSearchedQueries }
-
 enum LibraryKeys { libraryLastType }
 
 enum TapZoneKeys {
@@ -207,6 +210,7 @@ enum DynamicKeys {
   mappedMediaTitle,
   offlineVideoProgress,
   stickySource,
+  stickyServer,
   trackBindings;
 
   T get<T>(dynamic id, [T? defaultValue]) {
@@ -296,6 +300,7 @@ enum UISettingsKeys {
   navBarStyle,
   appFontFamily,
   bottomNavBarMargin,
+  useLegacyNavbar,
 }
 
 enum DownloadKeys {
@@ -305,4 +310,17 @@ enum DownloadKeys {
   downloadChunks,
   hlsParallelSegments,
   enableJxlCompression,
+  hasSeenDownloadGuide,
+}
+
+enum DiscordRpcKeys {
+  hideNsfw,
+  showTimestamps,
+  animeWatchingFormat,
+  animeDetailsFormat,
+  mangaReadingFormat,
+  mangaDetailsFormat,
+  novelReadingFormat,
+  novelDetailsFormat,
+  idleFormat,
 }

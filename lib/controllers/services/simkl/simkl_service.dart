@@ -31,13 +31,15 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/controllers/services/simkl/simkl_api.dart';
 
 enum SimklSearchCategory { anime, movie, show }
 
 class SimklService extends GetxController
     implements BaseService, OnlineService {
+  http.Client get _client => NetworkManager.instance.compatibleClient;
   final api = SimklApi();
   RxList<Media> trendingMovies = <Media>[].obs;
   RxList<Media> trendingSeries = <Media>[].obs;
@@ -406,7 +408,9 @@ class SimklService extends GetxController
       ].obs;
 
   @override
-  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+  RxList<Widget> novelWidgets(BuildContext context) {
+    return RxList.empty();
+  }
 
   @override
   bool get isDataLoaded =>
@@ -450,7 +454,7 @@ class SimklService extends GetxController
           'https://api.simkl.com/$endpointType/episodes/$id?client_id=$apiKey');
       try {
         final response =
-            await get(url, headers: {'Content-Type': 'application/json'});
+            await _client.get(url, headers: {'Content-Type': 'application/json'});
         if (response.statusCode == 200) {
           final dynamic decoded = json.decode(response.body);
           if (decoded is! List || decoded.isEmpty) return {};
@@ -541,7 +545,7 @@ class SimklService extends GetxController
                 ]
               };
 
-        final response = await post(
+        final response = await _client.post(
           url,
           headers: {
             'Content-Type': 'application/json',
@@ -575,7 +579,7 @@ class SimklService extends GetxController
               };
 
         if (historyBody != null) {
-          await post(historyUrl,
+          await _client.post(historyUrl,
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer $token',
@@ -604,7 +608,7 @@ class SimklService extends GetxController
                   }
                 ]
               };
-        await post(
+        await _client.post(
           ratingsUrl,
           headers: {
             'Content-Type': 'application/json',
@@ -678,7 +682,7 @@ class SimklService extends GetxController
               }
             ]
           };
-          await post(
+          await _client.post(
             url,
             headers: {
               'Content-Type': 'application/json',
@@ -707,7 +711,7 @@ class SimklService extends GetxController
               }
             ]
           };
-          await post(
+          await _client.post(
             historyUrl,
             headers: {
               'Content-Type': 'application/json',
@@ -728,7 +732,7 @@ class SimklService extends GetxController
               }
             ]
           };
-          await post(
+          await _client.post(
             ratingsUrl,
             headers: {
               'Content-Type': 'application/json',
@@ -752,7 +756,7 @@ class SimklService extends GetxController
     final token = AuthKeys.simklAuthToken.get<String?>();
     final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
     final url = Uri.parse('https://api.simkl.com/sync/history/remove');
-    final response = await post(url,
+    final response = await _client.post(url,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -835,7 +839,7 @@ class SimklService extends GetxController
     final clientSecret = dotenv.env['SIMKL_CLIENT_SECRET'];
 
     final url = Uri.parse('https://api.simkl.com/oauth/token');
-    final req = await post(
+    final req = await _client.post(
       url,
       headers: {
         'Content-Type': 'application/json',
@@ -866,14 +870,14 @@ class SimklService extends GetxController
     final token = AuthKeys.simklAuthToken.get<String?>();
     final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
     final url = Uri.parse('https://api.simkl.com/users/settings');
-    final response = await post(url, headers: {
+    final response = await _client.post(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
       'simkl-api-key': apiKey!
     });
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final req = await post(
+      final req = await _client.post(
           Uri.parse(
               'https://api.simkl.com/users/${data['account']['id']}/stats'),
           headers: {
@@ -906,7 +910,7 @@ class SimklService extends GetxController
     final token = AuthKeys.simklAuthToken.get<String?>();
     final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
     final url = Uri.parse('https://api.simkl.com/sync/all-items/movies');
-    final response = await get(url, headers: {
+    final response = await _client.get(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
       'simkl-api-key': apiKey!
@@ -928,7 +932,7 @@ class SimklService extends GetxController
     final token = AuthKeys.simklAuthToken.get<String?>();
     final apiKey = dotenv.env['SIMKL_CLIENT_ID'];
     final url = Uri.parse('https://api.simkl.com/sync/all-items/shows');
-    final response = await get(url, headers: {
+    final response = await _client.get(url, headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
       'simkl-api-key': apiKey!

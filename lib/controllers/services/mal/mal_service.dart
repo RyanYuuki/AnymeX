@@ -26,6 +26,8 @@ import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/widgets/common/installed_extensions_gridview.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_manga.dart';
 import 'package:anymex/utils/function.dart';
@@ -39,10 +41,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:anymex/controllers/network/network_manager.dart';
 
 import 'package:anymex/controllers/services/mal/mal_api.dart';
 
 class MalService extends GetxController implements BaseService, OnlineService {
+  http.Client get _client => NetworkManager.instance.compatibleClient;
   final api = MalApi();
   final communityService = Get.find<CommunityService>();
 
@@ -176,7 +180,16 @@ class MalService extends GetxController implements BaseService, OnlineService {
       ].obs;
 
   @override
-  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+  RxList<Widget> novelWidgets(BuildContext context) {
+    final sourceController = Get.find<SourceController>();
+    sourceController.initNovelExtensions();
+    return [
+      Obx(() => InstalledExtensionsGridView(
+            sources: sourceController.installedNovelExtensions,
+            itemType: ItemType.novel,
+          )),
+    ].obs;
+  }
 
   @override
   bool get isDataLoaded =>
@@ -498,7 +511,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Future<bool> _validateToken(String token) async {
     try {
-      final response = await http.get(
+      final response = await _client.get(
         Uri.parse('https://api.myanimelist.net/v2/users/@me'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -516,7 +529,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final clientId = dotenv.env['MAL_CLIENT_ID'] ?? '';
     final clientSecret = dotenv.env['MAL_CLIENT_SECRET'] ?? '';
 
-    final response = await http.post(
+    final response = await _client.post(
       Uri.parse('https://myanimelist.net/v1/oauth2/token'),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -620,7 +633,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
       Logger.i('Attempting to fetch MAL session ID with token');
 
-      final response = await http.get(
+      final response = await _client.get(
         Uri.parse('https://myanimelist.net/'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -653,7 +666,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       }
 
       Logger.i('No session cookie in main page, trying export page');
-      final exportResponse = await http.get(
+      final exportResponse = await _client.get(
         Uri.parse('https://myanimelist.net/panel.php?go=export'),
         headers: {
           'Authorization': 'Bearer $token',
@@ -676,7 +689,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
       if (AuthKeys.malSessionId.get<String?>() == null) {
         Logger.i('Attempting to create session via export form');
-        final formResponse = await http.post(
+        final formResponse = await _client.post(
           Uri.parse('https://myanimelist.net/panel.php?go=export'),
           headers: {
             'Authorization': 'Bearer $token',
@@ -707,7 +720,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Future<void> _exchangeCodeForTokenMAL(
       String code, String clientId, String codeVerifier, String secret) async {
-    final response = await http.post(
+    final response = await _client.post(
       Uri.parse('https://myanimelist.net/v1/oauth2/token'),
       body: {
         'client_id': clientId,
@@ -746,7 +759,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       }
       final tokenn = token ?? AuthKeys.malAuthToken.get<String?>();
       final useAuth = useAuthHeader && tokenn != null && tokenn.isNotEmpty;
-      final response = await http.get(Uri.parse(url),
+      final response = await _client.get(Uri.parse(url),
           headers: useAuth
               ? {
                   'Authorization': 'Bearer $tokenn',
@@ -800,7 +813,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (completedAt != null) 'finish_date': formatMalDate(completedAt),
     };
 
-    var req = await http.put(
+    var req = await _client.put(
       url,
       headers: {
         'Authorization': 'Bearer $token',
@@ -812,7 +825,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     if (req.statusCode == 401) {
       token = await _refreshAccessToken();
       if (token != null) {
-        req = await http.put(
+        req = await _client.put(
           url,
           headers: {
             'Authorization': 'Bearer $token',
@@ -877,7 +890,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     final url = Uri.parse(
         'https://api.myanimelist.net/v2/${isAnime ? 'anime' : 'manga'}/$listId/my_list_status');
 
-    var req = await http.delete(
+    var req = await _client.delete(
       url,
       headers: {
         'Authorization': 'Bearer $token',
@@ -888,7 +901,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
     if (req.statusCode == 401) {
       token = await _refreshAccessToken();
       if (token != null) {
-        req = await http.delete(
+        req = await _client.delete(
           url,
           headers: {
             'Authorization': 'Bearer $token',

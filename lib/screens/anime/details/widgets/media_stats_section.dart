@@ -40,8 +40,8 @@ Widget buildMediaStatsSection(
         width: double.infinity,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: colors.surfaceContainerHighest
-              .opaque(0.3, iReallyMeanIt: true),
+          color:
+              colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
@@ -50,13 +50,15 @@ Widget buildMediaStatsSection(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AnymeXText('Synopsis',
+            const AnymeXText(
+              'Synopsis',
               size: 15,
               variant: TextVariant.bold,
               isMarquee: true,
             ),
             const SizedBox(height: 8),
-            AnymeXText(cleanDesc,
+            AnymeXText(
+              cleanDesc,
               size: 13,
               maxLines: 9999,
               overflow: TextOverflow.ellipsis,
@@ -75,7 +77,8 @@ Widget buildMediaStatsSection(
               spacing: 6,
               runSpacing: 6,
               children: media.genres
-                  .map((genre) => buildGenreChip(context, genre))
+                  .map((genre) =>
+                      buildGenreChip(context, genre, media.mediaType))
                   .toList(),
             )
           ],
@@ -88,13 +91,12 @@ Widget buildMediaStatsSection(
               spacing: 6,
               runSpacing: 6,
               children: media.tags
-                  .map((tag) => buildTagChip(context, tag))
+                  .map((tag) => buildTagChip(context, tag, media.mediaType))
                   .toList(),
             ),
           ],
           colors),
-    if (media.friendsWatching != null &&
-        media.friendsWatching!.isNotEmpty)
+    if (media.friendsWatching != null && media.friendsWatching!.isNotEmpty)
       SocialSection(
         friends: media.friendsWatching!,
         totalEpisodes: media.totalEpisodes.isNotEmpty
@@ -102,8 +104,7 @@ Widget buildMediaStatsSection(
             : media.totalChapters,
       ),
     buildSeasonsSection(context, media),
-    if (controller.isAnime)
-      buildExtrasSection(context, media),
+    if (controller.isAnime) buildExtrasSection(context, media),
   ];
 
   final List<Widget> visibleSections = [];
@@ -154,15 +155,19 @@ Widget buildAlternativeTitles(BuildContext context, Media media) {
                   children: [
                     SizedBox(
                       width: 80,
-                      child: AnymeXText(entry.key,
+                      child: AnymeXText(
+                        entry.key,
                         size: 12,
                         color:
                             colors.onSurface.opaque(0.5, iReallyMeanIt: true),
                       ),
                     ),
                     Expanded(
-                      child: AnymeXText(entry.value,
+                      child: AnymeXText(
+                        entry.value,
                         size: 12,
+                        maxLines: null,
+                        overflow: TextOverflow.visible,
                         variant: TextVariant.semiBold,
                       ),
                     ),
@@ -187,7 +192,8 @@ Widget _buildSection(String title, List<Widget> children, ColorScheme colors) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnymeXText(title,
+        AnymeXText(
+          title,
           size: 14,
           variant: TextVariant.bold,
         ),
@@ -199,8 +205,14 @@ Widget _buildSection(String title, List<Widget> children, ColorScheme colors) {
 }
 
 Widget buildSeasonsSection(BuildContext context, Media mediaData) {
-  final prequels = mediaData.relations?.where((element) => element.relationType == 'PREQUEL').toList() ?? [];
-  final sequels = mediaData.relations?.where((element) => element.relationType == 'SEQUEL').toList() ?? [];
+  final prequels = mediaData.relations
+          ?.where((element) => element.relationType == 'PREQUEL')
+          .toList() ??
+      [];
+  final sequels = mediaData.relations
+          ?.where((element) => element.relationType == 'SEQUEL')
+          .toList() ??
+      [];
   final filteredRelations = [
     if (prequels.isNotEmpty) prequels.first,
     if (sequels.isNotEmpty) sequels.first,
@@ -231,7 +243,9 @@ Widget buildSeasonsSection(BuildContext context, Media mediaData) {
                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
                 child: ImageButton(
                   buttonText: relation.relationType,
-                  backgroundImage: relation.cover.isNotEmpty ? relation.cover : relation.poster,
+                  backgroundImage: relation.cover.isNotEmpty
+                      ? relation.cover
+                      : relation.poster,
                   width: double.infinity,
                   height: 70,
                   borderRadius: 12,
@@ -266,8 +280,7 @@ Widget buildExtrasSection(BuildContext context, Media mediaData) {
                 title: "Openings & Endings",
                 subtitle: "View opening and ending themes",
                 onTap: () {
-                  navigate(
-                      () => AnimeThemePlayerPage(animeDetails: mediaData));
+                  navigate(() => AnimeThemePlayerPage(animeDetails: mediaData));
                 },
               ),
               AnymeXTile(
@@ -396,11 +409,13 @@ Widget buildAiringCountdownCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AnymeXText('Episode ${airing.episode} Airing In',
+                AnymeXText(
+                  'Episode ${airing.episode} Airing In',
                   size: 11,
                   color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                 ),
-                AnymeXText(formattedTime,
+                AnymeXText(
+                  formattedTime,
                   size: 14,
                   variant: TextVariant.bold,
                   color: colors.primary,
@@ -426,6 +441,21 @@ Widget buildProgressContainer(
   final pct =
       totalCount > 0 ? (currentProgress / totalCount).clamp(0.0, 1.0) : 0.0;
 
+  final relEp = controller.isAnime
+      ? (media.nextAiringEpisode != null
+          ? media.nextAiringEpisode!.episode - 1
+          : (int.tryParse(
+                  controller.trackedMedia.value?.releasedEpisodes ?? '') ??
+              0))
+      : 0;
+
+  final progressText = (controller.isAnime &&
+          relEp > 0 &&
+          totalCount > 0 &&
+          relEp != totalCount)
+      ? '$currentProgress / $relEp / $totalCount'
+      : '$currentProgress / ${totalCount > 0 ? totalCount : "?"}';
+
   return Container(
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
@@ -441,11 +471,13 @@ Widget buildProgressContainer(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            AnymeXText(controller.isAnime ? 'Watching Progress' : 'Reading Progress',
+            AnymeXText(
+              controller.isAnime ? 'Watching Progress' : 'Reading Progress',
               size: 12,
               color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
             ),
-            AnymeXText('$currentProgress / ${totalCount > 0 ? totalCount : "?"}',
+            AnymeXText(
+              progressText,
               size: 13,
               variant: TextVariant.bold,
               color: colors.primary,
@@ -464,13 +496,14 @@ Widget buildProgressContainer(
   );
 }
 
-Widget buildGenreChip(BuildContext context, String genre) {
+Widget buildGenreChip(BuildContext context, String genre, ItemType type) {
   final colors = context.colors;
 
   return GestureDetector(
     onTap: () {
       navigate(() => SearchPage(
             searchTerm: '',
+            type: type,
             initialFilters: {
               'genres': [genre]
             },
@@ -485,7 +518,8 @@ Widget buildGenreChip(BuildContext context, String genre) {
           color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
         ),
       ),
-      child: AnymeXText(genre,
+      child: AnymeXText(
+        genre,
         size: 11,
         variant: TextVariant.semiBold,
       ),
@@ -493,7 +527,7 @@ Widget buildGenreChip(BuildContext context, String genre) {
   );
 }
 
-Widget buildTagChip(BuildContext context, MediaTag tag) {
+Widget buildTagChip(BuildContext context, MediaTag tag, ItemType type) {
   final colors = context.colors;
   final labelText = tag.rank > 0 ? '${tag.name} ${tag.rank}%' : tag.name;
 
@@ -501,6 +535,7 @@ Widget buildTagChip(BuildContext context, MediaTag tag) {
     onTap: () {
       navigate(() => SearchPage(
             searchTerm: '',
+            type: type,
             initialFilters: {
               'tags': [tag.name]
             },
@@ -515,7 +550,8 @@ Widget buildTagChip(BuildContext context, MediaTag tag) {
           color: colors.primary.opaque(0.25, iReallyMeanIt: true),
         ),
       ),
-      child: AnymeXText(labelText,
+      child: AnymeXText(
+        labelText,
         size: 11,
         variant: TextVariant.semiBold,
         color: colors.primary,
@@ -537,56 +573,73 @@ Widget buildStatsGrid(BuildContext context, Media media) {
   final stats = [
     if ((media.studios ?? []).isNotEmpty)
       MapEntry('Studio', (media.studios ?? []).join(', ')),
-    if (isAnime && media.totalEpisodes.isNotEmpty && media.totalEpisodes != '0' && media.totalEpisodes != '?')
+    if (isAnime &&
+        media.totalEpisodes.isNotEmpty &&
+        media.totalEpisodes != '0' &&
+        media.totalEpisodes != '?')
       MapEntry('Episodes', media.totalEpisodes),
     if (!isAnime &&
         (media.totalChapters ?? '').isNotEmpty &&
         media.totalChapters != '0' &&
         media.totalChapters != '?')
       MapEntry('Chapters', media.totalChapters!),
-    if (isAnime && media.duration.isNotEmpty && media.duration != '?') MapEntry('Duration', media.duration),
+    if (isAnime && media.duration.isNotEmpty && media.duration != '?')
+      MapEntry('Duration', media.duration),
     if (seasonText.trim().isNotEmpty) MapEntry('Season', seasonText.trim()),
-    if (media.status.isNotEmpty && media.status != '?') MapEntry('Status', media.status),
-    if (media.format.isNotEmpty && media.format != '?') MapEntry('Format', media.format),
-    if (media.sourceMaterial != null && media.sourceMaterial!.isNotEmpty && media.sourceMaterial != '?')
+    if (media.status.isNotEmpty && media.status != '?')
+      MapEntry('Status', media.status),
+    if (media.format.isNotEmpty && media.format != '?')
+      MapEntry('Format', media.format),
+    if (media.sourceMaterial != null &&
+        media.sourceMaterial!.isNotEmpty &&
+        media.sourceMaterial != '?')
       MapEntry('Source', formatSourceMaterial(media.sourceMaterial)),
-    if (media.rating.isNotEmpty && media.rating != '?') MapEntry('Score', '★ ${media.rating}'),
-    if (media.popularity.isNotEmpty && media.popularity != '?') MapEntry('Popularity', media.popularity),
+    if (media.rating.isNotEmpty && media.rating != '?')
+      MapEntry('Score', '★ ${media.rating}'),
+    if (media.popularity.isNotEmpty && media.popularity != '?')
+      MapEntry('Popularity', media.popularity),
   ];
 
   if (stats.isEmpty) return const SizedBox.shrink();
 
-  return Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(14),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-      ),
-    ),
-    child: Wrap(
-      spacing: 20,
-      runSpacing: 12,
-      children: stats.map((entry) {
-        VoidCallback? onTap;
-        if (entry.key == 'Studio' && (media.studios ?? []).isNotEmpty) {
-          final studioName = media.studios!.first;
-          onTap = () async {
-            final studioId = await AnilistData.fetchStudioIdByName(studioName);
-            if (studioId != null && context.mounted) {
-              showStudioDetailsSheet(
-                context,
-                studioId,
-                studioName,
-              );
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+          ),
+        ),
+        child: Wrap(
+          spacing: 20,
+          runSpacing: 12,
+          children: stats.map((entry) {
+            VoidCallback? onTap;
+            if (entry.key == 'Studio' && (media.studios ?? []).isNotEmpty) {
+              final studioName = media.studios!.first;
+              onTap = () async {
+                final studioId = await AnilistData.fetchStudioIdByName(studioName);
+                if (studioId != null && context.mounted) {
+                  showStudioDetailsSheet(
+                    context,
+                    studioId,
+                    studioName,
+                  );
+                }
+              };
             }
-          };
-        }
-        return buildStatCard(context, entry.key, entry.value, onTap: onTap);
-      }).toList(),
-    ),
+            return ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth - 28),
+              child: buildStatCard(context, entry.key, entry.value, onTap: onTap),
+            );
+          }).toList(),
+        ),
+      );
+    },
   );
 }
 
@@ -607,6 +660,8 @@ Widget buildStatCard(BuildContext context, String label, String value,
       AnymeXText(
         value,
         size: 13,
+        maxLines: null,
+        overflow: TextOverflow.visible,
         variant: TextVariant.semiBold,
       ),
     ],

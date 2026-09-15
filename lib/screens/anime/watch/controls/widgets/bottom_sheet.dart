@@ -1,3 +1,4 @@
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/screens/anime/widgets/episode/styles/compact_style.dart';
@@ -589,9 +590,9 @@ class PlayerBottomSheets {
       BuildContext context, PlayerController controller) {
     final episodes = controller.episodeList;
     final selectedEpisode = controller.currentEpisode;
-    final offlineEpisode = controller.offlineStorage
+    final watchedEpisodes = controller.offlineStorage
         .getAnimeById(controller.anilistData.id)
-        ?.episodes;
+        ?.watchedEpisodes;
 
     return showCustom<double>(
       context: context,
@@ -603,13 +604,12 @@ class PlayerBottomSheets {
         itemCount: episodes.length,
         itemBuilder: (context, index) {
           final episode = episodes[index];
-          final isSelected = episode == selectedEpisode.value;
-          final offlineEpisodes = offlineEpisode;
-          final isWatched = (offlineEpisodes ?? []).any((e) => e.number == episode.number);
+          final isSelected = episode.isSameEpisode(selectedEpisode.value);
+          final isWatched = (watchedEpisodes ?? []).any((e) => e.isSameEpisode(episode));
           
           double progress = 0.0;
-          if (offlineEpisodes != null) {
-            final matching = offlineEpisodes.firstWhereOrNull((e) => e.number == episode.number);
+          if (watchedEpisodes != null) {
+            final matching = watchedEpisodes.firstWhereOrNull((e) => e.isSameEpisode(episode));
             if (matching != null && matching.durationInMilliseconds != null && matching.durationInMilliseconds! > 0) {
               progress = (matching.timeStampInMilliseconds ?? 0) / matching.durationInMilliseconds!;
             }

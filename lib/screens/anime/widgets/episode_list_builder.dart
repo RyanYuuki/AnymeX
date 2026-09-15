@@ -14,21 +14,37 @@ import 'package:anymex/screens/anime/watch/watch_view.dart';
 import 'package:anymex/screens/anime/widgets/episode/episode_style_registry.dart';
 import 'package:anymex/screens/anime/widgets/episode_range.dart';
 import 'package:anymex/screens/anime/widgets/track_dialog.dart';
+import 'package:anymex/screens/downloads/controller/download_controller.dart';
+import 'package:anymex/screens/downloads/model/download_models.dart';
+import 'package:anymex/screens/downloads/widgets/download_server_selector.dart';
+import 'package:anymex/screens/downloads/widgets/downloaded_watch_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+typedef _BatchOption = ({
+  String title,
+  String subtitle,
+  IconData icon,
+  bool enabled,
+  VoidCallback onTap,
+});
 
 class EpisodeListBuilder extends StatefulWidget {
   const EpisodeListBuilder({
@@ -36,23 +52,27 @@ class EpisodeListBuilder extends StatefulWidget {
     required this.episodeList,
     required this.anilistData,
     this.isSliverMode = false,
+    this.onSettingsTap,
   });
 
   final List<Episode> episodeList;
   final Media? anilistData;
   final bool isSliverMode;
+  final VoidCallback? onSettingsTap;
 
   static Future<void> showServerSheet(
     BuildContext context, {
     required Episode episode,
     required List<Episode> episodeList,
     required Media anilistData,
+    bool bypassDialog = false,
   }) async {
     await AnymeXSheet.custom(
       ServerSheetContent(
         episode: episode,
         episodeList: episodeList,
         anilistData: anilistData,
+        bypassDialog: bypassDialog,
       ),
       context,
       showDragHandle: true,
@@ -66,11 +86,11 @@ class EpisodeListBuilder extends StatefulWidget {
 class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   final selectedChunkIndex = 1.obs;
   final RxMap<String, String> selectedSortValues = <String, String>{}.obs;
-  final RxList<hive.Video> streamList = <hive.Video>[].obs;
-  final RxBool isServerStreamLoading = false.obs;
+  final selectedViewTab = 0.obs;
   final sourceController = Get.find<SourceController>();
   final auth = Get.find<ServiceHandler>();
   final offlineStorage = Get.find<OfflineStorageController>();
+  late final DownloadController downloadController;
 
   final RxBool isLogged = false.obs;
   final RxInt userProgress = 0.obs;
@@ -89,6 +109,15 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   @override
   void initState() {
     super.initState();
+    downloadController = Get.isRegistered<DownloadController>()
+        ? Get.find<DownloadController>()
+        : Get.put(DownloadController());
+    final mediaTitle = widget.anilistData?.title ??
+        (widget.episodeList.isNotEmpty ? widget.episodeList.first.title ?? '' : '');
+    final extName = sourceController.activeSource.value?.name ?? '';
+    if (extName.isNotEmpty && mediaTitle.isNotEmpty) {
+      downloadController.ensureMediaMetaLoaded(extName, mediaTitle);
+    }
     _initSortGrouping();
     _initUserProgress();
     _initEpisodes();
@@ -102,7 +131,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     });
 
     _offlineStorageListener = () {
-      final savedData = offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
+      final savedData =
+          offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
       if (savedData?.currentEpisode != null) {
         savedEpisode.value = savedData!.currentEpisode!;
         offlineWatchedEpisodes = savedData.watchedEpisodes ?? [];
@@ -153,11 +183,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       _isUpdatingChunk = true;
       try {
         final episodesToChunk = _episodesForSelectedSortKey();
-        final chunkedEpisodes = chunkEpisodes(episodesToChunk, calculateChunkSize(episodesToChunk));
+        final chunkedEpisodes =
+            chunkEpisodes(episodesToChunk, calculateChunkSize(episodesToChunk));
 
         if (chunkedEpisodes.length > 1) {
-          final progress = double.tryParse(continueEpisode.value.number)?.toInt() ?? 0;
-          final chunkIndex = findChunkIndexFromProgress(progress, chunkedEpisodes);
+          final progress =
+              double.tryParse(continueEpisode.value.number)?.toInt() ?? 0;
+          final chunkIndex =
+              findChunkIndexFromProgress(progress, chunkedEpisodes);
           final maxIndex = chunkedEpisodes.length - 1;
           final nextIndex = maxIndex < 1 ? 0 : chunkIndex.clamp(1, maxIndex);
           if (selectedChunkIndex.value != nextIndex) {
@@ -184,10 +217,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     if (isLogged.value && widget.anilistData != null) {
       final trackedMedia = auth.onlineService.animeList
           .firstWhereOrNull((e) => e.id == widget.anilistData!.id);
-      trackerProgress = double.tryParse(trackedMedia?.episodeCount ?? '')?.toInt() ?? 0;
+      trackerProgress =
+          double.tryParse(trackedMedia?.episodeCount ?? '')?.toInt() ?? 0;
     }
 
-    final savedAnime = offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
+    final savedAnime =
+        offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
     offlineWatchedEpisodes = savedAnime?.watchedEpisodes ?? [];
 
     int localProgress = 0;
@@ -226,24 +261,41 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final saved = savedData?.currentEpisode;
     final nextSaved = saved ?? widget.episodeList[0];
 
-    if (savedEpisode.value.number != nextSaved.number) {
+    if (!savedEpisode.value.isSameEpisode(nextSaved)) {
       savedEpisode.value = nextSaved;
     }
 
-    final nextSelected = nextEpisode ?? fallbackEP ?? savedEpisode.value;
-    if (selectedEpisode.value.number != nextSelected.number) {
+    Episode nextSelected;
+    if (saved != null) {
+      final idx = widget.episodeList.indexWhere((e) => e.isSameEpisode(saved));
+      if (idx != -1) {
+        final ts = saved.timeStampInMilliseconds ?? 0;
+        final dur = saved.durationInMilliseconds ?? 0;
+        final isComplete =
+            dur > 0 && (ts / dur) * 100 >= settingsController.markAsCompleted;
+        if (isComplete && idx + 1 < widget.episodeList.length) {
+          nextSelected = widget.episodeList[idx + 1];
+        } else {
+          nextSelected = widget.episodeList[idx];
+        }
+      } else {
+        nextSelected = saved;
+      }
+    } else {
+      nextSelected = nextEpisode ?? fallbackEP ?? savedEpisode.value;
+    }
+
+    if (!selectedEpisode.value.isSameEpisode(nextSelected)) {
       selectedEpisode.value = nextSelected;
     }
-    if (continueEpisode.value.number != nextSelected.number) {
+    if (!continueEpisode.value.isSameEpisode(nextSelected)) {
       continueEpisode.value = nextSelected;
     }
   }
 
   bool _isEpisodeWatched(Episode episode) {
-    final epNum = episode.number.toInt();
-    if (epNum > 0 && epNum <= userProgress.value) return true;
-
-    final inOfflineWatched = offlineWatchedEpisodes.any((e) => e.number == episode.number);
+    final inOfflineWatched =
+        offlineWatchedEpisodes.any((e) => e.isSameEpisode(episode));
     if (inOfflineWatched) return true;
 
     final ts = episode.timeStampInMilliseconds ?? 0;
@@ -252,16 +304,25 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       return true;
     }
 
+    final hasSortSections = widget.episodeList.any((e) => e.sortMap.isNotEmpty);
+    if (!hasSortSections) {
+      final epNum = episode.number.toInt();
+      if (epNum > 0 && epNum <= userProgress.value) return true;
+    }
+
     return false;
   }
 
   double _calculateEpisodeProgress(Episode episode) {
     final savedEP = offlineWatchedEpisodes.cast<Episode?>().firstWhere(
-          (e) => e?.number == episode.number,
+          (e) => e?.isSameEpisode(episode) ?? false,
           orElse: () => null,
         );
 
-    final target = savedEP ?? (episode.number == savedEpisode.value.number ? savedEpisode.value : null);
+    final target = savedEP ??
+        (savedEpisode.value.isSameEpisode(episode)
+            ? savedEpisode.value
+            : null);
     if (target?.timeStampInMilliseconds != null &&
         target?.durationInMilliseconds != null &&
         target!.durationInMilliseconds! > 0) {
@@ -272,6 +333,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   void _initSortGrouping() {
+    final savedData =
+        offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
+    final savedSortMap = savedData?.currentEpisode?.sortMap ?? {};
     final sections = buildEpisodeSortSections(widget.episodeList);
     final nextSelection = <String, String>{};
 
@@ -283,14 +347,17 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       );
       if (availableValues.isEmpty) continue;
 
-      final currentValue = selectedSortValues[section.key];
-      nextSelection[section.key] = availableValues.contains(currentValue)
-          ? currentValue!
-          : availableValues.first;
+      final currentValue =
+          selectedSortValues[section.key] ?? savedSortMap[section.key];
+      nextSelection[section.key] =
+          (currentValue != null && availableValues.contains(currentValue))
+              ? currentValue
+              : availableValues.first;
     }
 
     if (selectedSortValues.length != nextSelection.length ||
-        nextSelection.entries.any((e) => selectedSortValues[e.key] != e.value)) {
+        nextSelection.entries
+            .any((e) => selectedSortValues[e.key] != e.value)) {
       selectedSortValues.assignAll(nextSelection);
     }
   }
@@ -311,8 +378,6 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     selectedEpisode.value = episode;
     fetchServers(episode);
   }
-
-
 
   List<String> _availableValuesForKey(
     String key, {
@@ -337,17 +402,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
     if (values.isNotEmpty) return values;
 
-    final fallbackSection = (sections ?? buildEpisodeSortSections(widget.episodeList))
-        .firstWhereOrNull((section) => section.key == key);
+    final fallbackSection =
+        (sections ?? buildEpisodeSortSections(widget.episodeList))
+            .firstWhereOrNull((section) => section.key == key);
     return fallbackSection?.values ?? const [];
   }
 
   bool _areEpisodesEquivalent(Episode first, Episode second) {
-    if (first.number != second.number) return false;
-    final firstSortMap = first.sortMap;
-    final secondSortMap = second.sortMap;
-    if (firstSortMap.isEmpty || secondSortMap.isEmpty) return true;
-    return mapEquals(firstSortMap, secondSortMap);
+    return first.isSameEpisode(second);
   }
 
   int _compareEpisodesByNumber(Episode first, Episode second) {
@@ -367,372 +429,18 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   }
 
   Future<void> fetchServers(Episode ep, {bool bypassDialog = false}) async {
-    streamList.clear();
-    isServerStreamLoading.value = true;
-    final sourceEpisode = DEpisode(
-      episodeNumber: ep.number,
-      url: ep.link,
-      sortMap: ep.sortMap.isEmpty ? null : ep.sortMap,
-    );
-
-    final scrapeToken =
-        "scrape_${DateTime.now().millisecondsSinceEpoch}_${ep.number}_${Random().nextInt(10000)}";
-
-    final activeSource = sourceController.activeSource.value;
-    if (activeSource == null) {
-      errorSnackBar('No active source selected');
-      return;
-    }
-
-    final methods = activeSource.methods;
-    final videoStream = methods.getVideoListStream(
-      sourceEpisode,
-      parameters: SourceParams(cancelToken: scrapeToken),
-    );
-    final videoFuture = videoStream == null
-        ? methods.getVideoList(
-            sourceEpisode,
-            parameters: SourceParams(cancelToken: scrapeToken),
-          )
-        : null;
-
-    final RxnString streamError = RxnString();
-    StreamSubscription? streamSubscription;
-
-    if (videoStream != null) {
-      streamSubscription = videoStream.listen(
-        (data) {
-          final nextVideo = hive.Video.fromVideo(data);
-          final alreadyExists = streamList.any((video) =>
-              video.quality == nextVideo.quality &&
-              video.originalUrl == nextVideo.originalUrl);
-          if (!alreadyExists) {
-            streamList.add(nextVideo);
-          }
-        },
-        onError: (e) {
-          streamError.value = e.toString();
-          isServerStreamLoading.value = false;
-        },
-        onDone: () {
-          isServerStreamLoading.value = false;
-        },
-      );
-    } else if (videoFuture != null) {
-      videoFuture.then((vids) {
-        isServerStreamLoading.value = false;
-        streamList.value = vids.map((e) => hive.Video.fromVideo(e)).toList();
-      }).catchError((e) {
-        isServerStreamLoading.value = false;
-        streamError.value = e.toString();
-      });
-    }
-
-    final mediaData = widget.anilistData ?? Media(serviceType: ServicesType.extensions);
-
-    AnymeXSheet.custom(
-      Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildSheetHeader(context.colors),
-          const Divider(height: 1, thickness: 0.5),
-          Flexible(
-            child: Obx(() {
-              if (isServerStreamLoading.value && streamList.isEmpty) {
-                return _buildScrapingLoadingState(videoStream != null);
-              } else if (streamError.value != null) {
-                return _buildErrorState(streamError.value!);
-              } else if (streamList.isEmpty && !isServerStreamLoading.value) {
-                return _buildEmptyState();
-              } else {
-                return _buildServerList(
-                  mediaData,
-                  bypassDialog,
-                  showBottomLoader: isServerStreamLoading.value,
-                );
-              }
-            }),
-          ),
-          const SizedBox(height: 12),
-        ],
-      ),
+    final mediaData =
+        widget.anilistData ?? Media(serviceType: ServicesType.extensions);
+    await EpisodeListBuilder.showServerSheet(
       context,
-      showDragHandle: true,
-    ).whenComplete(() {
-      streamSubscription?.cancel();
-      sourceController.activeSource.value?.cancelRequest(scrapeToken);
-      _initUserProgress();
-      if (mounted) setState(() {});
-    });
-
-    final dbId = '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
-    final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
-    if (savedTracking != null && !bypassDialog) {
-      snackBar("Long press an episode to reset the tracker.",
-          title: "Tracking Preference Applied");
-    }
-  }
-
-  Widget _buildSheetHeader(ColorScheme theme) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(Icons.play_arrow_rounded, size: 20, color: theme.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AnymeXText('Choose Quality',
-                  variant: TextVariant.bold,
-                  size: 16,
-                ),
-                AnymeXText('Select streaming server quality to watch',
-                  size: 12,
-                  color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
-                ),
-              ],
-            ),
-          ),
-          AnymexOnTap(
-            onTap: () => Navigator.pop(context),
-            child: Icon(Icons.close_rounded, color: theme.onSurface.opaque(0.5, iReallyMeanIt: true)),
-          ),
-        ],
-      ),
+      episode: ep,
+      episodeList: widget.episodeList,
+      anilistData: mediaData,
+      bypassDialog: bypassDialog,
     );
+    _initUserProgress();
+    if (mounted) setState(() {});
   }
-
-  Widget _buildScrapingLoadingState(bool fromSrc) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          ExpressiveLoadingIndicator(),
-          SizedBox(height: 16),
-          AnymeXText('Scanning for video streams...',
-            size: 16,
-            variant: TextVariant.semiBold,
-          ),
-          SizedBox(height: 8),
-          AnymeXText('This may take a few seconds',
-            size: 12,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(String errorMessage) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const SizedBox(height: 10),
-        const AnymeXText("Error Occurred",
-          variant: TextVariant.bold,
-          size: 18,
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.red.opaque(0.1, iReallyMeanIt: true),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: AnymeXText(errorMessage,
-            variant: TextVariant.regular,
-            size: 14,
-            textAlign: TextAlign.center,
-            color: Colors.red.opaque(0.8, iReallyMeanIt: true),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return const SizedBox(
-      height: 200,
-      child: Center(
-        child: AnymeXText("No servers available",
-          variant: TextVariant.bold,
-          size: 16,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildServerList(Media mediaData, bool bypassDialog, {bool showBottomLoader = false}) {
-    final theme = context.colors;
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.45,
-      ),
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        shrinkWrap: true,
-        itemCount: streamList.length + (showBottomLoader ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index == streamList.length) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: ExpressiveLoadingIndicator(),
-                  ),
-                  const SizedBox(width: 8),
-                  AnymeXText('Scanning for more servers...',
-                    size: 12,
-                    color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final video = streamList[index];
-          final quality = video.quality?.toUpperCase() ?? "UNKNOWN";
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: AnymexOnTap(
-              onTap: () async {
-                Navigator.pop(context);
-                final dbId = '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
-                
-                final isLoggedInOnline = auth.isLoggedIn.value &&
-                    auth.serviceType.value != ServicesType.extensions;
-
-                if (!isLoggedInOnline) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: selectedEpisode.value,
-                        episodeTracks: streamList,
-                        shouldTrack: false,
-                      ));
-                  _initUserProgress();
-                  if (mounted) setState(() {});
-                  return;
-                }
-
-                final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
-
-                if (savedTracking != null && !bypassDialog) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: selectedEpisode.value,
-                        episodeTracks: streamList,
-                        shouldTrack: savedTracking,
-                      ));
-                  _initUserProgress();
-                  if (mounted) setState(() {});
-                  return;
-                }
-
-                if (General.shouldAskForTrack.get(true) == false) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: selectedEpisode.value,
-                        episodeTracks: streamList,
-                      ));
-                  _initUserProgress();
-                  if (mounted) setState(() {});
-                  return;
-                }
-
-                final isExtension = mediaData.serviceType == ServicesType.extensions;
-                final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&
-                    Get.find<TrackBindingController>().hasAnyBinding(mediaData.id);
-
-                bool? shouldTrack;
-                if (isExtension) {
-                  shouldTrack = hasTrackBinding;
-                } else {
-                  shouldTrack = await showTrackingDialog(context, dbId: dbId);
-                }
-
-                if (shouldTrack != null) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: selectedEpisode.value,
-                        episodeTracks: streamList,
-                        shouldTrack: shouldTrack ?? false,
-                      ));
-                  _initUserProgress();
-                  if (mounted) setState(() {});
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: theme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: theme.outline.opaque(0.15, iReallyMeanIt: true),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
-                      ),
-                      child: Icon(Icons.play_arrow_rounded, size: 16, color: theme.primary),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymeXText(quality,
-                            variant: TextVariant.bold,
-                            size: 14,
-                          ),
-                          const SizedBox(height: 2),
-                          AnymeXText(sourceController.activeSource.value?.name?.toUpperCase() ?? '',
-                            variant: TextVariant.semiBold,
-                            size: 11,
-                            color: theme.onSurface.opaque(0.6, iReallyMeanIt: true),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -756,52 +464,127 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     return Obx(() {
       _initSortGrouping();
       final currentStyle = EpisodeStyleRegistry.activeStyle;
+      final mediaTitle = widget.anilistData?.title ??
+          (widget.episodeList.isNotEmpty ? widget.episodeList.first.title ?? '' : '');
+      final extName = sourceController.activeSource.value?.name ?? '';
+      final downloadedEpisodes =
+          downloadController.getDownloadedEpisodes(extName, mediaTitle);
+      final isDownloadedTab = selectedViewTab.value == 1;
+
       final episodesToShow = _episodesForSelectedSortKey();
-      final chunkedEpisodes = chunkEpisodes(episodesToShow, calculateChunkSize(episodesToShow));
+      final chunkedEpisodes =
+          chunkEpisodes(episodesToShow, calculateChunkSize(episodesToShow));
       final safeChunkIndex = chunkedEpisodes.isEmpty
           ? 0
           : selectedChunkIndex.value.clamp(0, chunkedEpisodes.length - 1);
-      final selectedEpisodes = chunkedEpisodes.isNotEmpty ? chunkedEpisodes[safeChunkIndex] : <Episode>[];
+      final selectedEpisodes = chunkedEpisodes.isNotEmpty
+          ? chunkedEpisodes[safeChunkIndex]
+          : <Episode>[];
 
       if (widget.isSliverMode) {
         return SliverMainAxisGroup(
           slivers: [
             SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...sortSections.map((section) {
-                    final values = _availableValuesForKey(section.key, sections: sortSections);
-                    if (values.length <= 1) return const SizedBox.shrink();
-
-                    return EpisodeSortKeySelector(
-                      title: section.title,
-                      labelPrefix: section.labelPrefix != "Type" ? section.labelPrefix : "",
-                      sortKeys: values,
-                      selectedSortKey: RxnString(selectedSortValues[section.key]),
-                      onSortKeySelected: (sortValue) {
-                        if (selectedSortValues[section.key] == sortValue) return;
-                        selectedSortValues[section.key] = sortValue;
-                        _initSortGrouping();
-                        selectedChunkIndex.value = 1;
-                      },
-                    );
-                  }),
-                  if (chunkedEpisodes.isNotEmpty)
-                    EpisodeChunkSelector(
-                      chunks: chunkedEpisodes,
-                      selectedChunkIndex: selectedChunkIndex,
-                      onChunkSelected: (index) {
-                        if (index != selectedChunkIndex.value) {
-                          selectedChunkIndex.value = index;
-                        }
-                      },
-                    ),
-                  const SizedBox(height: 12),
-                ],
+              child: _buildHeaderCard(
+                context,
+                sortSections: sortSections,
+                chunkedEpisodes: chunkedEpisodes,
+                downloadedCount: downloadedEpisodes.length,
+                isDownloadedTab: isDownloadedTab,
+                extName: extName,
+                mediaTitle: mediaTitle,
               ),
             ),
-            if (currentStyle.isGrid)
+            if (isDownloadedTab)
+              if (downloadedEpisodes.isEmpty)
+                SliverToBoxAdapter(
+                  child: _buildDownloadedEmptyState(context),
+                )
+              else if (currentStyle.isGrid)
+                SliverGrid.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: getResponsiveCrossAxisCount(
+                      context,
+                      baseColumns: 1,
+                      maxColumns: 3,
+                      mobileItemWidth: 400,
+                      tabletItemWidth: 400,
+                      desktopItemWidth: 200,
+                    ),
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    mainAxisExtent: currentStyle.id == 'minimal' ? 65 : 100,
+                  ),
+                  itemCount: downloadedEpisodes.length,
+                  itemBuilder: (context, index) {
+                    final item = downloadedEpisodes[index];
+                    final episode = item.episode;
+                    final isSelected =
+                        _areEpisodesEquivalent(selectedEpisode.value, episode);
+                    final isWatched = _isEpisodeWatched(episode);
+                    final prog = _calculateEpisodeProgress(episode);
+
+                    return currentStyle.builder(
+                      context,
+                      episode,
+                      isSelected,
+                      isWatched,
+                      prog,
+                      widget.anilistData,
+                      () => _playDownloadedEpisode(
+                          item, downloadedEpisodes, extName, mediaTitle),
+                      () => _playDownloadedEpisode(
+                          item, downloadedEpisodes, extName, mediaTitle),
+                      downloadButton: IconButton(
+                        icon: Icon(
+                          Icons.delete_outline_rounded,
+                          color: context.colors.error,
+                          size: 20,
+                        ),
+                        onPressed: () => _confirmDeleteEpisode(
+                            context, item, extName, mediaTitle),
+                      ),
+                    );
+                  },
+                )
+              else
+                SliverList.builder(
+                  itemCount: downloadedEpisodes.length,
+                  itemBuilder: (context, index) {
+                    final item = downloadedEpisodes[index];
+                    final episode = item.episode;
+                    final isSelected =
+                        _areEpisodesEquivalent(selectedEpisode.value, episode);
+                    final isWatched = _isEpisodeWatched(episode);
+                    final prog = _calculateEpisodeProgress(episode);
+
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: currentStyle.builder(
+                        context,
+                        episode,
+                        isSelected,
+                        isWatched,
+                        prog,
+                        widget.anilistData,
+                        () => _playDownloadedEpisode(
+                            item, downloadedEpisodes, extName, mediaTitle),
+                        () => _playDownloadedEpisode(
+                            item, downloadedEpisodes, extName, mediaTitle),
+                        downloadButton: IconButton(
+                          icon: Icon(
+                            Icons.delete_outline_rounded,
+                            color: context.colors.error,
+                            size: 20,
+                          ),
+                          onPressed: () => _confirmDeleteEpisode(
+                              context, item, extName, mediaTitle),
+                        ),
+                      ),
+                    );
+                  },
+                )
+            else if (currentStyle.isGrid)
               SliverGrid.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: getResponsiveCrossAxisCount(
@@ -819,7 +602,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                 itemCount: selectedEpisodes.length,
                 itemBuilder: (context, index) {
                   final episode = selectedEpisodes[index];
-                  final isSelected = _areEpisodesEquivalent(selectedEpisode.value, episode);
+                  final isSelected =
+                      _areEpisodesEquivalent(selectedEpisode.value, episode);
                   final isWatched = _isEpisodeWatched(episode);
                   final prog = _calculateEpisodeProgress(episode);
 
@@ -833,10 +617,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                     () => _handleEpisodeSelection(episode),
                     () {
                       selectedEpisode.value = episode;
-                      streamList.clear();
-                      isServerStreamLoading.value = false;
                       fetchServers(episode, bypassDialog: true);
                     },
+                    downloadButton: _buildEpisodeDownloadButton(
+                      context,
+                      episode,
+                      extName,
+                      mediaTitle,
+                    ),
                   );
                 },
               )
@@ -845,7 +633,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                 itemCount: selectedEpisodes.length,
                 itemBuilder: (context, index) {
                   final episode = selectedEpisodes[index];
-                  final isSelected = _areEpisodesEquivalent(selectedEpisode.value, episode);
+                  final isSelected =
+                      _areEpisodesEquivalent(selectedEpisode.value, episode);
                   final isWatched = _isEpisodeWatched(episode);
                   final prog = _calculateEpisodeProgress(episode);
 
@@ -861,10 +650,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       () => _handleEpisodeSelection(episode),
                       () {
                         selectedEpisode.value = episode;
-                        streamList.clear();
-                        isServerStreamLoading.value = false;
                         fetchServers(episode, bypassDialog: true);
                       },
+                      downloadButton: _buildEpisodeDownloadButton(
+                        context,
+                        episode,
+                        extName,
+                        mediaTitle,
+                      ),
                     ),
                   );
                 },
@@ -876,68 +669,688 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ...sortSections.map((section) {
-            final values = _availableValuesForKey(section.key, sections: sortSections);
-            if (values.length <= 1) return const SizedBox.shrink();
+          _buildHeaderCard(
+            context,
+            sortSections: sortSections,
+            chunkedEpisodes: chunkedEpisodes,
+            downloadedCount: downloadedEpisodes.length,
+            isDownloadedTab: isDownloadedTab,
+            extName: extName,
+            mediaTitle: mediaTitle,
+          ),
+          if (isDownloadedTab)
+            if (downloadedEpisodes.isEmpty)
+              _buildDownloadedEmptyState(context)
+            else
+              ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: downloadedEpisodes.length,
+                itemBuilder: (context, index) {
+                  final item = downloadedEpisodes[index];
+                  final episode = item.episode;
+                  final isSelected =
+                      _areEpisodesEquivalent(selectedEpisode.value, episode);
+                  final isWatched = _isEpisodeWatched(episode);
+                  final prog = _calculateEpisodeProgress(episode);
 
-            return EpisodeSortKeySelector(
-              title: section.title,
-              labelPrefix: section.labelPrefix != "Type" ? section.labelPrefix : "",
-              sortKeys: values,
-              selectedSortKey: RxnString(selectedSortValues[section.key]),
-              onSortKeySelected: (sortValue) {
-                if (selectedSortValues[section.key] == sortValue) return;
-                selectedSortValues[section.key] = sortValue;
-                _initSortGrouping();
-                selectedChunkIndex.value = 1;
-              },
-            );
-          }),
-          if (chunkedEpisodes.isNotEmpty)
-            EpisodeChunkSelector(
-              chunks: chunkedEpisodes,
-              selectedChunkIndex: selectedChunkIndex,
-              onChunkSelected: (index) {
-                if (index != selectedChunkIndex.value) {
-                  selectedChunkIndex.value = index;
-                }
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: currentStyle.builder(
+                      context,
+                      episode,
+                      isSelected,
+                      isWatched,
+                      prog,
+                      widget.anilistData,
+                      () => _playDownloadedEpisode(
+                          item, downloadedEpisodes, extName, mediaTitle),
+                      () => _playDownloadedEpisode(
+                          item, downloadedEpisodes, extName, mediaTitle),
+                      downloadButton: IconButton(
+                        icon: Icon(
+                          Icons.delete_outline_rounded,
+                          color: context.colors.error,
+                          size: 20,
+                        ),
+                        onPressed: () => _confirmDeleteEpisode(
+                            context, item, extName, mediaTitle),
+                      ),
+                    ),
+                  );
+                },
+              )
+          else
+            ListView.builder(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: selectedEpisodes.length,
+              itemBuilder: (context, index) {
+                final episode = selectedEpisodes[index];
+                final isSelected =
+                    _areEpisodesEquivalent(selectedEpisode.value, episode);
+                final isWatched = _isEpisodeWatched(episode);
+                final prog = _calculateEpisodeProgress(episode);
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: currentStyle.builder(
+                    context,
+                    episode,
+                    isSelected,
+                    isWatched,
+                    prog,
+                    widget.anilistData,
+                    () => _handleEpisodeSelection(episode),
+                    () {
+                      selectedEpisode.value = episode;
+                      fetchServers(episode, bypassDialog: true);
+                    },
+                    downloadButton: _buildEpisodeDownloadButton(
+                      context,
+                      episode,
+                      extName,
+                      mediaTitle,
+                    ),
+                  ),
+                );
               },
             ),
-          const SizedBox(height: 12),
-          ListView.builder(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: selectedEpisodes.length,
-            itemBuilder: (context, index) {
-              final episode = selectedEpisodes[index];
-              final isSelected = _areEpisodesEquivalent(selectedEpisode.value, episode);
-              final isWatched = _isEpisodeWatched(episode);
-              final prog = _calculateEpisodeProgress(episode);
+        ],
+      );
+    });
+  }
+
+  Widget _buildHeaderCard(
+    BuildContext context, {
+    required List<EpisodeSortSection> sortSections,
+    required List<List<Episode>> chunkedEpisodes,
+    required int downloadedCount,
+    required bool isDownloadedTab,
+    required String extName,
+    required String mediaTitle,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.colors.surfaceContainerHighest
+            .opaque(0.2, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: context.colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: AnymeXPills(
+                  scrollPadding: EdgeInsets.zero,
+                  items: [
+                    PillItem(
+                      label: 'Online',
+                      count: widget.episodeList.length,
+                      isSelected: selectedViewTab.value == 0,
+                      onTap: () => selectedViewTab.value = 0,
+                    ),
+                    PillItem(
+                      label: 'Downloaded',
+                      count: downloadedCount,
+                      isSelected: selectedViewTab.value == 1,
+                      onTap: () => selectedViewTab.value = 1,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () =>
+                      _showBatchDownloadSheet(context, extName, mediaTitle),
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: context.colors.surfaceContainerHighest
+                          .opaque(0.35, iReallyMeanIt: true),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: context.colors.outline
+                            .opaque(0.15, iReallyMeanIt: true),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.file_download_outlined,
+                      size: 16,
+                      color: context.colors.primary,
+                    ),
+                  ),
+                ),
+              ),
+              if (widget.onSettingsTap != null) ...[
+                const SizedBox(width: 8),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: widget.onSettingsTap,
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: context.colors.surfaceContainerHighest
+                            .opaque(0.35, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: context.colors.outline
+                              .opaque(0.15, iReallyMeanIt: true),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.settings_outlined,
+                            size: 16,
+                            color: context.colors.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          AnymeXText(
+                            'Settings',
+                            size: 12,
+                            color: context.colors.primary,
+                            variant: TextVariant.bold,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          if (!isDownloadedTab) ...[
+            ...sortSections.map((section) {
+              final values = _availableValuesForKey(section.key,
+                  sections: sortSections);
+              if (values.length <= 1) return const SizedBox.shrink();
 
               return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: currentStyle.builder(
-                  context,
-                  episode,
-                  isSelected,
-                  isWatched,
-                  prog,
-                  widget.anilistData,
-                  () => _handleEpisodeSelection(episode),
-                  () {
-                    selectedEpisode.value = episode;
-                    streamList.clear();
-                    isServerStreamLoading.value = false;
-                    fetchServers(episode, bypassDialog: true);
+                padding: const EdgeInsets.only(top: 12),
+                child: EpisodeSortKeySelector(
+                  title: section.title,
+                  labelPrefix:
+                      section.labelPrefix != "Type" ? section.labelPrefix : "",
+                  sortKeys: values,
+                  selectedSortKey: RxnString(selectedSortValues[section.key]),
+                  onSortKeySelected: (sortValue) {
+                    if (selectedSortValues[section.key] == sortValue) {
+                      return;
+                    }
+                    selectedSortValues[section.key] = sortValue;
+                    _initSortGrouping();
+                    selectedChunkIndex.value = 1;
                   },
                 ),
               );
-            },
-          ),
+            }),
+            if (chunkedEpisodes.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: EpisodeChunkSelector(
+                  chunks: chunkedEpisodes,
+                  selectedChunkIndex: selectedChunkIndex,
+                  onChunkSelected: (index) {
+                    if (index != selectedChunkIndex.value) {
+                      selectedChunkIndex.value = index;
+                    }
+                  },
+                ),
+              ),
           ],
-        );
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDownloadedEmptyState(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 16),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.cloud_download_outlined,
+              size: 48,
+              color: context.colors.onSurface.opaque(0.4),
+            ),
+            const SizedBox(height: 12),
+            AnymeXText(
+              'No downloaded episodes found for this anime',
+              size: 14,
+              variant: TextVariant.semiBold,
+              color: context.colors.onSurface.opaque(0.7),
+            ),
+            const SizedBox(height: 16),
+            AnymeXContainerButton(
+              onTap: () => selectedViewTab.value = 0,
+              radius: 12,
+              color: context.colors.primary,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: AnymeXText(
+                  'Switch to Online',
+                  color: context.colors.onPrimary,
+                  variant: TextVariant.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  OfflineMedia _getOfflineMedia(String mediaTitle) {
+    return widget.anilistData?.toOfflineMedia() ??
+        OfflineMedia(mediaId: mediaTitle, name: mediaTitle, poster: null);
+  }
+
+  Widget _buildEpisodeDownloadButton(
+    BuildContext context,
+    Episode episode,
+    String extName,
+    String mediaTitle,
+  ) {
+    if (extName.isEmpty || mediaTitle.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Obx(() {
+      final state = downloadController.getEpisodeState(
+        extName,
+        mediaTitle,
+        episode.number,
+        episode.sortMap,
+      );
+      final colors = context.colors;
+
+      switch (state.status) {
+        case DownloadItemStatus.downloaded:
+          return Tooltip(
+            message: 'Downloaded',
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () {
+                  snackBar('Episode ${episode.number} is downloaded');
+                },
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: colors.primary.opaque(0.15, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colors.primary.opaque(0.35, iReallyMeanIt: true),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.check_rounded,
+                    color: colors.primary,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ),
+          );
+        case DownloadItemStatus.downloading:
+          return Tooltip(
+            message: 'Downloading (${(state.progress * 100).toInt()}%)',
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () {
+                  if (state.taskId != null) {
+                    downloadController.pauseDownload(state.taskId!);
+                  }
+                },
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: colors.primary.opaque(0.1, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colors.primary.opaque(0.25, iReallyMeanIt: true),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          value: state.progress > 0 ? state.progress : null,
+                          strokeWidth: 2,
+                          color: colors.primary,
+                        ),
+                      ),
+                      Icon(
+                        Icons.pause_rounded,
+                        size: 12,
+                        color: colors.primary,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        case DownloadItemStatus.queued:
+          return Tooltip(
+            message: 'Queued for download',
+            child: Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHighest
+                    .opaque(0.3, iReallyMeanIt: true),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: colors.outline.opaque(0.12, iReallyMeanIt: true),
+                  width: 0.8,
+                ),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.8,
+                      color: colors.primary.opaque(0.6),
+                    ),
+                  ),
+                  Icon(
+                    Icons.access_time_rounded,
+                    size: 11,
+                    color: colors.primary.opaque(0.6),
+                  ),
+                ],
+              ),
+            ),
+          );
+        case DownloadItemStatus.failed:
+          return Tooltip(
+            message: 'Download failed. Tap to retry.',
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () {
+                  final activeSrc = sourceController.activeSource.value;
+                  if (activeSrc != null) {
+                    DownloadServerSelector.show(
+                      context,
+                      episodes: [episode],
+                      source: activeSrc,
+                      media: _getOfflineMedia(mediaTitle),
+                    );
+                  }
+                },
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: colors.error.opaque(0.15, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colors.error.opaque(0.35, iReallyMeanIt: true),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.refresh_rounded,
+                    color: colors.error,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ),
+          );
+        case DownloadItemStatus.notDownloaded:
+          return Tooltip(
+            message: 'Download Episode',
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () {
+                  final activeSrc = sourceController.activeSource.value;
+                  if (activeSrc != null) {
+                    DownloadServerSelector.show(
+                      context,
+                      episodes: [episode],
+                      source: activeSrc,
+                      media: _getOfflineMedia(mediaTitle),
+                    );
+                  }
+                },
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHighest
+                        .opaque(0.3, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colors.outline.opaque(0.12, iReallyMeanIt: true),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.download_rounded,
+                    color: colors.onSurface.opaque(0.7),
+                    size: 16,
+                  ),
+                ),
+              ),
+            ),
+          );
+      }
     });
+  }
+
+  Future<void> _playDownloadedEpisode(
+    DownloadedEpisodeMeta item,
+    List<DownloadedEpisodeMeta> downloadedEpisodes,
+    String extName,
+    String mediaTitle,
+  ) async {
+    final meta = await downloadController.ensureMediaMetaLoaded(extName, mediaTitle) ??
+        await downloadController.getMediaMeta(extName, mediaTitle) ??
+        DownloadedMediaMeta(
+          episodes: downloadedEpisodes,
+          media: widget.anilistData?.toOfflineMedia(),
+        );
+    final summary = downloadController.downloadedMedia.firstWhereOrNull(
+          (s) =>
+              s.extensionName.toLowerCase() == extName.toLowerCase() &&
+              (s.folderName.toLowerCase() == mediaTitle.toLowerCase() ||
+                  s.title.toLowerCase() == mediaTitle.toLowerCase()),
+        ) ??
+        DownloadedMediaSummary(
+          title: (widget.anilistData?.title.isNotEmpty == true)
+              ? widget.anilistData!.title
+              : mediaTitle,
+          poster: (widget.anilistData?.poster.isNotEmpty == true)
+              ? widget.anilistData!.poster
+              : widget.anilistData?.cover,
+          extensionName: extName,
+          folderName: mediaTitle,
+          mediaType: 'Anime',
+        );
+    await navigate(() => DownloadedWatchPage(
+          episode: item,
+          allEpisodes: downloadedEpisodes,
+          meta: meta,
+          summary: summary,
+        ));
+    _initUserProgress();
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _confirmDeleteEpisode(
+    BuildContext context,
+    DownloadedEpisodeMeta epMeta,
+    String extName,
+    String mediaTitle,
+  ) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const AnymeXText('Delete Episode', variant: TextVariant.bold),
+        content: AnymeXText(
+            'Are you sure you want to delete Episode ${epMeta.episode.number}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const AnymeXText('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: AnymeXText('Delete', color: ctx.colors.error),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true) {
+      await downloadController.deleteEpisode(
+        extName,
+        mediaTitle,
+        epMeta.episode.number,
+        epMeta.episode.sortMap,
+      );
+    }
+  }
+
+  void _showBatchDownloadSheet(
+    BuildContext context,
+    String extName,
+    String mediaTitle,
+  ) {
+    final activeSrc = sourceController.activeSource.value;
+    if (activeSrc == null) {
+      snackBar('No active source selected');
+      return;
+    }
+    final episodesToShow = _episodesForSelectedSortKey();
+    final chunkedEpisodes =
+        chunkEpisodes(episodesToShow, calculateChunkSize(episodesToShow));
+    final safeChunkIndex = chunkedEpisodes.isEmpty
+        ? 0
+        : selectedChunkIndex.value.clamp(0, chunkedEpisodes.length - 1);
+    final currentChunk = chunkedEpisodes.isNotEmpty
+        ? chunkedEpisodes[safeChunkIndex]
+        : <Episode>[];
+
+    final unwatched = widget.episodeList.where((e) {
+      final isWatched = _isEpisodeWatched(e);
+      final isDownloaded = downloadController.isEpisodeDownloaded(
+          extName, mediaTitle, e.number, e.sortMap);
+      return !isWatched && !isDownloaded;
+    }).toList();
+
+    final chunkNotDownloaded = currentChunk.where((e) {
+      return !downloadController.isEpisodeDownloaded(
+          extName, mediaTitle, e.number, e.sortMap);
+    }).toList();
+
+    final allNotDownloaded = widget.episodeList.where((e) {
+      return !downloadController.isEpisodeDownloaded(
+          extName, mediaTitle, e.number, e.sortMap);
+    }).toList();
+
+    final options = <_BatchOption>[
+      (
+        title: 'Download Unwatched Episodes',
+        subtitle: '${unwatched.length} episodes',
+        icon: Icons.playlist_play_rounded,
+        enabled: unwatched.isNotEmpty,
+        onTap: () {
+          DownloadServerSelector.show(
+            context,
+            episodes: unwatched,
+            source: activeSrc,
+            media: _getOfflineMedia(mediaTitle),
+          );
+        },
+      ),
+      (
+        title: 'Download Current Section',
+        subtitle: '${chunkNotDownloaded.length} episodes',
+        icon: Icons.view_carousel_outlined,
+        enabled: chunkNotDownloaded.isNotEmpty,
+        onTap: () {
+          DownloadServerSelector.show(
+            context,
+            episodes: chunkNotDownloaded,
+            source: activeSrc,
+            media: _getOfflineMedia(mediaTitle),
+          );
+        },
+      ),
+      (
+        title: 'Download All Episodes',
+        subtitle: '${allNotDownloaded.length} episodes',
+        icon: Icons.file_download_outlined,
+        enabled: allNotDownloaded.isNotEmpty,
+        onTap: () {
+          DownloadServerSelector.show(
+            context,
+            episodes: allNotDownloaded,
+            source: activeSrc,
+            media: _getOfflineMedia(mediaTitle),
+          );
+        },
+      ),
+    ];
+
+    AnymeXSheet(
+      title: 'Batch Download',
+      message: mediaTitle,
+      showDragHandle: true,
+      contentWidget: AnymeXTileBuilder<_BatchOption>(
+        items: options,
+        isSelection: false,
+        isEnabled: (item) => item.enabled,
+        getTitle: (item) => item.title,
+        getSubtitle: (item) => item.subtitle,
+        getIcon: (item) => item.icon,
+        showChevron: (item) => item.enabled,
+        onItemPressed: (item) {
+          if (item.enabled) {
+            Navigator.pop(context);
+            item.onTap();
+          }
+        },
+      ),
+    ).show(context);
   }
 }
 
@@ -974,7 +1387,8 @@ class ContinueEpisodeButton extends StatelessWidget {
             rawTitle.isEmpty ||
             rawTitle.toLowerCase() == 'movie' ||
             rawTitle.toLowerCase() == 'full movie';
-        final isMovieMedia = data.id.endsWith('*MOVIE') || data.mediaType == ItemType.anime;
+        final isMovieMedia =
+            data.id.endsWith('*MOVIE') || data.mediaType == ItemType.anime;
         final resolvedTitle = (isGenericMovie || isMovieMedia)
             ? (data.title.isNotEmpty ? data.title : "Episode ${episode.number}")
             : rawTitle;
@@ -1036,7 +1450,8 @@ class ContinueEpisodeButton extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          AnymeXText(episodeLabel.toUpperCase(),
+                          AnymeXText(
+                            episodeLabel.toUpperCase(),
                             variant: TextVariant.semiBold,
                             color: textColor,
                             textAlign: TextAlign.center,
@@ -1088,12 +1503,14 @@ class ServerSheetContent extends StatefulWidget {
   final Episode episode;
   final List<Episode> episodeList;
   final Media anilistData;
+  final bool bypassDialog;
 
   const ServerSheetContent({
     super.key,
     required this.episode,
     required this.episodeList,
     required this.anilistData,
+    this.bypassDialog = false,
   });
 
   @override
@@ -1105,12 +1522,17 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
   final RxBool isServerStreamLoading = false.obs;
   final sourceController = Get.find<SourceController>();
   final RxnString streamError = RxnString();
+  late final RxBool rememberServer;
   StreamSubscription? streamSubscription;
   String? scrapeToken;
+  bool _hasAutoSelected = false;
 
   @override
   void initState() {
     super.initState();
+    final savedSticky =
+        DynamicKeys.stickyServer.get<String?>(widget.anilistData.id.toString());
+    rememberServer = (savedSticky != null && savedSticky.isNotEmpty).obs;
     fetchServers();
   }
 
@@ -1121,6 +1543,49 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       sourceController.activeSource.value?.cancelRequest(scrapeToken!);
     }
     super.dispose();
+  }
+
+  void _checkAndAutoSelect({required bool isStreamCompleted}) {
+    if (_hasAutoSelected || !mounted) return;
+
+    final mediaId = widget.anilistData.id.toString();
+    final savedSticky = DynamicKeys.stickyServer.get<String?>(mediaId);
+
+    final offlineStorage = Get.find<OfflineStorageController>();
+    final savedAnime = offlineStorage.getAnimeById(mediaId);
+    final prevTrack = savedAnime?.currentEpisode?.currentTrack ??
+        savedAnime?.watchedEpisodes?.lastOrNull?.currentTrack;
+    final wasDub = hive.isDubTrack(prevTrack) ||
+        (savedSticky != null && hive.isDubLabel(savedSticky));
+
+    if (savedSticky != null && savedSticky.isNotEmpty) {
+      final matched = streamList.firstWhereOrNull((video) {
+        if (wasDub && !video.isDub) return false;
+        final q = video.quality?.toUpperCase();
+        final saved = savedSticky.toUpperCase();
+        return q == saved || video.originalUrl == savedSticky;
+      });
+      if (matched != null) {
+        _hasAutoSelected = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _handleServerSelected(matched);
+          }
+        });
+        return;
+      }
+    }
+
+    if (isStreamCompleted) {
+      if (streamList.length == 1) {
+        _hasAutoSelected = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _handleServerSelected(streamList.first);
+          }
+        });
+      }
+    }
   }
 
   Future<void> fetchServers() async {
@@ -1163,6 +1628,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
               video.originalUrl == nextVideo.originalUrl);
           if (!alreadyExists) {
             streamList.add(nextVideo);
+            _checkAndAutoSelect(isStreamCompleted: false);
           }
         },
         onError: (e) {
@@ -1171,12 +1637,14 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
         },
         onDone: () {
           isServerStreamLoading.value = false;
+          _checkAndAutoSelect(isStreamCompleted: true);
         },
       );
     } else if (videoFuture != null) {
       videoFuture.then((vids) {
         isServerStreamLoading.value = false;
         streamList.value = vids.map((e) => hive.Video.fromVideo(e)).toList();
+        _checkAndAutoSelect(isStreamCompleted: true);
       }).catchError((e) {
         isServerStreamLoading.value = false;
         streamError.value = e.toString();
@@ -1184,9 +1652,86 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
     }
   }
 
+  Future<void> _handleServerSelected(hive.Video video) async {
+    final mediaId = widget.anilistData.id.toString();
+    if (rememberServer.value) {
+      DynamicKeys.stickyServer
+          .set(mediaId, video.quality ?? video.originalUrl ?? '');
+    }
+    if (mounted && Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+    final mediaData = widget.anilistData;
+    final dbId =
+        '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
+
+    final auth = Get.find<ServiceHandler>();
+    final isLoggedInOnline = auth.isLoggedIn.value &&
+        auth.serviceType.value != ServicesType.extensions;
+
+    if (!isLoggedInOnline) {
+      await navigate(() => WatchScreen(
+            episodeSrc: video,
+            episodeList: widget.episodeList,
+            anilistData: mediaData,
+            currentEpisode: widget.episode,
+            episodeTracks: streamList,
+            shouldTrack: false,
+          ));
+      return;
+    }
+
+    final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
+
+    if (savedTracking != null && !widget.bypassDialog) {
+      await navigate(() => WatchScreen(
+            episodeSrc: video,
+            episodeList: widget.episodeList,
+            anilistData: mediaData,
+            currentEpisode: widget.episode,
+            episodeTracks: streamList,
+            shouldTrack: savedTracking,
+          ));
+      return;
+    }
+
+    if (General.shouldAskForTrack.get(true) == false) {
+      await navigate(() => WatchScreen(
+            episodeSrc: video,
+            episodeList: widget.episodeList,
+            anilistData: mediaData,
+            currentEpisode: widget.episode,
+            episodeTracks: streamList,
+          ));
+      return;
+    }
+
+    final isExtension = mediaData.serviceType == ServicesType.extensions;
+    final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&
+        Get.find<TrackBindingController>().hasAnyBinding(mediaData.id);
+
+    bool? shouldTrack;
+    if (isExtension) {
+      shouldTrack = hasTrackBinding;
+    } else {
+      shouldTrack = await showTrackingDialog(context, dbId: dbId);
+    }
+
+    if (shouldTrack != null) {
+      await navigate(() => WatchScreen(
+            episodeSrc: video,
+            episodeList: widget.episodeList,
+            anilistData: mediaData,
+            currentEpisode: widget.episode,
+            episodeTracks: streamList,
+            shouldTrack: shouldTrack!,
+          ));
+    }
+  }
+
   Widget _buildSheetHeader(ColorScheme theme) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 14),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 14),
       child: Row(
         children: [
           Container(
@@ -1195,19 +1740,27 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
               color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Icons.play_arrow_rounded, size: 20, color: theme.primary),
+            child:
+                Icon(Icons.play_arrow_rounded, size: 20, color: theme.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AnymeXText('Choose Quality',
+                AnymeXText(
+                  'Episode ${widget.episode.number}',
                   variant: TextVariant.bold,
+                  maxLines: 1,
                   size: 16,
                 ),
-                AnymeXText('Select streaming server quality to watch',
+                AnymeXText(
+                  (widget.episode.title != null &&
+                          widget.episode.title!.isNotEmpty)
+                      ? widget.episode.title!
+                      : 'Select streaming server quality to watch',
                   size: 12,
+                  maxLines: 1,
                   color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                 ),
               ],
@@ -1215,27 +1768,30 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
           ),
           AnymexOnTap(
             onTap: () => Navigator.pop(context),
-            child: Icon(Icons.close_rounded, color: theme.onSurface.opaque(0.5, iReallyMeanIt: true)),
+            child: Icon(Icons.close_rounded,
+                color: theme.onSurface.opaque(0.5, iReallyMeanIt: true)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildScrapingLoadingState(bool fromSrc) {
+  Widget _buildScrapingLoadingState() {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: Column(
+      child: const Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
-          AnymeXText('Scanning for video streams...',
+          AnymeXText(
+            'Scanning for video streams...',
             size: 16,
             variant: TextVariant.semiBold,
           ),
           SizedBox(height: 8),
-          AnymeXText('This may take a few seconds',
+          AnymeXText(
+            'This may take a few seconds',
             size: 12,
           ),
         ],
@@ -1248,7 +1804,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 10),
-        const AnymeXText("Error Occurred",
+        const AnymeXText(
+          "Error Occurred",
           variant: TextVariant.bold,
           size: 18,
         ),
@@ -1259,7 +1816,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
             color: Colors.red.opaque(0.1, iReallyMeanIt: true),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: AnymeXText(errorMessage,
+          child: AnymeXText(
+            errorMessage,
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
@@ -1274,7 +1832,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
     return const SizedBox(
       height: 200,
       child: Center(
-        child: AnymeXText("No servers available",
+        child: AnymeXText(
+          "No servers available",
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -1282,147 +1841,141 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
     );
   }
 
-  Widget _buildServerList(Media mediaData, bool bypassDialog, {bool showBottomLoader = false}) {
+  Widget _buildServerList(Media mediaData, {bool showBottomLoader = false}) {
     final theme = context.colors;
+    final mediaId = widget.anilistData.id.toString();
+    final savedSticky = DynamicKeys.stickyServer.get<String?>(mediaId);
+
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * 0.45,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.5,
       ),
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        shrinkWrap: true,
-        itemCount: streamList.length + (showBottomLoader ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index == streamList.length) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+        child: AnymeXTileBuilder<hive.Video>(
+          lazy: true,
+          items: streamList,
+          isSelection: false,
+          getTitle: (video) => video.quality?.toUpperCase() ?? "UNKNOWN",
+          getSubtitleWidget: (video) {
+            final subsCount = video.subtitles?.length ?? 0;
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              decoration: BoxDecoration(
+                color: theme.secondary,
+                borderRadius: BorderRadius.circular(6),
+              ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: ExpressiveLoadingIndicator(),
+                  Icon(
+                    Icons.closed_caption_rounded,
+                    color: theme.onSecondary,
+                    size: 16,
                   ),
-                  const SizedBox(width: 8),
-                  AnymeXText('Scanning for more servers...',
-                    size: 12,
-                    color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
+                  2.width(),
+                  AnymeXText(
+                    subsCount.toString(),
+                    size: 10,
+                    variant: TextVariant.semiBold,
+                    color: theme.onSecondary,
                   ),
                 ],
               ),
             );
-          }
+          },
+          maxLines: 9999,
+          getLeading: (video) => Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.play_arrow_rounded,
+              size: 20,
+              color: theme.primary,
+            ),
+          ),
+          getTrailing: (video) {
+            final quality = video.quality?.toUpperCase() ?? "UNKNOWN";
+            final isSaved = savedSticky != null &&
+                savedSticky.isNotEmpty &&
+                (quality == savedSticky.toUpperCase() ||
+                    video.originalUrl == savedSticky);
 
-          final video = streamList[index];
-          final quality = video.quality?.toUpperCase() ?? "UNKNOWN";
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: AnymexOnTap(
-              onTap: () async {
-                Navigator.pop(context);
-                final dbId = '${mediaData.id}_${mediaData.serviceType.name}_${mediaData.type}';
-                
-                final auth = Get.find<ServiceHandler>();
-                final isLoggedInOnline = auth.isLoggedIn.value &&
-                    auth.serviceType.value != ServicesType.extensions;
-
-                if (!isLoggedInOnline) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: widget.episode,
-                        episodeTracks: streamList,
-                        shouldTrack: false,
-                      ));
-                  return;
-                }
-
-                final savedTracking = DynamicKeys.trackingPermission.get<bool?>(dbId);
-
-                if (savedTracking != null && !bypassDialog) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: widget.episode,
-                        episodeTracks: streamList,
-                        shouldTrack: savedTracking,
-                      ));
-                  return;
-                }
-
-                final isExtension = mediaData.serviceType == ServicesType.extensions;
-                final hasTrackBinding = Get.isRegistered<TrackBindingController>() &&
-                    Get.find<TrackBindingController>().hasAnyBinding(mediaData.id);
-
-                bool? shouldTrack;
-                if (General.shouldAskForTrack.get(true) == false) {
-                  shouldTrack = true;
-                } else if (isExtension) {
-                  shouldTrack = hasTrackBinding;
-                } else {
-                  shouldTrack = await showTrackingDialog(context, dbId: dbId);
-                }
-
-                if (shouldTrack != null) {
-                  await navigate(() => WatchScreen(
-                        episodeSrc: video,
-                        episodeList: widget.episodeList,
-                        anilistData: mediaData,
-                        currentEpisode: widget.episode,
-                        episodeTracks: streamList,
-                        shouldTrack: shouldTrack ?? false,
-                      ));
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: theme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: theme.outline.opaque(0.15, iReallyMeanIt: true),
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 28,
-                      height: 28,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: theme.primaryContainer.opaque(0.3, iReallyMeanIt: true),
-                      ),
-                      child: Icon(Icons.play_arrow_rounded, size: 16, color: theme.primary),
+            if (isSaved) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: theme.primary.opaque(0.15, iReallyMeanIt: true),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymeXText(quality,
-                            variant: TextVariant.bold,
-                            size: 14,
-                          ),
-                          const SizedBox(height: 2),
-                          AnymeXText(sourceController.activeSource.value?.name?.toUpperCase() ?? '',
-                            variant: TextVariant.semiBold,
-                            size: 11,
-                            color: theme.onSurface.opaque(0.6, iReallyMeanIt: true),
-                          ),
-                        ],
-                      ),
+                    child: const AnymeXText(
+                      'Default',
+                      size: 11,
+                      variant: TextVariant.bold,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: theme.onSurface.opaque(0.4, iReallyMeanIt: true),
+                  ),
+                ],
+              );
+            }
+            return Icon(
+              Icons.chevron_right_rounded,
+              color: theme.onSurface.opaque(0.4, iReallyMeanIt: true),
+            );
+          },
+          headerChildren: [
+            Obx(
+              () => AnymeXTile.checkbox(
+                icon: Icons.bookmark_outline_rounded,
+                title: 'Remember Server',
+                subtitle: 'Auto-select this server quality for this anime',
+                value: rememberServer.value,
+                onChanged: (val) {
+                  rememberServer.value = val;
+                  if (!val) {
+                    DynamicKeys.stickyServer.set(mediaId, '');
+                  }
+                },
+              ),
+            ),
+          ],
+          onItemPressed: (video) => _handleServerSelected(video),
+          footerChildren: [
+            if (showBottomLoader)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: ExpressiveLoadingIndicator(),
+                    ),
+                    const SizedBox(width: 8),
+                    AnymeXText(
+                      'Scanning for more servers...',
+                      size: 12,
+                      color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                     ),
                   ],
                 ),
               ),
-            ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -1433,11 +1986,10 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildSheetHeader(context.colors),
-        const Divider(height: 1, thickness: 0.5),
         Flexible(
           child: Obx(() {
             if (isServerStreamLoading.value && streamList.isEmpty) {
-              return _buildScrapingLoadingState(scrapeToken != null);
+              return _buildScrapingLoadingState();
             } else if (streamError.value != null) {
               return _buildErrorState(streamError.value!);
             } else if (streamList.isEmpty && !isServerStreamLoading.value) {
@@ -1445,7 +1997,6 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
             } else {
               return _buildServerList(
                 widget.anilistData,
-                false,
                 showBottomLoader: isServerStreamLoading.value,
               );
             }

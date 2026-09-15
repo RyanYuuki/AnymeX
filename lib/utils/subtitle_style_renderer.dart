@@ -26,7 +26,7 @@ String normalizeSubtitleOutlineType(String outlineType) {
 }
 
 String resolveSubtitleFontFamily(String configuredFont) {
-  if (configuredFont == 'Default') return 'Poppins';
+  if (configuredFont == 'Default') return 'Linotte';
   if (configuredFont == 'Anime Ace 3') return 'AnimeAce';
   return configuredFont;
 }

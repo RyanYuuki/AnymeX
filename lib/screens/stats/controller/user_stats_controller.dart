@@ -11,6 +11,7 @@ class UserStatsController extends GetxController {
   final dailyActivities = <DailyActivity>[].obs;
   final mediaStats = <MediaStats>[].obs;
   final libraryItems = <OfflineMedia>[].obs;
+  final activeFilter = 'All'.obs;
 
   @override
   void onInit() {

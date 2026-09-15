@@ -7,7 +7,6 @@ import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'package:anymex/database/data_keys/keys.dart';
 import 'base_player.dart' as base;
@@ -96,7 +95,7 @@ class MediaKitPlayer extends base.BasePlayer {
         hwdec: config.hwdec,
         enableHardwareAcceleration: config.hwdec != 'no',
         androidAttachSurfaceAfterVideoParameters: true,
-        enableAndroidSurfaceProducer: false,
+        // enableAndroidSurfaceProducer: false,
       ),
     );
 
@@ -104,8 +103,6 @@ class MediaKitPlayer extends base.BasePlayer {
 
     try {
       final mpv = _player.platform as dynamic;
-      final tempDir = await getTemporaryDirectory();
-      await mpv.setProperty("demuxer-cache-dir", tempDir.path);
       await mpv.setProperty("af", "scaletempo2=max-speed=8");
       final currentAo = config.audioOutput;
       if (currentAo != 'auto') {
@@ -118,13 +115,17 @@ class MediaKitPlayer extends base.BasePlayer {
         }
       }
       await mpv.setProperty("hwdec", config.hwdec);
-      await mpv.setProperty("vd-lavc-fast", "yes");
-      await mpv.setProperty("vd-lavc-skiploopfilter", "nonkey");
+      await mpv.setProperty("autosync", "30");
+      await mpv.setProperty("framedrop", "no");
+      await mpv.setProperty("cache-on-disk", "no");
+      await mpv.setProperty("network-timeout", "30");
+      await mpv.setProperty("demuxer-readahead-secs", "30");
       if (!Platform.isAndroid && !Platform.isIOS) {
         await mpv.setProperty("vd-lavc-threads", "4");
       }
       await mpv.setProperty("cache", "yes");
-      final savedAudioLayout = PlayerKeys.audioChannelLayout.get<String>('auto');
+      final savedAudioLayout =
+          PlayerKeys.audioChannelLayout.get<String>('auto');
       if (savedAudioLayout != 'auto') {
         await mpv.setProperty("audio-channels", savedAudioLayout);
       }
@@ -395,7 +396,7 @@ class MediaKitPlayer extends base.BasePlayer {
     if (_isDisposed) return const SizedBox.shrink();
 
     return Video(
-      filterQuality: FilterQuality.medium,
+      filterQuality: FilterQuality.low,
       controls: null,
       controller: _videoController,
       fit: fit ?? BoxFit.contain,

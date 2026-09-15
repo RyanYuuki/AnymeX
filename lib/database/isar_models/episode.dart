@@ -141,4 +141,38 @@ extension EpisodeMap on Episode {
     }
     return result;
   }
+
+  bool isSameEpisode(Episode? other) {
+    if (other == null) return false;
+    if (identical(this, other)) return true;
+    if (link != null &&
+        other.link != null &&
+        link!.isNotEmpty &&
+        other.link!.isNotEmpty &&
+        link == other.link) {
+      return true;
+    }
+    final thisNum = double.tryParse(number.trim());
+    final otherNum = double.tryParse(other.number.trim());
+    if (thisNum != null && otherNum != null) {
+      if (thisNum != otherNum) return false;
+    } else if (number.trim() != other.number.trim()) {
+      return false;
+    }
+    final thisSort = sortMap;
+    final otherSort = other.sortMap;
+    if (thisSort.isNotEmpty && otherSort.isNotEmpty) {
+      if (thisSort.length != otherSort.length) return false;
+      for (final entry in thisSort.entries) {
+        if (otherSort[entry.key]?.trim() != entry.value.trim()) {
+          return false;
+        }
+      }
+      return true;
+    }
+    if (thisSort.isNotEmpty != otherSort.isNotEmpty) {
+      return false;
+    }
+    return true;
+  }
 }

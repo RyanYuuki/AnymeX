@@ -36,7 +36,7 @@ class WatchSettingsPane extends StatelessWidget {
                 child: AnymeXText(
                   title,
                   style: theme.textTheme.titleLarge?.copyWith(
-                    fontFamily: 'Poppins-SemiBold',
+                    fontFamily: 'Linotte',
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
                     color: cs.onSurface,

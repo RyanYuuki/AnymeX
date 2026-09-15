@@ -195,7 +195,7 @@ class _WatchiumPartyPopupContentState
                 AnymeXText(
                   'Watch Party',
                   style: theme.textTheme.titleLarge?.copyWith(
-                    fontFamily: 'Poppins-SemiBold',
+                    fontFamily: 'Linotte',
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -203,7 +203,7 @@ class _WatchiumPartyPopupContentState
                   AnymeXText(
                     'Room ${state.code}  ·  ${state.members.where((m) => m.online).length} online',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       color: cs.onSurface.withOpacity(0.6),
                     ),
                   ),
@@ -380,7 +380,7 @@ class _WatchiumPartyPopupContentState
                                       duration:
                                           const Duration(milliseconds: 200),
                                       style: TextStyle(
-                                        fontFamily: 'Poppins-SemiBold',
+                                        fontFamily: 'Linotte',
                                         fontSize: 14,
                                         color: _currentTab == t.tab
                                             ? cs.onPrimary
@@ -442,7 +442,7 @@ class _WatchiumPartyPopupContentState
                       AnymeXText(
                         'No messages yet',
                         style: TextStyle(
-                          fontFamily: 'Poppins',
+                          fontFamily: 'Linotte',
                           color: cs.onSurface.withValues(alpha: 0.6),
                           fontSize: 14,
                         ),
@@ -451,7 +451,7 @@ class _WatchiumPartyPopupContentState
                       AnymeXText(
                         'Be the first to say something!',
                         style: TextStyle(
-                          fontFamily: 'Poppins',
+                          fontFamily: 'Linotte',
                           color: cs.onSurface.withValues(alpha: 0.4),
                           fontSize: 12,
                         ),
@@ -525,7 +525,7 @@ class _WatchiumPartyPopupContentState
                                       AnymeXText(
                                         msg.username,
                                         style: TextStyle(
-                                          fontFamily: 'Poppins-SemiBold',
+                                          fontFamily: 'Linotte',
                                           fontSize: 10,
                                           color: cs.primary,
                                         ),
@@ -562,7 +562,7 @@ class _WatchiumPartyPopupContentState
                                 child: AnymeXText(
                                   msg.text,
                                   style: TextStyle(
-                                    fontFamily: 'Poppins',
+                                    fontFamily: 'Linotte',
                                     fontSize: 13,
                                     color: cs.onSurface,
                                   ),
@@ -632,7 +632,7 @@ class _WatchiumPartyPopupContentState
         AnymeXText(
           'QUICK REACTIONS',
           style: TextStyle(
-            fontFamily: 'Poppins-SemiBold',
+            fontFamily: 'Linotte',
             fontSize: 10,
             letterSpacing: 1.2,
             color: cs.onSurface.withValues(alpha: 0.4),
@@ -692,7 +692,7 @@ class _WatchiumPartyPopupContentState
               child: AnymeXText(
                 'Chat has been disabled by the host',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontSize: 11,
                   color: Colors.red.withValues(alpha: 0.8),
                 ),
@@ -716,7 +716,7 @@ class _WatchiumPartyPopupContentState
               child: AnymeXText(
                 'Announcement mode — only host and co-hosts can send messages',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontSize: 11,
                   color: Colors.amber.withValues(alpha: 0.8),
                 ),
@@ -740,7 +740,7 @@ class _WatchiumPartyPopupContentState
               child: AnymeXText(
                 'Announcement mode active — members can only read',
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontSize: 11,
                   color: Colors.amber.withValues(alpha: 0.6),
                 ),
@@ -783,7 +783,7 @@ class _WatchiumPartyPopupContentState
                 focusNode: _chatFocusNode,
                 enabled: !isMuted,
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontSize: 13,
                   color: isMuted
                       ? cs.onSurface.withValues(alpha: 0.4)
@@ -792,7 +792,7 @@ class _WatchiumPartyPopupContentState
                 decoration: InputDecoration(
                   hintText: hintText,
                   hintStyle: TextStyle(
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                     fontSize: 13,
                     color: isMuted
                         ? cs.onSurface.withValues(alpha: 0.3)
@@ -857,7 +857,7 @@ class _WatchiumPartyPopupContentState
               AnymeXText(
                 r.username,
                 style: TextStyle(
-                  fontFamily: 'Poppins-SemiBold',
+                  fontFamily: 'Linotte',
                   fontSize: 11,
                   color: cs.primary,
                 ),
@@ -991,7 +991,7 @@ class _WatchiumPartyPopupContentState
                                     ? '${member.username} (You)'
                                     : member.username,
                                 style: TextStyle(
-                                  fontFamily: 'Poppins-SemiBold',
+                                  fontFamily: 'Linotte',
                                   fontSize: 14,
                                   color: cs.onSurface,
                                 ),
@@ -1010,7 +1010,7 @@ class _WatchiumPartyPopupContentState
                                 child: const AnymeXText(
                                   'CO-HOST',
                                   style: TextStyle(
-                                    fontFamily: 'Poppins-SemiBold',
+                                    fontFamily: 'Linotte',
                                     fontSize: 10,
                                     color: Colors.orange,
                                   ),
@@ -1023,7 +1023,7 @@ class _WatchiumPartyPopupContentState
                         AnymeXText(
                           member.online ? 'Online' : 'Offline',
                           style: TextStyle(
-                            fontFamily: 'Poppins',
+                            fontFamily: 'Linotte',
                             fontSize: 11,
                             color: member.online
                                 ? Colors.green.withValues(alpha: 0.8)

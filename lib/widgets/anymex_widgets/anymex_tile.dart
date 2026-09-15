@@ -10,8 +10,10 @@ class AnymeXTile extends StatelessWidget {
   final Widget? leading;
   final String title;
   final String? subtitle;
+  final Widget? subtitleWidget;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final Color? iconColor;
   final Color? iconBackgroundColor;
   final bool showChevron;
@@ -21,6 +23,8 @@ class AnymeXTile extends StatelessWidget {
   final Widget? customContent;
   final TextStyle? titleStyle;
   final TextStyle? subtitleStyle;
+  final int? maxLines;
+  final bool autoResize;
 
   const AnymeXTile({
     super.key,
@@ -28,8 +32,10 @@ class AnymeXTile extends StatelessWidget {
     this.leading,
     required this.title,
     this.subtitle,
+    this.subtitleWidget,
     this.trailing,
     this.onTap,
+    this.onLongPress,
     this.iconColor,
     this.iconBackgroundColor,
     this.showChevron = true,
@@ -37,12 +43,11 @@ class AnymeXTile extends StatelessWidget {
     this.padding,
     this.enabled = true,
     this.customContent,
-    this.maxLines,
+    this.maxLines = 4,
+    this.autoResize = true,
     this.titleStyle,
     this.subtitleStyle,
   });
-
-  final int? maxLines;
 
   static Widget _buildSwitch(
     BuildContext context,
@@ -208,9 +213,9 @@ class AnymeXTile extends StatelessWidget {
             decoration: BoxDecoration(
               color: primary.withOpacity(0.12),
               borderRadius: BorderRadius.circular(10),
-
             ),
-            child: AnymeXText(formatValue(value),
+            child: AnymeXText(
+              formatValue(value),
               size: 12,
               variant: TextVariant.semiBold,
               color: primary,
@@ -248,6 +253,7 @@ class AnymeXTile extends StatelessWidget {
     String? subtitle,
     required bool selected,
     required VoidCallback? onTap,
+    VoidCallback? onLongPress,
     Color? iconColor,
     Color? iconBackgroundColor,
     BorderRadius? borderRadius,
@@ -269,6 +275,7 @@ class AnymeXTile extends StatelessWidget {
       enabled: enabled,
       showChevron: false,
       onTap: enabled ? onTap : null,
+      onLongPress: enabled ? onLongPress : null,
       titleStyle: titleStyle,
       subtitleStyle: subtitleStyle,
       trailing: Builder(
@@ -281,7 +288,9 @@ class AnymeXTile extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: selected ? colors.primary : colors.onSurface.withOpacity(0.24),
+                color: selected
+                    ? colors.primary
+                    : colors.onSurface.withOpacity(0.24),
                 width: 2,
               ),
               color: selected ? colors.primary : Colors.transparent,
@@ -345,7 +354,8 @@ class AnymeXTile extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color: value ? colors.primary : colors.onSurface.withOpacity(0.24),
+                color:
+                    value ? colors.primary : colors.onSurface.withOpacity(0.24),
                 width: 2,
               ),
               color: value ? colors.primary : Colors.transparent,
@@ -362,7 +372,6 @@ class AnymeXTile extends StatelessWidget {
       ),
     );
   }
-
 
   static Widget segmented<T>({
     Key? key,
@@ -488,18 +497,23 @@ class AnymeXTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    AnymeXText(title,
+                    AnymeXText(
+                      title,
                       size: 14.5,
-                      maxLines: maxLines ?? 2,
+                      maxLines: maxLines ?? 4,
+                      autoResize: autoResize,
                       variant: TextVariant.semiBold,
                       color: enabled
                           ? colors.onSurface
                           : colors.onSurface.opaque(0.4, iReallyMeanIt: true),
                       style: titleStyle,
                     ),
-                    if (subtitle != null && subtitle!.isNotEmpty) ...[
+                    if (subtitleWidget != null) ...[
+                      subtitleWidget!,
+                    ] else if (subtitle != null && subtitle!.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      AnymeXText(subtitle!,
+                      AnymeXText(
+                        subtitle!,
                         size: 12,
                         variant: TextVariant.regular,
                         color:
@@ -523,7 +537,7 @@ class AnymeXTile extends StatelessWidget {
       ),
     );
 
-    if (onTap != null && enabled) {
+    if ((onTap != null || onLongPress != null) && enabled) {
       return Material(
         color: Colors.transparent,
         borderRadius: radius,
@@ -531,6 +545,7 @@ class AnymeXTile extends StatelessWidget {
           margin: 0,
           scale: 0.98,
           onTap: onTap,
+          onLongPress: onLongPress,
           child: contentWidget,
         ),
       );
@@ -543,9 +558,6 @@ class AnymeXTile extends StatelessWidget {
     );
   }
 }
-
-
-
 
 class _SegmentedContent<T> extends StatelessWidget {
   final T value;

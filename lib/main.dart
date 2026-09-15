@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rhttp/rhttp.dart';
@@ -14,6 +14,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/stats/stats_tracker.dart';
 import 'package:anymex/screens/stats/user_stats_page.dart';
+import 'package:anymex/screens/stats/controller/user_stats_controller.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -38,8 +39,10 @@ import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/screens/novel/home_page.dart';
 import 'package:anymex/widgets/common/lazy_indexed_stack.dart';
 import 'package:anymex/widgets/common/media_mode_selector.dart';
+import 'package:anymex/widgets/common/home_continue_button.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
-import 'package:anymex/utils/function.dart';
+import 'package:anymex/services/fcm_service.dart'
+    hide firebaseMessagingBackgroundHandler;
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/logger.dart';
@@ -53,7 +56,6 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
@@ -182,12 +184,14 @@ void main(List<String> args) async {
         errorMessage: 'Failed to load .env file');
 
     if (!Platform.isLinux) {
-      await safeCall(() async {
-        await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        );
-        FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-      }, errorMessage: 'Failed to initialize Firebase');
+      await safeCall(
+          () => Firebase.initializeApp(
+                options: DefaultFirebaseOptions.currentPlatform,
+              ),
+          errorMessage: 'Failed to initialize Firebase');
+      await safeCall(() => FcmService.init(),
+          errorMessage: 'Failed to initialize FCM');
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     }
 
     if (Platform.isWindows || Platform.isLinux) {
@@ -287,6 +291,8 @@ void _initializeGetxController() async {
     Get.lazyPut(() => NotificationService());
     Get.put(StatsTracker());
     Get.lazyPut(() => CacheController());
+    Get.lazyPut(() => MediaModeController());
+    Get.lazyPut(() => DownloadSearchController());
   }, errorMessage: 'Failed to register GetX controllers');
 
   await safeCall(() => StorageManagerService().enforceImageCacheLimit(),
@@ -430,9 +436,6 @@ class _FilterScreenState extends State<FilterScreen> {
   int _selectedIndex = 1;
   int _mobileSelectedIndex = 0;
 
-  final List<String> _onlineTabs = ['Home', 'Discover', 'Library', 'History', 'Stats'];
-  final List<String> _extensionTabs = ['Home', 'Anime', 'Manga', 'Novel', 'Extensions'];
-
   @override
   void initState() {
     super.initState();
@@ -524,7 +527,7 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   List<String> _getNavTabs(ServiceHandler authService, Settings settings) {
-    return authService.serviceType.value == ServicesType.extensions ? _extensionTabs : _onlineTabs;
+    return settings.navigationTabOrder;
   }
 
   Widget _getWidgetForTab(String tabKey) {
@@ -554,26 +557,48 @@ class _FilterScreenState extends State<FilterScreen> {
     }
   }
 
-  NavItem _getNavItemForTab(String tabKey, bool isSimkl, Function(int) onTap) {
+  NavItem _getNavItemForTab(String tabKey, bool isSimkl, Function(int) onTap,
+      {bool isDesktop = false}) {
+    final settings = Get.find<Settings>();
     Widget? subWidget;
+    final mediaModeController = Get.isRegistered<MediaModeController>()
+        ? Get.find<MediaModeController>()
+        : Get.put(MediaModeController());
 
-    if (tabKey == 'Discover') {
-      subWidget = const MediaModeSelector(
-        isVertical: true,
-        showPlayButton: false,
-      );
-    } else if (tabKey == 'Library') {
-      subWidget = const MediaModeSelector(
-        isVertical: true,
-        showPlayButton: false,
-        isLibraryOrHistory: true,
-      );
-    } else if (tabKey == 'History') {
-      subWidget = const MediaModeSelector(
-        isVertical: true,
-        showPlayButton: true,
-        isLibraryOrHistory: true,
-      );
+    if (tabKey == 'Home') {
+      if (!isDesktop && mediaModeController.animeHistory.isNotEmpty) {
+        subWidget = const HomeContinueWatchingBar();
+      }
+    } else if (!settings.useLegacyNavbar) {
+      if (tabKey == 'Discover') {
+        subWidget = MediaModeSelector(
+          isVertical: isDesktop,
+          showPlayButton: false,
+        );
+      } else if (tabKey == 'Library') {
+        subWidget = MediaModeSelector(
+          isVertical: isDesktop,
+          showPlayButton: false,
+          isLibraryOrHistory: true,
+        );
+      } else if (tabKey == 'History') {
+        subWidget = MediaModeSelector(
+          isVertical: isDesktop,
+          showPlayButton: true,
+          isLibraryOrHistory: true,
+        );
+      } else if (tabKey == 'Stats') {
+        final statsController = Get.isRegistered<UserStatsController>()
+            ? Get.find<UserStatsController>()
+            : Get.put(UserStatsController());
+        subWidget = Obx(() => MediaModeSelector(
+              isVertical: isDesktop,
+              customOptions: const ['All', 'Anime', 'Manga', 'Novel'],
+              selectedOption: statsController.activeFilter.value,
+              onOptionSelected: (val) =>
+                  statsController.activeFilter.value = val,
+            ));
+      }
     }
 
     switch (tabKey) {
@@ -700,7 +725,7 @@ class _FilterScreenState extends State<FilterScreen> {
             final _ = mediaModeController.rxMode.value;
             final isSimkl = authService.serviceType.value == ServicesType.simkl;
             final navTabs = _getNavTabs(authService, settings);
-            final navRailWidth = settings.navBarStyle == 0 ? 110.0 : 120.0;
+            final navRailWidth = settings.navBarStyle == 0 ? 120.0 : 120.0;
             final validIndex = _selectedIndex.clamp(0, navTabs.length);
 
             return SizedBox(
@@ -754,7 +779,8 @@ class _FilterScreenState extends State<FilterScreen> {
                               return avatar;
                             })),
                         for (final tab in navTabs)
-                          _getNavItemForTab(tab, isSimkl, _onItemTapped),
+                          _getNavItemForTab(tab, isSimkl, _onItemTapped,
+                              isDesktop: true),
                       ],
                     ),
                   ],
@@ -791,41 +817,50 @@ class _FilterScreenState extends State<FilterScreen> {
       final validIndex = _mobileSelectedIndex.clamp(0, mobileRoutes.length - 1);
 
       return PopScope(
-        canPop: false,
-        onPopInvoked: (bool didPop) async {
-          if (didPop) return;
-          final homeIndex = navTabs.indexOf('Home');
-          if (validIndex != homeIndex && homeIndex != -1) {
-            setState(() {
-              _mobileSelectedIndex = homeIndex;
-            });
-          } else {
-            const MethodChannel("com.ryan.anymex/utils")
-                .invokeMethod("exitApp");
-          }
-        },
-        child: Scaffold(
+          canPop: false,
+          onPopInvoked: (bool didPop) async {
+            if (didPop) return;
+            final homeIndex = navTabs.indexOf('Home');
+            if (validIndex != homeIndex && homeIndex != -1) {
+              setState(() {
+                _mobileSelectedIndex = homeIndex;
+              });
+            } else {
+              const MethodChannel("com.ryan.anymex/utils")
+                  .invokeMethod("exitApp");
+            }
+          },
+          child: Scaffold(
             resizeToAvoidBottomInset: false,
-            body: LazyIndexedStack(
-              index: validIndex,
-              children: mobileRoutes,
-            ),
-            extendBody: true,
-            bottomNavigationBar: Column(
-              mainAxisSize: MainAxisSize.min,
+            body: Stack(
               children: [
-                ResponsiveNavBar(
-                  isDesktop: false,
-                  currentIndex: validIndex,
-                  margin: EdgeInsets.only(bottom: settings.bottomNavBarMargin, left: 32, right: 32, top: 10),
-                  items: [
-                    for (final tab in navTabs)
-                      _getNavItemForTab(tab, isSimkl, _onMobileItemTapped),
-                  ],
+                LazyIndexedStack(
+                  index: validIndex,
+                  children: mobileRoutes,
+                ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: ResponsiveNavBar(
+                    isDesktop: false,
+                    currentIndex: validIndex,
+                    margin: EdgeInsets.only(
+                        bottom: settings.bottomNavBarMargin,
+                        left: 32,
+                        right: 32,
+                        top: 10),
+                    items: [
+                      for (final tab in navTabs)
+                        _getNavItemForTab(tab, isSimkl, _onMobileItemTapped,
+                            isDesktop: false),
+                    ],
+                  ),
                 ),
               ],
-            )),
-      );
+            ),
+            extendBody: true,
+          ));
     });
   }
 }

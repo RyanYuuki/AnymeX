@@ -3,6 +3,7 @@ import 'package:anymex/screens/settings/search/settings_search_icons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_comments.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_discord.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_downloads.dart';
@@ -15,11 +16,9 @@ import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/utils/updater.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -160,6 +159,12 @@ class _SettingsPageState extends State<SettingsPage> {
               title: "Accounts",
               description: "Manage your MyAnimeList, Anilist, Simkl Accounts!",
               destination: SettingsAccounts.new,
+            ),
+            _buildTile(
+              icon: Icons.discord,
+              title: "Discord RPC",
+              description: "Configure Discord Rich Presence & activity status",
+              destination: SettingsDiscord.new,
             ),
           ],
         ),

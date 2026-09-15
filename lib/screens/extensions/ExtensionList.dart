@@ -428,7 +428,7 @@ class _ExtensionListState extends State<ExtensionList>
           fontSize: 11,
           color: Colors.grey.withValues(alpha: 0.55),
           fontStyle: FontStyle.italic,
-          fontFamily: 'Poppins',
+          fontFamily: 'Linotte',
         ),
       ),
     );

@@ -318,7 +318,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     '${_cachedChapters.length}',
                     style: TextStyle(
                       fontSize: 11,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       fontWeight: FontWeight.w600,
                       color: colors.primary,
                     ),
@@ -454,9 +454,11 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                         itemCount: _cachedChapters.length,
                         itemBuilder: (context, index) {
                           final chapter = _cachedChapters[index];
-                          final isCurrent =
-                              controller.currentChapter.value?.number ==
-                                  chapter.number;
+                          final current = controller.currentChapter.value;
+                          final isCurrent = current != null &&
+                              ((chapter.link != null && chapter.link!.isNotEmpty && current.link == chapter.link) ||
+                               ((chapter.link == null || chapter.link!.isEmpty || current.link == null || current.link!.isEmpty) &&
+                                current.number == chapter.number));
                           return _buildGridTile(chapter, isCurrent);
                         },
                       )
@@ -466,9 +468,11 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                         itemCount: _cachedChapters.length,
                         itemBuilder: (context, index) {
                           final chapter = _cachedChapters[index];
-                          final isCurrent =
-                              controller.currentChapter.value?.number ==
-                                  chapter.number;
+                          final current = controller.currentChapter.value;
+                          final isCurrent = current != null &&
+                              ((chapter.link != null && chapter.link!.isNotEmpty && current.link == chapter.link) ||
+                               ((chapter.link == null || chapter.link!.isEmpty || current.link == null || current.link!.isEmpty) &&
+                                current.number == chapter.number));
                           return _buildListTile(chapter, isCurrent);
                         },
                       ),
@@ -525,7 +529,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     'Ch. $formattedNum',
                     style: TextStyle(
                       fontSize: 11,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       fontWeight: FontWeight.bold,
                       color: isCurrent ? colors.onPrimary : colors.primary,
                     ),
@@ -586,7 +590,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                 'Ch. $formattedNum',
                 style: TextStyle(
                   fontSize: 13,
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontWeight: FontWeight.bold,
                   color: isCurrent ? colors.primary : colors.onSurface,
                 ),
@@ -600,7 +604,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     chapter.title!.trim(),
                     style: TextStyle(
                       fontSize: 10,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       color: isCurrent
                           ? colors.primary.withOpacity(0.8)
                           : colors.onSurface.withOpacity(0.5),
@@ -620,11 +624,22 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
 
   void _onChapterTap(Chapter chapter) {
     FocusScope.of(context).unfocus();
-    final index =
-        controller.chapterList.indexWhere((c) => c.number == chapter.number);
+    int index = -1;
+    if (chapter.link != null && chapter.link!.isNotEmpty) {
+      index = controller.chapterList.indexWhere((c) => c.link == chapter.link);
+    }
+    if (index == -1) {
+      index = controller.chapterList.indexWhere((c) => c.number == chapter.number);
+    }
     Navigator.of(context, rootNavigator: true).pop();
-    if (index != -1 &&
-        controller.currentChapter.value?.number != chapter.number) {
+
+    final current = controller.currentChapter.value;
+    final isCurrent = current != null &&
+        ((chapter.link != null && chapter.link!.isNotEmpty && current.link == chapter.link) ||
+         ((chapter.link == null || chapter.link!.isEmpty || current.link == null || current.link!.isEmpty) &&
+          current.number == chapter.number));
+
+    if (index != -1 && !isCurrent) {
       controller.navigateToChapter(index);
     }
   }

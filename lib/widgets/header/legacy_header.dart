@@ -22,7 +22,6 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
-import 'package:anymex/screens/novel/search/search_page.dart';
 
 enum PageType { manga, anime, home, novel, library, extensions, history, stats }
 
@@ -63,6 +62,32 @@ class Header extends StatelessWidget {
                       ),
                       AnymeXText(
                         "All your local shi",
+                        autoResize: true,
+                        maxLines: 1,
+                        color: context.colors.primary,
+                        variant: TextVariant.semiBold,
+                      ),
+                    ] else if (type == PageType.history) ...[
+                      const AnymeXText(
+                        "History",
+                        autoResize: true,
+                        maxLines: 1,
+                      ),
+                      AnymeXText(
+                        "Your watch & read history",
+                        autoResize: true,
+                        maxLines: 1,
+                        color: context.colors.primary,
+                        variant: TextVariant.semiBold,
+                      ),
+                    ] else if (type == PageType.stats) ...[
+                      const AnymeXText(
+                        "Stats",
+                        autoResize: true,
+                        maxLines: 1,
+                      ),
+                      AnymeXText(
+                        "Your watch & read statistics",
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -138,6 +163,28 @@ class Header extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ],
+                ),
+              ] else if (type == PageType.history) ...[
+                Row(
+                  children: [
+                    if (onSearchPressed != null)
+                      AnymexOnTap(
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Theme.of(context)
+                              .colorScheme
+                              .secondaryContainer
+                              .opaque(0.50),
+                          child: IconButton(
+                            onPressed: onSearchPressed,
+                            icon: Icon(
+                              IconlyLight.search,
+                              color: context.colors.primary,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ] else if (type == PageType.extensions) ...[

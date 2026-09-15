@@ -5,6 +5,7 @@ import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_queries.dart';
 import 'package:anymex/controllers/services/anilist/kitsu.dart';
 import 'package:anymex/controllers/services/widgets/widgets_builders.dart';
@@ -28,19 +29,19 @@ import 'package:anymex/screens/library/online/anime_list.dart';
 import 'package:anymex/screens/library/online/manga_list.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/novel/details/details_view.dart';
+import 'package:anymex/widgets/common/installed_extensions_gridview.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart' as fb;
 import 'package:anymex/utils/fallback/fallback_manga.dart' as fbm;
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart';
+import 'package:anymex/controllers/network/network_manager.dart';
 
 import 'package:anymex/controllers/services/anilist/anilist_api.dart';
 
@@ -49,6 +50,7 @@ Map<String, dynamic> _parseJson(String body) {
 }
 
 class AnilistData extends GetxController implements BaseService, OnlineService {
+  Client get _client => NetworkManager.instance.compatibleClient;
   final api = AnilistApi();
   final anilistAuth = Get.find<AnilistAuth>();
   final communityService = Get.find<CommunityService>();
@@ -315,7 +317,16 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   }
 
   @override
-  RxList<Widget> novelWidgets(BuildContext context) => mangaWidgets(context);
+  RxList<Widget> novelWidgets(BuildContext context) {
+    final sourceController = Get.find<SourceController>();
+    sourceController.initNovelExtensions();
+    return [
+      Obx(() => InstalledExtensionsGridView(
+            sources: sourceController.installedNovelExtensions.value,
+            itemType: ItemType.novel,
+          )),
+    ].obs;
+  }
 
   @override
   bool get isDataLoaded =>
@@ -473,7 +484,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
-    final response = await post(
+    final response = await _client.post(
       Uri.parse(url),
       headers: headers,
       body: json.encode({
@@ -494,7 +505,9 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
       recentlyUpdatedAnimes.value =
           parseMediaList(responseData['recentlyUpdatedAnimes']['media']);
     } else {
-      throw Exception('Failed to load AniList data: ${response.statusCode}');
+      AnilistErrorHandler.handleResponse(response);
+      final msg = AnilistErrorHandler.extractErrorMessage(response.body);
+      throw Exception(msg ?? 'Failed to load AniList data: ${response.statusCode}');
     }
   }
 
@@ -664,7 +677,7 @@ averageScore
       if (token != null) 'Authorization': 'Bearer $token',
     };
 
-    final response = await post(
+    final response = await _client.post(
       Uri.parse(url),
       headers: headers,
       body: json.encode({
@@ -694,8 +707,10 @@ averageScore
       trendingMangas.value =
           parseMediaList(responseData['trendingManga']['media']);
     } else {
+      AnilistErrorHandler.handleResponse(response);
+      final msg = AnilistErrorHandler.extractErrorMessage(response.body);
       throw Exception(
-          'Failed to load AniList manga data: ${response.statusCode}');
+          msg ?? 'Failed to load AniList manga data: ${response.statusCode}');
     }
   }
 
@@ -752,13 +767,16 @@ averageScore
       }
       ''';
 
-      final response = await post(
+      final response = await NetworkManager.instance.compatibleClient.post(
         Uri.parse(url),
         headers: headers,
         body: json.encode({'query': query}),
       );
 
-      if (response.statusCode != 200) break;
+      if (response.statusCode != 200) {
+        AnilistErrorHandler.handleResponse(response);
+        break;
+      }
 
       final data = json.decode(response.body);
       final studio = data['data']?['Studio'];
@@ -839,13 +857,16 @@ averageScore
     }
     ''';
 
-    final response = await post(
+    final response = await NetworkManager.instance.compatibleClient.post(
       Uri.parse(url),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'query': query}),
     );
 
-    if (response.statusCode != 200) return null;
+    if (response.statusCode != 200) {
+      AnilistErrorHandler.handleResponse(response);
+      return null;
+    }
 
     final data = json.decode(response.body);
     final studios = data['data']?['Page']?['studios'] as List?;
@@ -862,7 +883,7 @@ averageScore
     Logger.i("Fetching Anify metadata for animeId: $animeId");
 
     try {
-      final resp = await get(Uri.parse(
+      final resp = await NetworkManager.instance.compatibleClient.get(Uri.parse(
           "https://api.ani.zip/mappings?${serviceHandler.serviceType.value == ServicesType.anilist ? 'anilist_id' : 'mal_id'}=$animeId"));
 
       if (resp.statusCode != 200 || resp.body.isEmpty) {
@@ -1070,8 +1091,8 @@ averageScore
     };
 
     try {
-      final response =
-          await post(Uri.parse(url), headers: headers, body: jsonEncode(body));
+      final response = await NetworkManager.instance.compatibleClient.post(
+          Uri.parse(url), headers: headers, body: jsonEncode(body));
 
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
@@ -1082,6 +1103,7 @@ averageScore
         }).toList();
         return mappedData;
       } else {
+        AnilistErrorHandler.handleResponse(response);
         Logger.i(
             'Failed to fetch ${isManga ? "manga" : "anime"} data. Status code: ${response.statusCode} \n response body: ${response.body}');
         return [];
@@ -1117,7 +1139,7 @@ averageScore
     };
 
     try {
-      final response = await post(
+      final response = await _client.post(
         Uri.parse(url),
         headers: headers,
         body: json.encode(body),
@@ -1128,12 +1150,13 @@ averageScore
         final media = data['data']['Media'];
         cacheController.addCache(media);
         Logger.i('Primary Data Loaded for id: ${params.id}');
+        print('Fetched details for id: ${params.id}, media: $media');
         return Media.fromJson(media);
-      } else if (response.statusCode == 429) {
-        warningSnackBar('Chill for a min, you got rate limited.');
-        throw Exception(response.body);
       } else {
-        throw Exception(response.body);
+        AnilistErrorHandler.handleResponse(response);
+        throw Exception(
+            AnilistErrorHandler.extractErrorMessage(response.body) ??
+                response.body);
       }
     } catch (e) {
       Logger.i('Error occurred while fetching details: $e');
@@ -1160,7 +1183,7 @@ averageScore
     };
 
     try {
-      final response = await post(
+      final response = await _client.post(
         Uri.parse(url),
         headers: headers,
         body: json.encode(body),
@@ -1173,6 +1196,7 @@ averageScore
         media.mergeSecondaryData(mediaJson, pageJson: page);
         Logger.i('Secondary Data Loaded for id: $id');
       } else {
+        AnilistErrorHandler.handleResponse(response);
         Logger.i('Secondary fetch failed: ${response.statusCode}');
       }
     } catch (e) {
@@ -1256,7 +1280,7 @@ averageScore
     };
 
     try {
-      var response = await post(
+      var response = await NetworkManager.instance.compatibleClient.post(
         Uri.parse(url),
         headers: headers,
         body: jsonEncode({'query': batchQuery, 'variables': variables}),
@@ -1266,7 +1290,7 @@ averageScore
         final retryAfter =
             int.tryParse(response.headers['retry-after'] ?? '') ?? 60;
         await Future.delayed(Duration(seconds: retryAfter));
-        response = await post(
+        response = await NetworkManager.instance.compatibleClient.post(
           Uri.parse(url),
           headers: headers,
           body: jsonEncode({'query': batchQuery, 'variables': variables}),
@@ -1358,21 +1382,85 @@ averageScore
             ..sort();
           countries = [...coreCountries, ...extras];
         }
+      } else {
+        AnilistErrorHandler.handleResponse(response);
       }
     } catch (e) {
       Logger.i('Error fetching filter data: $e');
     }
 
+    const fallbackSeasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
+    const fallbackStatuses = [
+      'FINISHED',
+      'RELEASING',
+      'NOT_YET_RELEASED',
+      'CANCELLED',
+      'HIATUS'
+    ];
+    final fallbackFormats = isManga
+        ? ['MANGA', 'NOVEL', 'ONE_SHOT']
+        : ['TV', 'TV_SHORT', 'MOVIE', 'SPECIAL', 'OVA', 'ONA', 'MUSIC'];
+    const fallbackSources = [
+      'ORIGINAL',
+      'MANGA',
+      'LIGHT_NOVEL',
+      'VISUAL_NOVEL',
+      'VIDEO_GAME',
+      'NOVEL',
+      'DOUJINSHI',
+      'ANIME',
+      'WEB_NOVEL',
+      'LIVE_ACTION',
+      'GAME',
+      'COMIC',
+      'MULTIMEDIA_PROJECT',
+      'PICTURE_BOOK',
+      'OTHER'
+    ];
+    const fallbackGenres = [
+      'Action',
+      'Adventure',
+      'Comedy',
+      'Drama',
+      'Ecchi',
+      'Fantasy',
+      'Horror',
+      'Mahou Shoujo',
+      'Mecha',
+      'Music',
+      'Mystery',
+      'Psychological',
+      'Romance',
+      'Sci-Fi',
+      'Slice of Life',
+      'Sports',
+      'Supernatural',
+      'Thriller'
+    ];
+    const fallbackSorts = [
+      'POPULARITY_DESC',
+      'POPULARITY',
+      'TRENDING_DESC',
+      'TRENDING',
+      'SCORE_DESC',
+      'SCORE',
+      'START_DATE_DESC',
+      'START_DATE',
+      'TITLE_ROMAJI',
+      'TITLE_ROMAJI_DESC'
+    ];
+    const fallbackCountries = ['JP', 'KR', 'CN', 'TW'];
+
     final result = {
-      'genres': genres,
+      'genres': genres.isNotEmpty ? genres : fallbackGenres,
       'tags': tags,
       'streamingServices': streamingServices,
-      'formats': formats,
-      'statuses': statuses,
-      'sources': sources,
-      'seasons': seasons,
-      'sortOptions': sortOptions,
-      'countries': countries,
+      'formats': formats.isNotEmpty ? formats : fallbackFormats,
+      'statuses': statuses.isNotEmpty ? statuses : fallbackStatuses,
+      'sources': sources.isNotEmpty ? sources : fallbackSources,
+      'seasons': seasons.isNotEmpty ? seasons : fallbackSeasons,
+      'sortOptions': sortOptions.isNotEmpty ? sortOptions : fallbackSorts,
+      'countries': countries.isNotEmpty ? countries : fallbackCountries,
       'minYear': minYear,
       'maxEpisodes': maxEpisodes,
       'maxDuration': maxDuration,
@@ -1380,10 +1468,12 @@ averageScore
       'maxVolumes': maxVolumes,
     };
 
-    if (isManga) {
-      _cachedMangaFilterData = result;
-    } else {
-      _cachedAnimeFilterData = result;
+    if (genres.isNotEmpty) {
+      if (isManga) {
+        _cachedMangaFilterData = result;
+      } else {
+        _cachedAnimeFilterData = result;
+      }
     }
     return result;
   }
@@ -1408,7 +1498,7 @@ averageScore
 
     try {
       final type = isManga ? 'manga' : 'anime';
-      final response = await get(
+      final response = await NetworkManager.instance.compatibleClient.get(
         Uri.parse('https://api.jikan.moe/v4/genres/$type?filter=genres'),
       );
 

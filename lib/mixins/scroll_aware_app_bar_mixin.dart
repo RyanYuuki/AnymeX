@@ -10,17 +10,17 @@ mixin ScrollAwareAppBarMixin<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    scrollController.addListener(_handleScroll);
+    scrollController.addListener(handleScroll);
   }
 
   @override
   void dispose() {
-    scrollController.removeListener(_handleScroll);
+    scrollController.removeListener(handleScroll);
     isAppBarVisible.dispose();
     super.dispose();
   }
 
-  void _handleScroll() {
+  void handleScroll() {
     if (!scrollController.hasClients) return;
     final currentOffset = scrollController.offset;
     final maxScroll = scrollController.position.maxScrollExtent;

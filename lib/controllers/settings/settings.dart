@@ -13,6 +13,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/updater.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme_registry.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -87,12 +88,15 @@ class Settings extends GetxController {
     selectedProfile = PlayerUiKeys.selectedProfile.get<String>("MID-END");
     playerControlThemeRx.value =
         PlayerUiKeys.playerControlTheme.get<String>('default');
-    mediaIndicatorThemeRx.value =
+    final savedIndicatorTheme =
         PlayerUiKeys.mediaIndicatorTheme.get<String>('default');
+    mediaIndicatorThemeRx.value = MediaIndicatorThemeRegistry.themes
+            .any((t) => t.id == savedIndicatorTheme)
+        ? savedIndicatorTheme
+        : 'default';
     readerControlThemeRx.value =
         ReaderKeys.readerControlTheme.get<String>('default');
-    chapterStyleRx.value =
-        ReaderKeys.chapterStyle.get<String>('compact');
+    chapterStyleRx.value = ReaderKeys.chapterStyle.get<String>('compact');
 
     useAlternateTitle.value = General.useAlternateTitle.get<bool>(false);
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
@@ -128,7 +132,7 @@ class Settings extends GetxController {
     try {
       final modes = await FlutterDisplayMode.supported;
       supportedModes.value = modes;
-      
+
       final savedStr = General.preferredDisplayMode.get<String?>();
       if (savedStr != null) {
         preferredDisplayMode.value = modes.firstWhere(
@@ -139,7 +143,7 @@ class Settings extends GetxController {
       } else {
         preferredDisplayMode.value = DisplayMode.auto;
       }
-      
+
       activeDisplayMode.value = await FlutterDisplayMode.active;
     } catch (e) {
       Logger.e("Error initializing display modes: $e");
@@ -187,8 +191,9 @@ class Settings extends GetxController {
         if (data['telegram'] != null) {
           telegramUrl.value = data['telegram'];
         }
-        if (data['showJoinDialog'] != null) {
-          showJoinDialog.value = data['showJoinDialog'] as bool;
+        final joinVal = data['showJoinDialog'];
+        if (joinVal != null) {
+          showJoinDialog.value = joinVal as bool;
         }
       }
     } catch (e) {
@@ -267,6 +272,28 @@ class Settings extends GetxController {
   void showWelcomeDialog(BuildContext context) {
     if (General.isFirstTime.get<bool>(true)) {
       showWelcomeDialogg(context);
+      return;
+    }
+
+    if (linksFetched) {
+      _checkAndShowJoinDialog(context);
+    } else {
+      onLinksReady = () {
+        _checkAndShowJoinDialog(context);
+      };
+    }
+  }
+
+  void _checkAndShowJoinDialog(BuildContext context) {
+    final showOnline = showJoinDialog.value;
+    if (showOnline) {
+      showDiscordJoinDialog(context);
+    } else {
+      final count = General.joinDialogShowCount.get<int>(0);
+      if (count < 3) {
+        General.joinDialogShowCount.set(count + 1);
+        showDiscordJoinDialog(context);
+      }
     }
   }
 
@@ -390,6 +417,13 @@ class Settings extends GetxController {
     }
   }
 
+  bool get useLegacyNavbar => _getUISetting((s) => s.useLegacyNavbar);
+  set useLegacyNavbar(bool value) {
+    uiSettings.update((s) => s?.useLegacyNavbar = value);
+    UISettingsKeys.useLegacyNavbar.set(value);
+    uiSettings.refresh();
+    update();
+  }
 
   Map<String, bool> get homePageCards => _getUISetting((s) => s.homePageCards);
   Map<String, bool> get homePageCardsMal =>
@@ -401,20 +435,51 @@ class Settings extends GetxController {
     final service = Get.isRegistered<ServiceHandler>()
         ? Get.find<ServiceHandler>().serviceType.value.name
         : 'none';
-    return 'navigationTabOrder_$service';
+    final mode = useLegacyNavbar ? 'legacy' : 'modern';
+    return 'navigationTabOrder_${mode}_$service';
   }
 
   List<String> get navigationTabOrder {
     final raw = KvHelper.get<String>(_currentTabOrderKey, defaultVal: '');
-    final isDesktop = Get.context != null && MediaQuery.of(Get.context!).size.width > 600;
-    final authService = Get.isRegistered<ServiceHandler>() ? Get.find<ServiceHandler>() : null;
-    final isExtensionsService = authService?.serviceType.value == ServicesType.extensions;
+    final isDesktop =
+        Get.context != null && MediaQuery.of(Get.context!).size.width > 600;
+    final authService =
+        Get.isRegistered<ServiceHandler>() ? Get.find<ServiceHandler>() : null;
+    final isExtensionsService =
+        authService?.serviceType.value == ServicesType.extensions;
 
-    final defaultTabs = isExtensionsService
-        ? ['Library', 'Anime', 'Manga', 'Novel', 'Extensions']
-        : (isDesktop
-            ? ['Home', 'Anime', 'Manga', 'Library', 'Extensions']
-            : ['Home', 'Anime', 'Manga', 'Library']);
+    final defaultTabs = useLegacyNavbar
+        ? (isExtensionsService
+            ? [
+                'Home',
+                'Anime',
+                'Manga',
+                'Library',
+                'Stats',
+                if (isDesktop) 'Extensions'
+              ]
+            : (isDesktop
+                ? ['Home', 'Anime', 'Manga', 'Library', 'Stats', 'Extensions']
+                : ['Home', 'Anime', 'Manga', 'Library', 'Stats']))
+        : (isExtensionsService
+            ? [
+                'Home',
+                'Discover',
+                'Library',
+                'History',
+                'Stats',
+                if (isDesktop) 'Extensions'
+              ]
+            : (isDesktop
+                ? [
+                    'Home',
+                    'Discover',
+                    'Library',
+                    'History',
+                    'Stats',
+                    'Extensions'
+                  ]
+                : ['Home', 'Discover', 'Library', 'History', 'Stats']));
 
     if (raw.isEmpty) {
       return defaultTabs;

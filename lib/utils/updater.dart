@@ -50,6 +50,17 @@ class UpdateManager {
     );
   }
 
+  Map<String, String> _buildDownloadUrls(List<dynamic> assets) {
+    return {
+      'android_arm64': getDownloadUrlByArch(assets, 'arm64'),
+      'android_arm32': getDownloadUrlByArch(assets, 'v7a'),
+      'android_universal': getDownloadUrlByArch(assets, 'universal'),
+      'windows': getDownloadUrlByArch(assets, '.exe'),
+      'macos': getDownloadUrlByArch(assets, '.dmg'),
+      'linux': getDownloadUrlByArch(assets, '.AppImage'),
+    };
+  }
+
   Future<void> checkForUpdates(
     BuildContext context,
     RxBool canShowUpdate, {
@@ -62,12 +73,73 @@ class UpdateManager {
       try {
         final packageInfo = await PackageInfo.fromPlatform();
         final isBetaApp = packageInfo.packageName == 'com.ryan.anymexbeta';
-        final effectiveIsBeta = isBeta || isBetaApp;
-
         final currentVersion = await _getCurrentVersion();
-        final latestRelease = await _fetchLatestRelease(isBeta: effectiveIsBeta);
 
-        if (latestRelease == null) {
+        if (isBetaApp) {
+          final betaRelease = await _fetchLatestRelease(isBeta: true);
+          final stableRelease = await _fetchLatestRelease(isBeta: false);
+
+          if (betaRelease == null && stableRelease == null) {
+            Logger.i("Failed to check for updates");
+            if (manualCheck) {
+              snackBar('Failed to check for updates');
+            }
+            return;
+          }
+
+          if (betaRelease != null &&
+              _shouldUpdate(currentVersion, betaRelease['tag_name'] ?? '',
+                  isBeta: true)) {
+            final downloadUrls =
+                _buildDownloadUrls(betaRelease['assets'] ?? []);
+            if (context.mounted) {
+              _showUpdateBottomSheet(
+                context,
+                currentVersion,
+                betaRelease['tag_name'] ?? '',
+                betaRelease['body'] ?? '',
+                downloadUrls,
+              );
+            }
+            return;
+          }
+
+          if (stableRelease != null &&
+              _shouldUpdate(currentVersion, stableRelease['tag_name'] ?? '',
+                  isBeta: false)) {
+            snackBar(
+                'New stable update available: ${stableRelease['tag_name'] ?? ''}');
+            return;
+          }
+
+          if (manualCheck) {
+            snackBar('No updates available');
+          }
+          return;
+        }
+
+        if (isBeta) {
+          final betaRelease = await _fetchLatestRelease(isBeta: true);
+          if (betaRelease != null &&
+              _shouldUpdate(currentVersion, betaRelease['tag_name'] ?? '',
+                  isBeta: true)) {
+            final downloadUrls =
+                _buildDownloadUrls(betaRelease['assets'] ?? []);
+            if (context.mounted) {
+              _showUpdateBottomSheet(
+                context,
+                currentVersion,
+                betaRelease['tag_name'] ?? '',
+                betaRelease['body'] ?? '',
+                downloadUrls,
+              );
+            }
+            return;
+          }
+        }
+
+        final stableRelease = await _fetchLatestRelease(isBeta: false);
+        if (stableRelease == null) {
           Logger.i("Failed to check for updates");
           if (manualCheck) {
             snackBar('Failed to check for updates');
@@ -75,31 +147,18 @@ class UpdateManager {
           return;
         }
 
-        final assets = latestRelease['assets'] ?? [];
-
-        Map<String, String> downloadUrls = {
-          'android_arm64': getDownloadUrlByArch(assets, 'arm64'),
-          'android_arm32': getDownloadUrlByArch(assets, 'v7a'),
-          'android_universal': getDownloadUrlByArch(assets, 'universal'),
-          'windows': getDownloadUrlByArch(assets, '.exe'),
-          'macos': getDownloadUrlByArch(assets, '.dmg'),
-          'linux': getDownloadUrlByArch(assets, '.AppImage'),
-        };
-
-        if (_shouldUpdate(currentVersion, latestRelease['tag_name'] ?? '',
-            isBeta: effectiveIsBeta)) {
-          if (isBetaApp) {
-            snackBar('New beta update available: ${latestRelease['tag_name'] ?? ''}');
-          } else {
-            if (context.mounted) {
-              _showUpdateBottomSheet(
-                context,
-                currentVersion,
-                latestRelease['tag_name'] ?? '',
-                latestRelease['body'] ?? '',
-                downloadUrls,
-              );
-            }
+        if (_shouldUpdate(currentVersion, stableRelease['tag_name'] ?? '',
+            isBeta: false)) {
+          final downloadUrls =
+              _buildDownloadUrls(stableRelease['assets'] ?? []);
+          if (context.mounted) {
+            _showUpdateBottomSheet(
+              context,
+              currentVersion,
+              stableRelease['tag_name'] ?? '',
+              stableRelease['body'] ?? '',
+              downloadUrls,
+            );
           }
         } else {
           if (manualCheck) {
@@ -388,9 +447,10 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       snackBar("Install permission required");
     }
 
+    final packageInfo = await PackageInfo.fromPlatform();
     final result = await InstallPlugin.installApk(
       savePath,
-      appId: 'com.ryan.anymex',
+      appId: packageInfo.packageName,
     );
 
     if (result['isSuccess']) {
@@ -523,7 +583,9 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: AnymeXText(
-                          "v${widget.currentVersion}",
+                          widget.currentVersion.startsWith('v')
+                              ? widget.currentVersion
+                              : "v${widget.currentVersion}",
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -545,7 +607,9 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                               color: colorScheme.primary.opaque(0.3)),
                         ),
                         child: AnymeXText(
-                          "v${widget.newVersion}",
+                          widget.newVersion.startsWith('v')
+                              ? widget.newVersion
+                              : "v${widget.newVersion}",
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,

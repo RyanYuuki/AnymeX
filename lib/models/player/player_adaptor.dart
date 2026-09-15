@@ -44,7 +44,7 @@ class PlayerSettings {
     this.resizeMode = "Contain",
     this.subtitleSize = 16,
     this.subtitleColor = "White",
-    this.subtitleFont = 'Poppins',
+    this.subtitleFont = 'Linotte',
     this.subtitleBackgroundColor = "None",
     this.subtitleOutlineColor = "Black",
     this.showSubtitle = true,

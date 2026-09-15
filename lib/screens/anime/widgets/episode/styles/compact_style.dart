@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -16,6 +16,7 @@ class CompactEpisodeWidget extends StatelessWidget {
   final Media? media;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+  final Widget? downloadButton;
 
   const CompactEpisodeWidget({
     super.key,
@@ -26,10 +27,11 @@ class CompactEpisodeWidget extends StatelessWidget {
     this.media,
     this.onTap,
     this.onLongPress,
+    this.downloadButton,
   });
 
   String get episodeNumber =>
-      episode.number.contains('.0') ? episode.number.toInt().toString() : episode.number.toString();
+      formatEpisodeNumberLabel(episode.number, title: episode.title);
 
   String get episodeTitle {
     final raw = episode.title?.trim();
@@ -197,6 +199,11 @@ class CompactEpisodeWidget extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (downloadButton != null) ...[
+                  const SizedBox(width: 4),
+                  downloadButton!,
+                  const SizedBox(width: 4),
+                ],
               ],
             ),
           ),
@@ -214,8 +221,9 @@ Widget buildCompactEpisodeStyle(
   double progress,
   Media? media,
   VoidCallback? onTap,
-  VoidCallback? onLongPress,
-) {
+  VoidCallback? onLongPress, {
+  Widget? downloadButton,
+}) {
   return CompactEpisodeWidget(
     episode: episode,
     isSelected: isSelected,
@@ -224,5 +232,6 @@ Widget buildCompactEpisodeStyle(
     media: media,
     onTap: onTap,
     onLongPress: onLongPress,
+    downloadButton: downloadButton,
   );
 }

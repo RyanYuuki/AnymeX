@@ -4,18 +4,21 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:rhttp/rhttp.dart';
 
+import 'anilist_interceptor.dart';
 import 'cookie_manager.dart';
 import 'dns_manager.dart';
 import 'log_interceptor.dart';
 
 class NetworkManager extends GetxController {
+  static NetworkManager get instance => Get.find<NetworkManager>();
+
   final String _userAgent = _buildUserAgent();
   late RhttpClient _client;
+  late RhttpCompatibleClient _compatibleClient;
 
   RhttpClient get client => _client;
 
-  RhttpCompatibleClient get compatibleClient =>
-      RhttpCompatibleClient.of(_client);
+  RhttpCompatibleClient get compatibleClient => _compatibleClient;
 
   @override
   void onInit() {
@@ -29,7 +32,11 @@ class NetworkManager extends GetxController {
     try {
       var dns = DohProvider.cloudflare.url;
 
-      var interceptors = [LogInterceptor(), cookieManager];
+      var interceptors = [
+        LogInterceptor(),
+        cookieManager,
+        AnilistInterceptor(),
+      ];
 
       var clientSettings = ClientSettings(
         userAgent: _userAgent,
@@ -66,6 +73,8 @@ class NetworkManager extends GetxController {
         settings: clientSettings,
       );
 
+      _compatibleClient = RhttpCompatibleClient.of(_client);
+
       return _client;
     } catch (_) {
       rethrow;
@@ -81,6 +90,7 @@ class NetworkManager extends GetxController {
 
   @override
   void onClose() {
+    _compatibleClient.close();
     _client.dispose();
     super.onClose();
   }

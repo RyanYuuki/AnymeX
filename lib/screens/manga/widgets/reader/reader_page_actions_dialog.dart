@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
+import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -26,7 +27,7 @@ Future<void> showReaderPageActionsDialog(
     backgroundColor: Colors.transparent,
     builder: (_) => _ReaderPageActionsSheet(
       pageUrl: page.url,
-      headers: page.headers,
+      headers: getPageImageHeaders(page.headers),
     ),
   );
 }
