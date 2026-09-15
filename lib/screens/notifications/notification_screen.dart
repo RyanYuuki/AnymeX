@@ -11,6 +11,8 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -35,8 +37,8 @@ class NotificationScreen extends GetView<NotificationController> {
                 size: 18,
                 color: colorScheme.primary,
               ),
-              label: AnymexText(
-                text: 'Mark all read',
+              label: AnymeXText(
+                'Mark all read',
                 variant: TextVariant.semiBold,
                 size: 12,
                 color: colorScheme.primary,
@@ -193,8 +195,8 @@ class NotificationScreen extends GetView<NotificationController> {
                               : colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(width: 6),
-                        AnymexText(
-                          text: label,
+                        AnymeXText(
+                          label,
                           variant: TextVariant.semiBold,
                           size: 12,
                           color: isSelected
@@ -212,15 +214,13 @@ class NotificationScreen extends GetView<NotificationController> {
                                   : colorScheme.primary,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Text(
+                            child: AnymeXText(
                               '$unreadCount',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: isSelected
-                                    ? colorScheme.onPrimary
-                                    : colorScheme.onPrimary,
-                              ),
+                              variant: TextVariant.bold,
+                              size: 10,
+                              color: isSelected
+                                  ? colorScheme.onPrimary
+                                  : colorScheme.onPrimary,
                             ),
                           ),
                         ],
@@ -261,8 +261,8 @@ class NotificationScreen extends GetView<NotificationController> {
                           : colorScheme.onSurface.opaque(0.5),
                     ),
                     const SizedBox(width: 6),
-                    AnymexText(
-                      text: 'Unread only',
+                    AnymeXText(
+                      'Unread only',
                       variant: TextVariant.regular,
                       size: 12,
                       color: controller.showUnreadOnly.value
@@ -284,8 +284,8 @@ class NotificationScreen extends GetView<NotificationController> {
                     width: 1,
                   ),
                 ),
-                child: AnymexText(
-                  text: '${controller.unreadCount.value} unread',
+                child: AnymeXText(
+                  '${controller.unreadCount.value} unread',
                   variant: TextVariant.semiBold,
                   size: 11,
                   color: colorScheme.primary,
@@ -386,16 +386,15 @@ class NotificationScreen extends GetView<NotificationController> {
               ),
             ),
             const SizedBox(height: 16),
-            AnymexText(
-              text: 'No notifications yet',
+            AnymeXText(
+              'No notifications yet',
               variant: TextVariant.semiBold,
               size: 16,
               color: colorScheme.onSurface,
             ),
             const SizedBox(height: 6),
-            AnymexText(
-              text:
-                  'When someone interacts with your comments,\nyou\'ll see it here',
+            AnymeXText(
+              'When someone interacts with your comments,\nyou\'ll see it here',
               variant: TextVariant.regular,
               size: 13,
               color: colorScheme.onSurfaceVariant,
@@ -426,8 +425,8 @@ class NotificationScreen extends GetView<NotificationController> {
               ),
             ),
             const SizedBox(height: 16),
-            AnymexText(
-              text: 'Something went wrong',
+            AnymeXText(
+              'Something went wrong',
               variant: TextVariant.semiBold,
               size: 16,
               color: colorScheme.onSurface,
@@ -445,8 +444,8 @@ class NotificationScreen extends GetView<NotificationController> {
                     color: colorScheme.primary,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: AnymexText(
-                    text: 'Retry',
+                  child: AnymeXText(
+                    'Retry',
                     variant: TextVariant.semiBold,
                     size: 13,
                     color: colorScheme.onPrimary,
@@ -537,171 +536,167 @@ class _NotificationCard extends StatelessWidget {
     final colorScheme = context.colors;
     final categoryColor = _getCategoryColor(colorScheme);
 
-    return Material(
-      color: Colors.transparent,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 150),
-          decoration: BoxDecoration(
-            color: notification.isRead
-                ? colorScheme.surfaceContainer.opaque(0.25)
-                : colorScheme.surfaceContainerHigh.opaque(0.45),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
+        borderRadius: BorderRadius.circular(16),
+        child: AnymeXCard(
+          color: notification.isRead
+              ? null
+              : colorScheme.surfaceContainerHigh.opaque(0.45),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
               color: notification.isRead
-                  ? colorScheme.outlineVariant.opaque(0.15)
+                  ? colorScheme.outline.opaque(0.08)
                   : categoryColor.opaque(0.35),
               width: 1,
             ),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Left Glowing Category Accent Bar
-                  Container(
-                    width: 4,
-                    decoration: BoxDecoration(
-                      color: categoryColor,
-                      boxShadow: [
-                        if (!notification.isRead)
-                          BoxShadow(
-                            color: categoryColor.withValues(alpha: 0.6),
-                            blurRadius: 6,
-                            spreadRadius: 1,
-                          ),
-                      ],
-                    ),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Left Glowing Category Accent Bar
+                Container(
+                  width: 4,
+                  decoration: BoxDecoration(
+                    color: categoryColor,
+                    boxShadow: [
+                      if (!notification.isRead)
+                        BoxShadow(
+                          color: categoryColor.withValues(alpha: 0.6),
+                          blurRadius: 6,
+                          spreadRadius: 1,
+                        ),
+                    ],
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildAvatar(colorScheme, categoryColor),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Row(
-                                        children: [
-                                          Flexible(
-                                            child: AnymexText(
-                                              text: notification.title,
-                                              variant: notification.isRead
-                                                  ? TextVariant.semiBold
-                                                  : TextVariant.bold,
-                                              size: 13,
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              color: notification.isRead
-                                                  ? colorScheme.onSurface.opaque(0.7)
-                                                  : colorScheme.onSurface,
-                                            ),
-                                          ),
-                                          if (!notification.isRead) ...[
-                                            const SizedBox(width: 6),
-                                            Container(
-                                              width: 7,
-                                              height: 7,
-                                              decoration: BoxDecoration(
-                                                color: categoryColor,
-                                                shape: BoxShape.circle,
-                                              ),
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    AnymexText(
-                                      text: _formatTimeAgo(notification.createdAt),
-                                      variant: TextVariant.regular,
-                                      size: 11,
-                                      color: colorScheme.onSurfaceVariant.opaque(0.7),
-                                    ),
-                                  ],
-                                ),
-                                if (notification.body.isNotEmpty) ...[
-                                  const SizedBox(height: 5),
-                                  DiscordMarkdown(
-                                    text: notification.body,
-                                    colorScheme: colorScheme,
-                                    baseStyle: TextStyle(
-                                      color: colorScheme.onSurfaceVariant,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    fontSize: 12,
-                                  ),
-                                ],
-                                if (notification.mediaTitle != null &&
-                                    notification.mediaTitle!.isNotEmpty) ...[
-                                  const SizedBox(height: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: categoryColor.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                        color: categoryColor.withValues(alpha: 0.2),
-                                        width: 1,
-                                      ),
-                                    ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildAvatar(colorScheme, categoryColor),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
                                     child: Row(
-                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(
-                                          Icons.movie_outlined,
-                                          size: 12,
-                                          color: categoryColor,
-                                        ),
-                                        const SizedBox(width: 5),
                                         Flexible(
-                                          child: AnymexText(
-                                            text: notification.mediaTitle!,
-                                            variant: TextVariant.medium,
-                                            size: 11,
+                                          child: AnymeXText(
+                                            notification.title,
+                                            variant: notification.isRead
+                                                ? TextVariant.semiBold
+                                                : TextVariant.bold,
+                                            size: 13,
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
-                                            color: categoryColor,
+                                            color: notification.isRead
+                                                ? colorScheme.onSurface.opaque(0.7)
+                                                : colorScheme.onSurface,
                                           ),
                                         ),
+                                        if (!notification.isRead) ...[
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            width: 7,
+                                            height: 7,
+                                            decoration: BoxDecoration(
+                                              color: categoryColor,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        ],
                                       ],
                                     ),
                                   ),
-                                ],
-                                if (notification.actorUsername != null &&
-                                    notification.actorUsername!.isNotEmpty &&
-                                    notification.body.isEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  AnymexText(
-                                    text: '@${notification.actorUsername}',
+                                  const SizedBox(width: 8),
+                                  AnymeXText(
+                                    _formatTimeAgo(notification.createdAt),
                                     variant: TextVariant.regular,
                                     size: 11,
-                                    color: colorScheme.onSurfaceVariant,
+                                    color: colorScheme.onSurfaceVariant.opaque(0.7),
                                   ),
                                 ],
+                              ),
+                              if (notification.body.isNotEmpty) ...[
+                                const SizedBox(height: 5),
+                                DiscordMarkdown(
+                                  text: notification.body,
+                                  colorScheme: colorScheme,
+                                  baseStyle: TextStyle(
+                                    color: colorScheme.onSurfaceVariant,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                  fontSize: 12,
+                                ),
                               ],
-                            ),
+                              if (notification.mediaTitle != null &&
+                                  notification.mediaTitle!.isNotEmpty) ...[
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: categoryColor.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: categoryColor.withValues(alpha: 0.2),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.movie_outlined,
+                                        size: 12,
+                                        color: categoryColor,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Flexible(
+                                        child: AnymeXText(
+                                          notification.mediaTitle!,
+                                          variant: TextVariant.semiBold,
+                                          size: 11,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          color: categoryColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                              if (notification.actorUsername != null &&
+                                  notification.actorUsername!.isNotEmpty &&
+                                  notification.body.isEmpty) ...[
+                                const SizedBox(height: 4),
+                                AnymeXText(
+                                  '@${notification.actorUsername}',
+                                  variant: TextVariant.regular,
+                                  size: 11,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ],
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

@@ -5,11 +5,13 @@ import 'package:anymex/screens/anime/widgets/comments/controller/comment_preload
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/anime/widgets/comments/mention_autocomplete.dart';
+import 'package:anymex/screens/settings/sub_settings/widgets/moderation_action_sheet.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
-import 'package:anymex/widgets/custom_widgets/anymex_image.dart';
-import 'package:anymex/widgets/custom_widgets/custom_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -328,8 +330,8 @@ class _CommentSectionState extends State<CommentSection> {
               Row(
                 children: [
                   Expanded(
-                    child: AnymexText(
-                      text: 'Comments',
+                    child: AnymeXText(
+                      'Comments',
                       variant: TextVariant.semiBold,
                       color: colorScheme.onSurface,
                       size: 24,
@@ -384,8 +386,8 @@ class _CommentSectionState extends State<CommentSection> {
                 ],
               ),
               const SizedBox(height: 4),
-              AnymexText(
-                text: controller.totalCommentsCount.value > 0
+              AnymeXText(
+                controller.totalCommentsCount.value > 0
                     ? '${controller.totalCommentsCount.value} comments'
                     : _getTotalCommentCount(controller.comments),
                 color: colorScheme.onSurfaceVariant,
@@ -2507,38 +2509,17 @@ class _CommentSectionState extends State<CommentSection> {
                 color: Colors.orange,
                 onTap: () {
                   Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Warn User',
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'warn_user',
-                        reason: reason,
-                      );
-                    },
-                  );
+                  _openUserModeration(comment, ModerationActionType.warn);
                 },
               ),
               _buildModAction(
                 context: context,
                 icon: Icons.volume_off_rounded,
-                label: 'Mute User (24h)',
+                label: 'Mute User',
                 color: Colors.amber,
                 onTap: () {
                   Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Mute User',
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'mute_user',
-                        reason: reason,
-                        duration: 24,
-                      );
-                    },
-                  );
+                  _openUserModeration(comment, ModerationActionType.mute);
                 },
               ),
               _buildModAction(
@@ -2548,18 +2529,7 @@ class _CommentSectionState extends State<CommentSection> {
                 color: colorScheme.error,
                 onTap: () {
                   Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Ban User',
-                    isDestructive: true,
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'ban_user',
-                        reason: reason,
-                      );
-                    },
-                  );
+                  _openUserModeration(comment, ModerationActionType.ban);
                 },
               ),
               _buildModAction(
@@ -2569,19 +2539,7 @@ class _CommentSectionState extends State<CommentSection> {
                 color: Colors.purple,
                 onTap: () {
                   Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Shadow Ban User',
-                    isDestructive: true,
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'ban_user',
-                        reason: reason,
-                        shadowBan: true,
-                      );
-                    },
-                  );
+                  _openUserModeration(comment, ModerationActionType.shadowBan);
                 },
               ),
               const SizedBox(height: 8),
@@ -2603,17 +2561,7 @@ class _CommentSectionState extends State<CommentSection> {
                 color: Colors.teal,
                 onTap: () {
                   Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Unban User',
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'unban_user',
-                        reason: reason,
-                      );
-                    },
-                  );
+                  _openUserModeration(comment, ModerationActionType.unban);
                 },
               ),
               _buildModAction(
@@ -2623,17 +2571,7 @@ class _CommentSectionState extends State<CommentSection> {
                 color: Colors.teal,
                 onTap: () {
                   Navigator.pop(context);
-                  _showReasonDialog(
-                    context: context,
-                    title: 'Unmute User',
-                    onConfirm: (reason) {
-                      controller.manageUser(
-                        targetUserId: comment.userId,
-                        action: 'unmute_user',
-                        reason: reason,
-                      );
-                    },
-                  );
+                  _openUserModeration(comment, ModerationActionType.unmute);
                 },
               ),
               const SizedBox(height: 8),
@@ -2671,6 +2609,32 @@ class _CommentSectionState extends State<CommentSection> {
             ],
           ),
         );
+      },
+    );
+  }
+
+  void _openUserModeration(Comment comment, ModerationActionType actionType) {
+    AnymeXModerationActionSheet.show(
+      context,
+      targetUserId: comment.userId,
+      targetUsername: comment.username,
+      targetAvatar: comment.avatarUrl,
+      targetRole: comment.userRole,
+      initialAction: actionType,
+      onConfirm: ({
+        required String action,
+        required String reason,
+        int? duration,
+        bool shadowBan = false,
+      }) async {
+        await controller.manageUser(
+          targetUserId: comment.userId,
+          action: action,
+          reason: reason,
+          duration: duration,
+          shadowBan: shadowBan,
+        );
+        return true;
       },
     );
   }

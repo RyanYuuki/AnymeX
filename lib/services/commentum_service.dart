@@ -15,6 +15,33 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
+class CommentsPageResult {
+  final List<Comment> comments;
+  final int total;
+  final int totalPages;
+  final int page;
+  final int limit;
+
+  const CommentsPageResult({
+    required this.comments,
+    required this.total,
+    required this.totalPages,
+    required this.page,
+    required this.limit,
+  });
+
+  bool get hasMore => page < totalPages;
+
+  factory CommentsPageResult.empty({int page = 1, int limit = 50}) =>
+      CommentsPageResult(
+        comments: const [],
+        total: 0,
+        totalPages: 0,
+        page: page,
+        limit: limit,
+      );
+}
+
 class CommentumService extends GetxController {
   String get _baseUrl {
     final envBase = (dotenv.env['COMMENTS_BASE_URL'] ?? '').trim();
@@ -74,33 +101,6 @@ class CommentumService extends GetxController {
   }
 
   String get _clientType => serviceHandler.serviceType.value.name;
-
-class CommentsPageResult {
-  final List<Comment> comments;
-  final int total;
-  final int totalPages;
-  final int page;
-  final int limit;
-
-  const CommentsPageResult({
-    required this.comments,
-    required this.total,
-    required this.totalPages,
-    required this.page,
-    required this.limit,
-  });
-
-  bool get hasMore => page < totalPages;
-
-  factory CommentsPageResult.empty({int page = 1, int limit = 50}) =>
-      CommentsPageResult(
-        comments: const [],
-        total: 0,
-        totalPages: 0,
-        page: page,
-        limit: limit,
-      );
-}
 
   Future<CommentsPageResult> fetchCommentsPage(String mediaId,
       {int page = 1, int limit = 50, String sort = 'newest'}) async {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:anymex/screens/settings/sub_settings/widgets/moderation_action_sheet.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
@@ -1659,7 +1660,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
   final commentumService = Get.find<CommentumService>();
   Map<String, dynamic>? userInfo;
   bool isLoading = true;
-  final TextEditingController reasonController = TextEditingController();
   String selectedRole = 'user';
 
   @override
@@ -1732,11 +1732,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
     setState(() => isLoading = false);
   }
 
-  @override
-  void dispose() {
-    reasonController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1958,111 +1953,63 @@ class _UserManagementPageState extends State<UserManagementPage> {
                             ),
                             const SizedBox(height: 8),
                             AnymeXCard(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  TextField(
-                                    controller: reasonController,
-                                    maxLines: 2,
-                                    decoration: InputDecoration(
-                                      labelText: 'Reason',
-                                      hintText:
-                                          'Provide reason for action...',
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(12),
-                                        borderSide: BorderSide(
-                                          color: colorScheme.primary,
-                                          width: 1.5,
-                                        ),
-                                      ),
-                                    ),
+                                  _buildActionButton(
+                                    context: context,
+                                    icon: Icons.warning_amber_rounded,
+                                    label: 'Warn User',
+                                    color: Colors.amber,
+                                    onTap: () => _openModerationSheet(
+                                        ModerationActionType.warn),
                                   ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'Actions',
-                                    style:
-                                        theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w700,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
+                                  const Divider(height: 1),
+                                  _buildActionButton(
+                                    context: context,
+                                    icon: Icons.volume_off_rounded,
+                                    label: 'Mute User',
+                                    color: Colors.orange,
+                                    onTap: () => _openModerationSheet(
+                                        ModerationActionType.mute),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: [
-                                      _buildActionButton(
-                                        context: context,
-                                        icon: Icons.warning_amber_rounded,
-                                        label: 'Warn User',
-                                        color: Colors.amber,
-                                        onTap: () => _performAction(
-                                          action: 'warn_user',
-                                          label: 'Warn',
-                                        ),
-                                      ),
-                                      _buildActionButton(
-                                        context: context,
-                                        icon: Icons.volume_off_rounded,
-                                        label: 'Mute User',
-                                        color: Colors.orange,
-                                        onTap: () => _performAction(
-                                          action: 'mute_user',
-                                          label: 'Mute',
-                                        ),
-                                      ),
-                                      _buildActionButton(
-                                        context: context,
-                                        icon: Icons.block_rounded,
-                                        label: 'Ban User',
-                                        color: Colors.red,
-                                        onTap: () => _performAction(
-                                          action: 'ban_user',
-                                          label: 'Ban',
-                                        ),
-                                      ),
-                                      _buildActionButton(
-                                        context: context,
-                                        icon: Icons.visibility_off_rounded,
-                                        label: 'Shadow Ban',
-                                        color: Colors.deepPurple,
-                                        onTap: () => _performAction(
-                                          action: 'shadow_ban',
-                                          label: 'Shadow Ban',
-                                          shadowBan: true,
-                                        ),
-                                      ),
-                                      _buildActionButton(
-                                        context: context,
-                                        icon: Icons.check_circle_rounded,
-                                        label: 'Unban User',
-                                        color: Colors.green,
-                                        onTap: () => _performAction(
-                                          action: 'unban_user',
-                                          label: 'Unban',
-                                        ),
-                                      ),
-                                      _buildActionButton(
-                                        context: context,
-                                        icon: Icons.volume_up_rounded,
-                                        label: 'Unmute User',
-                                        color: Colors.teal,
-                                        onTap: () => _performAction(
-                                          action: 'unmute_user',
-                                          label: 'Unmute',
-                                        ),
-                                      ),
-                                    ],
+                                  const Divider(height: 1),
+                                  _buildActionButton(
+                                    context: context,
+                                    icon: Icons.block_rounded,
+                                    label: 'Ban User',
+                                    color: colorScheme.error,
+                                    onTap: () => _openModerationSheet(
+                                        ModerationActionType.ban),
+                                  ),
+                                  const Divider(height: 1),
+                                  _buildActionButton(
+                                    context: context,
+                                    icon: Icons.visibility_off_rounded,
+                                    label: 'Shadow Ban User',
+                                    color: Colors.deepPurple,
+                                    onTap: () => _openModerationSheet(
+                                        ModerationActionType.shadowBan),
+                                  ),
+                                  const Divider(height: 1),
+                                  _buildActionButton(
+                                    context: context,
+                                    icon: Icons.check_circle_rounded,
+                                    label: 'Unban User',
+                                    color: Colors.green,
+                                    onTap: () => _openModerationSheet(
+                                        ModerationActionType.unban),
+                                  ),
+                                  const Divider(height: 1),
+                                  _buildActionButton(
+                                    context: context,
+                                    icon: Icons.volume_up_rounded,
+                                    label: 'Unmute User',
+                                    color: Colors.teal,
+                                    onTap: () => _openModerationSheet(
+                                        ModerationActionType.unmute),
                                   ),
                                 ],
                               ),
@@ -2222,57 +2169,41 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  Future<void> _performAction({
-    required String action,
-    required String label,
-    int? duration,
-    bool shadowBan = false,
-  }) async {
-    final reason = reasonController.text.trim();
-    if (reason.isEmpty) {
-      snackBar('Please provide a reason');
-      return;
-    }
-
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('Confirm $label'),
-        content: Text(
-            'Are you sure you want to $label user ${widget.targetUserId}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            style: FilledButton.styleFrom(
-              backgroundColor:
-                  label.contains('Ban') ? context.colors.error : null,
-            ),
-            child: Text(label),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm != true) return;
-
-    final success = await commentumService.manageUser(
-      action: action,
+  void _openModerationSheet(ModerationActionType actionType) {
+    AnymeXModerationActionSheet.show(
+      context,
       targetUserId: widget.targetUserId,
-      reason: reason,
-      duration: duration,
-      shadowBan: shadowBan,
+      targetUsername: userInfo?['username']?.toString() ??
+          userInfo?['commentum_username']?.toString() ??
+          'User #${widget.targetUserId}',
+      targetAvatar: userInfo?['avatar']?.toString() ??
+          userInfo?['commentum_user_avatar']?.toString(),
       targetClientType: widget.targetClientType,
+      targetRole: userInfo?['role']?.toString() ??
+          userInfo?['commentum_user_role']?.toString(),
+      initialAction: actionType,
+      onConfirm: ({
+        required String action,
+        required String reason,
+        int? duration,
+        bool shadowBan = false,
+      }) async {
+        final success = await commentumService.manageUser(
+          action: action,
+          targetUserId: widget.targetUserId,
+          reason: reason,
+          duration: duration,
+          shadowBan: shadowBan,
+          targetClientType: widget.targetClientType,
+        );
+        if (success) {
+          snackBar('Action applied successfully');
+          _loadUserInfo();
+        } else {
+          snackBar('Failed to perform action');
+        }
+        return success;
+      },
     );
-
-    if (success) {
-      snackBar('User ${label.toLowerCase()}d successfully');
-      _loadUserInfo();
-    } else {
-      snackBar('Failed to $label user');
-    }
   }
 }

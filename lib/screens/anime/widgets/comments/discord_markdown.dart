@@ -91,7 +91,7 @@ class DiscordMarkdown extends StatelessWidget {
       });
 
       // Clean trailing artifact quotes if tag had double quotes like ">"
-      line = line.replaceAll(RegExp(r'["'']?>\s*$'), '');
+      line = line.replaceAll(RegExp(r'''["']?>\s*$'''), '');
 
       processedLines.add(line);
     }
