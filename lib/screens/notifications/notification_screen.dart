@@ -509,12 +509,14 @@ class NotificationScreen extends GetView<NotificationController> {
             media: media,
             tag: tag,
             initialTabIndex: 2,
+            scrollToCommentId: notification.commentId,
           ));
     } else {
       navigate(() => AnimeDetailsPage(
             media: media,
             tag: tag,
             initialTabIndex: 2,
+            scrollToCommentId: notification.commentId,
           ));
     }
   }

@@ -349,6 +349,7 @@ class NotificationService extends GetxController {
   void _navigateFromNotification(Map<String, dynamic> data, {int attempts = 0}) {
     final mediaId = data['media_id']?.toString();
     final mediaType = data['media_type']?.toString();
+    final commentId = data['comment_id']?.toString();
     final clientType = data['client_type']?.toString() ?? 'anilist';
 
     if (mediaId == null || mediaId.isEmpty || mediaType == null) {
@@ -396,12 +397,14 @@ class NotificationService extends GetxController {
         media: media,
         tag: tag,
         initialTabIndex: 2,
+        scrollToCommentId: commentId,
       ));
     } else {
       navigate(() => AnimeDetailsPage(
         media: media,
         tag: tag,
         initialTabIndex: 2,
+        scrollToCommentId: commentId,
       ));
     }
   }
