@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'package:anymex/services/commentum_service.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/glow.dart';
-import 'package:anymex/widgets/custom_widgets/custom_expansion_tile.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/other_features.dart';
-import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -50,132 +48,94 @@ class _SettingsModerationState extends State<SettingsModeration> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SuperListView(
-        padding: getResponsiveValue(context,
-            mobileValue: const EdgeInsets.fromLTRB(10.0, 50.0, 10.0, 20.0),
-            desktopValue: const EdgeInsets.fromLTRB(20.0, 50.0, 25.0, 20.0)),
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            behavior: HitTestBehavior.opaque,
-            child: const MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Row(
-                children: [
-                  CustomBackButton(),
-                  SizedBox(width: 10),
-                  AnymeXText("Moderation Panel",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                ],
-              ),
-            ),
+    return AnymeXScaffold(
+      showHeader: true,
+      headerTitle: 'Moderation Panel',
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            16.0,
+            AnymeXHeaderScope.of(ctx),
+            16.0,
+            30.0,
           ),
-          const SizedBox(height: 30),
-
-          // User Role Display
-          Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color:
-                    Theme.of(context).colorScheme.surfaceContainer.opaque(0.3)),
-            child: Column(
-              children: [
-                Obx(() => CustomTile(
-                      icon: Icons.admin_panel_settings,
-                      title: "Your Role",
-                      description:
-                          commentumService.currentUserRole.value.toUpperCase(),
-                      postFix: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: _getRoleColor(),
-                          borderRadius: BorderRadius.circular(12),
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainer
-                              .withValues(alpha: 0.3)),
-                      child: Column(
-                        children: [
-                          Obx(() => CustomTile(
-                                icon: Icons.admin_panel_settings,
-                                title: "Your Role",
-                                description: commentumService
-                                    .currentUserRole.value
-                                    .toUpperCase()
-                                    .replaceAll('_', ' '),
-                                postFix: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: _getRoleColor(),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    commentumService.currentUserRole.value
-                                        .toUpperCase()
-                                        .replaceAll('_', ' '),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              )),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainer
-                              .withValues(alpha: 0.3)),
-                      child: Column(
-                        children: [
-                          Obx(() => CustomTile(
-                                icon: Icons.report_outlined,
-                                title: "Reports Queue",
-                                description:
-                                    "${reportsQueue.length} pending reports",
-                                postFix: isLoadingQueue.value
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2),
-                                      )
-                                    : null,
-                                onTap: () => _navigateToReportsQueue(context),
-                              )),
-                          CustomTile(
-                              icon: Icons.search_outlined,
-                              title: "Search User",
-                              description: "Find and manage specific users",
-                              onTap: () => _showUserSearch(context)),
-                          CustomTile(
-                            icon: Icons.people_outlined,
-                            title: "User List",
-                            description: "View and filter all users",
-                            onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (_) => const UserListPage())),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // User Role Display
+              AnymeXCard(
+                child: Column(
+                  children: [
+                    Obx(() => CustomTile(
+                          icon: Icons.admin_panel_settings,
+                          title: "Your Role",
+                          description: commentumService.currentUserRole.value
+                              .toUpperCase()
+                              .replaceAll('_', ' '),
+                          postFix: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: _getRoleColor(),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              commentumService.currentUserRole.value
+                                  .toUpperCase()
+                                  .replaceAll('_', ' '),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
-                    ),
-                    30.height(),
+                        )),
                   ],
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              AnymeXCard(
+                child: Column(
+                  children: [
+                    Obx(() => CustomTile(
+                          icon: Icons.report_outlined,
+                          title: "Reports Queue",
+                          description:
+                              "${reportsQueue.length} pending reports",
+                          postFix: isLoadingQueue.value
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2),
+                                )
+                              : null,
+                          onTap: () => _navigateToReportsQueue(context),
+                        )),
+                    CustomTile(
+                      icon: Icons.search_outlined,
+                      title: "Search User",
+                      description: "Find and manage specific users",
+                      onTap: () => _showUserSearch(context),
+                    ),
+                    CustomTile(
+                      icon: Icons.people_outlined,
+                      title: "User List",
+                      description: "View and filter all users",
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const UserListPage(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );
@@ -458,7 +418,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             ],
           ),
           const SizedBox(height: 16),
-          AnymexExpansionTile(
+          AnymeXExpansionTile(
             title: 'Platform',
             initialExpanded: false,
             leading: Icon(Icons.language_rounded,
@@ -865,64 +825,62 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Glow(
-      child: Scaffold(
-        body: Column(
-          children: [
-            NestedHeader(
-              title: 'Reports Queue',
-              action: IconButton(
-                onPressed: _loadReports,
-                icon: const Icon(Icons.refresh),
-              ),
+    return AnymeXScaffold(
+      body: Column(
+        children: [
+          NestedHeader(
+            title: 'Reports Queue',
+            action: IconButton(
+              onPressed: _loadReports,
+              icon: const Icon(Icons.refresh),
             ),
-            Expanded(
-              child: Obx(() {
-                if (isLoading.value) {
-                  return const Center(child: ExpressiveLoadingIndicator());
-                }
+          ),
+          Expanded(
+            child: Obx(() {
+              if (isLoading.value) {
+                return const Center(child: ExpressiveLoadingIndicator());
+              }
 
-                if (reports.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.check_circle_outline_rounded,
-                            size: 64, color: colorScheme.primary),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No pending reports',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'All clear! No reports to review.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 50),
+              if (reports.isEmpty) {
+                return Center(
                   child: Column(
-                    children: reports
-                        .map((report) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: _buildReportCard(context, report),
-                            ))
-                        .toList(),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.check_circle_outline_rounded,
+                          size: 64, color: colorScheme.primary),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No pending reports',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'All clear! No reports to review.',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 );
-              }),
-            ),
-          ],
-        ),
+              }
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 50),
+                child: Column(
+                  children: reports
+                      .map((report) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _buildReportCard(context, report),
+                          ))
+                      .toList(),
+                ),
+              );
+            }),
+          ),
+        ],
       ),
     );
   }
@@ -943,11 +901,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
     final createdAt = report['createdAt']?.toString() ?? '';
     final isResolving = resolvingReports.contains(commentId);
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
-      ),
+    return AnymeXCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1361,90 +1315,83 @@ class _UserListPageState extends State<UserListPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
-    return Glow(
-      child: Scaffold(
-        body: Column(
-          children: [
-            NestedHeader(
-              title: 'User List',
-              action: IconButton(
-                onPressed: _loadUsers,
-                icon: const Icon(Icons.refresh),
-              ),
+    return AnymeXScaffold(
+      body: Column(
+        children: [
+          NestedHeader(
+            title: 'User List',
+            action: IconButton(
+              onPressed: _loadUsers,
+              icon: const Icon(Icons.refresh),
             ),
-            _buildStatusFilters(colorScheme, theme),
-            _buildDropdownFilters(colorScheme, theme),
-            Obx(() => Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      '${users.length} of $totalUsers users',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
+          ),
+          _buildStatusFilters(colorScheme, theme),
+          _buildDropdownFilters(colorScheme, theme),
+          Obx(() => Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '${users.length} of $totalUsers users',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                )),
-            Expanded(
-              child: Obx(() {
-                if (isLoading.value) {
-                  return const Center(child: ExpressiveLoadingIndicator());
-                }
+                ),
+              )),
+          Expanded(
+            child: Obx(() {
+              if (isLoading.value) {
+                return const Center(child: ExpressiveLoadingIndicator());
+              }
 
-                if (users.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.people_outline_rounded,
-                            size: 64, color: colorScheme.onSurfaceVariant),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No users found',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+              if (users.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.people_outline_rounded,
+                          size: 64, color: colorScheme.onSurfaceVariant),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No users found',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Try adjusting your filters',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Try adjusting your filters',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
                         ),
-                      ],
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 50),
-                  itemCount: users.length + (isLoadingMore.value ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index == users.length) {
-                      return const Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Center(
-                          child: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        ),
-                      );
-                    }
-                    return _buildUserCard(context, users[index]);
-                  },
+                      ),
+                    ],
+                  ),
                 );
-              }),
-            ),
-          ],
-        ),
+              }
+
+              return ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 50),
+                itemCount: users.length + (isLoadingMore.value ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == users.length) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: ExpressiveLoadingIndicator(),
+                      ),
+                    );
+                  }
+                  return _buildUserCard(context, users[index]);
+                },
+              );
+            }),
+          ),
+        ],
       ),
     );
   }
@@ -1589,13 +1536,9 @@ class _UserListPageState extends State<UserListPage> {
             ),
           );
         },
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
+        borderRadius: BorderRadius.circular(16),
+        child: AnymeXCard(
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
-          ),
           child: Row(
             children: [
               CircleAvatar(
@@ -1717,6 +1660,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
   Map<String, dynamic>? userInfo;
   bool isLoading = true;
   final TextEditingController reasonController = TextEditingController();
+  String selectedRole = 'user';
 
   @override
   void initState() {
@@ -1776,6 +1720,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               'client_type': clientType,
               'created_at': createdAt,
             };
+            selectedRole = role;
             isLoading = false;
           });
           return;
@@ -1798,361 +1743,387 @@ class _UserManagementPageState extends State<UserManagementPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Glow(
-      child: Scaffold(
-        body: Column(
-          children: [
-            const NestedHeader(title: 'User Management'),
-            Expanded(
-              child: isLoading
-                  ? const Center(child: ExpressiveLoadingIndicator())
-                  : userInfo == null
-                      ? Center(
-                          child: Text(
-                            'User not found (ID: ${widget.targetUserId})',
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        )
-                      : SingleChildScrollView(
-                          padding: const EdgeInsets.fromLTRB(10, 20, 10, 50),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surfaceContainer
-                                      .withValues(alpha: 0.3),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 36,
-                                      backgroundColor:
-                                          colorScheme.surfaceContainer,
-                                      backgroundImage: userInfo?['avatar'] !=
-                                                  null &&
-                                              userInfo!['avatar']
-                                                  .toString()
-                                                  .isNotEmpty
-                                          ? NetworkImage(
-                                              userInfo!['avatar'].toString())
-                                          : null,
-                                      child: userInfo?['avatar'] == null ||
-                                              userInfo!['avatar']
-                                                  .toString()
-                                                  .isEmpty
-                                          ? Icon(Icons.person_rounded,
-                                              size: 32,
-                                              color:
-                                                  colorScheme.onSurfaceVariant)
-                                          : null,
-                                    ),
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      userInfo?['username']?.toString() ??
-                                          'Unknown',
-                                      style:
-                                          theme.textTheme.titleLarge?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 14, vertical: 5),
-                                          decoration: BoxDecoration(
-                                            color: _getRoleColor(
-                                                    userInfo?['role']
-                                                            ?.toString() ??
-                                                        'user')
-                                                .withOpacity(0.15),
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            border: Border.all(
-                                              color: _getRoleColor(
-                                                      userInfo?['role']
-                                                              ?.toString() ??
-                                                          'user')
-                                                  .withOpacity(0.3),
-                                            ),
-                                          ),
-                                          child: Text(
-                                            (userInfo?['role']?.toString() ??
-                                                    'user')
-                                                .toUpperCase()
-                                                .replaceAll('_', ' '),
-                                            style: TextStyle(
-                                              color: _getRoleColor(
-                                                  userInfo?['role']
-                                                          ?.toString() ??
-                                                      'user'),
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ),
-                                        if (userInfo?['client_type'] != null &&
-                                            userInfo!['client_type']
-                                                .toString()
-                                                .isNotEmpty) ...[
-                                          const SizedBox(width: 8),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12, vertical: 5),
-                                            decoration: BoxDecoration(
-                                              color: colorScheme.primary
-                                                  .withValues(alpha: 0.15),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              border: Border.all(
-                                                color: colorScheme.primary
-                                                    .withValues(alpha: 0.3),
-                                              ),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Image.asset(
-                                                  'assets/images/${userInfo!['client_type'].toString()}-icon.png',
-                                                  width: 16,
-                                                  height: 16,
-                                                  color: colorScheme.primary,
-                                                ),
-                                                const SizedBox(width: 6),
-                                                Text(
-                                                  userInfo!['client_type']
-                                                      .toString()
-                                                      .toUpperCase(),
-                                                  style: TextStyle(
-                                                    color: colorScheme.primary,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                    const SizedBox(height: 16),
-                                    const Divider(height: 1),
-                                    const SizedBox(height: 12),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          _buildInfoRow(context, 'User ID',
-                                              widget.targetUserId),
-                                          _buildInfoRow(
-                                              context,
-                                              'Banned',
-                                              userInfo?['banned']?.toString() ==
-                                                      'true'
-                                                  ? 'Yes'
-                                                  : 'No'),
-                                          _buildInfoRow(
-                                              context,
-                                              'Shadow Banned',
-                                              userInfo?['shadow_banned']
-                                                          ?.toString() ==
-                                                      'true'
-                                                  ? 'Yes'
-                                                  : 'No'),
-                                          _buildInfoRow(
-                                              context,
-                                              'Muted',
-                                              userInfo?['muted']?.toString() ==
-                                                      'true'
-                                                  ? 'Yes'
-                                                  : 'No'),
-                                          _buildInfoRow(
-                                              context,
-                                              'Warnings',
-                                              userInfo?['warnings']
-                                                      ?.toString() ??
-                                                  '0'),
-                                          if (userInfo?['muted_until'] !=
-                                                  null &&
-                                              userInfo!['muted_until']
-                                                  .toString()
-                                                  .isNotEmpty &&
-                                              userInfo!['muted_until']
-                                                      .toString() !=
-                                                  'null')
-                                            _buildInfoRow(
-                                                context,
-                                                'Muted Until',
-                                                userInfo?['muted_until']
-                                                        .toString() ??
-                                                    'N/A'),
-                                          if (userInfo?['created_at'] != null &&
-                                              userInfo!['created_at']
-                                                  .toString()
-                                                  .isNotEmpty &&
-                                              userInfo!['created_at']
-                                                      .toString() !=
-                                                  'null')
-                                            _buildInfoRow(
-                                                context,
-                                                'Joined',
-                                                userInfo?['created_at'] != null
-                                                    ? timeago.format(DateTime
-                                                        .parse(userInfo![
-                                                                'created_at']
-                                                            .toString()))
-                                                    : 'N/A'),
-                                          if (userInfo?['notes'] != null &&
-                                              userInfo!['notes']
-                                                  .toString()
-                                                  .isNotEmpty &&
-                                              userInfo!['notes'].toString() !=
-                                                  'null')
-                                            _buildInfoRow(
-                                                context,
-                                                'Notes',
-                                                userInfo?['notes']
-                                                        ?.toString() ??
-                                                    ''),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surfaceContainer
-                                      .withValues(alpha: 0.3),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TextField(
-                                      controller: reasonController,
-                                      maxLines: 2,
-                                      decoration: InputDecoration(
-                                        labelText: 'Reason',
-                                        hintText:
-                                            'Provide reason for action...',
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          borderSide: BorderSide(
-                                            color: colorScheme.primary,
-                                            width: 1.5,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Actions',
-                                      style:
-                                          theme.textTheme.titleSmall?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color: colorScheme.onSurfaceVariant,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    _buildActionButton(
-                                      context: context,
-                                      icon: Icons.warning_rounded,
-                                      label: 'Warn User',
-                                      color: Colors.orange,
-                                      onTap: () => _performAction(
-                                        action: 'warn_user',
-                                        label: 'Warn',
-                                      ),
-                                    ),
-                                    _buildActionButton(
-                                      context: context,
-                                      icon: Icons.volume_off_rounded,
-                                      label: 'Mute User (24h)',
-                                      color: Colors.amber,
-                                      onTap: () => _performAction(
-                                        action: 'mute_user',
-                                        label: 'Mute',
-                                        duration: 24,
-                                      ),
-                                    ),
-                                    _buildActionButton(
-                                      context: context,
-                                      icon: Icons.block_rounded,
-                                      label: 'Ban User',
-                                      color: colorScheme.error,
-                                      onTap: () => _performAction(
-                                        action: 'ban_user',
-                                        label: 'Ban',
-                                      ),
-                                    ),
-                                    _buildActionButton(
-                                      context: context,
-                                      icon: Icons.visibility_off_rounded,
-                                      label: 'Shadow Ban User',
-                                      color: Colors.purple,
-                                      onTap: () => _performAction(
-                                        action: 'ban_user',
-                                        label: 'Shadow Ban',
-                                        shadowBan: true,
-                                      ),
-                                    ),
-                                    _buildActionButton(
-                                      context: context,
-                                      icon: Icons.check_circle_rounded,
-                                      label: 'Unban User',
-                                      color: Colors.green,
-                                      onTap: () => _performAction(
-                                        action: 'unban_user',
-                                        label: 'Unban',
-                                      ),
-                                    ),
-                                    _buildActionButton(
-                                      context: context,
-                                      icon: Icons.volume_up_rounded,
-                                      label: 'Unmute User',
-                                      color: Colors.teal,
-                                      onTap: () => _performAction(
-                                        action: 'unmute_user',
-                                        label: 'Unmute',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 30),
-                            ],
+    return AnymeXScaffold(
+      body: Column(
+        children: [
+          const NestedHeader(title: 'User Management'),
+          Expanded(
+            child: isLoading
+                ? const Center(child: ExpressiveLoadingIndicator())
+                : userInfo == null
+                    ? Center(
+                        child: Text(
+                          'User not found (ID: ${widget.targetUserId})',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
-            ),
-          ],
+                      )
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(10, 20, 10, 50),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AnymeXCard(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 36,
+                                    backgroundColor:
+                                        colorScheme.surfaceContainer,
+                                    backgroundImage: userInfo?['avatar'] !=
+                                                null &&
+                                            userInfo!['avatar']
+                                                .toString()
+                                                .isNotEmpty
+                                        ? NetworkImage(
+                                            userInfo!['avatar'].toString())
+                                        : null,
+                                    child: userInfo?['avatar'] == null ||
+                                            userInfo!['avatar']
+                                                .toString()
+                                                .isEmpty
+                                        ? Icon(Icons.person,
+                                            size: 36,
+                                            color: colorScheme.onSurfaceVariant)
+                                        : null,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    userInfo?['username']?.toString() ??
+                                        'Unknown',
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      _buildRoleBadge(
+                                          userInfo?['role']?.toString() ??
+                                              'user'),
+                                      if (userInfo?['client_type'] != null) ...[
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: colorScheme.primary
+                                                .withValues(alpha: 0.15),
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                            border: Border.all(
+                                              color: colorScheme.primary
+                                                  .withValues(alpha: 0.3),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Image.asset(
+                                                'assets/images/${userInfo!['client_type'].toString()}-icon.png',
+                                                width: 16,
+                                                height: 16,
+                                                color: colorScheme.primary,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Text(
+                                                userInfo!['client_type']
+                                                    .toString()
+                                                    .toUpperCase(),
+                                                style: TextStyle(
+                                                  color: colorScheme.primary,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  const Divider(height: 1),
+                                  const SizedBox(height: 12),
+                                  _buildInfoRow(context, 'User ID',
+                                      '#${widget.targetUserId}'),
+                                  if (userInfo?['created_at'] != null)
+                                    _buildInfoRow(
+                                      context,
+                                      'Joined',
+                                      _formatDate(userInfo!['created_at']),
+                                    ),
+                                  if (userInfo?['status'] != null)
+                                    _buildInfoRow(
+                                      context,
+                                      'Status',
+                                      (userInfo!['status'] as String)
+                                          .toUpperCase(),
+                                    ),
+                                  if (userInfo?['banned_until'] != null)
+                                    _buildInfoRow(
+                                      context,
+                                      'Banned Until',
+                                      _formatDate(userInfo!['banned_until']),
+                                    ),
+                                  if (userInfo?['muted_until'] != null)
+                                    _buildInfoRow(
+                                      context,
+                                      'Muted Until',
+                                      _formatDate(userInfo!['muted_until']),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Role Change Section
+                            Text(
+                              'Change Role',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            AnymeXCard(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 4),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  isExpanded: true,
+                                  value: ['user', 'moderator', 'admin']
+                                          .contains(selectedRole)
+                                      ? selectedRole
+                                      : 'user',
+                                  items: [
+                                    DropdownMenuItem(
+                                      value: 'user',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.person_outline,
+                                              size: 20,
+                                              color: colorScheme.primary),
+                                          const SizedBox(width: 12),
+                                          const Text('User'),
+                                        ],
+                                      ),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'moderator',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.shield_outlined,
+                                              size: 20,
+                                              color: Colors.blue.shade400),
+                                          const SizedBox(width: 12),
+                                          const Text('Moderator'),
+                                        ],
+                                      ),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'admin',
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.admin_panel_settings,
+                                              size: 20,
+                                              color: Colors.amber.shade400),
+                                          const SizedBox(width: 12),
+                                          const Text('Admin'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                  onChanged: (newRole) {
+                                    if (newRole != null) {
+                                      _changeRole(newRole);
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Moderation Actions Section
+                            Text(
+                              'Moderation Actions',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            AnymeXCard(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextField(
+                                    controller: reasonController,
+                                    maxLines: 2,
+                                    decoration: InputDecoration(
+                                      labelText: 'Reason',
+                                      hintText:
+                                          'Provide reason for action...',
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12),
+                                        borderSide: BorderSide(
+                                          color: colorScheme.primary,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Actions',
+                                    style:
+                                        theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: [
+                                      _buildActionButton(
+                                        context: context,
+                                        icon: Icons.warning_amber_rounded,
+                                        label: 'Warn User',
+                                        color: Colors.amber,
+                                        onTap: () => _performAction(
+                                          action: 'warn_user',
+                                          label: 'Warn',
+                                        ),
+                                      ),
+                                      _buildActionButton(
+                                        context: context,
+                                        icon: Icons.volume_off_rounded,
+                                        label: 'Mute User',
+                                        color: Colors.orange,
+                                        onTap: () => _performAction(
+                                          action: 'mute_user',
+                                          label: 'Mute',
+                                        ),
+                                      ),
+                                      _buildActionButton(
+                                        context: context,
+                                        icon: Icons.block_rounded,
+                                        label: 'Ban User',
+                                        color: Colors.red,
+                                        onTap: () => _performAction(
+                                          action: 'ban_user',
+                                          label: 'Ban',
+                                        ),
+                                      ),
+                                      _buildActionButton(
+                                        context: context,
+                                        icon: Icons.visibility_off_rounded,
+                                        label: 'Shadow Ban',
+                                        color: Colors.deepPurple,
+                                        onTap: () => _performAction(
+                                          action: 'shadow_ban',
+                                          label: 'Shadow Ban',
+                                          shadowBan: true,
+                                        ),
+                                      ),
+                                      _buildActionButton(
+                                        context: context,
+                                        icon: Icons.check_circle_rounded,
+                                        label: 'Unban User',
+                                        color: Colors.green,
+                                        onTap: () => _performAction(
+                                          action: 'unban_user',
+                                          label: 'Unban',
+                                        ),
+                                      ),
+                                      _buildActionButton(
+                                        context: context,
+                                        icon: Icons.volume_up_rounded,
+                                        label: 'Unmute User',
+                                        color: Colors.teal,
+                                        onTap: () => _performAction(
+                                          action: 'unmute_user',
+                                          label: 'Unmute',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+                          ],
+                        ),
+                      ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoleBadge(String role) {
+    final color = _getRoleColor(role);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+        ),
+      ),
+      child: Text(
+        role.toUpperCase().replaceAll('_', ' '),
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
         ),
       ),
     );
+  }
+
+  String _formatDate(dynamic dateStr) {
+    if (dateStr == null || dateStr.toString().isEmpty || dateStr.toString() == 'null') return 'N/A';
+    try {
+      return timeago.format(DateTime.parse(dateStr.toString()));
+    } catch (_) {
+      return dateStr.toString();
+    }
+  }
+
+  Future<void> _changeRole(String newRole) async {
+    final success = await commentumService.manageUser(
+      action: 'change_role',
+      targetUserId: widget.targetUserId,
+      reason: 'Role changed to $newRole',
+      targetClientType: widget.targetClientType,
+    );
+    if (success) {
+      snackBar('Role updated successfully');
+      setState(() {
+        selectedRole = newRole;
+      });
+      _loadUserInfo();
+    } else {
+      snackBar('Failed to update role');
+    }
   }
 
   Widget _buildInfoRow(BuildContext context, String label, String value) {
