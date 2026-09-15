@@ -5,10 +5,8 @@ import 'dart:io';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/io_client.dart' as http_io;
 import 'package:path/path.dart' as path;
 import 'package:pointycastle/export.dart';
-import 'package:rhttp/rhttp.dart';
 
 class _WorkerHttpOverrides extends HttpOverrides {
   @override
@@ -375,26 +373,7 @@ class _WorkerTask {
 void _workerEntryPoint(_WorkerInit init) async {
   HttpOverrides.global = _WorkerHttpOverrides();
 
-  http.Client httpClient;
-  try {
-    await Rhttp.init();
-    httpClient = await RhttpCompatibleClient.create(
-      settings: const ClientSettings(
-        tlsSettings: TlsSettings(verifyCertificates: false),
-        timeoutSettings: TimeoutSettings(
-          connectTimeout: Duration(seconds: 15),
-          timeout: Duration(seconds: 30),
-        ),
-      ),
-    );
-  } catch (e) {
-    if (kDebugMode) {
-      print('[DownloadWorker] Falling back to standard HttpClient: $e');
-    }
-    final ioClient = HttpClient()
-      ..badCertificateCallback = (cert, host, port) => true;
-    httpClient = http_io.IOClient(ioClient);
-  }
+  final httpClient = http.Client();
 
   final receivePort = ReceivePort();
 

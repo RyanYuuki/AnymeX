@@ -704,10 +704,8 @@ class DownloadController extends GetxController {
         task: request.task,
         source: request.source,
         preferredQuality: request.preferredQuality,
-      ).then((_) {
-        _processScrapeQueue();
-      }).catchError((e) {
-        _activeTaskCount--;
+      ).whenComplete(() {
+        if (_activeTaskCount < 0) _activeTaskCount = 0;
         _processScrapeQueue();
       });
     }
@@ -895,7 +893,8 @@ class DownloadController extends GetxController {
     final queued = activeTasks
         .where((t) =>
             t.status == DownloadStatus.queued ||
-            t.status == DownloadStatus.fetchingServer)
+            t.status == DownloadStatus.fetchingServer ||
+            t.status == DownloadStatus.awaitingServerSelection)
         .length;
     if (downloading.isEmpty && queued == 0) {
       _sendToBackground({'type': 'UPDATE_NOTIFICATION', 'title': 'AnymeX Downloads', 'text': 'All downloads complete.'});
