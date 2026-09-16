@@ -1055,6 +1055,15 @@ class _CommentSectionState extends State<CommentSection> {
     final effectiveLocked = comment.locked == true || isParentLocked;
     final isTarget = _isTargetComment(comment.id);
 
+    // Deleted comments render statically. They must NOT enter the Obx below:
+    // their build path reads zero observables (canModerate() is only reached
+    // for non-deleted comments), and an Obx that subscribes to nothing throws
+    // "improper use of a GetX" at mount - which blanked tiles gray while
+    // scrolling through threads containing deleted comments.
+    if (comment.deleted) {
+      return _buildDeletedComment(context, comment, depth);
+    }
+
     return Obx(() => Column(
           key: isTarget ? _targetCommentKey : null,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1151,6 +1160,13 @@ class _CommentSectionState extends State<CommentSection> {
               context,
               rootComment: comment,
               controller: controller,
+              onShowContextMenu: (target) {
+                final isOwnComment =
+                    target.userId == controller.profile.id?.toString();
+                _showCommentContextMenu(
+                    context, target, controller, isOwnComment,
+                    controller.canModerate());
+              },
             );
           },
           child: Container(
@@ -1719,10 +1735,6 @@ class _CommentSectionState extends State<CommentSection> {
       {bool effectiveLocked = false, int depth = 0}) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
-    if (comment.deleted) {
-      return _buildDeletedComment(context, comment, depth);
-    }
 
     final isSpoiler = comment.tag.toLowerCase().contains('spoiler');
     final isOwnComment = comment.userId == controller.profile.id?.toString();
