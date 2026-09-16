@@ -376,7 +376,7 @@ class DiscordMarkdown extends StatelessWidget {
 
   static String normalizeImageUrl(String rawUrl) {
     var url = rawUrl.trim();
-    url = url.replaceAll(RegExp(r'[\.,\)\;\"\'\>]+$'), '');
+    url = url.replaceAll(RegExp(r'''[\.,\);\"'>]+$'''), '');
 
     // Convert Giphy webpage link to direct gif
     final giphyMatch = RegExp(r'giphy\.com\/gifs\/(?:.*-)?([a-zA-Z0-9]+)', caseSensitive: false).firstMatch(url);
@@ -397,7 +397,7 @@ class DiscordMarkdown extends StatelessWidget {
 
   static bool _isImageUrl(String rawUrl) {
     var url = rawUrl.trim();
-    url = url.replaceAll(RegExp(r'[\.,\)\;\"\'\>]+$'), '');
+    url = url.replaceAll(RegExp(r'''[\.,\);\"'>]+$'''), '');
     final lower = url.toLowerCase();
 
     final hasImageExt = RegExp(
@@ -426,7 +426,7 @@ class DiscordMarkdown extends StatelessWidget {
 
   static CommentMediaImage? _parseImgTag(String tagAttributes) {
     final srcMatch = RegExp(
-      r'src=["\']{1,2}([^"\'\s>]+)["\']{1,2}',
+      r'''src=["']{1,2}([^"'\s>]+)["']{1,2}''',
       caseSensitive: false,
     ).firstMatch(tagAttributes);
 
@@ -436,7 +436,7 @@ class DiscordMarkdown extends StatelessWidget {
       return null;
     }
 
-    final url = normalizeImageUrl(rawUrl);
+    var url = normalizeImageUrl(rawUrl);
 
     // Clean trailing slash from file extension if present (e.g. .jpg/ -> .jpg)
     if (url.endsWith('/') &&
