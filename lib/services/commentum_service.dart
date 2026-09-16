@@ -67,14 +67,19 @@ class CommentumService extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    ever(serviceHandler.serviceType, (_) => _tryRegisterFcm());
+    ever(serviceHandler.serviceType, (_) {
+      _tryRegisterFcm();
+      getUserRole();
+    });
     ever(serviceHandler.profileData, (_) {
       _tryRegisterFcm();
       refreshUnreadCount();
+      getUserRole();
     });
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 1), () {
       _tryRegisterFcm();
       refreshUnreadCount();
+      getUserRole();
     });
   }
 
@@ -475,9 +480,10 @@ class CommentumService extends GetxController {
 
   Future<bool> resolveReport({
     required int commentId,
-    required String reporterId,
+    String? reporterId,
     required String resolution,
     String? reviewNotes,
+    bool deleteComment = false,
   }) async {
     if (currentUserId == null) {
       Logger.i('User not logged in');
@@ -491,20 +497,24 @@ class CommentumService extends GetxController {
     }
 
     try {
+      final body = <String, dynamic>{
+        'action': 'resolve',
+        'comment_id': commentId,
+        'client_type': _clientType,
+        'access_token': token,
+        'resolution': resolution,
+        if (reporterId != null && reporterId.isNotEmpty)
+          'reporter_info': {'user_id': reporterId},
+        if (reviewNotes != null) 'review_notes': reviewNotes,
+        if (deleteComment) 'delete_comment': true,
+      };
+
       final response = await http.post(
         Uri.parse('$_baseUrl/reports'),
         headers: {
           'Content-Type': 'application/json',
         },
-        body: json.encode({
-          'action': 'resolve',
-          'comment_id': commentId,
-          'reporter_info': {'user_id': reporterId},
-          'client_type': _clientType,
-          'access_token': token,
-          'resolution': resolution,
-          'review_notes': reviewNotes,
-        }),
+        body: json.encode(body),
       );
 
       if (response.statusCode == 200) {
@@ -830,6 +840,7 @@ class CommentumService extends GetxController {
     int? duration,
     bool shadowBan = false,
     String? targetClientType,
+    String? role,
   }) async {
     if (currentUserId == null) {
       Logger.i('User not logged in');
@@ -856,6 +867,7 @@ class CommentumService extends GetxController {
       } else {
         body['target_client_type'] = _clientType;
       }
+      if (role != null) body['role'] = role;
       if (severity != null) body['severity'] = severity;
       if (duration != null) body['duration'] = duration;
       if (shadowBan) body['shadow_ban'] = shadowBan;
@@ -1176,7 +1188,7 @@ class CommentumService extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final role = data['moderator']?['role'];
+        final role = data['role'] ?? data['moderator']?['role'];
         if (role != null) {
           currentUserRole.value = role;
           return role;

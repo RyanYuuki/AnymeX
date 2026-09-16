@@ -6,6 +6,8 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/other_features.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -892,6 +894,8 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
     final commentId = report['commentId'] as int? ?? 0;
     final content = report['content']?.toString() ?? '';
     final author = report['author'] as Map<String, dynamic>? ?? {};
+    final authorId = author['id']?.toString() ?? '';
+    final authorClientType = author['client_type']?.toString();
     final authorName = author['username']?.toString() ?? 'Unknown';
     final authorAvatar = author['avatar']?.toString();
     final mediaInfo = report['media'] as Map<String, dynamic>? ?? {};
@@ -906,71 +910,87 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 18,
-                  backgroundColor: colorScheme.surfaceContainer,
-                  child: authorAvatar != null && authorAvatar.isNotEmpty
-                      ? ClipOval(
-                          child: Image.network(authorAvatar,
-                              width: 36,
-                              height: 36,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.person, size: 18)),
-                        )
-                      : const Icon(Icons.person_rounded, size: 18),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        authorName,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
+          InkWell(
+            onTap: authorId.isNotEmpty
+                ? () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => UserManagementPage(
+                          targetUserId: authorId,
+                          targetClientType: authorClientType,
                         ),
                       ),
-                      if (mediaTitle.isNotEmpty)
+                    );
+                  }
+                : null,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: colorScheme.surfaceContainer,
+                    child: authorAvatar != null && authorAvatar.isNotEmpty
+                        ? ClipOval(
+                            child: Image.network(authorAvatar,
+                                width: 36,
+                                height: 36,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) =>
+                                    const Icon(Icons.person, size: 18)),
+                          )
+                        : const Icon(Icons.person_rounded, size: 18),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          '$mediaTitle ${mediaType.isNotEmpty ? "($mediaType)" : ""}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            fontSize: 12,
+                          authorName,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                    ],
+                        if (mediaTitle.isNotEmpty)
+                          Text(
+                            '$mediaTitle ${mediaType.isNotEmpty ? "($mediaType)" : ""}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: colorScheme.error.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.flag_rounded,
-                          size: 14, color: colorScheme.error),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$totalReports',
-                        style: TextStyle(
-                          color: colorScheme.error,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: colorScheme.error.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.flag_rounded,
+                            size: 14, color: colorScheme.error),
+                        const SizedBox(width: 4),
+                        Text(
+                          '$totalReports',
+                          style: TextStyle(
+                            color: colorScheme.error,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           const Divider(height: 24),
@@ -1072,89 +1092,236 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
           const Divider(height: 24),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (isResolving)
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+            child: isResolving
+                ? const Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                   )
-                else ...[
-                  OutlinedButton(
-                    onPressed: () => _resolveReport(
-                      commentId: commentId,
-                      reporterId: pendingReports.isNotEmpty
-                          ? (pendingReports.first['reporter_id']?.toString() ??
-                              '')
-                          : '',
-                      resolution: 'dismissed',
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (authorId.isNotEmpty) ...[
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => UserManagementPage(
+                                    targetUserId: authorId,
+                                    targetClientType: authorClientType,
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.shield_outlined, size: 15),
+                            label: const Text('User'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: colorScheme.primary,
+                              side: BorderSide(
+                                  color: colorScheme.primary.withOpacity(0.5)),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        OutlinedButton.icon(
+                          onPressed: () => _confirmDeleteReportedComment(
+                            commentId,
+                            pendingReports.isNotEmpty
+                                ? (pendingReports.first['reporter_id']
+                                        ?.toString() ??
+                                    '')
+                                : '',
+                          ),
+                          icon: const Icon(Icons.delete_outline_rounded,
+                              size: 15),
+                          label: const Text('Delete'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: colorScheme.error,
+                            side: BorderSide(
+                                color: colorScheme.error.withOpacity(0.5)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        OutlinedButton(
+                          onPressed: () => _resolveReport(
+                            commentId: commentId,
+                            reporterId: pendingReports.isNotEmpty
+                                ? (pendingReports.first['reporter_id']
+                                        ?.toString() ??
+                                    '')
+                                : '',
+                            resolution: 'dismissed',
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: colorScheme.onSurfaceVariant,
+                            side: BorderSide(
+                                color: colorScheme.outlineVariant),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text('Dismiss'),
+                        ),
+                        const SizedBox(width: 8),
+                        FilledButton(
+                          onPressed: () => _resolveReport(
+                            commentId: commentId,
+                            reporterId: pendingReports.isNotEmpty
+                                ? (pendingReports.first['reporter_id']
+                                        ?.toString() ??
+                                    '')
+                                : '',
+                            resolution: 'resolved',
+                          ),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.onPrimary,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 6),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text('Resolve'),
+                        ),
+                      ],
                     ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: colorScheme.onSurfaceVariant,
-                      side: BorderSide(color: colorScheme.outlineVariant),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text('Dismiss'),
                   ),
-                  const SizedBox(width: 10),
-                  FilledButton(
-                    onPressed: () => _resolveReport(
-                      commentId: commentId,
-                      reporterId: pendingReports.isNotEmpty
-                          ? (pendingReports.first['reporter_id']?.toString() ??
-                              '')
-                          : '',
-                      resolution: 'resolved',
-                    ),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: colorScheme.error,
-                      foregroundColor: colorScheme.onError,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text('Resolve'),
-                  ),
-                ],
-              ],
-            ),
           ),
         ],
       ),
     );
   }
 
+  void _confirmDeleteReportedComment(int commentId, String? reporterId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: AnymeXContainer(
+            padding: const EdgeInsets.all(20),
+            radius: 20,
+            color: colorScheme.surface,
+            border:
+                Border.all(color: colorScheme.error.withOpacity(0.3)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    AnymeXContainer(
+                      padding: const EdgeInsets.all(8),
+                      radius: 10,
+                      color: colorScheme.error.withOpacity(0.12),
+                      child: Icon(Icons.delete_forever_rounded,
+                          color: colorScheme.error, size: 22),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: AnymeXText(
+                        'Delete Reported Comment',
+                        variant: TextVariant.bold,
+                        size: 16,
+                        color: colorScheme.error,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                AnymeXText(
+                  'Are you sure you want to delete this comment? It will be removed permanently and the report will be resolved.',
+                  variant: TextVariant.regular,
+                  size: 13,
+                  color: colorScheme.onSurfaceVariant,
+                  maxLines: 5,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: AnymeXText('Cancel',
+                          color: colorScheme.onSurfaceVariant),
+                    ),
+                    const SizedBox(width: 8),
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: colorScheme.error,
+                        foregroundColor: colorScheme.onError,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _resolveReport(
+                          commentId: commentId,
+                          reporterId: reporterId,
+                          resolution: 'resolved',
+                          deleteComment: true,
+                        );
+                      },
+                      child: const Text('Delete Comment'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _resolveReport({
     required int commentId,
-    required String reporterId,
+    String? reporterId,
     required String resolution,
+    bool deleteComment = false,
   }) async {
-    if (reporterId.isEmpty) {
-      snackBar('No reporter ID found for this report');
-      return;
-    }
-
     resolvingReports.add(commentId);
     try {
       final success = await commentumService.resolveReport(
         commentId: commentId,
-        reporterId: reporterId,
+        reporterId:
+            (reporterId != null && reporterId.isNotEmpty) ? reporterId : null,
         resolution: resolution,
+        deleteComment: deleteComment,
       );
 
       if (success) {
-        snackBar('Report $resolution successfully');
+        snackBar(deleteComment
+            ? 'Comment deleted and report resolved'
+            : 'Report $resolution successfully');
         await _loadReports();
       } else {
-        snackBar('Failed to resolve report');
+        snackBar(
+            'Failed to ${deleteComment ? "delete comment" : "resolve report"}');
       }
     } finally {
       resolvingReports.remove(commentId);
@@ -2061,6 +2228,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
       targetUserId: widget.targetUserId,
       reason: 'Role changed to $newRole',
       targetClientType: widget.targetClientType,
+      role: newRole,
     );
     if (success) {
       snackBar('Role updated successfully');

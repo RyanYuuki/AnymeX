@@ -251,46 +251,53 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
               // Header: Role Icon + Username + Breadcrumb + Time
               Row(
                 children: [
-                  if (hasRole) _buildRoleBadge(context, comment.userRole!),
-                  Flexible(
-                    child: AnymeXText(
-                      comment.username,
-                      overflow: TextOverflow.ellipsis,
-                      size: 13,
-                      variant: TextVariant.bold,
-                      color: hasRole
-                          ? _getRoleColor(comment.userRole!)
-                          : colorScheme.onSurface,
-                      maxLines: null,
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (hasRole) _buildRoleBadge(context, comment.userRole!),
+                        Flexible(
+                          child: AnymeXText(
+                            comment.username,
+                            overflow: TextOverflow.ellipsis,
+                            size: 13,
+                            variant: TextVariant.bold,
+                            color: hasRole
+                                ? _getRoleColor(comment.userRole!)
+                                : colorScheme.onSurface,
+                            maxLines: 1,
+                          ),
+                        ),
+                        if (showParentBreadcrumb) ...[
+                          Icon(Icons.arrow_right,
+                              size: 18, color: colorScheme.primary),
+                          Flexible(
+                            child: AnymeXText(
+                              parentComment.username,
+                              overflow: TextOverflow.ellipsis,
+                              size: 13,
+                              variant: TextVariant.bold,
+                              color: parentComment.userRole != null &&
+                                      parentComment.userRole != 'user' &&
+                                      parentComment.userRole!.isNotEmpty
+                                  ? _getRoleColor(parentComment.userRole!)
+                                  : colorScheme.primary,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(width: 6),
+                        AnymeXText(
+                          _formatTime(comment.createdAt),
+                          size: 11,
+                          color: colorScheme.onSurfaceVariant.opaque(0.6),
+                          maxLines: 1,
+                        ),
+                      ],
                     ),
-                  ),
-                  if (showParentBreadcrumb) ...[
-                    Icon(Icons.arrow_right,
-                        size: 18, color: colorScheme.primary),
-                    Flexible(
-                      child: AnymeXText(
-                        parentComment.username,
-                        overflow: TextOverflow.ellipsis,
-                        size: 13,
-                        variant: TextVariant.bold,
-                        color: parentComment.userRole != null &&
-                                parentComment.userRole != 'user' &&
-                                parentComment.userRole!.isNotEmpty
-                            ? _getRoleColor(parentComment.userRole!)
-                            : colorScheme.primary,
-                        maxLines: null,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(width: 6),
-                  AnymeXText(
-                    _formatTime(comment.createdAt),
-                    size: 11,
-                    color: colorScheme.onSurfaceVariant.opaque(0.6),
-                    maxLines: null,
                   ),
                   if (comment.tag.isNotEmpty && comment.tag != 'General') ...[
-                    const Spacer(),
+                    const SizedBox(width: 8),
                     AnymeXContainer(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
@@ -305,7 +312,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                         color: isSpoiler
                             ? colorScheme.error
                             : colorScheme.primary,
-                        maxLines: null,
+                        maxLines: 1,
                       ),
                     ),
                   ],

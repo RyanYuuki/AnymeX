@@ -645,6 +645,8 @@ class CommentSectionController extends GetxController
     String? severity,
     int? duration,
     bool shadowBan = false,
+    String? role,
+    String? targetClientType,
   }) async {
     try {
       final success = await commentsDB.manageUser(
@@ -654,6 +656,8 @@ class CommentSectionController extends GetxController
         severity: severity,
         duration: duration,
         shadowBan: shadowBan,
+        role: role,
+        targetClientType: targetClientType,
       );
 
       if (success) {
@@ -670,15 +674,17 @@ class CommentSectionController extends GetxController
 
   Future<bool> resolveReport({
     required int commentId,
-    required String reporterId,
+    String? reporterId,
     required String resolution,
     String? reviewNotes,
+    bool deleteComment = false,
   }) async {
     return await commentsDB.resolveReport(
       commentId: commentId,
       reporterId: reporterId,
       resolution: resolution,
       reviewNotes: reviewNotes,
+      deleteComment: deleteComment,
     );
   }
 

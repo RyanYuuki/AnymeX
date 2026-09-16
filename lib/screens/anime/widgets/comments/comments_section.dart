@@ -1451,55 +1451,65 @@ class _CommentSectionState extends State<CommentSection> {
             children: [
               Row(
                 children: [
-                  if (reply.userRole != null && reply.userRole != 'user') ...[
-                    _buildRoleBadge(context, reply.userRole!),
-                  ],
-                  Flexible(
-                    child: GestureDetector(
-                      onTap: () => _showUserProfileSheet(context, reply),
-                      child: AnymeXText(
-                        reply.username,
-                        color: reply.userRole != null && reply.userRole != 'user'
-                            ? _getRoleColor(reply.userRole!)
-                            : colorScheme.onSurface,
-                        size: 13,
-                        variant: TextVariant.bold,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: null,
-                      ),
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (reply.userRole != null &&
+                            reply.userRole != 'user') ...[
+                          _buildRoleBadge(context, reply.userRole!),
+                        ],
+                        Flexible(
+                          child: GestureDetector(
+                            onTap: () => _showUserProfileSheet(context, reply),
+                            child: AnymeXText(
+                              reply.username,
+                              color: reply.userRole != null &&
+                                      reply.userRole != 'user'
+                                  ? _getRoleColor(reply.userRole!)
+                                  : colorScheme.onSurface,
+                              size: 13,
+                              variant: TextVariant.bold,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.arrow_right,
+                            size: 18, color: colorScheme.primary),
+                        const SizedBox(width: 2),
+                        Flexible(
+                          child: AnymeXText(
+                            parentUsername,
+                            color: parentRole != null && parentRole != 'user'
+                                ? _getRoleColor(parentRole)
+                                : colorScheme.primary,
+                            size: 13,
+                            variant: TextVariant.bold,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                        if (reply.edited == true) ...[
+                          const SizedBox(width: 4),
+                          AnymeXText(
+                            '(edited)',
+                            color: colorScheme.onSurfaceVariant.opaque(0.6),
+                            size: 10,
+                            fontStyle: FontStyle.italic,
+                            maxLines: 1,
+                          ),
+                        ],
+                        if (isLocked) ...[
+                          const SizedBox(width: 4),
+                          Icon(Icons.lock_rounded,
+                              size: 11, color: colorScheme.error),
+                        ],
+                      ],
                     ),
                   ),
-                  Icon(Icons.arrow_right, size: 18, color: colorScheme.primary),
-                  const SizedBox(width: 2),
-                  Flexible(
-                    child: AnymeXText(
-                      parentUsername,
-                      color: parentRole != null && parentRole != 'user'
-                          ? _getRoleColor(parentRole)
-                          : colorScheme.primary,
-                      size: 13,
-                      variant: TextVariant.bold,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: null,
-                    ),
-                  ),
-                  if (reply.edited == true) ...[
-                    const SizedBox(width: 4),
-                    AnymeXText(
-                      '(edited)',
-                      color: colorScheme.onSurfaceVariant.opaque(0.6),
-                      size: 10,
-                      fontStyle: FontStyle.italic,
-                      maxLines: null,
-                    ),
-                  ],
-                  if (isLocked) ...[
-                    const SizedBox(width: 4),
-                    Icon(Icons.lock_rounded,
-                        size: 11, color: colorScheme.error),
-                  ],
                   if (reply.tag.isNotEmpty && reply.tag != 'General') ...[
-                    const Spacer(),
+                    const SizedBox(width: 8),
                     _buildTag(context, reply.tag),
                   ],
                 ],
@@ -1796,43 +1806,50 @@ class _CommentSectionState extends State<CommentSection> {
             children: [
               Row(
                 children: [
-                  if (comment.userRole != null &&
-                      comment.userRole != 'user') ...[
-                    _buildRoleBadge(context, comment.userRole!),
-                  ],
-                  Flexible(
-                    child: GestureDetector(
-                      onTap: () => _showUserProfileSheet(context, comment),
-                      child: AnymeXText(
-                        comment.username,
-                        color: comment.userRole != null &&
-                                comment.userRole != 'user'
-                            ? _getRoleColor(comment.userRole!)
-                            : colorScheme.onSurface,
-                        size: depth == 0 ? 14 : 13,
-                        variant: TextVariant.bold,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: null,
-                      ),
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (comment.userRole != null &&
+                            comment.userRole != 'user') ...[
+                          _buildRoleBadge(context, comment.userRole!),
+                        ],
+                        Flexible(
+                          child: GestureDetector(
+                            onTap: () => _showUserProfileSheet(context, comment),
+                            child: AnymeXText(
+                              comment.username,
+                              color: comment.userRole != null &&
+                                      comment.userRole != 'user'
+                                  ? _getRoleColor(comment.userRole!)
+                                  : colorScheme.onSurface,
+                              size: depth == 0 ? 14 : 13,
+                              variant: TextVariant.bold,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                        if (comment.edited == true) ...[
+                          const SizedBox(width: 4),
+                          AnymeXText(
+                            '(edited)',
+                            color: colorScheme.onSurfaceVariant.opaque(0.6),
+                            size: 10,
+                            fontStyle: FontStyle.italic,
+                            maxLines: 1,
+                          ),
+                        ],
+                        if (isLocked) ...[
+                          const SizedBox(width: 4),
+                          Icon(Icons.lock_rounded,
+                              size: 12, color: colorScheme.error),
+                        ],
+                      ],
                     ),
                   ),
-                  if (comment.edited == true) ...[
-                    const SizedBox(width: 4),
-                    AnymeXText(
-                      '(edited)',
-                      color: colorScheme.onSurfaceVariant.opaque(0.6),
-                      size: 10,
-                      fontStyle: FontStyle.italic,
-                      maxLines: null,
-                    ),
-                  ],
-                  if (isLocked) ...[
-                    const SizedBox(width: 4),
-                    Icon(Icons.lock_rounded,
-                        size: 12, color: colorScheme.error),
-                  ],
                   if (comment.tag.isNotEmpty && comment.tag != 'General') ...[
-                    const Spacer(),
+                    const SizedBox(width: 8),
                     _buildTag(context, comment.tag),
                   ],
                 ],

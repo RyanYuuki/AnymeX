@@ -3,6 +3,8 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -265,117 +267,187 @@ class _SettingsCommentsState extends State<SettingsComments> {
     );
   }
 
-  void _showAboutDialog() {
+  void _showThemedDialog({
+    required String title,
+    required IconData icon,
+    required Widget content,
+    String buttonText = 'Close',
+  }) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('About Commentum v2'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Commentum v2 is an advanced comment system that provides:'),
-            SizedBox(height: 8),
-            BulletPoint(text: 'Real-time commenting with nested replies'),
-            BulletPoint(text: 'Advanced moderation tools'),
-            BulletPoint(
-                text:
-                    'User role management (User, Moderator, Admin, Super Admin)'),
-            BulletPoint(text: 'Content reporting and safety features'),
-            BulletPoint(text: 'Voting system with upvotes/downvotes'),
-            BulletPoint(
-                text: 'Cross-platform support (AniList, MyAnimeList, SIMKL)'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+      builder: (context) {
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: AnymeXContainer(
+            padding: const EdgeInsets.all(20),
+            radius: 20,
+            color: colorScheme.surface,
+            border:
+                Border.all(color: colorScheme.outlineVariant.withOpacity(0.3)),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    AnymeXContainer(
+                      padding: const EdgeInsets.all(8),
+                      radius: 10,
+                      color: colorScheme.primary.withOpacity(0.12),
+                      child: Icon(icon, color: colorScheme.primary, size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: AnymeXText(
+                        title,
+                        variant: TextVariant.bold,
+                        size: 17,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: content,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: AnymeXText(
+                      buttonText,
+                      variant: TextVariant.semiBold,
+                      color: colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
+        );
+      },
+    );
+  }
+
+  void _showAboutDialog() {
+    _showThemedDialog(
+      title: 'About Commentum v2',
+      icon: Icons.info_outline,
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnymeXText(
+            'Commentum v2 is an advanced comment system that provides:',
+            variant: TextVariant.semiBold,
+            size: 14,
+          ),
+          SizedBox(height: 8),
+          BulletPoint(text: 'Real-time commenting with nested replies'),
+          BulletPoint(text: 'Advanced moderation tools'),
+          BulletPoint(
+              text:
+                  'User role management (User, Moderator, Admin, Super Admin)'),
+          BulletPoint(text: 'Content reporting and safety features'),
+          BulletPoint(text: 'Voting system with upvotes/downvotes'),
+          BulletPoint(
+              text: 'Cross-platform support (AniList, MyAnimeList, SIMKL)'),
         ],
       ),
     );
   }
 
   void _showMarkdownGuide() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Markdown Guide'),
-        content: const SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                  'You can use Discord-style markdown to format your comments:',
-                  style: TextStyle(fontSize: 12, color: Colors.grey)),
-              SizedBox(height: 12),
-              _MarkdownExample(
-                syntax: '**bold text**',
-                label: 'Bold',
-                example: 'bold text',
-              ),
-              _MarkdownExample(
-                syntax: '*italic text*',
-                label: 'Italic',
-                example: 'italic text',
-              ),
-              _MarkdownExample(
-                syntax: '***bold italic***',
-                label: 'Bold + Italic',
-                example: 'bold italic',
-              ),
-              _MarkdownExample(
-                syntax: '~~strikethrough~~',
-                label: 'Strikethrough',
-                example: 'strikethrough',
-              ),
-              _MarkdownExample(
-                syntax: '`inline code`',
-                label: 'Inline Code',
-                example: 'inline code',
-              ),
-              _MarkdownExample(
-                syntax: '||spoiler text||',
-                label: 'Spoiler (tap to reveal)',
-                example: '|||||||||',
-                isSpoiler: true,
-              ),
-              _MarkdownExample(
-                syntax: '> blockquote',
-                label: 'Blockquote',
-                example: 'blockquote',
-              ),
-              _MarkdownExample(
-                syntax: '@username',
-                label: 'Mention',
-                example: '@username',
-              ),
-              _MarkdownExample(
-                syntax: 'https://example.com',
-                label: 'Link (auto-detected)',
-                example: 'https://example.com',
-              ),
-              _MarkdownExample(
-                syntax: 'https://example.com/image.png',
-                label: 'Image (shows thumbnail)',
-                example: '🖼 image',
-              ),
-              SizedBox(height: 12),
-              Text(
-                  'Tip: You can combine these! e.g. **bold and *italic* together**',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.grey)),
-            ],
+    _showThemedDialog(
+      title: 'Markdown Guide',
+      icon: Icons.code_outlined,
+      buttonText: 'Got it',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnymeXText(
+            'You can use Discord-style markdown to format your comments:',
+            variant: TextVariant.regular,
+            size: 12,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Got it'),
+          const SizedBox(height: 12),
+          const _MarkdownExample(
+            syntax: '**bold text**',
+            label: 'Bold',
+            example: 'bold text',
+          ),
+          const _MarkdownExample(
+            syntax: '*italic text*',
+            label: 'Italic',
+            example: 'italic text',
+          ),
+          const _MarkdownExample(
+            syntax: '***bold italic***',
+            label: 'Bold + Italic',
+            example: 'bold italic',
+          ),
+          const _MarkdownExample(
+            syntax: '~~strikethrough~~',
+            label: 'Strikethrough',
+            example: 'strikethrough',
+          ),
+          const _MarkdownExample(
+            syntax: '`inline code`',
+            label: 'Inline Code',
+            example: 'inline code',
+          ),
+          const _MarkdownExample(
+            syntax: '||spoiler text||',
+            label: 'Spoiler (tap to reveal)',
+            example: '|||||||||',
+            isSpoiler: true,
+          ),
+          const _MarkdownExample(
+            syntax: '> blockquote',
+            label: 'Blockquote',
+            example: 'blockquote',
+          ),
+          const _MarkdownExample(
+            syntax: '@username',
+            label: 'Mention',
+            example: '@username',
+          ),
+          const _MarkdownExample(
+            syntax: 'https://example.com',
+            label: 'Link (auto-detected)',
+            example: 'https://example.com',
+          ),
+          const _MarkdownExample(
+            syntax: 'https://example.com/image.png',
+            label: 'Image (shows thumbnail)',
+            example: '🖼 image',
+          ),
+          const SizedBox(height: 12),
+          AnymeXText(
+            'Tip: You can combine these! e.g. **bold and *italic* together**',
+            variant: TextVariant.regular,
+            size: 12,
+            fontStyle: FontStyle.italic,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ],
       ),
@@ -383,74 +455,74 @@ class _SettingsCommentsState extends State<SettingsComments> {
   }
 
   void _showHelpDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Help & Support'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('How to use the comment system:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            BulletPoint(
-                text:
-                    'Log in with your AniList, MyAnimeList, or SIMKL account'),
-            BulletPoint(
-                text: 'Comments are automatically linked to your account'),
-            BulletPoint(text: 'You can edit or delete your own comments'),
-            BulletPoint(text: 'Vote on comments you like or dislike'),
-            BulletPoint(text: 'Report inappropriate content to moderators'),
-            SizedBox(height: 12),
-            Text('Need help?', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text(
-                '• Contact moderators for content issues\n• Report bugs through the app settings\n• Join our Discord community for support'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+    _showThemedDialog(
+      title: 'Help & Support',
+      icon: Icons.help_outline,
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnymeXText(
+            'How to use the comment system:',
+            variant: TextVariant.bold,
+            size: 14,
           ),
+          SizedBox(height: 8),
+          BulletPoint(
+              text:
+                  'Log in with your AniList, MyAnimeList, or SIMKL account'),
+          BulletPoint(
+              text: 'Comments are automatically linked to your account'),
+          BulletPoint(text: 'You can edit or delete your own comments'),
+          BulletPoint(text: 'Vote on comments you like or dislike'),
+          BulletPoint(text: 'Report inappropriate content to moderators'),
+          SizedBox(height: 16),
+          AnymeXText(
+            'Need help?',
+            variant: TextVariant.bold,
+            size: 14,
+          ),
+          SizedBox(height: 6),
+          BulletPoint(text: 'Contact moderators for content issues'),
+          BulletPoint(text: 'Report bugs through the app settings'),
+          BulletPoint(text: 'Join our Discord community for support'),
         ],
       ),
     );
   }
 
   void _showPrivacyDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Privacy & Safety'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Your privacy is important:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            BulletPoint(
-                text: 'Only your username and avatar are shown publicly'),
-            BulletPoint(text: 'Your personal information is never shared'),
-            BulletPoint(
-                text:
-                    'Comments can be deleted but may be retained for moderation'),
-            BulletPoint(text: 'Reported content is reviewed by moderators'),
-            SizedBox(height: 12),
-            Text('Safety features:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            BulletPoint(text: 'Content filtering and moderation'),
-            BulletPoint(text: 'User reporting system'),
-            BulletPoint(text: 'Ban and warning system for violations'),
-            BulletPoint(text: 'Shadow banning for repeat offenders'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+    _showThemedDialog(
+      title: 'Privacy & Safety',
+      icon: Icons.privacy_tip_outlined,
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnymeXText(
+            'Your privacy is important:',
+            variant: TextVariant.bold,
+            size: 14,
           ),
+          SizedBox(height: 8),
+          BulletPoint(
+              text: 'Only your username and avatar are shown publicly'),
+          BulletPoint(text: 'Your personal information is never shared'),
+          BulletPoint(
+              text:
+                  'Comments can be deleted but may be retained for moderation'),
+          BulletPoint(text: 'Reported content is reviewed by moderators'),
+          SizedBox(height: 16),
+          AnymeXText(
+            'Safety features:',
+            variant: TextVariant.bold,
+            size: 14,
+          ),
+          SizedBox(height: 6),
+          BulletPoint(text: 'Content filtering and moderation'),
+          BulletPoint(text: 'User reporting system'),
+          BulletPoint(text: 'Ban and warning system for violations'),
+          BulletPoint(text: 'Shadow banning for repeat offenders'),
         ],
       ),
     );
@@ -464,13 +536,30 @@ class BulletPoint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+      padding: const EdgeInsets.only(left: 4.0, top: 6.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('• '),
-          Expanded(child: Text(text)),
+          Container(
+            margin: const EdgeInsets.only(top: 6, right: 8),
+            width: 5,
+            height: 5,
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
+              shape: BoxShape.circle,
+            ),
+          ),
+          Expanded(
+            child: AnymeXText(
+              text,
+              variant: TextVariant.regular,
+              size: 13,
+              color: colorScheme.onSurface,
+              maxLines: 4,
+            ),
+          ),
         ],
       ),
     );
@@ -500,31 +589,27 @@ class _MarkdownExample extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
+              AnymeXContainer(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
+                radius: 6,
+                color: colorScheme.primaryContainer,
+                child: AnymeXText(
                   label,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onPrimaryContainer,
-                  ),
+                  variant: TextVariant.bold,
+                  size: 11,
+                  color: colorScheme.onPrimaryContainer,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          Container(
+          const SizedBox(height: 5),
+          AnymeXContainer(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(8),
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            radius: 8,
+            color: colorScheme.surfaceContainerHighest.withOpacity(0.4),
+            border:
+                Border.all(color: colorScheme.outlineVariant.withOpacity(0.3)),
             child: SelectableText(
               syntax,
               style: TextStyle(

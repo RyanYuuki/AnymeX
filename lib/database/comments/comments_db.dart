@@ -276,9 +276,10 @@ class CommentsDatabase {
 
   Future<bool> resolveReport({
     required int commentId,
-    required String reporterId,
+    String? reporterId,
     required String resolution,
     String? reviewNotes,
+    bool deleteComment = false,
   }) async {
     try {
       log("Resolving report for comment $commentId: $resolution");
@@ -287,6 +288,7 @@ class CommentsDatabase {
         reporterId: reporterId,
         resolution: resolution,
         reviewNotes: reviewNotes,
+        deleteComment: deleteComment,
       );
       if (success) {
         snackBar('Report resolved successfully');
@@ -443,6 +445,8 @@ class CommentsDatabase {
     String? severity,
     int? duration,
     bool shadowBan = false,
+    String? role,
+    String? targetClientType,
   }) async {
     try {
       log("Managing user: $targetUserId, action: $action");
@@ -453,6 +457,8 @@ class CommentsDatabase {
         severity: severity,
         duration: duration,
         shadowBan: shadowBan,
+        role: role,
+        targetClientType: targetClientType,
       );
 
       if (success) {
