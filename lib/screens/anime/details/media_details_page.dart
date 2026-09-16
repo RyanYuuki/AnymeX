@@ -7,7 +7,7 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:anymex/screens/anime/details/widgets/media_stats_section.dart';
 import 'package:anymex/screens/anime/details/widgets/media_characters_section.dart';
 import 'package:anymex/screens/anime/details/widgets/media_quick_actions.dart';
-import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
+import 'package:anymex/screens/anime/widgets/comments/media_comments_page.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/manga/widgets/chapter_section.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
@@ -85,6 +85,15 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   }
 
   void _onTabSelected(int index) {
+    if (index == 2) {
+      navigate(() => MediaCommentsPage(
+            media: controller.media.value,
+            initialProgress: controller.mediaProgress.value,
+            scrollToCommentId: widget.scrollToCommentId,
+          ));
+      return;
+    }
+
     if (controller.selectedPage.value == index) return;
     controller.selectedPage.value = index;
     _isAnimatingPage = true;
@@ -425,33 +434,67 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   }
 
   Widget _buildCommentsTab(BuildContext context) {
-    return Obx(() {
-      if (controller.isLoading.value) {
-        return const Center(
-          child: Padding(
-            padding: EdgeInsets.all(40),
-            child: ExpressiveLoadingIndicator(),
-          ),
-        );
-      }
+    final colors = context.colors;
 
-      return CustomScrollView(
-        key: const PageStorageKey<String>('Comments'),
-        physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics()),
-        slivers: [
-          SliverToBoxAdapter(
-            child: Center(
-              child: CommentSection(
-                media: controller.media.value,
-                scrollToCommentId: widget.scrollToCommentId,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 36.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(22),
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                HugeIcons.strokeRoundedComment01,
+                size: 44,
+                color: colors.primary,
               ),
             ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 250)),
-        ],
-      );
-    });
+            const SizedBox(height: 18),
+            Text(
+              'Community Comments',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colors.onSurface,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Join discussions, share your reactions, and see episode thoughts.',
+              style: TextStyle(
+                fontSize: 13,
+                color: colors.onSurfaceVariant.opaque(0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () {
+                navigate(() => MediaCommentsPage(
+                      media: controller.media.value,
+                      initialProgress: controller.mediaProgress.value,
+                      scrollToCommentId: widget.scrollToCommentId,
+                    ));
+              },
+              icon: const Icon(Icons.forum_rounded, size: 18),
+              label: const Text('View All Comments'),
+              style: FilledButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildContinueButton(BuildContext context) {

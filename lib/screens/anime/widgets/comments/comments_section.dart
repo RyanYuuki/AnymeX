@@ -13,6 +13,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/comments_replies_sheet.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,11 +25,13 @@ import 'package:anymex/screens/profile/user_profile_page.dart';
 class CommentSection extends StatefulWidget {
   final Media media;
   final String? scrollToCommentId;
+  final bool showInlineInput;
 
   const CommentSection({
     super.key,
     required this.media,
     this.scrollToCommentId,
+    this.showInlineInput = true,
   });
 
   @override
@@ -299,45 +302,47 @@ class _CommentSectionState extends State<CommentSection> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(context, controller),
-            if (controller.isLoggedIn)
-              _buildCommentInput(context, controller)
-            else
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutCubic,
-                margin: const EdgeInsets.all(16),
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color:
-                      colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: controller.commentFocusNode.hasFocus
-                        ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                        : colorScheme.outlineVariant
-                            .opaque(0.3, iReallyMeanIt: true),
-                    width: 1.5,
+            if (widget.showInlineInput) ...[
+              if (controller.isLoggedIn)
+                _buildCommentInput(context, controller)
+              else
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic,
+                  margin: const EdgeInsets.all(16),
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainerLowest
+                        .withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: controller.commentFocusNode.hasFocus
+                          ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                          : colorScheme.outlineVariant
+                              .opaque(0.3, iReallyMeanIt: true),
+                      width: 1.5,
+                    ),
+                    boxShadow: controller.commentFocusNode.hasFocus
+                        ? [
+                            BoxShadow(
+                              color: colorScheme.primary
+                                 .opaque(0.1, iReallyMeanIt: true),
+                              blurRadius: 16,
+                              offset: const Offset(0, 4),
+                            ),
+                          ]
+                        : null,
                   ),
-                  boxShadow: controller.commentFocusNode.hasFocus
-                      ? [
-                          BoxShadow(
-                            color: colorScheme.primary
-                                .opaque(0.1, iReallyMeanIt: true),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Text(
-                  'You need to be logged in to comment.',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w500,
+                  child: Text(
+                    'You need to be logged in to comment.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-              ),
+            ],
             const SizedBox(height: 8),
             _buildCommentsList(context, controller),
           ],
@@ -1132,6 +1137,48 @@ class _CommentSectionState extends State<CommentSection> {
 
     if (replies.isEmpty) return const SizedBox.shrink();
 
+    if (depth == 0) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 46, top: 4),
+        child: GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            CommentsRepliesSheet.show(
+              context,
+              rootComment: comment,
+              controller: controller,
+            );
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 16,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '$totalReplies ${totalReplies == 1 ? "reply" : "replies"}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     if (isCollapsed) {
       return Padding(
         padding: const EdgeInsets.only(left: 14, top: 8),
@@ -1783,7 +1830,15 @@ class _CommentSectionState extends State<CommentSection> {
                         const SizedBox(width: 12),
                         if (!effectiveLocked) ...[
                           GestureDetector(
-                            onTap: () => controller.toggleReply(comment.id),
+                            onTap: () {
+                              if (!widget.showInlineInput) {
+                                HapticFeedback.lightImpact();
+                                controller.setReplyTarget(comment);
+                                controller.commentFocusNode.requestFocus();
+                              } else {
+                                controller.toggleReply(comment.id);
+                              }
+                            },
                             child: Text(
                               'Reply',
                               style: TextStyle(

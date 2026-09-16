@@ -16,8 +16,9 @@ import 'package:get/get.dart';
 class CommentSectionController extends GetxController
     with GetTickerProviderStateMixin {
   final Media media;
+  int initialProgress;
 
-  CommentSectionController({required this.media});
+  CommentSectionController({required this.media, this.initialProgress = 0});
 
   final profile = serviceHandler.onlineService.profileData.value;
   final commentsDB = CommentsDatabase();
@@ -25,9 +26,17 @@ class CommentSectionController extends GetxController
 
   bool get isLoggedIn => serviceHandler.onlineService.isLoggedIn.value;
 
+  static String getAutoProgressTag(Media media, int progress) {
+    if (media.mediaType == ItemType.anime) {
+      return 'Episode ${progress > 0 ? progress : 1}';
+    } else {
+      return 'Chapter ${progress > 0 ? progress : 1}';
+    }
+  }
+
   final TextEditingController commentController = TextEditingController();
   late Rx<TextEditingController> tagController = Rx(TextEditingController(
-      text: media.mediaType != ItemType.anime ? 'Chapter 1' : 'Episode 1'));
+      text: getAutoProgressTag(media, initialProgress)));
   final Rx<String> tag = ''.obs;
   final Rx<String> commentContent = ''.obs;
   final FocusNode commentFocusNode = FocusNode();
@@ -48,6 +57,24 @@ class CommentSectionController extends GetxController
   final RxSet<String> votingComments = <String>{}.obs;
   final RxString currentSort = 'newest'.obs;
   final RxString replyingToCommentId = ''.obs;
+  final Rxn<Comment> activeReplyComment = Rxn<Comment>();
+
+  void setReplyTarget(Comment comment) {
+    activeReplyComment.value = comment;
+    replyingToCommentId.value = comment.id;
+  }
+
+  void clearReplyTarget() {
+    activeReplyComment.value = null;
+    replyingToCommentId.value = '';
+  }
+
+  void updateProgress(int progress) {
+    initialProgress = progress;
+    final newTag = getAutoProgressTag(media, progress);
+    tagController.value.text = newTag;
+    tag.value = newTag;
+  }
 
   final RxBool isModerator = false.obs;
   final RxBool isAdmin = false.obs;
@@ -370,10 +397,24 @@ class CommentSectionController extends GetxController
     }
   }
 
+  Future<void> submitCurrentText() async {
+    final text = commentController.text.trim();
+    if (text.isEmpty || isSubmitting.value) return;
+
+    if (activeReplyComment.value != null) {
+      final parent = activeReplyComment.value!;
+      await addReply(parent, text);
+      clearInputs();
+    } else {
+      await addComment();
+    }
+  }
+
   void clearInputs() {
     commentController.clear();
     isInputExpanded.value = false;
     replyingToCommentId.value = '';
+    activeReplyComment.value = null;
     expandController.reverse();
     fadeController.reverse();
     commentFocusNode.unfocus();

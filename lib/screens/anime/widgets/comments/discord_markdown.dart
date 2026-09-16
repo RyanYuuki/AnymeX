@@ -784,11 +784,13 @@ class MarkdownFormattingToolbar extends StatelessWidget {
     required this.controller,
     required this.colorScheme,
     this.onSpoilerTap,
+    this.onGifTap,
   });
 
   final TextEditingController controller;
   final ColorScheme colorScheme;
   final VoidCallback? onSpoilerTap;
+  final VoidCallback? onGifTap;
 
   @override
   Widget build(BuildContext context) {
@@ -871,6 +873,43 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               colorScheme: colorScheme,
               onTap: onSpoilerTap ?? () => _wrapSelection('||', '||'),
             ),
+            const SizedBox(width: 4),
+            _ToolbarButton(
+              label: 'Quote',
+              child: Text(
+                '“ ”',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              colorScheme: colorScheme,
+              onTap: () => _wrapSelection('> ', ''),
+            ),
+            if (onGifTap != null) ...[
+              const SizedBox(width: 4),
+              _ToolbarButton(
+                label: 'GIF',
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'GIF',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                ),
+                colorScheme: colorScheme,
+                onTap: onGifTap!,
+              ),
+            ],
             const SizedBox(width: 4),
             _ToolbarButton(
               label: 'Image URL',
