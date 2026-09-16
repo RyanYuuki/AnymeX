@@ -96,7 +96,10 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
-        final List<dynamic> data = decoded['data'] ?? [];
+        final rawData = decoded['data'];
+        final List<dynamic> data = (rawData is Map
+            ? rawData['data']
+            : (rawData is List ? rawData : [])) ?? [];
         final parsed = <Map<String, String>>[];
 
         for (final item in data) {
@@ -179,7 +182,10 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
-        final List<dynamic> data = decoded['data'] ?? [];
+        final rawData = decoded['data'];
+        final List<dynamic> data = (rawData is Map
+            ? rawData['data']
+            : (rawData is List ? rawData : [])) ?? [];
         final parsed = <Map<String, String>>[];
 
         for (final item in data) {

@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -373,41 +374,69 @@ class DiscordMarkdown extends StatelessWidget {
     r'(https?:\/\/[^\s<>"{}|\\^`\[\]]+)',
   );
 
-  static bool _isImageUrl(String url) {
+  static String normalizeImageUrl(String rawUrl) {
+    var url = rawUrl.trim();
+    url = url.replaceAll(RegExp(r'[\.,\)\;\"\'\>]+$'), '');
+
+    // Convert Giphy webpage link to direct gif
+    final giphyMatch = RegExp(r'giphy\.com\/gifs\/(?:.*-)?([a-zA-Z0-9]+)', caseSensitive: false).firstMatch(url);
+    if (giphyMatch != null && !url.contains('/media/')) {
+      final id = giphyMatch.group(1);
+      if (id != null) return 'https://media.giphy.com/media/$id/giphy.gif';
+    }
+
+    // Convert Tenor webpage link to direct gif
+    final tenorMatch = RegExp(r'tenor\.com\/view\/(?:.*-)?(?:gif-)?([0-9]+)', caseSensitive: false).firstMatch(url);
+    if (tenorMatch != null && !url.contains('media.tenor.com') && !url.contains('c.tenor.com')) {
+      final id = tenorMatch.group(1);
+      if (id != null) return 'https://media.tenor.com/$id/tenor.gif';
+    }
+
+    return url;
+  }
+
+  static bool _isImageUrl(String rawUrl) {
+    var url = rawUrl.trim();
+    url = url.replaceAll(RegExp(r'[\.,\)\;\"\'\>]+$'), '');
     final lower = url.toLowerCase();
-    return lower.endsWith('.png') ||
-        lower.endsWith('.jpg') ||
-        lower.endsWith('.jpeg') ||
-        lower.endsWith('.gif') ||
-        lower.endsWith('.webp') ||
-        lower.endsWith('.webm') ||
-        lower.contains('.png?') ||
-        lower.contains('.jpg?') ||
-        lower.contains('.jpeg?') ||
-        lower.contains('.gif?') ||
-        lower.contains('.webp?') ||
-        lower.contains('giphy.com') ||
+
+    final hasImageExt = RegExp(
+      r'\.(?:png|jpg|jpeg|gif|webp|webm|bmp|svg)(?:\?.*)?$',
+      caseSensitive: false,
+    ).hasMatch(url);
+
+    if (hasImageExt) return true;
+
+    // Known GIF/image CDN hosts
+    return lower.contains('giphy.com') ||
         lower.contains('tenor.com') ||
-        lower.contains('media.tenor.co') ||
-        lower.contains('media.giphy.com') ||
+        lower.contains('media.tenor') ||
+        lower.contains('media.giphy') ||
         lower.contains('klipy.com') ||
+        lower.contains('media.klipy') ||
         lower.contains('catbox.moe') ||
         lower.contains('discordapp.com') ||
+        lower.contains('discordapp.net') ||
+        lower.contains('cdn.discordapp') ||
         lower.contains('wikia.nocookie.net') ||
-        lower.contains('imgur.com');
+        lower.contains('imgur.com') ||
+        lower.contains('i.imgur.com') ||
+        lower.contains('c.tenor.com');
   }
 
   static CommentMediaImage? _parseImgTag(String tagAttributes) {
     final srcMatch = RegExp(
-      r'src=["'']{1,2}([^"''\s>]+)["'']{1,2}',
+      r'src=["\']{1,2}([^"\'\s>]+)["\']{1,2}',
       caseSensitive: false,
     ).firstMatch(tagAttributes);
 
     if (srcMatch == null) return null;
-    var url = srcMatch.group(1)?.trim();
-    if (url == null || url.isEmpty || (!url.startsWith('http://') && !url.startsWith('https://'))) {
+    var rawUrl = srcMatch.group(1)?.trim();
+    if (rawUrl == null || rawUrl.isEmpty || (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://'))) {
       return null;
     }
+
+    final url = normalizeImageUrl(rawUrl);
 
     // Clean trailing slash from file extension if present (e.g. .jpg/ -> .jpg)
     if (url.endsWith('/') &&
@@ -910,16 +939,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                 onTap: onGifTap!,
               ),
             ],
-            const SizedBox(width: 4),
-            _ToolbarButton(
-              label: 'Image URL',
-              child: const Text(
-                '\u{1F5BC}',
-                style: TextStyle(fontSize: 16),
-              ),
-              colorScheme: colorScheme,
-              onTap: _insertImageTemplate,
-            ),
+
           ],
         ),
       ),

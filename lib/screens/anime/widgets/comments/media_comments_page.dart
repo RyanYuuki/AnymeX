@@ -27,6 +27,7 @@ class MediaCommentsPage extends StatefulWidget {
 
 class _MediaCommentsPageState extends State<MediaCommentsPage> {
   late CommentSectionController controller;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -46,6 +47,12 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
         tag: widget.media.uniqueId,
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -217,24 +224,40 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
           const SizedBox(width: 4),
         ],
       ),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
-        ),
-        slivers: [
-          SliverToBoxAdapter(
-            child: CommentSection(
-              media: widget.media,
-              scrollToCommentId: widget.scrollToCommentId,
-              showInlineInput: false,
+      // resizeToAvoidBottomInset pushes the body upward when the keyboard appears,
+      // which causes CommentInputBar (the last Column child) to naturally float
+      // above the keyboard without any manual inset math needed.
+      resizeToAvoidBottomInset: true,
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              // Dismiss keyboard when user scrolls down
+              keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
+              physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
+              child: Column(
+                children: [
+                  CommentSection(
+                    media: widget.media,
+                    scrollToCommentId: widget.scrollToCommentId,
+                    showInlineInput: false,
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+          // CommentInputBar is OUTSIDE the scrollable — resizeToAvoidBottomInset
+          // shrinks the Scaffold body so this widget always stays above the keyboard.
+          CommentInputBar(
+            controller: controller,
+            focusNode: controller.commentFocusNode,
+          ),
         ],
-      ),
-      bottomNavigationBar: CommentInputBar(
-        controller: controller,
-        focusNode: controller.commentFocusNode,
       ),
     );
   }

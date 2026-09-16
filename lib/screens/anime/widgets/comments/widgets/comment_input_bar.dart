@@ -78,8 +78,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
             !currentText.endsWith('\n')
         ? '\n'
         : '';
-    final formatted = '<img src="$url" width="auto" height="auto">';
-    controller.text = '$currentText$space$formatted\n';
+    controller.text = '$currentText$space$url\n';
     controller.selection =
         TextSelection.collapsed(offset: controller.text.length);
   }
@@ -223,6 +222,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 180),
                           curve: Curves.easeInOut,
+                          clipBehavior: Clip.antiAlias,
                           decoration: BoxDecoration(
                             color: colorScheme.surfaceContainerHighest
                                 .withValues(alpha: 0.32),
@@ -265,7 +265,16 @@ class _CommentInputBarState extends State<CommentInputBar> {
                                     .withValues(alpha: 0.55),
                                 fontSize: 14,
                               ),
+                              // Explicitly kill every Material border/fill variant
+                              // so nothing bleeds outside our AnimatedContainer corners
+                              filled: true,
+                              fillColor: Colors.transparent,
                               border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              focusedErrorBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
                               isDense: true,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,
@@ -276,6 +285,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                         ),
                       ),
                     ),
+
                     const SizedBox(width: 8),
 
                     // Sleek Modern Send Button
@@ -331,58 +341,60 @@ class _CommentInputBarState extends State<CommentInputBar> {
                 ),
               ),
 
-              // 3. Compact Formatting Toolbar & Locked Progress Tag
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
-                child: Row(
-                  children: [
-                    // Auto-Selected & Locked Progress Tag
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3.5),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: colorScheme.primary.withValues(alpha: 0.22),
-                          width: 1,
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            isAnime
-                                ? Icons.play_circle_outline_rounded
-                                : Icons.menu_book_rounded,
-                            size: 13,
-                            color: colorScheme.primary,
+              // 3. Compact Formatting Toolbar & Locked Progress Tag — only when focused
+              if (isFocused || hasText)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 0, 14, 8),
+                  child: Row(
+                    children: [
+                      // Auto-Selected & Locked Progress Tag
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3.5),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: colorScheme.primary.withValues(alpha: 0.22),
+                            width: 1,
                           ),
-                          const SizedBox(width: 4),
-                          Text(
-                            tagText,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isAnime
+                                  ? Icons.play_circle_outline_rounded
+                                  : Icons.menu_book_rounded,
+                              size: 13,
                               color: colorScheme.primary,
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 4),
+                            Text(
+                              tagText,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: colorScheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
+                      const SizedBox(width: 8),
 
-                    // Markdown Formatting Buttons (Bold, Italic, Strike, Code, Spoiler, Quote, GIF)
-                    Expanded(
-                      child: MarkdownFormattingToolbar(
-                        controller: _effectiveTextController,
-                        colorScheme: colorScheme,
-                        onGifTap: () => _openGifPicker(context),
+                      // Markdown Formatting Buttons (Bold, Italic, Strike, Code, Spoiler, Quote, GIF)
+                      Expanded(
+                        child: MarkdownFormattingToolbar(
+                          controller: _effectiveTextController,
+                          colorScheme: colorScheme,
+                          onGifTap: () => _openGifPicker(context),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+
             ],
           ),
         ),

@@ -396,16 +396,13 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final controller = widget.controller;
+    final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.85,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        builder: (ctx, scrollSheetController) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (ctx, scrollSheetController) {
           return Container(
             decoration: BoxDecoration(
               color: colorScheme.surface,
@@ -571,19 +568,21 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                   }),
                 ),
 
-                // Bottom Pinned Input Bar with dedicated sheet focus node
-                CommentInputBar(
-                  controller: controller,
-                  focusNode: _sheetFocusNode,
-                  onSubmitted: () {
-                    // Scroll to bottom or keep in view
-                  },
+                // Bottom Pinned Input Bar — floats above keyboard
+                Padding(
+                  padding: EdgeInsets.only(bottom: keyboardInset),
+                  child: CommentInputBar(
+                    controller: controller,
+                    focusNode: _sheetFocusNode,
+                    onSubmitted: () {
+                      // Scroll to bottom or keep in view
+                    },
+                  ),
                 ),
               ],
             ),
           );
         },
-      ),
     );
   }
 }
