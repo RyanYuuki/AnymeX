@@ -2104,98 +2104,113 @@ class _CommentSectionState extends State<CommentSection> {
       bool canModerate) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (ctx) {
         final colorScheme = Theme.of(context).colorScheme;
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnymeXContainer(
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                width: 40,
-                height: 4,
-                color: colorScheme.onSurfaceVariant.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(2),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 16),
+            child: AnymeXContainer(
+              borderRadius: BorderRadius.circular(24),
+              color: colorScheme.surfaceContainerHigh,
+              border: Border.all(
+                color: colorScheme.outlineVariant.withOpacity(0.2),
               ),
-              const SizedBox(height: 4),
-              _buildMenuOption(
-                icon: Icons.copy_rounded,
-                label: 'Copy',
-                onTap: () {
-                  Navigator.pop(ctx);
-                  Clipboard.setData(ClipboardData(text: comment.commentText));
-                  snackBar('Comment copied to clipboard');
-                },
-              ),
-              if (isOwnComment) ...[
-                const Divider(height: 1, indent: 24, endIndent: 24),
-                _buildMenuOption(
-                  icon: Icons.edit_outlined,
-                  label: 'Edit',
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _showEditDialog(context, comment, controller);
-                  },
-                ),
-                const Divider(height: 1, indent: 24, endIndent: 24),
-                _buildMenuOption(
-                  icon: Icons.delete_outline,
-                  label: 'Delete',
-                  isDestructive: true,
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _showDeleteDialog(context, comment, controller);
-                  },
-                ),
-              ],
-              if (!isOwnComment) ...[
-                const Divider(height: 1, indent: 24, endIndent: 24),
-                _buildMenuOption(
-                  icon: Icons.flag_outlined,
-                  label: 'Report',
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _showReportDialog(context, comment, controller);
-                  },
-                ),
-                const Divider(height: 1, indent: 24, endIndent: 24),
-                _buildMenuOption(
-                  icon: Icons.comment_outlined,
-                  label: 'User Comments',
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _showUserCommentsSheet(context, comment, controller);
-                  },
-                ),
-              ],
-              if (canModerate) ...[
-                const Divider(height: 1, indent: 24, endIndent: 24),
-                _buildMenuOption(
-                  icon: Icons.shield_outlined,
-                  label: 'Moderate',
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _showModerationSheet(context, comment, controller,
-                        isOwnComment: isOwnComment);
-                  },
-                ),
-                if (!isOwnComment) ...[
-                  const Divider(height: 1, indent: 24, endIndent: 24),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Center(
+                    child: AnymeXContainer(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      width: 36,
+                      height: 4,
+                      color: colorScheme.onSurfaceVariant.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
                   _buildMenuOption(
-                    icon: Icons.admin_panel_settings_outlined,
-                    label: 'User Actions',
+                    context: context,
+                    icon: Icons.copy_rounded,
+                    label: 'Copy Comment',
                     onTap: () {
                       Navigator.pop(ctx);
-                      _showUserManagementSheet(context, comment, controller);
+                      Clipboard.setData(ClipboardData(text: comment.commentText));
+                      snackBar('Comment copied to clipboard');
                     },
                   ),
+                  if (isOwnComment) ...[
+                    const SizedBox(height: 4),
+                    _buildMenuOption(
+                      context: context,
+                      icon: Icons.edit_outlined,
+                      label: 'Edit Comment',
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _showEditDialog(context, comment, controller);
+                      },
+                    ),
+                    const SizedBox(height: 4),
+                    _buildMenuOption(
+                      context: context,
+                      icon: Icons.delete_outline_rounded,
+                      label: 'Delete Comment',
+                      isDestructive: true,
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _showDeleteDialog(context, comment, controller);
+                      },
+                    ),
+                  ],
+                  if (!isOwnComment) ...[
+                    const SizedBox(height: 4),
+                    _buildMenuOption(
+                      context: context,
+                      icon: Icons.flag_outlined,
+                      label: 'Report Comment',
+                      isDestructive: true,
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _showReportDialog(context, comment, controller);
+                      },
+                    ),
+                  ],
+                  if (canModerate) ...[
+                    const SizedBox(height: 8),
+                    AnymeXContainer(
+                      height: 1,
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      color: colorScheme.outlineVariant.withOpacity(0.2),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildMenuOption(
+                      context: context,
+                      icon: Icons.shield_outlined,
+                      label: 'Moderate',
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        _showModerationSheet(context, comment, controller,
+                            isOwnComment: isOwnComment);
+                      },
+                    ),
+                    if (!isOwnComment) ...[
+                      const SizedBox(height: 4),
+                      _buildMenuOption(
+                        context: context,
+                        icon: Icons.admin_panel_settings_outlined,
+                        label: 'User Actions',
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _showUserManagementSheet(context, comment, controller);
+                        },
+                      ),
+                    ],
+                  ],
                 ],
-              ],
-              const SizedBox(height: 16),
-            ],
+              ),
+            ),
           ),
         );
       },
@@ -2203,30 +2218,61 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   Widget _buildMenuOption({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required VoidCallback onTap,
     bool isDestructive = false,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isDestructive ? colorScheme.error : colorScheme.onSurfaceVariant,
-        size: 22,
-      ),
-      title: AnymeXText(
-        label,
-        color: isDestructive ? colorScheme.error : colorScheme.onSurface,
-        size: 15,
-        style: const TextStyle(
-          fontWeight: FontWeight.w500,
+    final itemColor = isDestructive ? colorScheme.error : colorScheme.onSurface;
+    final iconColor = isDestructive ? colorScheme.error : colorScheme.primary;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: AnymeXContainer(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          borderRadius: BorderRadius.circular(14),
+          color: Colors.transparent,
+          child: Row(
+            children: [
+              AnymeXContainer(
+                width: 38,
+                height: 38,
+                borderRadius: BorderRadius.circular(10),
+                color: isDestructive
+                    ? colorScheme.error.withOpacity(0.12)
+                    : colorScheme.primary.withOpacity(0.1),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: iconColor,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: AnymeXText(
+                  label,
+                  color: itemColor,
+                  size: 14,
+                  variant: TextVariant.semiBold,
+                  maxLines: null,
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+              ),
+            ],
+          ),
         ),
-        maxLines: null,
       ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-      dense: true,
     );
   }
 
@@ -2234,65 +2280,170 @@ class _CommentSectionState extends State<CommentSection> {
       CommentSectionController controller) {
     final TextEditingController editController =
         TextEditingController(text: comment.commentText);
+    final colorScheme = Theme.of(context).colorScheme;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const AnymeXText('Edit Comment', maxLines: null),
-        content: TextField(
-          controller: editController,
-          maxLines: 5,
-          minLines: 1,
-          decoration: const InputDecoration(
-            hintText: 'Edit your comment...',
-            border: OutlineInputBorder(),
+      builder: (dialogCtx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        child: AnymeXContainer(
+          borderRadius: BorderRadius.circular(24),
+          color: colorScheme.surfaceContainerHigh,
+          border: Border.all(
+            color: colorScheme.outlineVariant.withOpacity(0.2),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  AnymeXContainer(
+                    width: 40,
+                    height: 40,
+                    borderRadius: BorderRadius.circular(12),
+                    color: colorScheme.primary.withOpacity(0.12),
+                    child: Center(
+                      child: Icon(Icons.edit_outlined,
+                          color: colorScheme.primary, size: 22),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: AnymeXText(
+                      'Edit Comment',
+                      size: 18,
+                      variant: TextVariant.bold,
+                      maxLines: null,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: editController,
+                maxLines: 5,
+                minLines: 2,
+                decoration: InputDecoration(
+                  hintText: 'Edit your comment...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogCtx),
+                    child: AnymeXText('Cancel',
+                        color: colorScheme.onSurfaceVariant, maxLines: null),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: () {
+                      if (editController.text.trim().isNotEmpty) {
+                        controller.editComment(comment, editController.text.trim());
+                        Navigator.pop(dialogCtx);
+                      }
+                    },
+                    style: FilledButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const AnymeXText('Save', maxLines: null),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const AnymeXText('Cancel', maxLines: null),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (editController.text.trim().isNotEmpty) {
-                controller.editComment(comment, editController.text.trim());
-                Navigator.pop(context);
-              }
-            },
-            child: const AnymeXText('Save', maxLines: null),
-          ),
-        ],
       ),
     );
   }
 
   void _showDeleteDialog(BuildContext context, Comment comment,
       CommentSectionController controller) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const AnymeXText('Delete Comment', maxLines: null),
-        content: const AnymeXText(
-            'Are you sure you want to delete this comment? This action cannot be undone.',
-            maxLines: null),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const AnymeXText('Cancel', maxLines: null),
+      builder: (dialogCtx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        child: AnymeXContainer(
+          borderRadius: BorderRadius.circular(24),
+          color: colorScheme.surfaceContainerHigh,
+          border: Border.all(
+            color: colorScheme.outlineVariant.withOpacity(0.2),
           ),
-          FilledButton(
-            onPressed: () {
-              controller.deleteComment(comment);
-              Navigator.pop(context);
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: context.colors.error,
-              foregroundColor: context.colors.onError,
-            ),
-            child: const AnymeXText('Delete', maxLines: null),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  AnymeXContainer(
+                    width: 40,
+                    height: 40,
+                    borderRadius: BorderRadius.circular(12),
+                    color: colorScheme.error.withOpacity(0.12),
+                    child: Center(
+                      child: Icon(Icons.delete_outline_rounded,
+                          color: colorScheme.error, size: 22),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: AnymeXText(
+                      'Delete Comment',
+                      size: 18,
+                      variant: TextVariant.bold,
+                      maxLines: null,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              AnymeXText(
+                'Are you sure you want to delete this comment? This action cannot be undone.',
+                color: colorScheme.onSurfaceVariant,
+                size: 14,
+                maxLines: null,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogCtx),
+                    child: AnymeXText('Cancel',
+                        color: colorScheme.onSurfaceVariant, maxLines: null),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: () {
+                      controller.deleteComment(comment);
+                      Navigator.pop(dialogCtx);
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colorScheme.error,
+                      foregroundColor: colorScheme.onError,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const AnymeXText('Delete', maxLines: null),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -2301,74 +2452,130 @@ class _CommentSectionState extends State<CommentSection> {
       CommentSectionController controller) {
     final TextEditingController reasonController = TextEditingController();
     final TextEditingController notesController = TextEditingController();
+    final colorScheme = Theme.of(context).colorScheme;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const AnymeXText('Report Comment', maxLines: null),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const AnymeXText('Please select a reason for reporting this comment:',
-                maxLines: null),
-            const SizedBox(height: 16),
-            DropdownButtonFormField<String>(
-              value:
-                  reasonController.text.isEmpty ? null : reasonController.text,
-              decoration: const InputDecoration(
-                labelText: 'Reason',
-                border: OutlineInputBorder(),
+      builder: (dialogCtx) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        child: AnymeXContainer(
+          borderRadius: BorderRadius.circular(24),
+          color: colorScheme.surfaceContainerHigh,
+          border: Border.all(
+            color: colorScheme.outlineVariant.withOpacity(0.2),
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  AnymeXContainer(
+                    width: 40,
+                    height: 40,
+                    borderRadius: BorderRadius.circular(12),
+                    color: colorScheme.error.withOpacity(0.12),
+                    child: Center(
+                      child: Icon(Icons.flag_outlined,
+                          color: colorScheme.error, size: 22),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: AnymeXText(
+                      'Report Comment',
+                      size: 18,
+                      variant: TextVariant.bold,
+                      maxLines: null,
+                    ),
+                  ),
+                ],
               ),
-              items: const [
-                DropdownMenuItem(
-                    value: 'spam', child: AnymeXText('Spam', maxLines: null)),
-                DropdownMenuItem(
-                    value: 'offensive',
-                    child: AnymeXText('Offensive', maxLines: null)),
-                DropdownMenuItem(
-                    value: 'harassment',
-                    child: AnymeXText('Harassment', maxLines: null)),
-                DropdownMenuItem(
-                    value: 'spoiler', child: AnymeXText('Spoiler', maxLines: null)),
-                DropdownMenuItem(
-                    value: 'nsfw', child: AnymeXText('NSFW', maxLines: null)),
-                DropdownMenuItem(
-                    value: 'off_topic',
-                    child: AnymeXText('Off-Topic', maxLines: null)),
-                DropdownMenuItem(
-                    value: 'other', child: AnymeXText('Other', maxLines: null)),
-              ],
-              onChanged: (value) {
-                reasonController.text = value ?? '';
-              },
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: notesController,
-              maxLines: 3,
-              decoration: const InputDecoration(
-                labelText: 'Additional notes (optional)',
-                border: OutlineInputBorder(),
+              const SizedBox(height: 14),
+              AnymeXText(
+                'Please select a reason for reporting this comment:',
+                color: colorScheme.onSurfaceVariant,
+                size: 14,
+                maxLines: null,
               ),
-            ),
-          ],
+              const SizedBox(height: 14),
+              DropdownButtonFormField<String>(
+                value:
+                    reasonController.text.isEmpty ? null : reasonController.text,
+                decoration: InputDecoration(
+                  labelText: 'Reason',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(
+                      value: 'spam', child: AnymeXText('Spam', maxLines: null)),
+                  DropdownMenuItem(
+                      value: 'offensive',
+                      child: AnymeXText('Offensive', maxLines: null)),
+                  DropdownMenuItem(
+                      value: 'harassment',
+                      child: AnymeXText('Harassment', maxLines: null)),
+                  DropdownMenuItem(
+                      value: 'spoiler', child: AnymeXText('Spoiler', maxLines: null)),
+                  DropdownMenuItem(
+                      value: 'nsfw', child: AnymeXText('NSFW', maxLines: null)),
+                  DropdownMenuItem(
+                      value: 'off_topic',
+                      child: AnymeXText('Off-Topic', maxLines: null)),
+                  DropdownMenuItem(
+                      value: 'other', child: AnymeXText('Other', maxLines: null)),
+                ],
+                onChanged: (value) {
+                  reasonController.text = value ?? '';
+                },
+              ),
+              const SizedBox(height: 14),
+              TextField(
+                controller: notesController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  labelText: 'Additional notes (optional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogCtx),
+                    child: AnymeXText('Cancel',
+                        color: colorScheme.onSurfaceVariant, maxLines: null),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: () {
+                      if (reasonController.text.trim().isNotEmpty) {
+                        controller.reportComment(comment, reasonController.text.trim(),
+                            notes: notesController.text.trim());
+                        Navigator.pop(dialogCtx);
+                      }
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: colorScheme.error,
+                      foregroundColor: colorScheme.onError,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const AnymeXText('Report', maxLines: null),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const AnymeXText('Cancel', maxLines: null),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (reasonController.text.trim().isNotEmpty) {
-                controller.reportComment(comment, reasonController.text.trim(),
-                    notes: notesController.text.trim());
-                Navigator.pop(context);
-              }
-            },
-            child: const AnymeXText('Report', maxLines: null),
-          ),
-        ],
       ),
     );
   }
