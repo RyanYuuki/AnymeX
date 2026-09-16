@@ -377,50 +377,52 @@ class _CommentSectionState extends State<CommentSection> {
                       maxLines: 1,
                     ),
                   ),
-                  _buildSortChip(context, controller),
-                  const SizedBox(width: 4),
-                  SizedBox(
-                    width: 36,
-                    height: 36,
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () =>
-                          showPolicySheet(context, PolicyType.commentRules),
-                      icon: Icon(
-                        Icons.assignment_outlined,
-                        color: colorScheme.primary,
-                        size: 18,
-                      ),
-                      tooltip: 'Comment Rules',
-                    ),
-                  ),
-                  Obx(() => SizedBox(
-                        width: 36,
-                        height: 36,
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: controller.isRefreshing.value
-                              ? null
-                              : () => controller.forceRefresh(),
-                          icon: controller.isRefreshing.value
-                              ? SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                )
-                              : Icon(
-                                  Icons.refresh,
-                                  size: 18,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                          tooltip: 'Refresh comments',
+                  if (widget.showInlineInput) ...[
+                    _buildSortChip(context, controller),
+                    const SizedBox(width: 4),
+                    SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () =>
+                            showPolicySheet(context, PolicyType.commentRules),
+                        icon: Icon(
+                          Icons.assignment_outlined,
+                          color: colorScheme.primary,
+                          size: 18,
                         ),
-                      )),
+                        tooltip: 'Comment Rules',
+                      ),
+                    ),
+                    Obx(() => SizedBox(
+                          width: 36,
+                          height: 36,
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: controller.isRefreshing.value
+                                ? null
+                                : () => controller.forceRefresh(),
+                            icon: controller.isRefreshing.value
+                                ? SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.refresh,
+                                    size: 18,
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                            tooltip: 'Refresh comments',
+                          ),
+                        )),
+                  ],
                 ],
               ),
               const SizedBox(height: 4),
@@ -1115,7 +1117,9 @@ class _CommentSectionState extends State<CommentSection> {
               ),
             _buildCommentItem(context, comment, controller,
                 effectiveLocked: effectiveLocked, depth: depth),
-            if (controller.isReplyingTo(comment.id) && !effectiveLocked) ...[
+            if (widget.showInlineInput &&
+                controller.isReplyingTo(comment.id) &&
+                !effectiveLocked) ...[
               const SizedBox(height: 8),
               _buildReplyInput(context, comment, controller, depth,
                   isParentLocked: isParentLocked),
@@ -1486,7 +1490,15 @@ class _CommentSectionState extends State<CommentSection> {
                         const SizedBox(width: 10),
                         if (!isLocked) ...[
                           GestureDetector(
-                            onTap: () => controller.toggleReply(reply.id),
+                            onTap: () {
+                              if (!widget.showInlineInput) {
+                                HapticFeedback.lightImpact();
+                                controller.setReplyTarget(reply);
+                                controller.commentFocusNode.requestFocus();
+                              } else {
+                                controller.toggleReply(reply.id);
+                              }
+                            },
                             child: Text(
                               'Reply',
                               style: TextStyle(
@@ -1536,7 +1548,9 @@ class _CommentSectionState extends State<CommentSection> {
                   ],
                 ),
               ),
-              if (controller.isReplyingTo(reply.id) && !isLocked) ...[
+              if (widget.showInlineInput &&
+                  controller.isReplyingTo(reply.id) &&
+                  !isLocked) ...[
                 const SizedBox(height: 8),
                 _buildReplyInput(context, reply, controller, depth,
                     isParentLocked: effectiveLocked),

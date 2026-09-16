@@ -34,6 +34,7 @@ class CommentsRepliesSheet extends StatefulWidget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: false,
       backgroundColor: Colors.transparent,
       builder: (ctx) => CommentsRepliesSheet(
         rootComment: rootComment,
@@ -48,10 +49,12 @@ class CommentsRepliesSheet extends StatefulWidget {
 
 class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _sheetFocusNode = FocusNode();
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _sheetFocusNode.dispose();
     widget.controller.clearReplyTarget();
     super.dispose();
   }
@@ -65,38 +68,92 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     }
   }
 
-  Widget _buildRoleBadge(ColorScheme colorScheme, String role) {
-    Color bg = colorScheme.primary.withValues(alpha: 0.15);
-    Color text = colorScheme.primary;
+  Widget _buildRoleBadge(BuildContext context, String role) {
+    final config = _getRoleBadgeConfig(role);
+    if (config == null) return const SizedBox.shrink();
 
-    if (role.toLowerCase() == 'admin' || role.toLowerCase() == 'superadmin') {
-      bg = Colors.redAccent.withValues(alpha: 0.15);
-      text = Colors.redAccent;
-    } else if (role.toLowerCase() == 'moderator') {
-      bg = const Color(0xFF10B981).withValues(alpha: 0.15);
-      text = const Color(0xFF10B981);
-    } else if (role.toLowerCase() == 'vip') {
-      bg = Colors.amber.withValues(alpha: 0.15);
-      text = Colors.amber;
+    return Padding(
+      padding: const EdgeInsets.only(right: 5),
+      child: Icon(config.$1, size: 15, color: config.$2),
+    );
+  }
+
+  Color _getRoleColor(String role) {
+    switch (role.toLowerCase()) {
+      case 'owner':
+        return Colors.amber.shade800;
+      case 'super_admin':
+      case 'superadmin':
+        return Colors.red;
+      case 'admin':
+        return Colors.orange;
+      case 'moderator':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  (IconData, Color)? _getRoleBadgeConfig(String role) {
+    switch (role.toLowerCase()) {
+      case 'owner':
+        return (Icons.auto_awesome, Colors.amber.shade800);
+      case 'super_admin':
+      case 'superadmin':
+        return (Icons.shield, Colors.red);
+      case 'admin':
+        return (Icons.verified_user, Colors.orange);
+      case 'moderator':
+        return (Icons.manage_accounts, Colors.teal);
+      default:
+        return null;
+    }
+  }
+
+  List<Comment> _flattenReplies(Comment root) {
+    final List<Comment> flat = [];
+    void traverse(Comment c) {
+      if (c.replies != null) {
+        for (final r in c.replies!) {
+          flat.add(r);
+          traverse(r);
+        }
+      }
+    }
+    traverse(root);
+    return flat;
+  }
+
+  int _countReplies(Comment root) {
+    int count = 0;
+    if (root.replies != null) {
+      count += root.replies!.length;
+      for (final r in root.replies!) {
+        count += _countReplies(r);
+      }
+    }
+    return count;
+  }
+
+  Comment? _findParentComment(Comment reply, Comment root) {
+    if (reply.parentId == null) return null;
+    final parentIdStr = reply.parentId.toString();
+    if (root.id == parentIdStr) return root;
+
+    Comment? search(Comment current) {
+      if (current.id == parentIdStr) return current;
+      if (current.replies != null) {
+        for (final r in current.replies!) {
+          final found = search(r);
+          if (found != null) return found;
+        }
+      }
+      return null;
     }
 
-    return Container(
-      margin: const EdgeInsets.only(right: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        role.toUpperCase(),
-        style: TextStyle(
-          fontSize: 9,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.4,
-          color: text,
-        ),
-      ),
-    );
+    final foundInRoot = search(root);
+    if (foundInRoot != null) return foundInRoot;
+    return widget.controller.findCommentById(parentIdStr);
   }
 
   Widget _buildCommentCard({
@@ -104,6 +161,8 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     required Comment comment,
     required bool isRoot,
     required bool isNestedSubReply,
+    Comment? parentComment,
+    Comment? rootComment,
     VoidCallback? onReplyTap,
   }) {
     final theme = Theme.of(context);
@@ -112,6 +171,15 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
 
     final isUpvoted = comment.userVote == 1;
     final isSpoiler = comment.tag.toLowerCase().contains('spoiler');
+
+    final hasRole = comment.userRole != null &&
+        comment.userRole != 'user' &&
+        comment.userRole!.isNotEmpty;
+
+    final showParentBreadcrumb = isNestedSubReply &&
+        parentComment != null &&
+        rootComment != null &&
+        parentComment.id != rootComment.id;
 
     Widget card = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,21 +212,42 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header: Username + Role + Time
+              // Header: Role Icon + Username + Breadcrumb + Time
               Row(
                 children: [
-                  if (comment.userRole != null &&
-                      comment.userRole != 'user' &&
-                      comment.userRole!.isNotEmpty)
-                    _buildRoleBadge(colorScheme, comment.userRole!),
-                  Text(
-                    comment.username,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: colorScheme.onSurface,
+                  if (hasRole) _buildRoleBadge(context, comment.userRole!),
+                  Flexible(
+                    child: Text(
+                      comment.username,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: hasRole
+                            ? _getRoleColor(comment.userRole!)
+                            : colorScheme.onSurface,
+                      ),
                     ),
                   ),
+                  if (showParentBreadcrumb) ...[
+                    Icon(Icons.arrow_right,
+                        size: 18, color: colorScheme.primary),
+                    Flexible(
+                      child: Text(
+                        parentComment.username,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: parentComment.userRole != null &&
+                                  parentComment.userRole != 'user' &&
+                                  parentComment.userRole!.isNotEmpty
+                              ? _getRoleColor(parentComment.userRole!)
+                              : colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(width: 6),
                   Text(
                     _formatTime(comment.createdAt),
@@ -170,12 +259,13 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                 ],
               ),
 
-              // Existing Comment Tag Badge (preserved!)
+              // Existing Comment Tag Badge (preserved)
               if (comment.tag.isNotEmpty && comment.tag != 'General')
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: isSpoiler
                           ? colorScheme.error.withValues(alpha: 0.15)
@@ -187,7 +277,8 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: isSpoiler ? colorScheme.error : colorScheme.primary,
+                        color:
+                            isSpoiler ? colorScheme.error : colorScheme.primary,
                       ),
                     ),
                   ),
@@ -216,13 +307,14 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                     GestureDetector(
                       onTap: () => controller.handleVote(comment, 1),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 3),
                         child: Row(
                           children: [
                             Icon(
                               isUpvoted
-                                  ? Icons.thumb_up_rounded
-                                  : Icons.thumb_up_outlined,
+                                    ? Icons.thumb_up_rounded
+                                    : Icons.thumb_up_outlined,
                               size: 13,
                               color: isUpvoted
                                   ? colorScheme.primary
@@ -255,7 +347,8 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                           onReplyTap();
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 3),
                           child: Text(
                             'Reply',
                             style: TextStyle(
@@ -275,7 +368,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
       ],
     );
 
-    // Apply minimal 10px micro-indent and clearly visible purple branch line for sub-replies
+    // Minimal micro-indent and stylish primary branch line for sub-replies
     if (isNestedSubReply) {
       return Container(
         margin: const EdgeInsets.only(left: 10, top: 12),
@@ -304,167 +397,193 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     final colorScheme = theme.colorScheme;
     final controller = widget.controller;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.85,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (ctx, scrollSheetController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 25,
-                offset: const Offset(0, -5),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              // Top Drag Handle & Title Bar
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                child: Column(
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 36,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: colorScheme.outlineVariant.opaque(0.4),
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Obx(() {
-                          final currentParent = controller.findCommentById(widget.rootComment.id) ?? widget.rootComment;
-                          final count = currentParent.replies?.length ?? 0;
-                          return Text(
-                            'Replies ($count)',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onSurface,
-                            ),
-                          );
-                        }),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.close_rounded, size: 20),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
-                  ],
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (ctx, scrollSheetController) {
+          return Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(24)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, -4),
                 ),
-              ),
-              Divider(height: 1, color: colorScheme.outlineVariant.opaque(0.15)),
-
-              // Scrollable Area
-              Expanded(
-                child: Obx(() {
-                  final latestParent = controller.findCommentById(widget.rootComment.id) ?? widget.rootComment;
-                  final replies = latestParent.replies ?? [];
-
-                  return ListView(
-                    controller: scrollSheetController,
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Top Drag Handle & Title Bar
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                  child: Column(
                     children: [
-                      // Pinned Original Comment Header Card
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest.opaque(0.2),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: colorScheme.outlineVariant.opaque(0.15),
-                            width: 1,
+                      Center(
+                        child: Container(
+                          width: 36,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: colorScheme.outlineVariant.opaque(0.4),
+                            borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.push_pin_rounded,
-                                  size: 13,
-                                  color: colorScheme.primary,
-                                ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'ORIGINAL COMMENT',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.5,
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Obx(() {
+                            final currentParent = controller
+                                    .findCommentById(widget.rootComment.id) ??
+                                widget.rootComment;
+                            final count = _countReplies(currentParent);
+                            return Text(
+                              'Replies ($count)',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: colorScheme.onSurface,
+                              ),
+                            );
+                          }),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, size: 20),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                    height: 1,
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.15)),
+
+                // Scrollable Area
+                Expanded(
+                  child: Obx(() {
+                    final latestParent = controller
+                            .findCommentById(widget.rootComment.id) ??
+                        widget.rootComment;
+                    final flatReplies = _flattenReplies(latestParent);
+
+                    return ListView(
+                      controller: scrollSheetController,
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      children: [
+                        // Pinned Original Comment Header Card
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: colorScheme.outlineVariant
+                                  .withValues(alpha: 0.15),
+                              width: 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.push_pin_rounded,
+                                    size: 13,
                                     color: colorScheme.primary,
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            _buildCommentCard(
-                              context: context,
-                              comment: latestParent,
-                              isRoot: true,
-                              isNestedSubReply: false,
-                              onReplyTap: () => controller.setReplyTarget(latestParent),
-                            ),
-                          ],
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'ORIGINAL COMMENT',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.5,
+                                      color: colorScheme.primary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              _buildCommentCard(
+                                context: context,
+                                comment: latestParent,
+                                isRoot: true,
+                                isNestedSubReply: false,
+                                rootComment: latestParent,
+                                onReplyTap: () {
+                                  controller.setReplyTarget(latestParent);
+                                  _sheetFocusNode.requestFocus();
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      // Replies Feed
-                      if (replies.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 40),
-                          child: Center(
-                            child: Text(
-                              'No replies yet. Be the first to reply!',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: colorScheme.onSurfaceVariant.opaque(0.6),
+                        // Replies Feed
+                        if (flatReplies.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 40),
+                            child: Center(
+                              child: Text(
+                                'No replies yet. Be the first to reply!',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color:
+                                      colorScheme.onSurfaceVariant.opaque(0.6),
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                      else
-                        ...replies.map((reply) {
-                          // Check if reply is a sub-reply (replying to another reply in thread)
-                          final isSubReply = reply.parentId != null &&
-                              reply.parentId.toString() != latestParent.id;
+                          )
+                        else
+                          ...flatReplies.map((reply) {
+                            final isSubReply = reply.parentId != null &&
+                                reply.parentId.toString() != latestParent.id;
+                            final parentComment =
+                                _findParentComment(reply, latestParent);
 
-                          return _buildCommentCard(
-                            context: context,
-                            comment: reply,
-                            isRoot: false,
-                            isNestedSubReply: isSubReply,
-                            onReplyTap: () => controller.setReplyTarget(reply),
-                          );
-                        }),
-                    ],
-                  );
-                }),
-              ),
+                            return _buildCommentCard(
+                              context: context,
+                              comment: reply,
+                              isRoot: false,
+                              isNestedSubReply: isSubReply,
+                              parentComment: parentComment,
+                              rootComment: latestParent,
+                              onReplyTap: () {
+                                controller.setReplyTarget(reply);
+                                _sheetFocusNode.requestFocus();
+                              },
+                            );
+                          }),
+                      ],
+                    );
+                  }),
+                ),
 
-              // Bottom Pinned Input Bar
-              CommentInputBar(
-                controller: controller,
-                onSubmitted: () {
-                  // After posting reply, scroll down to bottom
-                },
-              ),
-            ],
-          ),
-        );
-      },
+                // Bottom Pinned Input Bar with dedicated sheet focus node
+                CommentInputBar(
+                  controller: controller,
+                  focusNode: _sheetFocusNode,
+                  onSubmitted: () {
+                    // Scroll to bottom or keep in view
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

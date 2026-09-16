@@ -3,6 +3,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,10 +19,49 @@ class SettingsComments extends StatefulWidget {
 class _SettingsCommentsState extends State<SettingsComments> {
   final commentumService = Get.find<CommentumService>();
 
+  final RxBool _isLoadingPreferences = true.obs;
+  final RxBool _notifyOnReply = true.obs;
+  final RxBool _notifyOnMention = true.obs;
+  final RxBool _notifyOnAnnouncement = true.obs;
+  final RxBool _notifyOnRecentComment = true.obs;
+  final RxBool _notifyOnVote = true.obs;
+  final RxBool _notifyOnCommentDelete = false.obs;
+  final RxBool _notifyOnModAction = true.obs;
+
   @override
   void initState() {
     super.initState();
     commentumService.getUserRole();
+    _loadPreferences();
+  }
+
+  Future<void> _loadPreferences() async {
+    if (commentumService.currentUserId == null) {
+      _isLoadingPreferences.value = false;
+      return;
+    }
+    _isLoadingPreferences.value = true;
+    final prefs = await commentumService.getNotificationPreferences();
+    if (prefs.isNotEmpty) {
+      _notifyOnReply.value = prefs['notify_on_reply'] ?? true;
+      _notifyOnMention.value = prefs['notify_on_mention'] ?? true;
+      _notifyOnAnnouncement.value = prefs['notify_on_announcement'] ?? true;
+      _notifyOnRecentComment.value = prefs['notify_on_recent_comment'] ?? true;
+      _notifyOnVote.value = prefs['notify_on_vote'] ?? true;
+      _notifyOnCommentDelete.value = prefs['notify_on_comment_delete'] ?? false;
+      _notifyOnModAction.value = prefs['notify_on_mod_action'] ?? true;
+    }
+    _isLoadingPreferences.value = false;
+  }
+
+  Future<void> _updatePreference(String key, RxBool rxVal, bool newVal) async {
+    final oldVal = rxVal.value;
+    rxVal.value = newVal;
+    final success = await commentumService.updateNotificationPreferences({key: newVal});
+    if (!success) {
+      rxVal.value = oldVal;
+      snackBar('Failed to update preference');
+    }
   }
 
   @override
@@ -80,6 +120,116 @@ class _SettingsCommentsState extends State<SettingsComments> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 12),
+              AnymeXExpansionTile(
+                title: 'Notification Preferences',
+                initialExpanded: true,
+                content: Obx(() {
+                  if (commentumService.currentUserId == null) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 14.0),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline,
+                              color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Log in to customize your push notification preferences.',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.7),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  if (_isLoadingPreferences.value) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      CustomSwitchTile(
+                        icon: Icons.reply_rounded,
+                        title: 'Comment Replies',
+                        description:
+                            'Notify when someone replies to your comment',
+                        switchValue: _notifyOnReply.value,
+                        onChanged: (v) => _updatePreference(
+                            'notify_on_reply', _notifyOnReply, v),
+                      ),
+                      CustomSwitchTile(
+                        icon: Icons.alternate_email_rounded,
+                        title: 'Mentions',
+                        description:
+                            'Notify when someone @mentions your username',
+                        switchValue: _notifyOnMention.value,
+                        onChanged: (v) => _updatePreference(
+                            'notify_on_mention', _notifyOnMention, v),
+                      ),
+                      CustomSwitchTile(
+                        icon: Icons.campaign_outlined,
+                        title: 'Announcements',
+                        description:
+                            'Notify for official announcements and app updates',
+                        switchValue: _notifyOnAnnouncement.value,
+                        onChanged: (v) => _updatePreference(
+                            'notify_on_announcement', _notifyOnAnnouncement, v),
+                      ),
+                      CustomSwitchTile(
+                        icon: Icons.forum_outlined,
+                        title: 'Recent Media Comments',
+                        description:
+                            'Notify on new comments for media you discussed',
+                        switchValue: _notifyOnRecentComment.value,
+                        onChanged: (v) => _updatePreference(
+                            'notify_on_recent_comment',
+                            _notifyOnRecentComment,
+                            v),
+                      ),
+                      CustomSwitchTile(
+                        icon: Icons.thumb_up_alt_outlined,
+                        title: 'Votes',
+                        description: 'Notify on upvotes and downvotes',
+                        switchValue: _notifyOnVote.value,
+                        onChanged: (v) => _updatePreference(
+                            'notify_on_vote', _notifyOnVote, v),
+                      ),
+                      CustomSwitchTile(
+                        icon: Icons.delete_outline_rounded,
+                        title: 'Comment Deleted',
+                        description:
+                            'Notify if your comment is removed by a moderator',
+                        switchValue: _notifyOnCommentDelete.value,
+                        onChanged: (v) => _updatePreference(
+                            'notify_on_comment_delete',
+                            _notifyOnCommentDelete,
+                            v),
+                      ),
+                      CustomSwitchTile(
+                        icon: Icons.shield_outlined,
+                        title: 'Moderation Actions',
+                        description:
+                            'Notify on warnings, pinned comments, or thread locks',
+                        switchValue: _notifyOnModAction.value,
+                        onChanged: (v) => _updatePreference(
+                            'notify_on_mod_action', _notifyOnModAction, v),
+                      ),
+                    ],
+                  );
+                }),
               ),
               Obx(() {
                 if (commentumService.currentUserRole.value == 'user') {

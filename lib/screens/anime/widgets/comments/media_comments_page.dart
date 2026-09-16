@@ -232,7 +232,10 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
         ],
       ),
-      bottomNavigationBar: CommentInputBar(controller: controller),
+      bottomNavigationBar: CommentInputBar(
+        controller: controller,
+        focusNode: controller.commentFocusNode,
+      ),
     );
   }
 }
