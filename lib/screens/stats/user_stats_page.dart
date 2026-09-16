@@ -193,11 +193,11 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      _buildPrimaryStatsRow(
-                          context, totalHrs, totalMins, displayedUnits),
-                      const SizedBox(height: 14),
                       _buildRankProgressCard(
                           context, totalWatchTime + totalReadTime),
+                      const SizedBox(height: 14),
+                      _buildPrimaryStatsRow(
+                          context, totalHrs, totalMins, displayedUnits),
                       const SizedBox(height: 14),
                       _buildDailyAveragesRow(context),
                       const SizedBox(height: 20),
@@ -279,8 +279,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
 
   Widget _buildPrimaryStatsRow(
       BuildContext context, int hrs, int mins, int units) {
-    final timeReadCard = _buildDashboardCard(
-      context: context,
+    final timeReadCard = _buildSmallInfoCard(
       title: activeFilter.value == 'Anime'
           ? 'TIME WATCHED'
           : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
@@ -290,8 +289,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       icon: IconlyLight.timeCircle,
     );
 
-    final pagesCard = _buildDashboardCard(
-      context: context,
+    final pagesCard = _buildSmallInfoCard(
       title: activeFilter.value == 'Anime'
           ? 'Episodes'
           : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
@@ -302,8 +300,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       icon: IconlyLight.paper,
     );
 
-    final daysCard = _buildDashboardCard(
-      context: context,
+    final daysCard = _buildSmallInfoCard(
       title: 'DAYS ACTIVE',
       value: "${controller.totalDaysActive}",
       icon: IconlyLight.calendar,
@@ -311,11 +308,11 @@ class _UserStatsPageState extends State<UserStatsPage> {
 
     return Row(
       children: [
-        Expanded(child: SizedBox(height: 94, child: timeReadCard)),
+        Expanded(child: timeReadCard),
         const SizedBox(width: 8),
-        Expanded(child: SizedBox(height: 94, child: pagesCard)),
+        Expanded(child: pagesCard),
         const SizedBox(width: 8),
-        Expanded(child: SizedBox(height: 94, child: daysCard)),
+        Expanded(child: daysCard),
       ],
     );
   }
