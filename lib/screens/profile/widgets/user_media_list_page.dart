@@ -322,7 +322,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                     AnymeXText('Sort By',
                         style: TextStyle(
                           fontSize: 16,
-                          fontFamily: 'Poppins-Bold',
+                          fontFamily: 'Linotte',
                           fontWeight: FontWeight.bold,
                           color: colors.onSurface,
                         )),
@@ -427,7 +427,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                       AnymeXText('Filter by Genre',
                           style: TextStyle(
                             fontSize: 16,
-                            fontFamily: 'Poppins-Bold',
+                            fontFamily: 'Linotte',
                             fontWeight: FontWeight.bold,
                             color: colors.onSurface,
                           )),

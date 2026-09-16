@@ -554,13 +554,13 @@ class HeaderSearchBar extends StatelessWidget {
             controller: controller,
             onChanged: onChanged,
             autofocus: true,
-            style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
+            style: const TextStyle(fontSize: 14, fontFamily: 'Linotte'),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(
                 color: context.colors.onSurface.withOpacity(0.4),
                 fontSize: 14,
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
               ),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -700,7 +700,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
             ),
           ),
           const SizedBox(height: 10),
@@ -959,7 +959,7 @@ class SortTile extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
             color: isSelected
                 ? theme.colorScheme.secondary
                 : theme.colorScheme.onSurface,

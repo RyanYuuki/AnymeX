@@ -3,7 +3,6 @@ import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 enum TextVariant { regular, semiBold, bold }
 
@@ -204,60 +203,35 @@ class AnymeXText extends StatelessWidget {
         );
         return style != null ? base.merge(style) : base;
       }
-      if (customFamily == 'Google Sans') {
-        final base = TextStyle(
-          fontFamily: 'Google Sans',
-          fontSize: baseSize,
-          color: baseColor,
-          fontStyle: baseFontStyle,
-        );
-        return style != null
-            ? base.merge(style).copyWith(fontFamily: 'Google Sans')
-            : base;
-      }
-      if (customFamily == 'SF Pro') {
-        final base = TextStyle(
-          fontFamily: 'SF Pro',
-          fontSize: baseSize,
-          color: baseColor,
-          fontStyle: baseFontStyle,
-        );
-        return style != null
-            ? base.merge(style).copyWith(fontFamily: 'SF Pro')
-            : base;
-      }
       final weight = style?.fontWeight ??
           switch (variant) {
             TextVariant.bold => FontWeight.w700,
             TextVariant.semiBold => FontWeight.w600,
             _ => FontWeight.w400,
           };
-      try {
-        final gFont = GoogleFonts.getFont(
-          customFamily,
-          fontSize: baseSize,
-          color: baseColor,
-          fontStyle: baseFontStyle,
-          fontWeight: weight,
-        );
-
-        return style != null
-            ? gFont.merge(style).copyWith(fontFamily: gFont.fontFamily)
-            : gFont;
-      } catch (_) {}
+      final base = TextStyle(
+        fontFamily: customFamily,
+        fontSize: baseSize,
+        color: baseColor,
+        fontStyle: baseFontStyle,
+        fontWeight: weight,
+      );
+      return style != null ? base.merge(style) : base;
     }
 
-    final builtInFamily = switch (variant) {
-      TextVariant.semiBold => 'Poppins-SemiBold',
-      TextVariant.bold => 'Poppins-Bold',
-      _ => 'Poppins',
-    };
+    final weight = style?.fontWeight ??
+        switch (variant) {
+          TextVariant.bold => FontWeight.w700,
+          TextVariant.semiBold => FontWeight.w600,
+          _ => FontWeight.w400,
+        };
 
     final base = TextStyle(
-      fontFamily: builtInFamily,
+      fontFamily: 'Linotte',
       fontSize: baseSize,
       color: baseColor,
       fontStyle: baseFontStyle,
+      fontWeight: weight,
     );
 
     return style != null ? base.merge(style) : base;

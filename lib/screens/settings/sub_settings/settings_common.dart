@@ -29,16 +29,12 @@ class _SettingsCommonState extends State<SettingsCommon> {
   late bool showCommunityRecs =
       General.showCommunityRecommendations.get<bool>(true);
   bool get isMal => serviceHandler.serviceType.value.isMal;
-  late Map<String, bool> homePageCards;
   late bool unifiedLibrary = General.unifiedLibrary.get<bool>(true);
 
   @override
   void initState() {
     super.initState();
     uniScrapper = General.universalScrapper.get<bool>(false);
-    homePageCards = isMal ? settings.homePageCardsMal : settings.homePageCards;
-    homePageCards.putIfAbsent('Recommended Animes', () => true);
-    homePageCards.putIfAbsent('Recommended Mangas', () => true);
   }
 
   @override
@@ -288,48 +284,96 @@ class _SettingsCommonState extends State<SettingsCommon> {
 
     final defaultKeys = type.isMal
         ? [
-            'Watching Anime',
-            'Reading Manga',
-            'Plan to Watch Anime',
-            'Plan to Read Manga',
-            'Completed Anime',
+            'Continue Watching',
+            'Continue Reading',
+            'Planning Animes',
+            'Planning Manga',
+            'Completed TV',
             'Completed Manga',
-            'On-Hold Anime',
-            'On-Hold Manga',
-            'Dropped Anime',
+            'Paused Animes',
+            'Paused Manga',
+            'Dropped Animes',
             'Dropped Manga',
+            'Recommended Animes',
+            'Recommended Mangas',
           ]
         : type.isAL
             ? [
-                'Watching Anime',
-                'Reading Manga',
-                'Plan to Watch Anime',
-                'Plan to Read Manga',
-                'Completed Anime',
+                'Continue Watching',
+                'Continue Reading',
+                'Planning Animes',
+                'Planning Manga',
+                'Completed TV',
                 'Completed Manga',
-                'Paused Anime',
+                'Completed Movie',
+                'Paused Animes',
                 'Paused Manga',
-                'Dropped Anime',
+                'Dropped Animes',
                 'Dropped Manga',
+                'Rewatching Animes',
+                'Rewatching Manga',
+                'Recommended Animes',
+                'Recommended Mangas',
               ]
             : [
-                'Watching Anime',
-                'Reading Manga',
-                'Plan to Watch Anime',
-                'Plan to Read Manga',
-                'Completed Anime',
-                'Completed Manga',
-                'Hold Anime',
-                'Hold Manga',
-                'Dropped Anime',
-                'Dropped Manga',
+                'Continue Watching (Movies)',
+                'Continue Watching (Shows)',
+                'Planning Movies',
+                'Planning Shows',
+                'Completed Movies',
+                'Completed Shows',
+                'Paused Movies',
+                'Paused Shows',
+                'Dropped Movies',
+                'Dropped Shows',
               ];
 
-    for (var key in defaultKeys) {
-      targetCards.putIfAbsent(key, () => true);
-    }
+    final legacyMapping = type.isSimkl
+        ? {
+            'Watching Anime': 'Continue Watching (Shows)',
+            'Continue Watching': 'Continue Watching (Shows)',
+            'Reading Manga': 'Continue Watching (Shows)',
+            'Plan to Watch Anime': 'Planning Shows',
+            'Planning Animes': 'Planning Shows',
+            'Plan to Read Manga': 'Planning Shows',
+            'Planning Manga': 'Planning Shows',
+            'Completed Anime': 'Completed Shows',
+            'Completed TV': 'Completed Shows',
+            'Completed Manga': 'Completed Shows',
+            'On-Hold Anime': 'Paused Shows',
+            'Hold Anime': 'Paused Shows',
+            'Paused Anime': 'Paused Shows',
+            'Paused Animes': 'Paused Shows',
+            'On-Hold Manga': 'Paused Shows',
+            'Hold Manga': 'Paused Shows',
+            'Paused Manga': 'Paused Shows',
+            'Dropped Anime': 'Dropped Shows',
+            'Dropped Animes': 'Dropped Shows',
+            'Dropped Manga': 'Dropped Shows',
+          }
+        : {
+            'Watching Anime': 'Continue Watching',
+            'Reading Manga': 'Continue Reading',
+            'Plan to Watch Anime': 'Planning Animes',
+            'Plan to Read Manga': 'Planning Manga',
+            'Completed Anime': 'Completed TV',
+            'On-Hold Anime': 'Paused Animes',
+            'Hold Anime': 'Paused Animes',
+            'Paused Anime': 'Paused Animes',
+            'On-Hold Manga': 'Paused Manga',
+            'Hold Manga': 'Paused Manga',
+            'Dropped Anime': 'Dropped Animes',
+          };
 
-    final localState = Map<String, bool>.from(targetCards);
+    final localState = <String, bool>{};
+    for (final key in defaultKeys) {
+      localState[key] = targetCards[key] ?? true;
+    }
+    for (final entry in legacyMapping.entries) {
+      if (targetCards.containsKey(entry.key) && localState.containsKey(entry.value)) {
+        localState[entry.value] = targetCards[entry.key] ?? localState[entry.value]!;
+      }
+    }
 
     showDialog(
       context: context,

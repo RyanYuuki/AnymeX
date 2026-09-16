@@ -41,7 +41,7 @@ Widget _buildBottomSheetOption(
             label,
             style: const TextStyle(
               fontSize: 16,
-              fontFamily: 'Poppins-SemiBold',
+              fontFamily: 'Linotte',
             ),
           ),
         ],
@@ -232,7 +232,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                 name,
                                 style: TextStyle(
                                   fontSize: 28,
-                                  fontFamily: 'Poppins-Bold',
+                                  fontFamily: 'Linotte',
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: -0.5,
                                   color: context.theme.colorScheme.onSurface,
@@ -433,7 +433,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                             'More Options',
                                             style: TextStyle(
                                               fontSize: 18,
-                                              fontFamily: 'Poppins-Bold',
+                                              fontFamily: 'Linotte',
                                               fontWeight: FontWeight.bold,
                                               color: context
                                                   .theme.colorScheme.onSurface,
@@ -642,7 +642,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           'More Options',
                           style: TextStyle(
                             fontSize: 18,
-                            fontFamily: 'Poppins-Bold',
+                            fontFamily: 'Linotte',
                             fontWeight: FontWeight.bold,
                             color: context.theme.colorScheme.onSurface,
                           ),
@@ -851,7 +851,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                               maxLines: 1,
                               style: const TextStyle(
                                 fontSize: 15,
-                                fontFamily: 'Poppins-Bold',
+                                fontFamily: 'Linotte',
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white,
                                 shadows: [

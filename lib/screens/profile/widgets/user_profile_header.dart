@@ -212,7 +212,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                 name,
                                 style: TextStyle(
                                   fontSize: 28,
-                                  fontFamily: 'Poppins-Bold',
+                                  fontFamily: 'Linotte',
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: -0.5,
                                   color: context.theme.colorScheme.onSurface,
@@ -363,7 +363,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                             'More Options',
                                             style: TextStyle(
                                               fontSize: 18,
-                                              fontFamily: 'Poppins-Bold',
+                                              fontFamily: 'Linotte',
                                               fontWeight: FontWeight.bold,
                                               color: context
                                                   .theme.colorScheme.onSurface,
@@ -552,7 +552,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                               : getFollowLabel(isFollowing: widget.isFollowingUser, isFollower: widget.isFollowerOfUser),
                                           style: TextStyle(
                                             fontSize: 13,
-                                            fontFamily: 'Poppins-SemiBold',
+                                            fontFamily: 'Linotte',
                                             fontWeight: FontWeight.bold,
                                             color: _isFollowHovered
                                                 ? (widget.isFollowingUser ==

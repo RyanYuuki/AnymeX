@@ -71,7 +71,7 @@ Future<void> snackString(
             s,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
               fontSize: 16.0,
               fontWeight: FontWeight.w600,
               color: theme.onSurface,
@@ -180,18 +180,158 @@ class ChapterRecognition {
   }
 }
 
+class EpisodeInfo {
+  final String number;
+  final String? season;
+
+  const EpisodeInfo({
+    required this.number,
+    this.season,
+  });
+}
+
+EpisodeInfo parseEpisodeInfo(dynamic rawNumber, [String? title]) {
+  final cleanTitle = title?.trim() ?? '';
+  if (cleanTitle.isNotEmpty) {
+    for (final reg in [
+      RegExp(r'(?:^|[\s_.:\(\[-])S(\d+)[\s:_.-]*E(\d+)(?![\d\w])', caseSensitive: false),
+      RegExp(r'(?:^|[\s_.:\(\[-])Season\s*(\d+)[\s,:-]+(?:Episode|Ep\.?)\s*(\d+)(?![\d\w])', caseSensitive: false),
+      RegExp(r'(?:^|[\s_.:\(\[-])(\d+)x(\d+)(?![\d\w])', caseSensitive: false),
+      RegExp(r'(?:^|[\s_.:\(\[-])S(\d+)[\s:_.-]+(?:Ep\.?|Episode\s+)?(\d+)(?![\d\w])', caseSensitive: false),
+    ]) {
+      final match = reg.firstMatch(cleanTitle);
+      if (match != null) {
+        final season = int.tryParse(match.group(1)!);
+        final episode = int.tryParse(match.group(2)!);
+        if (episode != null) {
+          return EpisodeInfo(
+            number: episode.toString(),
+            season: season?.toString(),
+          );
+        }
+      }
+    }
+
+    final epMatch = RegExp(r'(?:^|[\s_.:\(\[-])(?:Episode|Ep\.?)\s*(\d+)(?![\d\w])', caseSensitive: false).firstMatch(cleanTitle);
+    if (epMatch != null) {
+      final episode = int.tryParse(epMatch.group(1)!);
+      if (episode != null) {
+        return EpisodeInfo(number: episode.toString());
+      }
+    }
+  }
+
+  final cleanNum = rawNumber?.toString().trim() ?? '';
+  if (cleanNum.isNotEmpty) {
+    for (final reg in [
+      RegExp(r'(?:^|[\s_.:\(\[-])S(\d+)[\s:_.-]*E(\d+)(?![\d\w])', caseSensitive: false),
+      RegExp(r'(?:^|[\s_.:\(\[-])Season\s*(\d+)[\s,:-]+(?:Episode|Ep\.?)\s*(\d+)(?![\d\w])', caseSensitive: false),
+      RegExp(r'(?:^|[\s_.:\(\[-])(\d+)x(\d+)(?![\d\w])', caseSensitive: false),
+    ]) {
+      final match = reg.firstMatch(cleanNum);
+      if (match != null) {
+        final season = int.tryParse(match.group(1)!);
+        final episode = int.tryParse(match.group(2)!);
+        if (episode != null) {
+          return EpisodeInfo(
+            number: episode.toString(),
+            season: season?.toString(),
+          );
+        }
+      }
+    }
+
+    final parsed = double.tryParse(cleanNum);
+    if (parsed != null) {
+      if (parsed == parsed.toInt()) {
+        return EpisodeInfo(number: parsed.toInt().toString());
+      }
+      final rounded = double.parse(parsed.toStringAsFixed(2));
+      if (rounded == rounded.toInt()) {
+        return EpisodeInfo(number: rounded.toInt().toString());
+      }
+      return EpisodeInfo(
+        number: rounded.toString().replaceAll(RegExp(r'\.?0+$'), ''),
+      );
+    }
+    return EpisodeInfo(number: cleanNum);
+  }
+
+  return const EpisodeInfo(number: '1');
+}
+
+String formatEpisodeNumberLabel(dynamic rawNumber, {String? title}) {
+  return parseEpisodeInfo(rawNumber, title).number;
+}
+
 Episode DEpisodeToEpisode(DEpisode chapter) {
+  final info = parseEpisodeInfo(chapter.episodeNumber, chapter.name);
+  final sortMap = <String, String>{};
+  if (chapter.sortMap != null) {
+    sortMap.addAll(chapter.sortMap!);
+  }
+  if (info.season != null && !sortMap.containsKey('season') && !sortMap.containsKey('Season')) {
+    sortMap['season'] = info.season!;
+  }
+
   return Episode(
-    number: chapter.episodeNumber,
+    number: info.number,
     link: chapter.url,
-    sortKeys: chapter.sortMap?.keys.toList(),
-    sortVals: chapter.sortMap?.values.toList(),
+    sortKeys: sortMap.isNotEmpty ? sortMap.keys.toList() : null,
+    sortVals: sortMap.isNotEmpty ? sortMap.values.toList() : null,
     title: chapter.name,
     thumbnail: chapter.thumbnail,
     desc: chapter.description,
     filler: chapter.filler,
     dateUpload: chapter.dateUpload,
   );
+}
+
+int? extractSeason(Episode? episode) {
+  if (episode == null) return null;
+  final sortMap = episode.sortMap;
+  for (final entry in sortMap.entries) {
+    if (entry.key.toLowerCase().contains('season')) {
+      final match = RegExp(r'\d+').firstMatch(entry.value);
+      if (match != null) {
+        final parsed = int.tryParse(match.group(0)!);
+        if (parsed != null && parsed > 0) return parsed;
+      }
+      final keyMatch = RegExp(r'\d+').firstMatch(entry.key);
+      if (keyMatch != null) {
+        final parsed = int.tryParse(keyMatch.group(0)!);
+        if (parsed != null && parsed > 0) return parsed;
+      }
+    }
+  }
+  for (final key in episode.sortKeys ?? <String>[]) {
+    if (key.toLowerCase().contains('season') ||
+        RegExp(r'\bs\d+\b', caseSensitive: false).hasMatch(key)) {
+      final match = RegExp(r'\d+').firstMatch(key);
+      if (match != null) {
+        final parsed = int.tryParse(match.group(0)!);
+        if (parsed != null && parsed > 0) return parsed;
+      }
+    }
+  }
+  for (final val in episode.sortVals ?? <String>[]) {
+    if (val.toLowerCase().contains('season')) {
+      final match = RegExp(r'\d+').firstMatch(val);
+      if (match != null) {
+        final parsed = int.tryParse(match.group(0)!);
+        if (parsed != null && parsed > 0) return parsed;
+      }
+    }
+  }
+  if (episode.title != null && episode.title!.isNotEmpty) {
+    final match = RegExp(r'(?:s|season)\s*(\d+)', caseSensitive: false)
+        .firstMatch(episode.title!);
+    if (match != null) {
+      final parsed = int.tryParse(match.group(1)!);
+      if (parsed != null && parsed > 0) return parsed;
+    }
+  }
+  return null;
 }
 
 String calcTime(String timestamp, {String format = "dd-MM-yyyy"}) {

@@ -224,7 +224,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
                 child: AnymeXText(
                   widget.source.name ?? 'Unknown',
                   style: TextStyle(
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                     color: theme.onSurface,
@@ -343,7 +343,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
               AnymeXText(
                 label,
                 style: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
                   color: theme.onSurface.withValues(alpha: 0.7),
@@ -355,7 +355,7 @@ class ExtensionTestResultItemState extends State<ExtensionTestResultItem> {
                 style: TextStyle(
                   fontSize: 14,
                   color: theme.onSurface,
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                 ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,

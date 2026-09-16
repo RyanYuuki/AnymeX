@@ -288,7 +288,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                                   .textTheme
                                   .titleLarge
                                   ?.copyWith(
-                                    fontFamily: 'Poppins-Bold',
+                                    fontFamily: 'Linotte',
                                   ),
                             ),
                             IconButton(

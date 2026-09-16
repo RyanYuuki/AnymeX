@@ -40,7 +40,7 @@ import 'package:iconsax/iconsax.dart';
 
 const Map<String, List<String>> fontGroups = {
   'Default': ['Default'],
-  'Latin': ['Trebuchet', 'Bahnschrift', 'Tahoma', 'Anime Ace 3', 'Poppins'],
+  'Latin': ['Trebuchet', 'Bahnschrift', 'Tahoma', 'Anime Ace 3', 'Linotte'],
   'Japanese': ['Cinecaption'],
 };
 

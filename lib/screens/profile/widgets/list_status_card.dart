@@ -59,7 +59,7 @@ class ListStatusCard extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: isDesktop ? 12 : 10.5,
-              fontFamily: 'Poppins-Bold',
+              fontFamily: 'Linotte',
               fontWeight: FontWeight.bold,
               letterSpacing: 1.5,
               color: context.theme.colorScheme.onSurfaceVariant,
@@ -136,7 +136,7 @@ class ListStatusCard extends StatelessWidget {
                           count.toString(),
                           style: TextStyle(
                             fontSize: isDesktop ? 15 : 13,
-                            fontFamily: 'Poppins-Bold',
+                            fontFamily: 'Linotte',
                             fontWeight: FontWeight.bold,
                             color: count > 0 ? color : color.withOpacity(0.5),
                           ),

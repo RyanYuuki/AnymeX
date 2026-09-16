@@ -99,6 +99,7 @@ enum PlayerUiKeys {
   playerControlTheme,
   playerControlThemesJson,
   mediaIndicatorTheme,
+  episodeStyle,
   mpvCoreSettings,
   betterPlayerCoreSettings,
   mpvVisualSettings,
@@ -351,6 +352,7 @@ enum DownloadKeys {
   downloadChunks,
   hlsParallelSegments,
   enableJxlCompression,
+  hasSeenDownloadGuide,
 }
 
 enum DiscordRpcKeys {

@@ -39,6 +39,7 @@ import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/color_profiler.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/sub_parser.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
@@ -893,18 +894,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _initializeSwipeStuffs() async {
     try {
-      VolumeController.instance.showSystemUI = false;
-      volume.value = await VolumeController.instance.getVolume();
+      if (Platform.isAndroid || Platform.isIOS) {
+        VolumeController.instance.showSystemUI = false;
+        volume.value = await VolumeController.instance.getVolume();
+      } else {
+        volume.value = _basePlayer.state.volume;
+      }
     } catch (_) {}
 
     try {
-      brightness.value = await ScreenBrightness.instance.application;
-      _subscriptions
-          .add(ScreenBrightness.instance.onCurrentBrightnessChanged.listen(
-        (value) {
-          brightness.value = value;
-        },
-      ));
+      if (Platform.isAndroid || Platform.isIOS) {
+        brightness.value = await ScreenBrightness.instance.application;
+        _subscriptions
+            .add(ScreenBrightness.instance.onCurrentBrightnessChanged.listen(
+          (value) {
+            brightness.value = value;
+          },
+        ));
+      }
     } catch (_) {}
   }
 
@@ -1684,6 +1691,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (previousTrack == null) {
+      final savedAnime = offlineStorage.getAnimeById(anilistData.id);
+      final prevTrack = savedAnime?.currentEpisode?.currentTrack ??
+          savedAnime?.watchedEpisodes?.lastOrNull?.currentTrack;
+      if (prevTrack != null && prevTrack.isDub) {
+        final dubTrack = tracks.firstWhereOrNull((t) => t.isDub);
+        if (dubTrack != null) return dubTrack;
+      }
       return tracks.first;
     }
 
@@ -1952,7 +1966,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     TorrentStreamResolver.stopActiveStream();
 
-    ScreenBrightness.instance.resetApplicationScreenBrightness();
+    try {
+      if (Platform.isAndroid || Platform.isIOS) {
+        await ScreenBrightness.instance.resetApplicationScreenBrightness();
+      }
+    } catch (_) {}
   }
 
   void _revertOrientations() {
@@ -2149,13 +2167,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     volumeIndicator.value = false;
     _volumeTimer?.cancel();
 
-    unawaited(
-      ScreenBrightness.instance
-          .setApplicationScreenBrightness(value)
-          .catchError((e) {
-        Logger.e("Error setting brightness: $e");
-      }),
-    );
+    if (Platform.isAndroid || Platform.isIOS) {
+      unawaited(
+        ScreenBrightness.instance
+            .setApplicationScreenBrightness(value)
+            .catchError((e) {
+          Logger.e("Error setting brightness: $e");
+        }),
+      );
+    }
 
     if (!isDragging) {
       _hideBrightnessIndicatorAfterDelay();
@@ -2801,13 +2821,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
         if (newProgress <= 0) return;
 
+        final detectedSeason = extractSeason(currentEpisode.value);
         await trackCtrl.pushProgress(mediaId, newProgress,
             isAnime: true,
             status: hasCrossedLimit && !hasNextEpisode
                 ? 'COMPLETED'
-                : null);
+                : null,
+            season: detectedSeason);
         Logger.i(
-            'Extension tracking completed for episode $currEpisodeNum, progress: $newProgress');
+            'Extension tracking completed for episode $currEpisodeNum (season $detectedSeason), progress: $newProgress');
       } catch (e) {
         Logger.i('Failed to track extension media: $e');
       }
@@ -2833,10 +2855,12 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         return;
       }
 
+      final detectedSeason = extractSeason(currentEpisode.value);
       await service.updateListEntry(UpdateListEntryParams(
           listId: anilistData.id,
           progress: newProgress,
           isAnime: true,
+          season: detectedSeason,
           status: hasCrossedLimit &&
                   anilistData.status == 'COMPLETED' &&
                   !hasNextEpisode

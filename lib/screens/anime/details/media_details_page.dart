@@ -731,7 +731,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                                   child: AnymeXText(
                                     subtitleText.toUpperCase(),
                                     style: TextStyle(
-                                      fontFamily: 'Poppins-SemiBold',
+                                      fontFamily: 'Linotte',
                                       fontSize: 10.0,
                                       color: context.colors.secondary
                                                   .computeLuminance() >
@@ -755,7 +755,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                                     child: AnymeXText(
                                       '${(clampedProgress * 100).toInt()}% ${isAnime ? 'WATCHED' : 'READ'}',
                                       style: TextStyle(
-                                        fontFamily: 'Poppins-SemiBold',
+                                        fontFamily: 'Linotte',
                                         fontSize: 10.0,
                                         color: context.colors.tertiary
                                                     .computeLuminance() >

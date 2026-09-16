@@ -141,7 +141,7 @@ class MediaDetailsController extends GetxController {
 
     searchedTitle.value = "Searching: ${initialMedia.title}...";
     selectedEpisodeStyle.value =
-        PlayerUiKeys.mediaIndicatorTheme.get<String>('compact');
+        PlayerUiKeys.episodeStyle.get<String>('compact');
 
     _restorePreferredSource();
     _initActiveSource();
@@ -179,7 +179,7 @@ class MediaDetailsController extends GetxController {
 
   void setEpisodeStyle(String styleId) {
     selectedEpisodeStyle.value = styleId;
-    PlayerUiKeys.mediaIndicatorTheme.set(styleId);
+    PlayerUiKeys.episodeStyle.set(styleId);
   }
 
   void _restorePreferredSource() {
@@ -579,6 +579,17 @@ class MediaDetailsController extends GetxController {
   }
 
   List<Episode> _renewEpisodeData(List<Episode> episodes) {
+    for (final episode in episodes) {
+      final info = parseEpisodeInfo(episode.number, episode.title);
+      if (info.number.isNotEmpty && info.number != episode.number) {
+        episode.number = info.number;
+      }
+      if (info.season != null && episode.sortMap['season'] == null && episode.sortMap['Season'] == null) {
+        final map = Map<String, String>.from(episode.sortMap);
+        map['season'] = info.season!;
+        episode.headers = map;
+      }
+    }
     if (episodes.any((episode) => episode.sortMap.isNotEmpty)) {
       return episodes;
     }

@@ -44,10 +44,11 @@ class _HomePageState extends State<HomePage> {
           Get.find<IncognitoController>().shouldHideHomeRecent) {
         return const SizedBox.shrink();
       }
-      final entries = <(Media, int, int)>[];
+      final entries = <(Media, int, int, DateTime?)>[];
 
       if (serviceHandler.isLoggedIn.value ||
           serviceHandler.animeList.isNotEmpty) {
+        final now = DateTime.now();
         for (final item in serviceHandler.animeList) {
           if (item.type?.toUpperCase() == 'MANGA' || item.id == null) continue;
           final watched = item.effectiveProgress;
@@ -55,7 +56,8 @@ class _HomePageState extends State<HomePage> {
           if (item.releasedEpisodes != null &&
               item.releasedEpisodes!.isNotEmpty) {
             latestReleased = int.tryParse(item.releasedEpisodes!) ?? 0;
-          } else if (item.mediaStatus?.toUpperCase() == 'COMPLETED') {
+          } else if (item.mediaStatus?.toUpperCase() == 'COMPLETED' ||
+              item.mediaStatus?.toUpperCase() == 'FINISHED') {
             latestReleased = int.tryParse(item.totalEpisodes ?? '') ?? 0;
           }
 
@@ -65,11 +67,41 @@ class _HomePageState extends State<HomePage> {
               status == 'REPEATING' ||
               status == 'REWATCHING';
 
-          if (isWatching && latestReleased > watched) {
-            final media = CardData.fromTrackedMedia(item).data;
-            entries.add((media, watched, latestReleased));
+          if (!isWatching || latestReleased <= watched) {
+            continue;
           }
+
+          final media = CardData.fromTrackedMedia(item).data;
+          final releaseDate = NewEpisodeReleaseCard.calculateReleaseDate(
+            media: media,
+            latestReleasedEpisode: latestReleased,
+            itemEndDate: item.endDate,
+            mediaStatus: item.mediaStatus,
+          );
+
+          final mediaStatus = item.mediaStatus?.toUpperCase();
+          final isStillAiring = mediaStatus == 'RELEASING' ||
+              mediaStatus == 'AIRING' ||
+              item.nextAiringEpisode != null;
+
+          if (!isStillAiring) {
+            if (releaseDate == null ||
+                now.isAfter(releaseDate.add(const Duration(days: 7)))) {
+              continue;
+            }
+          }
+
+          entries.add((media, watched, latestReleased, releaseDate));
         }
+
+        entries.sort((a, b) {
+          final dateA = a.$4;
+          final dateB = b.$4;
+          if (dateA == null && dateB == null) return 0;
+          if (dateA == null) return 1;
+          if (dateB == null) return -1;
+          return dateB.compareTo(dateA);
+        });
       }
 
       if (entries.isEmpty &&
@@ -86,7 +118,8 @@ class _HomePageState extends State<HomePage> {
           entries.add((
             CardData.fromTrackedMedia(item).data,
             dummyWatched,
-            dummyLatest
+            dummyLatest,
+            DateTime.now().subtract(Duration(days: i)),
           ));
         }
       }
@@ -97,38 +130,20 @@ class _HomePageState extends State<HomePage> {
 
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: AnymeXText(
-                'New Episode Releases',
-                variant: TextVariant.semiBold,
-                size: 17,
-                color: context.colors.primary,
-                isMarquee: true,
+        child: SizedBox(
+          height: 155,
+          child: RepaintBoundary(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: entries.length,
+              itemBuilder: (context, i) => NewEpisodeReleaseCard(
+                media: entries[i].$1,
+                watchedEpisode: entries[i].$2,
+                latestReleasedEpisode: entries[i].$3,
+                releaseDate: entries[i].$4,
               ),
             ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: SizedBox(
-                height: 155,
-                child: RepaintBoundary(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: entries.length,
-                    itemBuilder: (context, i) => NewEpisodeReleaseCard(
-                      media: entries[i].$1,
-                      watchedEpisode: entries[i].$2,
-                      latestReleasedEpisode: entries[i].$3,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       );
     });

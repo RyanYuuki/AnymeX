@@ -236,7 +236,7 @@ class _AnilistAboutMeState extends State<AnilistAboutMe> {
                 fontSize: 13.5,
                 height: 1.6,
                 color: context.theme.colorScheme.onSurfaceVariant,
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 fontFamilyFallback: const [
                   'Apple Color Emoji',
                   'Segoe UI Emoji',

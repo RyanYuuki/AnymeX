@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
@@ -37,7 +38,9 @@ import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/screens/novel/home_page.dart';
 import 'package:anymex/widgets/common/lazy_indexed_stack.dart';
 import 'package:anymex/widgets/common/media_mode_selector.dart';
+import 'package:anymex/widgets/common/home_continue_button.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
+import 'package:anymex/services/fcm_service.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/logger.dart';
@@ -284,6 +287,7 @@ void _initializeGetxController() async {
     Get.lazyPut(() => MediaModeController());
     Get.put(AppLockController(), permanent: true);
     Get.put(IncognitoController(), permanent: true);
+    Get.lazyPut(() => DownloadSearchController());
   }, errorMessage: 'Failed to register GetX controllers');
 
   await safeCall(() => StorageManagerService().enforceImageCacheLimit(),
@@ -341,6 +345,13 @@ class _MainAppState extends State<MainApp> {
         .addListener(() => _isFullScreen = AnymeXTitleBar.isFullScreen.value);
 
     focusNode = FocusNode();
+
+    if (!Platform.isLinux) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        safeCall(() => FcmService.init(),
+            errorMessage: 'Failed to initialize FCM');
+      });
+    }
 
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
@@ -488,8 +499,15 @@ class _FilterScreenState extends State<FilterScreen> {
       {bool isDesktop = false}) {
     final settings = Get.find<Settings>();
     Widget? subWidget;
+    final mediaModeController = Get.isRegistered<MediaModeController>()
+        ? Get.find<MediaModeController>()
+        : Get.put(MediaModeController());
 
-    if (!settings.useLegacyNavbar) {
+    if (tabKey == 'Home') {
+      if (!isDesktop && mediaModeController.animeHistory.isNotEmpty) {
+        subWidget = const HomeContinueWatchingBar();
+      }
+    } else if (!settings.useLegacyNavbar) {
       if (tabKey == 'Discover') {
         subWidget = MediaModeSelector(
           isVertical: isDesktop,

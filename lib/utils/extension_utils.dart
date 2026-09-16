@@ -31,12 +31,20 @@ Map<String, String> getPageImageHeaders(Map<String, String>? headers, [String? b
       ? effectiveBaseUrl.substring(0, effectiveBaseUrl.length - 1)
       : effectiveBaseUrl;
 
-  return {
+  final result = <String, String>{
     'User-Agent':
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
     if (referer.isNotEmpty) 'Referer': referer,
     if (origin.isNotEmpty) 'Origin': origin,
     'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-    ...?headers,
   };
+
+  if (headers != null) {
+    for (final entry in headers.entries) {
+      result.removeWhere((k, _) => k.toLowerCase() == entry.key.toLowerCase());
+      result[entry.key] = entry.value;
+    }
+  }
+
+  return result;
 }

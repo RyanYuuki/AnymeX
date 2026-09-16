@@ -124,19 +124,15 @@ class Episode {
 
 extension EpisodeMap on Episode {
   Map<String, String> get sortMap {
-    if (sortKeys == null || sortVals == null) return {};
-    if (sortKeys!.isEmpty || sortVals!.isEmpty) return {};
+    if (sortKeys == null || sortKeys!.isEmpty) return {};
 
     final result = <String, String>{};
-    final pairCount = sortKeys!.length < sortVals!.length
-        ? sortKeys!.length
-        : sortVals!.length;
-
-    for (int i = 0; i < pairCount; i++) {
+    final vals = sortVals ?? [];
+    for (int i = 0; i < sortKeys!.length; i++) {
       final k = sortKeys![i].trim();
-      final v = sortVals![i].trim();
-      if (k.isNotEmpty && v.isNotEmpty) {
-        result[k] = v;
+      final v = i < vals.length ? vals[i].trim() : '';
+      if (k.isNotEmpty) {
+        result[k] = v.isNotEmpty ? v : k;
       }
     }
     return result;
@@ -149,7 +145,9 @@ extension EpisodeMap on Episode {
         other.link != null &&
         link!.isNotEmpty &&
         other.link!.isNotEmpty &&
-        link == other.link) {
+        link == other.link &&
+        link != '#' &&
+        link != '/') {
       return true;
     }
     final thisNum = double.tryParse(number.trim());
@@ -159,8 +157,42 @@ extension EpisodeMap on Episode {
     } else if (number.trim() != other.number.trim()) {
       return false;
     }
+
+    final thisKeys = sortKeys ?? [];
+    final otherKeys = other.sortKeys ?? [];
+    if (thisKeys.isNotEmpty != otherKeys.isNotEmpty) {
+      return false;
+    }
+    if (thisKeys.isNotEmpty && otherKeys.isNotEmpty) {
+      if (thisKeys.length != otherKeys.length) return false;
+      for (int i = 0; i < thisKeys.length; i++) {
+        if (thisKeys[i].trim().toLowerCase() !=
+            otherKeys[i].trim().toLowerCase()) {
+          return false;
+        }
+      }
+    }
+
+    final thisVals = sortVals ?? [];
+    final otherVals = other.sortVals ?? [];
+    if (thisVals.isNotEmpty != otherVals.isNotEmpty) {
+      return false;
+    }
+    if (thisVals.isNotEmpty && otherVals.isNotEmpty) {
+      if (thisVals.length != otherVals.length) return false;
+      for (int i = 0; i < thisVals.length; i++) {
+        if (thisVals[i].trim().toLowerCase() !=
+            otherVals[i].trim().toLowerCase()) {
+          return false;
+        }
+      }
+    }
+
     final thisSort = sortMap;
     final otherSort = other.sortMap;
+    if (thisSort.isNotEmpty != otherSort.isNotEmpty) {
+      return false;
+    }
     if (thisSort.isNotEmpty && otherSort.isNotEmpty) {
       if (thisSort.length != otherSort.length) return false;
       for (final entry in thisSort.entries) {
@@ -168,10 +200,6 @@ extension EpisodeMap on Episode {
           return false;
         }
       }
-      return true;
-    }
-    if (thisSort.isNotEmpty != otherSort.isNotEmpty) {
-      return false;
     }
     return true;
   }

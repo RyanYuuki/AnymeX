@@ -346,7 +346,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                     AnymeXText('Sort By',
                         style: TextStyle(
                           fontSize: 16,
-                          fontFamily: 'Poppins-Bold',
+                          fontFamily: 'Linotte',
                           fontWeight: FontWeight.bold,
                           color: colors.onSurface,
                         )),
@@ -438,7 +438,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                   AnymeXText('Filter by Genre',
                       style: TextStyle(
                         fontSize: 16,
-                        fontFamily: 'Poppins-Bold',
+                        fontFamily: 'Linotte',
                         fontWeight: FontWeight.bold,
                         color: colors.onSurface,
                       )),

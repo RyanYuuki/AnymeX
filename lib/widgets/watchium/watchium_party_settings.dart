@@ -61,7 +61,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
             child: AnymeXText(
               'Party Settings',
               style: theme.textTheme.titleLarge?.copyWith(
-                fontFamily: 'Poppins-SemiBold',
+                fontFamily: 'Linotte',
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -248,7 +248,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
       child: AnymeXText(
         title,
         style: TextStyle(
-          fontFamily: 'Poppins-SemiBold',
+          fontFamily: 'Linotte',
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: cs.onSurface.withValues(alpha: 0.45),
@@ -302,7 +302,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                     AnymeXText(
                       'Overlay position',
                       style: TextStyle(
-                        fontFamily: 'Poppins-SemiBold',
+                        fontFamily: 'Linotte',
                         fontSize: 14,
                         color: cs.onSurface,
                       ),
@@ -311,7 +311,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                     AnymeXText(
                       'Where live comments appear on screen',
                       style: TextStyle(
-                        fontFamily: 'Poppins',
+                        fontFamily: 'Linotte',
                         fontSize: 11,
                         color: cs.onSurface.withValues(alpha: 0.5),
                       ),
@@ -400,7 +400,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                 label,
                 style: TextStyle(
                   fontSize: 10,
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   color: isSelected ? cs.primary : cs.onSurface.withValues(alpha: 0.6),
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 ),
@@ -449,7 +449,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                 AnymeXText(
                   title,
                   style: TextStyle(
-                    fontFamily: 'Poppins-SemiBold',
+                    fontFamily: 'Linotte',
                     fontSize: 14,
                     color: cs.onSurface,
                   ),
@@ -458,7 +458,7 @@ class _WatchiumPartySettingsState extends State<WatchiumPartySettings> {
                 AnymeXText(
                   subtitle,
                   style: TextStyle(
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                     fontSize: 11,
                     color: cs.onSurface.withValues(alpha: 0.5),
                   ),

@@ -59,7 +59,7 @@ class ReaderSettings {
                       child: AnymeXText(
                         'Reader Settings',
                         style: TextStyle(
-                            fontSize: 18, fontFamily: 'Poppins-SemiBold'),
+                            fontSize: 18, fontFamily: 'Linotte'),
                       ),
                     ),
                   ),

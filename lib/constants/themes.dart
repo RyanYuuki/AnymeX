@@ -4,7 +4,7 @@ const Color seedColor = Colors.red;
 
 ThemeData lightMode = ThemeData(
   useMaterial3: true,
-  fontFamily: 'Poppins',
+  fontFamily: 'Linotte',
   brightness: Brightness.light,
   scaffoldBackgroundColor:
       ColorScheme.fromSeed(brightness: Brightness.light, seedColor: seedColor)
@@ -62,7 +62,7 @@ ThemeData lightMode = ThemeData(
 
 ThemeData darkMode = ThemeData(
   useMaterial3: true,
-  fontFamily: 'Poppins',
+  fontFamily: 'Linotte',
   brightness: Brightness.dark,
   scaffoldBackgroundColor:
       ColorScheme.fromSeed(brightness: Brightness.dark, seedColor: seedColor)

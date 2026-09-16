@@ -162,7 +162,7 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
         style: const TextStyle(
           fontSize: 16.0,
           fontWeight: FontWeight.bold,
-          fontFamily: 'Poppins-Bold',
+          fontFamily: 'Linotte',
         ),
       ),
       maxLines: 1,
@@ -288,7 +288,7 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
               autofocus: true,
               style: TextStyle(
                 fontSize: 14,
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 color: theme.colorScheme.onSurface,
               ),
               decoration: InputDecoration(
@@ -298,7 +298,7 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
                 hintStyle: TextStyle(
                   color: theme.colorScheme.onSurface.opaque(0.45),
                   fontSize: 13.5,
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                 ),
                 border: InputBorder.none,
                 isDense: true,
