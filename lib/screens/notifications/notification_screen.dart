@@ -5,6 +5,7 @@ import 'package:anymex/models/notification/notification_item.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
+import 'package:anymex/screens/notifications/announcement_sheet.dart';
 import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
@@ -476,6 +477,22 @@ class NotificationScreen extends GetView<NotificationController> {
   void _handleNotificationTap(NotificationItem notification) {
     if (!notification.isRead) {
       controller.markAsRead(notification.id);
+    }
+
+    // Announcements open their dedicated bottom sheet (full info + markdown),
+    // NOT the comment/media navigation flow.
+    if (notification.type == 'announcement_published') {
+      final sheetContext = Get.context;
+      if (sheetContext != null) {
+        AnnouncementSheet.show(
+          sheetContext,
+          announcementId:
+              notification.metadata['announcement_id']?.toString() ?? '',
+          fallbackTitle: notification.title,
+          fallbackBody: notification.body,
+        );
+      }
+      return;
     }
 
     if (notification.mediaId == null || notification.mediaType == null) return;

@@ -9,6 +9,7 @@ import 'package:anymex/database/comments/model/user_points.dart';
 import 'package:anymex/database/comments/model/leaderboard_entry.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/models/notification/announcement.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/notification.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -1435,6 +1436,54 @@ class CommentumService extends GetxController {
       Logger.i('Error marking all notifications as read: $e');
       return false;
     }
+  }
+
+  /// Fetches the full announcement (title, markdown content, category,
+  /// author, dates) for the announcement bottom sheet.
+  Future<Announcement?> fetchAnnouncement(String announcementId) async {
+    try {
+      final params = <String, String>{};
+      if (currentUserId != null) {
+        params['user_id'] = currentUserId!;
+        params['app_id'] = 'anymex';
+      }
+      final query = params.isEmpty
+          ? ''
+          : '?${params.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}';
+
+      final response = await http.get(
+        Uri.parse('$_baseUrl/announcements/$announcementId$query'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final announcement = data['announcement'] as Map<String, dynamic>?;
+        if (announcement != null) {
+          return Announcement.fromJson(announcement);
+        }
+      }
+      Logger.i('Failed to fetch announcement $announcementId: ${response.statusCode}');
+      return null;
+    } catch (e) {
+      Logger.i('Error fetching announcement: $e');
+      return null;
+    }
+  }
+
+  /// Fire-and-forget read receipt for the announcement (dashboard read stats).
+  Future<void> markAnnouncementRead(String announcementId, String appId) async {
+    if (currentUserId == null) return;
+    try {
+      await http.post(
+        Uri.parse('$_baseUrl/announcements/$announcementId/read'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'user_id': currentUserId,
+          'app_id': appId,
+        }),
+      );
+    } catch (_) {}
   }
 
   Future<int> getUnreadNotificationCount() async {

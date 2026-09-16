@@ -6,6 +6,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/notifications/announcement_sheet.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
@@ -347,6 +348,16 @@ class NotificationService extends GetxController {
   }
 
   void _navigateFromNotification(Map<String, dynamic> data, {int attempts = 0}) {
+    // Announcements open their dedicated bottom sheet (full info + markdown),
+    // NOT the comment/media navigation flow.
+    final notificationType = data['type']?.toString();
+    final announcementId = data['announcement_id']?.toString() ?? '';
+    if (notificationType == 'announcement_published' ||
+        announcementId.isNotEmpty) {
+      _openAnnouncementSheet(data, attempts: attempts);
+      return;
+    }
+
     final mediaId = data['media_id']?.toString();
     final mediaType = data['media_type']?.toString();
     final commentId = data['comment_id']?.toString();
@@ -407,6 +418,31 @@ class NotificationService extends GetxController {
         scrollToCommentId: commentId,
       ));
     }
+  }
+
+  void _openAnnouncementSheet(Map<String, dynamic> data, {int attempts = 0}) {
+    final context = Get.context;
+    if (context == null) {
+      if (attempts >= 150) {
+        Logger.i('Announcement sheet nav timed out: no navigator context');
+        return;
+      }
+      Future.delayed(const Duration(milliseconds: 200), () {
+        _openAnnouncementSheet(data, attempts: attempts + 1);
+      });
+      return;
+    }
+
+    final announcementId = data['announcement_id']?.toString() ?? '';
+    Logger.i(
+        'Opening announcement sheet: id=$announcementId (from push tap)');
+
+    AnnouncementSheet.show(
+      context,
+      announcementId: announcementId,
+      fallbackTitle: data['title']?.toString(),
+      fallbackBody: data['body']?.toString(),
+    );
   }
 
   Future<void> refreshUnreadCount() async {
