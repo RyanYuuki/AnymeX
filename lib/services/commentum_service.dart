@@ -1557,6 +1557,8 @@ class CommentumService extends GetxController {
       return responses.any((r) => r.statusCode == 200);
     } catch (e) {
       Logger.i('Error marking all notifications as read: $e');
+      return false;
+    }
   }
 
   /// Fetches the full announcement (title, markdown content, category,
