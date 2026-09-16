@@ -13,10 +13,17 @@ class CommentsRepliesSheet extends StatefulWidget {
   final Comment rootComment;
   final CommentSectionController controller;
 
+  /// Optional hook so the host (CommentsSection) can open its full comment
+  /// context menu (copy/edit/delete/report/moderate) for any comment shown
+  /// in this sheet, keeping the replies view at feature parity with the
+  /// main comment list.
+  final void Function(Comment comment)? onShowContextMenu;
+
   const CommentsRepliesSheet({
     super.key,
     required this.rootComment,
     required this.controller,
+    this.onShowContextMenu,
   });
 
   static Future<void> show(
@@ -24,6 +31,7 @@ class CommentsRepliesSheet extends StatefulWidget {
     required Comment rootComment,
     required CommentSectionController controller,
     Comment? initialReplyTarget,
+    void Function(Comment comment)? onShowContextMenu,
   }) {
     if (initialReplyTarget != null) {
       controller.setReplyTarget(initialReplyTarget);
@@ -39,6 +47,7 @@ class CommentsRepliesSheet extends StatefulWidget {
       builder: (ctx) => CommentsRepliesSheet(
         rootComment: rootComment,
         controller: controller,
+        onShowContextMenu: onShowContextMenu,
       ),
     );
   }
@@ -170,6 +179,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     final controller = widget.controller;
 
     final isUpvoted = comment.userVote == 1;
+    final isDownvoted = comment.userVote == -1;
     final isSpoiler = comment.tag.toLowerCase().contains('spoiler');
 
     final hasRole = comment.userRole != null &&
@@ -180,6 +190,31 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
         parentComment != null &&
         rootComment != null &&
         parentComment.id != rootComment.id;
+
+    // Deleted replies render as a muted placeholder instead of stale content
+    if (comment.deleted) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: [
+            Icon(
+              Icons.delete_outline_rounded,
+              size: 14,
+              color: colorScheme.onSurfaceVariant.opaque(0.6),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'This comment was deleted',
+              style: TextStyle(
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+                color: colorScheme.onSurfaceVariant.opaque(0.6),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     Widget card = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,7 +372,43 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: 6),
+
+                    // Downvote Button
+                    GestureDetector(
+                      onTap: () => controller.handleVote(comment, -1),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 3),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isDownvoted
+                                  ? Icons.thumb_down_rounded
+                                  : Icons.thumb_down_outlined,
+                              size: 13,
+                              color: isDownvoted
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                            if (comment.dislikes > 0) ...[
+                              const SizedBox(width: 4),
+                              Text(
+                                '${comment.dislikes}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDownvoted
+                                      ? colorScheme.primary
+                                      : colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
 
                     // Reply Button
                     if (onReplyTap != null)
@@ -356,6 +427,22 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                               fontWeight: FontWeight.w700,
                               color: colorScheme.onSurfaceVariant,
                             ),
+                          ),
+                        ),
+                      ),
+
+                    // Context menu (3-dot) - full parity with the main list
+                    const Spacer(),
+                    if (widget.onShowContextMenu != null)
+                      GestureDetector(
+                        onTap: () => widget.onShowContextMenu!(comment),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          child: Icon(
+                            Icons.more_horiz_rounded,
+                            size: 16,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
