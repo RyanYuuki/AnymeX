@@ -1360,9 +1360,96 @@ class CommentumService extends GetxController {
     }
 
     try {
+      if (type == 'announcement') {
+        // Announcements are app-level notifications stored under 'anymex'
+        return await _fetchNotificationHistoryForClient(
+          clientType: 'anymex',
+          page: page,
+          limit: limit,
+          type: 'announcement',
+          unreadOnly: unreadOnly,
+        );
+      }
+
+      if (type != null) {
+        // Specific category (comment, mention, vote, report, moderation)
+        return await _fetchNotificationHistoryForClient(
+          clientType: _clientType,
+          page: page,
+          limit: limit,
+          type: type,
+          unreadOnly: unreadOnly,
+        );
+      }
+
+      // 'all' category: fetch both service notifications and anymex announcements
+      final results = await Future.wait([
+        _fetchNotificationHistoryForClient(
+          clientType: _clientType,
+          page: page,
+          limit: limit,
+          unreadOnly: unreadOnly,
+        ),
+        _fetchNotificationHistoryForClient(
+          clientType: 'anymex',
+          page: page,
+          limit: limit,
+          unreadOnly: unreadOnly,
+        ),
+      ]);
+
+      final clientResult = results[0];
+      final anymexResult = results[1];
+
+      final List<dynamic> combinedNotifs = [
+        ...clientResult['notifications'] as List? ?? [],
+        ...anymexResult['notifications'] as List? ?? [],
+      ];
+
+      // Deduplicate by ID
+      final seenIds = <dynamic>{};
+      final deduped = <dynamic>[];
+      for (final item in combinedNotifs) {
+        final id = item['id'];
+        if (id != null && seenIds.add(id)) {
+          deduped.add(item);
+        }
+      }
+
+      // Sort newest first
+      deduped.sort((a, b) {
+        final dateA = DateTime.tryParse(a['created_at']?.toString() ?? '') ?? DateTime(1970);
+        final dateB = DateTime.tryParse(b['created_at']?.toString() ?? '') ?? DateTime(1970);
+        return dateB.compareTo(dateA);
+      });
+
+      final totalUnread = (clientResult['unread_count'] as int? ?? 0) +
+          (anymexResult['unread_count'] as int? ?? 0);
+      final totalItems = (clientResult['total'] as int? ?? 0) +
+          (anymexResult['total'] as int? ?? 0);
+
+      return {
+        'notifications': deduped,
+        'total': totalItems,
+        'unread_count': totalUnread,
+      };
+    } catch (e) {
+      Logger.i('Error fetching notification history: $e');
+      return {'notifications': [], 'total': 0, 'unread_count': 0};
+    }
+  }
+
+  Future<Map<String, dynamic>> _fetchNotificationHistoryForClient({
+    required String clientType,
+    int page = 1,
+    int limit = 30,
+    String? type,
+    bool unreadOnly = false,
+  }) async {
+    try {
       final body = <String, dynamic>{
         'action': 'get_history',
-        'client_type': _clientType,
+        'client_type': clientType,
         'user_id': currentUserId,
         'page': page,
         'limit': limit,
@@ -1387,12 +1474,12 @@ class CommentumService extends GetxController {
       }
       return {'notifications': [], 'total': 0, 'unread_count': 0};
     } catch (e) {
-      Logger.i('Error fetching notification history: $e');
+      Logger.i('Error fetching notification history for $clientType: $e');
       return {'notifications': [], 'total': 0, 'unread_count': 0};
     }
   }
 
-  Future<bool> markNotificationRead(int notificationId) async {
+  Future<bool> markNotificationRead(int notificationId, {String? clientType}) async {
     if (currentUserId == null) return false;
 
     try {
@@ -1401,7 +1488,7 @@ class CommentumService extends GetxController {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'action': 'mark_read',
-          'client_type': _clientType,
+          'client_type': clientType ?? _clientType,
           'user_id': currentUserId,
           'notification_id': notificationId,
         }),
@@ -1418,24 +1505,58 @@ class CommentumService extends GetxController {
     if (currentUserId == null) return false;
 
     try {
-      final body = <String, dynamic>{
-        'action': 'mark_all_read',
-        'client_type': _clientType,
-        'user_id': currentUserId,
-      };
-      if (type != null) body['type'] = type;
+      if (type == 'announcement') {
+        final response = await http.post(
+          Uri.parse('$_baseUrl/notifications'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'action': 'mark_all_read',
+            'client_type': 'anymex',
+            'user_id': currentUserId,
+            'type': 'announcement',
+          }),
+        );
+        return response.statusCode == 200;
+      }
 
-      final response = await http.post(
-        Uri.parse('$_baseUrl/notifications'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode(body),
-      );
+      if (type != null) {
+        final response = await http.post(
+          Uri.parse('$_baseUrl/notifications'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'action': 'mark_all_read',
+            'client_type': _clientType,
+            'user_id': currentUserId,
+            'type': type,
+          }),
+        );
+        return response.statusCode == 200;
+      }
 
-      return response.statusCode == 200;
+      final responses = await Future.wait([
+        http.post(
+          Uri.parse('$_baseUrl/notifications'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'action': 'mark_all_read',
+            'client_type': _clientType,
+            'user_id': currentUserId,
+          }),
+        ),
+        http.post(
+          Uri.parse('$_baseUrl/notifications'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'action': 'mark_all_read',
+            'client_type': 'anymex',
+            'user_id': currentUserId,
+          }),
+        ),
+      ]);
+
+      return responses.any((r) => r.statusCode == 200);
     } catch (e) {
       Logger.i('Error marking all notifications as read: $e');
-      return false;
-    }
   }
 
   /// Fetches the full announcement (title, markdown content, category,
@@ -1490,23 +1611,37 @@ class CommentumService extends GetxController {
     if (currentUserId == null) return 0;
 
     try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/notifications'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'action': 'get_unread_count',
-          'client_type': _clientType,
-          'user_id': currentUserId,
-        }),
-      );
+      final futures = await Future.wait([
+        http.post(
+          Uri.parse('$_baseUrl/notifications'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'action': 'get_unread_count',
+            'client_type': _clientType,
+            'user_id': currentUserId,
+          }),
+        ),
+        http.post(
+          Uri.parse('$_baseUrl/notifications'),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'action': 'get_unread_count',
+            'client_type': 'anymex',
+            'user_id': currentUserId,
+          }),
+        ),
+      ]);
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final count = data['unread_count'] as int? ?? 0;
-        unreadNotificationCount.value = count;
-        return count;
+      int total = 0;
+      for (final res in futures) {
+        if (res.statusCode == 200) {
+          final data = json.decode(res.body);
+          total += (data['unread_count'] as int? ?? 0);
+        }
       }
-      return 0;
+
+      unreadNotificationCount.value = total;
+      return total;
     } catch (e) {
       Logger.i('Error getting unread count: $e');
       return 0;

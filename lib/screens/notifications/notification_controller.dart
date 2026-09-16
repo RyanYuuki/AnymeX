@@ -114,11 +114,16 @@ class NotificationController extends GetxController {
   }
 
   Future<void> markAsRead(int notificationId) async {
+    final index =
+        notifications.indexWhere((n) => n.id == notificationId);
+    final item = index != -1 ? notifications[index] : null;
+    final clientType = item?.clientType.isNotEmpty == true
+        ? item!.clientType
+        : (item?.type == 'announcement_published' ? 'anymex' : null);
+
     final success =
-        await _commentumService.markNotificationRead(notificationId);
+        await _commentumService.markNotificationRead(notificationId, clientType: clientType);
     if (success) {
-      final index =
-          notifications.indexWhere((n) => n.id == notificationId);
       if (index != -1) {
         final updated = NotificationItem(
           id: notifications[index].id,
