@@ -2,9 +2,8 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/models/notification/notification_item.dart';
-import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/manga/details_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
+import 'package:anymex/screens/anime/widgets/comments/media_comments_page.dart';
 import 'package:anymex/screens/notifications/announcement_sheet.dart';
 import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/screens/other_features.dart';
@@ -518,24 +517,14 @@ class NotificationScreen extends GetView<NotificationController> {
       mediaType: isManga ? ItemType.manga : ItemType.anime,
     );
 
-    final tag =
-        'notif-${notification.id}-${DateTime.now().millisecondsSinceEpoch}';
-
-    if (isManga) {
-      navigate(() => MangaDetailsPage(
-            media: media,
-            tag: tag,
-            initialTabIndex: 2,
-            scrollToCommentId: notification.commentId,
-          ));
-    } else {
-      navigate(() => AnimeDetailsPage(
-            media: media,
-            tag: tag,
-            initialTabIndex: 2,
-            scrollToCommentId: notification.commentId,
-          ));
-    }
+    // Open the standalone comments page directly — the details page's
+    // comments tab auto-pushes this exact page, so going straight here skips
+    // a full details-page load. Reply targets open the replies sheet inside
+    // CommentSection.
+    navigate(() => MediaCommentsPage(
+          media: media,
+          scrollToCommentId: notification.commentId,
+        ));
   }
 }
 

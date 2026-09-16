@@ -4,8 +4,7 @@ import 'dart:typed_data';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
-import 'package:anymex/screens/anime/details_page.dart';
-import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/anime/widgets/comments/media_comments_page.dart';
 import 'package:anymex/screens/notifications/announcement_sheet.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
@@ -399,25 +398,17 @@ class NotificationService extends GetxController {
       mediaType: isManga ? ItemType.manga : ItemType.anime,
     );
 
-    final tag = 'fcm-${DateTime.now().millisecondsSinceEpoch}';
+    Logger.i(
+        'Navigating to comments page for media: $mediaId ($type) on $serviceType');
 
-    Logger.i('Navigating to media: $mediaId ($type) on $serviceType');
-
-    if (isManga) {
-      navigate(() => MangaDetailsPage(
-        media: media,
-        tag: tag,
-        initialTabIndex: 2,
-        scrollToCommentId: commentId,
-      ));
-    } else {
-      navigate(() => AnimeDetailsPage(
-        media: media,
-        tag: tag,
-        initialTabIndex: 2,
-        scrollToCommentId: commentId,
-      ));
-    }
+    // Open the standalone comments page directly. The details page's comments
+    // tab auto-pushes this exact page, so going straight here skips a full
+    // details-page load. Reply targets are handled inside CommentSection,
+    // which opens the replies sheet for the target thread.
+    navigate(() => MediaCommentsPage(
+      media: media,
+      scrollToCommentId: commentId,
+    ));
   }
 
   void _openAnnouncementSheet(Map<String, dynamic> data, {int attempts = 0}) {

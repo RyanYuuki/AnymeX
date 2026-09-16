@@ -108,8 +108,34 @@ class _CommentSectionState extends State<CommentSection> {
       if (!isLoading &&
           !_hasScrolledToTarget &&
           controller.comments.isNotEmpty) {
+        final targetId = widget.scrollToCommentId!;
+        final root = _findRootThreadOfComment(targetId, controller.comments);
+
+        // Redesigned UI: depth-1+ replies render inside the replies sheet, so
+        // the inline target key can never mount for them — open the thread
+        // sheet directly instead of scrolling.
+        if (root != null && root.id != targetId) {
+          _hasScrolledToTarget = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            CommentsRepliesSheet.show(
+              context,
+              rootComment: root,
+              controller: controller,
+              onShowContextMenu: (target) {
+                final isOwnComment =
+                    target.userId == controller.profile.id?.toString();
+                _showCommentContextMenu(
+                    context, target, controller, isOwnComment,
+                    controller.canModerate());
+              },
+            );
+          });
+          return;
+        }
+
         // Auto-expand any collapsed threads that contain the target comment
-        _expandThreadForComment(widget.scrollToCommentId!, controller.comments);
+        _expandThreadForComment(targetId, controller.comments);
 
         // Wait for the widget tree to rebuild with expanded threads
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -149,6 +175,19 @@ class _CommentSectionState extends State<CommentSection> {
       }
     }
     return false;
+  }
+
+  /// Returns the top-level comment that contains [targetId] in its reply
+  /// tree, or the comment itself when it is top-level. Null when the target
+  /// is not present in the currently loaded comments.
+  Comment? _findRootThreadOfComment(String targetId, List<Comment> comments) {
+    for (final comment in comments) {
+      if (comment.id == targetId) return comment;
+      if (_commentExistsInTree(comment.replies ?? [], targetId)) {
+        return comment;
+      }
+    }
+    return null;
   }
 
   bool _wouldBeCollapsed(List<Comment> comments, String targetId, int depth) {

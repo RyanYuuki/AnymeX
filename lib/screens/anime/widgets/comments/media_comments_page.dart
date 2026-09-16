@@ -87,22 +87,39 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
         titleSpacing: 0,
         title: Row(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: AnymeXImage(
-                imageUrl: widget.media.poster ?? '',
+            if (widget.media.poster.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: AnymeXImage(
+                  imageUrl: widget.media.poster,
+                  width: 32,
+                  height: 44,
+                  fit: BoxFit.cover,
+                ),
+              )
+            else
+              Container(
                 width: 32,
                 height: 44,
-                fit: BoxFit.cover,
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(
+                  Icons.movie_outlined,
+                  size: 18,
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.media.title,
+                    widget.media.title.isNotEmpty
+                        ? widget.media.title
+                        : 'Comments',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

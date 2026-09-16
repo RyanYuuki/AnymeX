@@ -1,12 +1,11 @@
 import 'package:anymex/models/notification/announcement.dart';
+import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:get/get.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:url_launcher/url_launcher.dart';
 
 /// Dedicated bottom sheet for announcements.
 ///
@@ -250,36 +249,42 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
             ],
           ),
           const Divider(height: 24, thickness: 1),
-          MarkdownBody(
-            data: announcement.fullContent,
-            softLineBreak: true,
-            onTapLink: (text, href, title) {
-              if (href != null) {
-                launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
-              }
-            },
-            styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))
-                .copyWith(
-                  blockquote: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontStyle: FontStyle.italic,
-                        color: colors.onSurface.withOpacity(0.7),
-                      ),
-                  blockquoteDecoration: BoxDecoration(
-                    color: colors.surfaceContainerHighest.withOpacity(0.4),
-                    border: Border(
-                      left: BorderSide(color: colors.primary, width: 3),
-                    ),
-                  ),
-                  codeblockDecoration: BoxDecoration(
-                    color: colors.surfaceContainerHighest.withOpacity(0.4),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+          DiscordMarkdown(
+            text: _normalizeAnnouncementMarkdown(announcement.fullContent),
+            colorScheme: colors,
+            baseStyle: TextStyle(
+              fontSize: 14,
+              height: 1.45,
+              color: colors.onSurface,
+            ),
           ),
           const SizedBox(height: 8),
         ],
       ),
     );
+  }
+
+  /// The dashboard editor writes Discord-flavored markdown (bold, italic,
+  /// ||spoilers||, images, GIFs, links) plus headings and bullet lists that
+  /// the comment renderer treats as plain text. Normalize those two into
+  /// DiscordMarkdown-friendly lines so announcements match comment styling.
+  String _normalizeAnnouncementMarkdown(String raw) {
+    final out = <String>[];
+    for (final line in raw.split('\n')) {
+      final trimmed = line.trimLeft();
+      final header = RegExp(r'^(#{1,6})\s+(.*)$').firstMatch(trimmed);
+      if (header != null) {
+        out.add('**${header.group(2)}**');
+        continue;
+      }
+      final bullet = RegExp(r'^[-*+]\s+(.*)$').firstMatch(trimmed);
+      if (bullet != null) {
+        out.add('• ${bullet.group(1)}');
+        continue;
+      }
+      out.add(line);
+    }
+    return out.join('\n');
   }
 
   Widget _chip(BuildContext context, String label, Color color, IconData icon) {
@@ -327,15 +332,14 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
               softWrap: true,
             ),
             const SizedBox(height: 12),
-            MarkdownBody(
-              data: widget.fallbackBody ?? '',
-              softLineBreak: true,
-              onTapLink: (text, href, title) {
-                if (href != null) {
-                  launchUrl(Uri.parse(href),
-                      mode: LaunchMode.externalApplication);
-                }
-              },
+            DiscordMarkdown(
+              text: _normalizeAnnouncementMarkdown(widget.fallbackBody ?? ''),
+              colorScheme: colors,
+              baseStyle: TextStyle(
+                fontSize: 14,
+                height: 1.45,
+                color: colors.onSurface,
+              ),
             ),
           ] else ...[
             const SizedBox(height: 24),
