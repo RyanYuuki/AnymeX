@@ -3,7 +3,9 @@ import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -98,13 +100,11 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
                 ),
               )
             else
-              Container(
+              AnymeXContainer(
                 width: 32,
                 height: 44,
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(6),
-                ),
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(6),
                 child: Icon(
                   Icons.movie_outlined,
                   size: 18,
@@ -116,44 +116,38 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  AnymeXText(
                     widget.media.title.isNotEmpty
                         ? widget.media.title
                         : 'Comments',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
+                    size: 14.5,
+                    variant: TextVariant.bold,
+                    color: colorScheme.onSurface,
                   ),
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      Container(
+                      AnymeXContainer(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 5, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
+                        color: colorScheme.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(4),
+                        child: AnymeXText(
                           formatName,
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.primary,
-                          ),
+                          size: 10,
+                          variant: TextVariant.bold,
+                          color: colorScheme.primary,
+                          maxLines: null,
                         ),
                       ),
                       const SizedBox(width: 6),
-                      Obx(() => Text(
+                      Obx(() => AnymeXText(
                             '${controller.totalCommentsCount.value} Comments',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
+                            size: 11,
+                            color: colorScheme.onSurfaceVariant,
+                            maxLines: null,
                           )),
                     ],
                   ),
@@ -181,7 +175,7 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
                     else
                       const SizedBox(width: 18),
                     const SizedBox(width: 8),
-                    const Text('Top comments'),
+                    const AnymeXText('Top comments', maxLines: null),
                   ],
                 ),
               ),
@@ -195,7 +189,7 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
                     else
                       const SizedBox(width: 18),
                     const SizedBox(width: 8),
-                    const Text('Newest first'),
+                    const AnymeXText('Newest first', maxLines: null),
                   ],
                 ),
               ),
@@ -209,7 +203,7 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
                     else
                       const SizedBox(width: 18),
                     const SizedBox(width: 8),
-                    const Text('Oldest first'),
+                    const AnymeXText('Oldest first', maxLines: null),
                   ],
                 ),
               ),

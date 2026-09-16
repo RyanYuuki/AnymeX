@@ -9,6 +9,7 @@ import 'package:anymex/screens/settings/sub_settings/widgets/moderation_action_s
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
@@ -286,9 +287,10 @@ class _CommentSectionState extends State<CommentSection> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Comment Policy'),
-        content: const Text(
+        title: const AnymeXText('Comment Policy', maxLines: null),
+        content: const AnymeXText(
           'To maintain a safe and friendly community, please read and accept our comment policy before posting.\n\nWe do not tolerate spam, harassment, or offensive content.',
+          maxLines: null,
         ),
         actions: [
           TextButton(
@@ -296,7 +298,7 @@ class _CommentSectionState extends State<CommentSection> {
               Navigator.pop(context);
               showPolicySheet(context, PolicyType.commentRules);
             },
-            child: const Text('Read Full Rules'),
+            child: const AnymeXText('Read Full Rules', maxLines: null),
           ),
           FilledButton(
             onPressed: () {
@@ -304,7 +306,7 @@ class _CommentSectionState extends State<CommentSection> {
               Navigator.pop(context);
               controller.addComment();
             },
-            child: const Text('Accept & Post'),
+            child: const AnymeXText('Accept & Post', maxLines: null),
           ),
         ],
       ),
@@ -326,7 +328,7 @@ class _CommentSectionState extends State<CommentSection> {
         }
         return false;
       },
-      child: Container(
+      child: AnymeXContainer(
         margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
         decoration: BoxDecoration(
           color: colorScheme.surface.withValues(alpha: 0.5),
@@ -375,12 +377,13 @@ class _CommentSectionState extends State<CommentSection> {
                           ]
                         : null,
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     'You need to be logged in to comment.',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
+                    maxLines: null,
                   ),
                 ),
             ],
@@ -397,12 +400,11 @@ class _CommentSectionState extends State<CommentSection> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Obx(() => Container(
+    return Obx(() => AnymeXContainer(
           padding: const EdgeInsets.fromLTRB(24, 28, 16, 20),
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainer.opaque(0.3),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
+          color: colorScheme.surfaceContainer.opaque(0.3),
+          borderRadius:
+              const BorderRadius.vertical(top: Radius.circular(24)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -493,15 +495,13 @@ class _CommentSectionState extends State<CommentSection> {
 
     return PopupMenuButton<String>(
       onSelected: (sort) => controller.setSort(sort),
-      child: Container(
+      child: AnymeXContainer(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         margin: const EdgeInsets.only(left: 4),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainer.opaque(0.5),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: colorScheme.outlineVariant.opaque(0.3),
-          ),
+        color: colorScheme.surfaceContainer.opaque(0.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: colorScheme.outlineVariant.opaque(0.3),
         ),
         child: Obx(() => Row(
               mainAxisSize: MainAxisSize.min,
@@ -509,15 +509,14 @@ class _CommentSectionState extends State<CommentSection> {
                 Icon(Icons.sort_rounded,
                     size: 16, color: colorScheme.onSurfaceVariant),
                 const SizedBox(width: 4),
-                Text(
+                AnymeXText(
                   sortOptions
                       .firstWhere((s) => s.$1 == controller.currentSort.value)
                       .$2,
-                  style: TextStyle(
-                    color: colorScheme.onSurfaceVariant,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  color: colorScheme.onSurfaceVariant,
+                  size: 12,
+                  variant: TextVariant.semiBold,
+                  maxLines: null,
                 ),
                 Icon(Icons.arrow_drop_down_rounded,
                     size: 16, color: colorScheme.onSurfaceVariant),
@@ -535,7 +534,7 @@ class _CommentSectionState extends State<CommentSection> {
                     else
                       const SizedBox(width: 18),
                     const SizedBox(width: 8),
-                    Text(s.$2),
+                    AnymeXText(s.$2, maxLines: null),
                   ],
                 ),
               ))
@@ -594,18 +593,16 @@ class _CommentSectionState extends State<CommentSection> {
                         _buildUserAvatar(colorScheme, controller),
                         const SizedBox(width: 16),
                         Expanded(
-                          child: Container(
+                          child: AnymeXContainer(
                             height: 50,
                             clipBehavior: Clip.antiAlias,
-                            decoration: BoxDecoration(
-                              color: colorScheme.surface
-                                  .opaque(0.3, iReallyMeanIt: true),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: colorScheme.outlineVariant
-                                    .opaque(0.2, iReallyMeanIt: true),
-                                width: 1,
-                              ),
+                            color: colorScheme.surface
+                                .opaque(0.3, iReallyMeanIt: true),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: colorScheme.outlineVariant
+                                  .opaque(0.2, iReallyMeanIt: true),
+                              width: 1,
                             ),
                             child: TextField(
                               controller: controller.commentController,
@@ -666,9 +663,10 @@ class _CommentSectionState extends State<CommentSection> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
+                            child: const AnymeXText(
                               'Cancel',
-                              style: TextStyle(fontWeight: FontWeight.w600),
+                              variant: TextVariant.semiBold,
+                              maxLines: null,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -698,12 +696,11 @@ class _CommentSectionState extends State<CommentSection> {
                                       height: 18,
                                       child: ExpressiveLoadingIndicator(),
                                     )
-                                  : const Text(
+                                  : const AnymeXText(
                                       'Post',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
-                                      ),
+                                      variant: TextVariant.bold,
+                                      size: 15,
+                                      maxLines: null,
                                     ),
                             );
                           }),
@@ -734,12 +731,13 @@ class _CommentSectionState extends State<CommentSection> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          AnymeXText(
             'Tag',
             style: theme.textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
+            maxLines: null,
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -753,31 +751,30 @@ class _CommentSectionState extends State<CommentSection> {
                   controller.tagController.value.text = t;
                 },
                 borderRadius: BorderRadius.circular(10),
-                child: Container(
+                child: AnymeXContainer(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
+                  color: isSelected
+                      ? colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
+                      : colorScheme.surfaceContainerLow.opaque(0.3),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
                     color: isSelected
-                        ? colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
-                        : colorScheme.surfaceContainerLow.opaque(0.3),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isSelected
-                          ? colorScheme.primary.opaque(0.4)
-                          : colorScheme.outlineVariant.opaque(0.2),
-                      width: 1.5,
-                    ),
+                        ? colorScheme.primary.opaque(0.4)
+                        : colorScheme.outlineVariant.opaque(0.2),
+                    width: 1.5,
                   ),
-                  child: Text(
+                  child: AnymeXText(
                     t,
+                    color: isSelected
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
+                    size: 13,
                     style: TextStyle(
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.onSurface,
-                      fontSize: 13,
                       fontWeight:
                           isSelected ? FontWeight.w700 : FontWeight.w500,
                     ),
+                    maxLines: null,
                   ),
                 ),
               );
@@ -829,7 +826,7 @@ class _CommentSectionState extends State<CommentSection> {
 
   Widget _buildUserAvatar(
       ColorScheme colorScheme, CommentSectionController controller) {
-    return Container(
+    return AnymeXContainer(
       width: 40,
       height: 40,
       decoration: BoxDecoration(
@@ -879,13 +876,12 @@ class _CommentSectionState extends State<CommentSection> {
                   color: colorScheme.primary,
                 ),
                 const SizedBox(height: 20),
-                Text(
+                AnymeXText(
                   'Loading comments...',
-                  style: TextStyle(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
+                  color: colorScheme.onSurfaceVariant,
+                  size: 16,
+                  variant: TextVariant.semiBold,
+                  maxLines: null,
                 ),
               ],
             ),
@@ -900,7 +896,7 @@ class _CommentSectionState extends State<CommentSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
+              AnymeXContainer(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerLow,
@@ -913,21 +909,23 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
+              AnymeXText(
                 'No comments yet',
                 style: theme.textTheme.titleLarge?.copyWith(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
                 ),
+                maxLines: null,
               ),
               const SizedBox(height: 8),
-              Text(
+              AnymeXText(
                 'Start the conversation and share your thoughts!',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
+                maxLines: null,
               ),
             ],
           ),
@@ -942,12 +940,10 @@ class _CommentSectionState extends State<CommentSection> {
             physics: const NeverScrollableScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
             itemCount: controller.comments.length,
-            separatorBuilder: (context, index) => Container(
+            separatorBuilder: (context, index) => AnymeXContainer(
               height: 1,
               margin: const EdgeInsets.only(left: 48, top: 16, bottom: 16),
-              decoration: BoxDecoration(
-                color: colorScheme.outlineVariant.opaque(0.15),
-              ),
+              color: colorScheme.outlineVariant.opaque(0.15),
             ),
             itemBuilder: (context, index) {
               return _buildCommentWithReplies(
@@ -974,13 +970,14 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Text(
+                      AnymeXText(
                         'Loading more comments...',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: colorScheme.onSurfaceVariant,
+                        size: 13,
+                        color: colorScheme.onSurfaceVariant,
+                        style: const TextStyle(
                           fontWeight: FontWeight.w500,
                         ),
+                        maxLines: null,
                       ),
                     ],
                   ),
@@ -994,22 +991,23 @@ class _CommentSectionState extends State<CommentSection> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
+                      AnymeXContainer(
                         width: 32,
                         height: 1,
                         color: colorScheme.outlineVariant.opaque(0.25),
                       ),
                       const SizedBox(width: 10),
-                      Text(
+                      AnymeXText(
                         "You're all caught up",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colorScheme.onSurfaceVariant.opaque(0.6),
+                        size: 12,
+                        color: colorScheme.onSurfaceVariant.opaque(0.6),
+                        style: const TextStyle(
                           fontWeight: FontWeight.w500,
                         ),
+                        maxLines: null,
                       ),
                       const SizedBox(width: 10),
-                      Container(
+                      AnymeXContainer(
                         width: 32,
                         height: 1,
                         color: colorScheme.outlineVariant.opaque(0.25),
@@ -1110,57 +1108,55 @@ class _CommentSectionState extends State<CommentSection> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (isTarget)
-              Container(
+              AnymeXContainer(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary.opaque(0.08),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: colorScheme.primary.opaque(0.3),
-                  ),
+                color: colorScheme.primary.opaque(0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: colorScheme.primary.opaque(0.3),
                 ),
                 child: Row(
                   children: [
                     Icon(Icons.notifications_active_rounded,
                         size: 14, color: colorScheme.primary),
                     const SizedBox(width: 6),
-                    Text(
+                    AnymeXText(
                       'Notification Target',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.primary,
                         fontWeight: FontWeight.w700,
                         fontSize: 12,
                       ),
+                      maxLines: null,
                     ),
                   ],
                 ),
               ),
             if (comment.pinned == true && depth == 0)
-              Container(
+              AnymeXContainer(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary.opaque(0.08),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: colorScheme.primary.opaque(0.2),
-                  ),
+                color: colorScheme.primary.opaque(0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: colorScheme.primary.opaque(0.2),
                 ),
                 child: Row(
                   children: [
                     Icon(Icons.push_pin_rounded,
                         size: 14, color: colorScheme.primary),
                     const SizedBox(width: 6),
-                    Text(
+                    AnymeXText(
                       'Pinned',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.primary,
                         fontWeight: FontWeight.w700,
                         fontSize: 12,
                       ),
+                      maxLines: null,
                     ),
                   ],
                 ),
@@ -1210,12 +1206,10 @@ class _CommentSectionState extends State<CommentSection> {
               },
             );
           },
-          child: Container(
+          child: AnymeXContainer(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: colorScheme.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
+            color: colorScheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1225,13 +1219,12 @@ class _CommentSectionState extends State<CommentSection> {
                   color: colorScheme.primary,
                 ),
                 const SizedBox(width: 4),
-                Text(
+                AnymeXText(
                   '$totalReplies ${totalReplies == 1 ? "reply" : "replies"}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.primary,
-                  ),
+                  size: 12,
+                  variant: TextVariant.bold,
+                  color: colorScheme.primary,
+                  maxLines: null,
                 ),
               ],
             ),
@@ -1246,14 +1239,12 @@ class _CommentSectionState extends State<CommentSection> {
         child: InkWell(
           onTap: () => setState(() => _collapsedThreads.remove(comment.id)),
           borderRadius: BorderRadius.circular(8),
-          child: Container(
+          child: AnymeXContainer(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerLow.opaque(0.5),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: colorScheme.outlineVariant.opaque(0.2),
-              ),
+            color: colorScheme.surfaceContainerLow.opaque(0.5),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: colorScheme.outlineVariant.opaque(0.2),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -1261,13 +1252,14 @@ class _CommentSectionState extends State<CommentSection> {
                 Icon(Icons.unfold_more_rounded,
                     size: 14, color: colorScheme.primary),
                 const SizedBox(width: 6),
-                Text(
+                AnymeXText(
                   '[+] $totalReplies replies collapsed',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.primary,
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
                   ),
+                  maxLines: null,
                 ),
               ],
             ),
@@ -1296,12 +1288,10 @@ class _CommentSectionState extends State<CommentSection> {
               child: Container(
                 width: 18,
                 alignment: Alignment.center,
-                child: Container(
+                child: AnymeXContainer(
                   width: 2,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary.opaque(0.3),
-                    borderRadius: BorderRadius.circular(1),
-                  ),
+                  color: colorScheme.primary.opaque(0.3),
+                  borderRadius: BorderRadius.circular(1),
                 ),
               ),
             ),
@@ -1333,26 +1323,25 @@ class _CommentSectionState extends State<CommentSection> {
                                   (_visibleReplyCount[comment.id] ?? 4) + 4;
                             }),
                             borderRadius: BorderRadius.circular(8),
-                            child: Container(
+                            child: AnymeXContainer(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainerLow.opaque(0.4),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: colorScheme.outlineVariant.opaque(0.2),
-                                ),
+                              color: colorScheme.surfaceContainerLow.opaque(0.4),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: colorScheme.outlineVariant.opaque(0.2),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
+                                  AnymeXText(
                                     'Show more replies ($remainingCount)',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: colorScheme.primary,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 11,
                                     ),
+                                    maxLines: null,
                                   ),
                                 ],
                               ),
@@ -1371,13 +1360,14 @@ class _CommentSectionState extends State<CommentSection> {
                                 Icon(Icons.remove_circle_outline_rounded,
                                     size: 13, color: colorScheme.onSurfaceVariant.opaque(0.7)),
                                 const SizedBox(width: 4),
-                                Text(
+                                AnymeXText(
                                   'Collapse',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant.opaque(0.7),
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                   ),
+                                  maxLines: null,
                                 ),
                               ],
                             ),
@@ -1467,44 +1457,40 @@ class _CommentSectionState extends State<CommentSection> {
                   Flexible(
                     child: GestureDetector(
                       onTap: () => _showUserProfileSheet(context, reply),
-                      child: Text(
+                      child: AnymeXText(
                         reply.username,
+                        color: reply.userRole != null && reply.userRole != 'user'
+                            ? _getRoleColor(reply.userRole!)
+                            : colorScheme.onSurface,
+                        size: 13,
+                        variant: TextVariant.bold,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color:
-                              reply.userRole != null && reply.userRole != 'user'
-                                  ? _getRoleColor(reply.userRole!)
-                                  : colorScheme.onSurface,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        maxLines: null,
                       ),
                     ),
                   ),
                   Icon(Icons.arrow_right, size: 18, color: colorScheme.primary),
                   const SizedBox(width: 2),
                   Flexible(
-                    child: Text(
+                    child: AnymeXText(
                       parentUsername,
+                      color: parentRole != null && parentRole != 'user'
+                          ? _getRoleColor(parentRole)
+                          : colorScheme.primary,
+                      size: 13,
+                      variant: TextVariant.bold,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: parentRole != null && parentRole != 'user'
-                            ? _getRoleColor(parentRole)
-                            : colorScheme.primary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      maxLines: null,
                     ),
                   ),
                   if (reply.edited == true) ...[
                     const SizedBox(width: 4),
-                    Text(
+                    AnymeXText(
                       '(edited)',
-                      style: TextStyle(
-                        color: colorScheme.onSurfaceVariant.opaque(0.6),
-                        fontSize: 10,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      color: colorScheme.onSurfaceVariant.opaque(0.6),
+                      size: 10,
+                      fontStyle: FontStyle.italic,
+                      maxLines: null,
                     ),
                   ],
                   if (isLocked) ...[
@@ -1535,13 +1521,14 @@ class _CommentSectionState extends State<CommentSection> {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Text(
+                        AnymeXText(
                           _formatTimestampShort(reply.createdAt),
-                          style: TextStyle(
-                            color: colorScheme.onSurfaceVariant,
-                            fontSize: 11,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 11,
+                          style: const TextStyle(
                             fontWeight: FontWeight.w500,
                           ),
+                          maxLines: null,
                         ),
                         const SizedBox(width: 10),
                         if (!isLocked) ...[
@@ -1555,13 +1542,12 @@ class _CommentSectionState extends State<CommentSection> {
                                 controller.toggleReply(reply.id);
                               }
                             },
-                            child: Text(
+                            child: AnymeXText(
                               'Reply',
-                              style: TextStyle(
-                                color: colorScheme.onSurfaceVariant,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              color: colorScheme.onSurfaceVariant,
+                              size: 11,
+                              variant: TextVariant.semiBold,
+                              maxLines: null,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -1640,16 +1626,14 @@ class _CommentSectionState extends State<CommentSection> {
           children: [
             CompositedTransformTarget(
               link: replyLayerLink,
-              child: Container(
+              child: AnymeXContainer(
                 margin: const EdgeInsets.only(left: 16, right: 16),
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLowest.opaque(0.5),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
-                    width: 1.5,
-                  ),
+                color: colorScheme.surfaceContainerLowest.opaque(0.5),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
+                  width: 1.5,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1659,12 +1643,13 @@ class _CommentSectionState extends State<CommentSection> {
                         Icon(Icons.reply_rounded,
                             size: 16, color: colorScheme.primary),
                         const SizedBox(width: 6),
-                        Text(
+                        AnymeXText(
                           'Replying to ${comment.username}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.primary,
                             fontWeight: FontWeight.w600,
                           ),
+                          maxLines: null,
                         ),
                         const Spacer(),
                         GestureDetector(
@@ -1745,12 +1730,11 @@ class _CommentSectionState extends State<CommentSection> {
                                       height: 16,
                                       child: ExpressiveLoadingIndicator(),
                                     )
-                                  : const Text(
+                                  : const AnymeXText(
                                       'Reply',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 13,
-                                      ),
+                                      variant: TextVariant.bold,
+                                      size: 13,
+                                      maxLines: null,
                                     ),
                             )),
                       ],
@@ -1812,29 +1796,27 @@ class _CommentSectionState extends State<CommentSection> {
                   Flexible(
                     child: GestureDetector(
                       onTap: () => _showUserProfileSheet(context, comment),
-                      child: Text(
+                      child: AnymeXText(
                         comment.username,
+                        color: comment.userRole != null &&
+                                comment.userRole != 'user'
+                            ? _getRoleColor(comment.userRole!)
+                            : colorScheme.onSurface,
+                        size: depth == 0 ? 14 : 13,
+                        variant: TextVariant.bold,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: comment.userRole != null &&
-                                  comment.userRole != 'user'
-                              ? _getRoleColor(comment.userRole!)
-                              : colorScheme.onSurface,
-                          fontSize: depth == 0 ? 14 : 13,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        maxLines: null,
                       ),
                     ),
                   ),
                   if (comment.edited == true) ...[
                     const SizedBox(width: 4),
-                    Text(
+                    AnymeXText(
                       '(edited)',
-                      style: TextStyle(
-                        color: colorScheme.onSurfaceVariant.opaque(0.6),
-                        fontSize: 10,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      color: colorScheme.onSurfaceVariant.opaque(0.6),
+                      size: 10,
+                      fontStyle: FontStyle.italic,
+                      maxLines: null,
                     ),
                   ],
                   if (isLocked) ...[
@@ -1870,13 +1852,12 @@ class _CommentSectionState extends State<CommentSection> {
                             Icon(Icons.lock_rounded,
                                 size: 12, color: colorScheme.error),
                             const SizedBox(width: 4),
-                            Text(
+                            AnymeXText(
                               'Thread is locked',
-                              style: TextStyle(
-                                color: colorScheme.error,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 11,
-                              ),
+                              color: colorScheme.error,
+                              size: 11,
+                              variant: TextVariant.semiBold,
+                              maxLines: null,
                             ),
                           ],
                         ),
@@ -1884,13 +1865,14 @@ class _CommentSectionState extends State<CommentSection> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Text(
+                        AnymeXText(
                           _formatTimestampShort(comment.createdAt),
-                          style: TextStyle(
-                            color: colorScheme.onSurfaceVariant,
-                            fontSize: 11,
+                          color: colorScheme.onSurfaceVariant,
+                          size: 11,
+                          style: const TextStyle(
                             fontWeight: FontWeight.w500,
                           ),
+                          maxLines: null,
                         ),
                         const SizedBox(width: 12),
                         if (!effectiveLocked) ...[
@@ -1904,13 +1886,12 @@ class _CommentSectionState extends State<CommentSection> {
                                 controller.toggleReply(comment.id);
                               }
                             },
-                            child: Text(
+                            child: AnymeXText(
                               'Reply',
-                              style: TextStyle(
-                                color: colorScheme.onSurfaceVariant,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              color: colorScheme.onSurfaceVariant,
+                              size: 12,
+                              variant: TextVariant.semiBold,
+                              maxLines: null,
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -1981,14 +1962,13 @@ class _CommentSectionState extends State<CommentSection> {
                 isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: 3),
-          Text(
+          AnymeXText(
             count > 999 ? '${(count / 1000).toStringAsFixed(1)}k' : '$count',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color:
-                  isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
-            ),
+            size: 12,
+            variant: TextVariant.semiBold,
+            color:
+                isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+            maxLines: null,
           ),
         ],
       ),
@@ -2008,13 +1988,12 @@ class _CommentSectionState extends State<CommentSection> {
         Expanded(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: avatarSize / 4),
-            child: Text(
+            child: AnymeXText(
               '[deleted]',
-              style: TextStyle(
-                color: colorScheme.onSurfaceVariant.opaque(0.4),
-                fontSize: isCompact ? 13.0 : 15.0,
-                fontStyle: FontStyle.italic,
-              ),
+              color: colorScheme.onSurfaceVariant.opaque(0.4),
+              size: isCompact ? 13.0 : 15.0,
+              fontStyle: FontStyle.italic,
+              maxLines: null,
             ),
           ),
         ),
@@ -2027,7 +2006,7 @@ class _CommentSectionState extends State<CommentSection> {
     final colorScheme = context.colors;
     final iconSize = size <= 28 ? 14.0 : 18.0;
 
-    return Container(
+    return AnymeXContainer(
       width: size,
       height: size,
       decoration: BoxDecoration(
@@ -2120,14 +2099,12 @@ class _CommentSectionState extends State<CommentSection> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
+              AnymeXContainer(
                 margin: const EdgeInsets.symmetric(vertical: 12),
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(
-                  color: colorScheme.onSurfaceVariant.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
+                color: colorScheme.onSurfaceVariant.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
               ),
               const SizedBox(height: 4),
               _buildMenuOption(
@@ -2224,13 +2201,14 @@ class _CommentSectionState extends State<CommentSection> {
         color: isDestructive ? colorScheme.error : colorScheme.onSurfaceVariant,
         size: 22,
       ),
-      title: Text(
+      title: AnymeXText(
         label,
-        style: TextStyle(
-          color: isDestructive ? colorScheme.error : colorScheme.onSurface,
-          fontSize: 15,
+        color: isDestructive ? colorScheme.error : colorScheme.onSurface,
+        size: 15,
+        style: const TextStyle(
           fontWeight: FontWeight.w500,
         ),
+        maxLines: null,
       ),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -2246,7 +2224,7 @@ class _CommentSectionState extends State<CommentSection> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit Comment'),
+        title: const AnymeXText('Edit Comment', maxLines: null),
         content: TextField(
           controller: editController,
           maxLines: 5,
@@ -2259,7 +2237,7 @@ class _CommentSectionState extends State<CommentSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel', maxLines: null),
           ),
           FilledButton(
             onPressed: () {
@@ -2268,7 +2246,7 @@ class _CommentSectionState extends State<CommentSection> {
                 Navigator.pop(context);
               }
             },
-            child: const Text('Save'),
+            child: const AnymeXText('Save', maxLines: null),
           ),
         ],
       ),
@@ -2280,13 +2258,14 @@ class _CommentSectionState extends State<CommentSection> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Comment'),
-        content: const Text(
-            'Are you sure you want to delete this comment? This action cannot be undone.'),
+        title: const AnymeXText('Delete Comment', maxLines: null),
+        content: const AnymeXText(
+            'Are you sure you want to delete this comment? This action cannot be undone.',
+            maxLines: null),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel', maxLines: null),
           ),
           FilledButton(
             onPressed: () {
@@ -2297,7 +2276,7 @@ class _CommentSectionState extends State<CommentSection> {
               backgroundColor: context.colors.error,
               foregroundColor: context.colors.onError,
             ),
-            child: const Text('Delete'),
+            child: const AnymeXText('Delete', maxLines: null),
           ),
         ],
       ),
@@ -2312,11 +2291,12 @@ class _CommentSectionState extends State<CommentSection> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Report Comment'),
+        title: const AnymeXText('Report Comment', maxLines: null),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Please select a reason for reporting this comment:'),
+            const AnymeXText('Please select a reason for reporting this comment:',
+                maxLines: null),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               value:
@@ -2326,14 +2306,23 @@ class _CommentSectionState extends State<CommentSection> {
                 border: OutlineInputBorder(),
               ),
               items: const [
-                DropdownMenuItem(value: 'spam', child: Text('Spam')),
-                DropdownMenuItem(value: 'offensive', child: Text('Offensive')),
                 DropdownMenuItem(
-                    value: 'harassment', child: Text('Harassment')),
-                DropdownMenuItem(value: 'spoiler', child: Text('Spoiler')),
-                DropdownMenuItem(value: 'nsfw', child: Text('NSFW')),
-                DropdownMenuItem(value: 'off_topic', child: Text('Off-Topic')),
-                DropdownMenuItem(value: 'other', child: Text('Other')),
+                    value: 'spam', child: AnymeXText('Spam', maxLines: null)),
+                DropdownMenuItem(
+                    value: 'offensive',
+                    child: AnymeXText('Offensive', maxLines: null)),
+                DropdownMenuItem(
+                    value: 'harassment',
+                    child: AnymeXText('Harassment', maxLines: null)),
+                DropdownMenuItem(
+                    value: 'spoiler', child: AnymeXText('Spoiler', maxLines: null)),
+                DropdownMenuItem(
+                    value: 'nsfw', child: AnymeXText('NSFW', maxLines: null)),
+                DropdownMenuItem(
+                    value: 'off_topic',
+                    child: AnymeXText('Off-Topic', maxLines: null)),
+                DropdownMenuItem(
+                    value: 'other', child: AnymeXText('Other', maxLines: null)),
               ],
               onChanged: (value) {
                 reasonController.text = value ?? '';
@@ -2353,7 +2342,7 @@ class _CommentSectionState extends State<CommentSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel', maxLines: null),
           ),
           FilledButton(
             onPressed: () {
@@ -2363,7 +2352,7 @@ class _CommentSectionState extends State<CommentSection> {
                 Navigator.pop(context);
               }
             },
-            child: const Text('Report'),
+            child: const AnymeXText('Report', maxLines: null),
           ),
         ],
       ),
@@ -2385,30 +2374,27 @@ class _CommentSectionState extends State<CommentSection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: Container(
+                child: AnymeXContainer(
                   width: 40,
                   height: 4,
-                  decoration: BoxDecoration(
-                    color: colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+                  color: colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
+              AnymeXText(
                 'Moderate Comment',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
+                maxLines: null,
               ),
               const SizedBox(height: 8),
-              Container(
+              AnymeXContainer(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
+                color: colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(12),
+                child: AnymeXText(
                   '"${comment.commentText}"',
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
@@ -2522,21 +2508,20 @@ class _CommentSectionState extends State<CommentSection> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         child: Row(
           children: [
-            Container(
+            AnymeXContainer(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
               child: Icon(icon, color: color, size: 20),
             ),
             const SizedBox(width: 14),
-            Text(
+            AnymeXText(
               label,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
+              maxLines: null,
             ),
           ],
         ),
@@ -2554,7 +2539,7 @@ class _CommentSectionState extends State<CommentSection> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(title),
+        title: AnymeXText(title, maxLines: null),
         content: TextField(
           controller: reasonController,
           maxLines: 3,
@@ -2568,7 +2553,7 @@ class _CommentSectionState extends State<CommentSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const AnymeXText('Cancel', maxLines: null),
           ),
           FilledButton(
             onPressed: () {
@@ -2584,7 +2569,8 @@ class _CommentSectionState extends State<CommentSection> {
                     foregroundColor: context.colors.onError,
                   )
                 : null,
-            child: Text(isDestructive ? 'Delete' : 'Confirm'),
+            child: AnymeXText(isDestructive ? 'Delete' : 'Confirm',
+                maxLines: null),
           ),
         ],
       ),
@@ -2605,13 +2591,11 @@ class _CommentSectionState extends State<CommentSection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: Container(
+                child: AnymeXContainer(
                   width: 40,
                   height: 4,
-                  decoration: BoxDecoration(
-                    color: colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+                  color: colorScheme.outlineVariant,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 16),
@@ -2632,31 +2616,34 @@ class _CommentSectionState extends State<CommentSection> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AnymeXText(
                         comment.username,
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
                             ?.copyWith(fontWeight: FontWeight.w700),
+                        maxLines: null,
                       ),
-                      Text(
+                      AnymeXText(
                         'ID: ${comment.userId}',
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
                             ?.copyWith(color: colorScheme.onSurfaceVariant),
+                        maxLines: null,
                       ),
                     ],
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-              Text(
+              AnymeXText(
                 'User Actions',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: colorScheme.onSurfaceVariant,
                     ),
+                maxLines: null,
               ),
               const SizedBox(height: 8),
               _buildModAction(
@@ -2703,12 +2690,13 @@ class _CommentSectionState extends State<CommentSection> {
               _buildDivider(context),
               Padding(
                 padding: const EdgeInsets.only(left: 4, bottom: 8),
-                child: Text(
+                child: AnymeXText(
                   'Restore Actions',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: Colors.teal,
                       ),
+                  maxLines: null,
                 ),
               ),
               _buildModAction(
@@ -2735,12 +2723,13 @@ class _CommentSectionState extends State<CommentSection> {
               _buildDivider(context),
               Padding(
                 padding: const EdgeInsets.only(left: 4, bottom: 8),
-                child: Text(
+                child: AnymeXText(
                   'Info',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                         color: colorScheme.onSurfaceVariant,
                       ),
+                  maxLines: null,
                 ),
               ),
               _buildModAction(
@@ -2802,7 +2791,7 @@ class _CommentSectionState extends State<CommentSection> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('User Info'),
+        title: const AnymeXText('User Info', maxLines: null),
         content: FutureBuilder(
           future: controller.getUserInfoFromDb(userId),
           builder: (context, snapshot) {
@@ -2816,13 +2805,14 @@ class _CommentSectionState extends State<CommentSection> {
             }
 
             if (!snapshot.hasData || snapshot.data == null) {
-              return const Text('Failed to load user info.');
+              return const AnymeXText('Failed to load user info.',
+                  maxLines: null);
             }
 
             final data = snapshot.data!;
             final users = data['users'] as List<dynamic>? ?? [];
             if (users.isEmpty) {
-              return const Text('No user data found.');
+              return const AnymeXText('No user data found.', maxLines: null);
             }
 
             final user = users.first as Map<String, dynamic>;
@@ -2874,31 +2864,29 @@ class _CommentSectionState extends State<CommentSection> {
                               : null,
                         ),
                         const SizedBox(height: 10),
-                        Text(
+                        AnymeXText(
                           username,
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
                               ?.copyWith(fontWeight: FontWeight.w700),
+                          maxLines: null,
                         ),
                         const SizedBox(height: 4),
-                        Container(
+                        AnymeXContainer(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: _getRoleColor(role).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: _getRoleColor(role).withOpacity(0.3),
-                            ),
+                          color: _getRoleColor(role).withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _getRoleColor(role).withOpacity(0.3),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             role.toUpperCase(),
-                            style: TextStyle(
-                              color: _getRoleColor(role),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11,
-                            ),
+                            color: _getRoleColor(role),
+                            size: 11,
+                            variant: TextVariant.bold,
+                            maxLines: null,
                           ),
                         ),
                       ],
@@ -2931,7 +2919,7 @@ class _CommentSectionState extends State<CommentSection> {
                         _showUserHistoryDialog(context, userId, controller);
                       },
                       icon: const Icon(Icons.history, size: 18),
-                      label: const Text('View History'),
+                      label: const AnymeXText('View History', maxLines: null),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Theme.of(context).colorScheme.primary,
                         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -2946,7 +2934,7 @@ class _CommentSectionState extends State<CommentSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Close'),
+            child: const AnymeXText('Close', maxLines: null),
           ),
         ],
       ),
@@ -2966,23 +2954,19 @@ class _CommentSectionState extends State<CommentSection> {
           maxChildSize: 0.85,
           expand: false,
           builder: (context, scrollController) {
-            return Container(
+            return AnymeXContainer(
               padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerLow,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(20)),
-              ),
+              color: colorScheme.surfaceContainerLow,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(20)),
               child: Column(
                 children: [
                   Center(
-                    child: Container(
+                    child: AnymeXContainer(
                       width: 40,
                       height: 4,
-                      decoration: BoxDecoration(
-                        color: colorScheme.outlineVariant,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
+                      color: colorScheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -3002,12 +2986,13 @@ class _CommentSectionState extends State<CommentSection> {
                             ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: Text(
+                        child: AnymeXText(
                           '${comment.username}\'s Comments',
                           style: Theme.of(context)
                               .textTheme
                               .titleSmall
                               ?.copyWith(fontWeight: FontWeight.w700),
+                          maxLines: null,
                         ),
                       ),
                     ],
@@ -3035,7 +3020,8 @@ class _CommentSectionState extends State<CommentSection> {
                                 Icon(Icons.error_outline,
                                     size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
-                                Text('Failed to load comments.'),
+                                AnymeXText('Failed to load comments.',
+                                    maxLines: null),
                               ],
                             ),
                           );
@@ -3059,9 +3045,10 @@ class _CommentSectionState extends State<CommentSection> {
                                 Icon(Icons.comment_outlined,
                                     size: 40, color: Colors.grey),
                                 SizedBox(height: 8),
-                                Text('No comments found.',
+                                AnymeXText('No comments found.',
                                     style:
-                                        TextStyle(fontWeight: FontWeight.w500)),
+                                        TextStyle(fontWeight: FontWeight.w500),
+                                    maxLines: null),
                               ],
                             ),
                           );
@@ -3092,59 +3079,52 @@ class _CommentSectionState extends State<CommentSection> {
                                   Row(
                                     children: [
                                       if (deleted)
-                                        Container(
+                                        AnymeXContainer(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: colorScheme.error
-                                                .withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Text('DELETED',
-                                              style: TextStyle(
-                                                  color: colorScheme.error,
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w700)),
+                                          color: colorScheme.error
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          child: AnymeXText('DELETED',
+                                              color: colorScheme.error,
+                                              size: 10,
+                                              variant: TextVariant.bold,
+                                              maxLines: null),
                                         )
                                       else
-                                        Container(
+                                        AnymeXContainer(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: colorScheme.primary
-                                                .withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Text('COMMENT',
-                                              style: TextStyle(
-                                                  color: colorScheme.primary,
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w700)),
+                                          color: colorScheme.primary
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                          child: AnymeXText('COMMENT',
+                                              color: colorScheme.primary,
+                                              size: 10,
+                                              variant: TextVariant.bold,
+                                              maxLines: null),
                                         ),
                                       const Spacer(),
                                       if (timestamp.isNotEmpty)
-                                        Text(
+                                        AnymeXText(
                                           _formatTimestamp(timestamp),
-                                          style: TextStyle(
-                                            color: colorScheme.onSurfaceVariant,
-                                            fontSize: 10,
-                                          ),
+                                          color: colorScheme.onSurfaceVariant,
+                                          size: 10,
+                                          maxLines: null,
                                         ),
                                     ],
                                   ),
                                   if (content.isNotEmpty) ...[
                                     const SizedBox(height: 4),
-                                    Text(
+                                    AnymeXText(
                                       content,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: deleted
-                                            ? colorScheme.onSurfaceVariant
-                                                .withOpacity(0.5)
-                                            : colorScheme.onSurface,
-                                      ),
+                                      size: 13,
+                                      color: deleted
+                                          ? colorScheme.onSurfaceVariant
+                                              .withOpacity(0.5)
+                                          : colorScheme.onSurface,
                                       maxLines: 4,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -3158,13 +3138,11 @@ class _CommentSectionState extends State<CommentSection> {
                                             color: colorScheme.primary),
                                         const SizedBox(width: 4),
                                         Expanded(
-                                          child: Text(
+                                          child: AnymeXText(
                                             'On: $mediaTitle',
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              color: colorScheme.primary,
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                            size: 11,
+                                            color: colorScheme.primary,
+                                            variant: TextVariant.semiBold,
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -3212,18 +3190,18 @@ class _CommentSectionState extends State<CommentSection> {
         children: [
           SizedBox(
             width: 100,
-            child: Text(
+            child: AnymeXText(
               label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
-              ),
+              size: 13,
+              variant: TextVariant.semiBold,
+              maxLines: null,
             ),
           ),
           Expanded(
-            child: Text(
+            child: AnymeXText(
               value,
-              style: const TextStyle(fontSize: 13),
+              size: 13,
+              maxLines: null,
             ),
           ),
         ],
@@ -3236,7 +3214,7 @@ class _CommentSectionState extends State<CommentSection> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('User History'),
+        title: const AnymeXText('User History', maxLines: null),
         content: SizedBox(
           width: double.maxFinite,
           child: FutureBuilder(
@@ -3252,7 +3230,8 @@ class _CommentSectionState extends State<CommentSection> {
               }
 
               if (!snapshot.hasData || snapshot.data == null) {
-                return const Text('Failed to load user history.');
+                return const AnymeXText('Failed to load user history.',
+                    maxLines: null);
               }
 
               final data = snapshot.data!;
@@ -3265,8 +3244,9 @@ class _CommentSectionState extends State<CommentSection> {
                     SizedBox(height: 16),
                     Icon(Icons.history, size: 48, color: Colors.grey),
                     SizedBox(height: 12),
-                    Text('No history found.',
-                        style: TextStyle(fontWeight: FontWeight.w500)),
+                    AnymeXText('No history found.',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                        maxLines: null),
                   ],
                 );
               }
@@ -3323,13 +3303,11 @@ class _CommentSectionState extends State<CommentSection> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
+                          AnymeXContainer(
                             width: 32,
                             height: 32,
-                            decoration: BoxDecoration(
-                              color: actionColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                            color: actionColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
                             child:
                                 Icon(actionIcon, size: 16, color: actionColor),
                           ),
@@ -3340,78 +3318,69 @@ class _CommentSectionState extends State<CommentSection> {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
+                                    AnymeXText(
                                       actionLabel,
-                                      style: TextStyle(
-                                        color: actionColor,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 12,
-                                      ),
+                                      color: actionColor,
+                                      size: 12,
+                                      variant: TextVariant.bold,
+                                      maxLines: null,
                                     ),
                                     const Spacer(),
                                     if (timestamp.isNotEmpty)
-                                      Text(
+                                      AnymeXText(
                                         _formatTimestamp(timestamp),
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant,
-                                          fontSize: 10,
-                                        ),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
+                                        size: 10,
+                                        maxLines: null,
                                       ),
                                   ],
                                 ),
                                 const SizedBox(height: 2),
                                 if (content.isNotEmpty)
-                                  Text(
+                                  AnymeXText(
                                     content,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
-                                    ),
+                                    size: 12,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 if (reason.isNotEmpty && reason != 'No reason')
-                                  Text(
+                                  AnymeXText(
                                     'Reason: $reason',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant
-                                          .withOpacity(0.7),
-                                    ),
+                                    size: 11,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant
+                                        .withOpacity(0.7),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 if (mediaTitle.isNotEmpty) ...[
                                   const SizedBox(height: 2),
-                                  Text(
+                                  AnymeXText(
                                     'On: $mediaTitle',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                    size: 10,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    variant: TextVariant.semiBold,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ],
                                 const SizedBox(height: 2),
-                                Text(
+                                AnymeXText(
                                   'by $moderator',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant
-                                        .withOpacity(0.6),
-                                    fontStyle: FontStyle.italic,
-                                  ),
+                                  size: 10,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant
+                                      .withOpacity(0.6),
+                                  fontStyle: FontStyle.italic,
+                                  maxLines: null,
                                 ),
                               ],
                             ),
@@ -3428,7 +3397,7 @@ class _CommentSectionState extends State<CommentSection> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Close'),
+            child: const AnymeXText('Close', maxLines: null),
           ),
         ],
       ),
@@ -3466,23 +3435,20 @@ class _CommentSectionState extends State<CommentSection> {
       tagColor = Colors.teal;
     }
 
-    return Container(
+    return AnymeXContainer(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: tagColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: tagColor.withOpacity(0.2),
-          width: 1,
-        ),
+      color: tagColor.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(
+        color: tagColor.withOpacity(0.2),
+        width: 1,
       ),
-      child: Text(
+      child: AnymeXText(
         tag,
-        style: TextStyle(
-          color: tagColor,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-        ),
+        color: tagColor,
+        size: 11,
+        variant: TextVariant.bold,
+        maxLines: null,
       ),
     );
   }
@@ -3532,28 +3498,27 @@ class _SpoilerTextState extends State<_SpoilerText> {
 
     return GestureDetector(
       onTap: () => setState(() => _isRevealed = true),
-      child: Container(
+      child: AnymeXContainer(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: widget.colorScheme.surfaceContainerHighest.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: widget.colorScheme.outlineVariant.opaque(0.3),
-          ),
+        color: widget.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: widget.colorScheme.outlineVariant.opaque(0.3),
         ),
         child: Row(
           children: [
             Icon(Icons.visibility_off_rounded,
                 size: 16, color: widget.colorScheme.onSurfaceVariant),
             const SizedBox(width: 8),
-            Text(
+            AnymeXText(
               'Spoiler — tap to reveal',
               style: widget.theme.textTheme.bodyMedium?.copyWith(
                 color: widget.colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
                 fontStyle: FontStyle.italic,
               ),
+              maxLines: null,
             ),
           ],
         ),
@@ -3609,22 +3574,18 @@ class _UserProfileSheet extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final isMod = userRole != null && userRole != 'user';
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+    return AnymeXContainer(
+      color: colorScheme.surface,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
+          AnymeXContainer(
             margin: const EdgeInsets.symmetric(vertical: 12),
             width: 40,
             height: 4,
-            decoration: BoxDecoration(
-              color: colorScheme.onSurfaceVariant.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
+            color: colorScheme.onSurfaceVariant.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(2),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
@@ -3639,13 +3600,12 @@ class _UserProfileSheet extends StatelessWidget {
                   CircleAvatar(
                     radius: 36,
                     backgroundColor: colorScheme.primaryContainer,
-                    child: Text(
+                    child: AnymeXText(
                       username.isNotEmpty ? username[0].toUpperCase() : '?',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onPrimaryContainer,
-                      ),
+                      size: 24,
+                      variant: TextVariant.bold,
+                      color: colorScheme.onPrimaryContainer,
+                      maxLines: null,
                     ),
                   ),
                 const SizedBox(height: 12),
@@ -3653,33 +3613,31 @@ class _UserProfileSheet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Flexible(
-                      child: Text(
+                      child: AnymeXText(
                         username,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                         overflow: TextOverflow.ellipsis,
+                        maxLines: null,
                       ),
                     ),
                     if (isMod)
-                      Container(
+                      AnymeXContainer(
                         margin: const EdgeInsets.only(left: 8),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: _getRoleColor(userRole!).withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: _getRoleColor(userRole!).withOpacity(0.3),
-                          ),
+                        color: _getRoleColor(userRole!).withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _getRoleColor(userRole!).withOpacity(0.3),
                         ),
-                        child: Text(
+                        child: AnymeXText(
                           _getRoleLabel(userRole!),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: _getRoleColor(userRole!),
-                          ),
+                          size: 12,
+                          variant: TextVariant.bold,
+                          color: _getRoleColor(userRole!),
+                          maxLines: null,
                         ),
                       ),
                   ],

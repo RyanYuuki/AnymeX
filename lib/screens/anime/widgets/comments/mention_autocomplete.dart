@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -169,7 +171,7 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
 
                     return InkWell(
                       onTap: () => _selectUser(user),
-                      child: Container(
+                      child: AnymeXContainer(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 8),
                         color: isSelected
@@ -177,7 +179,7 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                             : null,
                         child: Row(
                           children: [
-                            Container(
+                            AnymeXContainer(
                               width: 28,
                               height: 28,
                               decoration: BoxDecoration(
@@ -185,6 +187,7 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                                 color: colorScheme.surfaceContainer,
                               ),
                               clipBehavior: Clip.antiAlias,
+                              borderRadius: BorderRadius.circular(14),
                               child: avatar != null && avatar.isNotEmpty
                                   ? AnymeXImage(
                                       imageUrl: avatar,
@@ -199,15 +202,16 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                             ),
                             const SizedBox(width: 10),
                             Expanded(
-                              child: Text(
+                              child: AnymeXText(
                                 username,
+                                color: colorScheme.onSurface,
+                                size: 14,
                                 style: TextStyle(
-                                  color: colorScheme.onSurface,
-                                  fontSize: 14,
                                   fontWeight: isSelected
                                       ? FontWeight.w600
                                       : FontWeight.w500,
                                 ),
+                                maxLines: null,
                               ),
                             ),
                           ],

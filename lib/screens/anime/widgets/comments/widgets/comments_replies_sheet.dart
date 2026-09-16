@@ -3,7 +3,9 @@ import 'package:anymex/screens/anime/widgets/comments/controller/comments_contro
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -203,13 +205,12 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
               color: colorScheme.onSurfaceVariant.opaque(0.6),
             ),
             const SizedBox(width: 6),
-            Text(
+            AnymeXText(
               'This comment was deleted',
-              style: TextStyle(
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-                color: colorScheme.onSurfaceVariant.opaque(0.6),
-              ),
+              size: 12,
+              fontStyle: FontStyle.italic,
+              color: colorScheme.onSurfaceVariant.opaque(0.6),
+              maxLines: null,
             ),
           ],
         ),
@@ -229,7 +230,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                   fit: BoxFit.cover,
                   radius: 0,
                 )
-              : Container(
+              : AnymeXContainer(
                   width: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
                   height: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
                   color: colorScheme.surfaceContainerHighest,
@@ -252,65 +253,59 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                 children: [
                   if (hasRole) _buildRoleBadge(context, comment.userRole!),
                   Flexible(
-                    child: Text(
+                    child: AnymeXText(
                       comment.username,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: hasRole
-                            ? _getRoleColor(comment.userRole!)
-                            : colorScheme.onSurface,
-                      ),
+                      size: 13,
+                      variant: TextVariant.bold,
+                      color: hasRole
+                          ? _getRoleColor(comment.userRole!)
+                          : colorScheme.onSurface,
+                      maxLines: null,
                     ),
                   ),
                   if (showParentBreadcrumb) ...[
                     Icon(Icons.arrow_right,
                         size: 18, color: colorScheme.primary),
                     Flexible(
-                      child: Text(
+                      child: AnymeXText(
                         parentComment.username,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: parentComment.userRole != null &&
-                                  parentComment.userRole != 'user' &&
-                                  parentComment.userRole!.isNotEmpty
-                              ? _getRoleColor(parentComment.userRole!)
-                              : colorScheme.primary,
-                        ),
+                        size: 13,
+                        variant: TextVariant.bold,
+                        color: parentComment.userRole != null &&
+                                parentComment.userRole != 'user' &&
+                                parentComment.userRole!.isNotEmpty
+                            ? _getRoleColor(parentComment.userRole!)
+                            : colorScheme.primary,
+                        maxLines: null,
                       ),
                     ),
                   ],
                   const SizedBox(width: 6),
-                  Text(
+                  AnymeXText(
                     _formatTime(comment.createdAt),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: colorScheme.onSurfaceVariant.opaque(0.6),
-                    ),
+                    size: 11,
+                    color: colorScheme.onSurfaceVariant.opaque(0.6),
+                    maxLines: null,
                   ),
                   if (comment.tag.isNotEmpty && comment.tag != 'General') ...[
                     const Spacer(),
-                    Container(
+                    AnymeXContainer(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: isSpoiler
-                            ? colorScheme.error.withValues(alpha: 0.15)
-                            : colorScheme.primary.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
+                      color: isSpoiler
+                          ? colorScheme.error.withValues(alpha: 0.15)
+                          : colorScheme.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                      child: AnymeXText(
                         comment.tag,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: isSpoiler
-                              ? colorScheme.error
-                              : colorScheme.primary,
-                        ),
+                        size: 10,
+                        variant: TextVariant.bold,
+                        color: isSpoiler
+                            ? colorScheme.error
+                            : colorScheme.primary,
+                        maxLines: null,
                       ),
                     ),
                   ],
@@ -355,15 +350,14 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                             ),
                             if (comment.likes > 0) ...[
                               const SizedBox(width: 4),
-                              Text(
+                              AnymeXText(
                                 '${comment.likes}',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: isUpvoted
-                                      ? colorScheme.primary
-                                      : colorScheme.onSurfaceVariant,
-                                ),
+                                size: 11,
+                                variant: TextVariant.semiBold,
+                                color: isUpvoted
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurfaceVariant,
+                                maxLines: null,
                               ),
                             ],
                           ],
@@ -391,15 +385,14 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                             ),
                             if (comment.dislikes > 0) ...[
                               const SizedBox(width: 4),
-                              Text(
+                              AnymeXText(
                                 '${comment.dislikes}',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: isDownvoted
-                                      ? colorScheme.primary
-                                      : colorScheme.onSurfaceVariant,
-                                ),
+                                size: 11,
+                                variant: TextVariant.semiBold,
+                                color: isDownvoted
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurfaceVariant,
+                                maxLines: null,
                               ),
                             ],
                           ],
@@ -418,13 +411,12 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 3),
-                          child: Text(
+                          child: AnymeXText(
                             'Reply',
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w700,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
+                            size: 11.5,
+                            variant: TextVariant.bold,
+                            color: colorScheme.onSurfaceVariant,
+                            maxLines: null,
                           ),
                         ),
                       ),
@@ -455,15 +447,13 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
 
     // Minimal micro-indent and stylish primary branch line for sub-replies
     if (isNestedSubReply) {
-      return Container(
+      return AnymeXContainer(
         margin: const EdgeInsets.only(left: 10, top: 12),
         padding: const EdgeInsets.only(left: 12),
-        decoration: BoxDecoration(
-          border: Border(
-            left: BorderSide(
-              color: colorScheme.primary.withValues(alpha: 0.45),
-              width: 2,
-            ),
+        border: Border(
+          left: BorderSide(
+            color: colorScheme.primary.withValues(alpha: 0.45),
+            width: 2,
           ),
         ),
         child: card,
@@ -488,7 +478,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
       minChildSize: 0.5,
       maxChildSize: 0.95,
       builder: (ctx, scrollSheetController) {
-          return Container(
+          return AnymeXContainer(
             decoration: BoxDecoration(
               color: colorScheme.surface,
               borderRadius:
@@ -509,13 +499,11 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                   child: Column(
                     children: [
                       Center(
-                        child: Container(
+                        child: AnymeXContainer(
                           width: 36,
                           height: 4,
-                          decoration: BoxDecoration(
-                            color: colorScheme.outlineVariant.opaque(0.4),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
+                          color: colorScheme.outlineVariant.opaque(0.4),
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                       const SizedBox(height: 10),
@@ -526,13 +514,12 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                                     .findCommentById(widget.rootComment.id) ??
                                 widget.rootComment;
                             final count = _countReplies(currentParent);
-                            return Text(
+                            return AnymeXText(
                               'Replies ($count)',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.onSurface,
-                              ),
+                              size: 16,
+                              variant: TextVariant.bold,
+                              color: colorScheme.onSurface,
+                              maxLines: null,
                             );
                           }),
                           const Spacer(),
@@ -562,17 +549,15 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                       children: [
                         // Pinned Original Comment Header Card
-                        Container(
+                        AnymeXContainer(
                           padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHighest
-                                .withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: colorScheme.outlineVariant
-                                  .withValues(alpha: 0.15),
-                              width: 1,
-                            ),
+                          color: colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: colorScheme.outlineVariant
+                                .withValues(alpha: 0.15),
+                            width: 1,
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -585,14 +570,15 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                                     color: colorScheme.primary,
                                   ),
                                   const SizedBox(width: 5),
-                                  Text(
+                                  AnymeXText(
                                     'ORIGINAL COMMENT',
+                                    size: 10,
+                                    color: colorScheme.primary,
                                     style: TextStyle(
-                                      fontSize: 10,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: 0.5,
-                                      color: colorScheme.primary,
                                     ),
+                                    maxLines: null,
                                   ),
                                 ],
                               ),
@@ -618,13 +604,11 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 40),
                             child: Center(
-                              child: Text(
+                              child: AnymeXText(
                                 'No replies yet. Be the first to reply!',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color:
-                                      colorScheme.onSurfaceVariant.opaque(0.6),
-                                ),
+                                size: 13,
+                                color: colorScheme.onSurfaceVariant.opaque(0.6),
+                                maxLines: null,
                               ),
                             ),
                           )

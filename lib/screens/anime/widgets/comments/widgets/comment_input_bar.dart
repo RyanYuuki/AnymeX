@@ -2,7 +2,9 @@ import 'package:anymex/screens/anime/widgets/comments/controller/comments_contro
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/gif_picker_sheet.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -102,14 +104,12 @@ class _CommentInputBarState extends State<CommentInputBar> {
       final isAnime = controller.media.mediaType == ItemType.anime;
       final isFocused = _effectiveFocusNode.hasFocus;
 
-      return Container(
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          border: Border(
-            top: BorderSide(
-              color: colorScheme.outlineVariant.withValues(alpha: 0.12),
-              width: 0.8,
-            ),
+      return AnymeXContainer(
+        color: colorScheme.surface,
+        border: Border(
+          top: BorderSide(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.12),
+            width: 0.8,
           ),
         ),
         child: SafeArea(
@@ -122,16 +122,14 @@ class _CommentInputBarState extends State<CommentInputBar> {
               if (replyingTo != null)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(14, 8, 14, 2),
-                  child: Container(
+                  child: AnymeXContainer(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: colorScheme.primary.withValues(alpha: 0.25),
-                        width: 1,
-                      ),
+                    color: colorScheme.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: colorScheme.primary.withValues(alpha: 0.25),
+                      width: 1,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -142,20 +140,18 @@ class _CommentInputBarState extends State<CommentInputBar> {
                           color: colorScheme.primary,
                         ),
                         const SizedBox(width: 5),
-                        Text(
+                        AnymeXText(
                           'Replying to ',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                          size: 12,
+                          color: colorScheme.onSurfaceVariant,
+                          maxLines: null,
                         ),
-                        Text(
+                        AnymeXText(
                           '@${replyingTo.username}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.primary,
-                          ),
+                          size: 12,
+                          variant: TextVariant.bold,
+                          color: colorScheme.primary,
+                          maxLines: null,
                         ),
                         const SizedBox(width: 8),
                         GestureDetector(
@@ -163,7 +159,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                             HapticFeedback.selectionClick();
                             controller.clearReplyTarget();
                           },
-                          child: Container(
+                          child: AnymeXContainer(
                             padding: const EdgeInsets.all(2),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -200,7 +196,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
                                 fit: BoxFit.cover,
                                 radius: 0,
                               )
-                            : Container(
+                            : AnymeXContainer(
                                 width: 34,
                                 height: 34,
                                 color: colorScheme.surfaceContainerHighest,
@@ -348,16 +344,14 @@ class _CommentInputBarState extends State<CommentInputBar> {
                   child: Row(
                     children: [
                       // Auto-Selected & Locked Progress Tag
-                      Container(
+                      AnymeXContainer(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3.5),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: colorScheme.primary.withValues(alpha: 0.22),
-                            width: 1,
-                          ),
+                        color: colorScheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: colorScheme.primary.withValues(alpha: 0.22),
+                          width: 1,
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -370,13 +364,12 @@ class _CommentInputBarState extends State<CommentInputBar> {
                               color: colorScheme.primary,
                             ),
                             const SizedBox(width: 4),
-                            Text(
+                            AnymeXText(
                               tagText,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: colorScheme.primary,
-                              ),
+                              size: 11,
+                              variant: TextVariant.bold,
+                              color: colorScheme.primary,
+                              maxLines: null,
                             ),
                           ],
                         ),

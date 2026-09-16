@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -257,7 +259,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
     final colorScheme = theme.colorScheme;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
-    return Container(
+    return AnymeXContainer(
       height: MediaQuery.of(context).size.height * 0.72 + keyboardHeight,
       decoration: BoxDecoration(
         color: colorScheme.surface,
@@ -276,14 +278,12 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
           children: [
             // Handle bar
             Center(
-              child: Container(
+              child: AnymeXContainer(
                 margin: const EdgeInsets.only(top: 10, bottom: 8),
                 width: 38,
                 height: 4,
-                decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(2),
-                ),
+                color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
 
@@ -292,13 +292,12 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Row(
                 children: [
-                  Text(
+                  AnymeXText(
                     'GIF Search',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
+                    size: 16,
+                    variant: TextVariant.bold,
+                    color: colorScheme.onSurface,
+                    maxLines: null,
                   ),
                   const Spacer(),
                   TextButton.icon(
@@ -326,15 +325,13 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
             if (!_showUrlTab)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-                child: Container(
+                child: AnymeXContainer(
                   height: 42,
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-                    ),
+                  color: colorScheme.surfaceContainerHighest
+                      .withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.3),
                   ),
                   child: TextField(
                     controller: _searchController,
@@ -376,16 +373,14 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Container(
+                      child: AnymeXContainer(
                         height: 42,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest
-                              .withValues(alpha: 0.4),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: colorScheme.outlineVariant
-                                .withValues(alpha: 0.3),
-                          ),
+                        color: colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: colorScheme.outlineVariant
+                              .withValues(alpha: 0.3),
                         ),
                         child: TextField(
                           controller: _urlController,
@@ -450,12 +445,11 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                                     .withValues(alpha: 0.5),
                               ),
                               const SizedBox(height: 8),
-                              Text(
+                              AnymeXText(
                                 _error!,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
+                                size: 13,
+                                color: colorScheme.onSurfaceVariant,
+                                maxLines: null,
                               ),
                               const SizedBox(height: 12),
                               OutlinedButton(
@@ -467,12 +461,11 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                         )
                       : _gifs.isEmpty
                           ? Center(
-                              child: Text(
+                              child: AnymeXText(
                                 'No GIFs found',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
+                                size: 13,
+                                color: colorScheme.onSurfaceVariant,
+                                maxLines: null,
                               ),
                             )
                           : GridView.builder(
@@ -496,14 +489,15 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                                   onTap: () => _selectGif(url),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: Container(
+                                    child: AnymeXContainer(
                                       color: colorScheme
                                           .surfaceContainerHighest
                                           .withValues(alpha: 0.3),
                                       child: CachedNetworkImage(
                                         imageUrl: preview,
                                         fit: BoxFit.cover,
-                                        placeholder: (context, url) => Container(
+                                        placeholder: (context, url) =>
+                                            AnymeXContainer(
                                           color: colorScheme
                                               .surfaceContainerHighest
                                               .withValues(alpha: 0.2),
