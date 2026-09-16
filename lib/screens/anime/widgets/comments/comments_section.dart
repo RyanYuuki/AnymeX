@@ -1537,7 +1537,14 @@ class _CommentSectionState extends State<CommentSection> {
                               if (!widget.showInlineInput) {
                                 HapticFeedback.lightImpact();
                                 controller.setReplyTarget(reply);
-                                controller.commentFocusNode.requestFocus();
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  if (mounted &&
+                                      controller
+                                          .commentFocusNode.canRequestFocus) {
+                                    controller.commentFocusNode.requestFocus();
+                                  }
+                                });
                               } else {
                                 controller.toggleReply(reply.id);
                               }
@@ -1881,7 +1888,14 @@ class _CommentSectionState extends State<CommentSection> {
                               if (!widget.showInlineInput) {
                                 HapticFeedback.lightImpact();
                                 controller.setReplyTarget(comment);
-                                controller.commentFocusNode.requestFocus();
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) {
+                                  if (mounted &&
+                                      controller
+                                          .commentFocusNode.canRequestFocus) {
+                                    controller.commentFocusNode.requestFocus();
+                                  }
+                                });
                               } else {
                                 controller.toggleReply(comment.id);
                               }

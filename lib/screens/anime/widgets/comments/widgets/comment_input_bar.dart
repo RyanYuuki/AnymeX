@@ -121,6 +121,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
               // 1. Replying to @user Sleek Micro-Chip
               if (replyingTo != null)
                 Padding(
+                  key: const ValueKey('comment_replying_to_chip'),
                   padding: const EdgeInsets.fromLTRB(14, 8, 14, 2),
                   child: AnymeXContainer(
                     padding:
@@ -180,6 +181,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
 
               // 2. Main Modern Input Box Row
               Padding(
+                key: const ValueKey('comment_main_input_row'),
                 padding: const EdgeInsets.fromLTRB(14, 8, 14, 6),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,

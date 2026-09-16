@@ -247,7 +247,7 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
               // Dismiss keyboard when user scrolls down
               keyboardDismissBehavior:
                   ScrollViewKeyboardDismissBehavior.onDrag,
-              physics: const BouncingScrollPhysics(
+              physics: const ClampingScrollPhysics(
                 parent: AlwaysScrollableScrollPhysics(),
               ),
               child: Column(
