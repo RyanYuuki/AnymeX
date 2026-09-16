@@ -262,6 +262,9 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
                     media: widget.media,
                     scrollToCommentId: widget.scrollToCommentId,
                     showInlineInput: false,
+                    // AppBar already shows poster, title, count, sort, rules
+                    // and refresh — the section's own header would duplicate it.
+                    showHeader: false,
                   ),
                   const SizedBox(height: 16),
                 ],

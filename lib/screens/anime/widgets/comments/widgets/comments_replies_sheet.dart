@@ -291,33 +291,31 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                       color: colorScheme.onSurfaceVariant.opaque(0.6),
                     ),
                   ),
-                ],
-              ),
-
-              // Existing Comment Tag Badge (preserved)
-              if (comment.tag.isNotEmpty && comment.tag != 'General')
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: isSpoiler
-                          ? colorScheme.error.withValues(alpha: 0.15)
-                          : colorScheme.primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      comment.tag,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        color:
-                            isSpoiler ? colorScheme.error : colorScheme.primary,
+                  if (comment.tag.isNotEmpty && comment.tag != 'General') ...[
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: isSpoiler
+                            ? colorScheme.error.withValues(alpha: 0.15)
+                            : colorScheme.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        comment.tag,
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: isSpoiler
+                              ? colorScheme.error
+                              : colorScheme.primary,
+                        ),
                       ),
                     ),
-                  ),
-                ),
+                  ],
+                ],
+              ),
 
               // Comment Markdown Content
               Padding(

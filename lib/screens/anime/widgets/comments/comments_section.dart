@@ -26,12 +26,14 @@ class CommentSection extends StatefulWidget {
   final Media media;
   final String? scrollToCommentId;
   final bool showInlineInput;
+  final bool showHeader;
 
   const CommentSection({
     super.key,
     required this.media,
     this.scrollToCommentId,
     this.showInlineInput = true,
+    this.showHeader = true,
   });
 
   @override
@@ -340,7 +342,7 @@ class _CommentSectionState extends State<CommentSection> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context, controller),
+            if (widget.showHeader) _buildHeader(context, controller),
             if (widget.showInlineInput) ...[
               if (controller.isLoggedIn)
                 _buildCommentInput(context, controller)
@@ -1510,13 +1512,12 @@ class _CommentSectionState extends State<CommentSection> {
                     Icon(Icons.lock_rounded,
                         size: 11, color: colorScheme.error),
                   ],
+                  if (reply.tag.isNotEmpty && reply.tag != 'General') ...[
+                    const Spacer(),
+                    _buildTag(context, reply.tag),
+                  ],
                 ],
               ),
-              if (reply.tag.isNotEmpty && reply.tag != 'General')
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: _buildTag(context, reply.tag),
-                ),
               const SizedBox(height: 4),
               GestureDetector(
                 onLongPress: () => _showCommentContextMenu(
@@ -1841,13 +1842,12 @@ class _CommentSectionState extends State<CommentSection> {
                     Icon(Icons.lock_rounded,
                         size: 12, color: colorScheme.error),
                   ],
+                  if (comment.tag.isNotEmpty && comment.tag != 'General') ...[
+                    const Spacer(),
+                    _buildTag(context, comment.tag),
+                  ],
                 ],
               ),
-              if (comment.tag.isNotEmpty && comment.tag != 'General')
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: _buildTag(context, comment.tag),
-                ),
               const SizedBox(height: 4),
               GestureDetector(
                 onLongPress: () => _showCommentContextMenu(
