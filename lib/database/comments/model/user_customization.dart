@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/services.dart';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 
 class AvatarDecorationItem {
@@ -56,61 +56,45 @@ class CustomizationRepository {
   static List<AnimeBannerItem>? _cachedBanners;
   static Map<String, List<AnimeBannerItem>>? _categorizedBanners;
 
-  static const String _decorationsFallbackUrl =
-      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/decorations.json';
-  static const String _bannersFallbackUrl =
-      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/beta/banners.json';
+  static const String _decorationsUrl =
+      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/customizations/decorations.json';
+  static const String _bannersUrl =
+      'https://raw.githubusercontent.com/Shebyyy/AnymeX-Preview/customizations/banners.json';
 
-  static Future<List<AvatarDecorationItem>> loadDecorations() async {
-    if (_cachedDecorations != null && _cachedDecorations!.isNotEmpty) {
+  static Future<List<AvatarDecorationItem>> loadDecorations({bool forceRefresh = false}) async {
+    if (!forceRefresh && _cachedDecorations != null && _cachedDecorations!.isNotEmpty) {
       return _cachedDecorations!;
     }
 
     try {
-      final jsonString = await rootBundle.loadString('assets/data/decorations.json');
-      final list = json.decode(jsonString) as List;
-      _cachedDecorations = list
-          .map((item) => AvatarDecorationItem.fromJson(Map<String, dynamic>.from(item)))
-          .toList();
-      return _cachedDecorations!;
-    } catch (_) {
-      try {
-        final res = await http.get(Uri.parse(_decorationsFallbackUrl));
-        if (res.statusCode == 200) {
-          final list = json.decode(res.body) as List;
-          _cachedDecorations = list
-              .map((item) => AvatarDecorationItem.fromJson(Map<String, dynamic>.from(item)))
-              .toList();
-          return _cachedDecorations!;
-        }
-      } catch (e) {
-        // Log fallback failure
+      final res = await http.get(Uri.parse(_decorationsUrl)).timeout(const Duration(seconds: 10));
+      if (res.statusCode == 200) {
+        final list = json.decode(res.body) as List;
+        _cachedDecorations = list
+            .map((item) => AvatarDecorationItem.fromJson(Map<String, dynamic>.from(item)))
+            .toList();
+        return _cachedDecorations!;
       }
+    } catch (e) {
+      log('Error loading decorations from remote: $e');
     }
     return _cachedDecorations ?? [];
   }
 
-  static Future<List<AnimeBannerItem>> loadBanners() async {
-    if (_cachedBanners != null && _cachedBanners!.isNotEmpty) {
+  static Future<List<AnimeBannerItem>> loadBanners({bool forceRefresh = false}) async {
+    if (!forceRefresh && _cachedBanners != null && _cachedBanners!.isNotEmpty) {
       return _cachedBanners!;
     }
 
     try {
-      final jsonString = await rootBundle.loadString('assets/data/banners.json');
-      final list = json.decode(jsonString) as List;
-      _parseBannersList(list);
-      return _cachedBanners!;
-    } catch (_) {
-      try {
-        final res = await http.get(Uri.parse(_bannersFallbackUrl));
-        if (res.statusCode == 200) {
-          final list = json.decode(res.body) as List;
-          _parseBannersList(list);
-          return _cachedBanners!;
-        }
-      } catch (e) {
-        // Log fallback failure
+      final res = await http.get(Uri.parse(_bannersUrl)).timeout(const Duration(seconds: 10));
+      if (res.statusCode == 200) {
+        final list = json.decode(res.body) as List;
+        _parseBannersList(list);
+        return _cachedBanners!;
       }
+    } catch (e) {
+      log('Error loading banners from remote: $e');
     }
     return _cachedBanners ?? [];
   }
