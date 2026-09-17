@@ -46,7 +46,8 @@ class ActivityComposerSheet extends StatefulWidget {
   State<ActivityComposerSheet> createState() => ActivityComposerSheetState();
 }
 
-class ActivityComposerSheetState extends State<ActivityComposerSheet> {
+class ActivityComposerSheetState extends State<ActivityComposerSheet>
+    with WidgetsBindingObserver {
   TextEditingController? _internalTextController;
   FocusNode? _internalFocusNode;
 
@@ -60,6 +61,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
   bool _isSubmitting = false;
   bool _isExpanded = false;
   bool _isPrivate = false;
+  bool _isPickingGif = false;
 
   bool get isExpanded => _isExpanded;
   set isExpanded(bool value) {
@@ -77,6 +79,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _focusNode.addListener(_onFocusChange);
     if (widget.isModal) {
       _isExpanded = true;
@@ -95,20 +98,50 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
 
   void cancelAction() {
     _textController.clear();
+    _focusNode.unfocus();
     setState(() {
       _isExpanded = false;
+      _previewMode = false;
     });
     if (widget.onCancel != null) widget.onCancel!();
   }
 
   void _onFocusChange() {
-    if (_focusNode.hasFocus && !_isExpanded) {
-      if (mounted) setState(() => _isExpanded = true);
+    if (_focusNode.hasFocus) {
+      if (!_isExpanded && mounted) setState(() => _isExpanded = true);
+    } else {
+      if (!widget.isModal && !_previewMode && !_isPickingGif && _isExpanded && mounted) {
+        setState(() => _isExpanded = false);
+      }
+    }
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    if (!mounted || widget.isModal || _previewMode || _isPickingGif) return;
+    final bottomInset = WidgetsBinding
+        .instance.platformDispatcher.views.first.viewInsets.bottom;
+    if (bottomInset == 0 && _isExpanded) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (!mounted || widget.isModal || _previewMode || _isPickingGif) return;
+        final currentInset = WidgetsBinding
+            .instance.platformDispatcher.views.first.viewInsets.bottom;
+        if (currentInset == 0 && _isExpanded) {
+          if (_focusNode.hasFocus) {
+            _focusNode.unfocus();
+          }
+          if (mounted) {
+            setState(() => _isExpanded = false);
+          }
+        }
+      });
     }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _focusNode.removeListener(_onFocusChange);
     _internalTextController?.dispose();
     _internalFocusNode?.dispose();
@@ -228,6 +261,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
       widget.onGifTap!();
       return;
     }
+    _isPickingGif = true;
     GifPickerSheet.show(
       context,
       onGifSelected: (url) {
@@ -243,7 +277,9 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
         if (mounted) setState(() {});
         _focusNode.requestFocus();
       },
-    );
+    ).then((_) {
+      _isPickingGif = false;
+    });
   }
 
   Widget _buildGifButton() {
