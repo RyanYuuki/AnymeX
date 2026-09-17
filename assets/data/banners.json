@@ -1,0 +1,522 @@
+[
+  {
+    "id": 1,
+    "category": "One Piece",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/81797/backgrounds/6564ee8183d39.jpg"
+  },
+  {
+    "id": 2,
+    "category": "One Piece",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/81797/backgrounds/659a96a80f691.jpg"
+  },
+  {
+    "id": 3,
+    "category": "One Piece",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/81797/backgrounds/6082a16f1aa8f.jpg"
+  },
+  {
+    "id": 4,
+    "category": "One Piece",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/81797/backgrounds/67f170f1417da.jpg"
+  },
+  {
+    "id": 5,
+    "category": "One Piece",
+    "url": "https://artworks.thetvdb.com/banners/series/81797/backgrounds/62037637.jpg"
+  },
+  {
+    "id": 7,
+    "category": "One Piece",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/81797-29.jpg"
+  },
+  {
+    "id": 8,
+    "category": "One Piece",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/81797-11.jpg"
+  },
+  {
+    "id": 10,
+    "category": "One Piece",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/81797-1.jpg"
+  },
+  {
+    "id": 11,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/79824-16.jpg"
+  },
+  {
+    "id": 12,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/79824-19.jpg"
+  },
+  {
+    "id": 13,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/79824-42.jpg"
+  },
+  {
+    "id": 14,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/series/79824/backgrounds/5ef24e7e7aeb6.jpg"
+  },
+  {
+    "id": 15,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/series/79824/backgrounds/5ef24ea1631ef.jpg"
+  },
+  {
+    "id": 16,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/79824-47.jpg"
+  },
+  {
+    "id": 17,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/series/79824/backgrounds/5f15069dbda88.jpg"
+  },
+  {
+    "id": 18,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/79824-4.jpg"
+  },
+  {
+    "id": 19,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/79824/backgrounds/6127541ce2817.jpg"
+  },
+  {
+    "id": 20,
+    "category": "Naruto",
+    "url": "https://artworks.thetvdb.com/banners/series/79824/backgrounds/5ec205b498762.jpg"
+  },
+  {
+    "id": 21,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/348545/backgrounds/62489b1bdc673.jpg"
+  },
+  {
+    "id": 22,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5d1a4142afb14.jpg"
+  },
+  {
+    "id": 23,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5c66aaaa792ec.jpg"
+  },
+  {
+    "id": 24,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/348545/backgrounds/646b6f70cc332.jpg"
+  },
+  {
+    "id": 25,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/348545/backgrounds/642202d497f2c.jpg"
+  },
+  {
+    "id": 26,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5d1a412ad47ad.jpg"
+  },
+  {
+    "id": 27,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5ccf486b68895.jpg"
+  },
+  {
+    "id": 28,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/series/348545/backgrounds/5eecde6897d41.jpg"
+  },
+  {
+    "id": 29,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5d48c61282828.jpg"
+  },
+  {
+    "id": 30,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5d530ce4e1ca0.jpg"
+  },
+  {
+    "id": 31,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/series/348545/backgrounds/62008002.jpg"
+  },
+  {
+    "id": 32,
+    "category": "Demon Slayer",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5ccf485bed599.jpg"
+  },
+  {
+    "id": 33,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/267440-27.jpg"
+  },
+  {
+    "id": 34,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/267440-20.jpg"
+  },
+  {
+    "id": 35,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/267440-23.jpg"
+  },
+  {
+    "id": 36,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/267440/backgrounds/61c919153d1b6.jpg"
+  },
+  {
+    "id": 37,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/series/267440/backgrounds/6016ff61a54d2.jpg"
+  },
+  {
+    "id": 38,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5baf8cdcebcb9.jpg"
+  },
+  {
+    "id": 39,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5b6137dc40fdb.jpg"
+  },
+  {
+    "id": 40,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/267440-28.jpg"
+  },
+  {
+    "id": 41,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/5d62d08d05188.jpg"
+  },
+  {
+    "id": 42,
+    "category": "Attack On Titan",
+    "url": "https://artworks.thetvdb.com/banners/series/267440/backgrounds/5fe8bc59bfe68.jpg"
+  },
+  {
+    "id": 43,
+    "category": "My Hero Academia",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/305074/backgrounds/69ae8bfdc36c7.jpg"
+  },
+  {
+    "id": 44,
+    "category": "My Hero Academia",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/305074-20.jpg"
+  },
+  {
+    "id": 45,
+    "category": "My Hero Academia",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/305074/backgrounds/68e13588406ff.jpg"
+  },
+  {
+    "id": 46,
+    "category": "My Hero Academia",
+    "url": "https://artworks.thetvdb.com/banners/series/305074/backgrounds/62037610.jpg"
+  },
+  {
+    "id": 47,
+    "category": "My Hero Academia",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/305074-12.jpg"
+  },
+  {
+    "id": 48,
+    "category": "Bleach",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/74796-1.jpg"
+  },
+  {
+    "id": 49,
+    "category": "Bleach",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/74796-3.jpg"
+  },
+  {
+    "id": 50,
+    "category": "Bleach",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/74796/backgrounds/634940dc001f4.jpg"
+  },
+  {
+    "id": 51,
+    "category": "Bleach",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/74796-10.jpg"
+  },
+  {
+    "id": 52,
+    "category": "Bleach",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/74796/backgrounds/64b449f301f3d.jpg"
+  },
+  {
+    "id": 53,
+    "category": "Bleach",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/74796-37.jpg"
+  },
+  {
+    "id": 54,
+    "category": "Bleach",
+    "url": "https://artworks.thetvdb.com/banners/fanart/original/74796-33.jpg"
+  },
+  {
+    "id": 56,
+    "category": "Solo Leveling",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/389597/backgrounds/6599d5d05abaa.jpg"
+  },
+  {
+    "id": 57,
+    "category": "Solo Leveling",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/389597/backgrounds/61ed3bc02a309.jpg"
+  },
+  {
+    "id": 58,
+    "category": "Solo Leveling",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/389597/backgrounds/67d216ed65e0e.jpg"
+  },
+  {
+    "id": 59,
+    "category": "Solo Leveling",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/389597/backgrounds/6749c5f04d5c7.jpg"
+  },
+  {
+    "id": 60,
+    "category": "Solo Leveling",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/389597/backgrounds/61ed3b978cd47.jpg"
+  },
+  {
+    "id": 61,
+    "category": "Solo Leveling",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/389597/backgrounds/65b6cf5a034f0.jpg"
+  },
+  {
+    "id": 62,
+    "category": "Solo Leveling",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/389597/backgrounds/65b6cf5a034f0.jpg"
+  },
+  {
+    "id": 63,
+    "category": "Solo Leveling",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/389597/backgrounds/6578431560ece.jpg"
+  },
+  {
+    "id": 64,
+    "category": "Solo Leveling",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/389597/backgrounds/67acfe69766f5.jpg"
+  },
+  {
+    "id": 65,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/series/377543/backgrounds/5ffdc23c58fac.jpg"
+  },
+  {
+    "id": 66,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/61c47ffed886e.jpg"
+  },
+  {
+    "id": 67,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/61f5d6652d7a1.jpg"
+  },
+  {
+    "id": 68,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/61c4801a753bc.jpg"
+  },
+  {
+    "id": 69,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/61f5d98e5e98d.jpg"
+  },
+  {
+    "id": 70,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/64f30a232c197.jpg"
+  },
+  {
+    "id": 71,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/66520e15c207f.jpg"
+  },
+  {
+    "id": 72,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/645c04a80e056.jpg"
+  },
+  {
+    "id": 73,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/61c4804891b93.jpg"
+  },
+  {
+    "id": 74,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/series/377543/backgrounds/5fdcef15a1939.jpg"
+  },
+  {
+    "id": 75,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/651bd2cb760d0.jpg"
+  },
+  {
+    "id": 76,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/64f31c4f5bc1e.jpg"
+  },
+  {
+    "id": 77,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/609cba4e2b446.jpg"
+  },
+  {
+    "id": 78,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/series/377543/backgrounds/5fc400f0069b9.jpg"
+  },
+  {
+    "id": 79,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/651bd29739ec5.jpg"
+  },
+  {
+    "id": 80,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/series/377543/backgrounds/60130a98c9a5a.jpg"
+  },
+  {
+    "id": 81,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/64cbd0b3e78b9.jpg"
+  },
+  {
+    "id": 82,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/6594cab4205a8.jpg"
+  },
+  {
+    "id": 83,
+    "category": "Jujutsu Kaisen",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/377543/backgrounds/64aaeb36b68ee.jpg"
+  },
+  {
+    "id": 84,
+    "category": "Mushoku Tensei",
+    "url": "https://artworks.thetvdb.com/banners/series/371310/backgrounds/5fef65bea1666.jpg"
+  },
+  {
+    "id": 85,
+    "category": "Mushoku Tensei",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/371310/backgrounds/6044b3f7c4510.jpg"
+  },
+  {
+    "id": 86,
+    "category": "Mushoku Tensei",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/371310/backgrounds/6a0eddc7732a0.jpg"
+  },
+  {
+    "id": 87,
+    "category": "Mushoku Tensei",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/371310/backgrounds/61479be537425.jpg"
+  },
+  {
+    "id": 88,
+    "category": "Mushoku Tensei",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/371310/backgrounds/61479bfd8bb09.jpg"
+  },
+  {
+    "id": 89,
+    "category": "Tokyo Revengers",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/393478/backgrounds/60fc99cd766d8.jpg"
+  },
+  {
+    "id": 90,
+    "category": "Tokyo Revengers",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/393478/backgrounds/60f3733aa53e2.jpg"
+  },
+  {
+    "id": 91,
+    "category": "Tokyo Revengers",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/393478/backgrounds/633e84ed879da.jpg"
+  },
+  {
+    "id": 92,
+    "category": "Tokyo Revengers",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/393478/backgrounds/6522fa442fc80.jpg"
+  },
+  {
+    "id": 93,
+    "category": "Tokyo Revengers",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/393478/backgrounds/63ed02debdc6e.jpg"
+  },
+  {
+    "id": 94,
+    "category": "Tokyo Revengers",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/393478/backgrounds/6143cdb59795e.jpg"
+  },
+  {
+    "id": 95,
+    "category": "Horimiya",
+    "url": "https://artworks.thetvdb.com/banners/series/388593/backgrounds/5fbfea198d8c2.jpg"
+  },
+  {
+    "id": 96,
+    "category": "Horimiya",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/388593/backgrounds/64c3cd1c94149.jpg"
+  },
+  {
+    "id": 97,
+    "category": "Horimiya",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/388593/backgrounds/61c46f12cef54.jpg"
+  },
+  {
+    "id": 98,
+    "category": "Horimiya",
+    "url": "https://artworks.thetvdb.com/banners/series/388593/backgrounds/5ff68c2c65a70.jpg"
+  },
+  {
+    "id": 99,
+    "category": "Horimiya",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/388593/backgrounds/61c340fb57d0e.jpg"
+  },
+  {
+    "id": 100,
+    "category": "Dr. STONE",
+    "url": "https://artworks.thetvdb.com/banners/series/355774/backgrounds/62061977.jpg"
+  },
+  {
+    "id": 101,
+    "category": "Dr. STONE",
+    "url": "https://artworks.thetvdb.com/banners/series/355774/backgrounds/602ec892bff94.jpg"
+  },
+  {
+    "id": 102,
+    "category": "Dr. STONE",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/355774/backgrounds/6430027e039be.jpg"
+  },
+  {
+    "id": 103,
+    "category": "Dr. STONE",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/355774/backgrounds/641bd18acded9.jpg"
+  },
+  {
+    "id": 104,
+    "category": "Dr. STONE",
+    "url": "https://artworks.thetvdb.com/banners/series/355774/backgrounds/62100678.jpg"
+  },
+  {
+    "id": 105,
+    "category": "Dr. STONE",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/355774/backgrounds/6463eef1ef504.jpg"
+  },
+  {
+    "id": 106,
+    "category": "That Time I Got Reincarnated as a Slime",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/352408/backgrounds/68b60227ec33a.jpg"
+  },
+  {
+    "id": 107,
+    "category": "That Time I Got Reincarnated as a Slime",
+    "url": "https://artworks.thetvdb.com/banners/v4/series/352408/backgrounds/60be23b659daf.jpg"
+  }
+]

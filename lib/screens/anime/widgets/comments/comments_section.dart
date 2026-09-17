@@ -10,9 +10,12 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comments_replies_sheet.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -1810,6 +1813,13 @@ class _CommentSectionState extends State<CommentSection> {
                             ),
                           ),
                         ),
+                        if (comment.hasLinkedAccounts) ...[
+                          const SizedBox(width: 4),
+                          LinkedAccountsBadges(
+                            linkedAccounts: comment.linkedAccounts,
+                            fontSize: 8.5,
+                          ),
+                        ],
                         if (comment.edited == true) ...[
                           const SizedBox(width: 4),
                           AnymeXText(
@@ -2004,42 +2014,10 @@ class _CommentSectionState extends State<CommentSection> {
 
   Widget _buildCommentAvatar(BuildContext context, Comment comment,
       {double size = 40}) {
-    final colorScheme = context.colors;
-    final iconSize = size <= 28 ? 14.0 : 18.0;
-
-    return AnymeXContainer(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colorScheme.surfaceContainer,
-        border: Border.all(
-          color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
-          width: 1,
-        ),
-        boxShadow: size > 28
-            ? [
-                BoxShadow(
-                  color: colorScheme.shadow.opaque(0.08, iReallyMeanIt: true),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : null,
-      ),
-      child: ClipOval(
-        child: comment.avatarUrl?.isNotEmpty == true
-            ? AnymeXImage(
-                imageUrl: comment.avatarUrl!,
-                fit: BoxFit.cover,
-                radius: 0,
-              )
-            : Icon(
-                Icons.person_rounded,
-                color: colorScheme.onSurfaceVariant,
-                size: iconSize,
-              ),
-      ),
+    return AnymeXDecoratedAvatar(
+      avatarUrl: comment.avatarUrl,
+      decorationUrl: comment.avatarDecoration,
+      size: size,
     );
   }
 
@@ -2807,40 +2785,67 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ),
               const SizedBox(height: 16),
+              if (comment.bannerUrl != null && comment.bannerUrl!.trim().isNotEmpty) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    height: 90,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: CachedNetworkImageProvider(comment.bannerUrl!),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
               Row(
                 children: [
-                  comment.avatarUrl?.isNotEmpty == true
-                      ? CircleAvatar(
-                          radius: 20,
-                          backgroundImage: NetworkImage(comment.avatarUrl!),
-                        )
-                      : CircleAvatar(
-                          radius: 20,
-                          backgroundColor: colorScheme.surfaceContainer,
-                          child: Icon(Icons.person_rounded,
-                              size: 18, color: colorScheme.onSurfaceVariant),
-                        ),
+                  AnymeXDecoratedAvatar(
+                    avatarUrl: comment.avatarUrl,
+                    decorationUrl: comment.avatarDecoration,
+                    size: 48,
+                    decorationScale: 1.25,
+                  ),
                   const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AnymeXText(
-                        comment.username,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w700),
-                        maxLines: null,
-                      ),
-                      AnymeXText(
-                        'ID: ${comment.userId}',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: colorScheme.onSurfaceVariant),
-                        maxLines: null,
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: AnymeXText(
+                                comment.username,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w700),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (comment.hasLinkedAccounts) ...[
+                              const SizedBox(width: 6),
+                              LinkedAccountsBadges(
+                                linkedAccounts: comment.linkedAccounts,
+                                fontSize: 9.5,
+                              ),
+                            ],
+                          ],
+                        ),
+                        AnymeXText(
+                          'ID: ${comment.userId}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: colorScheme.onSurfaceVariant),
+                          maxLines: null,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

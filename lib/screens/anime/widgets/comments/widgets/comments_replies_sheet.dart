@@ -4,8 +4,10 @@ import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -215,25 +217,10 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Avatar
-        ClipOval(
-          child: comment.avatarUrl?.isNotEmpty == true
-              ? AnymeXImage(
-                  imageUrl: comment.avatarUrl!,
-                  width: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
-                  height: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
-                  fit: BoxFit.cover,
-                  radius: 0,
-                )
-              : AnymeXContainer(
-                  width: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
-                  height: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
-                  color: colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.person_rounded,
-                    size: 16,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+        AnymeXDecoratedAvatar(
+          avatarUrl: comment.avatarUrl,
+          decorationUrl: comment.avatarDecoration,
+          size: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
         ),
         const SizedBox(width: 10),
 
@@ -262,6 +249,13 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                             maxLines: 1,
                           ),
                         ),
+                        if (comment.hasLinkedAccounts) ...[
+                          const SizedBox(width: 4),
+                          LinkedAccountsBadges(
+                            linkedAccounts: comment.linkedAccounts,
+                            fontSize: 8.5,
+                          ),
+                        ],
                         if (showParentBreadcrumb) ...[
                           Icon(Icons.arrow_right,
                               size: 18, color: colorScheme.primary),

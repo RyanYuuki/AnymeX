@@ -16,6 +16,9 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/screens/profile/widgets/decoration_closet_sheet.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/screens/profile/compatibility/compatibility_input_page.dart';
 
 Widget _buildBottomSheetOption(
@@ -66,8 +69,11 @@ class DesktopProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasBanner = user.cover != null && user.cover!.trim().isNotEmpty;
-    final imageUrl = hasBanner ? user.cover! : '';
+    final commentum = Get.isRegistered<CommentumService>() ? Get.find<CommentumService>() : null;
+    final equippedBanner = commentum?.currentUserBanner.value;
+    final effectiveCover = (equippedBanner != null && equippedBanner.isNotEmpty) ? equippedBanner : user.cover;
+    final hasBanner = effectiveCover != null && effectiveCover.trim().isNotEmpty;
+    final imageUrl = hasBanner ? effectiveCover : '';
     final name = user.name ?? 'Guest';
 
     final donatorTier =
@@ -389,6 +395,11 @@ class DesktopProfileHeader extends StatelessWidget {
                         child: Row(
                           children: [
                             HoverActionButton(
+                              icon: Icons.palette_outlined,
+                              onTap: () => DecorationClosetSheet.show(context),
+                            ),
+                            const SizedBox(width: 10),
+                            HoverActionButton(
                               icon: Icons.north_east_rounded,
                               onTap: () => launchUrlString(
                                 'https://anilist.co/user/$name',
@@ -550,8 +561,12 @@ class MobileProfileHeaderSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasBanner = bannerUrl != null && bannerUrl!.trim().isNotEmpty;
-    final imageUrl = hasBanner ? bannerUrl! : avatarUrl;
+    final commentum = Get.isRegistered<CommentumService>() ? Get.find<CommentumService>() : null;
+    final equippedBanner = commentum?.currentUserBanner.value;
+    final effectiveBanner = (equippedBanner != null && equippedBanner.isNotEmpty) ? equippedBanner : bannerUrl;
+    final hasBanner = effectiveBanner != null && effectiveBanner.trim().isNotEmpty;
+    final imageUrl = hasBanner ? effectiveBanner : avatarUrl;
+    final equippedDeco = commentum?.currentUserDecoration.value;
     final name = user.name ?? 'Guest';
     final handler = Get.find<ServiceHandler>();
     final donatorTier = handler.profileData.value.donatorTier ?? 0;
@@ -611,6 +626,18 @@ class MobileProfileHeaderSliver extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: IconButton(
+            icon: const Icon(Icons.palette_outlined),
+            tooltip: 'Decoration Closet',
+            onPressed: () => DecorationClosetSheet.show(context),
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
             icon: const Icon(Icons.more_vert),
             onPressed: () {
               showModalBottomSheet(
@@ -648,6 +675,15 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
+                        _buildBottomSheetOption(
+                          ctx,
+                          icon: Icons.checkroom_rounded,
+                          label: 'Decoration Closet',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            DecorationClosetSheet.show(context);
+                          },
+                        ),
                         _buildBottomSheetOption(
                           ctx,
                           icon: Icons.north_east_rounded,
@@ -806,35 +842,52 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           );
                         }
                       },
-                      child: Hero(
-                        tag: 'profile_avatar_$name',
-                        child: Container(
-                          width: 110,
-                          constraints: const BoxConstraints(
-                            minHeight: 110,
-                            maxHeight: 160,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.35),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          Hero(
+                            tag: 'profile_avatar_$name',
+                            child: Container(
+                              width: 110,
+                              constraints: const BoxConstraints(
+                                minHeight: 110,
+                                maxHeight: 160,
                               ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: CachedNetworkImage(
-                              imageUrl: avatarUrl,
-                              fit: BoxFit.cover,
-                              alignment: Alignment.topCenter,
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.person),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.35),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(14),
+                                child: CachedNetworkImage(
+                                  imageUrl: avatarUrl,
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment.topCenter,
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(Icons.person),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                          if (equippedDeco != null && equippedDeco.isNotEmpty)
+                            Positioned(
+                              width: 135,
+                              height: 135,
+                              child: IgnorePointer(
+                                child: CachedNetworkImage(
+                                  imageUrl: equippedDeco,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 12),

@@ -56,6 +56,11 @@ class CommentumService extends GetxController {
 
   final RxString currentUserRole = 'user'.obs;
   final RxInt unreadNotificationCount = 0.obs;
+  final RxString currentUserDecoration = ''.obs;
+  final RxString currentUserBanner = ''.obs;
+  final RxString currentUserBannerTheme = ''.obs;
+  final RxString currentUserNameplateTheme = ''.obs;
+  final Rx<Map<String, dynamic>> currentUserLinkedAccounts = Rx<Map<String, dynamic>>({});
   final Set<String> _registeredClientTypes = {};
   String? _pendingFcmToken;
 
@@ -70,16 +75,19 @@ class CommentumService extends GetxController {
     ever(serviceHandler.serviceType, (_) {
       _tryRegisterFcm();
       getUserRole();
+      fetchUserCustomizations();
     });
     ever(serviceHandler.profileData, (_) {
       _tryRegisterFcm();
       refreshUnreadCount();
       getUserRole();
+      fetchUserCustomizations();
     });
     Future.delayed(const Duration(seconds: 1), () {
       _tryRegisterFcm();
       refreshUnreadCount();
       getUserRole();
+      fetchUserCustomizations();
     });
   }
 
@@ -102,8 +110,26 @@ class CommentumService extends GetxController {
   }
 
   Future<String?> get _authToken async {
-    Get.find<AnilistAuth>();
-    return AuthKeys.authToken.get<String?>();
+    final service = serviceHandler.serviceType.value;
+    if (service.isSimkl) {
+      return AuthKeys.simklAuthToken.get<String?>();
+    } else if (service.isMal) {
+      return AuthKeys.malAuthToken.get<String?>();
+    } else {
+      return AuthKeys.authToken.get<String?>();
+    }
+  }
+
+  String? getTokenForService(String serviceType) {
+    final lower = serviceType.toLowerCase();
+    if (lower == 'anilist') {
+      return AuthKeys.authToken.get<String?>();
+    } else if (lower == 'mal' || lower == 'myanimelist') {
+      return AuthKeys.malAuthToken.get<String?>();
+    } else if (lower == 'simkl') {
+      return AuthKeys.simklAuthToken.get<String?>();
+    }
+    return null;
   }
 
   String get _clientType => serviceHandler.serviceType.value.name;
@@ -194,6 +220,10 @@ class CommentumService extends GetxController {
           "user_id": currentUserId,
           "username": currentUsername,
           if (currentUserAvatar != null) "avatar": currentUserAvatar,
+          if (currentUserDecoration.value.isNotEmpty)
+            "avatar_decoration": currentUserDecoration.value,
+          if (currentUserBanner.value.isNotEmpty)
+            "banner_url": currentUserBanner.value,
         },
         'media_info': {
           "media_id": mediaId,
@@ -1160,6 +1190,13 @@ class CommentumService extends GetxController {
       userRole: commentData['user_role']?.toString(),
       userTier: commentData['user_tier']?.toString(),
       userPoints: commentData['user_points'] as int?,
+      avatarDecoration: commentData['avatar_decoration']?.toString(),
+      bannerUrl: commentData['banner_url']?.toString(),
+      bannerTheme: commentData['banner_theme']?.toString(),
+      nameplateTheme: commentData['nameplate_theme']?.toString(),
+      linkedAccounts: commentData['linked_accounts'] is Map
+          ? Map<String, dynamic>.from(commentData['linked_accounts'])
+          : null,
       replies: replies,
     );
   }
@@ -1201,6 +1238,150 @@ class CommentumService extends GetxController {
       Logger.i('Error getting user role: $e');
       currentUserRole.value = 'user';
       return 'user';
+    }
+  }
+
+  Future<void> fetchUserCustomizations() async {
+    if (currentUserId == null) return;
+    try {
+      final token = await _authToken;
+      if (token == null) return;
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'action': 'get_profile',
+          'client_type': _clientType,
+          'access_token': token,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final user = data['user'];
+        if (user != null) {
+          currentUserDecoration.value = user['avatar_decoration']?.toString() ?? '';
+          currentUserBanner.value = user['banner_url']?.toString() ?? '';
+          currentUserBannerTheme.value = user['banner_theme']?.toString() ?? '';
+          currentUserNameplateTheme.value = user['nameplate_theme']?.toString() ?? '';
+          if (user['linked_accounts'] is Map) {
+            currentUserLinkedAccounts.value = Map<String, dynamic>.from(user['linked_accounts']);
+          }
+        }
+      }
+    } catch (e) {
+      Logger.i('Error fetching user customizations: $e');
+    }
+  }
+
+  Future<bool> updateCustomizations({
+    String? avatarDecoration,
+    String? bannerUrl,
+    String? bannerTheme,
+    String? nameplateTheme,
+  }) async {
+    if (currentUserId == null) return false;
+    try {
+      final token = await _authToken;
+      if (token == null) return false;
+
+      final body = <String, dynamic>{
+        'action': 'update_customizations',
+        'client_type': _clientType,
+        'access_token': token,
+      };
+
+      if (avatarDecoration != null) body['avatar_decoration'] = avatarDecoration;
+      if (bannerUrl != null) body['banner_url'] = bannerUrl;
+      if (bannerTheme != null) body['banner_theme'] = bannerTheme;
+      if (nameplateTheme != null) body['nameplate_theme'] = nameplateTheme;
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        if (avatarDecoration != null) currentUserDecoration.value = avatarDecoration;
+        if (bannerUrl != null) currentUserBanner.value = bannerUrl;
+        if (bannerTheme != null) currentUserBannerTheme.value = bannerTheme;
+        if (nameplateTheme != null) currentUserNameplateTheme.value = nameplateTheme;
+        return true;
+      }
+      return false;
+    } catch (e) {
+      Logger.i('Error updating customizations: $e');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> linkAccount({
+    required String targetClientType,
+    required String targetAccessToken,
+  }) async {
+    if (currentUserId == null) return null;
+    try {
+      final token = await _authToken;
+      if (token == null) return null;
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'action': 'link_account',
+          'client_type': _clientType,
+          'access_token': token,
+          'target_client_type': targetClientType,
+          'target_access_token': targetAccessToken,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['linked_accounts'] is Map) {
+          currentUserLinkedAccounts.value = Map<String, dynamic>.from(data['linked_accounts']);
+        }
+        return data;
+      } else {
+        final err = json.decode(response.body);
+        throw Exception(err['error'] ?? 'Failed to link account');
+      }
+    } catch (e) {
+      Logger.i('Error linking account: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> unlinkAccount(String serviceToUnlink) async {
+    if (currentUserId == null) return false;
+    try {
+      final token = await _authToken;
+      if (token == null) return false;
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'action': 'unlink_account',
+          'client_type': _clientType,
+          'access_token': token,
+          'service_to_unlink': serviceToUnlink,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['linked_accounts'] is Map) {
+          currentUserLinkedAccounts.value = Map<String, dynamic>.from(data['linked_accounts']);
+        }
+        return true;
+      }
+      return false;
+    } catch (e) {
+      Logger.i('Error unlinking account: $e');
+      return false;
     }
   }
 

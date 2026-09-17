@@ -34,7 +34,17 @@ class Comment {
   String? userTier;
   int? userPoints;
   int? parentId;
+  String? avatarDecoration;
+  String? bannerUrl;
+  String? bannerTheme;
+  String? nameplateTheme;
+  Map<String, dynamic>? linkedAccounts;
   List<Comment>? replies;
+
+  String? get linkedAnilistUsername => linkedAccounts?['anilist']?['username']?.toString();
+  String? get linkedMalUsername => linkedAccounts?['mal']?['username']?.toString();
+  String? get linkedSimklUsername => linkedAccounts?['simkl']?['username']?.toString();
+  bool get hasLinkedAccounts => linkedAnilistUsername != null || linkedMalUsername != null || linkedSimklUsername != null;
 
   Comment({
     required this.id,
@@ -70,6 +80,11 @@ class Comment {
     this.userTier,
     this.userPoints,
     this.parentId,
+    this.avatarDecoration,
+    this.bannerUrl,
+    this.bannerTheme,
+    this.nameplateTheme,
+    this.linkedAccounts,
     this.replies,
   });
 
@@ -109,6 +124,11 @@ class Comment {
       userTier: m['user_tier'],
       userPoints: m['user_points'],
       parentId: m['parent_id'],
+      avatarDecoration: m['avatar_decoration']?.toString(),
+      bannerUrl: m['banner_url']?.toString(),
+      bannerTheme: m['banner_theme']?.toString(),
+      nameplateTheme: m['nameplate_theme']?.toString(),
+      linkedAccounts: m['linked_accounts'] is Map ? Map<String, dynamic>.from(m['linked_accounts']) : null,
       replies: m['replies'] != null 
           ? (m['replies'] as List).map((reply) => Comment.fromMap(reply)).toList()
           : null,
@@ -150,6 +170,11 @@ class Comment {
     String? userTier,
     int? userPoints,
     int? parentId,
+    String? avatarDecoration,
+    String? bannerUrl,
+    String? bannerTheme,
+    String? nameplateTheme,
+    Map<String, dynamic>? linkedAccounts,
     List<Comment>? replies,
   }) {
     return Comment(
@@ -186,6 +211,11 @@ class Comment {
       userTier: userTier ?? this.userTier,
       userPoints: userPoints ?? this.userPoints,
       parentId: parentId ?? this.parentId,
+      avatarDecoration: avatarDecoration ?? this.avatarDecoration,
+      bannerUrl: bannerUrl ?? this.bannerUrl,
+      bannerTheme: bannerTheme ?? this.bannerTheme,
+      nameplateTheme: nameplateTheme ?? this.nameplateTheme,
+      linkedAccounts: linkedAccounts ?? this.linkedAccounts,
       replies: replies ?? this.replies,
     );
   }

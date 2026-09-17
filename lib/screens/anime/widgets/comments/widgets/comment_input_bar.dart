@@ -1,6 +1,8 @@
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/screens/anime/widgets/comments/mention_autocomplete.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
@@ -119,26 +121,16 @@ class _CommentInputBarState extends State<CommentInputBar> {
                       : 'Add a comment...',
                   leadingWidget: Padding(
                     padding: const EdgeInsets.only(bottom: 3),
-                    child: ClipOval(
-                      child: controller.profile.avatar?.isNotEmpty == true
-                          ? AnymeXImage(
-                              imageUrl: controller.profile.avatar!,
-                              width: 34,
-                              height: 34,
-                              fit: BoxFit.cover,
-                              radius: 0,
-                            )
-                          : AnymeXContainer(
-                              width: 34,
-                              height: 34,
-                              color: colorScheme.surfaceContainerHighest,
-                              child: Icon(
-                                Icons.person_rounded,
-                                color: colorScheme.onSurfaceVariant,
-                                size: 18,
-                              ),
-                            ),
-                    ),
+                    child: Obx(() {
+                      final deco = Get.isRegistered<CommentumService>()
+                          ? Get.find<CommentumService>().currentUserDecoration.value
+                          : null;
+                      return AnymeXDecoratedAvatar(
+                        avatarUrl: controller.profile.avatar,
+                        decorationUrl: deco,
+                        size: 34,
+                      );
+                    }),
                   ),
                   headerWidget: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
