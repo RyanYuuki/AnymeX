@@ -53,11 +53,14 @@ class DiscordMarkdown extends StatelessWidget {
         return '';
       });
 
-      // 2. Extract standard markdown images ![alt](url)
+      // 2. Extract standard markdown images ![alt](url) (also handles legacy embedded <img ...>)
       line = line.replaceAllMapped(_markdownImgPattern, (match) {
-        final url = match.group(1);
+        final url = match.group(2) ?? match.group(3) ?? match.group(1);
         if (url != null && url.isNotEmpty) {
-          collectedImages.add(CommentMediaImage(url: url));
+          final cleanUrl = normalizeImageUrl(url);
+          if (cleanUrl.isNotEmpty && !collectedImages.any((img) => img.url == cleanUrl)) {
+            collectedImages.add(CommentMediaImage(url: cleanUrl));
+          }
         }
         return '';
       });
@@ -65,7 +68,7 @@ class DiscordMarkdown extends StatelessWidget {
       // 3. Extract <img ...> tags (including <img src=""..."" width=""auto"" height=""auto"">)
       line = line.replaceAllMapped(_imgTagPattern, (match) {
         final img = _parseImgTag(match.group(1) ?? '');
-        if (img != null) {
+        if (img != null && !collectedImages.any((e) => e.url == img.url)) {
           collectedImages.add(img);
         }
         return '';
@@ -93,6 +96,9 @@ class DiscordMarkdown extends StatelessWidget {
 
       // Clean trailing artifact quotes if tag had double quotes like ">"
       line = line.replaceAll(RegExp(r'''["']?>\s*$'''), '');
+
+      // Clean up any residual empty markdown image brackets like ![alt]()
+      line = line.replaceAll(RegExp(r'!\[[^\]]*\]\(\s*\)'), '');
 
       processedLines.add(line);
     }
@@ -304,7 +310,26 @@ class DiscordMarkdown extends StatelessWidget {
       ),
     );
 
-    // 8. URLs
+    // 8. Markdown links: [text](url)
+    processed = replaceWithPlaceholder(
+      processed,
+      RegExp(r'\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)'),
+      (match) {
+        final label = match.group(1)!;
+        final url = match.group(2)!;
+        return TextSpan(
+          text: label,
+          style: TextStyle(
+            color: colorScheme.primary,
+            decoration: TextDecoration.underline,
+            fontWeight: FontWeight.w500,
+          ),
+          recognizer: TapGestureRecognizer()..onTap = () => _openUrl(url),
+        );
+      },
+    );
+
+    // 9. Raw URLs
     processed = replaceWithPlaceholder(
       processed,
       RegExp(r'(https?:\/\/[^\s<>"{}|\\^`\[\]]+)'),
@@ -357,7 +382,8 @@ class DiscordMarkdown extends StatelessWidget {
   );
 
   static final RegExp _markdownImgPattern = RegExp(
-    r'!\[.*?\]\((https?:\/\/[^\s\)]+)\)',
+    r'!\[([^\]]*)\]\(\s*(?:<img[^>]*src=["\x27]([^"\x27]+)["\x27][^>]*>|["\x27]?([^\s\)"\x27]+)["\x27]?)\s*\)',
+    caseSensitive: false,
   );
 
   static final RegExp _imgTagPattern = RegExp(

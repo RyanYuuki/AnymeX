@@ -64,6 +64,25 @@ class CommentSectionController extends GetxController
     replyingToCommentId.value = comment.id;
   }
 
+  void focusCommentInput([FocusNode? targetNode]) {
+    final node = targetNode ?? commentFocusNode;
+    if (node.hasFocus) {
+      node.unfocus();
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (node.canRequestFocus) {
+        node.requestFocus();
+        SystemChannels.textInput.invokeMethod('TextInput.show');
+      }
+    });
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (node.canRequestFocus) {
+        node.requestFocus();
+        SystemChannels.textInput.invokeMethod('TextInput.show');
+      }
+    });
+  }
+
   void clearReplyTarget() {
     activeReplyComment.value = null;
     replyingToCommentId.value = '';
@@ -320,7 +339,7 @@ class CommentSectionController extends GetxController
     // NOTE: Dart RegExp does NOT support lookbehind (?<!...) — it throws
     // FormatException at construction time, which made every comment/reply
     // fail before the request was even sent. The "don't double-wrap URLs
-    // that are already inside src=..." check is done in the callback below.
+    // that are already inside src=... or markdown syntax" check is done in the callback below.
     final imgUrlPattern = RegExp(
       r'''(https?:\/\/[^\s<>"{}|\\^`\[\]]+\.(?:png|jpg|jpeg|gif|webp|webm)(?:\?[^\s<>"{}|\\^`\[\]]*)?|https?:\/\/(?:media\.)?(?:tenor|giphy)\.com\/[^\s<>"{}|\\^`\[\]]+)''',
       caseSensitive: false,
@@ -329,10 +348,64 @@ class CommentSectionController extends GetxController
     return text.replaceAllMapped(imgUrlPattern, (match) {
       final url = match.group(0)!;
       final before = text.substring(0, match.start);
+      final after = text.substring(match.end);
+
       final alreadyInTag = before.endsWith('src="') || before.endsWith("src='");
-      if (alreadyInTag) return url;
+      final alreadyInMarkdown = RegExp(r'!?\[[^\]]*\]\(\s*$').hasMatch(before) &&
+          RegExp(r'^\s*\)').hasMatch(after);
+
+      if (alreadyInTag || alreadyInMarkdown) return url;
       return '<img src="$url" width="auto" height="auto">';
     });
+  }
+
+  static String formatCommentTimestamp(String timestamp) {
+    if (timestamp.isEmpty) return '';
+    try {
+      var str = timestamp.trim();
+      // Ensure backend timestamp without explicit timezone is parsed as UTC:
+      if (!str.endsWith('Z') && !RegExp(r'[+-]\d{2}(?::?\d{2})?$').hasMatch(str)) {
+        str = '${str}Z';
+      }
+      final utc = DateTime.parse(str);
+      final local = utc.toLocal();
+      final now = DateTime.now();
+      final diff = now.difference(local);
+
+      if (diff.isNegative || diff.inSeconds < 45) {
+        return 'just now';
+      }
+      if (diff.inMinutes < 60) {
+        return '${diff.inMinutes}m ago';
+      }
+      if (diff.inHours < 24) {
+        return '${diff.inHours}h ago';
+      }
+
+      // Check if it happened on the local calendar day before
+      final yesterday = now.subtract(const Duration(days: 1));
+      if (local.year == yesterday.year &&
+          local.month == yesterday.month &&
+          local.day == yesterday.day) {
+        return 'yesterday';
+      }
+
+      if (diff.inDays < 7) {
+        return '${diff.inDays}d ago';
+      }
+      if (diff.inDays < 30) {
+        final weeks = (diff.inDays / 7).floor();
+        return '${weeks}w ago';
+      }
+      if (diff.inDays < 365) {
+        final months = (diff.inDays / 30).floor();
+        return '${months}mo ago';
+      }
+      final years = (diff.inDays / 365).floor();
+      return '${years}y ago';
+    } catch (_) {
+      return '';
+    }
   }
 
   Future<void> addReply(Comment parentComment, String replyContent) async {

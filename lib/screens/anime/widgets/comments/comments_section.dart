@@ -1073,17 +1073,7 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   String _formatTimestampShort(String isoString) {
-    try {
-      final dt = DateTime.parse(isoString);
-      final now = DateTime.now();
-      final diff = now.difference(dt);
-      if (diff.inMinutes < 1) return 'just now';
-      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-      if (diff.inHours < 24) return '${diff.inHours}h ago';
-      return '${dt.day}/${dt.month}/${dt.year}';
-    } catch (_) {
-      return '';
-    }
+    return CommentSectionController.formatCommentTimestamp(isoString);
   }
 
   Widget _buildCommentWithReplies(BuildContext context, Comment comment,
@@ -1500,6 +1490,13 @@ class _CommentSectionState extends State<CommentSection> {
                             maxLines: 1,
                           ),
                         ],
+                        const SizedBox(width: 6),
+                        AnymeXText(
+                          _formatTimestampShort(reply.createdAt),
+                          size: 11,
+                          color: colorScheme.onSurfaceVariant.opaque(0.6),
+                          maxLines: 1,
+                        ),
                         if (isLocked) ...[
                           const SizedBox(width: 4),
                           Icon(Icons.lock_rounded,
@@ -1531,30 +1528,13 @@ class _CommentSectionState extends State<CommentSection> {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        AnymeXText(
-                          _formatTimestampShort(reply.createdAt),
-                          color: colorScheme.onSurfaceVariant,
-                          size: 11,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: null,
-                        ),
-                        const SizedBox(width: 10),
                         if (!isLocked) ...[
                           GestureDetector(
                             onTap: () {
                               if (!widget.showInlineInput) {
                                 HapticFeedback.lightImpact();
                                 controller.setReplyTarget(reply);
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  if (mounted &&
-                                      controller
-                                          .commentFocusNode.canRequestFocus) {
-                                    controller.commentFocusNode.requestFocus();
-                                  }
-                                });
+                                controller.focusCommentInput();
                               } else {
                                 controller.toggleReply(reply.id);
                               }
@@ -1840,6 +1820,13 @@ class _CommentSectionState extends State<CommentSection> {
                             maxLines: 1,
                           ),
                         ],
+                        const SizedBox(width: 6),
+                        AnymeXText(
+                          _formatTimestampShort(comment.createdAt),
+                          size: 11,
+                          color: colorScheme.onSurfaceVariant.opaque(0.6),
+                          maxLines: 1,
+                        ),
                         if (isLocked) ...[
                           const SizedBox(width: 4),
                           Icon(Icons.lock_rounded,
@@ -1889,30 +1876,13 @@ class _CommentSectionState extends State<CommentSection> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        AnymeXText(
-                          _formatTimestampShort(comment.createdAt),
-                          color: colorScheme.onSurfaceVariant,
-                          size: 11,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: null,
-                        ),
-                        const SizedBox(width: 12),
                         if (!effectiveLocked) ...[
                           GestureDetector(
                             onTap: () {
                               if (!widget.showInlineInput) {
                                 HapticFeedback.lightImpact();
                                 controller.setReplyTarget(comment);
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  if (mounted &&
-                                      controller
-                                          .commentFocusNode.canRequestFocus) {
-                                    controller.commentFocusNode.requestFocus();
-                                  }
-                                });
+                                controller.focusCommentInput();
                               } else {
                                 controller.toggleReply(comment.id);
                               }

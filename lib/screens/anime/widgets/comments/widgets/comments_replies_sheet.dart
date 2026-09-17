@@ -9,7 +9,6 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class CommentsRepliesSheet extends StatefulWidget {
   final Comment rootComment;
@@ -71,12 +70,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
   }
 
   String _formatTime(String timestamp) {
-    try {
-      final date = DateTime.parse(timestamp);
-      return timeago.format(date, locale: 'en_short');
-    } catch (_) {
-      return timestamp;
-    }
+    return CommentSectionController.formatCommentTimestamp(timestamp);
   }
 
   Widget _buildRoleBadge(BuildContext context, String role) {
@@ -598,7 +592,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                                 rootComment: latestParent,
                                 onReplyTap: () {
                                   controller.setReplyTarget(latestParent);
-                                  _sheetFocusNode.requestFocus();
+                                  controller.focusCommentInput(_sheetFocusNode);
                                 },
                               ),
                             ],
@@ -635,7 +629,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                               rootComment: latestParent,
                               onReplyTap: () {
                                 controller.setReplyTarget(reply);
-                                _sheetFocusNode.requestFocus();
+                                controller.focusCommentInput(_sheetFocusNode);
                               },
                             );
                           }),
