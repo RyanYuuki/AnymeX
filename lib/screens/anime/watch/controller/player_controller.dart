@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/scheduler.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -977,6 +976,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       await _openWithCloudFallback(
           startPositionOverride: startPositionOverride);
     }
+    _autoSelectAudioTrack();
 
     if (subtitleToRestore != null) {
       await _applySubtitleTrack(
@@ -1307,6 +1307,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
       embeddedQuality.value = e.video;
       _tryAutoSelectPreferredSubtitle();
+      if (selectedExternalAudio.value == null &&
+          selectedVideo.value?.audios?.isNotEmpty == true) {
+        _autoSelectAudioTrack();
+      }
     }));
 
     _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
@@ -1909,6 +1913,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
     await _basePlayer.setRate(_sessionSpeed);
+    _autoSelectAudioTrack();
   }
 
   Future<void> delete() async {
@@ -2258,9 +2263,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _autoSelectAudioTrack() {
     final audios = selectedVideo.value?.audios ?? [];
-    embeddedAudioTracks.value = audios
-        .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
-        .toList();
     if (audios.isNotEmpty) {
       final firstAudio = audios.first;
       if (firstAudio.file != null && firstAudio.file!.isNotEmpty) {
