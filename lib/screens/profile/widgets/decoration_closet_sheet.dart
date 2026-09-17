@@ -1,16 +1,13 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/model/user_customization.dart';
 import 'package:anymex/services/commentum_service.dart';
-import 'package:anymex/utils/color_extensions.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hugeicons/hugeicons.dart';
 
 class DecorationClosetSheet extends StatefulWidget {
   const DecorationClosetSheet({super.key});
@@ -118,10 +115,26 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
     final userAvatar = _commentumService.currentUserAvatar;
     final userName = _commentumService.currentUsername ?? 'You';
 
-    return AnymeXBottomSheet(
-      maxHeight: MediaQuery.of(context).size.height * 0.9,
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.9,
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
       child: Column(
         children: [
+          const SizedBox(height: 10),
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colorScheme.outlineVariant.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 6),
           // Header preview card
           _buildLivePreviewCard(colorScheme, userAvatar, userName),
           const SizedBox(height: 12),
@@ -210,7 +223,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             left: 16,
             bottom: 16,
             child: Row(
-              crossAxisAlignment: CrossAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 AnymeXDecoratedAvatar(
                   avatarUrl: userAvatar,
@@ -220,7 +233,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 ),
                 const SizedBox(width: 14),
                 Column(
-                  crossAxisAlignment: CrossAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
@@ -628,7 +641,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
               border: Border.all(color: colorScheme.primary.withOpacity(0.2)),
             ),
             child: Row(
-              crossAxisAlignment: CrossAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(Icons.info_outline, color: colorScheme.primary, size: 20),
                 const SizedBox(width: 10),
@@ -728,7 +741,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
           const SizedBox(width: 12),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [

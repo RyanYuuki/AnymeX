@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/database/comments/model/user_points.dart';

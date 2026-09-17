@@ -1,4 +1,4 @@
-import 'package:anymex/utils/color_extensions.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';

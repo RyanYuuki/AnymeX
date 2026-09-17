@@ -68,7 +68,7 @@ class LinkedAccountsBadges extends StatelessWidget {
 
     return Row(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: badges
           .expand((w) => [w, const SizedBox(width: 4)])
           .take(badges.length * 2 - 1)
