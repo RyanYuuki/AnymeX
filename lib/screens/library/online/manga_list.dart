@@ -86,7 +86,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   final _searchController = TextEditingController();
   String _searchQuery = '';
   late ScrollController _tabScrollController;
-  int _selectedTabIndex = 0;
+  final _selectedTabIndex = ValueNotifier<int>(0);
 
   _MangaSortMode _sortMode = _MangaSortMode.lastUpdated;
   bool _sortAscending = false;
@@ -169,19 +169,29 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   @override
   void dispose() {
     _tabController?.removeListener(_onTabChanged);
+    _tabController?.animation?.removeListener(_onTabChanged);
     _tabController?.dispose();
+    _selectedTabIndex.dispose();
     _tabScrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
 
   void _onTabChanged() {
-    if (!mounted) return;
-    if (_tabController != null && _tabController!.index != _selectedTabIndex) {
-      setState(() {
-        _selectedTabIndex = _tabController!.index;
-      });
-      _scrollToTab(_selectedTabIndex);
+    if (!mounted || _tabController == null) return;
+    final int newIndex;
+    if (_tabController!.indexIsChanging) {
+      newIndex = _tabController!.index;
+    } else if (_tabController!.animation != null) {
+      newIndex = _tabController!.animation!.value.round();
+    } else {
+      newIndex = _tabController!.index;
+    }
+    final clampedIndex =
+        newIndex.clamp(0, (_tabController!.length - 1).clamp(0, 9999));
+    if (clampedIndex != _selectedTabIndex.value) {
+      _selectedTabIndex.value = clampedIndex;
+      _scrollToTab(clampedIndex);
     }
   }
 
@@ -199,7 +209,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
       );
       _tabScrollController.animateTo(
         clampedOffset,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
       );
     });
@@ -207,6 +217,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
 
   void _setupTabController(List<String> orderedTabs) {
     _tabController?.removeListener(_onTabChanged);
+    _tabController?.animation?.removeListener(_onTabChanged);
     _tabController?.dispose();
     final requestedInitialTab = widget.initialTab;
     final initialIndex = requestedInitialTab == null
@@ -214,13 +225,14 @@ class _AnilistMangaListState extends State<AnilistMangaList>
         : orderedTabs
             .indexOf(requestedInitialTab)
             .clamp(0, orderedTabs.length - 1);
-    _selectedTabIndex = initialIndex;
+    _selectedTabIndex.value = initialIndex;
     _tabController = TabController(
       length: orderedTabs.length,
       vsync: this,
       initialIndex: initialIndex,
     );
     _tabController!.addListener(_onTabChanged);
+    _tabController!.animation?.addListener(_onTabChanged);
   }
 
   void _initTabController() {
@@ -553,7 +565,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
         _tabController?.animateTo(index);
       },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 150),
         curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
@@ -582,7 +594,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
             ),
             const SizedBox(width: 8),
             AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
               decoration: BoxDecoration(
                 color: isSelected
@@ -616,24 +628,29 @@ class _AnilistMangaListState extends State<AnilistMangaList>
 
     return SizedBox(
       height: 42,
-      child: ListView.separated(
-        controller: _tabScrollController,
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: h),
-        itemCount: orderedTabs.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 3),
-        itemBuilder: (context, index) {
-          final tab = orderedTabs[index];
-          final count = (tabFilteredItems[tab] ?? []).length;
-          final isSelected = _selectedTabIndex == index;
-          return _buildTabItem(
-            context,
-            index: index,
-            total: orderedTabs.length,
-            tab: tab,
-            count: count,
-            isSelected: isSelected,
+      child: ValueListenableBuilder<int>(
+        valueListenable: _selectedTabIndex,
+        builder: (context, currentSelected, _) {
+          return ListView.separated(
+            controller: _tabScrollController,
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: h),
+            itemCount: orderedTabs.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 3),
+            itemBuilder: (context, index) {
+              final tab = orderedTabs[index];
+              final count = (tabFilteredItems[tab] ?? []).length;
+              final isSelected = currentSelected == index;
+              return _buildTabItem(
+                context,
+                index: index,
+                total: orderedTabs.length,
+                tab: tab,
+                count: count,
+                isSelected: isSelected,
+              );
+            },
           );
         },
       ),
