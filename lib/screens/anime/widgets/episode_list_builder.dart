@@ -304,8 +304,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       return true;
     }
 
-    final hasSortSections = widget.episodeList.any((e) =>
-        e.sortMap.isNotEmpty || (e.sortKeys != null && e.sortKeys!.isNotEmpty));
+    final hasSortSections =
+        buildEpisodeSortSections(widget.episodeList).isNotEmpty;
     if (!hasSortSections) {
       final epNum = episode.number.toInt();
       if (epNum > 0 && epNum <= userProgress.value) return true;
