@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -382,15 +383,56 @@ class HeaderProfileAvatar extends StatelessWidget {
                     size: 18,
                   ),
           );
+          Widget content = avatar;
           if (count > 0) {
-            return AnymeXBadge(
+            content = AnymeXBadge(
               label: count.toString(),
               backgroundColor: context.colors.primary,
               textColor: context.colors.onPrimary,
-              child: avatar,
+              child: content,
             );
           }
-          return avatar;
+
+          final isIncognito = Get.isRegistered<IncognitoController>() &&
+              Get.find<IncognitoController>().isIncognito.value;
+
+          if (isIncognito) {
+            content = Stack(
+              clipBehavior: Clip.none,
+              children: [
+                content,
+                Positioned(
+                  bottom: -2,
+                  right: -2,
+                  child: Container(
+                    padding: const EdgeInsets.all(2.5),
+                    decoration: BoxDecoration(
+                      color: context.colors.surface,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: context.colors.primary,
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.colors.primary.withOpacity(0.35),
+                          blurRadius: 6,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.visibility_off_rounded,
+                      size: 10,
+                      color: context.colors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return content;
         }),
       ),
     );

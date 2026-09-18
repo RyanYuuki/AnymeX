@@ -91,7 +91,10 @@ class StatisticsPage extends StatelessWidget {
               stream: controller.watchCustomLists(ItemType.anime),
               builder: (context, snapshot) {
                 final lists = snapshot.data
-                        ?.where((l) => l.mediaTypeIndex == ItemType.anime.index)
+                        ?.where((l) =>
+                            l.mediaTypeIndex == ItemType.anime.index &&
+                            !controller.isCustomListHidden(
+                                l.listName, l.mediaTypeIndex))
                         .toList() ??
                     [];
                 return _buildCustomListsSection(context, lists, controller);
@@ -109,7 +112,10 @@ class StatisticsPage extends StatelessWidget {
               stream: controller.watchCustomLists(ItemType.manga),
               builder: (context, snapshot) {
                 final lists = snapshot.data
-                        ?.where((l) => l.mediaTypeIndex == ItemType.manga.index)
+                        ?.where((l) =>
+                            l.mediaTypeIndex == ItemType.manga.index &&
+                            !controller.isCustomListHidden(
+                                l.listName, l.mediaTypeIndex))
                         .toList() ??
                     [];
                 return _buildCustomListsSection(context, lists, controller);
@@ -127,7 +133,10 @@ class StatisticsPage extends StatelessWidget {
               stream: controller.watchCustomLists(ItemType.novel),
               builder: (context, snapshot) {
                 final lists = snapshot.data
-                        ?.where((l) => l.mediaTypeIndex == ItemType.novel.index)
+                        ?.where((l) =>
+                            l.mediaTypeIndex == ItemType.novel.index &&
+                            !controller.isCustomListHidden(
+                                l.listName, l.mediaTypeIndex))
                         .toList() ??
                     [];
                 return _buildCustomListsSection(context, lists, controller);

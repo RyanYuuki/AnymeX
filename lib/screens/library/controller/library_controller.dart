@@ -71,6 +71,12 @@ class LibraryController extends GetxController {
       }
     });
     
+    ever(offlineStorage.hiddenCustomListKeys, (_) {
+      if (!_isSwitchingCategory) {
+        _setupCustomListsSubscription();
+      }
+    });
+    
     _setupCustomListsSubscription();
   }
 
@@ -78,7 +84,9 @@ class LibraryController extends GetxController {
     _customListsSubscription?.cancel();
     _customListsSubscription = offlineStorage.watchCustomLists(type.value).listen((lists) {
       final filteredLists = lists
-          .where((l) => l.mediaTypeIndex == type.value.index)
+          .where((l) =>
+              l.mediaTypeIndex == type.value.index &&
+              !offlineStorage.isCustomListHidden(l.listName, l.mediaTypeIndex))
           .toList();
       customLists.value = filteredLists;
       customListNames.value = filteredLists.map((l) => l.listName ?? '').toList();
@@ -361,7 +369,11 @@ class LibraryController extends GetxController {
 
   Future<List<String>> getCustomListNames() async {
     final lists = await offlineStorage.getCustomListsByType(type.value);
-    return lists.map((l) => l.listName ?? '').toList();
+    return lists
+        .where((l) =>
+            !offlineStorage.isCustomListHidden(l.listName, l.mediaTypeIndex))
+        .map((l) => l.listName ?? '')
+        .toList();
   }
 
   Stream<List<OfflineMedia>> getCustomListStream(

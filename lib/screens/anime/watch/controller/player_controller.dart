@@ -15,6 +15,7 @@ import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -2798,6 +2799,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _trackOnline(bool hasCrossedLimit) async {
     if (!shouldTrack) return;
+    if (Get.isRegistered<IncognitoController>() &&
+        !Get.find<IncognitoController>().shouldSyncTrackers) {
+      Logger.i('Incognito mode: skipping online tracking');
+      return;
+    }
     if (isOffline.value) {
       Logger.i('Offline mode: skipping online tracking');
       return;

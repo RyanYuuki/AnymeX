@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -149,7 +150,10 @@ class NovelReaderController extends GetxController {
   @override
   void onClose() {
     _saveTracking(syncToCloud: false);
-    unawaited(_syncCloudProgressOnExit());
+    if (!Get.isRegistered<IncognitoController>() ||
+        Get.find<IncognitoController>().shouldSyncTrackers) {
+      unawaited(_syncCloudProgressOnExit());
+    }
     scrollController.removeListener(_scrollListener);
     _stopAutoScroll();
     _hideTimer?.cancel();

@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
@@ -54,6 +53,9 @@ import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_splash_screen.dart';
+import 'package:anymex/controllers/security/app_lock_controller.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
+import 'package:anymex/widgets/security/app_lock_gate.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/settings_sheet.dart';
@@ -283,6 +285,8 @@ void _initializeGetxController() async {
     Get.put(StatsTracker());
     Get.lazyPut(() => CacheController());
     Get.lazyPut(() => MediaModeController());
+    Get.put(AppLockController(), permanent: true);
+    Get.put(IncognitoController(), permanent: true);
     Get.lazyPut(() => DownloadSearchController());
   }, errorMessage: 'Failed to register GetX controllers');
 
@@ -389,11 +393,12 @@ class _MainAppState extends State<MainApp> {
             return child!;
           }
           final isDesktop = Platform.isWindows;
+          final content = AppLockGate(child: child!);
 
           if (isDesktop) {
             return Stack(
               children: [
-                RepaintBoundary(child: child!),
+                RepaintBoundary(child: content),
                 Positioned(
                   top: 0,
                   left: 0,
@@ -409,7 +414,7 @@ class _MainAppState extends State<MainApp> {
           }
           return Stack(
             children: [
-              child!,
+              content,
               // const FpsMeter(),
             ],
           );
