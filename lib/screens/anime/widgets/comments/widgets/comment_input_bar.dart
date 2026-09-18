@@ -1,9 +1,9 @@
+import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/screens/anime/widgets/comments/mention_autocomplete.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -34,11 +34,47 @@ class CommentInputBar extends StatefulWidget {
 class _CommentInputBarState extends State<CommentInputBar> {
   final LayerLink _layerLink = LayerLink();
   FocusNode? _internalFocusNode;
+  List<Map<String, dynamic>>? _cachedLocalUsers;
+  int _lastCommentsLength = -1;
+
   FocusNode get _effectiveFocusNode =>
       widget.focusNode ?? (_internalFocusNode ??= FocusNode());
 
   TextEditingController get _effectiveTextController =>
       widget.textController ?? widget.controller.commentController;
+
+  List<Map<String, dynamic>> _getLocalUsers(List<Comment> comments) {
+    if (_cachedLocalUsers != null && _lastCommentsLength == comments.length) {
+      return _cachedLocalUsers!;
+    }
+    _lastCommentsLength = comments.length;
+    final list = <Map<String, dynamic>>[];
+    final seen = <String>{};
+
+    void extract(Comment c) {
+      final name = c.username.trim();
+      if (!c.deleted &&
+          name.isNotEmpty &&
+          name.toLowerCase() != '[deleted]' &&
+          seen.add(name.toLowerCase())) {
+        list.add({
+          'username': name,
+          'avatar': c.avatarUrl,
+        });
+      }
+      if (c.replies != null && c.replies!.isNotEmpty) {
+        for (final reply in c.replies!) {
+          extract(reply);
+        }
+      }
+    }
+
+    for (final c in comments) {
+      extract(c);
+    }
+    _cachedLocalUsers = list;
+    return list;
+  }
 
   @override
   void initState() {
@@ -85,16 +121,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
           : CommentSectionController.getAutoProgressTag(
               controller.media, controller.initialProgress);
 
-      final localUsers = <Map<String, dynamic>>[];
-      final seen = <String>{};
-      for (final c in controller.comments) {
-        if (c.username.isNotEmpty && seen.add(c.username.toLowerCase())) {
-          localUsers.add({
-            'username': c.username,
-            'avatar': c.avatarUrl,
-          });
-        }
-      }
+      final localUsers = _getLocalUsers(controller.comments);
 
       return AnymeXContainer(
         color: colorScheme.surface,
@@ -117,7 +144,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
                   focusNode: _effectiveFocusNode,
                   layerLink: _layerLink,
                   hintText: replyingTo != null
-                      ? 'Reply to @${replyingTo.username}...'
+                      ? (replyingTo.deleted
+                          ? 'Reply to thread...'
+                          : 'Reply to @${replyingTo.username}...')
                       : 'Add a comment...',
                   leadingWidget: Padding(
                     padding: const EdgeInsets.only(bottom: 3),
@@ -165,7 +194,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
                                   color: colorScheme.onSurfaceVariant,
                                 ),
                                 AnymeXText(
-                                  '@${replyingTo.username}',
+                                  replyingTo.deleted
+                                      ? 'thread'
+                                      : '@${replyingTo.username}',
                                   size: 12,
                                   variant: TextVariant.bold,
                                   color: colorScheme.primary,

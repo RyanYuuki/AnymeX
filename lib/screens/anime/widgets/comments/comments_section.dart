@@ -13,11 +13,13 @@ import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comments_replies_sheet.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/user_comments_sheet.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -431,6 +433,20 @@ class _CommentSectionState extends State<CommentSection> {
                       height: 36,
                       child: IconButton(
                         padding: EdgeInsets.zero,
+                        onPressed: () => LeaderboardSheet.show(context),
+                        icon: Icon(
+                          Icons.emoji_events_outlined,
+                          color: colorScheme.primary,
+                          size: 18,
+                        ),
+                        tooltip: 'Leaderboard',
+                      ),
+                    ),
+                    SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
                         onPressed: () =>
                             showPolicySheet(context, PolicyType.commentRules),
                         icon: Icon(
@@ -550,6 +566,34 @@ class _CommentSectionState extends State<CommentSection> {
     return _mentionLayerLinks.putIfAbsent(key, () => LayerLink());
   }
 
+  List<Map<String, dynamic>> _extractLocalUsers(List<Comment> comments) {
+    final list = <Map<String, dynamic>>[];
+    final seen = <String>{};
+
+    void extract(Comment c) {
+      final name = c.username.trim();
+      if (!c.deleted &&
+          name.isNotEmpty &&
+          name.toLowerCase() != '[deleted]' &&
+          seen.add(name.toLowerCase())) {
+        list.add({
+          'username': name,
+          'avatar': c.avatarUrl,
+        });
+      }
+      if (c.replies != null && c.replies!.isNotEmpty) {
+        for (final reply in c.replies!) {
+          extract(reply);
+        }
+      }
+    }
+
+    for (final c in comments) {
+      extract(c);
+    }
+    return list;
+  }
+
   Widget _buildCommentInput(
       BuildContext context, CommentSectionController controller) {
     final theme = Theme.of(context);
@@ -610,6 +654,7 @@ class _CommentSectionState extends State<CommentSection> {
                             child: TextField(
                               controller: controller.commentController,
                               focusNode: controller.commentFocusNode,
+                              inputFormatters: [MarkdownListInputFormatter()],
                               maxLines:
                                   controller.isInputExpanded.value ? 5 : 1,
                               minLines: 1,
@@ -718,6 +763,7 @@ class _CommentSectionState extends State<CommentSection> {
               controller: controller.commentController,
               layerLink: _getMentionLayerLink('main'),
               focusNode: controller.commentFocusNode,
+              localUsers: _extractLocalUsers(controller.comments),
             ),
           ],
         ));
@@ -1087,13 +1133,74 @@ class _CommentSectionState extends State<CommentSection> {
     final effectiveLocked = comment.locked == true || isParentLocked;
     final isTarget = _isTargetComment(comment.id);
 
-    // Deleted comments render statically. They must NOT enter the Obx below:
-    // their build path reads zero observables (canModerate() is only reached
-    // for non-deleted comments), and an Obx that subscribes to nothing throws
-    // "improper use of a GetX" at mount - which blanked tiles gray while
-    // scrolling through threads containing deleted comments.
+    // Deleted comments render statically (avoiding Obx with zero subscriptions).
+    // If they have replies, the replies section is preserved so users can open the thread.
     if (comment.deleted) {
-      return _buildDeletedComment(context, comment, depth);
+      final hasReplies = comment.replies != null && comment.replies!.isNotEmpty;
+      return Column(
+        key: isTarget ? _targetCommentKey : null,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isTarget)
+            AnymeXContainer(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              color: colorScheme.primary.opaque(0.08),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: colorScheme.primary.opaque(0.3),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.notifications_active_rounded,
+                      size: 14, color: colorScheme.primary),
+                  const SizedBox(width: 6),
+                  AnymeXText(
+                    'Notification Target',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
+                    maxLines: null,
+                  ),
+                ],
+              ),
+            ),
+          if (comment.pinned == true && depth == 0)
+            AnymeXContainer(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              color: colorScheme.primary.opaque(0.08),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: colorScheme.primary.opaque(0.2),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.push_pin_rounded,
+                      size: 14, color: colorScheme.primary),
+                  const SizedBox(width: 6),
+                  AnymeXText(
+                    'Pinned',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12,
+                    ),
+                    maxLines: null,
+                  ),
+                ],
+              ),
+            ),
+          _buildDeletedComment(context, comment, depth),
+          if (hasReplies)
+            _buildRepliesSection(
+                context, comment, controller, effectiveLocked, depth: depth),
+        ],
+      );
     }
 
     return Obx(() => Column(
@@ -1668,6 +1775,7 @@ class _CommentSectionState extends State<CommentSection> {
                       focusNode: replyFocusNode,
                       maxLines: 3,
                       minLines: 1,
+                      inputFormatters: [MarkdownListInputFormatter()],
                       style: TextStyle(
                         color: colorScheme.onSurface,
                         fontSize: 14,
@@ -1747,6 +1855,7 @@ class _CommentSectionState extends State<CommentSection> {
               controller: replyController,
               layerLink: replyLayerLink,
               focusNode: replyFocusNode,
+              localUsers: _extractLocalUsers(controller.comments),
             ),
           ],
         );
@@ -1769,16 +1878,7 @@ class _CommentSectionState extends State<CommentSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () {
-            final currentUserId =
-                Get.find<ServiceHandler>().profileData.value.id;
-            if (comment.userId == currentUserId) {
-              navigate(() => const ProfilePage());
-            } else {
-              navigate(() =>
-                  UserProfilePage(userId: int.tryParse(comment.userId) ?? 0));
-            }
-          },
+          onTap: () => _showUserProfileSheet(context, comment),
           child: _buildCommentAvatar(context, comment,
               size: depth == 0 ? 36.0 : (depth == 1 ? 28.0 : 22.0)),
         ),
@@ -1813,13 +1913,6 @@ class _CommentSectionState extends State<CommentSection> {
                             ),
                           ),
                         ),
-                        if (comment.hasLinkedAccounts) ...[
-                          const SizedBox(width: 4),
-                          LinkedAccountsBadges(
-                            linkedAccounts: comment.linkedAccounts,
-                            fontSize: 8.5,
-                          ),
-                        ],
                         if (comment.edited == true) ...[
                           const SizedBox(width: 4),
                           AnymeXText(
@@ -1992,23 +2085,40 @@ class _CommentSectionState extends State<CommentSection> {
     final isCompact = depth >= 2;
     final avatarSize = isCompact ? 28.0 : 40.0;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(width: avatarSize + (isCompact ? 8 : 12)),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: avatarSize / 4),
-            child: AnymeXText(
-              '[deleted]',
-              color: colorScheme.onSurfaceVariant.opaque(0.4),
-              size: isCompact ? 13.0 : 15.0,
-              fontStyle: FontStyle.italic,
-              maxLines: null,
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: isCompact ? 4.0 : 6.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: avatarSize,
+            height: avatarSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: colorScheme.surfaceContainerHighest.opaque(0.4),
+              border: Border.all(
+                color: colorScheme.outlineVariant.opaque(0.2),
+                width: 0.8,
+              ),
+            ),
+            child: Icon(
+              Icons.delete_outline_rounded,
+              size: avatarSize * 0.5,
+              color: colorScheme.onSurfaceVariant.opaque(0.5),
             ),
           ),
-        ),
-      ],
+          SizedBox(width: isCompact ? 8 : 12),
+          Expanded(
+            child: AnymeXText(
+              '[This comment was deleted]',
+              color: colorScheme.onSurfaceVariant.opaque(0.5),
+              size: isCompact ? 12.0 : 13.5,
+              fontStyle: FontStyle.italic,
+              maxLines: 1,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -2827,7 +2937,7 @@ class _CommentSectionState extends State<CommentSection> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            if (comment.hasLinkedAccounts) ...[
+                            if (comment.linkedAccounts?.isNotEmpty == true) ...[
                               const SizedBox(width: 6),
                               LinkedAccountsBadges(
                                 linkedAccounts: comment.linkedAccounts,
@@ -3380,18 +3490,12 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  void _showUserProfileSheet(BuildContext context, Comment comment) async {
+  void _showUserProfileSheet(BuildContext context, Comment comment) {
     if (!context.mounted) return;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) => _UserProfileSheet(
-        username: comment.username,
-        avatarUrl: comment.avatarUrl,
-        userRole: comment.userRole,
-      ),
+    UserCommentsSheet.show(
+      context,
+      comment: comment,
+      controller: controller,
     );
   }
 

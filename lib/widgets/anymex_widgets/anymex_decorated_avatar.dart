@@ -11,6 +11,9 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
   final double decorationScale;
   final VoidCallback? onTap;
   final BoxBorder? customBorder;
+  final BorderRadius? borderRadius;
+  final BoxShape shape;
+  final String? heroTag;
 
   const AnymeXDecoratedAvatar({
     super.key,
@@ -20,6 +23,9 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
     this.decorationScale = 1.2,
     this.onTap,
     this.customBorder,
+    this.borderRadius,
+    this.shape = BoxShape.circle,
+    this.heroTag,
   });
 
   @override
@@ -27,12 +33,14 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
     final colorScheme = context.colors;
     final iconSize = size <= 28 ? 14.0 : 18.0;
     final hasDecoration = decorationUrl != null && decorationUrl!.trim().isNotEmpty;
+    final isCircle = shape == BoxShape.circle && borderRadius == null;
 
     Widget avatarCore = AnymeXContainer(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: isCircle ? null : (borderRadius ?? BorderRadius.circular(12)),
         color: colorScheme.surfaceContainer,
         border: customBorder ??
             Border.all(
@@ -49,20 +57,42 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
               ]
             : null,
       ),
-      child: ClipOval(
-        child: avatarUrl?.isNotEmpty == true
-            ? AnymeXImage(
-                imageUrl: avatarUrl!,
-                fit: BoxFit.cover,
-                radius: 0,
-              )
-            : Icon(
-                Icons.person_rounded,
-                color: colorScheme.onSurfaceVariant,
-                size: iconSize,
-              ),
-      ),
+      child: isCircle
+          ? ClipOval(
+              child: avatarUrl?.isNotEmpty == true
+                  ? AnymeXImage(
+                      imageUrl: avatarUrl!,
+                      fit: BoxFit.cover,
+                      radius: 0,
+                    )
+                  : Icon(
+                      Icons.person_rounded,
+                      color: colorScheme.onSurfaceVariant,
+                      size: iconSize,
+                    ),
+            )
+          : ClipRRect(
+              borderRadius: borderRadius ?? BorderRadius.circular(12),
+              child: avatarUrl?.isNotEmpty == true
+                  ? AnymeXImage(
+                      imageUrl: avatarUrl!,
+                      fit: BoxFit.cover,
+                      radius: 0,
+                    )
+                  : Icon(
+                      Icons.person_rounded,
+                      color: colorScheme.onSurfaceVariant,
+                      size: iconSize,
+                    ),
+            ),
     );
+
+    if (heroTag != null) {
+      avatarCore = Hero(
+        tag: heroTag!,
+        child: avatarCore,
+      );
+    }
 
     Widget content;
     if (hasDecoration) {

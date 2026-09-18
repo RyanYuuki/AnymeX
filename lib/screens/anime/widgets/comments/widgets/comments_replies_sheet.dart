@@ -2,12 +2,11 @@ import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/user_comments_sheet.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -217,10 +216,13 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Avatar
-        AnymeXDecoratedAvatar(
-          avatarUrl: comment.avatarUrl,
-          decorationUrl: comment.avatarDecoration,
-          size: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
+        GestureDetector(
+          onTap: () => UserCommentsSheet.show(context, comment: comment, controller: controller),
+          child: AnymeXDecoratedAvatar(
+            avatarUrl: comment.avatarUrl,
+            decorationUrl: comment.avatarDecoration,
+            size: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
+          ),
         ),
         const SizedBox(width: 10),
 
@@ -238,39 +240,49 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                       children: [
                         if (hasRole) _buildRoleBadge(context, comment.userRole!),
                         Flexible(
-                          child: AnymeXText(
-                            comment.username,
-                            overflow: TextOverflow.ellipsis,
-                            size: 13,
-                            variant: TextVariant.bold,
-                            color: hasRole
-                                ? _getRoleColor(comment.userRole!)
-                                : colorScheme.onSurface,
-                            maxLines: 1,
+                          child: GestureDetector(
+                            onTap: () => UserCommentsSheet.show(context, comment: comment, controller: controller),
+                            child: AnymeXText(
+                              comment.username,
+                              overflow: TextOverflow.ellipsis,
+                              size: 13,
+                              variant: TextVariant.bold,
+                              color: hasRole
+                                  ? _getRoleColor(comment.userRole!)
+                                  : colorScheme.onSurface,
+                              maxLines: 1,
+                            ),
                           ),
                         ),
-                        if (comment.hasLinkedAccounts) ...[
-                          const SizedBox(width: 4),
-                          LinkedAccountsBadges(
-                            linkedAccounts: comment.linkedAccounts,
-                            fontSize: 8.5,
-                          ),
-                        ],
                         if (showParentBreadcrumb) ...[
                           Icon(Icons.arrow_right,
                               size: 18, color: colorScheme.primary),
                           Flexible(
-                            child: AnymeXText(
-                              parentComment.username,
-                              overflow: TextOverflow.ellipsis,
-                              size: 13,
-                              variant: TextVariant.bold,
-                              color: parentComment.userRole != null &&
-                                      parentComment.userRole != 'user' &&
-                                      parentComment.userRole!.isNotEmpty
-                                  ? _getRoleColor(parentComment.userRole!)
-                                  : colorScheme.primary,
-                              maxLines: 1,
+                            child: GestureDetector(
+                              onTap: parentComment.deleted
+                                  ? null
+                                  : () => UserCommentsSheet.show(context,
+                                      comment: parentComment,
+                                      controller: controller),
+                              child: AnymeXText(
+                                parentComment.deleted
+                                    ? 'deleted'
+                                    : parentComment.username,
+                                overflow: TextOverflow.ellipsis,
+                                size: 13,
+                                variant: TextVariant.bold,
+                                fontStyle: parentComment.deleted
+                                    ? FontStyle.italic
+                                    : FontStyle.normal,
+                                color: parentComment.deleted
+                                    ? colorScheme.onSurfaceVariant.opaque(0.6)
+                                    : (parentComment.userRole != null &&
+                                            parentComment.userRole != 'user' &&
+                                            parentComment.userRole!.isNotEmpty
+                                        ? _getRoleColor(parentComment.userRole!)
+                                        : colorScheme.primary),
+                                maxLines: 1,
+                              ),
                             ),
                           ),
                         ],
@@ -569,7 +581,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                                     'ORIGINAL COMMENT',
                                     size: 10,
                                     color: colorScheme.primary,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: 0.5,
                                     ),

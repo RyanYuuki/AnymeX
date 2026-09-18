@@ -8,6 +8,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
+import 'package:anymex/services/commentum_service.dart';
 
 class SocialTab extends StatefulWidget {
   final int userId;
@@ -313,27 +315,15 @@ class SocialTabState extends State<SocialTab> {
                               ),
                               child: Row(
                                 children: [
-                                  if (user.avatarUrl != null)
-                                    ClipOval(
-                                      child: CachedNetworkImage(
-                                        imageUrl: user.avatarUrl!,
-                                        width: 56,
-                                        height: 56,
-                                        fit: BoxFit.cover,
-                                        errorWidget: (context, url, error) =>
-                                            const CircleAvatar(
-                                          radius: 28,
-                                          backgroundColor: Colors.transparent,
-                                          child: Icon(Icons.person, size: 24),
-                                        ),
-                                      ),
-                                    )
-                                  else
-                                    const CircleAvatar(
-                                      radius: 28,
-                                      backgroundColor: Colors.transparent,
-                                      child: Icon(Icons.person, size: 24),
-                                    ),
+                                  AnymeXDecoratedAvatar(
+                                    avatarUrl: user.avatarUrl,
+                                    decorationUrl: Get.isRegistered<CommentumService>()
+                                        ? Get.find<CommentumService>()
+                                            .getCachedDecoration(user.id.toString())
+                                        : null,
+                                    size: 56,
+                                    decorationScale: 1.25,
+                                  ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: AnymeXText(user.name,
@@ -404,29 +394,15 @@ class SocialTabState extends State<SocialTab> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            if (user.avatarUrl != null)
-                              ClipOval(
-                                child: CachedNetworkImage(
-                                  imageUrl: user.avatarUrl!,
-                                  width: avatarRadius * 2,
-                                  height: avatarRadius * 2,
-                                  fit: BoxFit.cover,
-                                  errorWidget: (context, url, error) =>
-                                      CircleAvatar(
-                                    radius: avatarRadius,
-                                    backgroundColor: Colors.transparent,
-                                    child: Icon(Icons.person,
-                                        size: avatarRadius * 0.7),
-                                  ),
-                                ),
-                              )
-                            else
-                              CircleAvatar(
-                                radius: avatarRadius,
-                                backgroundColor: Colors.transparent,
-                                child: Icon(Icons.person,
-                                    size: avatarRadius * 0.7),
-                              ),
+                            AnymeXDecoratedAvatar(
+                              avatarUrl: user.avatarUrl,
+                              decorationUrl: Get.isRegistered<CommentumService>()
+                                  ? Get.find<CommentumService>()
+                                      .getCachedDecoration(user.id.toString())
+                                  : null,
+                              size: avatarRadius * 2,
+                              decorationScale: 1.25,
+                            ),
                             const SizedBox(height: 6),
                             Padding(
                               padding:

@@ -45,6 +45,13 @@ class Comment {
   String? get linkedMalUsername => linkedAccounts?['mal']?['username']?.toString();
   String? get linkedSimklUsername => linkedAccounts?['simkl']?['username']?.toString();
   bool get hasLinkedAccounts => linkedAnilistUsername != null || linkedMalUsername != null || linkedSimklUsername != null;
+  bool hasSecondaryLinkedAccounts([String exclude = 'anilist']) {
+    final norm = exclude.toLowerCase();
+    final hasAl = (norm != 'anilist') && linkedAnilistUsername != null && linkedAnilistUsername!.isNotEmpty;
+    final hasMal = (norm != 'mal' && norm != 'myanimelist') && linkedMalUsername != null && linkedMalUsername!.isNotEmpty;
+    final hasSimkl = (norm != 'simkl') && linkedSimklUsername != null && linkedSimklUsername!.isNotEmpty;
+    return hasAl || hasMal || hasSimkl;
+  }
 
   Comment({
     required this.id,

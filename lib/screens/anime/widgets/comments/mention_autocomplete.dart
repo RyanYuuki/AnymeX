@@ -103,12 +103,17 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
 
   List<Map<String, dynamic>> _filterLocalUsers(String query) {
     if (widget.localUsers == null || widget.localUsers!.isEmpty) return [];
-    final lower = query.toLowerCase();
+    final lower = query.toLowerCase().trim();
     return widget.localUsers!.where((u) {
-      final name = (u['username'] as String? ?? '').toLowerCase();
+      final name = (u['username'] as String? ?? '').trim();
+      if (name.isEmpty ||
+          name.toLowerCase() == '[deleted]' ||
+          u['deleted'] == true) {
+        return false;
+      }
       if (lower.isEmpty) return true;
-      return name.contains(lower);
-    }).take(8).toList();
+      return name.toLowerCase().contains(lower);
+    }).take(20).toList();
   }
 
   Future<void> _searchUsers(String query, List<Map<String, dynamic>> initialMatches) async {
@@ -124,15 +129,21 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
         final combined = <Map<String, dynamic>>[];
 
         for (final u in initialMatches) {
-          final name = u['username'] as String? ?? '';
-          if (name.isNotEmpty && seen.add(name.toLowerCase())) {
+          final name = (u['username'] as String? ?? '').trim();
+          if (name.isNotEmpty &&
+              name.toLowerCase() != '[deleted]' &&
+              u['deleted'] != true &&
+              seen.add(name.toLowerCase())) {
             combined.add(u);
           }
         }
 
         for (final u in remoteResults) {
-          final name = u['username'] as String? ?? '';
-          if (name.isNotEmpty && seen.add(name.toLowerCase())) {
+          final name = (u['username'] as String? ?? '').trim();
+          if (name.isNotEmpty &&
+              name.toLowerCase() != '[deleted]' &&
+              u['deleted'] != true &&
+              seen.add(name.toLowerCase())) {
             combined.add(u);
           }
         }

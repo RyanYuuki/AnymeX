@@ -6,6 +6,7 @@ class LinkedAccountsBadges extends StatelessWidget {
   final double fontSize;
   final double iconSize;
   final bool interactive;
+  final String? excludeService;
 
   const LinkedAccountsBadges({
     super.key,
@@ -13,6 +14,7 @@ class LinkedAccountsBadges extends StatelessWidget {
     this.fontSize = 9.0,
     this.iconSize = 12.0,
     this.interactive = true,
+    this.excludeService,
   });
 
   @override
@@ -29,9 +31,11 @@ class LinkedAccountsBadges extends StatelessWidget {
     final malUsername = mal is Map ? mal['username']?.toString() : null;
     final simklUsername = simkl is Map ? simkl['username']?.toString() : null;
 
+    final normExclude = excludeService?.toLowerCase();
+
     final badges = <Widget>[];
 
-    if (anilistUsername != null && anilistUsername.isNotEmpty) {
+    if (normExclude != 'anilist' && anilistUsername != null && anilistUsername.isNotEmpty) {
       badges.add(_buildBadge(
         label: 'AL',
         username: anilistUsername,
@@ -42,7 +46,7 @@ class LinkedAccountsBadges extends StatelessWidget {
       ));
     }
 
-    if (malUsername != null && malUsername.isNotEmpty) {
+    if (normExclude != 'mal' && normExclude != 'myanimelist' && malUsername != null && malUsername.isNotEmpty) {
       badges.add(_buildBadge(
         label: 'MAL',
         username: malUsername,
@@ -53,7 +57,7 @@ class LinkedAccountsBadges extends StatelessWidget {
       ));
     }
 
-    if (simklUsername != null && simklUsername.isNotEmpty) {
+    if (normExclude != 'simkl' && simklUsername != null && simklUsername.isNotEmpty) {
       badges.add(_buildBadge(
         label: 'SIMKL',
         username: simklUsername,

@@ -1274,6 +1274,41 @@ class CommentumService extends GetxController {
     }
   }
 
+  final Map<String, Map<String, dynamic>> _publicProfileCache = {};
+
+  String? getCachedDecoration(String userId, {String clientType = 'anilist'}) {
+    final cacheKey = '$clientType:$userId';
+    return _publicProfileCache[cacheKey]?['avatar_decoration'] as String?;
+  }
+
+  String? getCachedBanner(String userId, {String clientType = 'anilist'}) {
+    final cacheKey = '$clientType:$userId';
+    return _publicProfileCache[cacheKey]?['banner_url'] as String?;
+  }
+
+  Future<Map<String, dynamic>?> fetchUserProfile(
+    String userId, {
+    String clientType = 'anilist',
+    bool forceRefresh = false,
+  }) async {
+    final cacheKey = '$clientType:$userId';
+    if (!forceRefresh && _publicProfileCache.containsKey(cacheKey)) {
+      return _publicProfileCache[cacheKey];
+    }
+
+    try {
+      final res = await getUserInfo(targetUserId: userId, targetClientType: clientType);
+      if (res != null && res['users'] is List && (res['users'] as List).isNotEmpty) {
+        final user = Map<String, dynamic>.from((res['users'] as List).first);
+        _publicProfileCache[cacheKey] = user;
+        return user;
+      }
+    } catch (e) {
+      Logger.i('Error fetching public user profile for $userId: $e');
+    }
+    return null;
+  }
+
   Future<bool> updateCustomizations({
     String? avatarDecoration,
     String? bannerUrl,

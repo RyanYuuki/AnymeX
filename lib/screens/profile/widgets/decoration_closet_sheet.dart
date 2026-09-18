@@ -920,40 +920,44 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
   }
 
   Widget _buildBottomActionBar(ColorScheme colorScheme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        border: Border(
-          top: BorderSide(color: colorScheme.outline.withOpacity(0.08)),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: AnymeXButton(
-              onTap: _isSaving ? () {} : _saveCustomizations,
-              backgroundColor: colorScheme.primary,
-              child: _isSaving
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Text(
-                      'Save & Equip',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-            ),
+    return SafeArea(
+      top: false,
+      bottom: true,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          border: Border(
+            top: BorderSide(color: colorScheme.outline.withOpacity(0.08)),
           ),
-        ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: AnymeXButton(
+                onTap: _isSaving ? () {} : _saveCustomizations,
+                backgroundColor: colorScheme.primary,
+                child: _isSaving
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: colorScheme.onPrimary,
+                        ),
+                      )
+                    : Text(
+                        'Save & Equip',
+                        style: TextStyle(
+                          color: colorScheme.onPrimary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

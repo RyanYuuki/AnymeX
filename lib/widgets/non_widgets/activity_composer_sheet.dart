@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/markdown.dart';
@@ -46,8 +47,7 @@ class ActivityComposerSheet extends StatefulWidget {
   State<ActivityComposerSheet> createState() => ActivityComposerSheetState();
 }
 
-class ActivityComposerSheetState extends State<ActivityComposerSheet>
-    with WidgetsBindingObserver {
+class ActivityComposerSheetState extends State<ActivityComposerSheet> {
   TextEditingController? _internalTextController;
   FocusNode? _internalFocusNode;
 
@@ -79,7 +79,6 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _focusNode.addListener(_onFocusChange);
     if (widget.isModal) {
       _isExpanded = true;
@@ -117,31 +116,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet>
   }
 
   @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    if (!mounted || widget.isModal || _previewMode || _isPickingGif) return;
-    final bottomInset = WidgetsBinding
-        .instance.platformDispatcher.views.first.viewInsets.bottom;
-    if (bottomInset == 0 && _isExpanded) {
-      Future.delayed(const Duration(milliseconds: 100), () {
-        if (!mounted || widget.isModal || _previewMode || _isPickingGif) return;
-        final currentInset = WidgetsBinding
-            .instance.platformDispatcher.views.first.viewInsets.bottom;
-        if (currentInset == 0 && _isExpanded) {
-          if (_focusNode.hasFocus) {
-            _focusNode.unfocus();
-          }
-          if (mounted) {
-            setState(() => _isExpanded = false);
-          }
-        }
-      });
-    }
-  }
-
-  @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _focusNode.removeListener(_onFocusChange);
     _internalTextController?.dispose();
     _internalFocusNode?.dispose();
@@ -216,6 +191,85 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet>
        
         String finalStart = startDelimiter;
         String finalEnd = endDelimiter;
+
+        if (tooltip == 'Numbered List') {
+          if (startIdx < endIdx) {
+            final selectedText = text.substring(startIdx, endIdx);
+            final lines = selectedText.split('\n');
+            int count = 1;
+            final formattedLines = lines.map((l) {
+              if (l.trim().isEmpty) return l;
+              return '${count++}. $l';
+            }).join('\n');
+            final newText = text.replaceRange(startIdx, endIdx, formattedLines);
+            setState(() {
+              _textController.text = newText;
+              _textController.selection = TextSelection(
+                baseOffset: startIdx,
+                extentOffset: startIdx + formattedLines.length,
+              );
+            });
+            _focusNode.requestFocus();
+            return;
+          } else {
+            final textBefore = text.substring(0, startIdx);
+            final lines = textBefore.split('\n');
+            int nextNum = 1;
+            for (int i = lines.length - 1; i >= 0; i--) {
+              final line = lines[i].trim();
+              if (line.isEmpty) continue;
+              final match = RegExp(r'^(\d+)\.').firstMatch(line);
+              if (match != null) {
+                nextNum = (int.tryParse(match.group(1)!) ?? 0) + 1;
+              }
+              break;
+            }
+            final needsNewline = startIdx > 0 && text[startIdx - 1] != '\n';
+            final prefix = needsNewline ? '\n$nextNum. ' : '$nextNum. ';
+            final newText = text.replaceRange(startIdx, endIdx, prefix);
+            final newOffset = startIdx + prefix.length;
+            setState(() {
+              _textController.text = newText;
+              _textController.selection =
+                  TextSelection.collapsed(offset: newOffset);
+            });
+            _focusNode.requestFocus();
+            return;
+          }
+        }
+
+        if (tooltip == 'Bullet List') {
+          if (startIdx < endIdx) {
+            final selectedText = text.substring(startIdx, endIdx);
+            final lines = selectedText.split('\n');
+            final formattedLines = lines.map((l) {
+              if (l.trim().isEmpty) return l;
+              return '- $l';
+            }).join('\n');
+            final newText = text.replaceRange(startIdx, endIdx, formattedLines);
+            setState(() {
+              _textController.text = newText;
+              _textController.selection = TextSelection(
+                baseOffset: startIdx,
+                extentOffset: startIdx + formattedLines.length,
+              );
+            });
+            _focusNode.requestFocus();
+            return;
+          } else {
+            final needsNewline = startIdx > 0 && text[startIdx - 1] != '\n';
+            final prefix = needsNewline ? '\n- ' : '- ';
+            final newText = text.replaceRange(startIdx, endIdx, prefix);
+            final newOffset = startIdx + prefix.length;
+            setState(() {
+              _textController.text = newText;
+              _textController.selection =
+                  TextSelection.collapsed(offset: newOffset);
+            });
+            _focusNode.requestFocus();
+            return;
+          }
+        }
 
         if (tooltip == 'Link' ||
             tooltip == 'Image' ||
@@ -520,6 +574,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet>
                       focusNode: _focusNode,
                       maxLines: 4,
                       minLines: _isExpanded ? 2 : 1,
+                      inputFormatters: [MarkdownListInputFormatter()],
                       decoration: InputDecoration(
                         hintText: widget.hintText,
                         border: OutlineInputBorder(
@@ -615,5 +670,91 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet>
     }
 
     return content;
+  }
+}
+
+/// Automatically continues markdown lists (bullet `- ` and numbered `1. `) on Enter,
+/// increments numbers sequentially, and cleans up empty list markers when Enter is pressed on them.
+class MarkdownListInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.length > oldValue.text.length &&
+        newValue.selection.isCollapsed) {
+      final oldCursor = oldValue.selection.baseOffset;
+      final newCursor = newValue.selection.baseOffset;
+
+      if (oldCursor >= 0 &&
+          newCursor > oldCursor &&
+          newValue.text.substring(oldCursor, newCursor) == '\n') {
+        final textBeforeEnter = oldValue.text.substring(0, oldCursor);
+        final lineStart = textBeforeEnter.lastIndexOf('\n') + 1;
+        final currentLine = textBeforeEnter.substring(lineStart);
+
+        // Check bullet list: e.g. "- ", "* "
+        final bulletMatch =
+            RegExp(r'^(\s*[-*]\s+)(.*)$').firstMatch(currentLine);
+        if (bulletMatch != null) {
+          final prefix = bulletMatch.group(1)!;
+          final content = bulletMatch.group(2)!;
+
+          if (content.trim().isEmpty) {
+            // Empty bullet line -> exit list
+            final newText = oldValue.text.substring(0, lineStart) +
+                oldValue.text.substring(oldCursor);
+            return TextEditingValue(
+              text: newText,
+              selection: TextSelection.collapsed(offset: lineStart),
+            );
+          } else {
+            // Auto-continue bullet list
+            final insertText = prefix;
+            final newText = newValue.text.substring(0, newCursor) +
+                insertText +
+                newValue.text.substring(newCursor);
+            return TextEditingValue(
+              text: newText,
+              selection: TextSelection.collapsed(
+                  offset: newCursor + insertText.length),
+            );
+          }
+        }
+
+        // Check numbered list: e.g. "1. ", "2. ", "10. "
+        final numberedMatch =
+            RegExp(r'^(\s*)(\d+)(\.\s+)(.*)$').firstMatch(currentLine);
+        if (numberedMatch != null) {
+          final indent = numberedMatch.group(1)!;
+          final num = int.tryParse(numberedMatch.group(2)!) ?? 1;
+          final dotSpace = numberedMatch.group(3)!;
+          final content = numberedMatch.group(4)!;
+
+          if (content.trim().isEmpty) {
+            // Empty numbered line -> exit list
+            final newText = oldValue.text.substring(0, lineStart) +
+                oldValue.text.substring(oldCursor);
+            return TextEditingValue(
+              text: newText,
+              selection: TextSelection.collapsed(offset: lineStart),
+            );
+          } else {
+            // Auto-continue numbered list with next number
+            final nextPrefix = '$indent${num + 1}$dotSpace';
+            final newText = newValue.text.substring(0, newCursor) +
+                nextPrefix +
+                newValue.text.substring(newCursor);
+            return TextEditingValue(
+              text: newText,
+              selection: TextSelection.collapsed(
+                  offset: newCursor + nextPrefix.length),
+            );
+          }
+        }
+      }
+    }
+
+    return newValue;
   }
 }

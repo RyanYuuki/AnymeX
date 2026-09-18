@@ -3,6 +3,7 @@ import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -208,6 +209,11 @@ class _MediaCommentsPageState extends State<MediaCommentsPage> {
                 ),
               ),
             ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.emoji_events_outlined, size: 21),
+            onPressed: () => LeaderboardSheet.show(context),
+            tooltip: 'Leaderboard',
           ),
           IconButton(
             icon: const Icon(Icons.assignment_outlined, size: 20),

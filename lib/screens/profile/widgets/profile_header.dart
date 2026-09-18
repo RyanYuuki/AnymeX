@@ -5,7 +5,6 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:anymex/screens/profile/widgets/hover_action_button.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -20,6 +19,8 @@ import 'package:anymex/screens/profile/widgets/decoration_closet_sheet.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/screens/profile/compatibility/compatibility_input_page.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
+import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
 
 Widget _buildBottomSheetOption(
   BuildContext context, {
@@ -71,6 +72,7 @@ class DesktopProfileHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final commentum = Get.isRegistered<CommentumService>() ? Get.find<CommentumService>() : null;
     final equippedBanner = commentum?.currentUserBanner.value;
+    final equippedDeco = commentum?.currentUserDecoration.value;
     final effectiveCover = (equippedBanner != null && equippedBanner.isNotEmpty) ? equippedBanner : user.cover;
     final hasBanner = effectiveCover != null && effectiveCover.trim().isNotEmpty;
     final imageUrl = hasBanner ? effectiveCover : '';
@@ -190,39 +192,27 @@ class DesktopProfileHeader extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Container(
-                        width: 190,
-                        constraints: const BoxConstraints(
-                          minHeight: 190,
-                          maxHeight: 280,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            if (avatarDominantColor != null)
-                              BoxShadow(
-                                color: avatarDominantColor!.withOpacity(0.5),
-                                blurRadius: 20,
-                                spreadRadius: 2,
-                                offset: const Offset(0, 0),
-                              )
-                            else
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.4),
-                                blurRadius: 15,
-                                offset: const Offset(0, 5),
+                      GestureDetector(
+                        onTap: () {
+                          if (user.avatar?.isNotEmpty == true) {
+                            Navigator.of(context, rootNavigator: true).push(
+                              MaterialPageRoute(
+                                builder: (_) => AnymeXFullscreenImageViewer(
+                                  imageUrl: user.avatar!,
+                                  tag: 'profile_avatar_$name',
+                                ),
                               ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: CachedNetworkImage(
-                            imageUrl: user.avatar ?? '',
-                            fit: BoxFit.cover,
-                            alignment: Alignment.topCenter,
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.person, size: 50),
-                          ),
+                            );
+                          }
+                        },
+                        child: AnymeXDecoratedAvatar(
+                          avatarUrl: user.avatar,
+                          decorationUrl: equippedDeco,
+                          size: 190,
+                          decorationScale: 1.25,
+                          borderRadius: BorderRadius.circular(12),
+                          shape: BoxShape.rectangle,
+                          heroTag: 'profile_avatar_$name',
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -383,6 +373,18 @@ class DesktopProfileHeader extends StatelessWidget {
                                         ),
                                       ),
                                     ],
+                                    if (commentum != null)
+                                      Obx(() {
+                                        final linked = commentum
+                                            .currentUserLinkedAccounts.value;
+                                        if (linked.isEmpty) {
+                                          return const SizedBox.shrink();
+                                        }
+                                        return LinkedAccountsBadges(
+                                          linkedAccounts: linked,
+                                          fontSize: 10,
+                                        );
+                                      }),
                                   ],
                                 ),
                               ),
@@ -397,6 +399,11 @@ class DesktopProfileHeader extends StatelessWidget {
                             HoverActionButton(
                               icon: Icons.palette_outlined,
                               onTap: () => DecorationClosetSheet.show(context),
+                            ),
+                            const SizedBox(width: 10),
+                            HoverActionButton(
+                              icon: Icons.emoji_events_outlined,
+                              onTap: () => LeaderboardSheet.show(context),
                             ),
                             const SizedBox(width: 10),
                             HoverActionButton(
@@ -521,6 +528,15 @@ class DesktopProfileHeader extends StatelessWidget {
                                               navigate(() => const CompatibilityInputPage());
                                             },
                                           ),
+                                          _buildBottomSheetOption(
+                                            ctx,
+                                            icon: Icons.emoji_events_outlined,
+                                            label: 'Community Leaderboard',
+                                            onTap: () {
+                                              Navigator.pop(ctx);
+                                              LeaderboardSheet.show(context);
+                                            },
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -638,6 +654,18 @@ class MobileProfileHeaderSliver extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           child: IconButton(
+            icon: const Icon(Icons.emoji_events_outlined),
+            tooltip: 'Leaderboard',
+            onPressed: () => LeaderboardSheet.show(context),
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
             icon: const Icon(Icons.more_vert),
             onPressed: () {
               showModalBottomSheet(
@@ -743,6 +771,15 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                             navigate(() => const CompatibilityInputPage());
                           },
                         ),
+                        _buildBottomSheetOption(
+                          ctx,
+                          icon: Icons.emoji_events_outlined,
+                          label: 'Community Leaderboard',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            LeaderboardSheet.show(context);
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -842,52 +879,14 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           );
                         }
                       },
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        alignment: Alignment.center,
-                        children: [
-                          Hero(
-                            tag: 'profile_avatar_$name',
-                            child: Container(
-                              width: 110,
-                              constraints: const BoxConstraints(
-                                minHeight: 110,
-                                maxHeight: 160,
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.35),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(14),
-                                child: CachedNetworkImage(
-                                  imageUrl: avatarUrl,
-                                  fit: BoxFit.cover,
-                                  alignment: Alignment.topCenter,
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(Icons.person),
-                                ),
-                              ),
-                            ),
-                          ),
-                          if (equippedDeco != null && equippedDeco.isNotEmpty)
-                            Positioned(
-                              width: 135,
-                              height: 135,
-                              child: IgnorePointer(
-                                child: CachedNetworkImage(
-                                  imageUrl: equippedDeco,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                        ],
+                      child: AnymeXDecoratedAvatar(
+                        avatarUrl: avatarUrl,
+                        decorationUrl: equippedDeco,
+                        size: 110,
+                        decorationScale: 1.25,
+                        borderRadius: BorderRadius.circular(14),
+                        shape: BoxShape.rectangle,
+                        heroTag: 'profile_avatar_$name',
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -1015,6 +1014,18 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                     ],
                                   ),
                                 ),
+                              if (commentum != null)
+                                Obx(() {
+                                  final linked = commentum
+                                      .currentUserLinkedAccounts.value;
+                                  if (linked.isEmpty) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return LinkedAccountsBadges(
+                                    linkedAccounts: linked,
+                                    fontSize: 10,
+                                  );
+                                }),
                             ],
                           ),
                         ],

@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -942,6 +941,28 @@ class MarkdownFormattingToolbar extends StatelessWidget {
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('> ', ''),
             ),
+            const SizedBox(width: 4),
+            _ToolbarButton(
+              label: 'Bullet List',
+              child: Icon(
+                Icons.format_list_bulleted_rounded,
+                size: 16,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              colorScheme: colorScheme,
+              onTap: _insertBulletList,
+            ),
+            const SizedBox(width: 4),
+            _ToolbarButton(
+              label: 'Numbered List',
+              child: Icon(
+                Icons.format_list_numbered_rounded,
+                size: 16,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              colorScheme: colorScheme,
+              onTap: _insertNumberedList,
+            ),
             if (onGifTap != null) ...[
               const SizedBox(width: 4),
               _ToolbarButton(
@@ -1013,6 +1034,71 @@ class MarkdownFormattingToolbar extends StatelessWidget {
     controller.text = text.replaceRange(offset, offset, template);
     controller.selection =
         TextSelection.collapsed(offset: offset + 18);
+  }
+
+  void _insertBulletList() {
+    final text = controller.text;
+    final selection = controller.selection;
+    final start = selection.start >= 0 ? selection.start : text.length;
+    final end = selection.end >= 0 ? selection.end : text.length;
+
+    if (start < end) {
+      final selectedText = text.substring(start, end);
+      final lines = selectedText.split('\n');
+      final formatted =
+          lines.map((l) => l.trim().isEmpty ? l : '- $l').join('\n');
+      controller.text = text.replaceRange(start, end, formatted);
+      controller.selection = TextSelection(
+        baseOffset: start,
+        extentOffset: start + formatted.length,
+      );
+    } else {
+      final needsNewline = start > 0 && text[start - 1] != '\n';
+      final prefix = needsNewline ? '\n- ' : '- ';
+      controller.text = text.replaceRange(start, end, prefix);
+      controller.selection =
+          TextSelection.collapsed(offset: start + prefix.length);
+    }
+  }
+
+  void _insertNumberedList() {
+    final text = controller.text;
+    final selection = controller.selection;
+    final start = selection.start >= 0 ? selection.start : text.length;
+    final end = selection.end >= 0 ? selection.end : text.length;
+
+    if (start < end) {
+      final selectedText = text.substring(start, end);
+      final lines = selectedText.split('\n');
+      int count = 1;
+      final formatted = lines.map((l) {
+        if (l.trim().isEmpty) return l;
+        return '${count++}. $l';
+      }).join('\n');
+      controller.text = text.replaceRange(start, end, formatted);
+      controller.selection = TextSelection(
+        baseOffset: start,
+        extentOffset: start + formatted.length,
+      );
+    } else {
+      final textBefore = text.substring(0, start);
+      final lines = textBefore.split('\n');
+      int nextNum = 1;
+      for (int i = lines.length - 1; i >= 0; i--) {
+        final line = lines[i].trim();
+        if (line.isEmpty) continue;
+        final match = RegExp(r'^(\d+)\.').firstMatch(line);
+        if (match != null) {
+          nextNum = (int.tryParse(match.group(1)!) ?? 0) + 1;
+        }
+        break;
+      }
+      final needsNewline = start > 0 && text[start - 1] != '\n';
+      final prefix = needsNewline ? '\n$nextNum. ' : '$nextNum. ';
+      controller.text = text.replaceRange(start, end, prefix);
+      controller.selection =
+          TextSelection.collapsed(offset: start + prefix.length);
+    }
   }
 }
 

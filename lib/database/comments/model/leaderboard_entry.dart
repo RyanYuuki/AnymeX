@@ -2,6 +2,7 @@ class LeaderboardEntry {
   final String userId;
   final String username;
   final String? avatarUrl;
+  final String? avatarDecoration;
   final int totalPoints;
   final String tier;
   final String tierEmoji;
@@ -20,6 +21,7 @@ class LeaderboardEntry {
     required this.tierLabel,
     required this.currentStreak,
     this.avatarUrl,
+    this.avatarDecoration,
     this.role,
     this.clientType,
     required this.rank,
@@ -61,6 +63,7 @@ class LeaderboardEntry {
       userId: m['user_id']?.toString() ?? '',
       username: m['username']?.toString() ?? 'Unknown',
       avatarUrl: m['avatar_url']?.toString() ?? m['avatar']?.toString(),
+      avatarDecoration: m['avatar_decoration']?.toString(),
       totalPoints: _parseInt(m['total_points'] ?? m['points']),
       tier: tier,
       tierEmoji: m['tier_emoji']?.toString() ?? _getTierEmoji(tier),
