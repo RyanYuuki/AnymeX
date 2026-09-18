@@ -1,6 +1,11 @@
+import 'package:anymex/database/comments/model/discord_badge.dart';
+
 class UserPoints {
   final String userId;
   final int totalPoints;
+  final int realPoints;
+  final int roleBonus;
+  final bool isInfinite;
   final String tier;
   final String tierEmoji;
   final int currentStreak;
@@ -8,10 +13,14 @@ class UserPoints {
   final String? role;
   final PointsBreakdown breakdown;
   final PointsStats stats;
+  final List<DiscordBadge>? badges;
 
   UserPoints({
     required this.userId,
     required this.totalPoints,
+    required this.realPoints,
+    required this.roleBonus,
+    required this.isInfinite,
     required this.tier,
     required this.tierEmoji,
     required this.currentStreak,
@@ -19,23 +28,36 @@ class UserPoints {
     this.role,
     required this.breakdown,
     required this.stats,
+    this.badges,
   });
+
+  String get displayPoints => isInfinite ? '∞' : '$totalPoints';
 
   factory UserPoints.fromMap(Map m) {
     final breakdownData = m['breakdown'] as Map? ?? {};
     final statsData = m['stats'] as Map? ?? {};
-    final tier = m['tier']?.toString() ?? 'Newcomer';
+    final role = m['role']?.toString();
+    final isInfinite = m['is_infinite'] == true || role == 'owner' || role == 'app_owner';
+    final tier = isInfinite ? 'Elite' : (m['tier']?.toString() ?? 'Newcomer');
 
     return UserPoints(
       userId: m['user_id']?.toString() ?? '',
       totalPoints: _parseInt(m['total_points'] ?? m['points']),
+      realPoints: _parseInt(m['real_points'] ?? m['points']),
+      roleBonus: _parseInt(m['role_bonus']),
+      isInfinite: isInfinite,
       tier: tier,
-      tierEmoji: m['tier_emoji']?.toString() ?? getTierEmoji(tier),
+      tierEmoji: m['tier_emoji']?.toString() ?? '',
       currentStreak: _parseInt(m['current_streak'] ?? m['streak']),
       longestStreak: _parseInt(m['longest_streak']),
-      role: m['role']?.toString(),
+      role: role,
       breakdown: PointsBreakdown.fromMap(breakdownData),
       stats: PointsStats.fromMap(statsData),
+      badges: m['badges'] != null
+          ? (m['badges'] as List)
+              .map((b) => DiscordBadge.fromMap(b as Map))
+              .toList()
+          : null,
     );
   }
 
@@ -44,38 +66,8 @@ class UserPoints {
     if (value is int) return value;
     return int.tryParse(value.toString()) ?? 0;
   }
-
-  static String getTierForPoints(int points) {
-    if (points >= 5000) return 'Elite';
-    if (points >= 1500) return 'Veteran';
-    if (points >= 500) return 'Active';
-    if (points >= 100) return 'Regular';
-    return 'Newcomer';
-  }
-
-  static String getTierEmojiForPoints(int points) {
-    if (points >= 5000) return '💎';
-    if (points >= 1500) return '⭐';
-    if (points >= 500) return '🌸';
-    if (points >= 100) return '🍃';
-    return '🌱';
-  }
-
-  static String getTierEmoji(String tier) {
-    switch (tier.toLowerCase()) {
-      case 'elite':
-        return '💎';
-      case 'veteran':
-        return '⭐';
-      case 'active':
-        return '🌸';
-      case 'regular':
-        return '🍃';
-      default:
-        return '🌱';
-    }
-  }
 }
+
 
 class PointsBreakdown {
   final int commentsPoints;

@@ -1,3 +1,5 @@
+import 'package:anymex/database/comments/model/discord_badge.dart';
+
 class Comment {
   String id;
   int contentId;
@@ -39,6 +41,7 @@ class Comment {
   String? bannerTheme;
   String? nameplateTheme;
   Map<String, dynamic>? linkedAccounts;
+  List<DiscordBadge>? badges;
   List<Comment>? replies;
 
   String? get linkedAnilistUsername => linkedAccounts?['anilist']?['username']?.toString();
@@ -92,6 +95,7 @@ class Comment {
     this.bannerTheme,
     this.nameplateTheme,
     this.linkedAccounts,
+    this.badges,
     this.replies,
   });
 
@@ -136,6 +140,11 @@ class Comment {
       bannerTheme: m['banner_theme']?.toString(),
       nameplateTheme: m['nameplate_theme']?.toString(),
       linkedAccounts: m['linked_accounts'] is Map ? Map<String, dynamic>.from(m['linked_accounts']) : null,
+      badges: m['badges'] != null
+          ? (m['badges'] as List)
+              .map((b) => DiscordBadge.fromMap(b as Map))
+              .toList()
+          : null,
       replies: m['replies'] != null 
           ? (m['replies'] as List).map((reply) => Comment.fromMap(reply)).toList()
           : null,
@@ -182,6 +191,7 @@ class Comment {
     String? bannerTheme,
     String? nameplateTheme,
     Map<String, dynamic>? linkedAccounts,
+    List<DiscordBadge>? badges,
     List<Comment>? replies,
   }) {
     return Comment(
@@ -223,6 +233,7 @@ class Comment {
       bannerTheme: bannerTheme ?? this.bannerTheme,
       nameplateTheme: nameplateTheme ?? this.nameplateTheme,
       linkedAccounts: linkedAccounts ?? this.linkedAccounts,
+      badges: badges ?? this.badges,
       replies: replies ?? this.replies,
     );
   }

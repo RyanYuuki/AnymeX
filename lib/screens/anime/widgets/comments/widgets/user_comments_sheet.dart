@@ -7,6 +7,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -80,6 +81,10 @@ class UserCommentsSheet {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
+                                if (comment.badges != null && comment.badges!.isNotEmpty) ...[
+                                  const SizedBox(width: 6),
+                                  DiscordBadgesRow(badges: comment.badges, size: 16.0),
+                                ],
                                 if (comment.linkedAccounts?.isNotEmpty == true) ...[
                                   const SizedBox(width: 6),
                                   LinkedAccountsBadges(

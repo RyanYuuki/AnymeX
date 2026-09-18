@@ -1,4 +1,3 @@
-import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/model/user_customization.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -43,13 +42,11 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
   String? _previewBannerUrl;
 
   final TextEditingController _customBannerController = TextEditingController();
-  final TextEditingController _linkTokenController = TextEditingController();
-  String _linkingService = 'mal';
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _previewDecorationUrl = _commentumService.currentUserDecoration.value.isNotEmpty
         ? _commentumService.currentUserDecoration.value
         : null;
@@ -64,7 +61,6 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
   void dispose() {
     _tabController.dispose();
     _customBannerController.dispose();
-    _linkTokenController.dispose();
     super.dispose();
   }
 
@@ -159,7 +155,6 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
               tabs: const [
                 Tab(text: 'Decorations'),
                 Tab(text: 'Banners'),
-                Tab(text: 'Linked Accounts'),
               ],
             ),
           ),
@@ -174,7 +169,6 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     children: [
                       _buildDecorationsTab(colorScheme),
                       _buildBannersTab(colorScheme),
-                      _buildLinkedAccountsTab(colorScheme),
                     ],
                   ),
           ),
@@ -622,301 +616,6 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
         ),
       ],
     );
-  }
-
-  Widget _buildLinkedAccountsTab(ColorScheme colorScheme) {
-    return Obx(() {
-      final linked = _commentumService.currentUserLinkedAccounts.value;
-      final currentService = serviceHandler.serviceType.value.name.toLowerCase();
-
-      return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        children: [
-          // Info banner
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colorScheme.primary.withOpacity(0.2)),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.info_outline, color: colorScheme.primary, size: 20),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Link your AniList, MyAnimeList, and Simkl accounts so all your customizations, banners, comments, and stats stay synced under one unified profile.',
-                    style: TextStyle(
-                      color: colorScheme.onSurface,
-                      fontSize: 12,
-                      height: 1.35,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // AniList Card
-          _buildServiceCard(
-            colorScheme: colorScheme,
-            serviceName: 'AniList',
-            serviceKey: 'anilist',
-            isPrimary: currentService == 'anilist',
-            linkedData: linked['anilist'],
-            accentColor: const Color(0xFF02A9FF),
-          ),
-          const SizedBox(height: 10),
-
-          // MAL Card
-          _buildServiceCard(
-            colorScheme: colorScheme,
-            serviceName: 'MyAnimeList',
-            serviceKey: 'mal',
-            isPrimary: currentService == 'mal' || currentService == 'myanimelist',
-            linkedData: linked['mal'],
-            accentColor: const Color(0xFF2E51A2),
-          ),
-          const SizedBox(height: 10),
-
-          // Simkl Card
-          _buildServiceCard(
-            colorScheme: colorScheme,
-            serviceName: 'Simkl',
-            serviceKey: 'simkl',
-            isPrimary: currentService == 'simkl',
-            linkedData: linked['simkl'],
-            accentColor: const Color(0xFFFFAE19),
-          ),
-        ],
-      );
-    });
-  }
-
-  Widget _buildServiceCard({
-    required ColorScheme colorScheme,
-    required String serviceName,
-    required String serviceKey,
-    required bool isPrimary,
-    required dynamic linkedData,
-    required Color accentColor,
-  }) {
-    final username = linkedData is Map ? linkedData['username']?.toString() : null;
-    final isLinked = isPrimary || (username != null && username.isNotEmpty);
-    final activeToken = _commentumService.getTokenForService(serviceKey);
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: isLinked ? accentColor.withOpacity(0.5) : colorScheme.outline.withOpacity(0.1),
-          width: 1.2,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Center(
-              child: Text(
-                serviceName.substring(0, 1),
-                style: TextStyle(
-                  color: accentColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      serviceName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    if (isPrimary)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primary.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'PRIMARY',
-                          style: TextStyle(
-                            color: colorScheme.primary,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  isLinked
-                      ? 'Linked as @${username ?? _commentumService.currentUsername}'
-                      : 'Not linked',
-                  style: TextStyle(
-                    color: isLinked ? accentColor : colorScheme.onSurfaceVariant,
-                    fontSize: 12,
-                    fontWeight: isLinked ? FontWeight.w600 : FontWeight.normal,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (!isPrimary && isLinked)
-            TextButton(
-              onPressed: () => _handleUnlink(serviceKey),
-              style: TextButton.styleFrom(
-                foregroundColor: colorScheme.error,
-              ),
-              child: const Text('Unlink', style: TextStyle(fontSize: 12)),
-            )
-          else if (!isPrimary && !isLinked)
-            ElevatedButton(
-              onPressed: () => _handleLink(serviceKey, activeToken),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: accentColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              child: Text(
-                activeToken != null ? '1-Tap Link' : 'Link',
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _handleLink(String serviceKey, String? activeToken) async {
-    if (activeToken != null && activeToken.isNotEmpty) {
-      // 1-tap link using currently saved session token
-      try {
-        final res = await _commentumService.linkAccount(
-          targetClientType: serviceKey,
-          targetAccessToken: activeToken,
-        );
-        if (res != null && mounted) {
-          Get.snackbar('Account Linked', 'Linked $serviceKey successfully!',
-              snackPosition: SnackPosition.BOTTOM);
-        }
-      } catch (e) {
-        Get.snackbar('Link Failed', e.toString(),
-            snackPosition: SnackPosition.BOTTOM);
-      }
-    } else {
-      // Prompt for access token
-      _linkingService = serviceKey;
-      _linkTokenController.clear();
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text('Link $serviceKey'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Enter your $serviceKey access token to link this account:',
-                style: const TextStyle(fontSize: 13),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _linkTokenController,
-                decoration: const InputDecoration(
-                  labelText: 'Access Token',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final token = _linkTokenController.text.trim();
-                if (token.isNotEmpty) {
-                  Navigator.pop(ctx);
-                  try {
-                    await _commentumService.linkAccount(
-                      targetClientType: _linkingService,
-                      targetAccessToken: token,
-                    );
-                    Get.snackbar('Success', 'Account linked successfully!',
-                        snackPosition: SnackPosition.BOTTOM);
-                  } catch (e) {
-                    Get.snackbar('Error', e.toString(),
-                        snackPosition: SnackPosition.BOTTOM);
-                  }
-                }
-              },
-              child: const Text('Link Account'),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  Future<void> _handleUnlink(String serviceKey) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Unlink $serviceKey?'),
-        content: const Text(
-          'Are you sure you want to unlink this account? It will no longer be unified with your profile.',
-          style: TextStyle(fontSize: 13),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Unlink'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      final success = await _commentumService.unlinkAccount(serviceKey);
-      if (success) {
-        Get.snackbar('Unlinked', 'Successfully unlinked $serviceKey',
-            snackPosition: SnackPosition.BOTTOM);
-      }
-    }
   }
 
   Widget _buildBottomActionBar(ColorScheme colorScheme) {

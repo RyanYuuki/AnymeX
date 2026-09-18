@@ -17,6 +17,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/database/comments/model/user_points.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
 
 class UserProfileHeader extends StatefulWidget {
   final Profile user;
@@ -208,27 +209,42 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              AnymeXText(
-                                name,
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontFamily: 'Linotte',
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -0.5,
-                                  color: context.theme.colorScheme.onSurface,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.black.withOpacity(0.7),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 2),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                    child: AnymeXText(
+                                      name,
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontFamily: 'Linotte',
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: -0.5,
+                                        color: context.theme.colorScheme.onSurface,
+                                        shadows: [
+                                          Shadow(
+                                            color: Colors.black.withOpacity(0.7),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                          Shadow(
+                                            color: Colors.black.withOpacity(0.4),
+                                            blurRadius: 24,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    Shadow(
-                                      color: Colors.black.withOpacity(0.4),
-                                      blurRadius: 24,
-                                      offset: const Offset(0, 4),
+                                  ),
+                                  if (widget.userPoints?.badges != null &&
+                                      widget.userPoints!.badges!.isNotEmpty) ...[
+                                    const SizedBox(width: 8),
+                                    DiscordBadgesRow(
+                                      badges: widget.userPoints!.badges,
+                                      size: 20,
                                     ),
                                   ],
-                                ),
+                                ],
                               ),
                               const SizedBox(height: 6),
                               Flexible(
@@ -287,9 +303,9 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                     size: 12,
                                                     color: Color(0xFFFFD700)),
                                                 const SizedBox(width: 4),
-                                                AnymeXText(
-                                                  '${widget.userPoints!.tier.toUpperCase()} • ${widget.userPoints!.totalPoints} pts',
-                                                  style: const TextStyle(
+                                                 AnymeXText(
+                                                   '${widget.userPoints!.tier.toUpperCase()} • ${widget.userPoints!.displayPoints} pts',
+                                                   style: const TextStyle(
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.white,

@@ -6,6 +6,8 @@ import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -233,13 +235,25 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              AnymeXText(
-                                'You (${_currentUserEntry!.username})',
-                                variant: TextVariant.bold,
-                                size: 13,
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: AnymeXText(
+                                      'You (${_currentUserEntry!.username})',
+                                      variant: TextVariant.bold,
+                                      size: 13,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  if (_currentUserEntry!.badges != null && _currentUserEntry!.badges!.isNotEmpty) ...[
+                                    const SizedBox(width: 6),
+                                    DiscordBadgesRow(badges: _currentUserEntry!.badges, size: 14.0),
+                                  ],
+                                ],
                               ),
                               AnymeXText(
-                                '${_currentUserEntry!.tierEmoji} ${_currentUserEntry!.tierLabel} • ${_currentUserEntry!.totalPoints} pts',
+                                '${_currentUserEntry!.tierEmoji} ${_currentUserEntry!.tierLabel} • ${_currentUserEntry!.displayPoints} pts',
                                 size: 11,
                                 color: colorScheme.onSurfaceVariant,
                               ),
@@ -371,7 +385,10 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (entry.role != null && entry.role != 'user') ...[
+                        if (entry.badges != null && entry.badges!.isNotEmpty) ...[
+                          const SizedBox(width: 6),
+                          DiscordBadgesRow(badges: entry.badges, size: 14.0),
+                        ] else if (entry.role != null && entry.role != 'user') ...[
                           const SizedBox(width: 6),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
@@ -392,8 +409,10 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                     const SizedBox(height: 3),
                     Row(
                       children: [
-                        Text(entry.tierEmoji, style: const TextStyle(fontSize: 11)),
-                        const SizedBox(width: 4),
+                        if (entry.tierEmoji.isNotEmpty) ...[
+                          Text(entry.tierEmoji, style: const TextStyle(fontSize: 11)),
+                          const SizedBox(width: 4),
+                        ],
                         AnymeXText(
                           entry.tierLabel,
                           size: 11,
@@ -402,7 +421,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                         ),
                         if (entry.currentStreak > 0) ...[
                           const SizedBox(width: 8),
-                          Text('🔥', style: const TextStyle(fontSize: 10)),
+                          const Text('🔥', style: TextStyle(fontSize: 10)),
                           const SizedBox(width: 2),
                           AnymeXText(
                             '${entry.currentStreak}d',
@@ -417,38 +436,89 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                 ),
               ),
 
-              // Points badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: isTop3
-                      ? rankColor.withValues(alpha: 0.12)
-                      : colorScheme.surface.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(10),
-                  border: isTop3
-                      ? Border.all(color: rankColor.withValues(alpha: 0.3), width: 0.8)
-                      : null,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.star_rounded,
-                      size: 13,
-                      color: isTop3 ? rankColor : colorScheme.primary,
+              // Points badge & bonus tag button
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: isTop3
+                          ? rankColor.withValues(alpha: 0.12)
+                          : colorScheme.surface.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(10),
+                      border: isTop3
+                          ? Border.all(color: rankColor.withValues(alpha: 0.3), width: 0.8)
+                          : null,
                     ),
-                    const SizedBox(width: 4),
-                    AnymeXText(
-                      '${entry.totalPoints}',
-                      variant: TextVariant.bold,
-                      size: 12.5,
-                      color: isTop3 ? rankColor : colorScheme.onSurface,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.star_rounded,
+                          size: 13,
+                          color: isTop3 ? rankColor : colorScheme.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        AnymeXText(
+                          '${entry.realPoints}',
+                          variant: TextVariant.bold,
+                          size: 12.5,
+                          color: isTop3 ? rankColor : colorScheme.onSurface,
+                        ),
+                      ],
                     ),
+                  ),
+                  if (entry.bonusTag != null) ...[
+                    const SizedBox(width: 5),
+                    _buildBonusTagButton(context, entry),
                   ],
-                ),
+                ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBonusTagButton(BuildContext context, LeaderboardEntry entry) {
+    final tag = entry.bonusTag!;
+    Color tagColor = const Color(0xFF5865F2);
+    try {
+      final hex = tag.color.replaceAll('#', '');
+      tagColor = Color(int.parse('0xFF$hex'));
+    } catch (_) {}
+
+    return GestureDetector(
+      onTap: () {
+        if (entry.isInfinite) {
+          snackBar('${entry.username}: ${tag.label} (∞ points). Ranking is based on real activity (${entry.realPoints} pts).');
+        } else {
+          snackBar('${entry.username}: ${entry.realPoints} earned pts + ${tag.text} role bonus (${tag.label}). Ranking is based on real activity.');
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+        decoration: BoxDecoration(
+          color: tagColor.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: tagColor.withValues(alpha: 0.4), width: 0.8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (entry.isInfinite) ...[
+              const Icon(Icons.workspace_premium_rounded, size: 11, color: Color(0xFFFFD700)),
+              const SizedBox(width: 2),
+            ],
+            AnymeXText(
+              tag.text,
+              variant: TextVariant.bold,
+              size: 11,
+              color: tagColor,
+            ),
+          ],
         ),
       ),
     );

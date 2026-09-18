@@ -1,9 +1,35 @@
+import 'package:anymex/database/comments/model/discord_badge.dart';
+
+class LeaderboardBonusTag {
+  final String text;
+  final String color;
+  final String label;
+
+  LeaderboardBonusTag({
+    required this.text,
+    required this.color,
+    required this.label,
+  });
+
+  factory LeaderboardBonusTag.fromMap(Map m) {
+    return LeaderboardBonusTag(
+      text: m['text']?.toString() ?? '',
+      color: m['color']?.toString() ?? '#5865F2',
+      label: m['label']?.toString() ?? '',
+    );
+  }
+}
+
 class LeaderboardEntry {
   final String userId;
   final String username;
   final String? avatarUrl;
   final String? avatarDecoration;
   final int totalPoints;
+  final int realPoints;
+  final int roleBonus;
+  final bool isInfinite;
+  final LeaderboardBonusTag? bonusTag;
   final String tier;
   final String tierEmoji;
   final String tierLabel;
@@ -11,11 +37,16 @@ class LeaderboardEntry {
   final String? role;
   final String? clientType;
   final int rank;
+  final List<DiscordBadge>? badges;
 
   LeaderboardEntry({
     required this.userId,
     required this.username,
     required this.totalPoints,
+    required this.realPoints,
+    required this.roleBonus,
+    required this.isInfinite,
+    this.bonusTag,
     required this.tier,
     required this.tierEmoji,
     required this.tierLabel,
@@ -25,53 +56,65 @@ class LeaderboardEntry {
     this.role,
     this.clientType,
     required this.rank,
+    this.badges,
   });
 
-  static String _getTierEmoji(String tier) {
-    switch (tier.toLowerCase()) {
-      case 'elite':
-        return '💎';
-      case 'veteran':
-        return '⭐';
-      case 'active':
-        return '🌸';
-      case 'regular':
-        return '🍃';
-      default:
-        return '🌱';
-    }
-  }
-
-  static String _getTierLabel(String tier) {
-    switch (tier.toLowerCase()) {
-      case 'elite':
-        return 'Elite';
-      case 'veteran':
-        return 'Veteran';
-      case 'active':
-        return 'Active';
-      case 'regular':
-        return 'Regular';
-      default:
-        return 'Newcomer';
-    }
-  }
+  String get displayPoints => isInfinite ? '∞' : '$realPoints';
 
   factory LeaderboardEntry.fromMap(Map m, {int? rank}) {
-    final tier = m['tier']?.toString() ?? 'newcomer';
+    final role = m['role']?.toString();
+    final isInfinite = m['is_infinite'] == true || role == 'owner' || role == 'app_owner';
+    final tier = isInfinite ? 'Elite' : (m['tier']?.toString() ?? 'newcomer');
+    final realPoints = _parseInt(m['real_points'] ?? m['points']);
+    final roleBonus = _parseInt(m['role_bonus']);
+
+    LeaderboardBonusTag? bonusTag;
+    if (m['bonus_tag'] != null && m['bonus_tag'] is Map) {
+      bonusTag = LeaderboardBonusTag.fromMap(m['bonus_tag'] as Map);
+    } else if (isInfinite) {
+      bonusTag = LeaderboardBonusTag(
+        text: '∞',
+        color: '#FFD700',
+        label: role == 'app_owner' ? 'App Creator' : 'Commentum Owner',
+      );
+    } else if (roleBonus > 0) {
+      String color = '#5865F2';
+      String label = 'Staff Bonus';
+      if (role == 'super_admin') {
+        color = '#ED4245';
+        label = 'SuperAdmin';
+      } else if (role == 'admin') {
+        color = '#E67E22';
+        label = 'Admin';
+      } else if (role == 'moderator') {
+        color = '#5865F2';
+        label = 'Mod';
+      }
+      bonusTag = LeaderboardBonusTag(text: '+$roleBonus', color: color, label: label);
+    }
+
     return LeaderboardEntry(
       userId: m['user_id']?.toString() ?? '',
       username: m['username']?.toString() ?? 'Unknown',
       avatarUrl: m['avatar_url']?.toString() ?? m['avatar']?.toString(),
       avatarDecoration: m['avatar_decoration']?.toString(),
       totalPoints: _parseInt(m['total_points'] ?? m['points']),
+      realPoints: realPoints,
+      roleBonus: roleBonus,
+      isInfinite: isInfinite,
+      bonusTag: bonusTag,
       tier: tier,
-      tierEmoji: m['tier_emoji']?.toString() ?? _getTierEmoji(tier),
-      tierLabel: _getTierLabel(tier),
+      tierEmoji: m['tier_emoji']?.toString() ?? '',
+      tierLabel: m['tier_label']?.toString() ?? (tier.isNotEmpty ? '${tier[0].toUpperCase()}${tier.substring(1)}' : 'Newcomer'),
       currentStreak: _parseInt(m['current_streak'] ?? m['streak']),
-      role: m['role']?.toString(),
+      role: role,
       clientType: m['client_type']?.toString(),
       rank: rank ?? _parseInt(m['rank']),
+      badges: m['badges'] != null
+          ? (m['badges'] as List)
+              .map((b) => DiscordBadge.fromMap(b as Map))
+              .toList()
+          : null,
     );
   }
 
@@ -81,3 +124,4 @@ class LeaderboardEntry {
     return int.tryParse(value.toString()) ?? 0;
   }
 }
+

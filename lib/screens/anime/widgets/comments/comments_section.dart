@@ -14,6 +14,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -1555,7 +1556,14 @@ class _CommentSectionState extends State<CommentSection> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (reply.userRole != null &&
+                        if (reply.badges != null && reply.badges!.isNotEmpty) ...[
+                          DiscordBadgesRow(
+                            badges: reply.badges,
+                            size: 13.0,
+                          ),
+                          const SizedBox(width: 4),
+                        ] else if (reply.userRole != null &&
+
                             reply.userRole != 'user') ...[
                           _buildRoleBadge(context, reply.userRole!),
                         ],
@@ -1893,7 +1901,13 @@ class _CommentSectionState extends State<CommentSection> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (comment.userRole != null &&
+                        if (comment.badges != null && comment.badges!.isNotEmpty) ...[
+                          DiscordBadgesRow(
+                            badges: comment.badges,
+                            size: depth == 0 ? 15.0 : 13.0,
+                          ),
+                          const SizedBox(width: 4),
+                        ] else if (comment.userRole != null &&
                             comment.userRole != 'user') ...[
                           _buildRoleBadge(context, comment.userRole!),
                         ],
@@ -2142,10 +2156,13 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   Color _getRoleColor(String role) {
-    switch (role) {
+    switch (role.toLowerCase()) {
       case 'owner':
+      case 'app_owner':
+      case 'appowner':
         return Colors.amber.shade800;
       case 'super_admin':
+      case 'superadmin':
         return Colors.red;
       case 'admin':
         return Colors.orange;
@@ -2157,10 +2174,13 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   (IconData, Color)? _getRoleBadgeConfig(String role) {
-    switch (role) {
+    switch (role.toLowerCase()) {
       case 'owner':
+      case 'app_owner':
+      case 'appowner':
         return (Icons.auto_awesome, Colors.amber.shade800);
       case 'super_admin':
+      case 'superadmin':
         return (Icons.shield, Colors.red);
       case 'admin':
         return (Icons.verified_user, Colors.orange);
@@ -2170,6 +2190,7 @@ class _CommentSectionState extends State<CommentSection> {
         return null;
     }
   }
+
 
   void _showCommentContextMenu(
       BuildContext context,

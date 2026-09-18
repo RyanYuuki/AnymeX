@@ -1,12 +1,18 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/user_comments_sheet.dart';
+import 'package:anymex/screens/profile/profile_page.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
+import 'package:anymex/database/comments/model/discord_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -87,6 +93,8 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
   Color _getRoleColor(String role) {
     switch (role.toLowerCase()) {
       case 'owner':
+      case 'app_owner':
+      case 'appowner':
         return Colors.amber.shade800;
       case 'super_admin':
       case 'superadmin':
@@ -103,6 +111,8 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
   (IconData, Color)? _getRoleBadgeConfig(String role) {
     switch (role.toLowerCase()) {
       case 'owner':
+      case 'app_owner':
+      case 'appowner':
         return (Icons.auto_awesome, Colors.amber.shade800);
       case 'super_admin':
       case 'superadmin':
@@ -115,6 +125,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
         return null;
     }
   }
+
 
   List<Comment> _flattenReplies(Comment root) {
     final List<Comment> flat = [];
@@ -215,9 +226,18 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     Widget card = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Avatar
+        // Avatar -> navigates to profile
         GestureDetector(
-          onTap: () => UserCommentsSheet.show(context, comment: comment, controller: controller),
+          onTap: () {
+            final currentUserId =
+                Get.find<ServiceHandler>().profileData.value.id?.toString();
+            if (comment.userId == currentUserId) {
+              navigate(() => const ProfilePage());
+            } else {
+              navigate(() =>
+                  UserProfilePage(userId: int.tryParse(comment.userId) ?? 0));
+            }
+          },
           child: AnymeXDecoratedAvatar(
             avatarUrl: comment.avatarUrl,
             decorationUrl: comment.avatarDecoration,
@@ -238,7 +258,20 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (hasRole) _buildRoleBadge(context, comment.userRole!),
+                        if (comment.badges != null && comment.badges!.isNotEmpty) ...[
+                          DiscordBadgesRow(
+                            badges: comment.badges,
+                            size: 13.0,
+                            isOp: !isRoot && (comment.userId == widget.rootComment.userId),
+                          ),
+                          const SizedBox(width: 4),
+                        ] else ...[
+                          if (hasRole) _buildRoleBadge(context, comment.userRole!),
+                          if (!isRoot && (comment.userId == widget.rootComment.userId)) ...[
+                            const DiscordBadgeWidget(badge: DiscordBadge.opBadge, size: 13.0),
+                            const SizedBox(width: 4),
+                          ],
+                        ],
                         Flexible(
                           child: GestureDetector(
                             onTap: () => UserCommentsSheet.show(context, comment: comment, controller: controller),

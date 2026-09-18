@@ -527,7 +527,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                         ),
                                         const SizedBox(width: 4),
                                         AnymeXText(
-                                          '${widget.userPoints!.tier.toUpperCase()} • ${widget.userPoints!.totalPoints} pts',
+                                          '${widget.userPoints!.tier.toUpperCase()} • ${widget.userPoints!.displayPoints} pts',
                                           style: const TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.w600,
