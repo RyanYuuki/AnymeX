@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/database/comments/model/discord_badge.dart';
 import 'package:anymex/database/comments/model/user_points.dart';
 import 'package:anymex/database/comments/model/leaderboard_entry.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
@@ -1195,6 +1196,11 @@ class CommentumService extends GetxController {
       nameplateTheme: commentData['nameplate_theme']?.toString(),
       linkedAccounts: commentData['linked_accounts'] is Map
           ? Map<String, dynamic>.from(commentData['linked_accounts'])
+          : null,
+      badges: commentData['badges'] != null
+          ? (commentData['badges'] as List)
+              .map((b) => DiscordBadge.fromMap(b as Map))
+              .toList()
           : null,
       replies: replies,
     );
