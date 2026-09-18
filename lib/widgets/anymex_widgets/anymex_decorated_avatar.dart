@@ -32,13 +32,19 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
     final iconSize = size <= 28 ? 14.0 : 18.0;
-    final hasDecoration =
-        decorationUrl != null && decorationUrl!.trim().isNotEmpty;
+    final _decoTrimmed = decorationUrl?.trim() ?? '';
+    final hasDecoration = _decoTrimmed.isNotEmpty && _decoTrimmed != 'null';
     final isCircle = shape == BoxShape.circle && borderRadius == null;
 
     Widget avatarCore = AnymeXContainer(
       width: size,
       height: size,
+      // Outer clip must match the shape — previously only `decoration:`
+      // carried the radius while the outer ClipRRect stayed square (0),
+      // so rectangle avatars painted square corners.
+      borderRadius:
+          isCircle ? null : (borderRadius ?? BorderRadius.circular(12)),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
         borderRadius:
@@ -105,20 +111,20 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
     Widget content;
     if (hasDecoration) {
       final decoSize = size * decorationScale;
-      // Layout stays exactly `size` so rows/dividers never shift —
-      // the frame only *paints* outside via Clip.none.
+      // Original layout: box is decoSize so the frame always has room
+      // and never gets clipped by headers/lists (first implementation).
       content = SizedBox(
-        width: size,
-        height: size,
+        width: decoSize,
+        height: decoSize,
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.center,
           children: [
             avatarCore,
-            IgnorePointer(
-              child: SizedBox(
-                width: decoSize,
-                height: decoSize,
+            Positioned(
+              width: decoSize,
+              height: decoSize,
+              child: IgnorePointer(
                 child: CachedNetworkImage(
                   imageUrl: decorationUrl!.trim(),
                   fit: BoxFit.contain,

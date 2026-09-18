@@ -63,7 +63,8 @@ class LeaderboardEntry {
 
   factory LeaderboardEntry.fromMap(Map m, {int? rank}) {
     final role = m['role']?.toString();
-    final isInfinite = m['is_infinite'] == true || role == 'owner' || role == 'app_owner';
+    final isInfinite =
+        m['is_infinite'] == true || role == 'owner' || role == 'app_owner';
     final tier = isInfinite ? 'Elite' : (m['tier']?.toString() ?? 'newcomer');
     final realPoints = _parseInt(m['real_points'] ?? m['points']);
     final roleBonus = _parseInt(m['role_bonus']);
@@ -90,14 +91,24 @@ class LeaderboardEntry {
         color = '#5865F2';
         label = 'Mod';
       }
-      bonusTag = LeaderboardBonusTag(text: '+$roleBonus', color: color, label: label);
+      bonusTag =
+          LeaderboardBonusTag(text: '+$roleBonus', color: color, label: label);
     }
 
     return LeaderboardEntry(
       userId: m['user_id']?.toString() ?? '',
       username: m['username']?.toString() ?? 'Unknown',
-      avatarUrl: m['avatar_url']?.toString() ?? m['avatar']?.toString(),
-      avatarDecoration: m['avatar_decoration']?.toString(),
+      avatarUrl: m['avatar_url']?.toString() ??
+          m['avatar']?.toString() ??
+          (m['user'] is Map ? m['user']['avatar']?.toString() : null),
+      avatarDecoration: _cleanDeco(m['avatar_decoration']) ??
+          _cleanDeco(m['avatarDecoration']) ??
+          _cleanDeco(m['decoration']) ??
+          _cleanDeco(m['avatar_frame']) ??
+          (m['user'] is Map
+              ? (_cleanDeco(m['user']['avatar_decoration']) ??
+                  _cleanDeco(m['user']['avatarDecoration']))
+              : null),
       totalPoints: _parseInt(m['total_points'] ?? m['points']),
       realPoints: realPoints,
       roleBonus: roleBonus,
@@ -105,7 +116,10 @@ class LeaderboardEntry {
       bonusTag: bonusTag,
       tier: tier,
       tierEmoji: m['tier_emoji']?.toString() ?? '',
-      tierLabel: m['tier_label']?.toString() ?? (tier.isNotEmpty ? '${tier[0].toUpperCase()}${tier.substring(1)}' : 'Newcomer'),
+      tierLabel: m['tier_label']?.toString() ??
+          (tier.isNotEmpty
+              ? '${tier[0].toUpperCase()}${tier.substring(1)}'
+              : 'Newcomer'),
       currentStreak: _parseInt(m['current_streak'] ?? m['streak']),
       role: role,
       clientType: m['client_type']?.toString(),
@@ -123,5 +137,11 @@ class LeaderboardEntry {
     if (value is int) return value;
     return int.tryParse(value.toString()) ?? 0;
   }
-}
 
+  static String? _cleanDeco(dynamic value) {
+    if (value == null) return null;
+    final t = value.toString().trim();
+    if (t.isEmpty || t == 'null') return null;
+    return t;
+  }
+}
