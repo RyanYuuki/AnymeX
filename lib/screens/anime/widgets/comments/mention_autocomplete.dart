@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -104,19 +104,23 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
   List<Map<String, dynamic>> _filterLocalUsers(String query) {
     if (widget.localUsers == null || widget.localUsers!.isEmpty) return [];
     final lower = query.toLowerCase().trim();
-    return widget.localUsers!.where((u) {
-      final name = (u['username'] as String? ?? '').trim();
-      if (name.isEmpty ||
-          name.toLowerCase() == '[deleted]' ||
-          u['deleted'] == true) {
-        return false;
-      }
-      if (lower.isEmpty) return true;
-      return name.toLowerCase().contains(lower);
-    }).take(20).toList();
+    return widget.localUsers!
+        .where((u) {
+          final name = (u['username'] as String? ?? '').trim();
+          if (name.isEmpty ||
+              name.toLowerCase() == '[deleted]' ||
+              u['deleted'] == true) {
+            return false;
+          }
+          if (lower.isEmpty) return true;
+          return name.toLowerCase().contains(lower);
+        })
+        .take(20)
+        .toList();
   }
 
-  Future<void> _searchUsers(String query, List<Map<String, dynamic>> initialMatches) async {
+  Future<void> _searchUsers(
+      String query, List<Map<String, dynamic>> initialMatches) async {
     final service = commentumService;
     if (service == null) return;
 
@@ -260,18 +264,24 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                       child: AnymeXText(
                         'No users found',
                         size: 13,
-                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        color:
+                            colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                     shrinkWrap: true,
                     itemCount: _results.length,
                     itemBuilder: (context, index) {
                       final user = _results[index];
                       final username = user['username'] as String? ?? '';
-                      final avatar = user['avatar'] as String?;
+                      final avatar = user['avatar'] as String? ??
+                          user['avatar_url'] as String?;
+                      final decoration = user['avatar_decoration'] as String? ??
+                          user['avatarDecoration'] as String? ??
+                          user['decoration'] as String?;
                       final isSelected = index == _selectedIndex;
 
                       return InkWell(
@@ -279,32 +289,18 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                         borderRadius: BorderRadius.circular(10),
                         child: AnymeXContainer(
                           margin: const EdgeInsets.symmetric(vertical: 2),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 6),
                           borderRadius: BorderRadius.circular(10),
                           color: isSelected
                               ? colorScheme.primary.withValues(alpha: 0.15)
                               : Colors.transparent,
                           child: Row(
                             children: [
-                              ClipOval(
-                                child: avatar != null && avatar.isNotEmpty
-                                    ? AnymeXImage(
-                                        imageUrl: avatar,
-                                        width: 28,
-                                        height: 28,
-                                        fit: BoxFit.cover,
-                                        radius: 0,
-                                      )
-                                    : AnymeXContainer(
-                                        width: 28,
-                                        height: 28,
-                                        color: colorScheme.surfaceContainerHighest,
-                                        child: Icon(
-                                          Icons.person_rounded,
-                                          size: 16,
-                                          color: colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
+                              AnymeXDecoratedAvatar(
+                                avatarUrl: avatar,
+                                decorationUrl: decoration,
+                                size: 28,
                               ),
                               const SizedBox(width: 10),
                               Expanded(
@@ -383,9 +379,8 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
 
     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
       setState(() {
-        _selectedIndex = _selectedIndex <= 0
-            ? _results.length - 1
-            : _selectedIndex - 1;
+        _selectedIndex =
+            _selectedIndex <= 0 ? _results.length - 1 : _selectedIndex - 1;
       });
       _overlayEntry?.markNeedsBuild();
       return KeyEventResult.handled;

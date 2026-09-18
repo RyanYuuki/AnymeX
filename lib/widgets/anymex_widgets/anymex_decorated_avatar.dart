@@ -32,7 +32,8 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
     final iconSize = size <= 28 ? 14.0 : 18.0;
-    final hasDecoration = decorationUrl != null && decorationUrl!.trim().isNotEmpty;
+    final hasDecoration =
+        decorationUrl != null && decorationUrl!.trim().isNotEmpty;
     final isCircle = shape == BoxShape.circle && borderRadius == null;
 
     Widget avatarCore = AnymeXContainer(
@@ -40,14 +41,21 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: isCircle ? BoxShape.circle : BoxShape.rectangle,
-        borderRadius: isCircle ? null : (borderRadius ?? BorderRadius.circular(12)),
-        color: colorScheme.surfaceContainer,
+        borderRadius:
+            isCircle ? null : (borderRadius ?? BorderRadius.circular(12)),
+        // When a frame is equipped the frame itself is the border —
+        // painting our own 1px ring + bg underneath is what peeked
+        // through as a "second border".
+        color:
+            hasDecoration ? Colors.transparent : colorScheme.surfaceContainer,
         border: customBorder ??
-            Border.all(
-              color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
-              width: 1,
-            ),
-        boxShadow: size > 28
+            (hasDecoration
+                ? null
+                : Border.all(
+                    color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
+                    width: 1,
+                  )),
+        boxShadow: (!hasDecoration && size > 28)
             ? [
                 BoxShadow(
                   color: colorScheme.shadow.opaque(0.08, iReallyMeanIt: true),
@@ -97,20 +105,22 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
     Widget content;
     if (hasDecoration) {
       final decoSize = size * decorationScale;
+      // Layout stays exactly `size` so rows/dividers never shift —
+      // the frame only *paints* outside via Clip.none.
       content = SizedBox(
-        width: decoSize,
-        height: decoSize,
+        width: size,
+        height: size,
         child: Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.center,
           children: [
             avatarCore,
-            Positioned(
-              width: decoSize,
-              height: decoSize,
-              child: IgnorePointer(
+            IgnorePointer(
+              child: SizedBox(
+                width: decoSize,
+                height: decoSize,
                 child: CachedNetworkImage(
-                  imageUrl: decorationUrl!,
+                  imageUrl: decorationUrl!.trim(),
                   fit: BoxFit.contain,
                   placeholder: (context, url) => const SizedBox.shrink(),
                   errorWidget: (context, url, error) => const SizedBox.shrink(),
@@ -125,10 +135,7 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
     }
 
     if (onTap != null) {
-      return GestureDetector(
-        onTap: onTap,
-        child: content,
-      );
+      return GestureDetector(onTap: onTap, child: content);
     }
 
     return content;

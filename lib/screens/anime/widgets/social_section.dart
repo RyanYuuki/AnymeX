@@ -7,7 +7,8 @@ import 'package:get/get.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:flutter/material.dart';
 
 class SocialSection extends StatelessWidget {
@@ -51,11 +52,13 @@ class SocialSection extends StatelessWidget {
         onTap: user.userId == null
             ? null
             : () {
-                final currentUserId = Get.find<ServiceHandler>().profileData.value.id;
+                final currentUserId =
+                    Get.find<ServiceHandler>().profileData.value.id;
                 if (user.userId.toString() == currentUserId) {
                   navigateWithSlide(() => const ProfilePage());
                 } else {
-                  navigateWithSlide(() => UserProfilePage(userId: user.userId!));
+                  navigateWithSlide(
+                      () => UserProfilePage(userId: user.userId!));
                 }
               },
         child: Column(
@@ -76,26 +79,16 @@ class SocialSection extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: ClipOval(
-                    child: (user.userAvatar != null && user.userAvatar!.isNotEmpty)
-                        ? CachedNetworkImage(
-                            imageUrl: user.userAvatar!,
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) => Image.network(
-                              'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png',
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Image.network(
-                            'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png',
-                            width: 80,
-                            height: 80,
-                            fit: BoxFit.cover,
-                          ),
+                  child: AnymeXDecoratedAvatar(
+                    avatarUrl: (user.userAvatar != null &&
+                            user.userAvatar!.isNotEmpty)
+                        ? user.userAvatar
+                        : 'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png',
+                    decorationUrl: Get.isRegistered<CommentumService>()
+                        ? Get.find<CommentumService>()
+                            .getCachedDecoration(user.userId?.toString() ?? '')
+                        : null,
+                    size: 80,
                   ),
                 ),
                 if (user.userScore != null && user.userScore! > 0)
@@ -120,9 +113,14 @@ class SocialSection extends StatelessWidget {
                           Icon(Icons.star_rounded,
                               size: 12, color: theme.onPrimary),
                           const SizedBox(width: 4),
-                          AnymeXText(Get.find<AnilistAuth>().isLoggedIn.value
-                                ? Get.find<AnilistAuth>().formatScore(user.userScore)
-                                : (user.userScore! > 10.0 ? user.userScore! / 10.0 : user.userScore!).toStringAsFixed(1),
+                          AnymeXText(
+                            Get.find<AnilistAuth>().isLoggedIn.value
+                                ? Get.find<AnilistAuth>()
+                                    .formatScore(user.userScore)
+                                : (user.userScore! > 10.0
+                                        ? user.userScore! / 10.0
+                                        : user.userScore!)
+                                    .toStringAsFixed(1),
                             size: 11,
                             color: theme.onPrimary,
                             variant: TextVariant.bold,
@@ -135,14 +133,16 @@ class SocialSection extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             if (status.isNotEmpty)
-              AnymeXText(status,
+              AnymeXText(
+                status,
                 size: 12,
                 color: theme.onSurface.withOpacity(0.7),
                 fontStyle: FontStyle.italic,
                 textAlign: TextAlign.center,
               ),
             const SizedBox(height: 2),
-            AnymeXText(user.userName ?? 'Unknown',
+            AnymeXText(
+              user.userName ?? 'Unknown',
               size: 13,
               maxLines: 1,
               textAlign: TextAlign.center,

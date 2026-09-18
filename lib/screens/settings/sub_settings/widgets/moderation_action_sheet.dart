@@ -1,4 +1,5 @@
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class AnymeXModerationActionSheet extends StatefulWidget {
   final String targetUserId;
   final String targetUsername;
   final String? targetAvatar;
+  final String? targetDecoration;
   final String? targetClientType;
   final String? targetRole;
   final ModerationActionType initialAction;
@@ -38,6 +40,7 @@ class AnymeXModerationActionSheet extends StatefulWidget {
     required this.targetUserId,
     required this.targetUsername,
     this.targetAvatar,
+    this.targetDecoration,
     this.targetClientType,
     this.targetRole,
     this.initialAction = ModerationActionType.mute,
@@ -49,6 +52,7 @@ class AnymeXModerationActionSheet extends StatefulWidget {
     required String targetUserId,
     required String targetUsername,
     String? targetAvatar,
+    String? targetDecoration,
     String? targetClientType,
     String? targetRole,
     ModerationActionType initialAction = ModerationActionType.mute,
@@ -64,6 +68,7 @@ class AnymeXModerationActionSheet extends StatefulWidget {
         targetUserId: targetUserId,
         targetUsername: targetUsername,
         targetAvatar: targetAvatar,
+        targetDecoration: targetDecoration,
         targetClientType: targetClientType,
         targetRole: targetRole,
         initialAction: initialAction,
@@ -226,7 +231,8 @@ class _AnymeXModerationActionSheetState
         _currentAction != ModerationActionType.unban &&
         _currentAction != ModerationActionType.unmute) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide a reason for this action')),
+        const SnackBar(
+            content: Text('Please provide a reason for this action')),
       );
       return;
     }
@@ -273,18 +279,10 @@ class _AnymeXModerationActionSheetState
             padding: const EdgeInsets.all(14),
             child: Row(
               children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: colorScheme.surfaceContainer,
-                  backgroundImage: widget.targetAvatar != null &&
-                          widget.targetAvatar!.isNotEmpty
-                      ? NetworkImage(widget.targetAvatar!)
-                      : null,
-                  child: widget.targetAvatar == null ||
-                          widget.targetAvatar!.isEmpty
-                      ? Icon(Icons.person,
-                          size: 24, color: colorScheme.onSurfaceVariant)
-                      : null,
+                AnymeXDecoratedAvatar(
+                  avatarUrl: widget.targetAvatar,
+                  decorationUrl: widget.targetDecoration,
+                  size: 48,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -308,8 +306,8 @@ class _AnymeXModerationActionSheetState
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: colorScheme.primary
-                                    .withValues(alpha: 0.15),
+                                color:
+                                    colorScheme.primary.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -341,7 +339,8 @@ class _AnymeXModerationActionSheetState
                   decoration: BoxDecoration(
                     color: actionColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: actionColor.withValues(alpha: 0.4)),
+                    border:
+                        Border.all(color: actionColor.withValues(alpha: 0.4)),
                   ),
                   child: Text(
                     _getActionTitle(),
@@ -398,9 +397,8 @@ class _AnymeXModerationActionSheetState
                   selected: _isCustomDuration,
                   selectedColor: actionColor.withValues(alpha: 0.2),
                   labelStyle: TextStyle(
-                    color: _isCustomDuration
-                        ? actionColor
-                        : colorScheme.onSurface,
+                    color:
+                        _isCustomDuration ? actionColor : colorScheme.onSurface,
                     fontWeight:
                         _isCustomDuration ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -509,9 +507,8 @@ class _AnymeXModerationActionSheetState
                     avatar: isCurrent
                         ? Icon(Icons.check, size: 14, color: actionColor)
                         : null,
-                    backgroundColor: isCurrent
-                        ? actionColor.withValues(alpha: 0.15)
-                        : null,
+                    backgroundColor:
+                        isCurrent ? actionColor.withValues(alpha: 0.15) : null,
                     labelStyle: TextStyle(
                       fontSize: 12,
                       color: isCurrent ? actionColor : null,

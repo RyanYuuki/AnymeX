@@ -21,6 +21,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comments_replies_sheet.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/user_comments_sheet.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -134,9 +135,8 @@ class _CommentSectionState extends State<CommentSection> {
               onShowContextMenu: (target) {
                 final isOwnComment =
                     target.userId == controller.profile.id?.toString();
-                _showCommentContextMenu(
-                    context, target, controller, isOwnComment,
-                    controller.canModerate());
+                _showCommentContextMenu(context, target, controller,
+                    isOwnComment, controller.canModerate());
               },
             );
           });
@@ -376,7 +376,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ? [
                             BoxShadow(
                               color: colorScheme.primary
-                                 .opaque(0.1, iReallyMeanIt: true),
+                                  .opaque(0.1, iReallyMeanIt: true),
                               blurRadius: 16,
                               offset: const Offset(0, 4),
                             ),
@@ -409,8 +409,7 @@ class _CommentSectionState extends State<CommentSection> {
     return Obx(() => AnymeXContainer(
           padding: const EdgeInsets.fromLTRB(24, 28, 16, 20),
           color: colorScheme.surfaceContainer.opaque(0.3),
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -580,6 +579,7 @@ class _CommentSectionState extends State<CommentSection> {
         list.add({
           'username': name,
           'avatar': c.avatarUrl,
+          'avatar_decoration': c.avatarDecoration,
         });
       }
       if (c.replies != null && c.replies!.isNotEmpty) {
@@ -876,37 +876,13 @@ class _CommentSectionState extends State<CommentSection> {
 
   Widget _buildUserAvatar(
       ColorScheme colorScheme, CommentSectionController controller) {
-    return AnymeXContainer(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: colorScheme.surfaceContainer,
-        border: Border.all(
-          color: colorScheme.outline.opaque(0.1, iReallyMeanIt: true),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.opaque(0.1, iReallyMeanIt: true),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipOval(
-        child: controller.profile.avatar?.isNotEmpty == true
-            ? AnymeXImage(
-                imageUrl: controller.profile.avatar!,
-                fit: BoxFit.cover,
-                radius: 0,
-              )
-            : Icon(
-                Icons.person_rounded,
-                color: colorScheme.onSurfaceVariant,
-                size: 20,
-              ),
-      ),
+    final deco = Get.isRegistered<CommentumService>()
+        ? Get.find<CommentumService>().currentUserDecoration.value
+        : null;
+    return AnymeXDecoratedAvatar(
+      avatarUrl: controller.profile.avatar,
+      decorationUrl: (deco?.isNotEmpty == true) ? deco : null,
+      size: 40,
     );
   }
 
@@ -1145,8 +1121,7 @@ class _CommentSectionState extends State<CommentSection> {
           if (isTarget)
             AnymeXContainer(
               margin: const EdgeInsets.only(bottom: 8),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               color: colorScheme.primary.opaque(0.08),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
@@ -1172,8 +1147,7 @@ class _CommentSectionState extends State<CommentSection> {
           if (comment.pinned == true && depth == 0)
             AnymeXContainer(
               margin: const EdgeInsets.only(bottom: 8),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               color: colorScheme.primary.opaque(0.08),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
@@ -1198,8 +1172,8 @@ class _CommentSectionState extends State<CommentSection> {
             ),
           _buildDeletedComment(context, comment, depth),
           if (hasReplies)
-            _buildRepliesSection(
-                context, comment, controller, effectiveLocked, depth: depth),
+            _buildRepliesSection(context, comment, controller, effectiveLocked,
+                depth: depth),
         ],
       );
     }
@@ -1279,7 +1253,8 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   Widget _buildRepliesSection(BuildContext context, Comment comment,
-      CommentSectionController controller, bool effectiveLocked, {int depth = 0}) {
+      CommentSectionController controller, bool effectiveLocked,
+      {int depth = 0}) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final replies = comment.replies ?? [];
@@ -1301,9 +1276,8 @@ class _CommentSectionState extends State<CommentSection> {
               onShowContextMenu: (target) {
                 final isOwnComment =
                     target.userId == controller.profile.id?.toString();
-                _showCommentContextMenu(
-                    context, target, controller, isOwnComment,
-                    controller.canModerate());
+                _showCommentContextMenu(context, target, controller,
+                    isOwnComment, controller.canModerate());
               },
             );
           },
@@ -1427,7 +1401,8 @@ class _CommentSectionState extends State<CommentSection> {
                             child: AnymeXContainer(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 5),
-                              color: colorScheme.surfaceContainerLow.opaque(0.4),
+                              color:
+                                  colorScheme.surfaceContainerLow.opaque(0.4),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
                                 color: colorScheme.outlineVariant.opaque(0.2),
@@ -1451,20 +1426,25 @@ class _CommentSectionState extends State<CommentSection> {
                           const SizedBox(width: 8),
                         ],
                         InkWell(
-                          onTap: () => setState(() => _collapsedThreads.add(comment.id)),
+                          onTap: () =>
+                              setState(() => _collapsedThreads.add(comment.id)),
                           borderRadius: BorderRadius.circular(8),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 4),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.remove_circle_outline_rounded,
-                                    size: 13, color: colorScheme.onSurfaceVariant.opaque(0.7)),
+                                    size: 13,
+                                    color: colorScheme.onSurfaceVariant
+                                        .opaque(0.7)),
                                 const SizedBox(width: 4),
                                 AnymeXText(
                                   'Collapse',
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant.opaque(0.7),
+                                    color: colorScheme.onSurfaceVariant
+                                        .opaque(0.7),
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -1556,14 +1536,14 @@ class _CommentSectionState extends State<CommentSection> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (reply.badges != null && reply.badges!.isNotEmpty) ...[
+                        if (reply.badges != null &&
+                            reply.badges!.isNotEmpty) ...[
                           DiscordBadgesRow(
                             badges: reply.badges,
                             size: 13.0,
                           ),
                           const SizedBox(width: 4),
                         ] else if (reply.userRole != null &&
-
                             reply.userRole != 'user') ...[
                           _buildRoleBadge(context, reply.userRole!),
                         ],
@@ -1687,9 +1667,8 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         const SizedBox(width: 8),
                         GestureDetector(
-                          onTap: () => _showCommentContextMenu(
-                              context, reply, controller, isOwnComment,
-                              canModerate),
+                          onTap: () => _showCommentContextMenu(context, reply,
+                              controller, isOwnComment, canModerate),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 4, vertical: 4),
@@ -1901,7 +1880,8 @@ class _CommentSectionState extends State<CommentSection> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (comment.badges != null && comment.badges!.isNotEmpty) ...[
+                        if (comment.badges != null &&
+                            comment.badges!.isNotEmpty) ...[
                           DiscordBadgesRow(
                             badges: comment.badges,
                             size: depth == 0 ? 15.0 : 13.0,
@@ -1913,7 +1893,8 @@ class _CommentSectionState extends State<CommentSection> {
                         ],
                         Flexible(
                           child: GestureDetector(
-                            onTap: () => _showUserProfileSheet(context, comment),
+                            onTap: () =>
+                                _showUserProfileSheet(context, comment),
                             child: AnymeXText(
                               comment.username,
                               color: comment.userRole != null &&
@@ -2034,9 +2015,8 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         const SizedBox(width: 10),
                         GestureDetector(
-                          onTap: () => _showCommentContextMenu(
-                              context, comment, controller, isOwnComment,
-                              canModerate),
+                          onTap: () => _showCommentContextMenu(context, comment,
+                              controller, isOwnComment, canModerate),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 4, vertical: 4),
@@ -2191,7 +2171,6 @@ class _CommentSectionState extends State<CommentSection> {
     }
   }
 
-
   void _showCommentContextMenu(
       BuildContext context,
       Comment comment,
@@ -2233,7 +2212,8 @@ class _CommentSectionState extends State<CommentSection> {
                     label: 'Copy Comment',
                     onTap: () {
                       Navigator.pop(ctx);
-                      Clipboard.setData(ClipboardData(text: comment.commentText));
+                      Clipboard.setData(
+                          ClipboardData(text: comment.commentText));
                       snackBar('Comment copied to clipboard');
                     },
                   ),
@@ -2299,7 +2279,8 @@ class _CommentSectionState extends State<CommentSection> {
                         label: 'User Actions',
                         onTap: () {
                           Navigator.pop(ctx);
-                          _showUserManagementSheet(context, comment, controller);
+                          _showUserManagementSheet(
+                              context, comment, controller);
                         },
                       ),
                     ],
@@ -2442,7 +2423,8 @@ class _CommentSectionState extends State<CommentSection> {
                   FilledButton(
                     onPressed: () {
                       if (editController.text.trim().isNotEmpty) {
-                        controller.editComment(comment, editController.text.trim());
+                        controller.editComment(
+                            comment, editController.text.trim());
                         Navigator.pop(dialogCtx);
                       }
                     },
@@ -2598,8 +2580,9 @@ class _CommentSectionState extends State<CommentSection> {
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
-                value:
-                    reasonController.text.isEmpty ? null : reasonController.text,
+                value: reasonController.text.isEmpty
+                    ? null
+                    : reasonController.text,
                 decoration: InputDecoration(
                   labelText: 'Reason',
                   border: OutlineInputBorder(
@@ -2616,14 +2599,16 @@ class _CommentSectionState extends State<CommentSection> {
                       value: 'harassment',
                       child: AnymeXText('Harassment', maxLines: null)),
                   DropdownMenuItem(
-                      value: 'spoiler', child: AnymeXText('Spoiler', maxLines: null)),
+                      value: 'spoiler',
+                      child: AnymeXText('Spoiler', maxLines: null)),
                   DropdownMenuItem(
                       value: 'nsfw', child: AnymeXText('NSFW', maxLines: null)),
                   DropdownMenuItem(
                       value: 'off_topic',
                       child: AnymeXText('Off-Topic', maxLines: null)),
                   DropdownMenuItem(
-                      value: 'other', child: AnymeXText('Other', maxLines: null)),
+                      value: 'other',
+                      child: AnymeXText('Other', maxLines: null)),
                 ],
                 onChanged: (value) {
                   reasonController.text = value ?? '';
@@ -2653,7 +2638,8 @@ class _CommentSectionState extends State<CommentSection> {
                   FilledButton(
                     onPressed: () {
                       if (reasonController.text.trim().isNotEmpty) {
-                        controller.reportComment(comment, reasonController.text.trim(),
+                        controller.reportComment(
+                            comment, reasonController.text.trim(),
                             notes: notesController.text.trim());
                         Navigator.pop(dialogCtx);
                       }
@@ -2916,7 +2902,8 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
               ),
               const SizedBox(height: 16),
-              if (comment.bannerUrl != null && comment.bannerUrl!.trim().isNotEmpty) ...[
+              if (comment.bannerUrl != null &&
+                  comment.bannerUrl!.trim().isNotEmpty) ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(14),
                   child: Container(
@@ -3109,6 +3096,7 @@ class _CommentSectionState extends State<CommentSection> {
       targetUserId: comment.userId,
       targetUsername: comment.username,
       targetAvatar: comment.avatarUrl,
+      targetDecoration: comment.avatarDecoration,
       targetRole: comment.userRole,
       initialAction: actionType,
       onConfirm: ({
@@ -3172,6 +3160,8 @@ class _CommentSectionState extends State<CommentSection> {
                 'Unknown';
             final avatar = user['avatar']?.toString() ??
                 user['commentum_user_avatar']?.toString();
+            final decoration = user['avatar_decoration']?.toString() ??
+                user['commentum_user_avatar_decoration']?.toString();
             final role = user['role']?.toString() ??
                 user['commentum_user_role']?.toString() ??
                 'user';
@@ -3196,16 +3186,10 @@ class _CommentSectionState extends State<CommentSection> {
                   Center(
                     child: Column(
                       children: [
-                        CircleAvatar(
-                          radius: 32,
-                          backgroundColor: colorScheme.surfaceContainer,
-                          backgroundImage: avatar != null && avatar.isNotEmpty
-                              ? NetworkImage(avatar)
-                              : null,
-                          child: avatar == null || avatar.isEmpty
-                              ? Icon(Icons.person_rounded,
-                                  size: 28, color: colorScheme.onSurfaceVariant)
-                              : null,
+                        AnymeXDecoratedAvatar(
+                          avatarUrl: avatar,
+                          decorationUrl: decoration,
+                          size: 64,
                         ),
                         const SizedBox(height: 10),
                         AnymeXText(
@@ -3316,18 +3300,11 @@ class _CommentSectionState extends State<CommentSection> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      comment.avatarUrl?.isNotEmpty == true
-                          ? CircleAvatar(
-                              radius: 18,
-                              backgroundImage: NetworkImage(comment.avatarUrl!),
-                            )
-                          : CircleAvatar(
-                              radius: 18,
-                              backgroundColor: colorScheme.surfaceContainer,
-                              child: Icon(Icons.person_rounded,
-                                  size: 16,
-                                  color: colorScheme.onSurfaceVariant),
-                            ),
+                      AnymeXDecoratedAvatar(
+                        avatarUrl: comment.avatarUrl,
+                        decorationUrl: comment.avatarDecoration,
+                        size: 36,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: AnymeXText(
@@ -3868,11 +3845,13 @@ class _SpoilerTextState extends State<_SpoilerText> {
 class _UserProfileSheet extends StatelessWidget {
   final String username;
   final String? avatarUrl;
+  final String? decorationUrl;
   final String? userRole;
 
   const _UserProfileSheet({
     required this.username,
     this.avatarUrl,
+    this.decorationUrl,
     this.userRole,
   });
 
@@ -3929,23 +3908,11 @@ class _UserProfileSheet extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
             child: Column(
               children: [
-                if (avatarUrl != null)
-                  CircleAvatar(
-                    radius: 36,
-                    backgroundImage: NetworkImage(avatarUrl!),
-                  )
-                else
-                  CircleAvatar(
-                    radius: 36,
-                    backgroundColor: colorScheme.primaryContainer,
-                    child: AnymeXText(
-                      username.isNotEmpty ? username[0].toUpperCase() : '?',
-                      size: 24,
-                      variant: TextVariant.bold,
-                      color: colorScheme.onPrimaryContainer,
-                      maxLines: null,
-                    ),
-                  ),
+                AnymeXDecoratedAvatar(
+                  avatarUrl: avatarUrl,
+                  decorationUrl: decorationUrl,
+                  size: 72,
+                ),
                 const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -7,6 +7,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -104,14 +105,13 @@ class _SettingsModerationState extends State<SettingsModeration> {
                     Obx(() => CustomTile(
                           icon: Icons.report_outlined,
                           title: "Reports Queue",
-                          description:
-                              "${reportsQueue.length} pending reports",
+                          description: "${reportsQueue.length} pending reports",
                           postFix: isLoadingQueue.value
                               ? const SizedBox(
                                   width: 20,
                                   height: 20,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2),
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2),
                                 )
                               : null,
                           onTap: () => _navigateToReportsQueue(context),
@@ -649,7 +649,10 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                     final user = _searchResults[index];
                     final userId = user['id']?.toString() ?? '';
                     final username = user['username']?.toString() ?? 'Unknown';
-                    final avatar = user['avatar']?.toString();
+                    final avatar = user['avatar']?.toString() ??
+                        user['avatar_url']?.toString();
+                    final decoration = user['avatar_decoration']?.toString() ??
+                        user['avatarDecoration']?.toString();
                     final role = user['role']?.toString() ?? 'user';
                     final isBanned = user['banned'] == true;
                     final clientType = user['client_type']?.toString() ?? '';
@@ -681,18 +684,10 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                             ),
                             child: Row(
                               children: [
-                                CircleAvatar(
-                                  radius: 18,
-                                  backgroundColor: colorScheme.surfaceContainer,
-                                  backgroundImage:
-                                      avatar != null && avatar.isNotEmpty
-                                          ? NetworkImage(avatar)
-                                          : null,
-                                  child: avatar == null || avatar.isEmpty
-                                      ? Icon(Icons.person_rounded,
-                                          size: 18,
-                                          color: colorScheme.onSurfaceVariant)
-                                      : null,
+                                AnymeXDecoratedAvatar(
+                                  avatarUrl: avatar,
+                                  decorationUrl: decoration,
+                                  size: 36,
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
@@ -897,7 +892,10 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
     final authorId = author['id']?.toString() ?? '';
     final authorClientType = author['client_type']?.toString();
     final authorName = author['username']?.toString() ?? 'Unknown';
-    final authorAvatar = author['avatar']?.toString();
+    final authorAvatar =
+        author['avatar']?.toString() ?? author['avatar_url']?.toString();
+    final authorDecoration = author['avatar_decoration']?.toString() ??
+        author['avatarDecoration']?.toString();
     final mediaInfo = report['media'] as Map<String, dynamic>? ?? {};
     final mediaTitle = mediaInfo['title']?.toString() ?? 'Unknown';
     final mediaType = mediaInfo['type']?.toString() ?? '';
@@ -929,19 +927,10 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 18,
-                    backgroundColor: colorScheme.surfaceContainer,
-                    child: authorAvatar != null && authorAvatar.isNotEmpty
-                        ? ClipOval(
-                            child: Image.network(authorAvatar,
-                                width: 36,
-                                height: 36,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) =>
-                                    const Icon(Icons.person, size: 18)),
-                          )
-                        : const Icon(Icons.person_rounded, size: 18),
+                  AnymeXDecoratedAvatar(
+                    avatarUrl: authorAvatar,
+                    decorationUrl: authorDecoration,
+                    size: 36,
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -1170,8 +1159,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                           ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: colorScheme.onSurfaceVariant,
-                            side: BorderSide(
-                                color: colorScheme.outlineVariant),
+                            side: BorderSide(color: colorScheme.outlineVariant),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 6),
                             shape: RoundedRectangleBorder(
@@ -1224,8 +1212,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
             padding: const EdgeInsets.all(20),
             radius: 20,
             color: colorScheme.surface,
-            border:
-                Border.all(color: colorScheme.error.withOpacity(0.3)),
+            border: Border.all(color: colorScheme.error.withOpacity(0.3)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1679,7 +1666,9 @@ class _UserListPageState extends State<UserListPage> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final username = user['username']?.toString() ?? 'Unknown';
-    final avatar = user['avatar']?.toString();
+    final avatar = user['avatar']?.toString() ?? user['avatar_url']?.toString();
+    final decoration = user['avatar_decoration']?.toString() ??
+        user['avatarDecoration']?.toString();
     final role = user['role']?.toString() ?? 'user';
     final isBanned = user['banned'] == true;
     final isMuted = user['muted'] == true;
@@ -1709,16 +1698,10 @@ class _UserListPageState extends State<UserListPage> {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: colorScheme.surfaceContainer,
-                backgroundImage: avatar != null && avatar.isNotEmpty
-                    ? NetworkImage(avatar)
-                    : null,
-                child: avatar == null || avatar.isEmpty
-                    ? Icon(Icons.person_rounded,
-                        size: 22, color: colorScheme.onSurfaceVariant)
-                    : null,
+              AnymeXDecoratedAvatar(
+                avatarUrl: avatar,
+                decorationUrl: decoration,
+                size: 44,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -1899,7 +1882,6 @@ class _UserManagementPageState extends State<UserManagementPage> {
     setState(() => isLoading = false);
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1931,26 +1913,21 @@ class _UserManagementPageState extends State<UserManagementPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 36,
-                                    backgroundColor:
-                                        colorScheme.surfaceContainer,
-                                    backgroundImage: userInfo?['avatar'] !=
-                                                null &&
-                                            userInfo!['avatar']
-                                                .toString()
-                                                .isNotEmpty
-                                        ? NetworkImage(
-                                            userInfo!['avatar'].toString())
-                                        : null,
-                                    child: userInfo?['avatar'] == null ||
-                                            userInfo!['avatar']
-                                                .toString()
-                                                .isEmpty
-                                        ? Icon(Icons.person,
-                                            size: 36,
-                                            color: colorScheme.onSurfaceVariant)
-                                        : null,
+                                  AnymeXDecoratedAvatar(
+                                    avatarUrl: userInfo?['avatar']
+                                            ?.toString() ??
+                                        userInfo?['avatar_url']?.toString() ??
+                                        userInfo?['commentum_user_avatar']
+                                            ?.toString(),
+                                    decorationUrl: userInfo?[
+                                                'avatar_decoration']
+                                            ?.toString() ??
+                                        userInfo?['avatarDecoration']
+                                            ?.toString() ??
+                                        userInfo?[
+                                                'commentum_user_avatar_decoration']
+                                            ?.toString(),
+                                    size: 72,
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
@@ -2214,7 +2191,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
   }
 
   String _formatDate(dynamic dateStr) {
-    if (dateStr == null || dateStr.toString().isEmpty || dateStr.toString() == 'null') return 'N/A';
+    if (dateStr == null ||
+        dateStr.toString().isEmpty ||
+        dateStr.toString() == 'null') return 'N/A';
     try {
       return timeago.format(DateTime.parse(dateStr.toString()));
     } catch (_) {
@@ -2346,6 +2325,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
           'User #${widget.targetUserId}',
       targetAvatar: userInfo?['avatar']?.toString() ??
           userInfo?['commentum_user_avatar']?.toString(),
+      targetDecoration: userInfo?['avatar_decoration']?.toString() ??
+          userInfo?['commentum_user_avatar_decoration']?.toString(),
       targetClientType: widget.targetClientType,
       targetRole: userInfo?['role']?.toString() ??
           userInfo?['commentum_user_role']?.toString(),

@@ -60,6 +60,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
         list.add({
           'username': name,
           'avatar': c.avatarUrl,
+          'avatar_decoration': c.avatarDecoration,
         });
       }
       if (c.replies != null && c.replies!.isNotEmpty) {
@@ -152,7 +153,9 @@ class _CommentInputBarState extends State<CommentInputBar> {
                     padding: const EdgeInsets.only(bottom: 3),
                     child: Obx(() {
                       final deco = Get.isRegistered<CommentumService>()
-                          ? Get.find<CommentumService>().currentUserDecoration.value
+                          ? Get.find<CommentumService>()
+                              .currentUserDecoration
+                              .value
                           : null;
                       return AnymeXDecoratedAvatar(
                         avatarUrl: controller.profile.avatar,
@@ -176,7 +179,8 @@ class _CommentInputBarState extends State<CommentInputBar> {
                             color: colorScheme.primary.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                              color: colorScheme.primary.withValues(alpha: 0.25),
+                              color:
+                                  colorScheme.primary.withValues(alpha: 0.25),
                               width: 1,
                             ),
                             child: Row(
@@ -237,7 +241,8 @@ class _CommentInputBarState extends State<CommentInputBar> {
                             color: colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: colorScheme.primary.withValues(alpha: 0.22),
+                              color:
+                                  colorScheme.primary.withValues(alpha: 0.22),
                               width: 1,
                             ),
                             child: Row(
