@@ -10,6 +10,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -85,15 +86,49 @@ class UserCommentsSheet {
                       ),
                       const SizedBox(height: 18),
 
-                      // 1. Center avatar with decoration
-                      Center(
-                        child: AnymeXDecoratedAvatar(
-                          avatarUrl: comment.avatarUrl,
-                          decorationUrl: comment.avatarDecoration,
-                          size: 76,
-                          decorationScale: 1.25,
+                      // 1. Banner + centered avatar with decoration
+                      if (!isLoading && _bannerUrl(profile) != null)
+                        SizedBox(
+                          height: 148,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: CachedNetworkImage(
+                                  imageUrl: _bannerUrl(profile)!,
+                                  height: 108,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorWidget: (_, __, ___) =>
+                                      const SizedBox.shrink(),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: Center(
+                                  child: AnymeXDecoratedAvatar(
+                                    avatarUrl: comment.avatarUrl,
+                                    decorationUrl: comment.avatarDecoration,
+                                    size: 76,
+                                    decorationScale: 1.25,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        Center(
+                          child: AnymeXDecoratedAvatar(
+                            avatarUrl: comment.avatarUrl,
+                            decorationUrl: comment.avatarDecoration,
+                            size: 76,
+                            decorationScale: 1.25,
+                          ),
                         ),
-                      ),
                       const SizedBox(height: 12),
 
                       // 2. Name + badges (centered)
@@ -146,20 +181,21 @@ class UserCommentsSheet {
                           children: [
                             _chip(
                               context,
-                              '${points.tierEmoji} ${points.tier.toUpperCase()}'
-                                  .trim(),
-                              colorScheme.primary,
-                            ),
-                            _chip(
-                              context,
                               '${points.displayPoints} pts',
                               colorScheme.primary,
                             ),
+                            if (points.role != null && points.role != 'user')
+                              _chip(
+                                context,
+                                points.role!.replaceAll('_', ' ').toUpperCase(),
+                                _roleColor(points.role!),
+                              ),
                             if (points.currentStreak > 0)
                               _chip(
                                 context,
-                                '🔥 ${points.currentStreak}d streak',
+                                '${points.currentStreak}d streak',
                                 Colors.orange,
+                                icon: Icons.local_fire_department_outlined,
                               ),
                           ],
                         )
@@ -217,6 +253,35 @@ class UserCommentsSheet {
                           ],
                         ),
                         const SizedBox(height: 8),
+                      ],
+
+                      // 4b. Points breakdown — every positive source (server)
+                      if (!isLoading &&
+                          points != null &&
+                          _breakdownChips(context, points).isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.pie_chart_outline_rounded,
+                              size: 14,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 6),
+                            AnymeXText(
+                              'Points breakdown',
+                              size: 12,
+                              variant: TextVariant.bold,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: _breakdownChips(context, points),
+                        ),
                       ],
 
                       // 5. Private section — self + mods only, never zeros
@@ -300,12 +365,15 @@ class UserCommentsSheet {
     if ((points.breakdown.warningsPoints.abs()) > 0) return true;
     if ((points.breakdown.deletedPoints.abs()) > 0) return true;
     if ((points.breakdown.bannedPoints.abs()) > 0) return true;
+    if (points.stats.totalDownvotesReceived > 0) return true;
     if (profile == null) return false;
     if (profile['banned'] == true ||
         profile['muted'] == true ||
         profile['shadow_banned'] == true) {
       return true;
     }
+    final notes = profile['notes']?.toString() ?? '';
+    if (notes.isNotEmpty && notes != 'null') return true;
     return false;
   }
 
@@ -313,6 +381,15 @@ class UserCommentsSheet {
       BuildContext context, UserPoints? points, Map<String, dynamic>? profile) {
     final rows = <Widget>[];
     if (points != null) {
+      if (points.stats.totalDownvotesReceived > 0) {
+        rows.add(_infoRow(
+          context,
+          Icons.thumb_down_outlined,
+          'Downvotes received',
+          '${points.stats.totalDownvotesReceived}',
+          Colors.grey,
+        ));
+      }
       if (points.breakdown.warningsPoints.abs() > 0) {
         rows.add(_infoRow(
           context,
@@ -369,8 +446,65 @@ class UserCommentsSheet {
           Colors.purple,
         ));
       }
+      final notes = profile['notes']?.toString() ?? '';
+      if (notes.isNotEmpty && notes != 'null') {
+        rows.add(_infoRow(
+          context,
+          Icons.sticky_note_2_outlined,
+          'Mod notes',
+          notes,
+          Colors.teal,
+        ));
+      }
     }
     return rows;
+  }
+
+  static String? _bannerUrl(Map<String, dynamic>? profile) {
+    final raw = profile?['banner_url']?.toString() ?? '';
+    if (raw.isEmpty || raw == 'null') return null;
+    return raw;
+  }
+
+  static Color _roleColor(String role) {
+    switch (role.toLowerCase()) {
+      case 'owner':
+      case 'app_owner':
+      case 'appowner':
+        return Colors.amber.shade800;
+      case 'super_admin':
+      case 'superadmin':
+        return Colors.red;
+      case 'admin':
+        return Colors.orange;
+      case 'moderator':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  static List<Widget> _breakdownChips(BuildContext context, UserPoints points) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final b = points.breakdown;
+    final parts = <MapEntry<String, int>>[
+      MapEntry('Comments', b.commentsPoints),
+      MapEntry('Replies', b.repliesPoints),
+      MapEntry('Upvotes', b.upvotesReceivedPoints),
+      MapEntry('Votes cast', b.votesCastPoints),
+      MapEntry('Pinned', b.pinnedPoints),
+      MapEntry('Streak bonus', b.streakBonus),
+      MapEntry('Role bonus', b.roleBonus),
+    ];
+    return [
+      for (final p in parts)
+        if (p.value > 0)
+          _chip(
+            context,
+            '${p.key} +${p.value}',
+            colorScheme.onSurfaceVariant,
+          ),
+    ];
   }
 
   static String _until(dynamic raw) {
@@ -384,7 +518,8 @@ class UserCommentsSheet {
     }
   }
 
-  static Widget _chip(BuildContext context, String label, Color color) {
+  static Widget _chip(BuildContext context, String label, Color color,
+      {IconData? icon}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -392,11 +527,20 @@ class UserCommentsSheet {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
-      child: AnymeXText(
-        label,
-        size: 11,
-        variant: TextVariant.bold,
-        color: color,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 13, color: color),
+            const SizedBox(width: 4),
+          ],
+          AnymeXText(
+            label,
+            size: 11,
+            variant: TextVariant.bold,
+            color: color,
+          ),
+        ],
       ),
     );
   }
