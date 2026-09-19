@@ -43,6 +43,7 @@ import 'package:anymex/widgets/common/media_mode_selector.dart';
 import 'package:anymex/controllers/media_mode_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/controllers/watchium/watchium_relay.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
@@ -279,6 +280,7 @@ void _initializeGetxController() async {
     Get.put(CommentumService());
     Get.put(CommentPreloader());
     Get.put(WatchiumService(), permanent: true);
+    Get.put(WatchiumRelay(), permanent: true);
     Get.put(GistSyncController(), permanent: true);
     Get.put(DownloadController(), permanent: true);
     Get.put(StatsTracker());

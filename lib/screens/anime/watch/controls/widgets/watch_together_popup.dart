@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/watchium/watchium_models.dart';
+import 'package:anymex/controllers/watchium/watchium_relay.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
@@ -546,7 +547,7 @@ class _WatchTogetherPopupContentState
       final anilistData = widget.controller.anilistData;
       final episodeTracks = widget.controller.episodeTracks;
 
-      final servers = episodeTracks.asMap().entries.map((entry) {
+      final rawServers = episodeTracks.asMap().entries.map((entry) {
         final video = entry.value;
         return WatchiumAnimeServer(
           serverId: entry.key.toString(),
@@ -567,6 +568,12 @@ class _WatchTogetherPopupContentState
         );
       }).toList();
 
+      // Device-local stream URLs (127.0.0.1 proxies) can't be opened by
+      // joiners: route them through the backend relay. No-op for public URLs.
+      final relay = Get.find<WatchiumRelay>();
+      await relay.startIfNeeded(rawServers);
+      final servers = relay.rewriteServers(rawServers);
+
       final code = await watchium.createRoom(
         animeTitle: anilistData.title,
         episodeNumber: int.tryParse(episode.number.toString()) ?? 1,
@@ -578,6 +585,8 @@ class _WatchTogetherPopupContentState
         maxMembers: _maxMembers.toInt(),
         password: _password.isEmpty ? null : _password,
       );
+
+      if (code == null) relay.stop(); // don't leave an orphan relay room
 
       if (code != null) {
         Logger.i('Room created: $code', 'WATCHIUM_UI');
@@ -593,6 +602,7 @@ class _WatchTogetherPopupContentState
       }
     } catch (e) {
       Logger.e('Room creation exception', error: e, loggerName: 'WATCHIUM_UI');
+      Get.find<WatchiumRelay>().stop();
       if (mounted) setState(() => _error = e.toString());
     } finally {
       if (mounted) setState(() => _isCreating = false);
