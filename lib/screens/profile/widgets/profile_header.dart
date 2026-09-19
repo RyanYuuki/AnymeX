@@ -54,6 +54,14 @@ Widget _buildBottomSheetOption(
   );
 }
 
+/// True when the backend kill-switch hides avatar decorations.
+/// Non-reactive on purpose: the flag is refreshed on every comments /
+/// leaderboard fetch, so it is current whenever these screens open.
+bool _decorationsDisabled() {
+  if (!Get.isRegistered<CommentumService>()) return false;
+  return !Get.find<CommentumService>().decorationsEnabled.value;
+}
+
 class DesktopProfileHeader extends StatelessWidget {
   final Profile user;
   final Animation<Alignment> bannerAnim;
@@ -70,11 +78,16 @@ class DesktopProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final commentum = Get.isRegistered<CommentumService>() ? Get.find<CommentumService>() : null;
+    final commentum = Get.isRegistered<CommentumService>()
+        ? Get.find<CommentumService>()
+        : null;
     final equippedBanner = commentum?.currentUserBanner.value;
     final equippedDeco = commentum?.currentUserDecoration.value;
-    final effectiveCover = (equippedBanner != null && equippedBanner.isNotEmpty) ? equippedBanner : user.cover;
-    final hasBanner = effectiveCover != null && effectiveCover.trim().isNotEmpty;
+    final effectiveCover = (equippedBanner != null && equippedBanner.isNotEmpty)
+        ? equippedBanner
+        : user.cover;
+    final hasBanner =
+        effectiveCover != null && effectiveCover.trim().isNotEmpty;
     final imageUrl = hasBanner ? effectiveCover : '';
     final name = user.name ?? 'Guest';
 
@@ -294,16 +307,15 @@ class DesktopProfileHeader extends StatelessWidget {
                                           final days = remaining.inDays;
                                           final hours =
                                               remaining.inHours.remainder(24);
-                                          final minutes = remaining.inMinutes
-                                              .remainder(60);
+                                          final minutes =
+                                              remaining.inMinutes.remainder(60);
                                           final countdownText = days > 0
                                               ? 'Reconnect in ${days}d ${hours}h ${minutes}m'
                                               : hours > 0
                                                   ? 'Reconnect in ${hours}h ${minutes}m'
                                                   : 'Reconnect in ${minutes}m';
                                           return Container(
-                                            padding:
-                                                const EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                               horizontal: 10,
                                               vertical: 4,
                                             ),
@@ -327,8 +339,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                                   countdownText,
                                                   style: const TextStyle(
                                                     fontSize: 10,
-                                                    fontWeight:
-                                                        FontWeight.w600,
+                                                    fontWeight: FontWeight.w600,
                                                     color: Colors.white,
                                                   ),
                                                 ),
@@ -396,11 +407,14 @@ class DesktopProfileHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 15.0),
                         child: Row(
                           children: [
-                            HoverActionButton(
-                              icon: Icons.palette_outlined,
-                              onTap: () => DecorationClosetSheet.show(context),
-                            ),
-                            const SizedBox(width: 10),
+                            if (!_decorationsDisabled(context)) ...[
+                              HoverActionButton(
+                                icon: Icons.palette_outlined,
+                                onTap: () =>
+                                    DecorationClosetSheet.show(context),
+                              ),
+                              const SizedBox(width: 10),
+                            ],
                             HoverActionButton(
                               icon: Icons.emoji_events_outlined,
                               onTap: () => LeaderboardSheet.show(context),
@@ -516,7 +530,8 @@ class DesktopProfileHeader extends StatelessWidget {
                                             label: 'AniList Settings',
                                             onTap: () {
                                               Navigator.pop(ctx);
-                                              navigate(() => const SettingsAnilistApi());
+                                              navigate(() =>
+                                                  const SettingsAnilistApi());
                                             },
                                           ),
                                           _buildBottomSheetOption(
@@ -525,7 +540,8 @@ class DesktopProfileHeader extends StatelessWidget {
                                             label: 'Check Compatibility',
                                             onTap: () {
                                               Navigator.pop(ctx);
-                                              navigate(() => const CompatibilityInputPage());
+                                              navigate(() =>
+                                                  const CompatibilityInputPage());
                                             },
                                           ),
                                           _buildBottomSheetOption(
@@ -577,10 +593,16 @@ class MobileProfileHeaderSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final commentum = Get.isRegistered<CommentumService>() ? Get.find<CommentumService>() : null;
+    final commentum = Get.isRegistered<CommentumService>()
+        ? Get.find<CommentumService>()
+        : null;
     final equippedBanner = commentum?.currentUserBanner.value;
-    final effectiveBanner = (equippedBanner != null && equippedBanner.isNotEmpty) ? equippedBanner : bannerUrl;
-    final hasBanner = effectiveBanner != null && effectiveBanner.trim().isNotEmpty;
+    final effectiveBanner =
+        (equippedBanner != null && equippedBanner.isNotEmpty)
+            ? equippedBanner
+            : bannerUrl;
+    final hasBanner =
+        effectiveBanner != null && effectiveBanner.trim().isNotEmpty;
     final imageUrl = hasBanner ? effectiveBanner : avatarUrl;
     final equippedDeco = commentum?.currentUserDecoration.value;
     final name = user.name ?? 'Guest';
@@ -635,18 +657,19 @@ class MobileProfileHeaderSliver extends StatelessWidget {
         ),
       ),
       actions: [
-        Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: context.theme.colorScheme.surface.withOpacity(0.5),
-            shape: BoxShape.circle,
+        if (!_decorationsDisabled())
+          Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surface.withOpacity(0.5),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.palette_outlined),
+              tooltip: 'Decoration Closet',
+              onPressed: () => DecorationClosetSheet.show(context),
+            ),
           ),
-          child: IconButton(
-            icon: const Icon(Icons.palette_outlined),
-            tooltip: 'Decoration Closet',
-            onPressed: () => DecorationClosetSheet.show(context),
-          ),
-        ),
         Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -703,15 +726,16 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        _buildBottomSheetOption(
-                          ctx,
-                          icon: Icons.checkroom_rounded,
-                          label: 'Decoration Closet',
-                          onTap: () {
-                            Navigator.pop(ctx);
-                            DecorationClosetSheet.show(context);
-                          },
-                        ),
+                        if (!_decorationsDisabled())
+                          _buildBottomSheetOption(
+                            ctx,
+                            icon: Icons.checkroom_rounded,
+                            label: 'Decoration Closet',
+                            onTap: () {
+                              Navigator.pop(ctx);
+                              DecorationClosetSheet.show(context);
+                            },
+                          ),
                         _buildBottomSheetOption(
                           ctx,
                           icon: Icons.north_east_rounded,
@@ -1016,8 +1040,8 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                 ),
                               if (commentum != null)
                                 Obx(() {
-                                  final linked = commentum
-                                      .currentUserLinkedAccounts.value;
+                                  final linked =
+                                      commentum.currentUserLinkedAccounts.value;
                                   if (linked.isEmpty) {
                                     return const SizedBox.shrink();
                                   }

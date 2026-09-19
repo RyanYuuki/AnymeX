@@ -56,6 +56,7 @@ class CommentumService extends GetxController {
 
   final RxString currentUserRole = 'user'.obs;
   final RxInt unreadNotificationCount = 0.obs;
+  final RxBool decorationsEnabled = true.obs;
   final RxString currentUserDecoration = ''.obs;
   final RxString currentUserBanner = ''.obs;
   final RxString currentUserBannerTheme = ''.obs;
@@ -150,6 +151,12 @@ class CommentumService extends GetxController {
         final data = json.decode(response.body);
         final commentsList = data['comments'] as List<dynamic>? ?? [];
         final pagination = data['pagination'] as Map<String, dynamic>? ?? {};
+
+        // Global decorations kill-switch (backend may omit the key).
+        if (data is Map && data.containsKey('decorations_enabled')) {
+          final v = data['decorations_enabled'];
+          decorationsEnabled.value = v != false && v != 'false';
+        }
 
         final comments = commentsList
             .map((commentData) => _mapCommentumToAnymeXComment(commentData))
@@ -1147,6 +1154,10 @@ class CommentumService extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        if (data is Map && data.containsKey('decorations_enabled')) {
+          final v = data['decorations_enabled'];
+          decorationsEnabled.value = v != false && v != 'false';
+        }
         final entries =
             (data['leaderboard'] as List? ?? []).asMap().entries.map((entry) {
           return LeaderboardEntry.fromMap(

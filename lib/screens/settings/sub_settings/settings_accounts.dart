@@ -139,58 +139,63 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
               thickness: 0.5,
               color: colors.outlineVariant.withOpacity(0.2),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () => DecorationClosetSheet.show(context),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.checkroom_rounded,
-                              size: 18, color: colors.primary),
-                          const SizedBox(width: 8),
-                          AnymeXText(
-                            'Open Closet',
-                            variant: TextVariant.bold,
-                            size: 13,
-                            color: colors.primary,
+            Obx(
+              () => Row(
+                children: [
+                  if (commentum == null ||
+                      commentum.decorationsEnabled.value) ...[
+                    Expanded(
+                      child: InkWell(
+                        onTap: () => DecorationClosetSheet.show(context),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.checkroom_rounded,
+                                  size: 18, color: colors.primary),
+                              const SizedBox(width: 8),
+                              AnymeXText(
+                                'Open Closet',
+                                variant: TextVariant.bold,
+                                size: 13,
+                                color: colors.primary,
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 1,
+                      height: 24,
+                      color: colors.outlineVariant.withOpacity(0.2),
+                    ),
+                  ],
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => LeaderboardSheet.show(context),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.emoji_events_rounded,
+                                size: 18, color: Color(0xFFFFD700)),
+                            const SizedBox(width: 8),
+                            AnymeXText(
+                              'Leaderboard',
+                              variant: TextVariant.bold,
+                              size: 13,
+                              color: colors.onSurface,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  width: 1,
-                  height: 24,
-                  color: colors.outlineVariant.withOpacity(0.2),
-                ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () => LeaderboardSheet.show(context),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.emoji_events_rounded,
-                              size: 18, color: Color(0xFFFFD700)),
-                          const SizedBox(width: 8),
-                          AnymeXText(
-                            'Leaderboard',
-                            variant: TextVariant.bold,
-                            size: 13,
-                            color: colors.onSurface,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -257,7 +262,6 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
   }
 }
 
-
 class TrackingServiceCard extends StatelessWidget {
   final String serviceIcon;
   final OnlineService service;
@@ -320,12 +324,14 @@ class TrackingServiceCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText(title,
+                          AnymeXText(
+                            title,
                             variant: TextVariant.semiBold,
                             size: 16,
                           ),
                           const SizedBox(height: 2),
-                          AnymeXText(isLogged
+                          AnymeXText(
+                            isLogged
                                 ? 'Connected as $username'
                                 : 'Not connected',
                             size: 12,
@@ -346,7 +352,8 @@ class TrackingServiceCard extends StatelessWidget {
                             : (colors.primary).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: AnymeXText(isLogged ? "Manage" : "Connect",
+                      child: AnymeXText(
+                        isLogged ? "Manage" : "Connect",
                         variant: TextVariant.bold,
                         size: 12,
                         color: isLogged ? colors.onSurface : (colors.primary),
