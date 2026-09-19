@@ -216,45 +216,50 @@ class UserCommentsSheet {
                         ),
                       const SizedBox(height: 16),
 
-                      // 4. Public stats grid (server data, never placeholders)
+                      // 4. Public stats grid (stats-tab highlight-card style)
                       if (!isLoading && points != null) ...[
                         GridView.count(
-                          crossAxisCount: 2,
+                          crossAxisCount: 3,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           mainAxisSpacing: 8,
                           crossAxisSpacing: 8,
-                          childAspectRatio: 2.6,
+                          childAspectRatio: 0.94,
                           children: [
                             _statTile(
                               context,
                               Icons.chat_bubble_outline_rounded,
                               '${points.stats.totalComments}',
-                              'Comments posted',
+                              'Comments',
+                              colorScheme.primary,
                             ),
                             _statTile(
                               context,
                               Icons.reply_rounded,
                               '${points.stats.totalReplies}',
                               'Replies',
+                              colorScheme.primary,
                             ),
                             _statTile(
                               context,
                               Icons.thumb_up_outlined,
                               '${points.stats.totalUpvotesReceived}',
-                              'Upvotes received',
+                              'Upvotes',
+                              Colors.green,
                             ),
                             _statTile(
                               context,
                               Icons.how_to_vote_outlined,
                               '${points.stats.totalVotesCast}',
                               'Votes cast',
+                              Colors.amber.shade700,
                             ),
                             _statTile(
                               context,
                               Icons.local_fire_department_outlined,
                               '${points.longestStreak}d',
-                              'Longest streak',
+                              'Best streak',
+                              Colors.orange,
                             ),
                             _memberSinceTile(context, profile),
                           ],
@@ -552,43 +557,37 @@ class UserCommentsSheet {
     );
   }
 
-  static Widget _statTile(
-      BuildContext context, IconData icon, String value, String label) {
+  static Widget _statTile(BuildContext context, IconData icon, String value,
+      String label, Color color) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(14),
+        color: colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.15),
+          color: colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
       ),
-      child: Row(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 20, color: colorScheme.primary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnymeXText(
-                  value,
-                  size: 15,
-                  variant: TextVariant.bold,
-                  color: colorScheme.onSurface,
-                  maxLines: 1,
-                ),
-                AnymeXText(
-                  label,
-                  size: 10.5,
-                  color: colorScheme.onSurfaceVariant,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          AnymeXText(
+            value,
+            size: 17,
+            variant: TextVariant.bold,
+            color: colorScheme.onSurface,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          AnymeXText(
+            label,
+            size: 11,
+            color: colorScheme.onSurfaceVariant,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -606,39 +605,32 @@ class UserCommentsSheet {
     }
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(14),
+        color: colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.15),
+          color: colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
       ),
-      child: Row(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.cake_outlined, size: 20, color: colorScheme.primary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnymeXText(
-                  value,
-                  size: 15,
-                  variant: TextVariant.bold,
-                  color: colorScheme.onSurface,
-                  maxLines: 1,
-                ),
-                AnymeXText(
-                  'Member since',
-                  size: 10.5,
-                  color: colorScheme.onSurfaceVariant,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+          Icon(Icons.cake_outlined, size: 24, color: colorScheme.tertiary),
+          const SizedBox(height: 8),
+          AnymeXText(
+            value,
+            size: 17,
+            variant: TextVariant.bold,
+            color: colorScheme.onSurface,
+            maxLines: 1,
+          ),
+          AnymeXText(
+            'Member since',
+            size: 11,
+            color: colorScheme.onSurfaceVariant,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
