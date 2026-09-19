@@ -115,6 +115,21 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
       final decoSize = size * decorationScale;
       // Original layout: box is decoSize so the frame always has room
       // and never gets clipped by headers/lists (first implementation).
+      Widget frame = CachedNetworkImage(
+        imageUrl: decorationUrl!.trim(),
+        fit: BoxFit.contain,
+        placeholder: (context, url) => const SizedBox.shrink(),
+        errorWidget: (context, url, error) => const SizedBox.shrink(),
+      );
+      // Rectangle avatars (profile headers): the frame PNG is square, so
+      // clip it to the avatar's rounding — otherwise its sharp corners
+      // stick out past the rounded avatar. Circle frames stay unclipped.
+      if (!isCircle) {
+        frame = ClipRRect(
+          borderRadius: borderRadius ?? BorderRadius.circular(12),
+          child: frame,
+        );
+      }
       content = SizedBox(
         width: decoSize,
         height: decoSize,
@@ -126,14 +141,7 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
             Positioned(
               width: decoSize,
               height: decoSize,
-              child: IgnorePointer(
-                child: CachedNetworkImage(
-                  imageUrl: decorationUrl!.trim(),
-                  fit: BoxFit.contain,
-                  placeholder: (context, url) => const SizedBox.shrink(),
-                  errorWidget: (context, url, error) => const SizedBox.shrink(),
-                ),
-              ),
+              child: IgnorePointer(child: frame),
             ),
           ],
         ),
