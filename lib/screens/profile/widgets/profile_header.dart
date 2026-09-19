@@ -407,7 +407,7 @@ class DesktopProfileHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 15.0),
                         child: Row(
                           children: [
-                            if (!_decorationsDisabled(context)) ...[
+                            if (!_decorationsDisabled()) ...[
                               HoverActionButton(
                                 icon: Icons.palette_outlined,
                                 onTap: () =>
