@@ -59,9 +59,10 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
   @override
   Widget build(BuildContext context) {
     final user = widget.user;
-    final effectiveBanner = (widget.customBanner != null && widget.customBanner!.trim().isNotEmpty)
-        ? widget.customBanner!
-        : (user.cover ?? '');
+    final effectiveBanner =
+        (widget.customBanner != null && widget.customBanner!.trim().isNotEmpty)
+            ? widget.customBanner!
+            : (user.cover ?? '');
     final imageUrl = effectiveBanner;
     final name = user.name ?? 'Guest';
 
@@ -121,7 +122,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                     Container(
                         color:
                             context.theme.colorScheme.surfaceContainerHighest),
-                  
+
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -161,7 +162,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
               ),
             ),
           ),
-         
+
           Positioned(
             bottom: 0,
             left: 0,
@@ -220,15 +221,18 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                         fontFamily: 'Linotte',
                                         fontWeight: FontWeight.w800,
                                         letterSpacing: -0.5,
-                                        color: context.theme.colorScheme.onSurface,
+                                        color:
+                                            context.theme.colorScheme.onSurface,
                                         shadows: [
                                           Shadow(
-                                            color: Colors.black.withOpacity(0.7),
+                                            color:
+                                                Colors.black.withOpacity(0.7),
                                             blurRadius: 12,
                                             offset: const Offset(0, 2),
                                           ),
                                           Shadow(
-                                            color: Colors.black.withOpacity(0.4),
+                                            color:
+                                                Colors.black.withOpacity(0.4),
                                             blurRadius: 24,
                                             offset: const Offset(0, 4),
                                           ),
@@ -237,7 +241,8 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                     ),
                                   ),
                                   if (widget.userPoints?.badges != null &&
-                                      widget.userPoints!.badges!.isNotEmpty) ...[
+                                      widget
+                                          .userPoints!.badges!.isNotEmpty) ...[
                                     const SizedBox(width: 8),
                                     DiscordBadgesRow(
                                       badges: widget.userPoints!.badges,
@@ -286,12 +291,14 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                       if (widget.userPoints != null) ...[
                                         const SizedBox(width: 10),
                                         GestureDetector(
-                                          onTap: () => LeaderboardSheet.show(context),
+                                          // Leaderboard entry hidden.
+                                          // onTap: () => LeaderboardSheet.show(context),
                                           child: Container(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 4),
                                             decoration: BoxDecoration(
-                                              color: Colors.black.withOpacity(0.4),
+                                              color:
+                                                  Colors.black.withOpacity(0.4),
                                               borderRadius:
                                                   BorderRadius.circular(20),
                                             ),
@@ -303,9 +310,9 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                     size: 12,
                                                     color: Color(0xFFFFD700)),
                                                 const SizedBox(width: 4),
-                                                 AnymeXText(
-                                                   '${widget.userPoints!.tier.toUpperCase()} • ${widget.userPoints!.displayPoints} pts',
-                                                   style: const TextStyle(
+                                                AnymeXText(
+                                                  '${widget.userPoints!.tier.toUpperCase()} • ${widget.userPoints!.displayPoints} pts',
+                                                  style: const TextStyle(
                                                     fontSize: 10,
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.white,
@@ -317,10 +324,12 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                         ),
                                       ],
                                       if (widget.linkedAccounts != null &&
-                                          widget.linkedAccounts!.isNotEmpty) ...[
+                                          widget
+                                              .linkedAccounts!.isNotEmpty) ...[
                                         const SizedBox(width: 10),
                                         LinkedAccountsBadges(
-                                          linkedAccounts: widget.linkedAccounts!,
+                                          linkedAccounts:
+                                              widget.linkedAccounts!,
                                           fontSize: 10,
                                         ),
                                       ],
@@ -370,11 +379,12 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                           children: [
                             HoverActionButton(
                               icon: Iconsax.heart5,
-                              onTap: () => navigate(() => CompatibilityInputPage(
-                                    prefillProfile: widget.user,
-                                    prefillUsername: name,
-                                    useLoggedInUser: true,
-                                  )),
+                              onTap: () =>
+                                  navigate(() => CompatibilityInputPage(
+                                        prefillProfile: widget.user,
+                                        prefillUsername: name,
+                                        useLoggedInUser: true,
+                                      )),
                             ),
                             const SizedBox(width: 10),
                             HoverActionButton(
@@ -383,11 +393,12 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                   'https://anilist.co/user/$name'),
                             ),
                             const SizedBox(width: 10),
-                            HoverActionButton(
-                              icon: Icons.emoji_events_outlined,
-                              onTap: () => LeaderboardSheet.show(context),
-                            ),
-                            const SizedBox(width: 10),
+                            // Leaderboard entry hidden.
+                            // HoverActionButton(
+                            //   icon: Icons.emoji_events_outlined,
+                            //   onTap: () => LeaderboardSheet.show(context),
+                            // ),
+                            // const SizedBox(width: 10),
                             HoverActionButton(
                               icon: Icons.more_horiz,
                               onTap: () {
@@ -485,22 +496,24 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                             label: 'Check Compatibility',
                                             onTap: () {
                                               Navigator.pop(ctx);
-                                              navigate(() => CompatibilityInputPage(
-                                                prefillProfile: widget.user,
-                                                prefillUsername: name,
-                                                useLoggedInUser: true,
-                                              ));
+                                              navigate(() =>
+                                                  CompatibilityInputPage(
+                                                    prefillProfile: widget.user,
+                                                    prefillUsername: name,
+                                                    useLoggedInUser: true,
+                                                  ));
                                             },
                                           ),
-                                          buildProfileSheetOption(
-                                            ctx,
-                                            icon: Icons.emoji_events_outlined,
-                                            label: 'Community Leaderboard',
-                                            onTap: () {
-                                              Navigator.pop(ctx);
-                                              LeaderboardSheet.show(context);
-                                            },
-                                          ),
+                                          // Leaderboard entry hidden.
+                                          // buildProfileSheetOption(
+                                          //   ctx,
+                                          //   icon: Icons.emoji_events_outlined,
+                                          //   label: 'Community Leaderboard',
+                                          //   onTap: () {
+                                          //     Navigator.pop(ctx);
+                                          //     LeaderboardSheet.show(context);
+                                          //   },
+                                          // ),
                                         ],
                                       ),
                                     ),
@@ -620,7 +633,11 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                   widget.isFollowingUser ==
                                                       true)
                                               ? 'Unfollow'
-                                              : getFollowLabel(isFollowing: widget.isFollowingUser, isFollower: widget.isFollowerOfUser),
+                                              : getFollowLabel(
+                                                  isFollowing:
+                                                      widget.isFollowingUser,
+                                                  isFollower:
+                                                      widget.isFollowerOfUser),
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontFamily: 'Linotte',

@@ -237,13 +237,14 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
           customPadding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
           children: [
             SizedBox(height: AnymeXHeaderScope.of(ctx)),
-            AnymeXSectionBuilder(
-              title: 'Profile & Closet',
-              children: [
-                _buildProfileCustomizationCard(context),
-              ],
-            ),
-            const SizedBox(height: 16),
+            // Profile & Closet section hidden (decorations kill-switch).
+            // AnymeXSectionBuilder(
+            //   title: 'Profile & Closet',
+            //   children: [
+            //     _buildProfileCustomizationCard(context),
+            //   ],
+            // ),
+            // const SizedBox(height: 16),
             AnymeXSectionBuilder(
               title: 'Tracking Services',
               children: services
