@@ -485,11 +485,12 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
       ],
     );
 
-    // Minimal micro-indent and stylish primary branch line for sub-replies
+    // Slim indent with a branch line for sub-replies (kept minimal so
+    // deep threads don't drift right — the breadcrumb already shows target)
     if (isNestedSubReply) {
       return AnymeXContainer(
-        margin: const EdgeInsets.only(left: 10, top: 12),
-        padding: const EdgeInsets.only(left: 12),
+        margin: const EdgeInsets.only(left: 2, top: 10),
+        padding: const EdgeInsets.only(left: 8),
         border: Border(
           left: BorderSide(
             color: colorScheme.primary.withValues(alpha: 0.45),

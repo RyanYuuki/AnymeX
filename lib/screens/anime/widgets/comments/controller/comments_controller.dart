@@ -202,6 +202,18 @@ class CommentSectionController extends GetxController
       final organized = commentsDB.organizeComments(_rawCommentsPool,
           sort: currentSort.value);
       comments.assignAll(organized);
+
+      // Pinned comments render first but their replies may sit on later
+      // pages (backend paginates flat). Without this the "N replies" pill
+      // only appears after the user scrolls (which triggers loadMore).
+      // Prefetch one extra page silently when a visible pinned thread
+      // has no replies yet.
+      if (hasMore.value &&
+          organized.any((c) =>
+              c.pinned == true &&
+              (c.replies == null || c.replies!.isEmpty))) {
+        loadMoreComments();
+      }
     } catch (e) {
       print('Error loading comments: $e');
       snackBar('Failed to load comments. Please try again.');
