@@ -11,6 +11,7 @@ class UserPoints {
   final int currentStreak;
   final int longestStreak;
   final String? role;
+  final int? rank;
   final PointsBreakdown breakdown;
   final PointsStats stats;
   final List<DiscordBadge>? badges;
@@ -26,6 +27,7 @@ class UserPoints {
     required this.currentStreak,
     required this.longestStreak,
     this.role,
+    this.rank,
     required this.breakdown,
     required this.stats,
     this.badges,
@@ -37,7 +39,8 @@ class UserPoints {
     final breakdownData = m['breakdown'] as Map? ?? {};
     final statsData = m['stats'] as Map? ?? {};
     final role = m['role']?.toString();
-    final isInfinite = m['is_infinite'] == true || role == 'owner' || role == 'app_owner';
+    final isInfinite =
+        m['is_infinite'] == true || role == 'owner' || role == 'app_owner';
     final tier = isInfinite ? 'Elite' : (m['tier']?.toString() ?? 'Newcomer');
 
     return UserPoints(
@@ -51,6 +54,7 @@ class UserPoints {
       currentStreak: _parseInt(m['current_streak'] ?? m['streak']),
       longestStreak: _parseInt(m['longest_streak']),
       role: role,
+      rank: m['rank'] == null ? null : _parseInt(m['rank']),
       breakdown: PointsBreakdown.fromMap(breakdownData),
       stats: PointsStats.fromMap(statsData),
       badges: m['badges'] != null
@@ -67,7 +71,6 @@ class UserPoints {
     return int.tryParse(value.toString()) ?? 0;
   }
 }
-
 
 class PointsBreakdown {
   final int commentsPoints;
@@ -100,14 +103,20 @@ class PointsBreakdown {
     return PointsBreakdown(
       commentsPoints: UserPoints._parseInt(m['comments'] ?? m['from_comments']),
       repliesPoints: UserPoints._parseInt(m['replies'] ?? m['from_replies']),
-      upvotesReceivedPoints: UserPoints._parseInt(m['upvotes_from_others'] ?? m['from_upvotes_received']),
-      votesCastPoints: UserPoints._parseInt(m['votes_cast'] ?? m['from_votes_cast']),
+      upvotesReceivedPoints: UserPoints._parseInt(
+          m['upvotes_from_others'] ?? m['from_upvotes_received']),
+      votesCastPoints:
+          UserPoints._parseInt(m['votes_cast'] ?? m['from_votes_cast']),
       pinnedPoints: UserPoints._parseInt(m['pinned'] ?? m['from_pinned']),
-      downvotesReceivedPoints: UserPoints._parseInt(m['downvotes_from_others'] ?? m['from_downvotes_received']),
-      warningsPoints: UserPoints._parseInt(m['warnings'] ?? m['penalty_warnings']),
-      deletedPoints: UserPoints._parseInt(m['mod_deletions'] ?? m['penalty_mod_deletes']),
+      downvotesReceivedPoints: UserPoints._parseInt(
+          m['downvotes_from_others'] ?? m['from_downvotes_received']),
+      warningsPoints:
+          UserPoints._parseInt(m['warnings'] ?? m['penalty_warnings']),
+      deletedPoints:
+          UserPoints._parseInt(m['mod_deletions'] ?? m['penalty_mod_deletes']),
       bannedPoints: UserPoints._parseInt(m['banned'] ?? m['penalty_ban']),
-      streakBonus: UserPoints._parseInt(m['streak_bonus'] ?? m['from_streak_bonus']),
+      streakBonus:
+          UserPoints._parseInt(m['streak_bonus'] ?? m['from_streak_bonus']),
       roleBonus: UserPoints._parseInt(m['role_bonus'] ?? m['from_role_bonus']),
     );
   }
@@ -145,12 +154,15 @@ class PointsStats {
 
   factory PointsStats.fromMap(Map m) {
     return PointsStats(
-      totalComments: UserPoints._parseInt(m['total_comments'] ?? m['comment_count']),
+      totalComments:
+          UserPoints._parseInt(m['total_comments'] ?? m['comment_count']),
       totalReplies: UserPoints._parseInt(m['total_replies'] ?? m['replies']),
-      totalUpvotesReceived: UserPoints._parseInt(m['total_upvotes_received'] ?? m['upvotes_from_others']),
-      totalDownvotesReceived:
-          UserPoints._parseInt(m['total_downvotes_received'] ?? m['downvotes_from_others']),
-      totalVotesCast: UserPoints._parseInt(m['total_votes_cast'] ?? m['vote_count']),
+      totalUpvotesReceived: UserPoints._parseInt(
+          m['total_upvotes_received'] ?? m['upvotes_from_others']),
+      totalDownvotesReceived: UserPoints._parseInt(
+          m['total_downvotes_received'] ?? m['downvotes_from_others']),
+      totalVotesCast:
+          UserPoints._parseInt(m['total_votes_cast'] ?? m['vote_count']),
     );
   }
 }

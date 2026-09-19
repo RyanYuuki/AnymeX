@@ -184,6 +184,13 @@ class UserCommentsSheet {
                               '${points.displayPoints} pts',
                               colorScheme.primary,
                             ),
+                            if (points.rank != null && points.rank! > 0)
+                              _chip(
+                                context,
+                                '#${points.rank}',
+                                colorScheme.tertiary,
+                                icon: Icons.leaderboard_outlined,
+                              ),
                             if (points.role != null && points.role != 'user')
                               _chip(
                                 context,
