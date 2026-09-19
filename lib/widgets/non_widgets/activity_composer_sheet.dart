@@ -161,17 +161,20 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
 
     if (mounted) {
       setState(() => _isSubmitting = false);
-      if (success) {
-        if (widget.isModal) {
-          Navigator.pop(context, true);
-        } else {
-          _textController.clear();
-          _focusNode.unfocus();
-          setState(() {
-            _isExpanded = false;
-          });
+        if (success) {
+          if (widget.isModal) {
+            Navigator.pop(context, true);
+          } else {
+            _textController.clear();
+            _focusNode.unfocus();
+            // Leave preview mode too — otherwise the composer reopens on an
+            // empty preview with no visible way back to the input.
+            setState(() {
+              _isExpanded = false;
+              _previewMode = false;
+            });
+          }
         }
-      }
     }
   }
 

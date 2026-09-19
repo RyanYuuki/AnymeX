@@ -216,11 +216,21 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                             shape: BoxShape.circle,
                           ),
                           alignment: Alignment.center,
-                          child: AnymeXText(
-                            '#${_currentUserEntry!.rank}',
-                            variant: TextVariant.bold,
-                            size: 12,
-                            color: colorScheme.primary,
+                          child: Builder(
+                            builder: (context) {
+                              final myRank = '#${_currentUserEntry!.rank}';
+                              return AnymeXText(
+                                myRank,
+                                variant: TextVariant.bold,
+                                size: myRank.length > 5
+                                    ? 9.0
+                                    : myRank.length > 4
+                                        ? 10.0
+                                        : 12,
+                                color: colorScheme.primary,
+                                maxLines: 1,
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -356,8 +366,14 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                     : AnymeXText(
                         rankBadge,
                         variant: TextVariant.bold,
-                        size: 12,
+                        // 4-digit ranks (#4048) overflow a 36px circle at 12
+                        size: rankBadge.length > 5
+                            ? 9.0
+                            : rankBadge.length > 4
+                                ? 10.0
+                                : 12,
                         color: rankColor,
+                        maxLines: 1,
                       ),
               ),
               const SizedBox(width: 12),
