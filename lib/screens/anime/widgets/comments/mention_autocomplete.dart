@@ -314,6 +314,9 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                                       ? colorScheme.primary
                                       : colorScheme.onSurface,
                                   maxLines: 1,
+                                  style: const TextStyle(
+                                    decoration: TextDecoration.none,
+                                  ),
                                 ),
                               ),
                             ],

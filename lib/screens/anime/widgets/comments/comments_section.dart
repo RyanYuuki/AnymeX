@@ -1536,17 +1536,6 @@ class _CommentSectionState extends State<CommentSection> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (reply.badges != null &&
-                            reply.badges!.isNotEmpty) ...[
-                          DiscordBadgesRow(
-                            badges: reply.badges,
-                            size: 13.0,
-                          ),
-                          const SizedBox(width: 4),
-                        ] else if (reply.userRole != null &&
-                            reply.userRole != 'user') ...[
-                          _buildRoleBadge(context, reply.userRole!),
-                        ],
                         Flexible(
                           child: GestureDetector(
                             onTap: () => _showUserProfileSheet(context, reply),
@@ -1563,6 +1552,17 @@ class _CommentSectionState extends State<CommentSection> {
                             ),
                           ),
                         ),
+                        if (reply.badges != null &&
+                            reply.badges!.isNotEmpty) ...[
+                          const SizedBox(width: 4),
+                          DiscordBadgesRow(
+                            badges: reply.badges,
+                            size: 13.0,
+                          ),
+                        ] else if (reply.userRole != null &&
+                            reply.userRole != 'user') ...[
+                          _buildRoleBadge(context, reply.userRole!),
+                        ],
                         Icon(Icons.arrow_right,
                             size: 18, color: colorScheme.primary),
                         const SizedBox(width: 2),
@@ -1880,17 +1880,6 @@ class _CommentSectionState extends State<CommentSection> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (comment.badges != null &&
-                            comment.badges!.isNotEmpty) ...[
-                          DiscordBadgesRow(
-                            badges: comment.badges,
-                            size: depth == 0 ? 15.0 : 13.0,
-                          ),
-                          const SizedBox(width: 4),
-                        ] else if (comment.userRole != null &&
-                            comment.userRole != 'user') ...[
-                          _buildRoleBadge(context, comment.userRole!),
-                        ],
                         Flexible(
                           child: GestureDetector(
                             onTap: () =>
@@ -1908,6 +1897,17 @@ class _CommentSectionState extends State<CommentSection> {
                             ),
                           ),
                         ),
+                        if (comment.badges != null &&
+                            comment.badges!.isNotEmpty) ...[
+                          const SizedBox(width: 4),
+                          DiscordBadgesRow(
+                            badges: comment.badges,
+                            size: depth == 0 ? 15.0 : 13.0,
+                          ),
+                        ] else if (comment.userRole != null &&
+                            comment.userRole != 'user') ...[
+                          _buildRoleBadge(context, comment.userRole!),
+                        ],
                         if (comment.edited == true) ...[
                           const SizedBox(width: 4),
                           AnymeXText(

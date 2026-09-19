@@ -258,20 +258,6 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (comment.badges != null && comment.badges!.isNotEmpty) ...[
-                          DiscordBadgesRow(
-                            badges: comment.badges,
-                            size: 13.0,
-                            isOp: !isRoot && (comment.userId == widget.rootComment.userId),
-                          ),
-                          const SizedBox(width: 4),
-                        ] else ...[
-                          if (hasRole) _buildRoleBadge(context, comment.userRole!),
-                          if (!isRoot && (comment.userId == widget.rootComment.userId)) ...[
-                            const DiscordBadgeWidget(badge: DiscordBadge.opBadge, size: 13.0),
-                            const SizedBox(width: 4),
-                          ],
-                        ],
                         Flexible(
                           child: GestureDetector(
                             onTap: () => UserCommentsSheet.show(context, comment: comment, controller: controller),
@@ -287,6 +273,20 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                             ),
                           ),
                         ),
+                        if (comment.badges != null && comment.badges!.isNotEmpty) ...[
+                          const SizedBox(width: 4),
+                          DiscordBadgesRow(
+                            badges: comment.badges,
+                            size: 13.0,
+                            isOp: !isRoot && (comment.userId == widget.rootComment.userId),
+                          ),
+                        ] else ...[
+                          if (hasRole) _buildRoleBadge(context, comment.userRole!),
+                          if (!isRoot && (comment.userId == widget.rootComment.userId)) ...[
+                            const SizedBox(width: 4),
+                            const DiscordBadgeWidget(badge: DiscordBadge.opBadge, size: 13.0),
+                          ],
+                        ],
                         if (showParentBreadcrumb) ...[
                           Icon(Icons.arrow_right,
                               size: 18, color: colorScheme.primary),
