@@ -1,8 +1,10 @@
+import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class AnymeXDecoratedAvatar extends StatelessWidget {
   final String? avatarUrl;
@@ -145,5 +147,93 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
     }
 
     return content;
+  }
+}
+
+/// Avatar that resolves its Commentum frame by [userId].
+///
+/// Reads the decoration cache synchronously (zero cost when a list screen
+/// prefetched via [CommentumService.prefetchCustomizations]); on a cache
+/// miss it fetches that single user once and rebuilds. Falls back to a
+/// plain avatar when logged out or the id is missing.
+class CommentumAvatar extends StatefulWidget {
+  final String? userId;
+  final String? avatarUrl;
+  final double size;
+  final double decorationScale;
+  final VoidCallback? onTap;
+  final String? clientType;
+
+  const CommentumAvatar({
+    super.key,
+    this.userId,
+    this.avatarUrl,
+    this.size = 40,
+    this.decorationScale = 1.2,
+    this.onTap,
+    this.clientType,
+  });
+
+  @override
+  State<CommentumAvatar> createState() => _CommentumAvatarState();
+}
+
+class _CommentumAvatarState extends State<CommentumAvatar> {
+  String? _decoration;
+  bool _fetching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _decoration = _cached();
+    if (_decoration == null) _fetchOnce();
+  }
+
+  @override
+  void didUpdateWidget(covariant CommentumAvatar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.userId != widget.userId ||
+        oldWidget.clientType != widget.clientType) {
+      _decoration = _cached();
+      _fetching = false;
+      if (_decoration == null) _fetchOnce();
+    }
+  }
+
+  String? _cached() {
+    final id = widget.userId?.trim() ?? '';
+    if (id.isEmpty || !Get.isRegistered<CommentumService>()) return null;
+    return Get.find<CommentumService>().getCachedDecoration(
+      id,
+      clientType: widget.clientType ?? 'anilist',
+    );
+  }
+
+  Future<void> _fetchOnce() async {
+    if (_fetching) return;
+    final id = widget.userId?.trim() ?? '';
+    if (id.isEmpty || !Get.isRegistered<CommentumService>()) return;
+    _fetching = true;
+    try {
+      final profile = await Get.find<CommentumService>().fetchUserProfile(id);
+      if (!mounted) return;
+      setState(() {
+        final raw = profile?['avatar_decoration']?.toString() ?? '';
+        _decoration = (raw.isEmpty || raw == 'null') ? null : raw;
+      });
+    } catch (_) {
+      // Stay decoration-less rather than breaking the row.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnymeXDecoratedAvatar(
+      avatarUrl: widget.avatarUrl,
+      decorationUrl: _decoration,
+      size: widget.size,
+      decorationScale: widget.decorationScale,
+      onTap: widget.onTap,
+    );
   }
 }

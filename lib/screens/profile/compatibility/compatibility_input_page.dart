@@ -9,6 +9,7 @@ import 'package:anymex/screens/profile/compatibility/compatibility_result_page.d
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
@@ -67,12 +68,16 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
     if (widget.prefillProfile != null) {
       _user2Profile = widget.prefillProfile;
       _user2Avatar = widget.prefillProfile!.avatar;
-      _username2Controller.text = widget.prefillProfile!.name ?? widget.prefillUsername ?? '';
-    } else if (widget.prefillUsername != null && widget.prefillUsername!.isNotEmpty) {
+      _username2Controller.text =
+          widget.prefillProfile!.name ?? widget.prefillUsername ?? '';
+    } else if (widget.prefillUsername != null &&
+        widget.prefillUsername!.isNotEmpty) {
       final name = widget.prefillUsername!;
       _username2Controller.text = name;
       Get.find<AnilistAuth>().fetchUserDetails(name).then((p) {
-        if (mounted && _username2Controller.text.trim().toLowerCase() == name.toLowerCase()) {
+        if (mounted &&
+            _username2Controller.text.trim().toLowerCase() ==
+                name.toLowerCase()) {
           setState(() {
             _user2Profile = p;
             if (p?.avatar != null) _user2Avatar = p!.avatar;
@@ -95,10 +100,12 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
         setState(() {
           _followingList = following;
         });
-      
+
         if (_user2Avatar == null && _username2Controller.text.isNotEmpty) {
           final match = following.firstWhereOrNull(
-            (u) => u.name.toLowerCase() == _username2Controller.text.trim().toLowerCase(),
+            (u) =>
+                u.name.toLowerCase() ==
+                _username2Controller.text.trim().toLowerCase(),
           );
           if (match != null && match.avatarUrl != null) {
             setState(() => _user2Avatar = match.avatarUrl);
@@ -129,7 +136,9 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
     final match = _followingList.firstWhereOrNull(
       (u) => u.name.toLowerCase() == name.toLowerCase(),
     );
-    if (match != null && match.avatarUrl != null && match.avatarUrl!.isNotEmpty) {
+    if (match != null &&
+        match.avatarUrl != null &&
+        match.avatarUrl!.isNotEmpty) {
       setState(() {
         if (isUser1) {
           _user1Avatar = match.avatarUrl;
@@ -138,7 +147,12 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
         }
       });
       Get.find<AnilistAuth>().fetchUserDetails(match.name).then((p) {
-        if (mounted && (isUser1 ? _username1Controller : _username2Controller).text.trim().toLowerCase() == match.name.toLowerCase()) {
+        if (mounted &&
+            (isUser1 ? _username1Controller : _username2Controller)
+                    .text
+                    .trim()
+                    .toLowerCase() ==
+                match.name.toLowerCase()) {
           setState(() {
             if (isUser1) {
               _user1Profile = p;
@@ -155,7 +169,8 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
       final profile = await auth.fetchUserDetails(name);
       final avatar = profile?.avatar ?? await auth.fetchUserAvatar(name);
       final currentCtrl = isUser1 ? _username1Controller : _username2Controller;
-      if (mounted && currentCtrl.text.trim().toLowerCase() == name.toLowerCase()) {
+      if (mounted &&
+          currentCtrl.text.trim().toLowerCase() == name.toLowerCase()) {
         setState(() {
           if (isUser1) {
             _user1Avatar = avatar;
@@ -199,14 +214,19 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
 
     final isUsingLoggedIn = !_compareTwoPeople && widget.useLoggedInUser;
     if (isUsingLoggedIn) {
-      final loggedInName = Get.find<AnilistAuth>().profileData.value.name?.toLowerCase().trim();
-      if (loggedInName != null && loggedInName.isNotEmpty && name2.toLowerCase() == loggedInName) {
-        snackBar('Cannot compare your profile with yourself! Please enter a different username.');
+      final loggedInName =
+          Get.find<AnilistAuth>().profileData.value.name?.toLowerCase().trim();
+      if (loggedInName != null &&
+          loggedInName.isNotEmpty &&
+          name2.toLowerCase() == loggedInName) {
+        snackBar(
+            'Cannot compare your profile with yourself! Please enter a different username.');
         return;
       }
     } else {
       if (name1.toLowerCase() == name2.toLowerCase()) {
-        snackBar('Cannot compare a user with themselves! Please enter two different usernames.');
+        snackBar(
+            'Cannot compare a user with themselves! Please enter two different usernames.');
         return;
       }
     }
@@ -216,10 +236,13 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
     await _controller.runMatch(
       userName1: _compareTwoPeople ? name1 : null,
       userName2: name2,
-      profile1: (_compareTwoPeople && _user1Profile != null && _user1Profile!.name?.toLowerCase().trim() == name1.toLowerCase())
+      profile1: (_compareTwoPeople &&
+              _user1Profile != null &&
+              _user1Profile!.name?.toLowerCase().trim() == name1.toLowerCase())
           ? _user1Profile
           : null,
-      profile2: (_user2Profile != null && _user2Profile!.name?.toLowerCase().trim() == name2.toLowerCase())
+      profile2: (_user2Profile != null &&
+              _user2Profile!.name?.toLowerCase().trim() == name2.toLowerCase())
           ? _user2Profile
           : null,
       useLoggedInUser: isUsingLoggedIn,
@@ -382,7 +405,8 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: colorScheme.primary.opaque(isMatched ? 0.35 : 0.15),
+                        color:
+                            colorScheme.primary.opaque(isMatched ? 0.35 : 0.15),
                         blurRadius: isMatched ? 16 : 8,
                         spreadRadius: isMatched ? 2 : 0,
                       ),
@@ -398,7 +422,8 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
                 ),
                 const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerHighest.opaque(0.8),
                     borderRadius: BorderRadius.circular(8),
@@ -426,9 +451,8 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
                 ? colorScheme.secondary.opaque(0.8)
                 : colorScheme.outline.opaque(0.25),
             shadowColor: colorScheme.secondary.opaque(0.25),
-            iconColor: hasUser2
-                ? colorScheme.secondary
-                : colorScheme.onSurfaceVariant,
+            iconColor:
+                hasUser2 ? colorScheme.secondary : colorScheme.onSurfaceVariant,
             avatarSize: avatarSize,
             isLargeScreen: isLargeScreen,
           ),
@@ -459,7 +483,9 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             textInputAction: textInputAction,
             onChanged: onChanged,
-            onFieldSubmitted: textInputAction == TextInputAction.done ? (_) => _submit() : null,
+            onFieldSubmitted: textInputAction == TextInputAction.done
+                ? (_) => _submit()
+                : null,
             decoration: InputDecoration(
               hintText: hintText,
               prefixIcon: Icon(prefixIcon, color: c.primary, size: 20),
@@ -474,7 +500,8 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
                   : null,
               filled: true,
               fillColor: c.surfaceContainerHigh.opaque(0.35),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(color: c.outline.opaque(0.12)),
@@ -505,7 +532,8 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
       isUser1: true,
       onChanged: _onUser1Changed,
       textInputAction: TextInputAction.next,
-      validator: (v) => (v == null || v.trim().isEmpty) ? 'Please enter a username' : null,
+      validator: (v) =>
+          (v == null || v.trim().isEmpty) ? 'Please enter a username' : null,
     );
   }
 
@@ -526,12 +554,21 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
           return 'Please enter a username';
         }
         if (!_compareTwoPeople && widget.useLoggedInUser) {
-          final loggedIn = Get.find<AnilistAuth>().profileData.value.name?.toLowerCase().trim();
-          if (loggedIn != null && loggedIn.isNotEmpty && v.trim().toLowerCase() == loggedIn) {
+          final loggedIn = Get.find<AnilistAuth>()
+              .profileData
+              .value
+              .name
+              ?.toLowerCase()
+              .trim();
+          if (loggedIn != null &&
+              loggedIn.isNotEmpty &&
+              v.trim().toLowerCase() == loggedIn) {
             return 'Cannot compare with yourself';
           }
         }
-        if (_compareTwoPeople && _username1Controller.text.trim().toLowerCase() == v.trim().toLowerCase()) {
+        if (_compareTwoPeople &&
+            _username1Controller.text.trim().toLowerCase() ==
+                v.trim().toLowerCase()) {
           return 'Please enter two different usernames';
         }
         return null;
@@ -572,7 +609,8 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
     );
   }
 
-  Widget _buildFollowingCard(BuildContext context, SocialUser friend, bool isSelected) {
+  Widget _buildFollowingCard(
+      BuildContext context, SocialUser friend, bool isSelected) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
@@ -581,7 +619,9 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
           _user2Avatar = friend.avatarUrl;
         });
         Get.find<AnilistAuth>().fetchUserDetails(friend.name).then((p) {
-          if (mounted && _username2Controller.text.trim().toLowerCase() == friend.name.toLowerCase()) {
+          if (mounted &&
+              _username2Controller.text.trim().toLowerCase() ==
+                  friend.name.toLowerCase()) {
             setState(() => _user2Profile = p);
           }
         });
@@ -591,87 +631,77 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 250),
           curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? context.colors.primary.opaque(0.2)
-              : context.colors.surfaceContainerHighest.opaque(0.35),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
             color: isSelected
-                ? context.colors.primary
-                : context.colors.outline.opaque(0.1),
-            width: isSelected ? 1.5 : 1,
+                ? context.colors.primary.opaque(0.2)
+                : context.colors.surfaceContainerHighest.opaque(0.35),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected
+                  ? context.colors.primary
+                  : context.colors.outline.opaque(0.1),
+              width: isSelected ? 1.5 : 1,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: context.colors.primary.opaque(0.2),
+                      blurRadius: 10,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : null,
           ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: context.colors.primary.opaque(0.2),
-                    blurRadius: 10,
-                    spreadRadius: 1,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                children: [
+                  CommentumAvatar(
+                    userId: friend.id.toString(),
+                    avatarUrl: friend.avatarUrl,
+                    size: 40,
                   ),
-                ]
-              : null,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Stack(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(shape: BoxShape.circle),
-                  child: ClipOval(
-                    child: friend.avatarUrl != null && friend.avatarUrl!.isNotEmpty
-                        ? AnymeXImage(
-                            imageUrl: friend.avatarUrl!,
-                            width: 40,
-                            height: 40,
-                            fit: BoxFit.cover,
-                          )
-                        : const Icon(Icons.person, size: 20),
-                  ),
-                ),
-                if (isSelected)
-                  Positioned(
-                    right: -1,
-                    bottom: -1,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        color: context.colors.primary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.check,
-                        size: 10,
-                        color: context.colors.onPrimary,
+                  if (isSelected)
+                    Positioned(
+                      right: -1,
+                      bottom: -1,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: context.colors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.check,
+                          size: 10,
+                          color: context.colors.onPrimary,
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            SizedBox(
-              width: 65,
-              child: AnymeXText(
-                friend.name,
-                size: 11,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-                variant: isSelected ? TextVariant.bold : TextVariant.regular,
-                color: isSelected ? context.colors.primary : null,
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 6),
+              SizedBox(
+                width: 65,
+                child: AnymeXText(
+                  friend.name,
+                  size: 11,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  variant: isSelected ? TextVariant.bold : TextVariant.regular,
+                  color: isSelected ? context.colors.primary : null,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildDesktopFollowingGrid(BuildContext context) {
     return AnymeXSectionBuilder(
@@ -692,7 +722,9 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
               ),
               itemBuilder: (ctx, i) {
                 final friend = _followingList[i];
-                final isSelected = _username2Controller.text.trim().toLowerCase() == friend.name.toLowerCase();
+                final isSelected =
+                    _username2Controller.text.trim().toLowerCase() ==
+                        friend.name.toLowerCase();
                 return _buildFollowingCard(context, friend, isSelected);
               },
             ),
@@ -791,7 +823,9 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
             itemCount: _followingList.length,
             itemBuilder: (ctx, i) {
               final friend = _followingList[i];
-              final isSelected = _username2Controller.text.trim().toLowerCase() == friend.name.toLowerCase();
+              final isSelected =
+                  _username2Controller.text.trim().toLowerCase() ==
+                      friend.name.toLowerCase();
               return Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: _buildFollowingCard(context, friend, isSelected),
@@ -841,12 +875,12 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
                   children: [
                     Center(
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: containerMaxWidth),
+                        constraints:
+                            BoxConstraints(maxWidth: containerMaxWidth),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             const SizedBox(height: 8),
-
                             _buildMatchupHero(
                               context,
                               user1Name,
@@ -856,18 +890,18 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
                               isLargeScreen: isLargeScreen,
                             ),
                             const SizedBox(height: 24),
-
                             if (isLargeScreen)
-                              
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
                                     flex: 5,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       children: [
-                                        _buildInputControls(context, isLoggedIn),
+                                        _buildInputControls(
+                                            context, isLoggedIn),
                                         const SizedBox(height: 20),
                                         _buildCalculateButton(),
                                       ],
@@ -876,19 +910,20 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
                                   const SizedBox(width: 24),
                                   Expanded(
                                     flex: 6,
-                                    child: isLoggedIn && _followingList.isNotEmpty
+                                    child: isLoggedIn &&
+                                            _followingList.isNotEmpty
                                         ? _buildDesktopFollowingGrid(context)
                                         : _buildDesktopFeatureInfoCard(context),
                                   ),
                                 ],
                               )
                             else
-                            
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   _buildInputControls(context, isLoggedIn),
-                                  if (isLoggedIn && _followingList.isNotEmpty) ...[
+                                  if (isLoggedIn &&
+                                      _followingList.isNotEmpty) ...[
                                     const SizedBox(height: 16),
                                     _buildMobileFollowingCarousel(context),
                                   ],

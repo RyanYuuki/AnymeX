@@ -1,4 +1,5 @@
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ void showInAppNotification({
   required String title,
   required String body,
   String? avatarUrl,
+  String? userId,
   String? type,
   VoidCallback? onTap,
   Duration duration = const Duration(milliseconds: 4500),
@@ -50,6 +52,7 @@ void showInAppNotification({
       title: title,
       body: body,
       avatarUrl: avatarUrl,
+      userId: userId,
       type: type,
       duration: duration,
       onDismiss: () => _removeBannerEntry(entry),
@@ -94,6 +97,7 @@ class _InAppBannerWidget extends StatefulWidget {
     required this.title,
     required this.body,
     this.avatarUrl,
+    this.userId,
     this.type,
     required this.duration,
     required this.onDismiss,
@@ -103,6 +107,7 @@ class _InAppBannerWidget extends StatefulWidget {
   final String title;
   final String body;
   final String? avatarUrl;
+  final String? userId;
   final String? type;
   final Duration duration;
   final VoidCallback onDismiss;
@@ -281,6 +286,14 @@ class _InAppBannerWidgetState extends State<_InAppBannerWidget>
   }
 
   Widget _buildAvatar(ColorScheme cs) {
+    // Prefer id-based resolution (frame included); plain avatar otherwise.
+    if (widget.userId != null && widget.userId!.trim().isNotEmpty) {
+      return CommentumAvatar(
+        userId: widget.userId,
+        avatarUrl: widget.avatarUrl,
+        size: 40,
+      );
+    }
     final url = widget.avatarUrl;
     if (url == null || url.isEmpty) {
       return Container(

@@ -77,6 +77,13 @@ class SocialTabState extends State<SocialTab> {
           _socialFetched = true;
         });
         widget.onCountsFetched?.call(followingTotal, followersTotal);
+        // One batched lookup so every row's frame resolves from cache.
+        if (Get.isRegistered<CommentumService>()) {
+          Get.find<CommentumService>().prefetchCustomizations([
+            for (final u in followingUsers) u.id.toString(),
+            for (final u in followerUsers) u.id.toString(),
+          ]);
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -111,6 +118,10 @@ class SocialTabState extends State<SocialTab> {
           _followingHasMore = hasMore;
           _socialLoadingMore = false;
         });
+        if (Get.isRegistered<CommentumService>()) {
+          Get.find<CommentumService>()
+              .prefetchCustomizations([for (final u in users) u.id.toString()]);
+        }
       } else {
         final nextPage = _followersPage + 1;
         final (users, hasMore, totalCount) =
@@ -127,6 +138,10 @@ class SocialTabState extends State<SocialTab> {
           _followersHasMore = hasMore;
           _socialLoadingMore = false;
         });
+        if (Get.isRegistered<CommentumService>()) {
+          Get.find<CommentumService>()
+              .prefetchCustomizations([for (final u in users) u.id.toString()]);
+        }
       }
     } catch (_) {
       if (mounted) {
@@ -315,18 +330,16 @@ class SocialTabState extends State<SocialTab> {
                               ),
                               child: Row(
                                 children: [
-                                  AnymeXDecoratedAvatar(
+                                  CommentumAvatar(
+                                    userId: user.id.toString(),
                                     avatarUrl: user.avatarUrl,
-                                    decorationUrl: Get.isRegistered<CommentumService>()
-                                        ? Get.find<CommentumService>()
-                                            .getCachedDecoration(user.id.toString())
-                                        : null,
                                     size: 56,
                                     decorationScale: 1.25,
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
-                                    child: AnymeXText(user.name,
+                                    child: AnymeXText(
+                                      user.name,
                                       size: 15,
                                       variant: TextVariant.bold,
                                       color:
@@ -394,12 +407,9 @@ class SocialTabState extends State<SocialTab> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            AnymeXDecoratedAvatar(
+                            CommentumAvatar(
+                              userId: user.id.toString(),
                               avatarUrl: user.avatarUrl,
-                              decorationUrl: Get.isRegistered<CommentumService>()
-                                  ? Get.find<CommentumService>()
-                                      .getCachedDecoration(user.id.toString())
-                                  : null,
                               size: avatarRadius * 2,
                               decorationScale: 1.25,
                             ),
@@ -407,7 +417,8 @@ class SocialTabState extends State<SocialTab> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 4),
-                              child: AnymeXText(user.name,
+                              child: AnymeXText(
+                                user.name,
                                 size: 11.5,
                                 variant: TextVariant.bold,
                                 color: context.theme.colorScheme.onSurface,

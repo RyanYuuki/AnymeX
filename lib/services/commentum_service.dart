@@ -60,7 +60,8 @@ class CommentumService extends GetxController {
   final RxString currentUserBanner = ''.obs;
   final RxString currentUserBannerTheme = ''.obs;
   final RxString currentUserNameplateTheme = ''.obs;
-  final Rx<Map<String, dynamic>> currentUserLinkedAccounts = Rx<Map<String, dynamic>>({});
+  final Rx<Map<String, dynamic>> currentUserLinkedAccounts =
+      Rx<Map<String, dynamic>>({});
   final Set<String> _registeredClientTypes = {};
   String? _pendingFcmToken;
 
@@ -178,8 +179,8 @@ class CommentumService extends GetxController {
 
   Future<List<Comment>> fetchComments(String mediaId,
       {int page = 1, int limit = 50, String sort = 'newest'}) async {
-    final pageResult = await fetchCommentsPage(mediaId,
-        page: page, limit: limit, sort: sort);
+    final pageResult =
+        await fetchCommentsPage(mediaId, page: page, limit: limit, sort: sort);
     return pageResult.comments;
   }
 
@@ -678,7 +679,8 @@ class CommentumService extends GetxController {
         'page': page,
         'limit': limit,
       };
-      if (targetClientType != null) body['target_client_type'] = targetClientType;
+      if (targetClientType != null)
+        body['target_client_type'] = targetClientType;
       if (role != null) body['role'] = role;
       if (banned != null) body['banned'] = banned;
       if (muted != null) body['muted'] = muted;
@@ -686,7 +688,7 @@ class CommentumService extends GetxController {
 
       final response = await http.post(
         Uri.parse('$_baseUrl/users'),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: json.encode(body),
       );
 
@@ -718,11 +720,12 @@ class CommentumService extends GetxController {
         'access_token': token,
         'username': username.trim(),
       };
-      if (targetClientType != null) body['target_client_type'] = targetClientType;
+      if (targetClientType != null)
+        body['target_client_type'] = targetClientType;
 
       final response = await http.post(
         Uri.parse('$_baseUrl/users'),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: json.encode(body),
       );
 
@@ -730,7 +733,8 @@ class CommentumService extends GetxController {
         return json.decode(response.body);
       } else {
         final error = json.decode(response.body);
-        Logger.i('Failed to search users: ${error['error'] ?? 'Unknown error'}');
+        Logger.i(
+            'Failed to search users: ${error['error'] ?? 'Unknown error'}');
         return null;
       }
     } catch (e) {
@@ -749,7 +753,7 @@ class CommentumService extends GetxController {
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/users'),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'action': 'search_users_public',
           'client_type': _clientType,
@@ -994,7 +998,8 @@ class CommentumService extends GetxController {
         return UserPoints.fromMap(pointsData);
       } else {
         final error = json.decode(response.body);
-        Logger.i('Failed to get user points: ${error['error'] ?? 'Unknown error'}');
+        Logger.i(
+            'Failed to get user points: ${error['error'] ?? 'Unknown error'}');
         return null;
       }
     } catch (e) {
@@ -1039,6 +1044,88 @@ class CommentumService extends GetxController {
     }
   }
 
+  /// Bulk-fetch avatar decorations / banners / linked accounts for up to 100
+  /// users in one request. Results are merged into [_publicProfileCache] so
+  /// every [getCachedDecoration] reader picks them up with no extra calls.
+  Future<Map<String, Map<String, dynamic>>> getBatchCustomizations({
+    required List<String> userIds,
+    String? targetClientType,
+  }) async {
+    final ids = userIds
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toSet()
+        .take(100)
+        .toList();
+    if (ids.isEmpty || currentUserId == null) return {};
+    final token = await _authToken;
+    if (token == null) return {};
+
+    try {
+      final clientType = targetClientType ?? _clientType;
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'action': 'get_batch_customizations',
+          'client_type': _clientType,
+          'target_client_type': clientType,
+          'access_token': token,
+          'user_ids': ids,
+        }),
+      );
+
+      if (response.statusCode != 200) return {};
+      final data = json.decode(response.body);
+      final customs = data['customizations'] as Map? ?? {};
+      final out = <String, Map<String, dynamic>>{};
+      customs.forEach((key, value) {
+        if (value is Map) {
+          final id = key.toString();
+          final map = Map<String, dynamic>.from(value);
+          out[id] = map;
+          // Seed the profile cache so getCachedDecoration works instantly.
+          final cacheKey = '$clientType:$id';
+          _publicProfileCache[cacheKey] = {
+            ...?_publicProfileCache[cacheKey],
+            'avatar_decoration': map['avatar_decoration'],
+            'banner_url': map['banner_url'],
+            'banner_theme': map['banner_theme'],
+            'nameplate_theme': map['nameplate_theme'],
+            if (map['linked_accounts'] is Map)
+              'linked_accounts': map['linked_accounts'],
+          };
+        }
+      });
+      return out;
+    } catch (e) {
+      Logger.i('Error getting batch customizations: $e');
+      return {};
+    }
+  }
+
+  /// Prefetch decorations for ids missing from the cache. Fire-and-forget
+  /// safe: skips cached ids, guests, and empty lists.
+  Future<void> prefetchCustomizations(
+    Iterable<String?> userIds, {
+    String? targetClientType,
+  }) async {
+    final clientType = targetClientType ?? _clientType;
+    final missing = <String>{};
+    for (final raw in userIds) {
+      final id = (raw ?? '').trim();
+      if (id.isEmpty || id == 'null') continue;
+      if (getCachedDecoration(id, clientType: clientType) != null) continue;
+      if (_publicProfileCache.containsKey('$clientType:$id')) continue;
+      missing.add(id);
+    }
+    if (missing.isEmpty) return;
+    await getBatchCustomizations(
+      userIds: missing.toList(),
+      targetClientType: clientType,
+    );
+  }
+
   Future<Map<String, dynamic>> getLeaderboard({
     String? targetClientType,
     int page = 1,
@@ -1060,10 +1147,8 @@ class CommentumService extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final entries = (data['leaderboard'] as List? ?? [])
-            .asMap()
-            .entries
-            .map((entry) {
+        final entries =
+            (data['leaderboard'] as List? ?? []).asMap().entries.map((entry) {
           return LeaderboardEntry.fromMap(
             entry.value as Map,
             rank: entry.key + 1 + ((page - 1) * limit),
@@ -1266,12 +1351,15 @@ class CommentumService extends GetxController {
         final data = json.decode(response.body);
         final user = data['user'];
         if (user != null) {
-          currentUserDecoration.value = user['avatar_decoration']?.toString() ?? '';
+          currentUserDecoration.value =
+              user['avatar_decoration']?.toString() ?? '';
           currentUserBanner.value = user['banner_url']?.toString() ?? '';
           currentUserBannerTheme.value = user['banner_theme']?.toString() ?? '';
-          currentUserNameplateTheme.value = user['nameplate_theme']?.toString() ?? '';
+          currentUserNameplateTheme.value =
+              user['nameplate_theme']?.toString() ?? '';
           if (user['linked_accounts'] is Map) {
-            currentUserLinkedAccounts.value = Map<String, dynamic>.from(user['linked_accounts']);
+            currentUserLinkedAccounts.value =
+                Map<String, dynamic>.from(user['linked_accounts']);
           }
         }
       }
@@ -1303,8 +1391,11 @@ class CommentumService extends GetxController {
     }
 
     try {
-      final res = await getUserInfo(targetUserId: userId, targetClientType: clientType);
-      if (res != null && res['users'] is List && (res['users'] as List).isNotEmpty) {
+      final res =
+          await getUserInfo(targetUserId: userId, targetClientType: clientType);
+      if (res != null &&
+          res['users'] is List &&
+          (res['users'] as List).isNotEmpty) {
         final user = Map<String, dynamic>.from((res['users'] as List).first);
         _publicProfileCache[cacheKey] = user;
         return user;
@@ -1332,7 +1423,8 @@ class CommentumService extends GetxController {
         'access_token': token,
       };
 
-      if (avatarDecoration != null) body['avatar_decoration'] = avatarDecoration;
+      if (avatarDecoration != null)
+        body['avatar_decoration'] = avatarDecoration;
       if (bannerUrl != null) body['banner_url'] = bannerUrl;
       if (bannerTheme != null) body['banner_theme'] = bannerTheme;
       if (nameplateTheme != null) body['nameplate_theme'] = nameplateTheme;
@@ -1344,10 +1436,12 @@ class CommentumService extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        if (avatarDecoration != null) currentUserDecoration.value = avatarDecoration;
+        if (avatarDecoration != null)
+          currentUserDecoration.value = avatarDecoration;
         if (bannerUrl != null) currentUserBanner.value = bannerUrl;
         if (bannerTheme != null) currentUserBannerTheme.value = bannerTheme;
-        if (nameplateTheme != null) currentUserNameplateTheme.value = nameplateTheme;
+        if (nameplateTheme != null)
+          currentUserNameplateTheme.value = nameplateTheme;
         return true;
       }
       return false;
@@ -1381,7 +1475,8 @@ class CommentumService extends GetxController {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['linked_accounts'] is Map) {
-          currentUserLinkedAccounts.value = Map<String, dynamic>.from(data['linked_accounts']);
+          currentUserLinkedAccounts.value =
+              Map<String, dynamic>.from(data['linked_accounts']);
         }
         return data;
       } else {
@@ -1414,7 +1509,8 @@ class CommentumService extends GetxController {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['linked_accounts'] is Map) {
-          currentUserLinkedAccounts.value = Map<String, dynamic>.from(data['linked_accounts']);
+          currentUserLinkedAccounts.value =
+              Map<String, dynamic>.from(data['linked_accounts']);
         }
         return true;
       }
@@ -1486,13 +1582,17 @@ class CommentumService extends GetxController {
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/notifications'),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'action': 'register_token',
           'client_type': _clientType,
           'user_id': currentUserId,
           'fcm_token': fcmToken,
-          'platform': Platform.isAndroid ? 'android' : Platform.isIOS ? 'ios' : 'other',
+          'platform': Platform.isAndroid
+              ? 'android'
+              : Platform.isIOS
+                  ? 'ios'
+                  : 'other',
           'app_version': '3.0.7',
         }),
       );
@@ -1515,7 +1615,7 @@ class CommentumService extends GetxController {
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/notifications'),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'action': 'unregister_token',
           'client_type': _clientType,
@@ -1537,7 +1637,7 @@ class CommentumService extends GetxController {
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/notifications'),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'action': 'get_preferences',
           'client_type': _clientType,
@@ -1556,13 +1656,14 @@ class CommentumService extends GetxController {
     }
   }
 
-  Future<bool> updateNotificationPreferences(Map<String, bool> preferences) async {
+  Future<bool> updateNotificationPreferences(
+      Map<String, bool> preferences) async {
     if (currentUserId == null) return false;
 
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/notifications'),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'action': 'update_preferences',
           'client_type': _clientType,
@@ -1651,8 +1752,10 @@ class CommentumService extends GetxController {
 
       // Sort newest first
       deduped.sort((a, b) {
-        final dateA = DateTime.tryParse(a['created_at']?.toString() ?? '') ?? DateTime(1970);
-        final dateB = DateTime.tryParse(b['created_at']?.toString() ?? '') ?? DateTime(1970);
+        final dateA = DateTime.tryParse(a['created_at']?.toString() ?? '') ??
+            DateTime(1970);
+        final dateB = DateTime.tryParse(b['created_at']?.toString() ?? '') ??
+            DateTime(1970);
         return dateB.compareTo(dateA);
       });
 
@@ -1712,7 +1815,8 @@ class CommentumService extends GetxController {
     }
   }
 
-  Future<bool> markNotificationRead(int notificationId, {String? clientType}) async {
+  Future<bool> markNotificationRead(int notificationId,
+      {String? clientType}) async {
     if (currentUserId == null) return false;
 
     try {
@@ -1819,7 +1923,8 @@ class CommentumService extends GetxController {
           return Announcement.fromJson(announcement);
         }
       }
-      Logger.i('Failed to fetch announcement $announcementId: ${response.statusCode}');
+      Logger.i(
+          'Failed to fetch announcement $announcementId: ${response.statusCode}');
       return null;
     } catch (e) {
       Logger.i('Error fetching announcement: $e');

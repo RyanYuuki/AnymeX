@@ -62,6 +62,11 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       setState(() {
         replies = fetched;
       });
+      // One batched lookup so every reply frame resolves from cache.
+      if (Get.isRegistered<CommentumService>()) {
+        Get.find<CommentumService>().prefetchCustomizations(
+            [for (final r in fetched) r.authorId?.toString()]);
+      }
     }
   }
 
@@ -357,12 +362,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                 }
               }
             },
-            child: AnymeXDecoratedAvatar(
+            child: CommentumAvatar(
+              userId: reply.authorId?.toString(),
               avatarUrl: reply.authorAvatarUrl,
-              decorationUrl: Get.isRegistered<CommentumService>()
-                  ? Get.find<CommentumService>()
-                      .getCachedDecoration(reply.authorId?.toString() ?? '')
-                  : null,
               size: 32,
             ),
           ),
@@ -656,12 +658,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      AnymeXDecoratedAvatar(
+                      CommentumAvatar(
+                        userId: liker.id.toString(),
                         avatarUrl: liker.avatarUrl,
-                        decorationUrl: Get.isRegistered<CommentumService>()
-                            ? Get.find<CommentumService>()
-                                .getCachedDecoration(liker.id.toString())
-                            : null,
                         size: 40,
                       ),
                       const SizedBox(width: 16),

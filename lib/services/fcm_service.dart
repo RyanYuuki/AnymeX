@@ -82,6 +82,7 @@ class FcmService {
         '';
 
     final avatarUrl = message.data['actor_avatar']?.toString();
+    final actorId = message.data['actor_id']?.toString();
     final type = message.data['type']?.toString();
     final data = Map<String, dynamic>.from(message.data);
 
@@ -89,6 +90,7 @@ class FcmService {
       title: title,
       body: description,
       avatarUrl: (avatarUrl == null || avatarUrl.isEmpty) ? null : avatarUrl,
+      userId: (actorId == null || actorId.isEmpty) ? null : actorId,
       type: type,
       onTap: () => _openFromData(data),
     );

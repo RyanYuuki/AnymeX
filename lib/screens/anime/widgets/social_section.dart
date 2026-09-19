@@ -79,15 +79,12 @@ class SocialSection extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: AnymeXDecoratedAvatar(
+                  child: CommentumAvatar(
+                    userId: user.userId?.toString(),
                     avatarUrl: (user.userAvatar != null &&
                             user.userAvatar!.isNotEmpty)
                         ? user.userAvatar
                         : 'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png',
-                    decorationUrl: Get.isRegistered<CommentumService>()
-                        ? Get.find<CommentumService>()
-                            .getCachedDecoration(user.userId?.toString() ?? '')
-                        : null,
                     size: 80,
                   ),
                 ),

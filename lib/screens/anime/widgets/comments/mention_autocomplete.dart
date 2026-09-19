@@ -277,11 +277,15 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                     itemBuilder: (context, index) {
                       final user = _results[index];
                       final username = user['username'] as String? ?? '';
+                      final userId =
+                          user['user_id']?.toString() ?? user['id']?.toString();
                       final avatar = user['avatar'] as String? ??
                           user['avatar_url'] as String?;
                       final decoration = user['avatar_decoration'] as String? ??
                           user['avatarDecoration'] as String? ??
                           user['decoration'] as String?;
+                      final hasInlineDeco =
+                          decoration != null && decoration.trim().isNotEmpty;
                       final isSelected = index == _selectedIndex;
 
                       return InkWell(
@@ -297,11 +301,18 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                               : Colors.transparent,
                           child: Row(
                             children: [
-                              AnymeXDecoratedAvatar(
-                                avatarUrl: avatar,
-                                decorationUrl: decoration,
-                                size: 28,
-                              ),
+                              if (hasInlineDeco)
+                                AnymeXDecoratedAvatar(
+                                  avatarUrl: avatar,
+                                  decorationUrl: decoration,
+                                  size: 28,
+                                )
+                              else
+                                CommentumAvatar(
+                                  userId: userId,
+                                  avatarUrl: avatar,
+                                  size: 28,
+                                ),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: AnymeXText(
