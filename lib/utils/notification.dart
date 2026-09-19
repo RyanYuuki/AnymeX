@@ -27,7 +27,8 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   final localNotifications = FlutterLocalNotificationsPlugin();
 
-  const androidSettings = AndroidInitializationSettings('@drawable/ic_stat_anymex');
+  const androidSettings =
+      AndroidInitializationSettings('@drawable/ic_stat_anymex');
   const iosSettings = DarwinInitializationSettings(
     requestAlertPermission: false,
     requestBadgePermission: false,
@@ -84,12 +85,18 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 String _getChannelName(String channelId) {
   switch (channelId) {
-    case 'votes': return 'Votes';
-    case 'moderation': return 'Moderation';
-    case 'reports': return 'Reports';
-    case 'announcements': return 'Announcements';
-    case 'mentions': return 'Mentions';
-    default: return 'Comments';
+    case 'votes':
+      return 'Votes';
+    case 'moderation':
+      return 'Moderation';
+    case 'reports':
+      return 'Reports';
+    case 'announcements':
+      return 'Announcements';
+    case 'mentions':
+      return 'Mentions';
+    default:
+      return 'Comments';
   }
 }
 
@@ -144,7 +151,8 @@ class NotificationService extends GetxController {
     final local = _localNotifications;
     if (local == null) return;
 
-    const androidSettings = AndroidInitializationSettings('@drawable/ic_stat_anymex');
+    const androidSettings =
+        AndroidInitializationSettings('@drawable/ic_stat_anymex');
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -160,41 +168,47 @@ class NotificationService extends GetxController {
     );
 
     if (Platform.isAndroid) {
-      final androidPlugin = local
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      final androidPlugin = local.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
       if (androidPlugin == null) return;
 
-      await androidPlugin.createNotificationChannel(const AndroidNotificationChannel(
+      await androidPlugin
+          .createNotificationChannel(const AndroidNotificationChannel(
         'comments',
         'Comments',
         description: 'New comments, replies, and edits',
         importance: Importance.high,
       ));
-      await androidPlugin.createNotificationChannel(const AndroidNotificationChannel(
+      await androidPlugin
+          .createNotificationChannel(const AndroidNotificationChannel(
         'votes',
         'Votes',
         description: 'Upvotes and downvotes on your comments',
         importance: Importance.defaultImportance,
       ));
-      await androidPlugin.createNotificationChannel(const AndroidNotificationChannel(
+      await androidPlugin
+          .createNotificationChannel(const AndroidNotificationChannel(
         'moderation',
         'Moderation',
         description: 'Warnings, mutes, bans, and moderation actions',
         importance: Importance.high,
       ));
-      await androidPlugin.createNotificationChannel(const AndroidNotificationChannel(
+      await androidPlugin
+          .createNotificationChannel(const AndroidNotificationChannel(
         'reports',
         'Reports',
         description: 'Report filed, resolved, dismissed',
         importance: Importance.defaultImportance,
       ));
-      await androidPlugin.createNotificationChannel(const AndroidNotificationChannel(
+      await androidPlugin
+          .createNotificationChannel(const AndroidNotificationChannel(
         'announcements',
         'Announcements',
         description: 'Official announcements',
         importance: Importance.high,
       ));
-      await androidPlugin.createNotificationChannel(const AndroidNotificationChannel(
+      await androidPlugin
+          .createNotificationChannel(const AndroidNotificationChannel(
         'mentions',
         'Mentions',
         description: 'When someone @mentions you in a comment',
@@ -238,8 +252,10 @@ class NotificationService extends GetxController {
         provisional: false,
       );
 
-      final authorized = settings.authorizationStatus == AuthorizationStatus.authorized;
-      final provisional = settings.authorizationStatus == AuthorizationStatus.provisional;
+      final authorized =
+          settings.authorizationStatus == AuthorizationStatus.authorized;
+      final provisional =
+          settings.authorizationStatus == AuthorizationStatus.provisional;
       notificationsEnabled.value = authorized || provisional;
 
       if (notificationsEnabled.value) {
@@ -255,75 +271,18 @@ class NotificationService extends GetxController {
     }
   }
 
-  void _handleForegroundMessage(RemoteMessage message) async {
-    try {
-      final local = _localNotifications;
-      if (local == null) return;
+  void _handleForegroundMessage(RemoteMessage message) {
+    // Foreground visuals are owned by the in-app top banner (FcmService).
+    // Posting a system notification here as well would show every push
+    // twice (banner + heads-up). Background/killed pushes still arrive
+    // through the OS tray via the `notification` payload in the message.
+    refreshUnreadCount();
+  }
 
-      final data = message.data;
-      final title = data['title'] as String? ?? message.notification?.title ?? 'Notification';
-      final body = data['body'] as String? ?? message.notification?.body ?? '';
-      final actorAvatar = data['actor_avatar'] as String?;
-      final channelId = data['channel_id'] as String? ?? 'comments';
-
-      AndroidNotificationDetails androidDetails;
-      if (actorAvatar != null && actorAvatar.isNotEmpty) {
-        try {
-          final httpClient = HttpClient();
-          final request = await httpClient.getUrl(Uri.parse(actorAvatar));
-          final response = await request.close();
-          final bytes = <int>[];
-          await for (final chunk in response) {
-            bytes.addAll(chunk);
-          }
-          final uint8list = Uint8List.fromList(bytes);
-          httpClient.close();
-
-          androidDetails = AndroidNotificationDetails(
-            channelId,
-            _getChannelNameForService(channelId),
-            importance: _getChannelImportanceForService(channelId),
-            priority: Priority.high,
-            icon: '@drawable/ic_stat_anymex',
-            largeIcon: ByteArrayAndroidBitmap(uint8list),
-          );
-        } catch (e) {
-          Logger.e('Failed to load avatar for notification: $e');
-          androidDetails = AndroidNotificationDetails(
-            channelId,
-            _getChannelNameForService(channelId),
-            importance: _getChannelImportanceForService(channelId),
-            priority: Priority.high,
-            icon: '@drawable/ic_stat_anymex',
-          );
-        }
-      } else {
-        androidDetails = AndroidNotificationDetails(
-          channelId,
-          _getChannelNameForService(channelId),
-          importance: _getChannelImportanceForService(channelId),
-          priority: Priority.high,
-          icon: '@drawable/ic_stat_anymex',
-        );
-      }
-
-      local.show(
-        message.hashCode,
-        title,
-        body,
-        NotificationDetails(
-          android: androidDetails,
-          iOS: const DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          ),
-        ),
-        payload: jsonEncode(data),
-      );
-    } catch (e) {
-      Logger.e('Error showing foreground notification: $e');
-    }
+  /// Entry point for in-app banner taps and FCM opened-app events.
+  void navigateFromPush(Map<String, dynamic> data) {
+    onNotificationTap?.call();
+    _navigateFromNotification(data);
   }
 
   void _handleMessageOpenedApp(RemoteMessage message) {
@@ -346,7 +305,8 @@ class NotificationService extends GetxController {
     }
   }
 
-  void _navigateFromNotification(Map<String, dynamic> data, {int attempts = 0}) {
+  void _navigateFromNotification(Map<String, dynamic> data,
+      {int attempts = 0}) {
     // Announcements open their dedicated bottom sheet (full info + markdown),
     // NOT the comment/media navigation flow.
     final notificationType = data['type']?.toString();
@@ -364,7 +324,9 @@ class NotificationService extends GetxController {
 
     if (mediaId == null || mediaId.isEmpty || mediaType == null) {
       final clickAction = data['click_action'] as String?;
-      if (clickAction != null && clickAction.isNotEmpty && clickAction.startsWith('anymex://')) {
+      if (clickAction != null &&
+          clickAction.isNotEmpty &&
+          clickAction.startsWith('anymex://')) {
         Logger.i('Navigating via click_action (fallback): $clickAction');
       }
       Logger.i('Notification has no navigable media info');
@@ -386,7 +348,8 @@ class NotificationService extends GetxController {
     final isManga = type == 'manga' || type == 'novel';
     final handler = Get.find<ServiceHandler>();
 
-    final serviceType = _serviceTypeFromClientType(clientType) ?? handler.serviceType.value;
+    final serviceType =
+        _serviceTypeFromClientType(clientType) ?? handler.serviceType.value;
 
     if (handler.serviceType.value != serviceType) {
       handler.changeService(serviceType);
@@ -406,9 +369,9 @@ class NotificationService extends GetxController {
     // details-page load. Reply targets are handled inside CommentSection,
     // which opens the replies sheet for the target thread.
     navigate(() => MediaCommentsPage(
-      media: media,
-      scrollToCommentId: commentId,
-    ));
+          media: media,
+          scrollToCommentId: commentId,
+        ));
   }
 
   void _openAnnouncementSheet(Map<String, dynamic> data, {int attempts = 0}) {
@@ -425,8 +388,7 @@ class NotificationService extends GetxController {
     }
 
     final announcementId = data['announcement_id']?.toString() ?? '';
-    Logger.i(
-        'Opening announcement sheet: id=$announcementId (from push tap)');
+    Logger.i('Opening announcement sheet: id=$announcementId (from push tap)');
 
     AnnouncementSheet.show(
       context,
@@ -455,33 +417,11 @@ class NotificationService extends GetxController {
         await service.registerFcmToken(token);
         Logger.i('FCM token registered with backend');
       } else {
-        Logger.i('CommentumService not yet registered, token will be registered later');
+        Logger.i(
+            'CommentumService not yet registered, token will be registered later');
       }
     } catch (e) {
       Logger.e('Failed to register FCM token: $e');
-    }
-  }
-
-  String _getChannelNameForService(String channelId) {
-    switch (channelId) {
-      case 'votes': return 'Votes';
-      case 'moderation': return 'Moderation';
-      case 'reports': return 'Reports';
-      case 'announcements': return 'Announcements';
-      case 'mentions': return 'Mentions';
-      default: return 'Comments';
-    }
-  }
-
-  Importance _getChannelImportanceForService(String channelId) {
-    switch (channelId) {
-      case 'comments':
-      case 'moderation':
-      case 'announcements':
-      case 'mentions':
-        return Importance.high;
-      default:
-        return Importance.defaultImportance;
     }
   }
 
