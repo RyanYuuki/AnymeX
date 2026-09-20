@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:anymex/database/data_keys/keys.dart';
+
 import 'package:anymex/screens/extensions/widgets/plugin_manager.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
@@ -654,16 +654,6 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         ? _installedReleaseTitle
                         : 'Unknown'),
                 const SizedBox(height: 8),
-              ],
-              if (!Platform.isAndroid) ...[
-                const SizedBox(height: 16),
-                const Divider(height: 1),
-                const SizedBox(height: 14),
-                _buildMetaRow(
-                  colors,
-                  'Bridge Mode',
-                  PluginKeys.bridgeMode.get<String>('sidecar'),
-                ),
               ],
             ],
             if (!isBusy && _needsRestart) ...[
