@@ -118,7 +118,22 @@ class GridAnimeCard extends StatelessWidget {
     final media = data is Media
         ? CardData.fromMedia(data)
         : CardData.fromTrackedMedia(data);
-    final itemType = type ?? (isManga ? ItemType.manga : ItemType.anime);
+    final itemType = type ??
+        (isManga
+            ? (data is Media && data.mediaType == ItemType.novel
+                ? ItemType.novel
+                : ItemType.manga)
+            : (data is Media
+                ? (data.mediaType == ItemType.anime &&
+                        (data.type == 'MANGA' ||
+                            ['MANGA', 'ONE_SHOT', 'MANHWA', 'MANHUA']
+                                .contains(data.format.toUpperCase()))
+                    ? ItemType.manga
+                    : (data.mediaType == ItemType.anime &&
+                            data.format.toUpperCase() == 'NOVEL'
+                        ? ItemType.novel
+                        : data.mediaType))
+                : ItemType.anime));
 
     final isOnlineList = variant == CardVariant.onlinelist;
     final extraData = isOnlineList
@@ -172,8 +187,10 @@ class GridAnimeCard extends StatelessWidget {
         margin: 0,
         onTap: () {
           if (itemType == ItemType.novel) {
+            media.data.mediaType = ItemType.novel;
             final sourceController = Get.find<SourceController>();
-            var novSource = sourceController.getNovelExtensionByName(media.data.season);
+            var novSource =
+                sourceController.getNovelExtensionByName(media.data.season);
             novSource ??= sourceController.activeNovelSource.value ??
                 sourceController.installedNovelExtensions.firstOrNull;
             if (novSource != null) {
@@ -185,8 +202,10 @@ class GridAnimeCard extends StatelessWidget {
                   ));
             }
           } else if (itemType == ItemType.manga) {
+            media.data.mediaType = ItemType.manga;
             navigate(() => MangaDetailsPage(media: media.data, tag: heroTag));
           } else {
+            media.data.mediaType = ItemType.anime;
             navigate(() => AnimeDetailsPage(media: media.data, tag: heroTag));
           }
         },
