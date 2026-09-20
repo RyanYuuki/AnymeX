@@ -134,6 +134,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   void _openAddDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.5),
       builder: (_) => _AddRepoDialog(
         type: _tab,
@@ -797,6 +798,7 @@ class _AddRepoDialog extends StatefulWidget {
 class _AddRepoDialogState extends State<_AddRepoDialog> {
   final _ctrl = TextEditingController();
   bool _loading = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -813,12 +815,23 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
         .toList();
     if (urls.isEmpty) return;
 
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       await widget.onAdd(urls);
       if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.toString().replaceFirst('Exception: ', '');
+          _loading = false;
+        });
+        snackBar('Failed to add repo: $_error');
+      }
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted && _error == null) setState(() => _loading = false);
     }
   }
 
@@ -836,6 +849,10 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
       title: 'Add Repository',
       confirmText: _loading ? 'Adding...' : 'Add Repository',
       onConfirm: _loading ? () {} : _submit,
+      isConfirmEnabled: !_loading,
+      forceAction: _loading,
+      showCancelButton: !_loading,
+      autoDismiss: false,
       contentWidget: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -876,6 +893,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
           const SizedBox(height: 8),
           TextField(
             controller: _ctrl,
+            enabled: !_loading,
             autofocus: true,
             maxLines: 2,
             minLines: 1,
@@ -904,6 +922,37 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                   borderSide: BorderSide(color: c.primary, width: 1.5)),
             ),
           ),
+          if (_loading) ...[
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: c.primary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                AnymeXText(
+                  'Adding repository & fetching extensions...',
+                  style: TextStyle(fontSize: 12, color: c.onSurfaceVariant),
+                ),
+              ],
+            ),
+          ],
+          if (_error != null) ...[
+            const SizedBox(height: 10),
+            AnymeXText(
+              _error!,
+              style: TextStyle(
+                fontSize: 12,
+                color: c.error,
+              ),
+            ),
+          ],
         ],
       ),
     );

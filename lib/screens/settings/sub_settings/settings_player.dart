@@ -447,6 +447,36 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     );
   }
 
+  void _showDefaultOrientationDialog() {
+    final orientationMap = {
+      'landscape': 'Auto (Landscape)',
+      'auto_full': 'Auto (Full)',
+      'landscape_left': 'Landscape Left',
+      'landscape_right': 'Landscape Right',
+      'portrait': 'Portrait',
+    };
+    final current = settings.defaultOrientation;
+    final currentLabel = orientationMap[current] ?? 'Auto (Landscape)';
+
+    showSelectionDialog<String>(
+      title: 'Default Orientation',
+      items: orientationMap.values.toList(),
+      selectedItem: currentLabel.obs,
+      getTitle: (item) => item,
+      onItemSelected: (selected) {
+        final key = orientationMap.entries
+            .firstWhere(
+              (e) => e.value == selected,
+              orElse: () => const MapEntry('landscape', 'Auto (Landscape)'),
+            )
+            .key;
+        settings.defaultOrientation = key;
+        setState(() {});
+      },
+      leadingIcon: Icons.screen_rotation_rounded,
+    );
+  }
+
   void _showResizeModeDialog() {
     final currentFit = settings.resizeMode;
     final selectedLabel = resizeModeList.firstWhere(
@@ -2125,14 +2155,19 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                   settings.mediaIndicatorTheme,
                                 ).name,
                               ),
-                              AnymeXTile.toggle(
-                                  icon: Icons.stay_current_portrait,
-                                  title: "Default Portrait",
-                                  subtitle:
-                                      "For psychopaths who like watching in portrait",
-                                  value: settings.defaultPortraitMode,
-                                  onChanged: (val) =>
-                                      settings.defaultPortraitMode = val),
+                              AnymeXTile(
+                                icon: Icons.screen_rotation_rounded,
+                                onTap: _showDefaultOrientationDialog,
+                                title: "Default Orientation",
+                                subtitle: const {
+                                      'landscape': 'Auto (Landscape)',
+                                      'auto_full': 'Auto (Full)',
+                                      'landscape_left': 'Landscape Left',
+                                      'landscape_right': 'Landscape Right',
+                                      'portrait': 'Portrait',
+                                    }[settings.defaultOrientation] ??
+                                    'Auto (Landscape)',
+                              ),
                               AnymeXTile(
                                 icon: Icons.speed,
                                 onTap: _showPlaybackSpeedDialog,
