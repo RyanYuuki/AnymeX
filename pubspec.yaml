@@ -1,7 +1,7 @@
 name: anymex
 description: "An Multiservice Tracking Client"
 publish_to: "https://github.com/RyanYuuki/AnymeX"
-version: 3.1.7+39
+version: 3.1.8+40
 
 environment:
     sdk: ">=3.4.4 <4.0.0"
@@ -239,6 +239,6 @@ inno_bundle:
     id: 8fbd47cb-d6e1-5343-a9f6-61661647c94c
     publisher: Ryan Yuuki
     name: AnymeX
-    version: 3.1.7
+    version: 3.1.8
     admin: auto
     installer_icon: ./anymex.ico
