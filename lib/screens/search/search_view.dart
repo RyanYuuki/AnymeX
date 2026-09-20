@@ -1594,13 +1594,11 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       final novSource = _selectedSource ??
           _sourceController.activeNovelSource.value ??
           _sourceController.installedNovelExtensions.firstOrNull;
-      if (novSource != null) {
-        navigateWithAnimation(() => NovelDetailsPage(
-              media: media,
-              tag: heroTag,
-              source: novSource,
-            ));
-      }
+      navigateWithAnimation(() => NovelDetailsPage(
+            media: media,
+            tag: heroTag,
+            source: novSource,
+          ));
     } else if (effectiveType == ItemType.manga) {
       navigateWithAnimation(() => MangaDetailsPage(
             media: media,

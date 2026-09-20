@@ -134,11 +134,16 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              _Ios26CapsuleIconButton(
-                                icon: CupertinoIcons.device_phone_portrait,
-                                tooltip: 'Toggle Orientation',
-                                onPressed: () => controller.toggleOrientation(),
-                              ),
+                              Obx(() => _Ios26CapsuleIconButton(
+                                    icon: controller.isOrientationLocked.value
+                                        ? Icons.screen_lock_rotation_rounded
+                                        : CupertinoIcons.device_phone_portrait,
+                                    tooltip: controller.isOrientationLocked.value
+                                        ? 'Unlock Orientation'
+                                        : 'Lock Orientation',
+                                    onPressed: () =>
+                                        controller.toggleOrientation(),
+                                  )),
                               const SizedBox(width: 4),
                               _Ios26CapsuleIconButton(
                                 icon: Icons.fit_screen,

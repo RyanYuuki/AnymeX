@@ -193,14 +193,11 @@ class GridAnimeCard extends StatelessWidget {
                 sourceController.getNovelExtensionByName(media.data.season);
             novSource ??= sourceController.activeNovelSource.value ??
                 sourceController.installedNovelExtensions.firstOrNull;
-            if (novSource != null) {
-              final Source activeSource = novSource;
-              navigate(() => NovelDetailsPage(
-                    media: media.data,
-                    tag: heroTag,
-                    source: activeSource,
-                  ));
-            }
+            navigate(() => NovelDetailsPage(
+                  media: media.data,
+                  tag: heroTag,
+                  source: novSource,
+                ));
           } else if (itemType == ItemType.manga) {
             media.data.mediaType = ItemType.manga;
             navigate(() => MangaDetailsPage(media: media.data, tag: heroTag));
