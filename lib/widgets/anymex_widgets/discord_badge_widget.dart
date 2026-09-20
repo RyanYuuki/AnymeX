@@ -163,6 +163,7 @@ class DiscordBadgeWidget extends StatelessWidget {
 
 class DiscordBadgesRow extends StatelessWidget {
   final List<DiscordBadge>? badges;
+  final String? role;
   final bool isOp;
   final double size;
   final bool interactive;
@@ -170,6 +171,7 @@ class DiscordBadgesRow extends StatelessWidget {
   const DiscordBadgesRow({
     super.key,
     this.badges,
+    this.role,
     this.isOp = false,
     this.size = 15.0,
     this.interactive = true,
@@ -181,6 +183,11 @@ class DiscordBadgesRow extends StatelessWidget {
 
     if (badges != null && badges!.isNotEmpty) {
       displayBadges.addAll(badges!);
+    } else if (role != null && role != 'user') {
+      final roleBadge = DiscordBadge.getRoleBadge(role);
+      if (roleBadge != null) {
+        displayBadges.add(roleBadge);
+      }
     }
 
     if (isOp) {

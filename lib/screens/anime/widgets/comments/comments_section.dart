@@ -1,3 +1,4 @@
+import 'package:anymex/database/comments/model/commentum_role.dart';
 import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -1552,16 +1553,16 @@ class _CommentSectionState extends State<CommentSection> {
                             ),
                           ),
                         ),
-                        if (reply.badges != null &&
-                            reply.badges!.isNotEmpty) ...[
+                        if ((reply.badges != null &&
+                            reply.badges!.isNotEmpty) ||
+                            (reply.userRole != null &&
+                            reply.userRole != 'user')) ...[
                           const SizedBox(width: 4),
                           DiscordBadgesRow(
                             badges: reply.badges,
+                            role: reply.userRole,
                             size: 13.0,
                           ),
-                        ] else if (reply.userRole != null &&
-                            reply.userRole != 'user') ...[
-                          _buildRoleBadge(context, reply.userRole!),
                         ],
                         Icon(Icons.arrow_right,
                             size: 18, color: colorScheme.primary),
@@ -1897,16 +1898,16 @@ class _CommentSectionState extends State<CommentSection> {
                             ),
                           ),
                         ),
-                        if (comment.badges != null &&
-                            comment.badges!.isNotEmpty) ...[
+                        if ((comment.badges != null &&
+                            comment.badges!.isNotEmpty) ||
+                            (comment.userRole != null &&
+                            comment.userRole != 'user')) ...[
                           const SizedBox(width: 4),
                           DiscordBadgesRow(
                             badges: comment.badges,
+                            role: comment.userRole,
                             size: depth == 0 ? 15.0 : 13.0,
                           ),
-                        ] else if (comment.userRole != null &&
-                            comment.userRole != 'user') ...[
-                          _buildRoleBadge(context, comment.userRole!),
                         ],
                         if (comment.edited == true) ...[
                           const SizedBox(width: 4),
@@ -2125,50 +2126,8 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  Widget _buildRoleBadge(BuildContext context, String role) {
-    final config = _getRoleBadgeConfig(role);
-    if (config == null) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 4),
-      child: Icon(config.$1, size: 16, color: config.$2),
-    );
-  }
-
   Color _getRoleColor(String role) {
-    switch (role.toLowerCase()) {
-      case 'owner':
-      case 'app_owner':
-      case 'appowner':
-        return Colors.amber.shade800;
-      case 'super_admin':
-      case 'superadmin':
-        return Colors.red;
-      case 'admin':
-        return Colors.orange;
-      case 'moderator':
-        return Colors.teal;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  (IconData, Color)? _getRoleBadgeConfig(String role) {
-    switch (role.toLowerCase()) {
-      case 'owner':
-      case 'app_owner':
-      case 'appowner':
-        return (Icons.auto_awesome, Colors.amber.shade800);
-      case 'super_admin':
-      case 'superadmin':
-        return (Icons.shield, Colors.red);
-      case 'admin':
-        return (Icons.verified_user, Colors.orange);
-      case 'moderator':
-        return (Icons.manage_accounts, Colors.teal);
-      default:
-        return null;
-    }
+    return CommentumRoleConfig.getRoleColor(context, role);
   }
 
   void _showCommentContextMenu(
@@ -3855,34 +3814,12 @@ class _UserProfileSheet extends StatelessWidget {
     this.userRole,
   });
 
-  Color _getRoleColor(String role) {
-    switch (role) {
-      case 'owner':
-        return Colors.amber.shade800;
-      case 'super_admin':
-        return Colors.red;
-      case 'admin':
-        return Colors.orange;
-      case 'moderator':
-        return Colors.teal;
-      default:
-        return Colors.grey;
-    }
+  Color _getRoleColor(BuildContext context, String role) {
+    return CommentumRoleConfig.getRoleColor(context, role);
   }
 
   String _getRoleLabel(String role) {
-    switch (role) {
-      case 'owner':
-        return '👑 Owner';
-      case 'super_admin':
-        return '🛡️ S.Admin';
-      case 'admin':
-        return '⚔️ Admin';
-      case 'moderator':
-        return '🔨 Mod';
-      default:
-        return role;
-    }
+    return CommentumRoleConfig.getRoleLabel(role);
   }
 
   @override
@@ -3932,16 +3869,16 @@ class _UserProfileSheet extends StatelessWidget {
                         margin: const EdgeInsets.only(left: 8),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 3),
-                        color: _getRoleColor(userRole!).withOpacity(0.15),
+                        color: _getRoleColor(context, userRole!).withOpacity(0.15),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: _getRoleColor(userRole!).withOpacity(0.3),
+                          color: _getRoleColor(context, userRole!).withOpacity(0.3),
                         ),
                         child: AnymeXText(
                           _getRoleLabel(userRole!),
                           size: 12,
                           variant: TextVariant.bold,
-                          color: _getRoleColor(userRole!),
+                          color: _getRoleColor(context, userRole!),
                           maxLines: null,
                         ),
                       ),

@@ -140,11 +140,15 @@ class Comment {
       bannerTheme: m['banner_theme']?.toString(),
       nameplateTheme: m['nameplate_theme']?.toString(),
       linkedAccounts: m['linked_accounts'] is Map ? Map<String, dynamic>.from(m['linked_accounts']) : null,
-      badges: m['badges'] != null
+      badges: (m['badges'] != null && (m['badges'] as List).isNotEmpty)
           ? (m['badges'] as List)
               .map((b) => DiscordBadge.fromMap(b as Map))
               .toList()
-          : null,
+          : (m['user_role'] != null &&
+                  m['user_role'] != 'user' &&
+                  DiscordBadge.getRoleBadge(m['user_role']?.toString()) != null
+              ? [DiscordBadge.getRoleBadge(m['user_role']?.toString())!]
+              : null),
       replies: m['replies'] != null 
           ? (m['replies'] as List).map((reply) => Comment.fromMap(reply)).toList()
           : null,

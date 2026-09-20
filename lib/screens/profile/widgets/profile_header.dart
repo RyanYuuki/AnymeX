@@ -407,20 +407,19 @@ class DesktopProfileHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 15.0),
                         child: Row(
                           children: [
-                            // Closet + leaderboard entries hidden.
-                            // if (!_decorationsDisabled()) ...[
-                            //   HoverActionButton(
-                            //     icon: Icons.palette_outlined,
-                            //     onTap: () =>
-                            //         DecorationClosetSheet.show(context),
-                            //   ),
-                            //   const SizedBox(width: 10),
-                            // ],
-                            // HoverActionButton(
-                            //   icon: Icons.emoji_events_outlined,
-                            //   onTap: () => LeaderboardSheet.show(context),
-                            // ),
-                            // const SizedBox(width: 10),
+                            if (!_decorationsDisabled()) ...[
+                              HoverActionButton(
+                                icon: Icons.palette_outlined,
+                                onTap: () =>
+                                    DecorationClosetSheet.show(context),
+                              ),
+                              const SizedBox(width: 10),
+                            ],
+                            HoverActionButton(
+                              icon: Icons.emoji_events_outlined,
+                              onTap: () => LeaderboardSheet.show(context),
+                            ),
+                            const SizedBox(width: 10),
                             HoverActionButton(
                               icon: Icons.north_east_rounded,
                               onTap: () => launchUrlString(
@@ -658,32 +657,31 @@ class MobileProfileHeaderSliver extends StatelessWidget {
         ),
       ),
       actions: [
-        // Closet + leaderboard entries hidden.
-        // if (!_decorationsDisabled())
-        //   Container(
-        //     margin: const EdgeInsets.all(8),
-        //     decoration: BoxDecoration(
-        //       color: context.theme.colorScheme.surface.withOpacity(0.5),
-        //       shape: BoxShape.circle,
-        //     ),
-        //     child: IconButton(
-        //       icon: const Icon(Icons.palette_outlined),
-        //       tooltip: 'Decoration Closet',
-        //       onPressed: () => DecorationClosetSheet.show(context),
-        //     ),
-        //   ),
-        // Container(
-        //   margin: const EdgeInsets.all(8),
-        //   decoration: BoxDecoration(
-        //     color: context.theme.colorScheme.surface.withOpacity(0.5),
-        //     shape: BoxShape.circle,
-        //   ),
-        //   child: IconButton(
-        //     icon: const Icon(Icons.emoji_events_outlined),
-        //     tooltip: 'Leaderboard',
-        //     onPressed: () => LeaderboardSheet.show(context),
-        //   ),
-        // ),
+        if (!_decorationsDisabled())
+          Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surface.withOpacity(0.5),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.palette_outlined),
+              tooltip: 'Decoration Closet',
+              onPressed: () => DecorationClosetSheet.show(context),
+            ),
+          ),
+        Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.emoji_events_outlined),
+            tooltip: 'Leaderboard',
+            onPressed: () => LeaderboardSheet.show(context),
+          ),
+        ),
         Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -728,17 +726,16 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        // Closet entry hidden.
-                        // if (!_decorationsDisabled())
-                        //   _buildBottomSheetOption(
-                        //     ctx,
-                        //     icon: Icons.checkroom_rounded,
-                        //     label: 'Decoration Closet',
-                        //     onTap: () {
-                        //       Navigator.pop(ctx);
-                        //       DecorationClosetSheet.show(context);
-                        //     },
-                        //   ),
+                        if (!_decorationsDisabled())
+                          _buildBottomSheetOption(
+                            ctx,
+                            icon: Icons.checkroom_rounded,
+                            label: 'Decoration Closet',
+                            onTap: () {
+                              Navigator.pop(ctx);
+                              DecorationClosetSheet.show(context);
+                            },
+                          ),
                         _buildBottomSheetOption(
                           ctx,
                           icon: Icons.north_east_rounded,

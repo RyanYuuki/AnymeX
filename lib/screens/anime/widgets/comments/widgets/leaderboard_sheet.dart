@@ -4,6 +4,7 @@ import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
@@ -16,11 +17,9 @@ class LeaderboardSheet extends StatefulWidget {
   const LeaderboardSheet({super.key});
 
   static void show(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => const LeaderboardSheet(),
+    AnymeXSheet.custom(
+      const LeaderboardSheet(),
+      context,
     );
   }
 
@@ -83,31 +82,22 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.75,
-      minChildSize: 0.45,
-      maxChildSize: 0.95,
-      expand: false,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainer,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              Center(
-                child: Container(
-                  width: 42,
-                  height: 4.5,
-                  decoration: BoxDecoration(
-                    color: colorScheme.outlineVariant.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                ),
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.8,
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          Center(
+            child: Container(
+              width: 42,
+              height: 4.5,
+              decoration: BoxDecoration(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(3),
               ),
-              const SizedBox(height: 14),
+            ),
+          ),
+          const SizedBox(height: 14),
 
               // Header Bar
               Padding(
@@ -198,7 +188,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                     color: colorScheme.surfaceContainerHigh,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
+                        color: colorScheme.shadow.withValues(alpha: 0.15),
                         blurRadius: 8,
                         offset: const Offset(0, -2),
                       ),
@@ -297,8 +287,6 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
             ],
           ),
         );
-      },
-    );
   }
 
   Widget _buildLeaderboardTile(BuildContext context, LeaderboardEntry entry, int index) {

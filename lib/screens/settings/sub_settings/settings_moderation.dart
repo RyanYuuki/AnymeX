@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:anymex/database/comments/model/commentum_role.dart';
+import 'package:anymex/database/comments/model/discord_badge.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/moderation_action_sheet.dart';
 import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
@@ -70,31 +73,44 @@ class _SettingsModerationState extends State<SettingsModeration> {
               AnymeXCard(
                 child: Column(
                   children: [
-                    Obx(() => CustomTile(
-                          icon: Icons.admin_panel_settings,
-                          title: "Your Role",
-                          description: commentumService.currentUserRole.value
-                              .toUpperCase()
-                              .replaceAll('_', ' '),
-                          postFix: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: _getRoleColor(),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              commentumService.currentUserRole.value
-                                  .toUpperCase()
-                                  .replaceAll('_', ' '),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
+                    Obx(() {
+                      final role = commentumService.currentUserRole.value;
+                      final roleColor = _getRoleColor();
+                      final badge = DiscordBadge.getRoleBadge(role);
+                      return CustomTile(
+                        icon: Icons.admin_panel_settings,
+                        title: "Your Role",
+                        description: CommentumRoleConfig.getRoleLabel(role),
+                        postFix: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (badge != null) ...[
+                              DiscordBadgeWidget(badge: badge, size: 18),
+                              const SizedBox(width: 8),
+                            ],
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: roleColor.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: roleColor.withValues(alpha: 0.35),
+                                ),
+                              ),
+                              child: Text(
+                                CommentumRoleConfig.getRoleLabel(role).toUpperCase(),
+                                style: TextStyle(
+                                  color: roleColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
-                          ),
-                        )),
+                          ],
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -145,19 +161,8 @@ class _SettingsModerationState extends State<SettingsModeration> {
   }
 
   Color _getRoleColor() {
-    final role = commentumService.currentUserRole.value;
-    switch (role) {
-      case 'owner':
-        return Colors.purple;
-      case 'super_admin':
-        return Colors.red;
-      case 'admin':
-        return Colors.orange;
-      case 'moderator':
-        return Colors.teal;
-      default:
-        return Colors.grey;
-    }
+    return CommentumRoleConfig.getRoleColor(
+        context, commentumService.currentUserRole.value);
   }
 
   Future<void> _navigateToReportsQueue(BuildContext context) async {
@@ -772,18 +777,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
   }
 
   Color _getRoleColor(String role) {
-    switch (role) {
-      case 'owner':
-        return Colors.purple;
-      case 'super_admin':
-        return Colors.red;
-      case 'admin':
-        return Colors.orange;
-      case 'moderator':
-        return Colors.teal;
-      default:
-        return Colors.grey;
-    }
+    return CommentumRoleConfig.getRoleColor(context, role);
   }
 }
 
@@ -1452,18 +1446,7 @@ class _UserListPageState extends State<UserListPage> {
   }
 
   Color _getRoleColor(String role) {
-    switch (role) {
-      case 'owner':
-        return Colors.purple;
-      case 'super_admin':
-        return Colors.red;
-      case 'admin':
-        return Colors.orange;
-      case 'moderator':
-        return Colors.teal;
-      default:
-        return Colors.grey;
-    }
+    return CommentumRoleConfig.getRoleColor(context, role);
   }
 
   @override
@@ -2170,23 +2153,33 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
   Widget _buildRoleBadge(String role) {
     final color = _getRoleColor(role);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withOpacity(0.3),
+    final badge = DiscordBadge.getRoleBadge(role);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (badge != null) ...[
+          DiscordBadgeWidget(badge: badge, size: 16),
+          const SizedBox(width: 6),
+        ],
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: color.withOpacity(0.3),
+            ),
+          ),
+          child: Text(
+            CommentumRoleConfig.getRoleLabel(role).toUpperCase(),
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
         ),
-      ),
-      child: Text(
-        role.toUpperCase().replaceAll('_', ' '),
-        style: TextStyle(
-          color: color,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
-        ),
-      ),
+      ],
     );
   }
 
@@ -2266,18 +2259,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
   }
 
   Color _getRoleColor(String role) {
-    switch (role) {
-      case 'owner':
-        return Colors.purple;
-      case 'super_admin':
-        return Colors.red;
-      case 'admin':
-        return Colors.orange;
-      case 'moderator':
-        return Colors.teal;
-      default:
-        return Colors.grey;
-    }
+    return CommentumRoleConfig.getRoleColor(context, role);
   }
 
   Widget _buildActionButton({

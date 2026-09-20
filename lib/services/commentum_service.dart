@@ -13,6 +13,7 @@ import 'package:anymex/models/notification/announcement.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/notification.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -54,6 +55,8 @@ class CommentumService extends GetxController {
         : envBase;
   }
 
+  String get baseUrl => _baseUrl;
+
   final RxString currentUserRole = 'user'.obs;
   final RxInt unreadNotificationCount = 0.obs;
   final RxBool decorationsEnabled = true.obs;
@@ -61,6 +64,8 @@ class CommentumService extends GetxController {
   final RxString currentUserBanner = ''.obs;
   final RxString currentUserBannerTheme = ''.obs;
   final RxString currentUserNameplateTheme = ''.obs;
+  final RxString currentUserProfileEffect = ''.obs;
+  final RxList<String> unlockedCustomizations = <String>[].obs;
   final Rx<Map<String, dynamic>> currentUserLinkedAccounts =
       Rx<Map<String, dynamic>>({});
   final Set<String> _registeredClientTypes = {};
@@ -1368,6 +1373,12 @@ class CommentumService extends GetxController {
           currentUserBannerTheme.value = user['banner_theme']?.toString() ?? '';
           currentUserNameplateTheme.value =
               user['nameplate_theme']?.toString() ?? '';
+          currentUserProfileEffect.value =
+              user['profile_effect_url']?.toString() ?? '';
+          if (user['unlocked_customizations'] is List) {
+            unlockedCustomizations.value =
+                List<String>.from(user['unlocked_customizations']);
+          }
           if (user['linked_accounts'] is Map) {
             currentUserLinkedAccounts.value =
                 Map<String, dynamic>.from(user['linked_accounts']);
@@ -1422,6 +1433,7 @@ class CommentumService extends GetxController {
     String? bannerUrl,
     String? bannerTheme,
     String? nameplateTheme,
+    String? profileEffectUrl,
   }) async {
     if (currentUserId == null) return false;
     try {
@@ -1434,11 +1446,13 @@ class CommentumService extends GetxController {
         'access_token': token,
       };
 
-      if (avatarDecoration != null)
+      if (avatarDecoration != null) {
         body['avatar_decoration'] = avatarDecoration;
+      }
       if (bannerUrl != null) body['banner_url'] = bannerUrl;
       if (bannerTheme != null) body['banner_theme'] = bannerTheme;
       if (nameplateTheme != null) body['nameplate_theme'] = nameplateTheme;
+      if (profileEffectUrl != null) body['profile_effect_url'] = profileEffectUrl;
 
       final response = await http.post(
         Uri.parse('$_baseUrl/users'),
@@ -1447,18 +1461,55 @@ class CommentumService extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        if (avatarDecoration != null)
+        if (avatarDecoration != null) {
           currentUserDecoration.value = avatarDecoration;
+        }
         if (bannerUrl != null) currentUserBanner.value = bannerUrl;
         if (bannerTheme != null) currentUserBannerTheme.value = bannerTheme;
-        if (nameplateTheme != null)
+        if (nameplateTheme != null) {
           currentUserNameplateTheme.value = nameplateTheme;
+        }
+        if (profileEffectUrl != null) {
+          currentUserProfileEffect.value = profileEffectUrl;
+        }
         return true;
       }
       return false;
     } catch (e) {
       Logger.i('Error updating customizations: $e');
       return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> unlockCustomization(String customizationId) async {
+    if (currentUserId == null) return {'success': false, 'error': 'Not logged in'};
+    try {
+      final token = await _authToken;
+      if (token == null) return {'success': false, 'error': 'No auth token'};
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/users'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'action': 'unlock_customization',
+          'client_type': _clientType,
+          'access_token': token,
+          'customization_id': customizationId,
+        }),
+      );
+
+      final data = json.decode(response.body);
+      if (response.statusCode == 200 && data['success'] == true) {
+        if (!unlockedCustomizations.contains(customizationId)) {
+          unlockedCustomizations.add(customizationId);
+        }
+        return Map<String, dynamic>.from(data);
+      } else {
+        return {'success': false, 'error': data['error'] ?? 'Unlock failed'};
+      }
+    } catch (e) {
+      Logger.i('Error unlocking customization: $e');
+      return {'success': false, 'error': e.toString()};
     }
   }
 
@@ -1534,17 +1585,22 @@ class CommentumService extends GetxController {
 
   Future<bool> isModerator() async {
     final role = await getUserRole();
-    return ['moderator', 'admin', 'super_admin', 'owner'].contains(role);
+    return ['moderator', 'admin', 'super_admin', 'owner', 'app_owner'].contains(role);
   }
 
   Future<bool> isAdmin() async {
     final role = await getUserRole();
-    return ['admin', 'super_admin', 'owner'].contains(role);
+    return ['admin', 'super_admin', 'owner', 'app_owner'].contains(role);
   }
 
   Future<bool> isSuperAdmin() async {
     final role = await getUserRole();
-    return ['super_admin', 'owner'].contains(role);
+    return ['super_admin', 'owner', 'app_owner'].contains(role);
+  }
+
+  Future<bool> isOwner() async {
+    final role = await getUserRole();
+    return ['owner', 'app_owner'].contains(role);
   }
 
   Future<List<Map<String, dynamic>>> getModerationQueue() async {
@@ -1591,6 +1647,12 @@ class CommentumService extends GetxController {
     if (currentUserId == null) return false;
 
     try {
+      String appVersion = 'unknown';
+      try {
+        final pkg = await PackageInfo.fromPlatform();
+        appVersion = pkg.version;
+      } catch (_) {}
+
       final response = await http.post(
         Uri.parse('$_baseUrl/notifications'),
         headers: {'Content-Type': 'application/json'},
@@ -1604,7 +1666,7 @@ class CommentumService extends GetxController {
               : Platform.isIOS
                   ? 'ios'
                   : 'other',
-          'app_version': '3.0.7',
+          'app_version': appVersion,
         }),
       );
 

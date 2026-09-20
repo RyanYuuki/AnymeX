@@ -10,6 +10,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
@@ -27,29 +28,18 @@ class UserCommentsSheet {
     required Comment comment,
     required CommentSectionController controller,
   }) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (sheetContext) {
-        final colorScheme = Theme.of(context).colorScheme;
-        final currentUserId =
-            Get.find<ServiceHandler>().profileData.value.id?.toString();
-        final isSelf = comment.userId == currentUserId;
-        final canViewPrivate = isSelf || controller.canModerate();
+    AnymeXSheet.custom(
+      Builder(
+        builder: (context) {
+          final colorScheme = Theme.of(context).colorScheme;
+          final currentUserId =
+              Get.find<ServiceHandler>().profileData.value.id?.toString();
+          final isSelf = comment.userId == currentUserId;
+          final canViewPrivate = isSelf || controller.canModerate();
 
-        return DraggableScrollableSheet(
-          initialChildSize: 0.62,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
-          expand: false,
-          builder: (context, scrollController) {
-            return Container(
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainer,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(24)),
-              ),
+          return SizedBox(
+            height: MediaQuery.of(context).size.height * 0.75,
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
               child: FutureBuilder<List<dynamic>>(
                 future: Future.wait([
@@ -351,11 +341,11 @@ class UserCommentsSheet {
                             ),
                           ),
                           icon: const Icon(Icons.person_outline, size: 16),
-                          label: const AnymeXText(
+                          label: AnymeXText(
                             'View Full Profile',
                             variant: TextVariant.bold,
                             size: 13,
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                           ),
                         ),
                       ),
@@ -364,10 +354,11 @@ class UserCommentsSheet {
                   );
                 },
               ),
-            );
-          },
-        );
-      },
+            ),
+          );
+        },
+      ),
+      context,
     );
   }
 

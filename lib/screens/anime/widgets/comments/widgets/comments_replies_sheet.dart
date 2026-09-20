@@ -1,3 +1,5 @@
+import 'package:anymex/database/comments/model/commentum_role.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
@@ -47,16 +49,13 @@ class CommentsRepliesSheet extends StatefulWidget {
       controller.setReplyTarget(rootComment);
     }
 
-    return showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: false,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => CommentsRepliesSheet(
+    return AnymeXSheet.custom(
+      CommentsRepliesSheet(
         rootComment: rootComment,
         controller: controller,
         onShowContextMenu: onShowContextMenu,
       ),
+      context,
     );
   }
 
@@ -80,50 +79,8 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     return CommentSectionController.formatCommentTimestamp(timestamp);
   }
 
-  Widget _buildRoleBadge(BuildContext context, String role) {
-    final config = _getRoleBadgeConfig(role);
-    if (config == null) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 5),
-      child: Icon(config.$1, size: 15, color: config.$2),
-    );
-  }
-
   Color _getRoleColor(String role) {
-    switch (role.toLowerCase()) {
-      case 'owner':
-      case 'app_owner':
-      case 'appowner':
-        return Colors.amber.shade800;
-      case 'super_admin':
-      case 'superadmin':
-        return Colors.red;
-      case 'admin':
-        return Colors.orange;
-      case 'moderator':
-        return Colors.teal;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  (IconData, Color)? _getRoleBadgeConfig(String role) {
-    switch (role.toLowerCase()) {
-      case 'owner':
-      case 'app_owner':
-      case 'appowner':
-        return (Icons.auto_awesome, Colors.amber.shade800);
-      case 'super_admin':
-      case 'superadmin':
-        return (Icons.shield, Colors.red);
-      case 'admin':
-        return (Icons.verified_user, Colors.orange);
-      case 'moderator':
-        return (Icons.manage_accounts, Colors.teal);
-      default:
-        return null;
-    }
+    return CommentumRoleConfig.getRoleColor(context, role);
   }
 
 
@@ -273,19 +230,16 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                             ),
                           ),
                         ),
-                        if (comment.badges != null && comment.badges!.isNotEmpty) ...[
+                        if ((comment.badges != null && comment.badges!.isNotEmpty) ||
+                            hasRole ||
+                            (!isRoot && (comment.userId == widget.rootComment.userId))) ...[
                           const SizedBox(width: 4),
                           DiscordBadgesRow(
                             badges: comment.badges,
+                            role: comment.userRole,
                             size: 13.0,
                             isOp: !isRoot && (comment.userId == widget.rootComment.userId),
                           ),
-                        ] else ...[
-                          if (hasRole) _buildRoleBadge(context, comment.userRole!),
-                          if (!isRoot && (comment.userId == widget.rootComment.userId)) ...[
-                            const SizedBox(width: 4),
-                            const DiscordBadgeWidget(badge: DiscordBadge.opBadge, size: 13.0),
-                          ],
                         ],
                         if (showParentBreadcrumb) ...[
                           Icon(Icons.arrow_right,
@@ -514,26 +468,10 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     final controller = widget.controller;
     final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
 
-    return DraggableScrollableSheet(
-      initialChildSize: 0.85,
-      minChildSize: 0.5,
-      maxChildSize: 0.95,
-      builder: (ctx, scrollSheetController) {
-          return AnymeXContainer(
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(24)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, -4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.85,
+      child: Column(
+        children: [
                 // Top Drag Handle & Title Bar
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
@@ -586,7 +524,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                     final flatReplies = _flattenReplies(latestParent);
 
                     return ListView(
-                      controller: scrollSheetController,
+                      controller: _scrollController,
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                       children: [
                         // Pinned Original Comment Header Card
@@ -689,10 +627,8 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                     },
                   ),
                 ),
-              ],
-            ),
-          );
-        },
+        ],
+      ),
     );
   }
 }

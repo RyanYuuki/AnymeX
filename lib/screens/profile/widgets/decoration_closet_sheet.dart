@@ -1,10 +1,14 @@
 import 'package:anymex/database/comments/model/user_customization.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -12,11 +16,9 @@ class DecorationClosetSheet extends StatefulWidget {
   const DecorationClosetSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const DecorationClosetSheet(),
+    return AnymeXSheet.custom(
+      const DecorationClosetSheet(),
+      context,
     );
   }
 
@@ -30,9 +32,11 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
   final CommentumService _commentumService = Get.find<CommentumService>();
 
   List<AvatarDecorationItem> _decorations = [];
+  List<CustomizationItem> _nameplates = [];
   List<AnimeBannerItem> _allBanners = [];
   Map<String, List<AnimeBannerItem>> _categorizedBanners = {};
-  String _selectedCategory = 'All';
+  List<CustomizationItem> _effects = [];
+  String _selectedBannerCategory = 'All';
 
   bool _loadingCatalog = true;
   bool _isSaving = false;
@@ -40,19 +44,32 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
   // Working preview state
   String? _previewDecorationUrl;
   String? _previewBannerUrl;
+  String? _previewNameplateUrl;
+  String? _previewEffectUrl;
 
-  final TextEditingController _customBannerController = TextEditingController();
+  final TextEditingController _customBannerController =
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _previewDecorationUrl = _commentumService.currentUserDecoration.value.isNotEmpty
-        ? _commentumService.currentUserDecoration.value
-        : null;
+    _tabController = TabController(length: 4, vsync: this);
+    _previewDecorationUrl =
+        _commentumService.currentUserDecoration.value.isNotEmpty
+            ? _commentumService.currentUserDecoration.value
+            : null;
     _previewBannerUrl = _commentumService.currentUserBanner.value.isNotEmpty
         ? _commentumService.currentUserBanner.value
         : null;
+    _previewNameplateUrl =
+        _commentumService.currentUserNameplateTheme.value.isNotEmpty
+            ? _commentumService.currentUserNameplateTheme.value
+            : null;
+    _previewEffectUrl =
+        _commentumService.currentUserProfileEffect.value.isNotEmpty
+            ? _commentumService.currentUserProfileEffect.value
+            : null;
+
     _customBannerController.text = _previewBannerUrl ?? '';
     _loadCatalog();
   }
@@ -66,16 +83,45 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
 
   Future<void> _loadCatalog() async {
     setState(() => _loadingCatalog = true);
-    final decos = await CustomizationRepository.loadDecorations();
-    final banners = await CustomizationRepository.loadBanners();
-    final categorized = await CustomizationRepository.loadCategorizedBanners();
+    final results = await Future.wait([
+      CustomizationRepository.loadDecorations(),
+      CustomizationRepository.loadNameplates(),
+      CustomizationRepository.loadBanners(),
+      CustomizationRepository.loadCategorizedBanners(),
+      CustomizationRepository.loadEffects(),
+    ]);
+
     if (mounted) {
       setState(() {
-        _decorations = decos;
-        _allBanners = banners;
-        _categorizedBanners = categorized;
+        _decorations = results[0] as List<AvatarDecorationItem>;
+        _nameplates = results[1] as List<CustomizationItem>;
+        _allBanners = results[2] as List<AnimeBannerItem>;
+        _categorizedBanners =
+            results[3] as Map<String, List<AnimeBannerItem>>;
+        _effects = results[4] as List<CustomizationItem>;
         _loadingCatalog = false;
       });
+    }
+  }
+
+  bool _isUnlocked(String id, int pointsRequired) {
+    if (pointsRequired <= 0) return true;
+    final role = _commentumService.currentUserRole.value;
+    if (['owner', 'app_owner', 'super_admin', 'admin', 'moderator'].contains(role)) {
+      return true;
+    }
+    return _commentumService.unlockedCustomizations.contains(id);
+  }
+
+  Future<void> _unlockItem(String id, String title) async {
+    final res = await _commentumService.unlockCustomization(id);
+    if (mounted) {
+      if (res['success'] == true) {
+        snackBar(res['message']?.toString() ?? 'Successfully unlocked $title!');
+        setState(() {});
+      } else {
+        snackBar(res['error']?.toString() ?? 'Failed to unlock');
+      }
     }
   }
 
@@ -84,13 +130,15 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
     final success = await _commentumService.updateCustomizations(
       avatarDecoration: _previewDecorationUrl ?? '',
       bannerUrl: _previewBannerUrl ?? '',
+      nameplateTheme: _previewNameplateUrl ?? '',
+      profileEffectUrl: _previewEffectUrl ?? '',
     );
     if (mounted) {
       setState(() => _isSaving = false);
       if (success) {
         Get.snackbar(
           'Profile Updated',
-          'Your avatar decoration and banner have been saved!',
+          'Your customizations have been saved and applied!',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: context.colors.surfaceContainerHighest,
           colorText: context.colors.onSurface,
@@ -111,31 +159,28 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
     final userAvatar = _commentumService.currentUserAvatar;
     final userName = _commentumService.currentUsername ?? 'You';
 
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.85,
       child: Column(
         children: [
           const SizedBox(height: 10),
           Center(
             child: Container(
-              width: 36,
-              height: 4,
+              width: 38,
+              height: 4.5,
               decoration: BoxDecoration(
-                color: colorScheme.outlineVariant.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(2),
+                color: colorScheme.outlineVariant.withOpacity(0.35),
+                borderRadius: BorderRadius.circular(2.5),
               ),
             ),
           ),
-          const SizedBox(height: 6),
-          // Header preview card
+          const SizedBox(height: 8),
+
+          // Header Live Preview
           _buildLivePreviewCard(colorScheme, userAvatar, userName),
           const SizedBox(height: 12),
 
-          // Tabs
+          // 4 Tabs: Decorations, Nameplates, Banners, Effects
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
@@ -152,23 +197,28 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
               ),
               labelColor: colorScheme.onPrimary,
               unselectedLabelColor: colorScheme.onSurfaceVariant,
+              labelPadding: const EdgeInsets.symmetric(horizontal: 4),
               tabs: const [
                 Tab(text: 'Decorations'),
+                Tab(text: 'Nameplates'),
                 Tab(text: 'Banners'),
+                Tab(text: 'Effects'),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
-          // Tab content
+          // Tab views
           Expanded(
             child: _loadingCatalog
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: ExpressiveLoadingIndicator())
                 : TabBarView(
                     controller: _tabController,
                     children: [
                       _buildDecorationsTab(colorScheme),
+                      _buildNameplatesTab(colorScheme),
                       _buildBannersTab(colorScheme),
+                      _buildEffectsTab(colorScheme),
                     ],
                   ),
           ),
@@ -183,7 +233,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
   Widget _buildLivePreviewCard(
       ColorScheme colorScheme, String? userAvatar, String userName) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      margin: const EdgeInsets.fromLTRB(16, 4, 16, 0),
       height: 130,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
@@ -198,7 +248,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
       ),
       child: Stack(
         children: [
-          // Gradient dark overlay
+          // Dark gradient overlay for banner text readability
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -206,16 +256,34 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withOpacity(0.3),
-                  Colors.black.withOpacity(0.75),
+                  colorScheme.scrim.withOpacity(0.25),
+                  colorScheme.scrim.withOpacity(0.72),
                 ],
               ),
             ),
           ),
-          // User info content
+
+          // Effect overlay preview if chosen
+          if (_previewEffectUrl != null && _previewEffectUrl!.isNotEmpty)
+            Positioned.fill(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Opacity(
+                  opacity: 0.5,
+                  child: CachedNetworkImage(
+                    imageUrl: _previewEffectUrl!,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                  ),
+                ),
+              ),
+            ),
+
+          // User Info (Avatar + Decoration + Nameplate + Badges)
           Positioned(
             left: 16,
             bottom: 16,
+            right: 16,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -226,52 +294,47 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                   decorationScale: 1.25,
                 ),
                 const SizedBox(width: 14),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      userName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        shadows: [Shadow(color: Colors.black, blurRadius: 4)],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Obx(() {
-                      final linked = _commentumService.currentUserLinkedAccounts.value;
-                      return LinkedAccountsBadges(
-                        linkedAccounts: linked,
-                        fontSize: 10,
-                        interactive: false,
-                      );
-                    }),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Username with optional Nameplate background
+                      _buildUsernameWithNameplate(userName, colorScheme),
+                      const SizedBox(height: 4),
+                      Obx(() {
+                        final linked =
+                            _commentumService.currentUserLinkedAccounts.value;
+                        return LinkedAccountsBadges(
+                          linkedAccounts: linked,
+                          fontSize: 10,
+                          interactive: false,
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          // Tag top right
+
+          // Live Preview Chip
           Positioned(
             top: 10,
             right: 12,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.55),
+                color: colorScheme.surface.withOpacity(0.65),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white24, width: 0.8),
+                border: Border.all(
+                    color: colorScheme.outline.withOpacity(0.2), width: 0.8),
               ),
-              child: const Text(
+              child: AnymeXText(
                 'Live Preview',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.4,
-                ),
+                size: 10,
+                variant: TextVariant.semiBold,
+                color: colorScheme.onSurface,
               ),
             ),
           ),
@@ -280,47 +343,72 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
     );
   }
 
+  Widget _buildUsernameWithNameplate(String userName, ColorScheme colorScheme) {
+    if (_previewNameplateUrl != null && _previewNameplateUrl!.isNotEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          color: colorScheme.surfaceContainerHighest.withOpacity(0.7),
+          border: Border.all(color: colorScheme.primary.withOpacity(0.4)),
+        ),
+        child: AnymeXText(
+          userName,
+          variant: TextVariant.bold,
+          size: 15,
+          color: colorScheme.onSurface,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    }
+    return AnymeXText(
+      userName,
+      variant: TextVariant.bold,
+      size: 16,
+      color: Colors.white,
+      style: const TextStyle(
+        shadows: [Shadow(color: Colors.black87, blurRadius: 4)],
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  // --- TAB 1: DECORATIONS ---
   Widget _buildDecorationsTab(ColorScheme colorScheme) {
     return Column(
       children: [
-        // Controls / Clear decoration button
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${_decorations.length} Discord Decorations',
-                style: TextStyle(
-                  color: colorScheme.onSurfaceVariant,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
+              AnymeXText(
+                '${_decorations.length} Avatar Decorations',
+                size: 12.5,
+                variant: TextVariant.semiBold,
+                color: colorScheme.onSurfaceVariant,
               ),
               if (_previewDecorationUrl != null)
                 GestureDetector(
-                  onTap: () {
-                    setState(() => _previewDecorationUrl = null);
-                  },
-                  child: Text(
+                  onTap: () => setState(() => _previewDecorationUrl = null),
+                  child: AnymeXText(
                     'Remove Decoration',
-                    style: TextStyle(
-                      color: colorScheme.error,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    size: 12,
+                    variant: TextVariant.bold,
+                    color: colorScheme.error,
                   ),
                 ),
             ],
           ),
         ),
-        // Grid of decorations
         Expanded(
           child: GridView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 4,
-              childAspectRatio: 0.9,
+              childAspectRatio: 0.85,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
@@ -328,12 +416,17 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             itemBuilder: (context, index) {
               final item = _decorations[index];
               final isSelected = _previewDecorationUrl == item.url;
+              final unlocked = _isUnlocked(item.id, item.pointsRequired);
 
               return GestureDetector(
                 onTap: () {
-                  setState(() {
-                    _previewDecorationUrl = isSelected ? null : item.url;
-                  });
+                  if (unlocked) {
+                    setState(() {
+                      _previewDecorationUrl = isSelected ? null : item.url;
+                    });
+                  } else {
+                    _unlockItem(item.id, item.title);
+                  }
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -345,15 +438,6 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                           : colorScheme.outline.withOpacity(0.08),
                       width: isSelected ? 2.2 : 1.0,
                     ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: colorScheme.primary.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            )
-                          ]
-                        : null,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -364,36 +448,49 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                           child: CachedNetworkImage(
                             imageUrl: item.url,
                             fit: BoxFit.contain,
-                            placeholder: (context, url) => const Center(
+                            placeholder: (_, __) => const Center(
                               child: SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               ),
                             ),
-                            errorWidget: (context, url, err) =>
+                            errorWidget: (_, __, ___) =>
                                 const Icon(Icons.broken_image, size: 20),
                           ),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 6, left: 4, right: 4),
-                        child: Text(
+                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+                        child: AnymeXText(
                           item.title,
+                          size: 10.5,
+                          variant: isSelected
+                              ? TextVariant.bold
+                              : TextVariant.regular,
+                          color: isSelected
+                              ? colorScheme.primary
+                              : colorScheme.onSurface,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: isSelected
-                                ? colorScheme.primary
-                                : colorScheme.onSurface,
-                            fontSize: 10.5,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.w500,
-                          ),
                         ),
                       ),
+                      if (!unlocked)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 1.5),
+                          margin: const EdgeInsets.only(bottom: 4),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: AnymeXText(
+                            '★ ${item.pointsRequired}',
+                            size: 9,
+                            variant: TextVariant.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -405,11 +502,147 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
     );
   }
 
+  // --- TAB 2: NAMEPLATES ---
+  Widget _buildNameplatesTab(ColorScheme colorScheme) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AnymeXText(
+                '${_nameplates.length} Collectible Nameplates',
+                size: 12.5,
+                variant: TextVariant.semiBold,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              if (_previewNameplateUrl != null)
+                GestureDetector(
+                  onTap: () => setState(() => _previewNameplateUrl = null),
+                  child: AnymeXText(
+                    'Remove Nameplate',
+                    size: 12,
+                    variant: TextVariant.bold,
+                    color: colorScheme.error,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 2.8,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: _nameplates.length,
+            itemBuilder: (context, index) {
+              final item = _nameplates[index];
+              final isSelected = _previewNameplateUrl == item.url ||
+                  _previewNameplateUrl == item.staticUrl;
+              final unlocked = _isUnlocked(item.id, item.pointsRequired);
+              final displayUrl = item.staticUrl ?? item.url;
+
+              return GestureDetector(
+                onTap: () {
+                  if (unlocked) {
+                    setState(() {
+                      _previewNameplateUrl = isSelected ? null : item.url;
+                    });
+                  } else {
+                    _unlockItem(item.id, item.title);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.outline.withOpacity(0.1),
+                      width: isSelected ? 2.0 : 1.0,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      if (displayUrl.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: CachedNetworkImage(
+                            imageUrl: displayUrl,
+                            width: 44,
+                            height: 28,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, __, ___) =>
+                                const Icon(Icons.badge_outlined, size: 20),
+                          ),
+                        ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AnymeXText(
+                              item.title,
+                              size: 11.5,
+                              variant: isSelected
+                                  ? TextVariant.bold
+                                  : TextVariant.semiBold,
+                              color: isSelected
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurface,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            AnymeXText(
+                              item.category,
+                              size: 9.5,
+                              color: colorScheme.onSurfaceVariant,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (!unlocked)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: AnymeXText(
+                            '★ ${item.pointsRequired}',
+                            size: 9,
+                            variant: TextVariant.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // --- TAB 3: BANNERS ---
   Widget _buildBannersTab(ColorScheme colorScheme) {
     final categories = ['All', ..._categorizedBanners.keys];
-    final displayedBanners = _selectedCategory == 'All'
+    final displayedBanners = _selectedBannerCategory == 'All'
         ? _allBanners
-        : (_categorizedBanners[_selectedCategory] ?? []);
+        : (_categorizedBanners[_selectedBannerCategory] ?? []);
 
     return Column(
       children: [
@@ -437,7 +670,10 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  style: const TextStyle(fontSize: 12),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -451,7 +687,8 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colorScheme.primary,
                   foregroundColor: colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -459,7 +696,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 child: const Text('Apply', style: TextStyle(fontSize: 12)),
               ),
               if (_previewBannerUrl != null) ...[
-                const SizedBox(width: 6),
+                const SizedBox(width: 4),
                 IconButton(
                   onPressed: () {
                     setState(() {
@@ -477,7 +714,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
 
         // Category Chips
         SizedBox(
-          height: 38,
+          height: 36,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             scrollDirection: Axis.horizontal,
@@ -485,12 +722,12 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             separatorBuilder: (_, __) => const SizedBox(width: 6),
             itemBuilder: (context, index) {
               final cat = categories[index];
-              final isSelected = _selectedCategory == cat;
+              final isSelected = _selectedBannerCategory == cat;
               return ChoiceChip(
                 label: Text(cat, style: const TextStyle(fontSize: 11)),
                 selected: isSelected,
                 onSelected: (_) {
-                  setState(() => _selectedCategory = cat);
+                  setState(() => _selectedBannerCategory = cat);
                 },
                 selectedColor: colorScheme.primary,
                 labelStyle: TextStyle(
@@ -536,17 +773,11 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: isSelected ? colorScheme.primary : Colors.transparent,
+                      color: isSelected
+                          ? colorScheme.primary
+                          : Colors.transparent,
                       width: isSelected ? 2.5 : 0,
                     ),
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: colorScheme.primary.withOpacity(0.35),
-                              blurRadius: 6,
-                            )
-                          ]
-                        : null,
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
@@ -556,7 +787,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                         CachedNetworkImage(
                           imageUrl: item.banner,
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
+                          placeholder: (_, __) => Container(
                             color: colorScheme.surfaceContainer,
                             child: const Center(
                               child: SizedBox(
@@ -566,12 +797,11 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                               ),
                             ),
                           ),
-                          errorWidget: (context, url, error) => Container(
+                          errorWidget: (_, __, ___) => Container(
                             color: colorScheme.surfaceContainer,
                             child: const Icon(Icons.broken_image, size: 24),
                           ),
                         ),
-                        // Label overlay
                         Positioned(
                           bottom: 0,
                           left: 0,
@@ -579,16 +809,14 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 3),
-                            color: Colors.black.withOpacity(0.65),
-                            child: Text(
+                            color: colorScheme.scrim.withOpacity(0.65),
+                            child: AnymeXText(
                               item.title,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 9.5,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              size: 9.5,
+                              color: Colors.white,
+                              variant: TextVariant.semiBold,
                             ),
                           ),
                         ),
@@ -602,12 +830,140 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                                 shape: BoxShape.circle,
                                 color: colorScheme.primary,
                               ),
-                              child: const Icon(Icons.check,
-                                  color: Colors.white, size: 14),
+                              child: Icon(Icons.check,
+                                  color: colorScheme.onPrimary, size: 14),
                             ),
                           ),
                       ],
                     ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // --- TAB 4: EFFECTS ---
+  Widget _buildEffectsTab(ColorScheme colorScheme) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AnymeXText(
+                '${_effects.length} Profile Effects',
+                size: 12.5,
+                variant: TextVariant.semiBold,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              if (_previewEffectUrl != null)
+                GestureDetector(
+                  onTap: () => setState(() => _previewEffectUrl = null),
+                  child: AnymeXText(
+                    'Remove Effect',
+                    size: 12,
+                    variant: TextVariant.bold,
+                    color: colorScheme.error,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 0.9,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemCount: _effects.length,
+            itemBuilder: (context, index) {
+              final item = _effects[index];
+              final isSelected = _previewEffectUrl == item.url;
+              final unlocked = _isUnlocked(item.id, item.pointsRequired);
+              final thumb = item.thumbnailUrl ?? item.url;
+
+              return GestureDetector(
+                onTap: () {
+                  if (unlocked) {
+                    setState(() {
+                      _previewEffectUrl = isSelected ? null : item.url;
+                    });
+                  } else {
+                    _unlockItem(item.id, item.title);
+                  }
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.outline.withOpacity(0.08),
+                      width: isSelected ? 2.0 : 1.0,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CachedNetworkImage(
+                            imageUrl: thumb,
+                            fit: BoxFit.contain,
+                            placeholder: (_, __) => const Center(
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (_, __, ___) =>
+                                const Icon(Icons.auto_awesome, size: 24),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+                        child: AnymeXText(
+                          item.title,
+                          size: 10.5,
+                          variant: isSelected
+                              ? TextVariant.bold
+                              : TextVariant.regular,
+                          color: isSelected
+                              ? colorScheme.primary
+                              : colorScheme.onSurface,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (!unlocked)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 1.5),
+                          margin: const EdgeInsets.only(bottom: 4),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: AnymeXText(
+                            '★ ${item.pointsRequired}',
+                            size: 9,
+                            variant: TextVariant.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               );
@@ -623,7 +979,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
       top: false,
       bottom: true,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: colorScheme.surface,
           border: Border(
@@ -645,13 +1001,11 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                           color: colorScheme.onPrimary,
                         ),
                       )
-                    : Text(
+                    : AnymeXText(
                         'Save & Equip',
-                        style: TextStyle(
-                          color: colorScheme.onPrimary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
+                        color: colorScheme.onPrimary,
+                        variant: TextVariant.bold,
+                        size: 14,
                       ),
               ),
             ),

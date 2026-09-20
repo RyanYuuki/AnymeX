@@ -66,4 +66,64 @@ class DiscordBadge {
     badgeColor: Color(0xFF5865F2),
     priority: 0,
   );
+
+  static DiscordBadge? getRoleBadge(String? role) {
+    if (role == null) return null;
+    switch (role.toLowerCase()) {
+      case 'owner':
+        return const DiscordBadge(
+          id: 'owner',
+          name: 'Commentum Owner',
+          description: 'Owner and creator of the Commentum community platform.',
+          iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/server/crown.svg',
+          isSvg: true,
+          badgeColor: Color(0xFFFFD700),
+          priority: 1,
+        );
+      case 'app_owner':
+      case 'appowner':
+        return const DiscordBadge(
+          id: 'app_owner',
+          name: 'App Creator',
+          description: 'Creator and developer of AnymeX.',
+          iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/server/crown.svg',
+          isSvg: true,
+          badgeColor: Color(0xFFFFD700),
+          priority: 2,
+        );
+      case 'super_admin':
+      case 'superadmin':
+        return const DiscordBadge(
+          id: 'super_admin',
+          name: 'Super Administrator',
+          description: 'Super Administrator with system-wide management authority.',
+          iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-staff.svg',
+          isSvg: true,
+          badgeColor: Color(0xFF5865F2),
+          priority: 3,
+        );
+      case 'admin':
+        return const DiscordBadge(
+          id: 'admin',
+          name: 'Administrator',
+          description: 'Community administrator overseeing moderation and policies.',
+          iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-staff.svg',
+          isSvg: true,
+          badgeColor: Color(0xFFED4245),
+          priority: 4,
+        );
+      case 'moderator':
+        return const DiscordBadge(
+          id: 'moderator',
+          name: 'Moderator',
+          description: 'Verified moderator keeping comments respectful and safe.',
+          iconUrl: 'https://cdn.jsdelivr.net/gh/mezotv/discord-badges@main/assets/discord-mod.svg',
+          isSvg: true,
+          badgeColor: Color(0xFF57F287),
+          priority: 5,
+        );
+      default:
+        return null;
+    }
+  }
 }
