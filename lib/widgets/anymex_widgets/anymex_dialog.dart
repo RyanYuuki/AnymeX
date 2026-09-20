@@ -23,6 +23,7 @@ class AnymeXDialog extends StatelessWidget {
   final VoidCallback? onCancel;
   final dynamic Function()? cancelResultGetter;
   final String cancelText;
+  final bool autoDismiss;
 
   const AnymeXDialog({
     super.key,
@@ -41,6 +42,7 @@ class AnymeXDialog extends StatelessWidget {
     this.onCancel,
     this.cancelResultGetter,
     this.cancelText = 'Cancel',
+    this.autoDismiss = true,
   });
 
   void show(BuildContext context) {
@@ -62,6 +64,7 @@ class AnymeXDialog extends StatelessWidget {
         cancelText: cancelText,
         confirmResultGetter: confirmResultGetter,
         cancelResultGetter: cancelResultGetter,
+        autoDismiss: autoDismiss,
       ),
     );
   }
@@ -222,18 +225,20 @@ class AnymeXDialog extends StatelessWidget {
                                         const SizedBox(width: 4),
                                       ],
                                       Expanded(
-                                        child: AnymexOnTap(
-                                          onTap: isConfirmEnabled
-                                              ? () {
-                                                  final result =
-                                                      confirmResultGetter
-                                                          ?.call();
-                                                  Get.back(result: result);
-                                                  onConfirm.call();
-                                                }
-                                              : () {},
-                                          scale: 0.95,
-                                          child: Container(
+                                          child: AnymexOnTap(
+                                            onTap: isConfirmEnabled
+                                                ? () {
+                                                    if (autoDismiss) {
+                                                      final result =
+                                                          confirmResultGetter
+                                                              ?.call();
+                                                      Get.back(result: result);
+                                                    }
+                                                    onConfirm.call();
+                                                  }
+                                                : () {},
+                                            scale: 0.95,
+                                            child: Container(
                                             height: 48,
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
