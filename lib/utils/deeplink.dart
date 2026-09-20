@@ -325,6 +325,18 @@ class Deeplink {
 
   static Future<void> _openHydratedMediaTarget(
       _MediaDeepLinkTarget target) async {
+    final handler = Get.find<ServiceHandler>();
+    final hasToken = AuthKeys.authToken.get<String>('').isNotEmpty ||
+        AuthKeys.malAuthToken.get<String>('').isNotEmpty ||
+        AuthKeys.simklAuthToken.get<String>('').isNotEmpty;
+    if (hasToken && !handler.isLoggedIn.value) {
+      int attempts = 0;
+      while (!handler.isLoggedIn.value && attempts < 25) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        attempts++;
+      }
+    }
+
     Media media = Media(
       id: target.mediaId,
       serviceType: target.serviceType,
@@ -342,9 +354,7 @@ class Deeplink {
       fetchedMedia.serviceType = target.serviceType;
       fetchedMedia.mediaType = target.isManga ? ItemType.manga : ItemType.anime;
       media = fetchedMedia;
-    } catch (_) {
-      // Fallback to minimal media payload if details request fails.
-    }
+    } catch (_) {}
 
     final tag = 'deep-link-${DateTime.now().millisecondsSinceEpoch}';
 
