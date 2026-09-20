@@ -59,9 +59,8 @@ class UserCommentsSheet {
                       ? snapshot.data![1] as Map<String, dynamic>?
                       : null;
 
-                  return ListView(
-                    controller: scrollController,
-                    padding: EdgeInsets.zero,
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Center(
                         child: Container(
@@ -326,7 +325,7 @@ class UserCommentsSheet {
                         width: double.infinity,
                         child: FilledButton.icon(
                           onPressed: () {
-                            Navigator.pop(sheetContext);
+                            Navigator.pop(context);
                             final parsedId = int.tryParse(comment.userId);
                             if (isSelf) {
                               navigate(() => const ProfilePage());

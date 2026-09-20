@@ -169,7 +169,6 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                             ),
                           )
                         : ListView.separated(
-                            controller: scrollController,
                             padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
                             itemCount: _entries.length,
                             separatorBuilder: (_, __) => const SizedBox(height: 8),
