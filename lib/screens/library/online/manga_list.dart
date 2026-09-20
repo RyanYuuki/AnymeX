@@ -87,6 +87,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   String _searchQuery = '';
   late ScrollController _tabScrollController;
   final _selectedTabIndex = ValueNotifier<int>(0);
+  final List<GlobalKey> _tabKeys = [];
 
   _MangaSortMode _sortMode = _MangaSortMode.lastUpdated;
   bool _sortAscending = false;
@@ -197,21 +198,16 @@ class _AnilistMangaListState extends State<AnilistMangaList>
 
   void _scrollToTab(int index) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_tabScrollController.hasClients) return;
-      const tabEstimatedWidth = 120.0;
-      final screenWidth = MediaQuery.sizeOf(context).width;
-      final targetOffset = (index * (tabEstimatedWidth + 3)) -
-          (screenWidth / 2) +
-          (tabEstimatedWidth / 2);
-      final clampedOffset = targetOffset.clamp(
-        0.0,
-        _tabScrollController.position.maxScrollExtent,
-      );
-      _tabScrollController.animateTo(
-        clampedOffset,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-      );
+      if (!mounted || index < 0 || index >= _tabKeys.length) return;
+      final keyContext = _tabKeys[index].currentContext;
+      if (keyContext != null) {
+        Scrollable.ensureVisible(
+          keyContext,
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+        );
+      }
     });
   }
 
@@ -219,6 +215,8 @@ class _AnilistMangaListState extends State<AnilistMangaList>
     _tabController?.removeListener(_onTabChanged);
     _tabController?.animation?.removeListener(_onTabChanged);
     _tabController?.dispose();
+    _tabKeys.clear();
+    _tabKeys.addAll(List.generate(orderedTabs.length, (_) => GlobalKey()));
     final requestedInitialTab = widget.initialTab;
     final initialIndex = requestedInitialTab == null
         ? 0
@@ -642,13 +640,16 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               final tab = orderedTabs[index];
               final count = (tabFilteredItems[tab] ?? []).length;
               final isSelected = currentSelected == index;
-              return _buildTabItem(
-                context,
-                index: index,
-                total: orderedTabs.length,
-                tab: tab,
-                count: count,
-                isSelected: isSelected,
+              return KeyedSubtree(
+                key: index < _tabKeys.length ? _tabKeys[index] : null,
+                child: _buildTabItem(
+                  context,
+                  index: index,
+                  total: orderedTabs.length,
+                  tab: tab,
+                  count: count,
+                  isSelected: isSelected,
+                ),
               );
             },
           );
@@ -660,67 +661,77 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   Widget _buildHeaderActions(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: _openRandom,
-          icon: const Icon(Iconsax.shuffle, size: 20),
-          tooltip: 'Random',
-        ),
-        IconButton(
-          onPressed: () => _showGenreFilter(context),
-          icon: Badge(
-            isLabelVisible: _selectedGenres.isNotEmpty,
-            label: AnymeXText('${_selectedGenres.length}',
-                style: const TextStyle(fontSize: 9)),
-            child: const Icon(Iconsax.filter, size: 20),
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert_rounded, size: 22),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      onSelected: (val) {
+        switch (val) {
+          case 'shuffle':
+            _openRandom();
+            break;
+          case 'filter':
+            _showGenreFilter(context);
+            break;
+          case 'sort':
+            _showSortMenu(context);
+            break;
+          case 'reverse_tabs':
+            setState(() {
+              _isReversed = !_isReversed;
+              _initTabController();
+            });
+            break;
+        }
+      },
+      itemBuilder: (ctx) => [
+        PopupMenuItem(
+          value: 'shuffle',
+          child: Row(
+            children: [
+              Icon(Iconsax.shuffle,
+                  size: 20, color: colors.onSurfaceVariant),
+              const SizedBox(width: 12),
+              const AnymeXText('Random'),
+            ],
           ),
-          tooltip: 'Filter genres',
         ),
-        PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert_rounded, size: 22),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+        PopupMenuItem(
+          value: 'filter',
+          child: Row(
+            children: [
+              Icon(Iconsax.filter,
+                  size: 20, color: colors.onSurfaceVariant),
+              const SizedBox(width: 12),
+              AnymeXText(_selectedGenres.isNotEmpty
+                  ? 'Filter genres (${_selectedGenres.length})'
+                  : 'Filter genres'),
+            ],
           ),
-          onSelected: (val) {
-            switch (val) {
-              case 'sort':
-                _showSortMenu(context);
-                break;
-              case 'reverse_tabs':
-                setState(() {
-                  _isReversed = !_isReversed;
-                  _initTabController();
-                });
-                break;
-            }
-          },
-          itemBuilder: (ctx) => [
-            PopupMenuItem(
-              value: 'sort',
-              child: Row(
-                children: [
-                  Icon(Icons.sort_rounded,
-                      size: 20, color: colors.onSurfaceVariant),
-                  const SizedBox(width: 12),
-                  const AnymeXText('Sort'),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'reverse_tabs',
-              child: Row(
-                children: [
-                  Icon(Iconsax.arrow_swap_horizontal,
-                      size: 20, color: colors.onSurfaceVariant),
-                  const SizedBox(width: 12),
-                  AnymeXText(
-                      _isReversed ? 'Default tab order' : 'Reverse tabs'),
-                ],
-              ),
-            ),
-          ],
+        ),
+        PopupMenuItem(
+          value: 'sort',
+          child: Row(
+            children: [
+              Icon(Icons.sort_rounded,
+                  size: 20, color: colors.onSurfaceVariant),
+              const SizedBox(width: 12),
+              const AnymeXText('Sort'),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'reverse_tabs',
+          child: Row(
+            children: [
+              Icon(Iconsax.arrow_swap_horizontal,
+                  size: 20, color: colors.onSurfaceVariant),
+              const SizedBox(width: 12),
+              AnymeXText(
+                  _isReversed ? 'Default tab order' : 'Reverse tabs'),
+            ],
+          ),
         ),
       ],
     );
@@ -729,8 +740,6 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final anilistAuth = Get.find<ServiceHandler>();
-    final userName = widget.userName ?? anilistAuth.profileData.value.name;
     final mangaList = activeMediaList;
     final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
 
@@ -746,7 +755,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: "$userName's ${widget.title ?? 'Manga'} List",
+      headerTitle: widget.title ?? 'Manga List',
       headerSubtitle: _selectedGenres.isNotEmpty
           ? '${_selectedGenres.length} genre(s) filtered'
           : '${activeMediaList.length} Manga',
