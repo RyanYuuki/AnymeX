@@ -367,6 +367,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       DeviceOrientation.landscapeLeft.obs;
   final Rx<DeviceOrientation> physicalOrientation =
       DeviceOrientation.portraitUp.obs;
+  final RxBool isOrientationLocked = false.obs;
   StreamSubscription? _accelerometerSub;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
@@ -702,9 +703,18 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _initPhysicalOrientationListener();
 
     if (Platform.isAndroid || Platform.isIOS) {
-      if (playerSettings.defaultPortraitMode) {
+      final defaultMode = playerSettings.defaultOrientation;
+      if (defaultMode == 'portrait' || playerSettings.defaultPortraitMode) {
+        isOrientationLocked.value = true;
         _applyOrientation(DeviceOrientation.portraitUp);
+      } else if (defaultMode == 'landscape_left') {
+        isOrientationLocked.value = true;
+        _applyOrientation(DeviceOrientation.landscapeLeft);
+      } else if (defaultMode == 'landscape_right') {
+        isOrientationLocked.value = true;
+        _applyOrientation(DeviceOrientation.landscapeRight);
       } else {
+        isOrientationLocked.value = false;
         final orientation = await _getClosestLandscapeOrientation();
         _applyOrientation(orientation);
       }
@@ -719,17 +729,36 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .listen((event) {
         final x = event.x;
         final y = event.y;
-        if (x.abs() > y.abs()) {
-          if (x > 5.0) {
-            physicalOrientation.value = DeviceOrientation.landscapeLeft;
-          } else if (x < -5.0) {
-            physicalOrientation.value = DeviceOrientation.landscapeRight;
+        final defaultMode = playerSettings.defaultOrientation;
+        DeviceOrientation? targetOrientation;
+
+        if (defaultMode == 'auto_full') {
+          if (x.abs() > y.abs()) {
+            if (x > 3.0) {
+              targetOrientation = DeviceOrientation.landscapeLeft;
+            } else if (x < -3.0) {
+              targetOrientation = DeviceOrientation.landscapeRight;
+            }
+          } else {
+            if (y > 3.0) {
+              targetOrientation = DeviceOrientation.portraitUp;
+            } else if (y < -3.0) {
+              targetOrientation = DeviceOrientation.portraitDown;
+            }
           }
         } else {
-          if (y > 5.0) {
-            physicalOrientation.value = DeviceOrientation.portraitUp;
-          } else if (y < -5.0) {
-            physicalOrientation.value = DeviceOrientation.portraitDown;
+          if (x > 2.5) {
+            targetOrientation = DeviceOrientation.landscapeLeft;
+          } else if (x < -2.5) {
+            targetOrientation = DeviceOrientation.landscapeRight;
+          }
+        }
+
+        if (targetOrientation != null) {
+          physicalOrientation.value = targetOrientation;
+          if (!isOrientationLocked.value &&
+              currentOrientation.value != targetOrientation) {
+            _applyOrientation(targetOrientation);
           }
         }
       });
@@ -781,19 +810,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleOrientation() {
-    if (currentOrientation.value != physicalOrientation.value) {
-      _applyOrientation(physicalOrientation.value);
-      return;
-    }
-    DeviceOrientation next;
-    if (currentOrientation.value == DeviceOrientation.landscapeLeft) {
-      next = DeviceOrientation.portraitUp;
-    } else if (currentOrientation.value == DeviceOrientation.portraitUp) {
-      next = DeviceOrientation.landscapeRight;
+    isOrientationLocked.value = !isOrientationLocked.value;
+    if (!isOrientationLocked.value) {
+      if (currentOrientation.value != physicalOrientation.value) {
+        _applyOrientation(physicalOrientation.value);
+      }
+      snackBar('Orientation Unlocked');
     } else {
-      next = DeviceOrientation.landscapeLeft;
+      snackBar('Orientation Locked');
     }
-    _applyOrientation(next);
   }
 
   void _performSegmentSkip(aniskip.SkipIntervals interval) {
