@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -9,7 +9,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -49,20 +49,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (Platform.isWindows || Platform.isLinux)
-                      AnymeXSectionBuilder(
-                        title: 'Bridge Settings (Desktop)',
-                        children: [
-                          Obx(() => AnymeXTile(
-                                icon: Icons.settings_input_component_rounded,
-                                title: 'Bridge Mode (Requires Restart)',
-                                subtitle: settings.bridgeMode.value == 'jni'
-                                    ? 'JNI Mode is on. Reliable performance.'
-                                    : 'Sidecar Mode is on. Independent process.',
-                                onTap: () => _showBridgeModeDialog(),
-                              )),
-                        ],
-                      ),
                     AnymeXSectionBuilder(
                       title: 'Universal',
                       children: [
@@ -105,6 +91,16 @@ class _SettingsCommonState extends State<SettingsCommon> {
                             });
                           },
                         ),
+                        Obx(() => AnymeXTile.toggle(
+                              icon: Icons.play_circle_outline_rounded,
+                              title: 'Show Continue Watching on Home',
+                              subtitle:
+                                  'If enabled, a continue watching bar will be shown above the bottom navigation bar on the home page.',
+                              value: settings.showHomeContinueWatching.value,
+                              onChanged: (e) {
+                                settings.saveShowHomeContinueWatching(e);
+                              },
+                            )),
                       ],
                     ),
                     AnymeXSectionBuilder(
@@ -411,44 +407,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
             },
           );
         },
-      ),
-    );
-  }
-
-  void _showBridgeModeDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AnymeXDialog(
-        title: 'Select Bridge Mode',
-        showCancelButton: false,
-        confirmText: 'Dismiss',
-        onConfirm: () {},
-        contentWidget: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnymeXTile.radio(
-              title: 'JNI Mode (Recommended)',
-              subtitle: 'Faster performance and direct integration.',
-              selected: settings.bridgeMode.value == 'jni',
-              onTap: () {
-                settings.saveBridgeMode('jni');
-                Navigator.pop(context);
-                snackBar('Bridge Mode set to JNI. Restart required.');
-              },
-            ),
-            const SizedBox(height: 8),
-            AnymeXTile.radio(
-              title: 'Sidecar Mode',
-              subtitle: 'Separate process, higher stability.',
-              selected: settings.bridgeMode.value == 'sidecar',
-              onTap: () {
-                settings.saveBridgeMode('sidecar');
-                Navigator.pop(context);
-                snackBar('Bridge Mode set to Sidecar. Restart required.');
-              },
-            ),
-          ],
-        ),
       ),
     );
   }
