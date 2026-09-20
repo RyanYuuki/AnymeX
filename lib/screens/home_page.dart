@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0),
         child: SizedBox(
-          height: 155,
+          height: 110,
           child: RepaintBoundary(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
