@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -15,7 +14,6 @@ import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -624,21 +622,34 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
 
   static const _tabs = ['Sort Options', 'Layout Settings'];
 
+  void _onTabChanged() {
+    if (!mounted) return;
+    final int newIndex;
+    if (_tabController.indexIsChanging) {
+      newIndex = _tabController.index;
+    } else if (_tabController.animation != null) {
+      newIndex = _tabController.animation!.value.round();
+    } else {
+      newIndex = _tabController.index;
+    }
+    final clamped = newIndex.clamp(0, _tabs.length - 1);
+    if (clamped != _selectedIndex) {
+      setState(() => _selectedIndex = clamped);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.index != _selectedIndex) {
-        setState(() {
-          _selectedIndex = _tabController.index;
-        });
-      }
-    });
+    _tabController.addListener(_onTabChanged);
+    _tabController.animation?.addListener(_onTabChanged);
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
+    _tabController.animation?.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }

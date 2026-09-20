@@ -42,6 +42,7 @@ class _CalendarState extends State<Calendar>
   late ScrollController _tabScrollController;
   int _selectedTabIndex = 0;
   List<DateTime> dateTabs = [];
+  final List<GlobalKey> _tabKeys = [];
   bool isGrid = true;
   bool isLoading = true;
   bool hasError = false;
@@ -63,9 +64,12 @@ class _CalendarState extends State<Calendar>
 
     dateTabs =
         List.generate(7, (index) => DateTime.now().add(Duration(days: index)));
+    _tabKeys.clear();
+    _tabKeys.addAll(List.generate(dateTabs.length, (_) => GlobalKey()));
 
     _tabController = TabController(length: dateTabs.length, vsync: this);
     _tabController.addListener(_onTabControllerChanged);
+    _tabController.animation?.addListener(_onTabControllerChanged);
   }
 
   void _loadData() {
@@ -200,37 +204,43 @@ class _CalendarState extends State<Calendar>
 
   void _onTabControllerChanged() {
     if (!mounted) return;
-    if (_tabController.index != _selectedTabIndex) {
+    final int newIndex;
+    if (_tabController.indexIsChanging) {
+      newIndex = _tabController.index;
+    } else if (_tabController.animation != null) {
+      newIndex = _tabController.animation!.value.round();
+    } else {
+      newIndex = _tabController.index;
+    }
+    final clampedIndex =
+        newIndex.clamp(0, (dateTabs.length - 1).clamp(0, 9999));
+    if (clampedIndex != _selectedTabIndex) {
       setState(() {
-        _selectedTabIndex = _tabController.index;
+        _selectedTabIndex = clampedIndex;
       });
-      _scrollToTab(_selectedTabIndex);
+      _scrollToTab(clampedIndex);
     }
   }
 
   void _scrollToTab(int index) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_tabScrollController.hasClients) return;
-      const tabEstimatedWidth = 140.0;
-      final screenWidth = MediaQuery.sizeOf(context).width;
-      final targetOffset = (index * (tabEstimatedWidth + 8)) -
-          (screenWidth / 2) +
-          (tabEstimatedWidth / 2);
-      final clampedOffset = targetOffset.clamp(
-        0.0,
-        _tabScrollController.position.maxScrollExtent,
-      );
-      _tabScrollController.animateTo(
-        clampedOffset,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-      );
+      if (!mounted || index < 0 || index >= _tabKeys.length) return;
+      final keyContext = _tabKeys[index].currentContext;
+      if (keyContext != null) {
+        Scrollable.ensureVisible(
+          keyContext,
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+        );
+      }
     });
   }
 
   @override
   void dispose() {
     _tabController.removeListener(_onTabControllerChanged);
+    _tabController.animation?.removeListener(_onTabControllerChanged);
     _tabController.dispose();
     _tabScrollController.dispose();
     super.dispose();
@@ -322,6 +332,12 @@ class _CalendarState extends State<Calendar>
         scale: 0.95,
         onTap: () {
           HapticFeedback.lightImpact();
+          if (_selectedTabIndex != index) {
+            setState(() {
+              _selectedTabIndex = index;
+            });
+            _scrollToTab(index);
+          }
           _tabController.animateTo(index);
         },
         child: AnimatedContainer(
@@ -406,7 +422,10 @@ class _CalendarState extends State<Calendar>
         itemBuilder: (context, index) {
           final date = dateTabs[index];
           final isSelected = _selectedTabIndex == index;
-          return _buildDateTab(context, index, date, isSelected);
+          return KeyedSubtree(
+            key: index < _tabKeys.length ? _tabKeys[index] : null,
+            child: _buildDateTab(context, index, date, isSelected),
+          );
         },
       ),
     );
