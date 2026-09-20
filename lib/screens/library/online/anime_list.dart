@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
@@ -570,6 +571,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
     required bool isSelected,
   }) {
     final theme = Theme.of(context);
+    final borderRadius = _tabBorder(index, total, isSelected);
 
     return AnymexOnTap(
       margin: 0,
@@ -578,55 +580,70 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
         HapticFeedback.lightImpact();
         _tabController?.animateTo(index);
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? theme.colorScheme.primary.opaque(0.18, iReallyMeanIt: true)
-              : theme.colorScheme.surfaceContainerHighest
-                  .opaque(0.3, iReallyMeanIt: true),
-          borderRadius: _tabBorder(index, total, isSelected),
-          border: Border.all(
-            color: isSelected
-                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                : theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
-            width: 0.5,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnymeXText(
-              tab.toUpperCase(),
-              variant: isSelected ? TextVariant.bold : TextVariant.semiBold,
-              size: 13,
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
               color: isSelected
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface,
-            ),
-            const SizedBox(width: 8),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-              decoration: BoxDecoration(
+                  ? theme.colorScheme.primary.opaque(0.18, iReallyMeanIt: true)
+                  : theme.colorScheme.surfaceContainer.opaque(0.55),
+              borderRadius: borderRadius,
+              border: Border.all(
                 color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.surfaceContainerHighest
-                        .opaque(0.5, iReallyMeanIt: true),
-                borderRadius: BorderRadius.circular(10),
+                    ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                    : theme.colorScheme.onSurface
+                        .opaque(0.08, iReallyMeanIt: true),
+                width: 0.5,
               ),
-              child: AnymeXText(
-                count.toString(),
-                variant: TextVariant.bold,
-                size: 11,
-                color: isSelected
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurfaceVariant.opaque(0.8),
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.opaque(0.08, iReallyMeanIt: true),
+                  blurRadius: 24,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnymeXText(
+                  tab.toUpperCase(),
+                  variant: isSelected ? TextVariant.bold : TextVariant.semiBold,
+                  size: 13,
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface,
+                ),
+                const SizedBox(width: 8),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surfaceContainerHighest
+                            .opaque(0.5, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: AnymeXText(
+                    count.toString(),
+                    variant: TextVariant.bold,
+                    size: 11,
+                    color: isSelected
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.onSurfaceVariant.opaque(0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

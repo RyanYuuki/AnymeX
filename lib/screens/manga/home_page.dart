@@ -79,7 +79,7 @@ class _MangaHomePageState extends State<MangaHomePage> {
                     children: serviceHandler.mangaWidgets(context),
                   );
                 }),
-                SizedBox(height: bottomNavBarHeight),
+                SizedBox(height: bottomNavBarHeight + 150),
               ],
             ),
           ),

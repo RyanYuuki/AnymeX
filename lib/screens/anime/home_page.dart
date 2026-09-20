@@ -157,7 +157,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                           sources: sources.value,
                           itemType: currentType,
                         )),
-                    SizedBox(height: bottomNavBarHeight + 60),
+                    SizedBox(height: bottomNavBarHeight + 150),
                   ],
                 ),
               );
@@ -276,7 +276,7 @@ class _ContentPage extends StatelessWidget {
           SizedBox(height: statusBarHeight + appBarHeight),
           const SizedBox(height: 10),
           ...widgets,
-          SizedBox(height: bottomNavBarHeight + 60),
+          SizedBox(height: bottomNavBarHeight + 150),
         ],
       ),
     );

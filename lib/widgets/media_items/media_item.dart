@@ -118,7 +118,7 @@ class GridAnimeCard extends StatelessWidget {
     final media = data is Media
         ? CardData.fromMedia(data)
         : CardData.fromTrackedMedia(data);
-    final itemType = type ??
+    ItemType itemType = type ??
         (isManga
             ? (data is Media && data.mediaType == ItemType.novel
                 ? ItemType.novel
