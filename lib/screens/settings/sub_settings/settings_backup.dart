@@ -28,12 +28,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
     final passwordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
     bool usePassword = false;
-    Set<String> selectedSettingsCategories = {};
-    Set<String> selectedExtensionIds = {};
-    bool backupAnime = true;
-    bool backupManga = true;
-    bool backupNovel = true;
-    bool backupCustomLists = true;
+    bool backupSettings = true;
+    bool backupAuthTokens = false;
     bool hasSelected = false;
 
     await showDialog(
@@ -41,22 +37,10 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
       builder: (context) => BackupPasswordDialog(
         passwordController: passwordController,
         confirmPasswordController: confirmPasswordController,
-        onConfirm: (
-          usePass,
-          categories,
-          extensionIds,
-          bAnime,
-          bManga,
-          bNovel,
-          bCustomLists,
-        ) {
+        onConfirm: (usePass, backSettings, backAuthTokens) {
           usePassword = usePass;
-          selectedSettingsCategories = categories;
-          selectedExtensionIds = extensionIds;
-          backupAnime = bAnime;
-          backupManga = bManga;
-          backupNovel = bNovel;
-          backupCustomLists = bCustomLists;
+          backupSettings = backSettings;
+          backupAuthTokens = backAuthTokens;
           hasSelected = true;
         },
       ),
@@ -80,15 +64,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
 
       final path = await controller.exportBackupToExternal(
         password: password,
-        backupSettings: selectedSettingsCategories.isNotEmpty,
-        backupAuthTokens:
-            selectedSettingsCategories.contains(SettingsCategory.accounts),
-        selectedSettingsCategories: selectedSettingsCategories,
-        selectedExtensionIds: selectedExtensionIds,
-        backupAnime: backupAnime,
-        backupManga: backupManga,
-        backupNovel: backupNovel,
-        backupCustomLists: backupCustomLists,
+        backupSettings: backupSettings,
+        backupAuthTokens: backupAuthTokens,
       );
       if (path != null && mounted) {
         snackBar("Backup saved successfully!");
@@ -128,14 +105,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         RestorePreviewSheet(
           info: info,
           isEncrypted: isEncrypted,
-          onConfirm: (
-            selectedCategories,
-            selectedExtensions,
-            restoreAnime,
-            restoreManga,
-            restoreNovel,
-            restoreCustomLists,
-          ) async {
+          onConfirm: (restoreSettings, restoreAuthTokens) async {
             Get.back();
             setState(() {
               controller.isRestoring.value = true;
@@ -145,15 +115,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 path,
                 password: password,
                 merge: false,
-                restoreSettings: selectedCategories.isNotEmpty,
-                restoreAuthTokens: selectedCategories
-                    .contains(SettingsCategory.accounts),
-                selectedSettingsCategories: selectedCategories,
-                selectedExtensionIds: selectedExtensions,
-                restoreAnime: restoreAnime,
-                restoreManga: restoreManga,
-                restoreNovel: restoreNovel,
-                restoreCustomLists: restoreCustomLists,
+                restoreSettings: restoreSettings,
+                restoreAuthTokens: restoreAuthTokens,
               );
               if (mounted) {
                 snackBar(

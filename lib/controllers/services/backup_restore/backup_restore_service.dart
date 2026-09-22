@@ -3,16 +3,12 @@ import 'dart:io';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
-import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/widgets/common/source_selector.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
-import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
-import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -25,94 +21,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../main.dart';
-
-class SettingsCategory {
-  static const common = 'Common';
-  static const ui = 'UI';
-  static const theme = 'Theme';
-  static const player = 'Player';
-  static const reader = 'Reader';
-  static const accounts = 'Accounts';
-  static const discord = 'Discord';
-  static const downloads = 'Downloads';
-  static const extensions = 'Extensions';
-
-  static const List<String> all = [
-    common,
-    ui,
-    theme,
-    player,
-    reader,
-    accounts,
-    discord,
-    downloads,
-    extensions,
-  ];
-
-  static String getCategoryForKey(String key) {
-    if (key.startsWith('AuthKeys_') ||
-        key.startsWith('auth') ||
-        key.contains('AuthToken')) {
-      return accounts;
-    }
-    if (key.contains('discord') || key.contains('Discord')) {
-      return discord;
-    }
-    if (key.startsWith('ThemeKeys_') ||
-        key.startsWith('Theme_') ||
-        key.contains('Color') ||
-        key.contains('isOled') ||
-        key.contains('isLightMode') ||
-        key.contains('isSystemMode') ||
-        key.contains('logo')) {
-      return theme;
-    }
-    if (key.startsWith('PlayerKeys_') ||
-        key.startsWith('PlayerSettingsKeys_') ||
-        key.startsWith('PlayerUiKeys_') ||
-        key.contains('player') ||
-        key.contains('subtitle') ||
-        key.contains('autoSkip') ||
-        key.contains('useLibass') ||
-        key.contains('useMediaKit')) {
-      return player;
-    }
-    if (key.startsWith('ReaderKeys_') ||
-        key.startsWith('NovelReaderKeys_') ||
-        key.startsWith('TapZoneKeys_') ||
-        key.contains('reader') ||
-        key.contains('chapter') ||
-        key.contains('reading') ||
-        key.contains('dualPage') ||
-        key.contains('tts') ||
-        key.contains('tapZone')) {
-      return reader;
-    }
-    if (key.startsWith('LocalSourceKeys_') ||
-        key.contains('watchOffline') ||
-        key.contains('download')) {
-      return downloads;
-    }
-    if (key.startsWith('SourceKeys_') ||
-        key.startsWith('PluginKeys_') ||
-        key.contains('activeAnimeRepo') ||
-        key.contains('activeMangaRepo') ||
-        key.contains('activeNovelRepo') ||
-        key.contains('extension')) {
-      return extensions;
-    }
-    if (key.startsWith('navigationTabOrder') ||
-        key.startsWith('UISettings') ||
-        key.startsWith('LibraryKeys_') ||
-        key.contains('uiScaler') ||
-        key.contains('showHomeContinueWatching') ||
-        key.contains('grid') ||
-        key.contains('unifiedLibrary')) {
-      return ui;
-    }
-    return common;
-  }
-}
 
 class BackupRestoreService extends GetxController {
   final OfflineStorageController _storageController = Get.find();
@@ -133,32 +41,17 @@ class BackupRestoreService extends GetxController {
   Future<Map<String, dynamic>> _buildBackupData({
     bool backupSettings = true,
     bool backupAuthTokens = false,
-    Set<String>? selectedSettingsCategories,
-    Set<String>? selectedExtensionIds,
-    bool backupAnime = true,
-    bool backupManga = true,
-    bool backupNovel = true,
-    bool backupCustomLists = true,
   }) async {
-    final animeCustomLists = backupCustomLists
-        ? await _storageController.getCustomListsByType(ItemType.anime)
-        : <CustomList>[];
-    final mangaCustomLists = backupCustomLists
-        ? await _storageController.getCustomListsByType(ItemType.manga)
-        : <CustomList>[];
-    final novelCustomLists = backupCustomLists
-        ? await _storageController.getCustomListsByType(ItemType.novel)
-        : <CustomList>[];
+    final animeCustomLists =
+        await _storageController.getCustomListsByType(ItemType.anime);
+    final mangaCustomLists =
+        await _storageController.getCustomListsByType(ItemType.manga);
+    final novelCustomLists =
+        await _storageController.getCustomListsByType(ItemType.novel);
 
-    final animeLibrary = backupAnime
-        ? await _storageController.getAnimeLibrary()
-        : <OfflineMedia>[];
-    final mangaLibrary = backupManga
-        ? await _storageController.getMangaLibrary()
-        : <OfflineMedia>[];
-    final novelLibrary = backupNovel
-        ? await _storageController.getNovelLibrary()
-        : <OfflineMedia>[];
+    final animeLibrary = await _storageController.getAnimeLibrary();
+    final mangaLibrary = await _storageController.getMangaLibrary();
+    final novelLibrary = await _storageController.getNovelLibrary();
 
     final animeCount = animeCustomLists.fold<int>(
       0,
@@ -175,88 +68,6 @@ class BackupRestoreService extends GetxController {
       (sum, list) => sum + (list.mediaIds?.length ?? 0),
     );
 
-    final settingsEntries = isar
-        .collection<KeyValue>()
-        .where()
-        .findAllSync()
-        .where((e) {
-          final cat = SettingsCategory.getCategoryForKey(e.key);
-          if (selectedSettingsCategories != null) {
-            return selectedSettingsCategories.contains(cat);
-          }
-          final isAuth = cat == SettingsCategory.accounts;
-          if (isAuth) return backupAuthTokens;
-          return backupSettings;
-        })
-        .map((e) => {'key': e.key, 'value': e.value})
-        .toList();
-
-    final sourceCtrl = Get.isRegistered<SourceController>()
-        ? Get.find<SourceController>()
-        : null;
-    final em = Get.isRegistered<ExtensionManager>()
-        ? Get.find<ExtensionManager>()
-        : null;
-
-    final allSources = <Source>[];
-    if (sourceCtrl != null) {
-      allSources.addAll(sourceCtrl.installedExtensions);
-      allSources.addAll(sourceCtrl.installedMangaExtensions);
-      allSources.addAll(sourceCtrl.installedNovelExtensions);
-    }
-
-    final exportedExtensions = <Map<String, dynamic>>[];
-    for (final s in allSources) {
-      if (selectedExtensionIds == null || selectedExtensionIds.contains(s.id)) {
-        final managerName = sourceTypeName(s);
-        ItemType? type;
-        if (sourceCtrl?.installedExtensions.any((e) => e.id == s.id) == true) {
-          type = ItemType.anime;
-        } else if (sourceCtrl?.installedMangaExtensions
-                .any((e) => e.id == s.id) ==
-            true) {
-          type = ItemType.manga;
-        } else if (sourceCtrl?.installedNovelExtensions
-                .any((e) => e.id == s.id) ==
-            true) {
-          type = ItemType.novel;
-        }
-
-        exportedExtensions.add({
-          'id': s.id,
-          'name': s.name,
-          'lang': s.lang,
-          'version': s.version,
-          'baseUrl': s.baseUrl,
-          'iconUrl': s.iconUrl,
-          'managerName': managerName,
-          'mediaType': type?.name,
-        });
-      }
-    }
-
-    final repoData = <Map<String, dynamic>>[];
-    if (em != null && exportedExtensions.isNotEmpty) {
-      for (final manager in em.managers) {
-        for (final type in [ItemType.anime, ItemType.manga, ItemType.novel]) {
-          try {
-            final repos = manager.getReposRx(type).value;
-            for (final r in repos) {
-              if (r.url.isNotEmpty) {
-                repoData.add({
-                  'url': r.url,
-                  'name': r.name,
-                  'type': type.name,
-                  'managerId': manager.id,
-                  'managerName': manager.name,
-                });
-              }
-            }
-          } catch (_) {}
-        }
-      }
-    }
-
     return {
       'date': DateFormat('dd MM yyyy hh:mm a').format(DateTime.now()),
       'appVersion': '',
@@ -272,87 +83,74 @@ class BackupRestoreService extends GetxController {
       'animeCustomLists': animeCustomLists.map((e) => e.toJson()).toList(),
       'mangaCustomLists': mangaCustomLists.map((e) => e.toJson()).toList(),
       'novelCustomLists': novelCustomLists.map((e) => e.toJson()).toList(),
-      'settings': settingsEntries,
-      'extensions': exportedExtensions,
-      'repositories': repoData,
+      'settings': isar.collection<KeyValue>()
+          .where()
+          .findAllSync()
+          .where((e) {
+            final isAuth = e.key.startsWith('AuthKeys_') ?? false;
+            if (isAuth) return backupAuthTokens;
+            return backupSettings;
+          })
+          .map((e) => {'key': e.key, 'value': e.value})
+          .toList(),
     };
   }
 
-  Future<void> _applyBackupData(
-    Map<String, dynamic> data, {
-    bool merge = false,
-    bool restoreSettings = true,
-    bool restoreAuthTokens = false,
-    Set<String>? selectedSettingsCategories,
-    Set<String>? selectedExtensionIds,
-    bool restoreAnime = true,
-    bool restoreManga = true,
-    bool restoreNovel = true,
-    bool restoreCustomLists = true,
-  }) async {
-    if (!merge &&
-        restoreAnime &&
-        restoreManga &&
-        restoreNovel &&
-        restoreCustomLists) {
+  Future<void> _applyBackupData(Map<String, dynamic> data,
+      {bool merge = false,
+      bool restoreSettings = true,
+      bool restoreAuthTokens = false}) async {
+    if (!merge) {
       await _storageController.clearCache();
     }
 
-    final animeList = restoreAnime
-        ? ((data['animeLibrary'] as List?)
-                ?.map((e) => OfflineMedia.fromJson(
-                    (e as Map<String, dynamic>)..["mediaTypeIndex"] = 1))
-                .toList() ??
-            [])
-        : <OfflineMedia>[];
+    final animeList = (data['animeLibrary'] as List?)
+            ?.map((e) => OfflineMedia.fromJson(
+                (e as Map<String, dynamic>)..["mediaTypeIndex"] = 1))
+            .toList() ??
+        [];
 
-    final mangaList = restoreManga
-        ? ((data['mangaLibrary'] as List?)
-                ?.map((e) => OfflineMedia.fromJson(
-                    (e as Map<String, dynamic>)..["mediaTypeIndex"] = 0))
-                .toList() ??
-            [])
-        : <OfflineMedia>[];
+    final mangaList = (data['mangaLibrary'] as List?)
+            ?.map((e) => OfflineMedia.fromJson(
+                (e as Map<String, dynamic>)..["mediaTypeIndex"] = 0))
+            .toList() ??
+        [];
 
-    final novelList = restoreNovel
-        ? ((data['novelLibrary'] as List?)
-                ?.map((e) => OfflineMedia.fromJson(
-                    (e as Map<String, dynamic>)..["mediaTypeIndex"] = 2))
-                .toList() ??
-            [])
-        : <OfflineMedia>[];
+    final novelList = (data['novelLibrary'] as List?)
+            ?.map((e) => OfflineMedia.fromJson(
+                (e as Map<String, dynamic>)..["mediaTypeIndex"] = 2))
+            .toList() ??
+        [];
 
-    if (animeList.isNotEmpty || mangaList.isNotEmpty || novelList.isNotEmpty) {
-      await isar.writeTxn(() async {
-        if (merge) {
-          for (var anime in animeList) {
-            if (_storageController.getMediaById(anime.mediaId ?? '') == null) {
-              await isar.offlineMedias.put(anime);
-            }
+    await isar.writeTxn(() async {
+      if (merge) {
+        for (var anime in animeList) {
+          if (_storageController.getMediaById(anime.mediaId ?? '') == null) {
+            await isar.offlineMedias.put(anime);
           }
-
-          for (var manga in mangaList) {
-            if (_storageController.getMediaById(manga.mediaId ?? '') == null) {
-              await isar.offlineMedias.put(manga);
-            }
-          }
-
-          for (var novel in novelList) {
-            if (_storageController.getMediaById(novel.mediaId ?? '') == null) {
-              await isar.offlineMedias.put(novel);
-            }
-          }
-        } else {
-          await isar.offlineMedias.putAll([
-            ...animeList,
-            ...mangaList,
-            ...novelList,
-          ]);
         }
-      });
-    }
 
-    if (!merge && restoreCustomLists) {
+        for (var manga in mangaList) {
+          if (_storageController.getMediaById(manga.mediaId ?? '') == null) {
+            await isar.offlineMedias.put(manga);
+          }
+        }
+
+        for (var novel in novelList) {
+          if (_storageController.getMediaById(novel.mediaId ?? '') == null) {
+            await isar.offlineMedias.put(novel);
+          }
+        }
+      } else {
+        await isar.offlineMedias.putAll([
+          ...animeList,
+          ...mangaList,
+          ...novelList,
+        ]);
+      }
+    });
+
+    if (!merge) {
       final animeCustomLists = (data['animeCustomLists'] as List?)
               ?.map((e) => CustomList.fromJson(
                   (e as Map<String, dynamic>)..['mediaTypeIndex'] = 1))
@@ -386,14 +184,9 @@ class BackupRestoreService extends GetxController {
         final key = setting['key'] as String?;
         if (key == null) continue;
 
-        final category = SettingsCategory.getCategoryForKey(key);
-        if (selectedSettingsCategories != null) {
-          if (!selectedSettingsCategories.contains(category)) continue;
-        } else {
-          final isAuth = category == SettingsCategory.accounts;
-          if (isAuth && !restoreAuthTokens) continue;
-          if (!isAuth && !restoreSettings) continue;
-        }
+        final isAuth = key.startsWith('AuthKeys_');
+        if (isAuth && !restoreAuthTokens) continue;
+        if (!isAuth && !restoreSettings) continue;
 
         final kv = KeyValue()
           ..key = key
@@ -401,69 +194,6 @@ class BackupRestoreService extends GetxController {
         await isar.collection<KeyValue>().put(kv);
       }
     });
-
-    final repos = data['repositories'] as List? ?? [];
-    if (repos.isNotEmpty && Get.isRegistered<ExtensionManager>()) {
-      final em = Get.find<ExtensionManager>();
-      for (final r in repos) {
-        final url = r['url'] as String?;
-        final typeName = r['type'] as String?;
-        final managerId = r['managerId'] as String?;
-        if (url != null && typeName != null && managerId != null) {
-          final type =
-              ItemType.values.firstWhereOrNull((t) => t.name == typeName) ??
-                  ItemType.anime;
-          try {
-            await em.addRepos([url], type, managerId);
-          } catch (_) {}
-        }
-      }
-    }
-
-    final extensions = data['extensions'] as List? ?? [];
-    if (extensions.isNotEmpty && Get.isRegistered<SourceController>()) {
-      final sourceCtrl = Get.find<SourceController>();
-      try {
-        await sourceCtrl.fetchRepos();
-      } catch (_) {}
-
-      for (final ext in extensions) {
-        final extId = ext['id'] as String?;
-        final managerName = ext['managerName'] as String? ?? '';
-        if (extId == null) continue;
-        if (selectedExtensionIds != null &&
-            !selectedExtensionIds.contains(extId)) {
-          continue;
-        }
-
-        final isPluginDependent = managerName == 'Aniyomi' ||
-            managerName == 'CloudStream' ||
-            managerName == 'Kotatsu';
-        if (Platform.isIOS && isPluginDependent) {
-          continue;
-        }
-
-        if (isPluginDependent && !AnymeXRuntimeBridge.isPluginInstalled) {
-          continue;
-        }
-
-        final allAvailable = [
-          ...sourceCtrl.availableExtensions,
-          ...sourceCtrl.availableMangaExtensions,
-          ...sourceCtrl.availableNovelExtensions,
-        ];
-        final matchingSource =
-            allAvailable.firstWhereOrNull((s) => s.id == extId);
-        if (matchingSource != null) {
-          try {
-            await matchingSource.install();
-            await sourceCtrl.refreshSourceState(matchingSource);
-          } catch (e) {
-            Logger.i("Auto-install extension error: $e");
-          }
-        }
-      }
-    }
 
     Get.delete<LibraryController>();
   }
@@ -523,12 +253,6 @@ class BackupRestoreService extends GetxController {
     bool requestPath = true,
     bool backupSettings = true,
     bool backupAuthTokens = false,
-    Set<String>? selectedSettingsCategories,
-    Set<String>? selectedExtensionIds,
-    bool backupAnime = true,
-    bool backupManga = true,
-    bool backupNovel = true,
-    bool backupCustomLists = true,
   }) async {
     try {
       if (Platform.isAndroid && requestPath) {
@@ -542,12 +266,6 @@ class BackupRestoreService extends GetxController {
       final data = await _buildBackupData(
         backupSettings: backupSettings,
         backupAuthTokens: backupAuthTokens,
-        selectedSettingsCategories: selectedSettingsCategories,
-        selectedExtensionIds: selectedExtensionIds,
-        backupAnime: backupAnime,
-        backupManga: backupManga,
-        backupNovel: backupNovel,
-        backupCustomLists: backupCustomLists,
       );
       final packageInfo = await PackageInfo.fromPlatform();
       data['appVersion'] = packageInfo.version;
@@ -629,19 +347,11 @@ class BackupRestoreService extends GetxController {
     }
   }
 
-  Future<void> restoreBackup(
-    String filePath, {
-    String? password,
-    bool merge = false,
-    bool restoreSettings = true,
-    bool restoreAuthTokens = false,
-    Set<String>? selectedSettingsCategories,
-    Set<String>? selectedExtensionIds,
-    bool restoreAnime = true,
-    bool restoreManga = true,
-    bool restoreNovel = true,
-    bool restoreCustomLists = true,
-  }) async {
+  Future<void> restoreBackup(String filePath,
+      {String? password,
+      bool merge = false,
+      bool restoreSettings = true,
+      bool restoreAuthTokens = false}) async {
     try {
       final file = File(filePath);
 
@@ -655,18 +365,10 @@ class BackupRestoreService extends GetxController {
           ? _decryptData(content, password)
           : jsonDecode(content) as Map<String, dynamic>;
 
-      await _applyBackupData(
-        data,
-        merge: merge,
-        restoreSettings: restoreSettings,
-        restoreAuthTokens: restoreAuthTokens,
-        selectedSettingsCategories: selectedSettingsCategories,
-        selectedExtensionIds: selectedExtensionIds,
-        restoreAnime: restoreAnime,
-        restoreManga: restoreManga,
-        restoreNovel: restoreNovel,
-        restoreCustomLists: restoreCustomLists,
-      );
+      await _applyBackupData(data,
+          merge: merge,
+          restoreSettings: restoreSettings,
+          restoreAuthTokens: restoreAuthTokens);
 
       Logger.i('Backup restored successfully from: $filePath');
     } catch (e) {
@@ -753,26 +455,6 @@ class BackupRestoreService extends GetxController {
       final mangaCount = data['mangaCount'] ?? 0;
       final novelCount = data['novelCount'] ?? 0;
 
-      final settingsList = data['settings'] as List? ?? [];
-      final availableCategories = <String>{};
-      for (var s in settingsList) {
-        final k = s['key'] as String?;
-        if (k != null) {
-          availableCategories.add(SettingsCategory.getCategoryForKey(k));
-        }
-      }
-
-      final extensionsList = (data['extensions'] as List? ?? [])
-          .map((e) => Map<String, dynamic>.from(e as Map))
-          .toList();
-
-      final hasPluginExtensions = extensionsList.any((e) {
-        final manager = e['managerName'] as String? ?? '';
-        return manager == 'Aniyomi' ||
-            manager == 'CloudStream' ||
-            manager == 'Kotatsu';
-      });
-
       return {
         'date': data['date'],
         'username': data['username'],
@@ -797,22 +479,12 @@ class BackupRestoreService extends GetxController {
             (data['mangaCustomLists'] as List?)?.length ?? 0,
         'novelCustomListsCount':
             (data['novelCustomLists'] as List?)?.length ?? 0,
-        'hasSettings': settingsList.any((e) =>
-            SettingsCategory.getCategoryForKey(e['key'] as String? ?? '') !=
-            SettingsCategory.accounts),
-        'hasAuthTokens': settingsList.any((e) =>
-            SettingsCategory.getCategoryForKey(e['key'] as String? ?? '') ==
-            SettingsCategory.accounts),
-        'settingsCategories': availableCategories.toList(),
-        'extensions': extensionsList,
-        'hasPluginExtensions': hasPluginExtensions,
-        'hasAnime': (data['animeLibrary'] as List?)?.isNotEmpty ?? false,
-        'hasManga': (data['mangaLibrary'] as List?)?.isNotEmpty ?? false,
-        'hasNovel': (data['novelLibrary'] as List?)?.isNotEmpty ?? false,
-        'hasCustomLists':
-            ((data['animeCustomLists'] as List?)?.isNotEmpty ?? false) ||
-                ((data['mangaCustomLists'] as List?)?.isNotEmpty ?? false) ||
-                ((data['novelCustomLists'] as List?)?.isNotEmpty ?? false),
+        'hasSettings': (data['settings'] as List?)?.any((e) =>
+                !(e['key'] as String? ?? '').startsWith('AuthKeys_')) ??
+            false,
+        'hasAuthTokens': (data['settings'] as List?)?.any((e) =>
+                (e['key'] as String? ?? '').startsWith('AuthKeys_')) ??
+            false,
       };
     } catch (e) {
       Logger.i('Failed to get backup info: $e');
