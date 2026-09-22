@@ -171,3 +171,4 @@ keystore.b64
 
 # Local Flutter SDK
 flutter_sdk/
+AGENTS.md
