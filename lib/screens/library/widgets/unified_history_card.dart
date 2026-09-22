@@ -34,7 +34,7 @@ class UnifiedHistoryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16)),
       color: context.colors.secondaryContainer.withAlpha(120),
       child: AnymexOnTap(
-        onTap: media.onTap,
+        onTap: media.onCoverTap ?? media.onTap,
         child: SizedBox(
           height: getResponsiveSize(context, mobileSize: 140, desktopSize: 180),
           child: ClipRRect(
@@ -90,18 +90,21 @@ class UnifiedHistoryCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(8.multiplyRadius()),
-                              color: colorScheme.primary,
-                            ),
-                            child: AnymeXText(media.formattedEpisodeTitle.toString(),
-                              size: 12,
-                              variant: TextVariant.bold,
-                              color: colorScheme.onPrimary,
+                          AnymexOnTap(
+                            onTap: media.onTap,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.circular(8.multiplyRadius()),
+                                color: colorScheme.primary,
+                              ),
+                              child: AnymeXText(media.formattedEpisodeTitle.toString(),
+                                size: 12,
+                                variant: TextVariant.bold,
+                                color: colorScheme.onPrimary,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -126,36 +129,39 @@ class UnifiedHistoryCard extends StatelessWidget {
                               isMarquee: true,
                             ),
                           const Spacer(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  AnymeXText(media.date!,
-                                    size: 12,
-                                    color:
-                                        colorScheme.onSurface.opaque(0.7),
-                                  ),
-                                  AnymeXText(media.progressText ?? '??',
-                                    size: 12,
-                                    color: colorScheme.primary,
-                                    variant: TextVariant.bold,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: LinearProgressIndicator(
-                                  value: media.calculatedProgress,
-                                  backgroundColor: colorScheme.surfaceVariant,
-                                  color: colorScheme.primary,
-                                  minHeight: 5,
+                          AnymexOnTap(
+                            onTap: media.onTap,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    AnymeXText(media.date!,
+                                      size: 12,
+                                      color:
+                                          colorScheme.onSurface.opaque(0.7),
+                                    ),
+                                    AnymeXText(media.progressText ?? '??',
+                                      size: 12,
+                                      color: colorScheme.primary,
+                                      variant: TextVariant.bold,
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 4),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    value: media.calculatedProgress,
+                                    backgroundColor: colorScheme.surfaceVariant,
+                                    color: colorScheme.primary,
+                                    minHeight: 5,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -189,7 +195,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
       ),
       color: colorScheme.secondaryContainer.withAlpha(120),
       child: AnymexOnTap(
-        onTap: media.onTap,
+        onTap: media.onCoverTap ?? media.onTap,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -214,18 +220,21 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(8.multiplyRadius()),
-                          color: colorScheme.primary,
-                        ),
-                        child: AnymeXText(media.formattedEpisodeTitle ?? '',
-                          size: 12,
-                          variant: TextVariant.bold,
-                          color: colorScheme.onPrimary,
+                      AnymexOnTap(
+                        onTap: media.onTap,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(8.multiplyRadius()),
+                            color: colorScheme.primary,
+                          ),
+                          child: AnymeXText(media.formattedEpisodeTitle ?? '',
+                            size: 12,
+                            variant: TextVariant.bold,
+                            color: colorScheme.onPrimary,
+                          ),
                         ),
                       ),
                       Container(
@@ -261,29 +270,32 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: media.calculatedProgress,
-                            backgroundColor: colorScheme.surfaceVariant,
-                            color: colorScheme.primary,
-                            minHeight: 6,
+                  AnymexOnTap(
+                    onTap: media.onTap,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: LinearProgressIndicator(
+                              value: media.calculatedProgress,
+                              backgroundColor: colorScheme.surfaceVariant,
+                              color: colorScheme.primary,
+                              minHeight: 6,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      AnymeXText(media.progressText!,
-                        size: 12,
-                        color: colorScheme.primary,
-                        variant: TextVariant.bold,
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        AnymeXText(media.progressText!,
+                          size: 12,
+                          color: colorScheme.primary,
+                          variant: TextVariant.bold,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -312,7 +324,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
           borderRadius: BorderRadius.circular(16)),
       color: context.colors.secondaryContainer.withAlpha(120),
       child: AnymexOnTap(
-        onTap: media.onTap,
+        onTap: media.onCoverTap ?? media.onTap,
         child: SizedBox(
           height: getResponsiveSize(context, mobileSize: 140, desktopSize: 180),
           child: Row(
@@ -343,18 +355,21 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(8.multiplyRadius()),
-                          color: colorScheme.primary,
-                        ),
-                        child: AnymeXText(media.formattedEpisodeTitle ?? 'Episode ??',
-                          size: 12,
-                          variant: TextVariant.bold,
-                          color: colorScheme.onPrimary,
+                      AnymexOnTap(
+                        onTap: media.onTap,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(8.multiplyRadius()),
+                            color: colorScheme.primary,
+                          ),
+                          child: AnymeXText(media.formattedEpisodeTitle ?? 'Episode ??',
+                            size: 12,
+                            variant: TextVariant.bold,
+                            color: colorScheme.onPrimary,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -379,34 +394,37 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                         ),
                       const Spacer(),
                       // Progress indicator
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              AnymeXText(media.date!,
-                                size: 12,
-                                color: colorScheme.onSurface.opaque(0.7),
-                              ),
-                              AnymeXText(media.progressText!,
-                                size: 12,
-                                color: colorScheme.primary,
-                                variant: TextVariant.bold,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: LinearProgressIndicator(
-                              value: media.calculatedProgress,
-                              backgroundColor: colorScheme.surfaceVariant,
-                              color: colorScheme.primary,
-                              minHeight: 5,
+                      AnymexOnTap(
+                        onTap: media.onTap,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AnymeXText(media.date!,
+                                  size: 12,
+                                  color: colorScheme.onSurface.opaque(0.7),
+                                ),
+                                AnymeXText(media.progressText!,
+                                  size: 12,
+                                  color: colorScheme.primary,
+                                  variant: TextVariant.bold,
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: LinearProgressIndicator(
+                                value: media.calculatedProgress,
+                                backgroundColor: colorScheme.surfaceVariant,
+                                color: colorScheme.primary,
+                                minHeight: 5,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

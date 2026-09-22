@@ -1,3 +1,7 @@
+import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/anime/details_page.dart';
+import 'package:anymex/screens/manga/details_page.dart';
+import 'package:anymex/screens/novel/details/details_view.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
@@ -36,6 +40,7 @@ class HistoryModel {
   bool? isManga;
   double? calculatedProgress;
   VoidCallback? onTap;
+  VoidCallback? onCoverTap;
   String? progressText;
   String? date;
 
@@ -52,11 +57,13 @@ class HistoryModel {
       this.isManga,
       this.calculatedProgress,
       this.onTap,
+      this.onCoverTap,
       this.progressText,
       this.date});
 
   factory HistoryModel.fromOfflineMedia(OfflineMedia media, ItemType type) {
     final onTap = _buildHistoryTapHandler(media, type);
+    final onCoverTap = _buildHistoryCoverTapHandler(media, type);
 
     final isManga = !type.isAnime;
     return HistoryModel(
@@ -89,6 +96,7 @@ class HistoryModel {
                 media.currentEpisode?.durationInMilliseconds,
               ),
         onTap: onTap,
+        onCoverTap: onCoverTap,
         date: formattedDate(isManga
             ? media.currentChapter?.lastReadTime ?? 0
             : media.currentEpisode?.lastWatchedTime ?? 0),
@@ -113,6 +121,28 @@ HistoryModel(
 )
   ''';
   }
+}
+
+VoidCallback _buildHistoryCoverTapHandler(OfflineMedia media, ItemType type) {
+  return () {
+    final tag = '${media.id}_history_${DateTime.now().millisecondsSinceEpoch}';
+    final mediaModel = Media.fromOfflineMedia(media, type);
+    if (type.isAnime) {
+      navigateWithAnimation(() => AnimeDetailsPage(media: mediaModel, tag: tag));
+    } else if (type.isManga) {
+      navigateWithAnimation(() => MangaDetailsPage(media: mediaModel, tag: tag));
+    } else {
+      final sourceName = media.season ?? '';
+      final source = sourceName.isNotEmpty
+          ? sourceController.getNovelExtensionByName(sourceName)
+          : null;
+      navigateWithAnimation(() => NovelDetailsPage(
+            source: source,
+            media: mediaModel,
+            tag: tag,
+          ));
+    }
+  };
 }
 
 VoidCallback _buildHistoryTapHandler(OfflineMedia media, ItemType type) {
