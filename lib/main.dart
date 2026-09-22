@@ -4,7 +4,6 @@ import 'dart:ui';
 
 import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:rhttp/rhttp.dart';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
@@ -571,7 +570,9 @@ class _FilterScreenState extends State<FilterScreen> {
         : Get.put(MediaModeController());
 
     if (tabKey == 'Home') {
-      if (!isDesktop && mediaModeController.animeHistory.isNotEmpty) {
+      if (!isDesktop &&
+          settings.showHomeContinueWatching.value &&
+          mediaModeController.animeHistory.isNotEmpty) {
         subWidget = const HomeContinueWatchingBar();
       }
     } else if (!settings.useLegacyNavbar) {

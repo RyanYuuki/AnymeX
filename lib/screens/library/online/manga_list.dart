@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
@@ -86,7 +87,8 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   final _searchController = TextEditingController();
   String _searchQuery = '';
   late ScrollController _tabScrollController;
-  int _selectedTabIndex = 0;
+  final _selectedTabIndex = ValueNotifier<int>(0);
+  final List<GlobalKey> _tabKeys = [];
 
   _MangaSortMode _sortMode = _MangaSortMode.lastUpdated;
   bool _sortAscending = false;
@@ -169,58 +171,67 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   @override
   void dispose() {
     _tabController?.removeListener(_onTabChanged);
+    _tabController?.animation?.removeListener(_onTabChanged);
     _tabController?.dispose();
+    _selectedTabIndex.dispose();
     _tabScrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
 
   void _onTabChanged() {
-    if (!mounted) return;
-    if (_tabController != null && _tabController!.index != _selectedTabIndex) {
-      setState(() {
-        _selectedTabIndex = _tabController!.index;
-      });
-      _scrollToTab(_selectedTabIndex);
+    if (!mounted || _tabController == null) return;
+    final int newIndex;
+    if (_tabController!.indexIsChanging) {
+      newIndex = _tabController!.index;
+    } else if (_tabController!.animation != null) {
+      newIndex = _tabController!.animation!.value.round();
+    } else {
+      newIndex = _tabController!.index;
+    }
+    final clampedIndex =
+        newIndex.clamp(0, (_tabController!.length - 1).clamp(0, 9999));
+    if (clampedIndex != _selectedTabIndex.value) {
+      _selectedTabIndex.value = clampedIndex;
+      _scrollToTab(clampedIndex);
     }
   }
 
   void _scrollToTab(int index) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_tabScrollController.hasClients) return;
-      const tabEstimatedWidth = 120.0;
-      final screenWidth = MediaQuery.sizeOf(context).width;
-      final targetOffset = (index * (tabEstimatedWidth + 3)) -
-          (screenWidth / 2) +
-          (tabEstimatedWidth / 2);
-      final clampedOffset = targetOffset.clamp(
-        0.0,
-        _tabScrollController.position.maxScrollExtent,
-      );
-      _tabScrollController.animateTo(
-        clampedOffset,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-      );
+      if (!mounted || index < 0 || index >= _tabKeys.length) return;
+      final keyContext = _tabKeys[index].currentContext;
+      if (keyContext != null) {
+        Scrollable.ensureVisible(
+          keyContext,
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+        );
+      }
     });
   }
 
   void _setupTabController(List<String> orderedTabs) {
     _tabController?.removeListener(_onTabChanged);
+    _tabController?.animation?.removeListener(_onTabChanged);
     _tabController?.dispose();
+    _tabKeys.clear();
+    _tabKeys.addAll(List.generate(orderedTabs.length, (_) => GlobalKey()));
     final requestedInitialTab = widget.initialTab;
     final initialIndex = requestedInitialTab == null
         ? 0
         : orderedTabs
             .indexOf(requestedInitialTab)
             .clamp(0, orderedTabs.length - 1);
-    _selectedTabIndex = initialIndex;
+    _selectedTabIndex.value = initialIndex;
     _tabController = TabController(
       length: orderedTabs.length,
       vsync: this,
       initialIndex: initialIndex,
     );
     _tabController!.addListener(_onTabChanged);
+    _tabController!.animation?.addListener(_onTabChanged);
   }
 
   void _initTabController() {
@@ -544,6 +555,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
     required bool isSelected,
   }) {
     final theme = Theme.of(context);
+    final borderRadius = _tabBorder(index, total, isSelected);
 
     return AnymexOnTap(
       margin: 0,
@@ -552,55 +564,70 @@ class _AnilistMangaListState extends State<AnilistMangaList>
         HapticFeedback.lightImpact();
         _tabController?.animateTo(index);
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? theme.colorScheme.primary.opaque(0.18, iReallyMeanIt: true)
-              : theme.colorScheme.surfaceContainerHighest
-                  .opaque(0.3, iReallyMeanIt: true),
-          borderRadius: _tabBorder(index, total, isSelected),
-          border: Border.all(
-            color: isSelected
-                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                : theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
-            width: 0.5,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnymeXText(
-              tab.toUpperCase(),
-              variant: isSelected ? TextVariant.bold : TextVariant.semiBold,
-              size: 13,
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
               color: isSelected
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface,
-            ),
-            const SizedBox(width: 8),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-              decoration: BoxDecoration(
+                  ? theme.colorScheme.primary.opaque(0.18, iReallyMeanIt: true)
+                  : theme.colorScheme.surfaceContainer.opaque(0.55),
+              borderRadius: borderRadius,
+              border: Border.all(
                 color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.surfaceContainerHighest
-                        .opaque(0.5, iReallyMeanIt: true),
-                borderRadius: BorderRadius.circular(10),
+                    ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                    : theme.colorScheme.onSurface
+                        .opaque(0.08, iReallyMeanIt: true),
+                width: 0.5,
               ),
-              child: AnymeXText(
-                count.toString(),
-                variant: TextVariant.bold,
-                size: 11,
-                color: isSelected
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurfaceVariant.opaque(0.8),
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.opaque(0.08, iReallyMeanIt: true),
+                  blurRadius: 24,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnymeXText(
+                  tab.toUpperCase(),
+                  variant: isSelected ? TextVariant.bold : TextVariant.semiBold,
+                  size: 13,
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface,
+                ),
+                const SizedBox(width: 8),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surfaceContainerHighest
+                            .opaque(0.5, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: AnymeXText(
+                    count.toString(),
+                    variant: TextVariant.bold,
+                    size: 11,
+                    color: isSelected
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.onSurfaceVariant.opaque(0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -616,24 +643,32 @@ class _AnilistMangaListState extends State<AnilistMangaList>
 
     return SizedBox(
       height: 42,
-      child: ListView.separated(
-        controller: _tabScrollController,
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.symmetric(horizontal: h),
-        itemCount: orderedTabs.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 3),
-        itemBuilder: (context, index) {
-          final tab = orderedTabs[index];
-          final count = (tabFilteredItems[tab] ?? []).length;
-          final isSelected = _selectedTabIndex == index;
-          return _buildTabItem(
-            context,
-            index: index,
-            total: orderedTabs.length,
-            tab: tab,
-            count: count,
-            isSelected: isSelected,
+      child: ValueListenableBuilder<int>(
+        valueListenable: _selectedTabIndex,
+        builder: (context, currentSelected, _) {
+          return ListView.separated(
+            controller: _tabScrollController,
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: h),
+            itemCount: orderedTabs.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 3),
+            itemBuilder: (context, index) {
+              final tab = orderedTabs[index];
+              final count = (tabFilteredItems[tab] ?? []).length;
+              final isSelected = currentSelected == index;
+              return KeyedSubtree(
+                key: index < _tabKeys.length ? _tabKeys[index] : null,
+                child: _buildTabItem(
+                  context,
+                  index: index,
+                  total: orderedTabs.length,
+                  tab: tab,
+                  count: count,
+                  isSelected: isSelected,
+                ),
+              );
+            },
           );
         },
       ),
@@ -643,67 +678,77 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   Widget _buildHeaderActions(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          onPressed: _openRandom,
-          icon: const Icon(Iconsax.shuffle, size: 20),
-          tooltip: 'Random',
-        ),
-        IconButton(
-          onPressed: () => _showGenreFilter(context),
-          icon: Badge(
-            isLabelVisible: _selectedGenres.isNotEmpty,
-            label: AnymeXText('${_selectedGenres.length}',
-                style: const TextStyle(fontSize: 9)),
-            child: const Icon(Iconsax.filter, size: 20),
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert_rounded, size: 22),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      onSelected: (val) {
+        switch (val) {
+          case 'shuffle':
+            _openRandom();
+            break;
+          case 'filter':
+            _showGenreFilter(context);
+            break;
+          case 'sort':
+            _showSortMenu(context);
+            break;
+          case 'reverse_tabs':
+            setState(() {
+              _isReversed = !_isReversed;
+              _initTabController();
+            });
+            break;
+        }
+      },
+      itemBuilder: (ctx) => [
+        PopupMenuItem(
+          value: 'shuffle',
+          child: Row(
+            children: [
+              Icon(Iconsax.shuffle,
+                  size: 20, color: colors.onSurfaceVariant),
+              const SizedBox(width: 12),
+              const AnymeXText('Random'),
+            ],
           ),
-          tooltip: 'Filter genres',
         ),
-        PopupMenuButton<String>(
-          icon: const Icon(Icons.more_vert_rounded, size: 22),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+        PopupMenuItem(
+          value: 'filter',
+          child: Row(
+            children: [
+              Icon(Iconsax.filter,
+                  size: 20, color: colors.onSurfaceVariant),
+              const SizedBox(width: 12),
+              AnymeXText(_selectedGenres.isNotEmpty
+                  ? 'Filter genres (${_selectedGenres.length})'
+                  : 'Filter genres'),
+            ],
           ),
-          onSelected: (val) {
-            switch (val) {
-              case 'sort':
-                _showSortMenu(context);
-                break;
-              case 'reverse_tabs':
-                setState(() {
-                  _isReversed = !_isReversed;
-                  _initTabController();
-                });
-                break;
-            }
-          },
-          itemBuilder: (ctx) => [
-            PopupMenuItem(
-              value: 'sort',
-              child: Row(
-                children: [
-                  Icon(Icons.sort_rounded,
-                      size: 20, color: colors.onSurfaceVariant),
-                  const SizedBox(width: 12),
-                  const AnymeXText('Sort'),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'reverse_tabs',
-              child: Row(
-                children: [
-                  Icon(Iconsax.arrow_swap_horizontal,
-                      size: 20, color: colors.onSurfaceVariant),
-                  const SizedBox(width: 12),
-                  AnymeXText(
-                      _isReversed ? 'Default tab order' : 'Reverse tabs'),
-                ],
-              ),
-            ),
-          ],
+        ),
+        PopupMenuItem(
+          value: 'sort',
+          child: Row(
+            children: [
+              Icon(Icons.sort_rounded,
+                  size: 20, color: colors.onSurfaceVariant),
+              const SizedBox(width: 12),
+              const AnymeXText('Sort'),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'reverse_tabs',
+          child: Row(
+            children: [
+              Icon(Iconsax.arrow_swap_horizontal,
+                  size: 20, color: colors.onSurfaceVariant),
+              const SizedBox(width: 12),
+              AnymeXText(
+                  _isReversed ? 'Default tab order' : 'Reverse tabs'),
+            ],
+          ),
         ),
       ],
     );
@@ -712,8 +757,6 @@ class _AnilistMangaListState extends State<AnilistMangaList>
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final anilistAuth = Get.find<ServiceHandler>();
-    final userName = widget.userName ?? anilistAuth.profileData.value.name;
     final mangaList = activeMediaList;
     final orderedTabs = _isReversed ? tabs.reversed.toList() : tabs;
 
@@ -729,7 +772,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: "$userName's ${widget.title ?? 'Manga'} List",
+      headerTitle: widget.title ?? 'Manga List',
       headerSubtitle: _selectedGenres.isNotEmpty
           ? '${_selectedGenres.length} genre(s) filtered'
           : '${activeMediaList.length} Manga',

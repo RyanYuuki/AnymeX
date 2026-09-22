@@ -173,85 +173,96 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
 
     return Row(
       key: const ValueKey('split'),
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildPill(
-          context,
-          onTap: canPop ? () => Navigator.of(context).pop() : null,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (canPop) ...[
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(
-                    Icons.arrow_back_ios_rounded,
-                    color: theme.colorScheme.onSurface,
-                    size: 16,
-                  ),
-                  style: IconButton.styleFrom(
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest
-                        .opaque(0.3, iReallyMeanIt: true),
-                  ),
-                ),
-                SizedBox(
-                    width: getResponsiveSize(context,
-                        mobileSize: 4, desktopSize: 10)),
-              ],
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: maxHeaderWidth,
-                      ),
-                      child: AnymeXText(widget.title,
-                        variant: TextVariant.bold,
-                        size: 16.0,
-                        maxLines: 1,
-                        isMarquee: isLongTitle,
-                      ),
-                    ),
-                    if (widget.subtitle != null &&
-                        widget.subtitle!.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      AnymeXText(widget.subtitle!,
-                        variant: TextVariant.regular,
-                        size: 11,
-                        color: theme.colorScheme.onSurface.opaque(0.6),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              6.width()
-            ],
-          ),
-        ),
-        const Spacer(),
-        if (hasActions) ...[
-          const SizedBox(width: 8),
-          _buildPill(
+        Flexible(
+          fit: FlexFit.loose,
+          child: _buildPill(
             context,
-            padding: const EdgeInsets.all(4),
+            onTap: canPop ? () => Navigator.of(context).pop() : null,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (widget.enableSearch)
+                if (canPop) ...[
                   IconButton(
-                    onPressed: _toggleSearch,
+                    onPressed: () => Navigator.of(context).pop(),
                     icon: Icon(
-                      IconlyLight.search,
-                      color: theme.colorScheme.primary,
-                      size: 20,
+                      Icons.arrow_back_ios_rounded,
+                      color: theme.colorScheme.onSurface,
+                      size: 16,
+                    ),
+                    style: IconButton.styleFrom(
+                      backgroundColor: theme.colorScheme.surfaceContainerHighest
+                          .opaque(0.3, iReallyMeanIt: true),
                     ),
                   ),
-                if (widget.action != null) widget.action!,
+                  SizedBox(
+                      width: getResponsiveSize(context,
+                          mobileSize: 4, desktopSize: 10)),
+                ],
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: maxHeaderWidth,
+                        ),
+                        child: AnymeXText(widget.title,
+                          variant: TextVariant.bold,
+                          size: 16.0,
+                          maxLines: 1,
+                          autoResize: true,
+                          isMarquee: isLongTitle,
+                        ),
+                      ),
+                      if (widget.subtitle != null &&
+                          widget.subtitle!.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        AnymeXText(widget.subtitle!,
+                          variant: TextVariant.regular,
+                          size: 11,
+                          color: theme.colorScheme.onSurface.opaque(0.6),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                6.width()
               ],
+            ),
+          ),
+        ),
+        if (hasActions) ...[
+          const SizedBox(width: 8),
+          Flexible(
+            fit: FlexFit.loose,
+            child: _buildPill(
+              context,
+              padding: const EdgeInsets.all(4),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.enableSearch)
+                      IconButton(
+                        onPressed: _toggleSearch,
+                        icon: Icon(
+                          IconlyLight.search,
+                          color: theme.colorScheme.primary,
+                          size: 20,
+                        ),
+                      ),
+                    if (widget.action != null) widget.action!,
+                  ],
+                ),
+              ),
             ),
           ),
         ],

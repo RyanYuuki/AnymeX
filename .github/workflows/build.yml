@@ -246,13 +246,9 @@ jobs:
         if: matrix.platform == 'linux'
         run: |
           flutter pub get
-          dart run jni:setup
           flutter build linux --release
           rm -rf AppDir && mkdir -p AppDir/usr/{bin,share/icons/hicolor/256x256/apps,lib}
           cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
-          if [ -d "build/jni_libs" ]; then
-            cp build/jni_libs/*.so AppDir/usr/bin/lib/ 2>/dev/null || true
-          fi
           cp assets/images/logo.png AppDir/usr/share/icons/hicolor/256x256/apps/anymex.png
           cp assets/images/logo.png AppDir/anymex.png
           cat > AppDir/anymex.desktop << 'EOF'
@@ -329,7 +325,6 @@ jobs:
           git config --global core.longpaths true
           git config --system core.longpaths true
           flutter pub get
-          dart run jni:setup
           pwsh ./scripts/setup_libtorrent_windows.ps1 -Arch x64
           dart run inno_bundle:build --release 2>&1 | Select-String -Pattern "Compile aborted" -NotMatch
           $issFile = "build\windows\x64\installer\Release\inno-script.iss"

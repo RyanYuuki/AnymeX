@@ -34,6 +34,7 @@ enum General {
   unifiedLibrary,
   joinDialogShowCount,
   wrongTitleIsCardView,
+  showHomeContinueWatching,
 }
 
 enum ThemeKeys {
@@ -240,6 +241,7 @@ enum PlayerSettingsKeys {
   bottomMargin,
   transculentControls,
   defaultPortraitMode,
+  defaultOrientation,
   playerStyle,
   subtitleOutlineWidth,
   autoSkipOP,

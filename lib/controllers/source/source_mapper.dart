@@ -132,22 +132,32 @@ class SourceMapper {
     double bestScore = 0;
     dynamic bestMatch;
     List<DMedia> fallbackResults = [];
+    bool hasError = false;
 
     Future<void> search(
         String query, String sourceTitle, bool isHeavyNormalized) async {
-      if (isInterrupted() || bestScore >= 0.98) return;
+      if (isInterrupted() || hasError || bestScore >= 0.98) return;
 
       searchedTitle.value = "Searching: $sourceTitle";
       final token = "map_${mappingToken}_${query.hashCode}";
       sourceController.updateToken(isManga ? 'manga_search' : 'search', token);
 
-      final results = (await activeSource.methods.search(
-        query,
-        1,
-        [],
-        parameters: SourceParams(cancelToken: token),
-      ))
-          .list;
+      List<DMedia> results;
+      try {
+        results = (await activeSource.methods.search(
+          query,
+          1,
+          [],
+          parameters: SourceParams(cancelToken: token),
+        ))
+            .list;
+      } catch (e) {
+        if (isInterrupted()) return;
+        Logger.e("Error searching source for '$query': $e");
+        hasError = true;
+        searchedTitle.value = "Error Searching";
+        return;
+      }
 
       if (results.isEmpty || isInterrupted()) return;
 
@@ -204,6 +214,7 @@ class SourceMapper {
 
     if (savedTitle != null && savedTitle.isNotEmpty) {
       await search(savedTitle, savedTitle, false);
+      if (hasError || isInterrupted()) return null;
       if (bestScore >= 0.7 && bestMatch != null) {
         searchedTitle.value = "Found: ${bestMatch.title ?? ''}";
         return Media.froDMedia(bestMatch, type);
@@ -212,49 +223,53 @@ class SourceMapper {
 
     if (englishTitle.isNotEmpty) {
       await search(englishTitle, englishTitle, false);
-      if (isInterrupted()) return null;
+      if (hasError || isInterrupted()) return null;
       if (bestScore >= 0.98) {
         searchedTitle.value = "Found: ${bestMatch.title ?? ''}";
         return Media.froDMedia(bestMatch, type);
       }
     }
 
-    if (bestScore < 0.96 &&
+    if (!hasError &&
+        bestScore < 0.96 &&
         romajiTitle.isNotEmpty &&
         _normalizeLight(romajiTitle) != _normalizeLight(englishTitle)) {
       await search(romajiTitle, romajiTitle, false);
-      if (isInterrupted()) return null;
+      if (hasError || isInterrupted()) return null;
       if (bestScore >= 0.98) {
         searchedTitle.value = "Found: ${bestMatch.title ?? ''}";
         return Media.froDMedia(bestMatch, type);
       }
     }
 
-    if (bestScore < 0.96 && synonyms.isNotEmpty) {
+    if (!hasError && bestScore < 0.96 && synonyms.isNotEmpty) {
       Logger.i(
           "Confidence low (${bestScore.toStringAsFixed(2)}). Trying synonyms...");
       final limitedSynonyms = synonyms.take(3);
       for (final synonym in limitedSynonyms) {
-        if (isInterrupted() || bestScore >= 0.96) break;
+        if (hasError || isInterrupted() || bestScore >= 0.96) break;
         if (_isInvalidTitle(synonym)) continue;
         await search(synonym, synonym, false);
       }
-      if (isInterrupted()) return null;
+      if (hasError || isInterrupted()) return null;
       if (bestScore >= 0.98) {
         searchedTitle.value = "Found: ${bestMatch.title ?? ''}";
         return Media.froDMedia(bestMatch, type);
       }
     }
 
-    if (bestScore < 0.7) {
+    if (!hasError && bestScore < 0.7) {
       Logger.i("No good match. Trying heavy normalization...");
       if (englishTitle.isNotEmpty) {
         await search(_normalizeHeavy(englishTitle), englishTitle, true);
       }
-      if (bestScore < 0.8 && romajiTitle.isNotEmpty) {
+      if (!hasError && bestScore < 0.8 && romajiTitle.isNotEmpty) {
         await search(_normalizeHeavy(romajiTitle), romajiTitle, true);
       }
+      if (hasError || isInterrupted()) return null;
     }
+
+    if (hasError) return null;
 
     if (bestScore >= 0.7 && bestMatch != null) {
       searchedTitle.value = "Found: ${bestMatch.title ?? ''}";

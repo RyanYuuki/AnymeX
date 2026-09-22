@@ -587,7 +587,7 @@ class _HeaderBodyShellState extends State<_HeaderBodyShell> {
 
     final currentOffset = metrics.pixels;
 
-    if (currentOffset <= 0) {
+    if (currentOffset <= metrics.viewportDimension * 0.5) {
       if (!_isHeaderVisible.value) _isHeaderVisible.value = true;
       _previousScrollOffset = currentOffset;
       return;

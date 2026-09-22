@@ -40,6 +40,7 @@ class Settings extends GetxController {
   RxBool useAlternateTitle = false.obs;
   RxBool enableBetaUpdates = false.obs;
   RxBool writeLogToFile = false.obs;
+  RxBool showHomeContinueWatching = true.obs;
   Rxn<DisplayMode> preferredDisplayMode = Rxn<DisplayMode>();
   Rxn<DisplayMode> activeDisplayMode = Rxn<DisplayMode>();
   RxList<DisplayMode> supportedModes = <DisplayMode>[].obs;
@@ -101,6 +102,8 @@ class Settings extends GetxController {
     useAlternateTitle.value = General.useAlternateTitle.get<bool>(false);
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
+    showHomeContinueWatching.value =
+        General.showHomeContinueWatching.get<bool>(true);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
 
     downloadPath.value = DownloadKeys.downloadPath.get<String>("");
@@ -233,9 +236,7 @@ class Settings extends GetxController {
   }
 
   void _updateBridgeDispatcher() {
-    final mode =
-        bridgeMode.value == 'sidecar' ? BridgeType.sidecar : BridgeType.jni;
-    Get.find<ExtensionManager>().setBridgeType(mode);
+    Get.find<ExtensionManager>().setBridgeType(BridgeType.sidecar);
   }
 
   void saveBridgeMode(String value) {
@@ -267,6 +268,11 @@ class Settings extends GetxController {
   void saveEnableJxlCompression(bool value) {
     enableJxlCompression.value = value;
     DownloadKeys.enableJxlCompression.set(value);
+  }
+
+  void saveShowHomeContinueWatching(bool value) {
+    showHomeContinueWatching.value = value;
+    General.showHomeContinueWatching.set(value);
   }
 
   void showWelcomeDialog(BuildContext context) {
@@ -577,6 +583,13 @@ class Settings extends GetxController {
   set defaultPortraitMode(bool value) {
     playerSettings.update((s) => s?.defaultPortraitMode = value);
     PlayerSettingsKeys.defaultPortraitMode.set(value);
+  }
+
+  String get defaultOrientation =>
+      _getPlayerSetting((s) => s.defaultOrientation);
+  set defaultOrientation(String value) {
+    playerSettings.update((s) => s?.defaultOrientation = value);
+    PlayerSettingsKeys.defaultOrientation.set(value);
   }
 
   double get speed => _getPlayerSetting((s) => s.speed);

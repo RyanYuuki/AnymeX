@@ -16,7 +16,6 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -99,26 +98,6 @@ class _HomePageState extends State<HomePage> {
         });
       }
 
-      if (entries.isEmpty &&
-          kDebugMode &&
-          serviceHandler.animeList.isNotEmpty) {
-        final animeList = serviceHandler.animeList
-            .where((i) => i.type?.toUpperCase() != 'MANGA' && i.id != null)
-            .take(3)
-            .toList();
-        for (int i = 0; i < animeList.length; i++) {
-          final item = animeList[i];
-          final dummyWatched = (i + 1) * 3;
-          final dummyLatest = dummyWatched + (i % 2 == 0 ? 1 : 2);
-          entries.add((
-            CardData.fromTrackedMedia(item).data,
-            dummyWatched,
-            dummyLatest,
-            DateTime.now().subtract(Duration(days: i)),
-          ));
-        }
-      }
-
       if (entries.isEmpty) {
         return const SizedBox.shrink();
       }
@@ -126,7 +105,7 @@ class _HomePageState extends State<HomePage> {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0),
         child: SizedBox(
-          height: 155,
+          height: 110,
           child: RepaintBoundary(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -305,7 +284,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                     ],
                   ),
-                  SizedBox(height: bottomNavBarHeight),
+                  SizedBox(height: bottomNavBarHeight + 150),
                 ],
               ),
             ),

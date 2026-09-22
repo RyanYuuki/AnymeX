@@ -123,7 +123,10 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                   height: 48,
                   width: 48,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.35),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest
+                        .opaque(0.35),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(5),
                       bottomLeft: Radius.circular(5),
@@ -131,7 +134,10 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       bottomRight: Radius.circular(22),
                     ),
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .opaque(0.08, iReallyMeanIt: true),
                       width: 0.5,
                     ),
                   ),
@@ -144,11 +150,15 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       General.wrongTitleIsCardView.set(_isCardView);
                     },
                     icon: Icon(
-                      _isCardView ? Icons.view_list_rounded : Icons.grid_view_rounded,
+                      _isCardView
+                          ? Icons.view_list_rounded
+                          : Icons.grid_view_rounded,
                       color: Theme.of(context).colorScheme.primary,
                       size: 20,
                     ),
-                    tooltip: _isCardView ? 'Switch to List View' : 'Switch to Card View',
+                    tooltip: _isCardView
+                        ? 'Switch to List View'
+                        : 'Switch to Card View',
                   ),
                 ),
               ],
@@ -156,7 +166,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
             Obx(() => searchStatus.value.isNotEmpty
                 ? Padding(
                     padding: const EdgeInsets.only(top: 8.0, left: 4.0),
-                    child: AnymeXText(searchStatus.value,
+                    child: AnymeXText(
+                      searchStatus.value,
                       variant: TextVariant.semiBold,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -171,7 +182,10 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                     return const Center(child: AnymeXProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(
-                      child: AnymeXText('Error: ${snapshot.error}'),
+                      child: AnymeXText(
+                        'Error: ${snapshot.error}',
+                        maxLines: 9999,
+                      ),
                     );
                   } else if (snapshot.hasData && snapshot.data != null) {
                     final results = snapshot.data ?? [];
@@ -232,7 +246,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                             FocusManager.instance.primaryFocus?.unfocus();
                             SourceMapper.interruptMapping();
                             if (source != null && widget.mediaId != null) {
-                              sourceController.setActiveSource(source, mediaId: widget.mediaId);
+                              sourceController.setActiveSource(source,
+                                  mediaId: widget.mediaId);
                             }
                             Get.back();
                             WidgetsBinding.instance.addPostFrameCallback((_) {
