@@ -8,6 +8,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -81,14 +82,12 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
         ? Get.find<CommentumService>()
         : null;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow.withOpacity(0.4),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colors.primary.withOpacity(0.25),
-          width: 1,
-        ),
+    return AnymeXContainer(
+      color: colors.surfaceContainerLow.withOpacity(0.4),
+      radius: 20,
+      border: Border.all(
+        color: colors.primary.withOpacity(0.25),
+        width: 1,
       ),
       clipBehavior: Clip.antiAlias,
       child: Material(
@@ -139,62 +138,60 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
               thickness: 0.5,
               color: colors.outlineVariant.withOpacity(0.2),
             ),
-            Obx(
-              () => Row(
-                children: [
-                  if (commentum != null) ...[
-                    Expanded(
-                      child: InkWell(
-                        onTap: () => DecorationClosetSheet.show(context),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.checkroom_rounded,
-                                  size: 18, color: colors.primary),
-                              const SizedBox(width: 8),
-                              AnymeXText(
-                                'Open Closet',
-                                variant: TextVariant.bold,
-                                size: 13,
-                                color: colors.primary,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 24,
-                      color: colors.outlineVariant.withOpacity(0.2),
-                    ),
-                  ],
+            Row(
+              children: [
+                if (commentum != null) ...[
                   Expanded(
                     child: InkWell(
-                      onTap: () => LeaderboardSheet.show(context),
+                      onTap: () => DecorationClosetSheet.show(context),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.emoji_events_rounded,
-                                size: 18, color: Color(0xFFFFD700)),
+                            Icon(Icons.checkroom_rounded,
+                                size: 18, color: colors.primary),
                             const SizedBox(width: 8),
                             AnymeXText(
-                              'Leaderboard',
+                              'Open Closet',
                               variant: TextVariant.bold,
                               size: 13,
-                              color: colors.onSurface,
+                              color: colors.primary,
                             ),
                           ],
                         ),
                       ),
                     ),
                   ),
+                  AnymeXContainer(
+                    width: 1,
+                    height: 24,
+                    color: colors.outlineVariant.withOpacity(0.2),
+                  ),
                 ],
-              ),
+                Expanded(
+                  child: InkWell(
+                    onTap: () => LeaderboardSheet.show(context),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.emoji_events_rounded,
+                              size: 18, color: Color(0xFFFFD700)),
+                          const SizedBox(width: 8),
+                          AnymeXText(
+                            'Leaderboard',
+                            variant: TextVariant.bold,
+                            size: 13,
+                            color: colors.onSurface,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -289,16 +286,14 @@ class TrackingServiceCard extends StatelessWidget {
         final String? avatar =
             isLogged ? service.profileData.value.avatar : null;
 
-        return Container(
-          decoration: BoxDecoration(
-            color: colors.surfaceContainerLow.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isLogged
-                  ? (colors.primary).withOpacity(0.5)
-                  : Colors.transparent,
-              width: 1,
-            ),
+        return AnymeXContainer(
+          color: colors.surfaceContainerLow.withOpacity(0.4),
+          radius: 20,
+          border: Border.all(
+            color: isLogged
+                ? (colors.primary).withOpacity(0.5)
+                : Colors.transparent,
+            width: 1,
           ),
           clipBehavior: Clip.antiAlias,
           child: Material(
@@ -342,15 +337,13 @@ class TrackingServiceCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Container(
+                    AnymeXContainer(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isLogged
-                            ? colors.surfaceContainerHigh
-                            : (colors.primary).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      color: isLogged
+                          ? colors.surfaceContainerHigh
+                          : (colors.primary).withOpacity(0.1),
+                      radius: 12,
                       child: AnymeXText(
                         isLogged ? "Manage" : "Connect",
                         variant: TextVariant.bold,
@@ -370,28 +363,25 @@ class TrackingServiceCard extends StatelessWidget {
 
   Widget _buildServiceIcon(String? avatarUrl, bool isLogged) {
     if (isLogged && avatarUrl != null && avatarUrl.isNotEmpty) {
-      return Container(
+      return AnymeXContainer(
         width: 44,
         height: 44,
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-                image: CachedNetworkImageProvider(
-                  avatarUrl,
-                  cacheManager: AnymeXCacheManager.instance,
-                ),
-                fit: BoxFit.cover)),
+        radius: 22,
+        clipBehavior: Clip.antiAlias,
+        child: CachedNetworkImage(
+          imageUrl: avatarUrl,
+          cacheManager: AnymeXCacheManager.instance,
+          fit: BoxFit.cover,
+        ),
       );
     }
 
-    return Container(
+    return AnymeXContainer(
       width: 44,
       height: 44,
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
+      color: Colors.white.withOpacity(0.1),
+      radius: 12,
       child: Image.asset(
         'assets/icons/$serviceIcon',
         errorBuilder: (c, o, s) => const Icon(IconlyBold.danger),
