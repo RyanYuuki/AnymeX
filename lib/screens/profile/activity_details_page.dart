@@ -12,6 +12,8 @@ import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:anymex/screens/profile/widgets/profile_common.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 
 void showActivityDetailsSheet(BuildContext context, AnilistActivity activity) {
   showModalBottomSheet(
@@ -60,6 +62,11 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       setState(() {
         replies = fetched;
       });
+      // One batched lookup so every reply frame resolves from cache.
+      if (Get.isRegistered<CommentumService>()) {
+        Get.find<CommentumService>().prefetchCustomizations(
+            [for (final r in fetched) r.authorId?.toString()]);
+      }
     }
   }
 
@@ -135,7 +142,8 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       builder: (context) => AlertDialog(
         backgroundColor: context.theme.colorScheme.surfaceContainerHigh,
         title: const AnymeXText('Delete Reply'),
-        content: const AnymeXText('Are you sure you want to delete this reply?'),
+        content:
+            const AnymeXText('Are you sure you want to delete this reply?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -257,81 +265,77 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                       ],
                     ),
                   ),
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: _fetchReplies,
-                    child: ListView(
-                      controller: scrollController,
-                      physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics()),
-                      children: [
-                        ActivityCard(
-                          activity: widget.activity,
-                          onTap: () {},
-                          onReplyTap:
-                              () {}, 
-                        ),
-
-                        const Divider(indent: 16, endIndent: 16),
-
-                        if (replies == null)
-                          const Padding(
-                            padding: EdgeInsets.all(32.0),
-                            child: Center(child: CircularProgressIndicator()),
-                          )
-                        else if (replies!.isEmpty)
-                          const Padding(
-                            padding: EdgeInsets.all(32.0),
-                            child: Center(
-                              child: AnymeXText("No replies yet. Be the first!"),
-                            ),
-                          )
-                        else
-                          ...replies!.map((reply) => _buildReplyCard(reply)),
-
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ),
-
-                Container(
-                  padding: EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 8,
-                    bottom: 12 + MediaQuery.paddingOf(context).bottom,
-                  ),
-                  decoration: BoxDecoration(
-                    color: context.theme.colorScheme.surfaceContainer,
-                    border: Border(
-                      top: BorderSide(
-                        color: context.theme.dividerColor.withOpacity(0.1),
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: _fetchReplies,
+                      child: ListView(
+                        controller: scrollController,
+                        physics: const AlwaysScrollableScrollPhysics(
+                            parent: BouncingScrollPhysics()),
+                        children: [
+                          ActivityCard(
+                            activity: widget.activity,
+                            onTap: () {},
+                            onReplyTap: () {},
+                          ),
+                          const Divider(indent: 16, endIndent: 16),
+                          if (replies == null)
+                            const Padding(
+                              padding: EdgeInsets.all(32.0),
+                              child: Center(child: CircularProgressIndicator()),
+                            )
+                          else if (replies!.isEmpty)
+                            const Padding(
+                              padding: EdgeInsets.all(32.0),
+                              child: Center(
+                                child:
+                                    AnymeXText("No replies yet. Be the first!"),
+                              ),
+                            )
+                          else
+                            ...replies!.map((reply) => _buildReplyCard(reply)),
+                          const SizedBox(height: 20),
+                        ],
                       ),
                     ),
                   ),
-                  child: ActivityComposerSheet(
-                    key: _composerKey,
-                    hintText: _editingReplyId != null
-                        ? "Edit reply..."
-                        : "Write a reply...",
-                    showCancelButton: _editingReplyId != null || _isReplying,
-                    onCancel: () {
-                      setState(() {
-                        _editingReplyId = null;
-                        _isReplying = false;
-                      });
-                    },
-                    onSubmit: (text, {isPrivate = false}) => _postReply(text),
+                  Container(
+                    padding: EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      top: 8,
+                      bottom: 12 + MediaQuery.paddingOf(context).bottom,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.theme.colorScheme.surfaceContainer,
+                      border: Border(
+                        top: BorderSide(
+                          color: context.theme.dividerColor.withOpacity(0.1),
+                        ),
+                      ),
+                    ),
+                    child: ActivityComposerSheet(
+                      key: _composerKey,
+                      hintText: _editingReplyId != null
+                          ? "Edit reply..."
+                          : "Write a reply...",
+                      showCancelButton: _editingReplyId != null || _isReplying,
+                      onCancel: () {
+                        setState(() {
+                          _editingReplyId = null;
+                          _isReplying = false;
+                        });
+                      },
+                      onSubmit: (text, {isPrivate = false}) => _postReply(text),
+                    ),
                   ),
-                ),
-              ],
+                ],
               ),
             );
           },
         ),
       ),
-    ); 
+    );
   }
 
   Widget _buildReplyCard(ActivityReply reply) {
@@ -340,186 +344,172 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
         Get.find<AnilistAuth>().profileData.value.id.toString();
 
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () {
-                if (reply.authorId != null) {
-                  Navigator.pop(context); // Close bottom
-                  final currentUserId = Get.find<ServiceHandler>().profileData.value.id;
-                  if (reply.authorId.toString() == currentUserId) {
-                    navigateWithSlide(() => const ProfilePage());
-                  } else {
-                    navigateWithSlide(
-                        () => UserProfilePage(userId: reply.authorId!));
-                  }
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              if (reply.authorId != null) {
+                Navigator.pop(context); // Close bottom
+                final currentUserId =
+                    Get.find<ServiceHandler>().profileData.value.id;
+                if (reply.authorId.toString() == currentUserId) {
+                  navigateWithSlide(() => const ProfilePage());
+                } else {
+                  navigateWithSlide(
+                      () => UserProfilePage(userId: reply.authorId!));
                 }
-              },
-              child: reply.authorAvatarUrl != null
-                  ? ClipOval(
-                      child: CachedNetworkImage(
-                        imageUrl: reply.authorAvatarUrl!,
-                        width: 32,
-                        height: 32,
-                        fit: BoxFit.cover,
-                        errorWidget: (context, url, error) => const CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.transparent,
-                          child: Icon(Icons.person, size: 20),
+              }
+            },
+            child: CommentumAvatar(
+              userId: reply.authorId?.toString(),
+              avatarUrl: reply.authorAvatarUrl,
+              size: 32,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (reply.authorId != null) {
+                          Navigator.pop(context); // Close bottom sheet
+                          final currentUserId =
+                              Get.find<ServiceHandler>().profileData.value.id;
+                          if (reply.authorId.toString() == currentUserId) {
+                            navigateWithSlide(() => const ProfilePage());
+                          } else {
+                            navigateWithSlide(
+                                () => UserProfilePage(userId: reply.authorId!));
+                          }
+                        }
+                      },
+                      child: AnymeXText(
+                        reply.authorName ?? 'User',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    )
-                  : const CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: 16,
-                      child: Icon(Icons.person, size: 20),
                     ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          if (reply.authorId != null) {
-                            Navigator.pop(
-                                context); // Close bottom sheet
-                            final currentUserId = Get.find<ServiceHandler>().profileData.value.id;
-                            if (reply.authorId.toString() == currentUserId) {
-                              navigateWithSlide(() => const ProfilePage());
-                            } else {
-                              navigateWithSlide(
-                                  () => UserProfilePage(userId: reply.authorId!));
+                    AnymeXText(
+                      reply.timeAgo,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: subtleText,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                AnilistAboutMe(
+                  about: reply.text,
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            if (_editingReplyId != null) {
+                              setState(() => _editingReplyId = null);
                             }
-                          }
-                        },
-                        child: AnymeXText(
-                          reply.authorName ?? 'User',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
+                            _focusComposer('@${reply.authorName} ');
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 4.0),
+                            child: AnymeXText(
+                              'reply',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: context.theme.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      AnymeXText(
-                        reply.timeAgo,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: subtleText,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  AnilistAboutMe(
-                    about: reply.text,
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
+                        if (reply.authorId.toString() == currentUserId) ...[
                           InkWell(
-                            onTap: () {
-                              if (_editingReplyId != null) {
-                                setState(() => _editingReplyId = null);
-                              }
-                              _focusComposer('@${reply.authorName} ');
-                            },
+                            onTap: () => _deleteReply(reply),
                             borderRadius: BorderRadius.circular(16),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8.0, vertical: 4.0),
                               child: AnymeXText(
-                                'reply',
+                                'delete',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: context.theme.colorScheme.primary,
+                                  color: context.theme.colorScheme.error,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
                           ),
-                          if (reply.authorId.toString() == currentUserId) ...[
-                            InkWell(
-                              onTap: () => _deleteReply(reply),
-                              borderRadius: BorderRadius.circular(16),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 4.0),
-                                child: AnymeXText(
-                                  'delete',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: context.theme.colorScheme.error,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                          InkWell(
+                            onTap: () => _editReply(reply),
+                            borderRadius: BorderRadius.circular(16),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0, vertical: 4.0),
+                              child: AnymeXText(
+                                'edit',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: context
+                                      .theme.colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
-                            InkWell(
-                              onTap: () => _editReply(reply),
-                              borderRadius: BorderRadius.circular(16),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 4.0),
-                                child: AnymeXText(
-                                  'edit',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: context
-                                        .theme.colorScheme.onSurfaceVariant,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    InkWell(
+                      onTap: () => _toggleReplyLike(reply),
+                      onLongPress: () => _showReplyLikedBySheet(context, reply),
+                      borderRadius: BorderRadius.circular(16),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6.0, vertical: 4.0),
+                        child: Row(
+                          children: [
+                            Icon(
+                              reply.isLiked
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              size: 14,
+                              color: reply.isLiked ? Colors.red : subtleText,
+                            ),
+                            const SizedBox(width: 4),
+                            AnymeXText(
+                              '${reply.likeCount}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: reply.isLiked ? Colors.red : subtleText,
                               ),
                             ),
                           ],
-                        ],
-                      ),
-                      InkWell(
-                        onTap: () => _toggleReplyLike(reply),
-                        onLongPress: () => _showReplyLikedBySheet(context, reply),
-                        borderRadius: BorderRadius.circular(16),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6.0, vertical: 4.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                reply.isLiked
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                size: 14,
-                                color: reply.isLiked ? Colors.red : subtleText,
-                              ),
-                              const SizedBox(width: 4),
-                              AnymeXText(
-                                '${reply.likeCount}',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color:
-                                      reply.isLiked ? Colors.red : subtleText,
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -537,8 +527,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
         final likeCount = reply.likes.length;
         final contentHeight = 70.0 + (likeCount * 90.0) + 16.0;
         final screenHeight = MediaQuery.of(sheetContext).size.height;
-        final initialFraction =
-            (contentHeight / screenHeight).clamp(0.25, 0.9);
+        final initialFraction = (contentHeight / screenHeight).clamp(0.25, 0.9);
         return DraggableScrollableSheet(
           initialChildSize: initialFraction,
           minChildSize: 0.25,
@@ -583,8 +572,8 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                           '${reply.likeCount}',
                           style: TextStyle(
                             fontSize: 14,
-                            color: dragContext
-                                .theme.colorScheme.onSurfaceVariant,
+                            color:
+                                dragContext.theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -655,8 +644,10 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                       begin: Alignment.centerLeft,
                       end: Alignment.centerRight,
                       colors: [
-                        context.theme.colorScheme.surfaceContainer.withOpacity(0.95),
-                        context.theme.colorScheme.surfaceContainer.withOpacity(0.8),
+                        context.theme.colorScheme.surfaceContainer
+                            .withOpacity(0.95),
+                        context.theme.colorScheme.surfaceContainer
+                            .withOpacity(0.8),
                         Colors.transparent,
                       ],
                       stops: const [0.0, 0.5, 1.0],
@@ -667,29 +658,15 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      if (liker.avatarUrl != null)
-                        ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl: liker.avatarUrl!,
-                            width: 40,
-                            height: 40,
-                            fit: BoxFit.cover,
-                            errorWidget: (context, url, error) => CircleAvatar(
-                              radius: 20,
-                              backgroundColor: Colors.transparent,
-                              child: Icon(Icons.person, color: context.theme.colorScheme.onPrimaryContainer),
-                            ),
-                          ),
-                        )
-                      else
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundColor: Colors.transparent,
-                          child: Icon(Icons.person, color: context.theme.colorScheme.onPrimaryContainer),
-                        ),
+                      CommentumAvatar(
+                        userId: liker.id.toString(),
+                        avatarUrl: liker.avatarUrl,
+                        size: 40,
+                      ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: AnymeXText(liker.name,
+                        child: AnymeXText(
+                          liker.name,
                           size: 16,
                           variant: TextVariant.bold,
                           color: context.theme.colorScheme.onSurface,

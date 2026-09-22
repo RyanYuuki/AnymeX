@@ -1,0 +1,673 @@
+import 'package:anymex/database/comments/model/commentum_role.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/database/comments/model/comment.dart';
+import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
+import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/user_comments_sheet.dart';
+import 'package:anymex/screens/profile/profile_page.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
+import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
+import 'package:anymex/database/comments/model/discord_badge.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+
+class CommentsRepliesSheet extends StatefulWidget {
+  final Comment rootComment;
+  final CommentSectionController controller;
+
+  /// Optional hook so the host (CommentsSection) can open its full comment
+  /// context menu (copy/edit/delete/report/moderate) for any comment shown
+  /// in this sheet, keeping the replies view at feature parity with the
+  /// main comment list.
+  final void Function(Comment comment)? onShowContextMenu;
+
+  const CommentsRepliesSheet({
+    super.key,
+    required this.rootComment,
+    required this.controller,
+    this.onShowContextMenu,
+  });
+
+  static Future<void> show(
+    BuildContext context, {
+    required Comment rootComment,
+    required CommentSectionController controller,
+    Comment? initialReplyTarget,
+    void Function(Comment comment)? onShowContextMenu,
+  }) {
+    if (initialReplyTarget != null) {
+      controller.setReplyTarget(initialReplyTarget);
+    } else {
+      controller.setReplyTarget(rootComment);
+    }
+
+    return AnymeXSheet.custom(
+      CommentsRepliesSheet(
+        rootComment: rootComment,
+        controller: controller,
+        onShowContextMenu: onShowContextMenu,
+      ),
+      context,
+    );
+  }
+
+  @override
+  State<CommentsRepliesSheet> createState() => _CommentsRepliesSheetState();
+}
+
+class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
+  final ScrollController _scrollController = ScrollController();
+  final FocusNode _sheetFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _sheetFocusNode.dispose();
+    widget.controller.clearReplyTarget();
+    super.dispose();
+  }
+
+  String _formatTime(String timestamp) {
+    return CommentSectionController.formatCommentTimestamp(timestamp);
+  }
+
+  Color _getRoleColor(String role) {
+    return CommentumRoleConfig.getRoleColor(context, role);
+  }
+
+
+  List<Comment> _flattenReplies(Comment root) {
+    final List<Comment> flat = [];
+    void traverse(Comment c) {
+      if (c.replies != null) {
+        for (final r in c.replies!) {
+          flat.add(r);
+          traverse(r);
+        }
+      }
+    }
+    traverse(root);
+    return flat;
+  }
+
+  int _countReplies(Comment root) {
+    int count = 0;
+    if (root.replies != null) {
+      count += root.replies!.length;
+      for (final r in root.replies!) {
+        count += _countReplies(r);
+      }
+    }
+    return count;
+  }
+
+  Comment? _findParentComment(Comment reply, Comment root) {
+    if (reply.parentId == null) return null;
+    final parentIdStr = reply.parentId.toString();
+    if (root.id == parentIdStr) return root;
+
+    Comment? search(Comment current) {
+      if (current.id == parentIdStr) return current;
+      if (current.replies != null) {
+        for (final r in current.replies!) {
+          final found = search(r);
+          if (found != null) return found;
+        }
+      }
+      return null;
+    }
+
+    final foundInRoot = search(root);
+    if (foundInRoot != null) return foundInRoot;
+    return widget.controller.findCommentById(parentIdStr);
+  }
+
+  Widget _buildCommentCard({
+    required BuildContext context,
+    required Comment comment,
+    required bool isRoot,
+    required bool isNestedSubReply,
+    Comment? parentComment,
+    Comment? rootComment,
+    VoidCallback? onReplyTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final controller = widget.controller;
+
+    final isUpvoted = comment.userVote == 1;
+    final isDownvoted = comment.userVote == -1;
+    final isSpoiler = comment.tag.toLowerCase().contains('spoiler');
+
+    final hasRole = comment.userRole != null &&
+        comment.userRole != 'user' &&
+        comment.userRole!.isNotEmpty;
+
+    final showParentBreadcrumb = isNestedSubReply &&
+        parentComment != null &&
+        rootComment != null &&
+        parentComment.id != rootComment.id;
+
+    // Deleted replies render as a muted placeholder instead of stale content
+    if (comment.deleted) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: [
+            Icon(
+              Icons.delete_outline_rounded,
+              size: 14,
+              color: colorScheme.onSurfaceVariant.opaque(0.6),
+            ),
+            const SizedBox(width: 6),
+            AnymeXText(
+              'This comment was deleted',
+              size: 12,
+              fontStyle: FontStyle.italic,
+              color: colorScheme.onSurfaceVariant.opaque(0.6),
+              maxLines: null,
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget card = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Avatar -> navigates to profile
+        GestureDetector(
+          onTap: () {
+            final currentUserId =
+                Get.find<ServiceHandler>().profileData.value.id?.toString();
+            if (comment.userId == currentUserId) {
+              navigate(() => const ProfilePage());
+            } else {
+              navigate(() =>
+                  UserProfilePage(userId: int.tryParse(comment.userId) ?? 0));
+            }
+          },
+          child: AnymeXDecoratedAvatar(
+            avatarUrl: comment.avatarUrl,
+            decorationUrl: comment.avatarDecoration,
+            size: isNestedSubReply ? 26 : (isRoot ? 34 : 30),
+          ),
+        ),
+        const SizedBox(width: 10),
+
+        // Body
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header: Role Icon + Username + Breadcrumb + Time
+              Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: GestureDetector(
+                            onTap: () => UserCommentsSheet.show(context, comment: comment, controller: controller),
+                            child: AnymeXText(
+                              comment.username,
+                              overflow: TextOverflow.ellipsis,
+                              size: 13,
+                              variant: TextVariant.bold,
+                              color: hasRole
+                                  ? _getRoleColor(comment.userRole!)
+                                  : colorScheme.onSurface,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                        if ((comment.badges != null && comment.badges!.isNotEmpty) ||
+                            hasRole ||
+                            (!isRoot && (comment.userId == widget.rootComment.userId))) ...[
+                          const SizedBox(width: 4),
+                          DiscordBadgesRow(
+                            badges: comment.badges,
+                            role: comment.userRole,
+                            size: 13.0,
+                            isOp: !isRoot && (comment.userId == widget.rootComment.userId),
+                          ),
+                        ],
+                        if (showParentBreadcrumb) ...[
+                          Icon(Icons.arrow_right,
+                              size: 18, color: colorScheme.primary),
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: parentComment.deleted
+                                  ? null
+                                  : () => UserCommentsSheet.show(context,
+                                      comment: parentComment,
+                                      controller: controller),
+                              child: AnymeXText(
+                                parentComment.deleted
+                                    ? 'deleted'
+                                    : parentComment.username,
+                                overflow: TextOverflow.ellipsis,
+                                size: 13,
+                                variant: TextVariant.bold,
+                                fontStyle: parentComment.deleted
+                                    ? FontStyle.italic
+                                    : FontStyle.normal,
+                                color: parentComment.deleted
+                                    ? colorScheme.onSurfaceVariant.opaque(0.6)
+                                    : (parentComment.userRole != null &&
+                                            parentComment.userRole != 'user' &&
+                                            parentComment.userRole!.isNotEmpty
+                                        ? _getRoleColor(parentComment.userRole!)
+                                        : colorScheme.primary),
+                                maxLines: 1,
+                              ),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(width: 6),
+                        AnymeXText(
+                          _formatTime(comment.createdAt),
+                          size: 11,
+                          color: colorScheme.onSurfaceVariant.opaque(0.6),
+                          maxLines: 1,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (comment.tag.isNotEmpty && comment.tag != 'General') ...[
+                    const SizedBox(width: 8),
+                    AnymeXContainer(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      color: isSpoiler
+                          ? colorScheme.error.withValues(alpha: 0.15)
+                          : colorScheme.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                      child: AnymeXText(
+                        comment.tag,
+                        size: 10,
+                        variant: TextVariant.bold,
+                        color: isSpoiler
+                            ? colorScheme.error
+                            : colorScheme.primary,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+
+              // Comment Markdown Content
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: DiscordMarkdown(
+                  text: comment.commentText,
+                  colorScheme: colorScheme,
+                  baseStyle: TextStyle(
+                    fontSize: 13.5,
+                    height: 1.4,
+                    color: colorScheme.onSurface.opaque(0.9),
+                  ),
+                ),
+              ),
+
+              // Actions Row: Upvote + Reply
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
+                child: Row(
+                  children: [
+                    // Upvote Button
+                    GestureDetector(
+                      onTap: () => controller.handleVote(comment, 1),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 3),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isUpvoted
+                                    ? Icons.thumb_up_rounded
+                                    : Icons.thumb_up_outlined,
+                              size: 13,
+                              color: isUpvoted
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                            if (comment.likes > 0) ...[
+                              const SizedBox(width: 4),
+                              AnymeXText(
+                                '${comment.likes}',
+                                size: 11,
+                                variant: TextVariant.semiBold,
+                                color: isUpvoted
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurfaceVariant,
+                                maxLines: null,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+
+                    // Downvote Button
+                    GestureDetector(
+                      onTap: () => controller.handleVote(comment, -1),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 3),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isDownvoted
+                                  ? Icons.thumb_down_rounded
+                                  : Icons.thumb_down_outlined,
+                              size: 13,
+                              color: isDownvoted
+                                  ? colorScheme.primary
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                            if (comment.dislikes > 0) ...[
+                              const SizedBox(width: 4),
+                              AnymeXText(
+                                '${comment.dislikes}',
+                                size: 11,
+                                variant: TextVariant.semiBold,
+                                color: isDownvoted
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurfaceVariant,
+                                maxLines: null,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+
+                    // Reply Button
+                    if (onReplyTap != null)
+                      GestureDetector(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          onReplyTap();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 3),
+                          child: AnymeXText(
+                            'Reply',
+                            size: 11.5,
+                            variant: TextVariant.bold,
+                            color: colorScheme.onSurfaceVariant,
+                            maxLines: null,
+                          ),
+                        ),
+                      ),
+
+                    // Context menu (3-dot) - full parity with the main list
+                    const Spacer(),
+                    if (widget.onShowContextMenu != null)
+                      GestureDetector(
+                        onTap: () => widget.onShowContextMenu!(comment),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          child: Icon(
+                            Icons.more_horiz_rounded,
+                            size: 16,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    final commentum = Get.isRegistered<CommentumService>()
+        ? Get.find<CommentumService>()
+        : null;
+    final hasNameplate = (commentum?.renderNameplates.value ?? true) &&
+        comment.nameplateTheme != null &&
+        comment.nameplateTheme!.trim().isNotEmpty;
+
+    if (hasNameplate) {
+      String nameplateImg = comment.nameplateTheme!.trim();
+      if (nameplateImg.endsWith('.webm')) {
+        nameplateImg = nameplateImg
+            .replaceAll('asset.webm', 'static.png')
+            .replaceAll('.webm', '.png');
+      }
+
+      card = AnymeXContainer(
+        borderRadius: BorderRadius.circular(14),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(nameplateImg),
+            fit: BoxFit.cover,
+          ),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.12),
+            width: 0.8,
+          ),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          color: Colors.black.withOpacity(0.55),
+          child: card,
+        ),
+      );
+    }
+
+    // Slim indent with a branch line for sub-replies (kept minimal so
+    // deep threads don't drift right — the breadcrumb already shows target)
+    if (isNestedSubReply) {
+      return AnymeXContainer(
+        margin: const EdgeInsets.only(left: 2, top: 10),
+        padding: const EdgeInsets.only(left: 8),
+        border: Border(
+          left: BorderSide(
+            color: colorScheme.primary.withValues(alpha: 0.45),
+            width: 2,
+          ),
+        ),
+        child: card,
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: card,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final controller = widget.controller;
+    final keyboardInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.85,
+      child: Column(
+        children: [
+                // Top Drag Handle & Title Bar
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                  child: Column(
+                    children: [
+                      Center(
+                        child: AnymeXContainer(
+                          width: 36,
+                          height: 4,
+                          color: colorScheme.outlineVariant.opaque(0.4),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Obx(() {
+                            final currentParent = controller
+                                    .findCommentById(widget.rootComment.id) ??
+                                widget.rootComment;
+                            final count = _countReplies(currentParent);
+                            return AnymeXText(
+                              'Replies ($count)',
+                              size: 16,
+                              variant: TextVariant.bold,
+                              color: colorScheme.onSurface,
+                              maxLines: null,
+                            );
+                          }),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.close_rounded, size: 20),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Divider(
+                    height: 1,
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.15)),
+
+                // Scrollable Area
+                Expanded(
+                  child: Obx(() {
+                    final latestParent = controller
+                            .findCommentById(widget.rootComment.id) ??
+                        widget.rootComment;
+                    final flatReplies = _flattenReplies(latestParent);
+
+                    return ListView(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      children: [
+                        // Pinned Original Comment Header Card
+                        AnymeXContainer(
+                          padding: const EdgeInsets.all(12),
+                          color: colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: colorScheme.outlineVariant
+                                .withValues(alpha: 0.15),
+                            width: 1,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.push_pin_rounded,
+                                    size: 13,
+                                    color: colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  AnymeXText(
+                                    'ORIGINAL COMMENT',
+                                    size: 10,
+                                    color: colorScheme.primary,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 0.5,
+                                    ),
+                                    maxLines: null,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              _buildCommentCard(
+                                context: context,
+                                comment: latestParent,
+                                isRoot: true,
+                                isNestedSubReply: false,
+                                rootComment: latestParent,
+                                onReplyTap: () {
+                                  controller.setReplyTarget(latestParent);
+                                  controller.focusCommentInput(_sheetFocusNode);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Replies Feed
+                        if (flatReplies.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 40),
+                            child: Center(
+                              child: AnymeXText(
+                                'No replies yet. Be the first to reply!',
+                                size: 13,
+                                color: colorScheme.onSurfaceVariant.opaque(0.6),
+                                maxLines: null,
+                              ),
+                            ),
+                          )
+                        else
+                          ...flatReplies.map((reply) {
+                            final isSubReply = reply.parentId != null &&
+                                reply.parentId.toString() != latestParent.id;
+                            final parentComment =
+                                _findParentComment(reply, latestParent);
+
+                            return _buildCommentCard(
+                              context: context,
+                              comment: reply,
+                              isRoot: false,
+                              isNestedSubReply: isSubReply,
+                              parentComment: parentComment,
+                              rootComment: latestParent,
+                              onReplyTap: () {
+                                controller.setReplyTarget(reply);
+                                controller.focusCommentInput(_sheetFocusNode);
+                              },
+                            );
+                          }),
+                      ],
+                    );
+                  }),
+                ),
+
+                // Bottom Pinned Input Bar — floats above keyboard
+                Padding(
+                  padding: EdgeInsets.only(bottom: keyboardInset),
+                  child: CommentInputBar(
+                    controller: controller,
+                    focusNode: _sheetFocusNode,
+                    onSubmitted: () {
+                      // Scroll to bottom or keep in view
+                    },
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+}

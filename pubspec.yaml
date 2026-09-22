@@ -105,6 +105,7 @@ dependencies:
     firebase_core: ^4.4.0
     firebase_analytics: ^12.1.1
     firebase_messaging: ^16.6.0
+    flutter_local_notifications: ^17.2.2
     background_downloader: ^9.5.2
     auto_size_text: ^3.0.0
     vibration: ^3.1.5
