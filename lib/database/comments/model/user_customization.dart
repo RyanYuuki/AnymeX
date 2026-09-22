@@ -250,6 +250,10 @@ class CustomizationRepository {
           if (item is Map) {
             final banner =
                 AnimeBannerItem.fromJson(Map<String, dynamic>.from(item));
+            if (banner.title.toLowerCase().contains('featured block') ||
+                banner.banner.contains('featured_block_url')) {
+              continue;
+            }
             banners.add(banner);
             map.putIfAbsent(banner.series, () => []).add(banner);
           }

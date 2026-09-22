@@ -5,10 +5,12 @@ import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -77,6 +79,15 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
     }
   }
 
+  String _resolveNameplateUrl(String url) {
+    if (url.endsWith('.webm')) {
+      return url
+          .replaceAll('asset.webm', 'static.png')
+          .replaceAll('.webm', '.png');
+    }
+    return url;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -99,100 +110,128 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
           ),
           const SizedBox(height: 14),
 
-              // Header Bar
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.emoji_events_rounded, color: colorScheme.primary, size: 22),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymeXText(
-                            'Community Leaderboard',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: colorScheme.onSurface,
-                            ),
-                          ),
-                          AnymeXText(
-                            'Top commenters & points ranking',
-                            size: 11.5,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.refresh_rounded, size: 20),
-                      onPressed: _isLoading ? null : _fetchLeaderboard,
-                      tooltip: 'Refresh',
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 12),
-              Divider(height: 1, color: colorScheme.outlineVariant.withValues(alpha: 0.2)),
-
-              // Content
-              Expanded(
-                child: _isLoading
-                    ? const Center(
-                        child: ExpressiveLoadingIndicator(),
-                      )
-                    : _entries.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.leaderboard_outlined,
-                                    size: 48,
-                                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4)),
-                                const SizedBox(height: 10),
-                                AnymeXText(
-                                  'No rankings available yet',
-                                  color: colorScheme.onSurfaceVariant,
-                                  size: 14,
-                                ),
-                              ],
-                            ),
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 80),
-                            itemCount: _entries.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 8),
-                            itemBuilder: (context, index) {
-                              final entry = _entries[index];
-                              return _buildLeaderboardTile(context, entry, index);
-                            },
-                          ),
-              ),
-
-              // Bottom Current User Rank Bar (if available)
-              if (_currentUserEntry != null)
+          // Header Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHigh,
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.shadow.withValues(alpha: 0.15),
-                        blurRadius: 8,
-                        offset: const Offset(0, -2),
+                    color: colorScheme.primary.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.emoji_events_rounded,
+                      color: colorScheme.primary, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        'Community Leaderboard',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      AnymeXText(
+                        'Top commenters & points ranking',
+                        size: 11.5,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.refresh_rounded, size: 20),
+                  onPressed: _isLoading ? null : _fetchLeaderboard,
+                  tooltip: 'Refresh',
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 12),
+          Divider(
+              height: 1,
+              color: colorScheme.outlineVariant.withValues(alpha: 0.2)),
+
+          // Content
+          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: ExpressiveLoadingIndicator(),
+                  )
+                : _entries.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.leaderboard_outlined,
+                                size: 48,
+                                color: colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.4)),
+                            const SizedBox(height: 10),
+                            AnymeXText(
+                              'No rankings available yet',
+                              color: colorScheme.onSurfaceVariant,
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.separated(
+                        padding:
+                            const EdgeInsets.fromLTRB(16, 12, 16, 80),
+                        itemCount: _entries.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          final entry = _entries[index];
+                          return _buildLeaderboardTile(
+                              context, entry, index);
+                        },
+                      ),
+          ),
+
+          // Bottom Current User Rank Bar (if available)
+          if (_currentUserEntry != null)
+            Obx(() {
+              final renderNameplate =
+                  _commentumService.renderNameplates.value &&
+                      _currentUserEntry!.nameplateTheme != null &&
+                      _currentUserEntry!.nameplateTheme!.isNotEmpty;
+              final nameplateImg = renderNameplate
+                  ? _resolveNameplateUrl(
+                      _currentUserEntry!.nameplateTheme!)
+                  : null;
+
+              return AnymeXContainer(
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerHigh,
+                  image: nameplateImg != null
+                      ? DecorationImage(
+                          image: CachedNetworkImageProvider(nameplateImg),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorScheme.shadow.withValues(alpha: 0.15),
+                      blurRadius: 8,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 12),
+                  color: nameplateImg != null
+                      ? Colors.black.withOpacity(0.55)
+                      : Colors.transparent,
                   child: SafeArea(
                     top: false,
                     child: Row(
@@ -283,9 +322,11 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                     ),
                   ),
                 ),
-            ],
-          ),
-        );
+              );
+            }),
+        ],
+      ),
+    );
   }
 
   Widget _buildLeaderboardTile(BuildContext context, LeaderboardEntry entry, int index) {
@@ -316,173 +357,207 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
 
     final isMyEntry = entry.userId == _commentumService.currentUserId;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => _onUserTapped(entry),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: isMyEntry
-                ? colorScheme.primary.withValues(alpha: 0.1)
-                : colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
+    return Obx(() {
+      final renderNameplate = _commentumService.renderNameplates.value &&
+          entry.nameplateTheme != null &&
+          entry.nameplateTheme!.isNotEmpty;
+      final nameplateImg = renderNameplate
+          ? _resolveNameplateUrl(entry.nameplateTheme!)
+          : null;
+
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () => _onUserTapped(entry),
+          child: AnymeXContainer(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
               color: isMyEntry
-                  ? colorScheme.primary.withValues(alpha: 0.4)
-                  : isTop3
-                      ? rankColor.withValues(alpha: 0.3)
-                      : colorScheme.outlineVariant.withValues(alpha: 0.12),
-              width: isTop3 || isMyEntry ? 1.2 : 0.8,
+                  ? colorScheme.primary.withValues(alpha: 0.1)
+                  : colorScheme.surfaceContainerHigh.withValues(alpha: 0.6),
+              image: nameplateImg != null
+                  ? DecorationImage(
+                      image: CachedNetworkImageProvider(nameplateImg),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isMyEntry
+                    ? colorScheme.primary.withValues(alpha: 0.4)
+                    : isTop3
+                        ? rankColor.withValues(alpha: 0.3)
+                        : colorScheme.outlineVariant.withValues(alpha: 0.12),
+                width: isTop3 || isMyEntry ? 1.2 : 0.8,
+              ),
             ),
-          ),
-          child: Row(
-            children: [
-              // Rank indicator
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: rankBgColor ?? colorScheme.surface.withValues(alpha: 0.4),
-                  shape: BoxShape.circle,
-                ),
-                alignment: Alignment.center,
-                child: isTop3
-                    ? Text(rankBadge, style: const TextStyle(fontSize: 16))
-                    : AnymeXText(
-                        rankBadge,
-                        variant: TextVariant.bold,
-                        // 4-digit ranks (#4048) overflow a 36px circle at 12
-                        size: rankBadge.length > 5
-                            ? 9.0
-                            : rankBadge.length > 4
-                                ? 10.0
-                                : 12,
-                        color: rankColor,
-                        maxLines: 1,
-                      ),
-              ),
-              const SizedBox(width: 12),
-
-              // Avatar
-              AnymeXDecoratedAvatar(
-                avatarUrl: entry.avatarUrl,
-                decorationUrl: entry.avatarDecoration,
-                size: 38,
-              ),
-              const SizedBox(width: 12),
-
-              // User Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: AnymeXText(
-                            entry.username,
-                            variant: TextVariant.bold,
-                            size: 14,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (entry.badges != null && entry.badges!.isNotEmpty) ...[
-                          const SizedBox(width: 6),
-                          DiscordBadgesRow(badges: entry.badges, size: 14.0),
-                        ] else if (entry.role != null && entry.role != 'user') ...[
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-                            decoration: BoxDecoration(
-                              color: colorScheme.primary.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: AnymeXText(
-                              entry.role!,
-                              size: 9.5,
-                              variant: TextVariant.bold,
-                              color: colorScheme.primary,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 3),
-                    Row(
-                      children: [
-                        if (entry.tierEmoji.isNotEmpty) ...[
-                          Text(entry.tierEmoji, style: const TextStyle(fontSize: 11)),
-                          const SizedBox(width: 4),
-                        ],
-                        AnymeXText(
-                          entry.tierLabel,
-                          size: 11,
-                          variant: TextVariant.semiBold,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        if (entry.currentStreak > 0) ...[
-                          const SizedBox(width: 8),
-                          const Text('🔥', style: TextStyle(fontSize: 10)),
-                          const SizedBox(width: 2),
-                          AnymeXText(
-                            '${entry.currentStreak}d',
-                            size: 10.5,
-                            color: Colors.orange,
-                            variant: TextVariant.semiBold,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              // Points badge & bonus tag button
-              Row(
-                mainAxisSize: MainAxisSize.min,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              color: nameplateImg != null
+                  ? Colors.black.withOpacity(0.52)
+                  : Colors.transparent,
+              child: Row(
                 children: [
+                  // Rank indicator
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
-                      color: isTop3
-                          ? rankColor.withValues(alpha: 0.12)
-                          : colorScheme.surface.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(10),
-                      border: isTop3
-                          ? Border.all(color: rankColor.withValues(alpha: 0.3), width: 0.8)
-                          : null,
+                      color: rankBgColor ??
+                          colorScheme.surface.withValues(alpha: 0.4),
+                      shape: BoxShape.circle,
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    alignment: Alignment.center,
+                    child: isTop3
+                        ? Text(rankBadge, style: const TextStyle(fontSize: 16))
+                        : AnymeXText(
+                            rankBadge,
+                            variant: TextVariant.bold,
+                            size: rankBadge.length > 5
+                                ? 9.0
+                                : rankBadge.length > 4
+                                    ? 10.0
+                                    : 12,
+                            color: rankColor,
+                            maxLines: 1,
+                          ),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // Avatar
+                  AnymeXDecoratedAvatar(
+                    avatarUrl: entry.avatarUrl,
+                    decorationUrl: entry.avatarDecoration,
+                    size: 38,
+                  ),
+                  const SizedBox(width: 12),
+
+                  // User Info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.star_rounded,
-                          size: 13,
-                          color: isTop3 ? rankColor : colorScheme.primary,
+                        Row(
+                          children: [
+                            Flexible(
+                              child: AnymeXText(
+                                entry.username,
+                                variant: TextVariant.bold,
+                                size: 14,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (entry.badges != null &&
+                                entry.badges!.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              DiscordBadgesRow(
+                                  badges: entry.badges, size: 14.0),
+                            ] else if (entry.role != null &&
+                                entry.role != 'user') ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.primary
+                                      .withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: AnymeXText(
+                                  entry.role!,
+                                  size: 9.5,
+                                  variant: TextVariant.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
-                        const SizedBox(width: 4),
-                        AnymeXText(
-                          '${entry.realPoints}',
-                          variant: TextVariant.bold,
-                          size: 12.5,
-                          color: isTop3 ? rankColor : colorScheme.onSurface,
+                        const SizedBox(height: 3),
+                        Row(
+                          children: [
+                            if (entry.tierEmoji.isNotEmpty) ...[
+                              Text(entry.tierEmoji,
+                                  style: const TextStyle(fontSize: 11)),
+                              const SizedBox(width: 4),
+                            ],
+                            AnymeXText(
+                              entry.tierLabel,
+                              size: 11,
+                              variant: TextVariant.semiBold,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            if (entry.currentStreak > 0) ...[
+                              const SizedBox(width: 8),
+                              const Text('🔥',
+                                  style: TextStyle(fontSize: 10)),
+                              const SizedBox(width: 2),
+                              AnymeXText(
+                                '${entry.currentStreak}d',
+                                size: 10.5,
+                                color: Colors.orange,
+                                variant: TextVariant.semiBold,
+                              ),
+                            ],
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  if (entry.bonusTag != null) ...[
-                    const SizedBox(width: 5),
-                    _buildBonusTagButton(context, entry),
-                  ],
+
+                  // Points badge & bonus tag button
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 9, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: isTop3
+                              ? rankColor.withValues(alpha: 0.12)
+                              : colorScheme.surface.withValues(alpha: 0.5),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isTop3
+                                ? rankColor.withValues(alpha: 0.3)
+                                : colorScheme.outlineVariant
+                                    .withValues(alpha: 0.15),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.stars_rounded,
+                              size: 13,
+                              color: isTop3 ? rankColor : colorScheme.primary,
+                            ),
+                            const SizedBox(width: 4),
+                            AnymeXText(
+                              entry.displayPoints,
+                              variant: TextVariant.bold,
+                              size: 12,
+                              color: isTop3 ? rankColor : colorScheme.primary,
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (entry.bonusTag != null) ...[
+                        const SizedBox(width: 6),
+                        _buildBonusTagButton(context, entry),
+                      ],
+                    ],
+                  ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildBonusTagButton(BuildContext context, LeaderboardEntry entry) {

@@ -15,6 +15,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
 import 'package:anymex/database/comments/model/discord_badge.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -438,6 +440,43 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
         ),
       ],
     );
+
+    final commentum = Get.isRegistered<CommentumService>()
+        ? Get.find<CommentumService>()
+        : null;
+    final hasNameplate = (commentum?.renderNameplates.value ?? true) &&
+        comment.nameplateTheme != null &&
+        comment.nameplateTheme!.trim().isNotEmpty;
+
+    if (hasNameplate) {
+      String nameplateImg = comment.nameplateTheme!.trim();
+      if (nameplateImg.endsWith('.webm')) {
+        nameplateImg = nameplateImg
+            .replaceAll('asset.webm', 'static.png')
+            .replaceAll('.webm', '.png');
+      }
+
+      card = AnymeXContainer(
+        borderRadius: BorderRadius.circular(14),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(nameplateImg),
+            fit: BoxFit.cover,
+          ),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.12),
+            width: 0.8,
+          ),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          color: Colors.black.withOpacity(0.55),
+          child: card,
+        ),
+      );
+    }
 
     // Slim indent with a branch line for sub-replies (kept minimal so
     // deep threads don't drift right — the breadcrumb already shows target)

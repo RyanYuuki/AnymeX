@@ -3,6 +3,8 @@ import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
@@ -83,6 +85,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
 
   Future<void> _loadCatalog() async {
     setState(() => _loadingCatalog = true);
+    _commentumService.fetchCurrentUserPoints();
     final results = await Future.wait([
       CustomizationRepository.loadDecorations(),
       CustomizationRepository.loadNameplates(),
@@ -123,6 +126,202 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
         snackBar(res['error']?.toString() ?? 'Failed to unlock');
       }
     }
+  }
+
+  Future<void> _onSavePressed() async {
+    if (_isSaving) return;
+
+    // Collect any locked items that are currently selected in preview
+    final List<Map<String, dynamic>> lockedItemsToUnlock = [];
+
+    if (_previewDecorationUrl != null && _previewDecorationUrl!.isNotEmpty) {
+      final match = _decorations.firstWhereOrNull((d) => d.url == _previewDecorationUrl);
+      if (match != null && !_isUnlocked(match.id, match.pointsRequired)) {
+        lockedItemsToUnlock.add({
+          'id': match.id,
+          'title': match.title,
+          'type': 'Avatar Decoration',
+          'points': match.pointsRequired,
+        });
+      }
+    }
+
+    if (_previewNameplateUrl != null && _previewNameplateUrl!.isNotEmpty) {
+      final match = _nameplates.firstWhereOrNull((n) =>
+          n.url == _previewNameplateUrl || n.staticUrl == _previewNameplateUrl);
+      if (match != null && !_isUnlocked(match.id, match.pointsRequired)) {
+        lockedItemsToUnlock.add({
+          'id': match.id,
+          'title': match.title,
+          'type': 'Nameplate',
+          'points': match.pointsRequired,
+        });
+      }
+    }
+
+    if (_previewEffectUrl != null && _previewEffectUrl!.isNotEmpty) {
+      final match = _effects.firstWhereOrNull((e) => e.url == _previewEffectUrl);
+      if (match != null && !_isUnlocked(match.id, match.pointsRequired)) {
+        lockedItemsToUnlock.add({
+          'id': match.id,
+          'title': match.title,
+          'type': 'Profile Effect',
+          'points': match.pointsRequired,
+        });
+      }
+    }
+
+    // If no locked items are selected, directly save & equip!
+    if (lockedItemsToUnlock.isEmpty) {
+      await _saveCustomizations();
+      return;
+    }
+
+    // Locked items must be bought/unlocked first
+    final int totalPointsNeeded =
+        lockedItemsToUnlock.fold(0, (sum, item) => sum + (item['points'] as int));
+    final currentPoints =
+        _commentumService.currentUserPoints.value?.totalPoints ?? 0;
+    final bool isInfinite =
+        _commentumService.currentUserPoints.value?.isInfinite ?? false;
+    final bool canAfford = isInfinite || currentPoints >= totalPointsNeeded;
+
+    final colorScheme = context.colors;
+
+    AnymeXDialog(
+      title: 'Unlock Customizations',
+      showCancelButton: true,
+      cancelText: 'Cancel',
+      confirmText: canAfford ? 'Unlock & Equip' : 'Not Enough Points',
+      isConfirmEnabled: canAfford,
+      contentWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnymeXText(
+            'The following item${lockedItemsToUnlock.length > 1 ? "s require" : " requires"} unlocking before equipping:',
+            size: 13,
+            color: colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(height: 12),
+          ...lockedItemsToUnlock.map((item) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymeXText(
+                            item['title'].toString(),
+                            variant: TextVariant.bold,
+                            size: 13,
+                            color: colorScheme.onSurface,
+                          ),
+                          AnymeXText(
+                            item['type'].toString(),
+                            size: 11,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: AnymeXText(
+                        '★ ${item['points']} pts',
+                        variant: TextVariant.bold,
+                        size: 11,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AnymeXText(
+                'Total Cost:',
+                variant: TextVariant.semiBold,
+                size: 13,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              AnymeXText(
+                '★ $totalPointsNeeded pts',
+                variant: TextVariant.bold,
+                size: 13,
+                color: colorScheme.primary,
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AnymeXText(
+                'Your Balance:',
+                variant: TextVariant.semiBold,
+                size: 13,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              AnymeXText(
+                isInfinite ? '∞ pts' : '★ $currentPoints pts',
+                variant: TextVariant.bold,
+                size: 13,
+                color: canAfford ? colorScheme.onSurface : colorScheme.error,
+              ),
+            ],
+          ),
+          if (!canAfford) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: colorScheme.error.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, size: 16, color: colorScheme.error),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: AnymeXText(
+                      'You need ${totalPointsNeeded - currentPoints} more points to unlock these items.',
+                      size: 11,
+                      color: colorScheme.error,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+      onConfirm: () async {
+        setState(() => _isSaving = true);
+        for (final item in lockedItemsToUnlock) {
+          final res = await _commentumService
+              .unlockCustomization(item['id'].toString());
+          if (res['success'] != true) {
+            setState(() => _isSaving = false);
+            snackBar(
+                res['error']?.toString() ?? 'Failed to unlock ${item['title']}');
+            return;
+          }
+        }
+        await _saveCustomizations();
+      },
+    ).show(context);
   }
 
   Future<void> _saveCustomizations() async {
@@ -318,6 +517,40 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             ),
           ),
 
+          // Points balance chip
+          Positioned(
+            top: 10,
+            left: 12,
+            child: Obx(() {
+              final pts = _commentumService.currentUserPoints.value;
+              final ptsDisplay = pts != null ? pts.displayPoints : '...';
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface.withOpacity(0.65),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                      color: colorScheme.outline.withOpacity(0.2), width: 0.8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.stars_rounded,
+                        size: 13, color: colorScheme.primary),
+                    const SizedBox(width: 4),
+                    AnymeXText(
+                      '$ptsDisplay pts',
+                      size: 10,
+                      variant: TextVariant.bold,
+                      color: colorScheme.onSurface,
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
+
           // Live Preview Chip
           Positioned(
             top: 10,
@@ -343,22 +576,39 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
     );
   }
 
+  String _resolveNameplateImageUrl(String url) {
+    if (url.endsWith('.webm')) {
+      return url
+          .replaceAll('asset.webm', 'static.png')
+          .replaceAll('.webm', '.png');
+    }
+    return url;
+  }
+
   Widget _buildUsernameWithNameplate(String userName, ColorScheme colorScheme) {
     if (_previewNameplateUrl != null && _previewNameplateUrl!.isNotEmpty) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      final imgUrl = _resolveNameplateImageUrl(_previewNameplateUrl!);
+      return AnymeXContainer(
+        borderRadius: BorderRadius.circular(8),
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-          color: colorScheme.surfaceContainerHighest.withOpacity(0.7),
-          border: Border.all(color: colorScheme.primary.withOpacity(0.4)),
+          borderRadius: BorderRadius.circular(8),
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(imgUrl),
+            fit: BoxFit.cover,
+          ),
         ),
-        child: AnymeXText(
-          userName,
-          variant: TextVariant.bold,
-          size: 15,
-          color: colorScheme.onSurface,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          color: Colors.black.withOpacity(0.35),
+          child: AnymeXText(
+            userName,
+            variant: TextVariant.bold,
+            size: 15,
+            color: Colors.white,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       );
     }
@@ -420,13 +670,9 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
 
               return GestureDetector(
                 onTap: () {
-                  if (unlocked) {
-                    setState(() {
-                      _previewDecorationUrl = isSelected ? null : item.url;
-                    });
-                  } else {
-                    _unlockItem(item.id, item.title);
-                  }
+                  setState(() {
+                    _previewDecorationUrl = isSelected ? null : item.url;
+                  });
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -549,13 +795,9 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
 
               return GestureDetector(
                 onTap: () {
-                  if (unlocked) {
-                    setState(() {
-                      _previewNameplateUrl = isSelected ? null : item.url;
-                    });
-                  } else {
-                    _unlockItem(item.id, item.title);
-                  }
+                  setState(() {
+                    _previewNameplateUrl = isSelected ? null : item.url;
+                  });
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -892,13 +1134,9 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
 
               return GestureDetector(
                 onTap: () {
-                  if (unlocked) {
-                    setState(() {
-                      _previewEffectUrl = isSelected ? null : item.url;
-                    });
-                  } else {
-                    _unlockItem(item.id, item.title);
-                  }
+                  setState(() {
+                    _previewEffectUrl = isSelected ? null : item.url;
+                  });
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -990,7 +1228,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
           children: [
             Expanded(
               child: AnymeXButton(
-                onTap: _isSaving ? () {} : _saveCustomizations,
+                onTap: _isSaving ? () {} : _onSavePressed,
                 backgroundColor: colorScheme.primary,
                 child: _isSaving
                     ? SizedBox(

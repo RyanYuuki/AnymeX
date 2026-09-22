@@ -324,3 +324,10 @@ enum DiscordRpcKeys {
   novelDetailsFormat,
   idleFormat,
 }
+
+enum CommentKeys {
+  renderAvatarDecorations,
+  renderNameplates,
+  renderProfileEffects,
+  renderBanners,
+}

@@ -1862,7 +1862,7 @@ class _CommentSectionState extends State<CommentSection> {
     final canModerate = controller.canModerate();
     final isLocked = comment.locked == true || effectiveLocked;
 
-    return Row(
+    final commentContent = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
@@ -2038,6 +2038,46 @@ class _CommentSectionState extends State<CommentSection> {
         ),
       ],
     );
+
+    final commentum = Get.isRegistered<CommentumService>()
+        ? Get.find<CommentumService>()
+        : null;
+    final hasNameplate = (commentum?.renderNameplates.value ?? true) &&
+        comment.nameplateTheme != null &&
+        comment.nameplateTheme!.trim().isNotEmpty;
+
+    if (hasNameplate) {
+      String nameplateImg = comment.nameplateTheme!.trim();
+      if (nameplateImg.endsWith('.webm')) {
+        nameplateImg = nameplateImg
+            .replaceAll('asset.webm', 'static.png')
+            .replaceAll('.webm', '.png');
+      }
+
+      return AnymeXContainer(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        borderRadius: BorderRadius.circular(14),
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(nameplateImg),
+            fit: BoxFit.cover,
+          ),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.12),
+            width: 0.8,
+          ),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          color: Colors.black.withOpacity(0.55),
+          child: commentContent,
+        ),
+      );
+    }
+
+    return commentContent;
   }
 
   Widget _buildCompactVoteButton({

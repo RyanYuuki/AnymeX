@@ -25,6 +25,7 @@ class LeaderboardEntry {
   final String username;
   final String? avatarUrl;
   final String? avatarDecoration;
+  final String? nameplateTheme;
   final int totalPoints;
   final int realPoints;
   final int roleBonus;
@@ -53,6 +54,7 @@ class LeaderboardEntry {
     required this.currentStreak,
     this.avatarUrl,
     this.avatarDecoration,
+    this.nameplateTheme,
     this.role,
     this.clientType,
     required this.rank,
@@ -108,6 +110,12 @@ class LeaderboardEntry {
           (m['user'] is Map
               ? (_cleanDeco(m['user']['avatar_decoration']) ??
                   _cleanDeco(m['user']['avatarDecoration']))
+              : null),
+      nameplateTheme: _cleanDeco(m['nameplate_theme']) ??
+          _cleanDeco(m['nameplateTheme']) ??
+          (m['user'] is Map
+              ? (_cleanDeco(m['user']['nameplate_theme']) ??
+                  _cleanDeco(m['user']['nameplateTheme']))
               : null),
       totalPoints: _parseInt(m['total_points'] ?? m['points']),
       realPoints: realPoints,

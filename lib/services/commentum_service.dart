@@ -16,6 +16,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:anymex/database/kv_helper.dart';
 
 class CommentsPageResult {
   final List<Comment> comments;
@@ -59,13 +60,20 @@ class CommentumService extends GetxController {
 
   final RxString currentUserRole = 'user'.obs;
   final RxInt unreadNotificationCount = 0.obs;
-  final RxBool decorationsEnabled = true.obs;
+
+  // Local render preferences (user-controlled, persisted via Isar KvHelper)
+  final RxBool renderAvatarDecorations = true.obs;
+  final RxBool renderNameplates = true.obs;
+  final RxBool renderProfileEffects = true.obs;
+  final RxBool renderBanners = true.obs;
+
   final RxString currentUserDecoration = ''.obs;
   final RxString currentUserBanner = ''.obs;
   final RxString currentUserBannerTheme = ''.obs;
   final RxString currentUserNameplateTheme = ''.obs;
   final RxString currentUserProfileEffect = ''.obs;
   final RxList<String> unlockedCustomizations = <String>[].obs;
+  final Rxn<UserPoints> currentUserPoints = Rxn<UserPoints>();
   final Rx<Map<String, dynamic>> currentUserLinkedAccounts =
       Rx<Map<String, dynamic>>({});
   final Set<String> _registeredClientTypes = {};
@@ -76,26 +84,69 @@ class CommentumService extends GetxController {
   String? get currentUsername => currentUser?.name;
   String? get currentUserAvatar => currentUser?.avatar;
 
+  Future<UserPoints?> fetchCurrentUserPoints() async {
+    final uid = currentUserId;
+    if (uid == null) return null;
+    final points = await getUserPoints(targetUserId: uid);
+    if (points != null) {
+      currentUserPoints.value = points;
+    }
+    return points;
+  }
+
   @override
   void onInit() {
     super.onInit();
+    _loadLocalRenderPrefs();
     ever(serviceHandler.serviceType, (_) {
       _tryRegisterFcm();
       getUserRole();
       fetchUserCustomizations();
+      fetchCurrentUserPoints();
     });
     ever(serviceHandler.profileData, (_) {
       _tryRegisterFcm();
       refreshUnreadCount();
       getUserRole();
       fetchUserCustomizations();
+      fetchCurrentUserPoints();
     });
     Future.delayed(const Duration(seconds: 1), () {
       _tryRegisterFcm();
       refreshUnreadCount();
       getUserRole();
       fetchUserCustomizations();
+      fetchCurrentUserPoints();
     });
+  }
+
+  void _loadLocalRenderPrefs() {
+    renderAvatarDecorations.value =
+        CommentKeys.renderAvatarDecorations.get<bool>(true);
+    renderNameplates.value =
+        CommentKeys.renderNameplates.get<bool>(true);
+    renderProfileEffects.value =
+        CommentKeys.renderProfileEffects.get<bool>(true);
+    renderBanners.value =
+        CommentKeys.renderBanners.get<bool>(true);
+  }
+
+  void saveRenderPref(CommentKeys key, bool value) {
+    key.set(value);
+    switch (key) {
+      case CommentKeys.renderAvatarDecorations:
+        renderAvatarDecorations.value = value;
+        break;
+      case CommentKeys.renderNameplates:
+        renderNameplates.value = value;
+        break;
+      case CommentKeys.renderProfileEffects:
+        renderProfileEffects.value = value;
+        break;
+      case CommentKeys.renderBanners:
+        renderBanners.value = value;
+        break;
+    }
   }
 
   Future<void> _tryRegisterFcm() async {
@@ -156,12 +207,6 @@ class CommentumService extends GetxController {
         final data = json.decode(response.body);
         final commentsList = data['comments'] as List<dynamic>? ?? [];
         final pagination = data['pagination'] as Map<String, dynamic>? ?? {};
-
-        // Global decorations kill-switch (backend may omit the key).
-        if (data is Map && data.containsKey('decorations_enabled')) {
-          final v = data['decorations_enabled'];
-          decorationsEnabled.value = v != false && v != 'false';
-        }
 
         final comments = commentsList
             .map((commentData) => _mapCommentumToAnymeXComment(commentData))
@@ -1159,10 +1204,6 @@ class CommentumService extends GetxController {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        if (data is Map && data.containsKey('decorations_enabled')) {
-          final v = data['decorations_enabled'];
-          decorationsEnabled.value = v != false && v != 'false';
-        }
         final entries =
             (data['leaderboard'] as List? ?? []).asMap().entries.map((entry) {
           return LeaderboardEntry.fromMap(
@@ -1503,6 +1544,7 @@ class CommentumService extends GetxController {
         if (!unlockedCustomizations.contains(customizationId)) {
           unlockedCustomizations.add(customizationId);
         }
+        fetchCurrentUserPoints();
         return Map<String, dynamic>.from(data);
       } else {
         return {'success': false, 'error': data['error'] ?? 'Unlock failed'};

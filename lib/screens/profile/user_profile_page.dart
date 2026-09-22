@@ -64,6 +64,8 @@ class _UserProfilePageState extends State<UserProfilePage>
   Color? _avatarDominantColor;
   String? _customBanner;
   String? _customDecoration;
+  String? _customNameplate;
+  String? _customEffect;
   UserPoints? _userPoints;
   Map<String, dynamic>? _linkedAccounts;
 
@@ -121,6 +123,8 @@ class _UserProfilePageState extends State<UserProfilePage>
           setState(() {
             _customBanner = profileData['banner_url'] as String?;
             _customDecoration = profileData['avatar_decoration'] as String?;
+            _customNameplate = profileData['nameplate_theme'] as String?;
+            _customEffect = profileData['profile_effect_url'] as String?;
             if (profileData['linked_accounts'] is Map) {
               _linkedAccounts =
                   Map<String, dynamic>.from(profileData['linked_accounts']);
@@ -965,6 +969,7 @@ class _UserProfilePageState extends State<UserProfilePage>
       avatarDominantColor: _avatarDominantColor,
       avatarDecoration: _customDecoration,
       customBanner: _customBanner,
+      profileEffect: _customEffect,
       userPoints: _userPoints,
       linkedAccounts: _linkedAccounts,
       isFollowingUser: _isFollowingUser,
@@ -992,6 +997,7 @@ class _UserProfilePageState extends State<UserProfilePage>
       avatarUrl: avatarUrl,
       bannerUrl: effectiveBanner,
       avatarDecoration: _customDecoration,
+      profileEffect: _customEffect,
       userPoints: _userPoints,
       linkedAccounts: _linkedAccounts,
       bannerController: _bannerController,

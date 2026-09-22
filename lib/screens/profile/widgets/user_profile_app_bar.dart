@@ -16,14 +16,17 @@ import 'package:anymex/screens/profile/compatibility/compatibility_input_page.da
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/database/comments/model/user_points.dart';
-import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UserProfileAppBar extends StatefulWidget {
   final Profile user;
   final String avatarUrl;
   final String? bannerUrl;
   final String? avatarDecoration;
+  final String? profileEffect;
   final UserPoints? userPoints;
   final Map<String, dynamic>? linkedAccounts;
   final AnimationController bannerController;
@@ -39,6 +42,7 @@ class UserProfileAppBar extends StatefulWidget {
     required this.avatarUrl,
     this.bannerUrl,
     this.avatarDecoration,
+    this.profileEffect,
     this.userPoints,
     this.linkedAccounts,
     required this.bannerController,
@@ -299,6 +303,22 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                 ),
               ),
             ),
+            if ((Get.isRegistered<CommentumService>() &&
+                    Get.find<CommentumService>().renderProfileEffects.value) &&
+                widget.profileEffect != null &&
+                widget.profileEffect!.isNotEmpty)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: 0.6,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.profileEffect!,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              ),
             Positioned(
               left: 16,
               right: 16,

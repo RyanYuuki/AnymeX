@@ -21,6 +21,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/screens/profile/compatibility/compatibility_input_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 Widget _buildBottomSheetOption(
   BuildContext context, {
@@ -54,13 +55,6 @@ Widget _buildBottomSheetOption(
   );
 }
 
-/// True when the backend kill-switch hides avatar decorations.
-/// Non-reactive on purpose: the flag is refreshed on every comments /
-/// leaderboard fetch, so it is current whenever these screens open.
-bool _decorationsDisabled() {
-  if (!Get.isRegistered<CommentumService>()) return false;
-  return !Get.find<CommentumService>().decorationsEnabled.value;
-}
 
 class DesktopProfileHeader extends StatelessWidget {
   final Profile user;
@@ -165,6 +159,32 @@ class DesktopProfileHeader extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Obx(() {
+                    final commentum = Get.isRegistered<CommentumService>()
+                        ? Get.find<CommentumService>()
+                        : null;
+                    final effectUrl =
+                        commentum?.currentUserProfileEffect.value;
+                    final renderEffect =
+                        (commentum?.renderProfileEffects.value ?? true) &&
+                            effectUrl != null &&
+                            effectUrl.isNotEmpty;
+                    if (!renderEffect) return const SizedBox.shrink();
+
+                    return Positioned.fill(
+                      child: IgnorePointer(
+                        child: Opacity(
+                          opacity: 0.6,
+                          child: CachedNetworkImage(
+                            imageUrl: effectUrl,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, __, ___) =>
+                                const SizedBox.shrink(),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
                   Positioned(
                     top: 0,
                     left: 0,
@@ -407,7 +427,7 @@ class DesktopProfileHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 15.0),
                         child: Row(
                           children: [
-                            if (!_decorationsDisabled()) ...[
+                            if (Get.isRegistered<CommentumService>()) ...[
                               HoverActionButton(
                                 icon: Icons.palette_outlined,
                                 onTap: () =>
@@ -657,7 +677,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
         ),
       ),
       actions: [
-        if (!_decorationsDisabled())
+        if (commentum != null)
           Container(
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
@@ -726,7 +746,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        if (!_decorationsDisabled())
+                        if (commentum != null)
                           _buildBottomSheetOption(
                             ctx,
                             icon: Icons.checkroom_rounded,
@@ -881,6 +901,27 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                 ),
               ),
             ),
+            Obx(() {
+              final effectUrl = commentum?.currentUserProfileEffect.value;
+              final renderEffect =
+                  (commentum?.renderProfileEffects.value ?? true) &&
+                      effectUrl != null &&
+                      effectUrl.isNotEmpty;
+              if (!renderEffect) return const SizedBox.shrink();
+
+              return Positioned.fill(
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: 0.6,
+                    child: CachedNetworkImage(
+                      imageUrl: effectUrl,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              );
+            }),
             Positioned(
               left: 16,
               right: 16,

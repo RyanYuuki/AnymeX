@@ -10,6 +10,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
@@ -75,7 +76,7 @@ class UserCommentsSheet {
                       ),
                       const SizedBox(height: 18),
 
-                      // 1. Banner + centered avatar with decoration
+                      // 1. Banner + centered avatar with decoration + effect overlay
                       if (!isLoading && _bannerUrl(profile) != null)
                         SizedBox(
                           height: 148,
@@ -84,13 +85,37 @@ class UserCommentsSheet {
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
-                                child: CachedNetworkImage(
-                                  imageUrl: _bannerUrl(profile)!,
-                                  height: 108,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  errorWidget: (_, __, ___) =>
-                                      const SizedBox.shrink(),
+                                child: Stack(
+                                  children: [
+                                    CachedNetworkImage(
+                                      imageUrl: _bannerUrl(profile)!,
+                                      height: 108,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorWidget: (_, __, ___) =>
+                                          const SizedBox.shrink(),
+                                    ),
+                                    if ((Get.isRegistered<CommentumService>() &&
+                                            Get.find<CommentumService>()
+                                                .renderProfileEffects
+                                                .value) &&
+                                        _effectUrl(profile) != null)
+                                      Positioned.fill(
+                                        child: IgnorePointer(
+                                          child: Opacity(
+                                            opacity: 0.6,
+                                            child: CachedNetworkImage(
+                                              imageUrl: _effectUrl(profile)!,
+                                              height: 108,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                              errorWidget: (_, __, ___) =>
+                                                  const SizedBox.shrink(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
                               Positioned(
@@ -120,38 +145,80 @@ class UserCommentsSheet {
                         ),
                       const SizedBox(height: 12),
 
-                      // 2. Name + badges (centered)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Flexible(
-                            child: AnymeXText(
-                              comment.username,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 17,
-                                color: colorScheme.onSurface,
+                      // 2. Name + badges (centered, with optional nameplate)
+                      Builder(builder: (context) {
+                        final rawNameplate = comment.nameplateTheme ??
+                            _nameplateUrl(profile);
+                        final commentum = Get.isRegistered<CommentumService>()
+                            ? Get.find<CommentumService>()
+                            : null;
+                        final hasNameplate = (commentum
+                                    ?.renderNameplates.value ??
+                                true) &&
+                            rawNameplate != null &&
+                            rawNameplate.trim().isNotEmpty;
+
+                        final nameRow = Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: AnymeXText(
+                                comment.username,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 17,
+                                  color: hasNameplate
+                                      ? Colors.white
+                                      : colorScheme.onSurface,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
                             ),
-                          ),
-                          if (comment.badges != null &&
-                              comment.badges!.isNotEmpty) ...[
-                            const SizedBox(width: 6),
-                            DiscordBadgesRow(
-                                badges: comment.badges, size: 16.0),
+                            if (comment.badges != null &&
+                                comment.badges!.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              DiscordBadgesRow(
+                                  badges: comment.badges, size: 16.0),
+                            ],
+                            if (comment.linkedAccounts?.isNotEmpty == true) ...[
+                              const SizedBox(width: 6),
+                              LinkedAccountsBadges(
+                                linkedAccounts: comment.linkedAccounts,
+                                fontSize: 8.5,
+                              ),
+                            ],
                           ],
-                          if (comment.linkedAccounts?.isNotEmpty == true) ...[
-                            const SizedBox(width: 6),
-                            LinkedAccountsBadges(
-                              linkedAccounts: comment.linkedAccounts,
-                              fontSize: 8.5,
+                        );
+
+                        if (hasNameplate) {
+                          final resolvedUrl =
+                              _resolveNameplateUrl(rawNameplate!.trim());
+                          return Center(
+                            child: AnymeXContainer(
+                              borderRadius: BorderRadius.circular(10),
+                              clipBehavior: Clip.antiAlias,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                  image: CachedNetworkImageProvider(resolvedUrl),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 6),
+                                color: Colors.black.withOpacity(0.38),
+                                child: nameRow,
+                              ),
                             ),
-                          ],
-                        ],
-                      ),
+                          );
+                        }
+
+                        return Center(child: nameRow);
+                      }),
                       const SizedBox(height: 10),
 
                       // 3. Tier / points / streak chips
@@ -466,6 +533,27 @@ class UserCommentsSheet {
     final raw = profile?['banner_url']?.toString() ?? '';
     if (raw.isEmpty || raw == 'null') return null;
     return raw;
+  }
+
+  static String? _effectUrl(Map<String, dynamic>? profile) {
+    final raw = profile?['profile_effect_url']?.toString() ?? '';
+    if (raw.isEmpty || raw == 'null') return null;
+    return raw;
+  }
+
+  static String? _nameplateUrl(Map<String, dynamic>? profile) {
+    final raw = profile?['nameplate_theme']?.toString() ?? '';
+    if (raw.isEmpty || raw == 'null') return null;
+    return raw;
+  }
+
+  static String _resolveNameplateUrl(String url) {
+    if (url.endsWith('.webm')) {
+      return url
+          .replaceAll('asset.webm', 'static.png')
+          .replaceAll('.webm', '.png');
+    }
+    return url;
   }
 
   static Color _roleColor(String role) {

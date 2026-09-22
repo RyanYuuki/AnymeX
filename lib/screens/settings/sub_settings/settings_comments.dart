@@ -1,4 +1,5 @@
 import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
@@ -122,6 +123,57 @@ class _SettingsCommentsState extends State<SettingsComments> {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 12),
+              AnymeXExpansionTile(
+                title: 'Appearance',
+                initialExpanded: true,
+                content: Obx(() {
+                  final commentum = Get.isRegistered<CommentumService>()
+                      ? Get.find<CommentumService>()
+                      : null;
+                  if (commentum == null) return const SizedBox.shrink();
+                  return Column(
+                    children: [
+                      CustomSwitchTile(
+                        icon: Icons.auto_awesome_rounded,
+                        title: 'Avatar Decorations',
+                        description:
+                            'Show animated frames around user avatars',
+                        switchValue: commentum.renderAvatarDecorations.value,
+                        onChanged: (v) => commentum.saveRenderPref(
+                            CommentKeys.renderAvatarDecorations, v),
+                      ),
+                      CustomSwitchTile(
+                        icon: Icons.badge_outlined,
+                        title: 'Nameplates',
+                        description:
+                            'Show nameplate backgrounds on comment cards and leaderboard',
+                        switchValue: commentum.renderNameplates.value,
+                        onChanged: (v) => commentum.saveRenderPref(
+                            CommentKeys.renderNameplates, v),
+                      ),
+                      CustomSwitchTile(
+                        icon: Icons.blur_on_rounded,
+                        title: 'Profile Effects',
+                        description:
+                            'Show animated effect overlays on profile banners',
+                        switchValue: commentum.renderProfileEffects.value,
+                        onChanged: (v) => commentum.saveRenderPref(
+                            CommentKeys.renderProfileEffects, v),
+                      ),
+                      CustomSwitchTile(
+                        icon: Icons.image_outlined,
+                        title: 'Custom Banners',
+                        description:
+                            'Show custom profile banners (falls back to AniList cover if off)',
+                        switchValue: commentum.renderBanners.value,
+                        onChanged: (v) => commentum.saveRenderPref(
+                            CommentKeys.renderBanners, v),
+                      ),
+                    ],
+                  );
+                }),
               ),
               const SizedBox(height: 12),
               AnymeXExpansionTile(
