@@ -34,7 +34,49 @@ enum General {
   unifiedLibrary,
   joinDialogShowCount,
   wrongTitleIsCardView,
+  hiddenCustomLists,
   showHomeContinueWatching,
+}
+
+enum AppLockType {
+  pin4,
+  pin6,
+  pattern,
+}
+
+enum PatternDotStyle {
+  circle,
+  glow,
+  diamond,
+  heart,
+  star,
+}
+
+enum AppLockKeys {
+  isEnabled,
+  pinHash,
+  lockType,
+  biometricsEnabled,
+  timeoutSeconds,
+  hideInRecentApps,
+  hapticsEnabled,
+  allowEmergencyReset,
+  secretPinDigit,
+  secretPatternDot,
+  patternDotStyle,
+  showPatternTrail,
+  lastBackgroundTimestamp,
+  lockOnNotificationShade,
+}
+
+enum IncognitoKeys {
+  isIncognito,
+  pauseOnlineTracking,
+  pauseLocalHistory,
+  pauseSearchHistory,
+  hideHomeRecent,
+  pauseDiscordRpc,
+  autoExitOnClose,
 }
 
 enum ThemeKeys {

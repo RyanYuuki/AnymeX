@@ -13,6 +13,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:dart_discord_presence/dart_discord_presence.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -130,6 +131,9 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   bool get isLoggedIn => _token.value.isNotEmpty;
   bool get isLoading => _isLoading.value;
   bool get isEnabled => _enabled.value;
+  bool get _isIncognitoSuppressed =>
+      Get.isRegistered<IncognitoController>() &&
+      !Get.find<IncognitoController>().shouldBroadcastDiscord;
   DiscordProfile? get userProfile => profile.value;
 
   static DiscordRPCController get instance => Get.find<DiscordRPCController>();
@@ -500,7 +504,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     required Episode episode,
     required String totalEpisodes,
   }) async {
-    if (!_enabled.value) return;
+    if (!_enabled.value || _isIncognitoSuppressed) return;
     if (shouldHideNsfw(anime)) {
       await clearPresence();
       return;
@@ -629,7 +633,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     required Episode episode,
     required String totalEpisodes,
   }) async {
-    if (!_enabled.value) return;
+    if (!_enabled.value || _isIncognitoSuppressed) return;
     if (shouldHideNsfw(anime)) {
       await clearPresence();
       return;
@@ -745,7 +749,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     required String totalChapters,
     int currentPage = 1,
   }) async {
-    if (!_enabled.value) return;
+    if (!_enabled.value || _isIncognitoSuppressed) return;
     if (shouldHideNsfw(manga)) {
       await clearPresence();
       return;
@@ -852,7 +856,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> updateMediaPresence({required Media media}) async {
-    if (!_enabled.value) return;
+    if (!_enabled.value || _isIncognitoSuppressed) return;
     if (shouldHideNsfw(media)) {
       await clearPresence();
       return;
@@ -972,7 +976,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     String? activity,
     String? details,
   }) async {
-    if (!_enabled.value) return;
+    if (!_enabled.value || _isIncognitoSuppressed) return;
     if (!_isConnected.value) await connect();
     if (!_isConnected.value || !_canUseDesktopRpc('updateBrowsingPresence')) {
       print('Discord not connected');

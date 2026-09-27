@@ -58,6 +58,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
         .findAllSync();
 
     customList = raw
+        .where((l) => !storage.isCustomListHidden(l.listName, l.mediaTypeIndex))
         .map((l) => CustomList(
               listName: l.listName,
               mediaIds: List<String>.from(l.mediaIds ?? []),

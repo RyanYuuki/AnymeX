@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/media_mode_controller.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -258,7 +259,9 @@ class MediaModeSelector extends StatelessWidget {
             : null,
       );
     
-      final showContinue = showPlayButton && hasItems;
+      final hideDueToIncognito = Get.isRegistered<IncognitoController>() &&
+          Get.find<IncognitoController>().shouldHideHomeRecent;
+      final showContinue = showPlayButton && hasItems && !hideDueToIncognito;
     
       if (isSimkl) {
         const options = [

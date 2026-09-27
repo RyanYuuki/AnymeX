@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/security/incognito_controller.dart';
 import 'package:anymex/screens/downloads/download_screen.dart';
 import 'package:anymex/screens/extensions/ExtensionScreen.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/settings/settings.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_incognito.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
@@ -334,6 +336,51 @@ class SettingsSheet extends StatelessWidget {
               ],
             ),
           ),
+          Obx(() {
+            final incognito = Get.isRegistered<IncognitoController>()
+                ? Get.find<IncognitoController>()
+                : null;
+            final isActive = incognito?.isIncognito.value ?? false;
+            return Tooltip(
+              message: isActive
+                  ? 'Incognito Mode Active (Tap to Turn Off)'
+                  : 'Incognito Mode (Private Browsing)',
+              child: AnymexOnTap(
+                onTap: () {
+                  incognito?.toggleIncognito();
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? theme.primary
+                        : theme.surfaceContainerHighest.opaque(0.5),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: isActive
+                        ? [
+                            BoxShadow(
+                              color: theme.primary.withOpacity(0.4),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Icon(
+                    isActive
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_off_outlined,
+                    size: 18,
+                    color: isActive
+                        ? theme.onPrimary
+                        : theme.onSurface.opaque(0.7),
+                  ),
+                ),
+              ),
+            );
+          }),
+          const SizedBox(width: 8),
           AnymexOnTap(
             onTap: () => snackBar('This feature is not available yet.'),
             child: Container(
@@ -406,6 +453,40 @@ class SettingsSheet extends StatelessWidget {
       //     navigate(() => const WatchiumPage());
       //   },
       // ),
+      _SheetMenuItem(
+        icon: Icons.visibility_off_rounded,
+        label: 'Incognito Mode',
+        trailing: Obx(() {
+          final incognito = Get.isRegistered<IncognitoController>()
+              ? Get.find<IncognitoController>()
+              : null;
+          final isActive = incognito?.isIncognito.value ?? false;
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: isActive
+                  ? theme.primary.withOpacity(0.2)
+                  : theme.surfaceContainerHighest.opaque(0.4),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isActive
+                    ? theme.primary.withOpacity(0.5)
+                    : theme.outline.opaque(0.1),
+              ),
+            ),
+            child: AnymeXText(
+              isActive ? 'ON' : 'OFF',
+              size: 11,
+              variant: TextVariant.bold,
+              color: isActive ? theme.primary : theme.onSurface.opaque(0.5),
+            ),
+          );
+        }),
+        onTap: () {
+          Get.back();
+          navigate(() => const SettingsIncognito());
+        },
+      ),
       _SheetMenuItem(
         icon: Iconsax.setting,
         label: 'Settings',
@@ -504,11 +585,12 @@ class SettingsSheet extends StatelessWidget {
                 variant: TextVariant.semiBold,
               ),
             ),
-            Icon(
-              IconlyLight.arrowRight2,
-              size: 14,
-              color: theme.onSurface.opaque(0.25),
-            ),
+            item.trailing ??
+                Icon(
+                  IconlyLight.arrowRight2,
+                  size: 14,
+                  color: theme.onSurface.opaque(0.25),
+                ),
           ],
         ),
       ),
@@ -520,10 +602,12 @@ class _SheetMenuItem {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final Widget? trailing;
 
   const _SheetMenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
+    this.trailing,
   });
 }
