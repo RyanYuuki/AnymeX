@@ -434,6 +434,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
         : statusLabel;
 
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.only(
         left: 20,
         right: 20,

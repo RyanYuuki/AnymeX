@@ -54,6 +54,9 @@ class AnymeXSheet extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
         child: Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * 0.85,
+          ),
           decoration: BoxDecoration(
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(24),
@@ -74,18 +77,25 @@ class AnymeXSheet extends StatelessWidget {
                   ),
                 ),
               if (customWidget != null)
-                customWidget!
+                Flexible(
+                  child: customWidget!,
+                )
               else ...[
                 if (title != null) ...[
                   AnymeXText(title!, size: 18, variant: TextVariant.bold),
                   const SizedBox(height: 10),
                 ],
-                contentWidget ??
-                    (message != null
-                        ? AnymeXText(message!,
-                            textAlign: TextAlign.center,
-                            size: 14)
-                        : const SizedBox.shrink()),
+                Flexible(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: contentWidget ??
+                        (message != null
+                            ? AnymeXText(message!,
+                                textAlign: TextAlign.center,
+                                size: 14)
+                            : const SizedBox.shrink()),
+                  ),
+                ),
               ],
             ],
           ),

@@ -14,6 +14,9 @@ import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/source_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/audio_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/buffering_overlay.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/speed_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
 import 'package:flutter/material.dart';
@@ -140,6 +143,7 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
         children: [
           Obx(() => _controller.videoWidget),
           PlayerOverlay(controller: _controller),
+          BufferingOverlay(controller: _controller),
           if (!PlayerKeys.useLibass.get<bool>(false))
             SubtitleText(controller: _controller),
           DoubleTapSeekWidget(controller: _controller),
@@ -183,6 +187,13 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
             top: 0,
             bottom: 0,
             left: 0,
+            child: AudioPopup(controller: _controller),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            left: 0,
             child: SyncSubsPopup(controller: _controller),
           ),
           Positioned(
@@ -191,6 +202,13 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
             bottom: 0,
             left: 0,
             child: EpisodesPane(controller: _controller),
+          ),
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            left: 0,
+            child: SpeedPopup(controller: _controller),
           ),
         ],
       ),

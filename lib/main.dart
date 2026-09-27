@@ -504,7 +504,9 @@ class _FilterScreenState extends State<FilterScreen> {
         : Get.put(MediaModeController());
 
     if (tabKey == 'Home') {
-      if (!isDesktop && mediaModeController.animeHistory.isNotEmpty) {
+      if (!isDesktop &&
+          settings.showHomeContinueWatching.value &&
+          mediaModeController.animeHistory.isNotEmpty) {
         subWidget = const HomeContinueWatchingBar();
       }
     } else if (!settings.useLegacyNavbar) {

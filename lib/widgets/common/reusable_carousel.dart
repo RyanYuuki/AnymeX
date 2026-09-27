@@ -151,8 +151,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   }
 
   void _showPeekPopup(BuildContext context, CarouselData itemData, String tag) {
-    final bool isMediaManga = _determineIfManga(itemData);
-    final ItemType mediaType = isMediaManga ? ItemType.manga : ItemType.anime;
+    final ItemType mediaType = _determineItemType(itemData);
     final media = Media.fromCarouselData(itemData, mediaType);
     if (media.userStatus != null && media.userStatus!.isNotEmpty) return;
     MediaPeekPopup.show(context, media, mediaType, tag);
@@ -168,17 +167,14 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
 
   void _navigateToDetailsPage(CarouselData itemData, String tag) {
     final controller = Get.find<SourceController>();
-    bool isMediaManga = _determineIfManga(itemData);
-    if (widget.variant == DataVariant.recommendation) {
-      isMediaManga = widget.type == ItemType.manga;
-    }
-    final ItemType mediaType = isMediaManga ? ItemType.manga : ItemType.anime;
+    final ItemType mediaType = _determineItemType(itemData);
     final media = Media.fromCarouselData(itemData, mediaType);
 
     void onTapHandler() {
       if (mediaType == ItemType.novel || widget.type == ItemType.novel) {
-        final source =
-            widget.source ?? sourceController.installedNovelExtensions.first;
+        final source = widget.source ??
+            controller.activeNovelSource.value ??
+            controller.installedNovelExtensions.firstOrNull;
         navigateWithAnimation(() => NovelDetailsPage(
               media: media,
               tag: tag,
@@ -197,22 +193,37 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       }
     }
 
-    _setActiveSource(controller, itemData);
+    _setActiveSource(controller, itemData, mediaType);
     onTapHandler();
   }
 
-  bool _determineIfManga(CarouselData itemData) {
-    return (widget.variant == DataVariant.relation &&
-            itemData.source == "MANGA") ||
-        (widget.source?.itemType == ItemType.manga) ||
-        widget.type == ItemType.manga;
+  ItemType _determineItemType(CarouselData itemData) {
+    if (widget.variant == DataVariant.recommendation) {
+      return widget.type;
+    }
+    if ((widget.variant == DataVariant.relation &&
+            itemData.source?.toUpperCase() == "NOVEL") ||
+        widget.source?.itemType == ItemType.novel ||
+        widget.type == ItemType.novel) {
+      return ItemType.novel;
+    }
+    if ((widget.variant == DataVariant.relation &&
+            itemData.source?.toUpperCase() == "MANGA") ||
+        widget.source?.itemType == ItemType.manga ||
+        widget.type == ItemType.manga) {
+      return ItemType.manga;
+    }
+    return ItemType.anime;
   }
 
-  void _setActiveSource(SourceController controller, CarouselData itemData) {
+  void _setActiveSource(
+      SourceController controller, CarouselData itemData, ItemType mediaType) {
     if (widget.source != null) {
       controller.setActiveSource(widget.source!);
     } else if (itemData.source != null) {
-      if (widget.type == ItemType.manga) {
+      if (mediaType == ItemType.novel || widget.type == ItemType.novel) {
+        controller.getNovelExtensionByName(itemData.source!);
+      } else if (mediaType == ItemType.manga || widget.type == ItemType.manga) {
         controller.getMangaExtensionByName(itemData.source!);
       } else {
         controller.getExtensionByValue(itemData.source!);

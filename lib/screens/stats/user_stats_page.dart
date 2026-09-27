@@ -208,7 +208,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                       _buildDetailedInsightsSection(context),
                       const SizedBox(height: 24),
                       _buildFrequentlyRevisitedSection(context),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 150),
                     ]),
                   ),
                 ),
@@ -439,73 +439,6 @@ class _UserStatsPageState extends State<UserStatsPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildDashboardCard({
-    required BuildContext context,
-    required String title,
-    required String value,
-    required IconData icon,
-    int valueMaxLines = 1,
-    bool isChildOnRight = false,
-    Widget? child,
-  }) {
-    return AnymeXCard(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: Stack(
-        children: [
-          if (child != null && isChildOnRight)
-            Align(
-              alignment: Alignment.centerRight,
-              child: child,
-            ),
-          Padding(
-            padding: EdgeInsets.only(
-                right: (child != null && isChildOnRight) ? 56.0 : 0.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(icon,
-                        size: 12,
-                        color:
-                            context.colors.onSurfaceVariant.withOpacity(0.5)),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: AnymeXText(
-                        title.toUpperCase(),
-                        size: 8.5,
-                        variant: TextVariant.bold,
-                        color: context.colors.onSurfaceVariant.withOpacity(0.5),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: AnymeXText(
-                      value,
-                      size: (child != null && isChildOnRight) ? 12 : 16.5,
-                      variant: TextVariant.bold,
-                      color: context.colors.onSurface,
-                      maxLines: valueMaxLines,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-                if (child != null && !isChildOnRight) child,
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 

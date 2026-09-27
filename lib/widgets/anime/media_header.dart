@@ -184,33 +184,47 @@ class MediaHeader extends StatelessWidget {
                           final studioName = creator;
                           final canOpenStudio = isAnime && studioName != null && studioName != 'Unknown';
 
-                          return Row(spacing: 1, children: [
-                            _buildMetaData(
-                              context,
-                              studioName ?? 'Unknown',
-                              const BorderRadius.horizontal(
-                                  right: Radius.circular(5),
-                                  left: Radius.circular(10)),
-                              onTap: canOpenStudio
-                                  ? () async {
-                                      final studioId = await AnilistData.fetchStudioIdByName(studioName);
-                                      if (studioId != null && context.mounted) {
-                                        showStudioDetailsSheet(
-                                          context,
-                                          studioId,
-                                          studioName,
-                                        );
-                                      }
-                                    }
-                                  : null,
-                            ),
-                            _buildMetaData(
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: _buildMetaData(
+                                  context,
+                                  studioName ?? 'Unknown',
+                                  const BorderRadius.horizontal(
+                                      right: Radius.circular(5),
+                                      left: Radius.circular(10)),
+                                  icon: isAnime
+                                      ? Icons.movie_creation_outlined
+                                      : Icons.brush_outlined,
+                                  onTap: canOpenStudio
+                                      ? () async {
+                                          final studioId =
+                                              await AnilistData.fetchStudioIdByName(
+                                                  studioName);
+                                          if (studioId != null &&
+                                              context.mounted) {
+                                            showStudioDetailsSheet(
+                                              context,
+                                              studioId,
+                                              studioName,
+                                            );
+                                          }
+                                        }
+                                      : null,
+                                ),
+                              ),
+                              const SizedBox(width: 2),
+                              _buildMetaData(
                                 context,
                                 status.isNotEmpty ? status : 'Unknown',
                                 const BorderRadius.horizontal(
                                     right: Radius.circular(10),
-                                    left: Radius.circular(5))),
-                          ]);
+                                    left: Radius.circular(5)),
+                                icon: Icons.info_outline_rounded,
+                              ),
+                            ],
+                          );
                         },
                       ),
                     ],
@@ -296,19 +310,38 @@ class MediaHeader extends StatelessWidget {
   }
 
   Widget _buildMetaData(
-      BuildContext context, String val, BorderRadius? radius, {VoidCallback? onTap}) {
+      BuildContext context, String val, BorderRadius? radius,
+      {VoidCallback? onTap, IconData? icon}) {
     final chip = AnymeXContainer(
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainer.opaque(0.2, iReallyMeanIt: true),
+        color: context.colors.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
         borderRadius: radius,
         border: Border.all(
           color: context.colors.onSurface.opaque(0.1, iReallyMeanIt: true),
         ),
       ),
-      child: AnymeXText(val,
-        variant: TextVariant.semiBold,
-        size: 11,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(
+              icon,
+              size: 12,
+              color: context.colors.primary,
+            ),
+            const SizedBox(width: 4),
+          ],
+          Flexible(
+            child: AnymeXText(
+              val,
+              variant: TextVariant.semiBold,
+              size: 11,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
 

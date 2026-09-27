@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: eb5d2b7ca8ae4d95569e2235ed9ecd5c43fa162d
+      resolved-ref: "7f5f884ba7e33845f8d7877aaba76a91cb29ee1c"
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
@@ -482,6 +482,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  dlna_dart:
+    dependency: "direct main"
+    description:
+      name: dlna_dart
+      sha256: da607931548720331b7503f72c426fa7fbd19e9144a4778d293c16a5bc186407
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   dynamic_color:
     dependency: "direct main"
     description:
@@ -1195,14 +1203,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0-dev.3"
-  jni:
-    dependency: transitive
-    description:
-      name: jni
-      sha256: "8706a77e94c76fe9ec9315e18949cc9479cc03af97085ca9c1077b61323ea12d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.15.2"
   js:
     dependency: transitive
     description:
@@ -1316,46 +1316,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
-  local_auth:
-    dependency: "direct main"
-    description:
-      name: local_auth
-      sha256: ecf24edf2283c509ecd217e3595f6f71034b68888d28ad1dae6bfa0857b816ac
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.2"
-  local_auth_android:
-    dependency: transitive
-    description:
-      name: local_auth_android
-      sha256: b201c006fa769c23386f89aa6837ec0eb8179fcfb212eadcf87b422b3f9a6a78
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.8"
-  local_auth_darwin:
-    dependency: transitive
-    description:
-      name: local_auth_darwin
-      sha256: b1b2d938cc3511512e552d92e782e055b8dc29c83e21c59e6ecfc6bd79ab0744
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.4"
-  local_auth_platform_interface:
-    dependency: transitive
-    description:
-      name: local_auth_platform_interface
-      sha256: f98b8e388588583d3f781f6806e4f4c9f9e189d898d27f0c249b93a1973dd122
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
-  local_auth_windows:
-    dependency: transitive
-    description:
-      name: local_auth_windows
-      sha256: d72b8a441e5e6a679902f87c51529fcce65f442d77598484cf35454c3d733eda
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.2"
   logging:
     dependency: transitive
     description:
@@ -2570,7 +2530,7 @@ packages:
     source: hosted
     version: "1.1.0"
   xml:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: xml
       sha256: b015a8ad1c488f66851d762d3090a21c600e479dc75e68328c52774040cf9226
@@ -2611,4 +2571,4 @@ packages:
     version: "3.1.3"
 sdks:
   dart: ">=3.10.4 <4.0.0"
-  flutter: ">=3.38.0"
+  flutter: ">=3.35.0"

@@ -360,12 +360,17 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     if (recs.isEmpty) return const SizedBox.shrink();
                     return ReusableCarousel(
                       data: recs,
-                      title: controller.isAnime
-                          ? 'Recommended Anime'
-                          : 'Recommended Manga',
+                      title: controller.isNovel
+                          ? 'Recommended Novels'
+                          : (controller.isAnime
+                              ? 'Recommended Anime'
+                              : 'Recommended Manga'),
                       variant: DataVariant.recommendation,
-                      type:
-                          controller.isAnime ? ItemType.anime : ItemType.manga,
+                      type: controller.isNovel
+                          ? ItemType.novel
+                          : (controller.isAnime
+                              ? ItemType.anime
+                              : ItemType.manga),
                     );
                   }),
                 ],

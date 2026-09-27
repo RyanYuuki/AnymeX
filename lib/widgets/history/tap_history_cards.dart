@@ -3,6 +3,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -116,9 +117,11 @@ class NewEpisodeReleaseCard extends StatelessWidget {
       },
       child: Container(
         margin: const EdgeInsets.only(left: 15),
-        width: getResponsiveSize(context,
-            mobileSize: MediaQuery.sizeOf(context).width / 1.15,
-            desktopSize: MediaQuery.sizeOf(context).width / 2.5),
+        width: getResponsiveSize(
+          context,
+          mobileSize: (MediaQuery.sizeOf(context).width * 0.75).clamp(260.0, 310.0),
+          desktopSize: 320.0,
+        ),
         child: AnymeXCard(
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
@@ -130,7 +133,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
           ),
           color: colorScheme.secondaryContainer.withAlpha(100),
           child: SizedBox(
-            height: 155,
+            height: 110,
             child: Row(
               children: [
                 Hero(
@@ -144,8 +147,8 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                     ),
                     child: AnymeXImage(
                       imageUrl: media.poster,
-                      width: 105,
-                      height: 155,
+                      width: 78,
+                      height: 110,
                       radius: 0,
                       fadeInDuration: Duration.zero,
                       fadeOutDuration: Duration.zero,
@@ -154,68 +157,88 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        AnymeXText(
-                          media.displayTitle.toUpperCase(),
-                          size: 15.5,
-                          variant: TextVariant.bold,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          isMarquee: true,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AnymeXText(
+                                media.displayTitle,
+                                size: 13,
+                                variant: TextVariant.bold,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                isMarquee: true,
+                              ),
+                            ),
+                            if (_getReleaseDateText() != null) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surfaceContainerHighest.opaque(0.6),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: AnymeXText(
+                                  _getReleaseDateText()!,
+                                  size: 9.5,
+                                  variant: TextVariant.semiBold,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                               decoration: BoxDecoration(
-                                color: colorScheme.secondary.withOpacity(0.18),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.auto_awesome,
-                                    size: 12,
-                                    color: colorScheme.secondary,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  AnymeXText(
-                                    'NEW EPISODE',
-                                    size: 10.5,
-                                    variant: TextVariant.bold,
-                                    color: colorScheme.secondary,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primary.withOpacity(0.18),
-                                borderRadius: BorderRadius.circular(8),
+                                color: colorScheme.primary.opaque(0.15),
+                                borderRadius: BorderRadius.circular(6),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
                                     Icons.play_arrow_rounded,
-                                    size: 14,
+                                    size: 13,
                                     color: colorScheme.primary,
                                   ),
                                   const SizedBox(width: 2),
                                   AnymeXText(
-                                    'EPISODE $latest',
-                                    size: 10.5,
+                                    'EP $latest',
+                                    size: 10,
                                     variant: TextVariant.bold,
                                     color: colorScheme.primary,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                              decoration: BoxDecoration(
+                                color: colorScheme.error.opaque(0.12),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.access_time_rounded,
+                                    size: 11,
+                                    color: colorScheme.error,
+                                  ),
+                                  const SizedBox(width: 3),
+                                  AnymeXText(
+                                    '$behind behind',
+                                    size: 10,
+                                    variant: TextVariant.bold,
+                                    color: colorScheme.error,
                                   ),
                                 ],
                               ),
@@ -225,70 +248,22 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_today_outlined,
-                                  size: 13,
-                                  color: colorScheme.onSurfaceVariant
-                                      .withOpacity(0.7),
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: AnymeXText(
-                                    'Watched up to episode $watched',
-                                    size: 11.5,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
+                            AnymeXText(
+                              'Watched $watched of $latest',
+                              size: 10.5,
+                              variant: TextVariant.regular,
+                              color: colorScheme.onSurfaceVariant,
                             ),
-                            const SizedBox(height: 3),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.access_time_rounded,
-                                  size: 13,
-                                  color: colorScheme.onSurfaceVariant
-                                      .withOpacity(0.7),
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: AnymeXText(
-                                    '$behind episode${behind == 1 ? '' : 's'} behind',
-                                    size: 11.5,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (_getReleaseDateText() != null) ...[
-                              const SizedBox(height: 3),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.newspaper_outlined,
-                                    size: 13,
-                                    color: colorScheme.onSurfaceVariant
-                                        .withOpacity(0.7),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: AnymeXText(
-                                      'Released ${_getReleaseDateText()}',
-                                      size: 11.5,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
+                            const SizedBox(height: 4),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: AnymeXLinearIndicator(
+                                value: latest > 0 ? (watched / latest).clamp(0.0, 1.0) : 0.05,
+                                minHeight: 7,
+                                color: colorScheme.primary,
+                                backgroundColor: colorScheme.onSurface.withOpacity(0.1),
                               ),
-                            ],
+                            ),
                           ],
                         ),
                       ],

@@ -35,6 +35,7 @@ enum General {
   joinDialogShowCount,
   wrongTitleIsCardView,
   hiddenCustomLists,
+  showHomeContinueWatching,
 }
 
 enum AppLockType {
@@ -282,6 +283,7 @@ enum PlayerSettingsKeys {
   bottomMargin,
   transculentControls,
   defaultPortraitMode,
+  defaultOrientation,
   playerStyle,
   subtitleOutlineWidth,
   autoSkipOP,

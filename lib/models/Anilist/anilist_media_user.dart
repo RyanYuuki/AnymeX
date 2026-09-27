@@ -69,20 +69,49 @@ class TrackedMedia {
             (page >= total || page >= total - 1 || (page / total) >= 0.95);
         local = isComplete ? chNum : (chNum > 0 ? chNum - 1 : 0);
       }
+      if (saved?.readChapters != null && saved!.readChapters!.isNotEmpty) {
+        for (final rCh in saved.readChapters!) {
+          final rNum = double.tryParse(rCh.number.toString())?.toInt() ?? 0;
+          final page = rCh.pageNumber;
+          final total = rCh.totalPages;
+          final isComplete = page != null &&
+              total != null &&
+              total > 0 &&
+              (page >= total || page >= total - 1 || (page / total) >= 0.95);
+          final progressForCh = isComplete ? rNum : (rNum > 0 ? rNum - 1 : 0);
+          if (progressForCh > local) {
+            local = progressForCh;
+          }
+        }
+      }
     } else {
       final saved = offline.getAnimeById(id ?? '');
       final ep = saved?.currentEpisode;
+      final markAsCompleted = Get.isRegistered<Settings>()
+          ? Get.find<Settings>().markAsCompleted
+          : 85.0;
       if (ep != null) {
         final epNum = double.tryParse(ep.number.toString())?.toInt() ?? 0;
         final ts = ep.timeStampInMilliseconds ?? 0;
         final dur = ep.durationInMilliseconds ?? 0;
-        final markAsCompleted = Get.isRegistered<Settings>()
-            ? Get.find<Settings>().markAsCompleted
-            : 85.0;
         if (dur > 0 && (ts / dur) * 100 >= markAsCompleted) {
           local = epNum;
         } else {
           local = epNum > 0 ? epNum - 1 : 0;
+        }
+      }
+      if (saved?.watchedEpisodes != null && saved!.watchedEpisodes!.isNotEmpty) {
+        for (final wEp in saved.watchedEpisodes!) {
+          final wNum = double.tryParse(wEp.number.toString())?.toInt() ?? 0;
+          final ts = wEp.timeStampInMilliseconds ?? 0;
+          final dur = wEp.durationInMilliseconds ?? 0;
+          final isCompleted =
+              (dur > 0 && (ts / dur) * 100 >= markAsCompleted) ||
+                  (ts > 0 && ts >= dur && dur > 0);
+          final progressForEp = isCompleted ? wNum : (wNum > 0 ? wNum - 1 : 0);
+          if (progressForEp > local) {
+            local = progressForEp;
+          }
         }
       }
     }

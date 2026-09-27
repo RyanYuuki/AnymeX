@@ -5,11 +5,8 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
-import 'package:anymex/controllers/watchium/watchium_service.dart';
-import 'package:anymex/widgets/watchium/watchium_create_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:get/get.dart';
@@ -308,21 +305,13 @@ class BottomControls extends StatelessWidget {
         compact: true,
       ),
       'orientation': Obx(() {
-        final orientation = controller.physicalOrientation.value;
-        double angle = 0.0;
-        IconData icon = Icons.smartphone_rounded;
-        if (orientation == DeviceOrientation.landscapeLeft) {
-          icon = Icons.rotate_left_rounded;
-        } else if (orientation == DeviceOrientation.landscapeRight) {
-          icon = Icons.rotate_right_rounded;
-        } else if (orientation == DeviceOrientation.portraitDown) {
-          angle = 3.14159265359;
-        }
+        final isLocked = controller.isOrientationLocked.value;
         return ControlButton(
-          icon: icon,
-          rotationAngle: angle,
+          icon: isLocked
+              ? Icons.screen_lock_rotation_rounded
+              : Icons.screen_rotation_rounded,
           onPressed: () => controller.toggleOrientation(),
-          tooltip: 'Toggle Orientation',
+          tooltip: isLocked ? 'Unlock Orientation' : 'Lock Orientation',
           compact: true,
         );
       }),

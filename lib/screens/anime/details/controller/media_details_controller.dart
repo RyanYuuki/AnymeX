@@ -110,6 +110,14 @@ class MediaDetailsController extends GetxController {
   int _sourceRequestVersion = 0;
   Worker? _activeSourceWorker;
   Worker? _isAnifyWorker;
+  Worker? _loginWorker;
+  Worker? _alAnimeWorker;
+  Worker? _alMangaWorker;
+  Worker? _malAnimeWorker;
+  Worker? _malMangaWorker;
+  Worker? _simklAnimeWorker;
+  Worker? _simklMangaWorker;
+  Worker? _serviceTypeWorker;
   bool _isInitialFetchDone = false;
 
   bool get isAnime => initialMedia.mediaType == d.ItemType.anime;
@@ -130,6 +138,15 @@ class MediaDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    if (initialMedia.mediaType == d.ItemType.anime) {
+      if (initialMedia.type == 'MANGA' ||
+          ['MANGA', 'ONE_SHOT', 'MANHWA', 'MANHUA']
+              .contains(initialMedia.format.toUpperCase())) {
+        initialMedia.mediaType = d.ItemType.manga;
+      } else if (initialMedia.format.toUpperCase() == 'NOVEL') {
+        initialMedia.mediaType = d.ItemType.novel;
+      }
+    }
     offlineStorage = Get.find<OfflineStorageController>();
     anilist = Get.find<AnilistAuth>();
 
@@ -147,6 +164,7 @@ class MediaDetailsController extends GetxController {
     _initActiveSource();
     _bindSourceWorker();
     _bindAnifyWorker();
+    _bindTrackingWorkers();
     _initOfflineAndTrackedData();
     checkIfInCustomList();
 
@@ -166,6 +184,14 @@ class MediaDetailsController extends GetxController {
     countdownTimer?.cancel();
     _activeSourceWorker?.dispose();
     _isAnifyWorker?.dispose();
+    _loginWorker?.dispose();
+    _serviceTypeWorker?.dispose();
+    _alAnimeWorker?.dispose();
+    _alMangaWorker?.dispose();
+    _malAnimeWorker?.dispose();
+    _malMangaWorker?.dispose();
+    _simklAnimeWorker?.dispose();
+    _simklMangaWorker?.dispose();
     SourceMapper.interruptMapping();
     sourceController.cancelInProgress('search');
     sourceController.cancelInProgress('detail');
@@ -265,6 +291,25 @@ class MediaDetailsController extends GetxController {
     });
   }
 
+  void _bindTrackingWorkers() {
+    _loginWorker =
+        ever(serviceHandler.isLoggedIn, (_) => _initOfflineAndTrackedData());
+    _serviceTypeWorker =
+        ever(serviceHandler.serviceType, (_) => _initOfflineAndTrackedData());
+    _alAnimeWorker = ever(serviceHandler.anilistService.animeList,
+        (_) => _initOfflineAndTrackedData());
+    _alMangaWorker = ever(serviceHandler.anilistService.mangaList,
+        (_) => _initOfflineAndTrackedData());
+    _malAnimeWorker = ever(serviceHandler.malService.animeList,
+        (_) => _initOfflineAndTrackedData());
+    _malMangaWorker = ever(serviceHandler.malService.mangaList,
+        (_) => _initOfflineAndTrackedData());
+    _simklAnimeWorker = ever(serviceHandler.simklService.animeList,
+        (_) => _initOfflineAndTrackedData());
+    _simklMangaWorker = ever(serviceHandler.simklService.mangaList,
+        (_) => _initOfflineAndTrackedData());
+  }
+
   void _initOfflineAndTrackedData() {
     if (isAnime) {
       offlineMedia.value = offlineStorage.getAnimeById(initialMedia.id);
@@ -280,7 +325,10 @@ class MediaDetailsController extends GetxController {
       final list = isAnime
           ? serviceHandler.onlineService.animeList
           : serviceHandler.onlineService.mangaList;
-      final found = list.firstWhereOrNull((e) => e.id == initialMedia.id);
+      final targetId = initialMedia.id.toString();
+      final found = list.firstWhereOrNull((e) =>
+          e.id?.toString() == targetId ||
+          (e.idMal != null && e.idMal.toString() == targetId));
       if (found != null) {
         trackedMedia.value = found;
         isListedMedia.value = true;

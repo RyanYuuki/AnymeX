@@ -7,6 +7,7 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 
 class RecommendationCache {
   static final Map<String, List<Media>> _cache = {};
@@ -319,6 +320,8 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
         romajiTitle: titleFallback ?? 'Unknown',
         poster: picture ?? '',
         description: synopsis ?? '',
+        mediaType: ItemType.anime,
+        type: 'ANIME',
         serviceType: isAL ? ServicesType.anilist : ServicesType.mal,
         genres: genres ?? [],
       ));
@@ -518,6 +521,14 @@ Future<List<Media>> _fetchAnilistRecommendations({
       final coverImage = media['coverImage'] as Map?;
       final poster = coverImage?['large'] as String? ?? '';
 
+      final format = media['format']?.toString() ?? '';
+      final isNovel = mediaType == 'MANGA' && format.toUpperCase() == 'NOVEL';
+      final determinedType = isNovel
+          ? ItemType.novel
+          : (mediaType == 'MANGA' || isManga
+              ? ItemType.manga
+              : ItemType.anime);
+
       results.add(Media(
         id: id,
         idMal: media['idMal']?.toString() ?? '',
@@ -528,7 +539,9 @@ Future<List<Media>> _fetchAnilistRecommendations({
         serviceType: ServicesType.anilist,
         genres: genres,
         rating: media['averageScore']?.toString() ?? '0',
-        format: media['format']?.toString() ?? '',
+        format: format,
+        mediaType: determinedType,
+        type: mediaType,
         totalEpisodes: media['episodes']?.toString() ?? '0',
         totalChapters: media['chapters']?.toString() ?? '0',
         status: media['status']?.toString() ?? '',
@@ -572,6 +585,7 @@ Future<List<Media>> _fetchMalRecommendations({
         final media = Media.fromMAL(rec, isManga: isManga);
         results.add(media);
       } catch (e) {
+        Logger.e('Error parsing MAL recommendation: $e');
       }
     }
     return results;
