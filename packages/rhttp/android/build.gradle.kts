@@ -6,6 +6,9 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileNotFoundException
+import java.io.InputStream
+import java.io.OutputStream
+import java.net.URI
 
 group = "com.flutter_rust_bridge.rhttp"
 version = "1.0-SNAPSHOT"
@@ -138,9 +141,9 @@ fun findRustlsPlatformVerifierAar(): File {
     val downloadedAar = File(layout.buildDirectory.get().asFile, "rustls-platform-verifier-$version.aar")
     if (!downloadedAar.exists() || downloadedAar.length() == 0L) {
         downloadedAar.parentFile.mkdirs()
-        val url = java.net.URI.create("https://raw.githubusercontent.com/rustls/rustls-platform-verifier/maven-archive/android-release-support/maven/org/rustls/rustls-platform-verifier/$version/rustls-platform-verifier-$version.aar").toURL()
-        url.openStream().use { input ->
-            downloadedAar.outputStream().use { output ->
+        val url = URI.create("https://raw.githubusercontent.com/rustls/rustls-platform-verifier/maven-archive/android-release-support/maven/org/rustls/rustls-platform-verifier/$version/rustls-platform-verifier-$version.aar").toURL()
+        url.openStream().use { input: InputStream ->
+            downloadedAar.outputStream().use { output: OutputStream ->
                 input.copyTo(output)
             }
         }
