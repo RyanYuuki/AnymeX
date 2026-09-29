@@ -130,7 +130,22 @@ fun findRustlsPlatformVerifierAar(): File {
     val manifestPath = pkg.getValue("manifest_path").jsonPrimitive.content
     val version = pkg.getValue("version").jsonPrimitive.content
     val crateRoot = File(manifestPath).parentFile
-    return File(crateRoot, "maven/rustls/rustls-platform-verifier/$version/rustls-platform-verifier-$version.aar")
+    val bundledAar = File(crateRoot, "maven/rustls/rustls-platform-verifier/$version/rustls-platform-verifier-$version.aar")
+    if (bundledAar.exists()) {
+        return bundledAar
+    }
+
+    val downloadedAar = File(layout.buildDirectory.get().asFile, "rustls-platform-verifier-$version.aar")
+    if (!downloadedAar.exists() || downloadedAar.length() == 0L) {
+        downloadedAar.parentFile.mkdirs()
+        val url = java.net.URI.create("https://raw.githubusercontent.com/rustls/rustls-platform-verifier/maven-archive/android-release-support/maven/org/rustls/rustls-platform-verifier/$version/rustls-platform-verifier-$version.aar").toURL()
+        url.openStream().use { input ->
+            downloadedAar.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+    }
+    return downloadedAar
 }
 
 fun extractRustlsPlatformVerifierClasses(): File {
