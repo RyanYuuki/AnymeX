@@ -50,7 +50,12 @@ enum ThemeKeys {
   selectedCustomLogoId,
 }
 
-enum PlayerKeys { useLibass, useMediaKit, useExternalPlayer, audioChannelLayout }
+enum PlayerKeys {
+  useLibass,
+  useMediaKit,
+  useExternalPlayer,
+  audioChannelLayout
+}
 
 enum PlayerUiKeys {
   playerExperimentalEnabled,
@@ -69,6 +74,7 @@ enum PlayerUiKeys {
   selectedProfile,
   shadersEnabled,
   cacheDays,
+  keyboardShortcuts,
 }
 
 enum ReaderKeys {

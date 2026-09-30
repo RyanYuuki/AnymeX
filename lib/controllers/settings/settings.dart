@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/player/player_adaptor.dart';
+import 'package:anymex/models/player/shortcut_action.dart';
 import 'package:anymex/models/ui/ui_adaptor.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/onboarding/welcome_dialog.dart';
@@ -25,6 +26,7 @@ Settings get settingsController => Get.find<Settings>();
 class Settings extends GetxController {
   late Rx<UISettings> uiSettings;
   late Rx<PlayerSettings> playerSettings;
+  late Rx<Map<ShortcutAction, LogicalKeyboardKey>> playerShortcuts;
   final RxString discordUrl = 'https://discord.gg/GKVvSyXDUD'.obs;
   final RxString telegramUrl = 'https://t.me/AnymeX_Discussion'.obs;
   final RxBool showJoinDialog = true.obs;
@@ -82,6 +84,8 @@ class Settings extends GetxController {
     _fetchInviteLinks();
 
     playerSettings = Rx<PlayerSettings>(PlayerSettings.fromDB());
+    playerShortcuts =
+        Rx<Map<ShortcutAction, LogicalKeyboardKey>>(_loadPlayerShortcuts());
     uiSettings = Rx<UISettings>(UISettings.fromDB());
     uiSettings.value.normalizeMaps();
 
@@ -309,6 +313,49 @@ class Settings extends GetxController {
 
   T _getPlayerSetting<T>(T Function(PlayerSettings settings) getter) {
     return getter(playerSettings.value);
+  }
+
+  Map<ShortcutAction, LogicalKeyboardKey> _loadPlayerShortcuts() {
+    final raw = PlayerUiKeys.keyboardShortcuts.get<String>('{}');
+    final result = <ShortcutAction, LogicalKeyboardKey>{};
+    try {
+      final decoded = jsonDecode(raw) as Map<String, dynamic>;
+      for (final action in ShortcutAction.values) {
+        final storedId = decoded[action.name];
+        if (storedId is int) {
+          result[action] = LogicalKeyboardKey(storedId);
+        }
+      }
+    } catch (_) {
+      // Corrupt/legacy value: fall back to defaults for every action.
+    }
+    return result;
+  }
+
+  void _savePlayerShortcuts(Map<ShortcutAction, LogicalKeyboardKey> map) {
+    final encoded = <String, int>{
+      for (final entry in map.entries) entry.key.name: entry.value.keyId,
+    };
+    PlayerUiKeys.keyboardShortcuts.set(jsonEncode(encoded));
+  }
+
+  LogicalKeyboardKey shortcutFor(ShortcutAction action) =>
+      playerShortcuts.value[action] ?? action.defaultKey;
+
+  void setShortcut(ShortcutAction action, LogicalKeyboardKey key) {
+    final updated =
+        Map<ShortcutAction, LogicalKeyboardKey>.from(playerShortcuts.value)
+          ..[action] = key;
+    playerShortcuts.value = updated;
+    _savePlayerShortcuts(updated);
+  }
+
+  void resetShortcut(ShortcutAction action) {
+    final updated =
+        Map<ShortcutAction, LogicalKeyboardKey>.from(playerShortcuts.value)
+          ..remove(action);
+    playerShortcuts.value = updated;
+    _savePlayerShortcuts(updated);
   }
 
   bool get usePosterColor => _getUISetting((s) => s.usePosterColor);

@@ -8,6 +8,7 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/themed_controls.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/double_tap_seek.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/keyboard_shortcuts.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/buffering_overlay.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
@@ -141,98 +142,101 @@ class _WatchScreenState extends State<WatchScreen> {
         }
       },
       child: Scaffold(
-        body: Obx(() {
-          final isPip = controller.isPipMode.value;
-          return Stack(
-            children: [
-              Obx(() => KeyedSubtree(
-                    key: ValueKey(controller.playerReloadVersion.value),
-                    child: controller.videoWidget,
-                  )),
-              if (!PlayerKeys.useLibass.get<bool>(false))
-                SubtitleText(controller: controller),
-              if (!isPip) ...[
-                PlayerOverlay(controller: controller),
-                BufferingOverlay(controller: controller),
-                DoubleTapSeekWidget(
-                  controller: controller,
-                ),
-                const Align(
-                  alignment: Alignment.center,
-                  child: ThemedCenterControls(),
-                ),
-                const Align(
-                  alignment: Alignment.topCenter,
-                  child: ThemedTopControls(),
-                ),
-                const Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ThemedBottomControls(),
-                ),
-                MediaIndicatorBuilder(
-                  isVolumeIndicator: false,
-                  controller: controller,
-                ),
-                MediaIndicatorBuilder(
-                  isVolumeIndicator: true,
-                  controller: controller,
-                ),
-                ShaderOsd(controller: controller),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: SourcePopup(controller: controller),
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: TracksPopup(controller: controller),
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: AudioPopup(controller: controller),
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: SyncSubsPopup(controller: controller),
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: EpisodesPane(controller: controller),
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: SpeedPopup(controller: controller),
-                ),
-                const Positioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: WatchiumPartyPopup(),
-                ),
-                const WatchiumOverlay(),
-                const _WatchiumOverlays(),
+        body: PlayerKeyboardShortcuts(
+          controller: controller,
+          child: Obx(() {
+            final isPip = controller.isPipMode.value;
+            return Stack(
+              children: [
+                Obx(() => KeyedSubtree(
+                      key: ValueKey(controller.playerReloadVersion.value),
+                      child: controller.videoWidget,
+                    )),
+                if (!PlayerKeys.useLibass.get<bool>(false))
+                  SubtitleText(controller: controller),
+                if (!isPip) ...[
+                  PlayerOverlay(controller: controller),
+                  BufferingOverlay(controller: controller),
+                  DoubleTapSeekWidget(
+                    controller: controller,
+                  ),
+                  const Align(
+                    alignment: Alignment.center,
+                    child: ThemedCenterControls(),
+                  ),
+                  const Align(
+                    alignment: Alignment.topCenter,
+                    child: ThemedTopControls(),
+                  ),
+                  const Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ThemedBottomControls(),
+                  ),
+                  MediaIndicatorBuilder(
+                    isVolumeIndicator: false,
+                    controller: controller,
+                  ),
+                  MediaIndicatorBuilder(
+                    isVolumeIndicator: true,
+                    controller: controller,
+                  ),
+                  ShaderOsd(controller: controller),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: SourcePopup(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: TracksPopup(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: AudioPopup(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: SyncSubsPopup(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: EpisodesPane(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: SpeedPopup(controller: controller),
+                  ),
+                  const Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: WatchiumPartyPopup(),
+                  ),
+                  const WatchiumOverlay(),
+                  const _WatchiumOverlays(),
+                ],
               ],
-            ],
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
