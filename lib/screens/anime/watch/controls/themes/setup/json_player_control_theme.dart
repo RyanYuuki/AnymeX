@@ -739,27 +739,19 @@ class ThemeRenderer {
 
     if (id == 'orientation') {
       return Obx(() {
-        final orientation = controller.physicalOrientation.value;
-        double angle = 0.0;
-        if (orientation == DeviceOrientation.landscapeLeft) {
-          angle = -1.57079632679;
-        } else if (orientation == DeviceOrientation.landscapeRight) {
-          angle = 1.57079632679;
-        } else if (orientation == DeviceOrientation.portraitDown) {
-          angle = 3.14159265359;
-        }
+        final isLocked = controller.isOrientationLocked.value;
         return _makeButtonShell(
           style: style,
-          tooltip: item.grabString('tooltip') ?? _tooltipForId(id),
+          tooltip: item.grabString('tooltip') ??
+              (isLocked ? 'Unlock Orientation' : 'Lock Orientation'),
           enabled: enabled,
           onTap: enabled ? () => _doAction(id, item) : null,
-          guts: Transform.rotate(
-            angle: angle,
-            child: Icon(
-              Icons.smartphone_rounded,
-              size: style.iconSize,
-              color: enabled ? iconColor : disabledColor,
-            ),
+          guts: Icon(
+            isLocked
+                ? Icons.screen_lock_rotation_rounded
+                : Icons.screen_rotation_rounded,
+            size: style.iconSize,
+            color: enabled ? iconColor : disabledColor,
           ),
         );
       });

@@ -376,7 +376,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
       textCapitalization: textCapitalization,
       inputFormatters: formatters,
       style: TextStyle(
-        fontFamily: 'Poppins',
+        fontFamily: 'Linotte',
         fontSize: 14,
         color: cs.onSurface,
         letterSpacing: letterSpacing,
@@ -385,12 +385,12 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
         labelText: label,
         hintText: hint,
         labelStyle: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: 'Linotte',
           fontSize: 13,
           color: cs.onSurfaceVariant,
         ),
         hintStyle: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: 'Linotte',
           fontSize: 13,
           color: cs.onSurface.opaque(0.35),
           letterSpacing: letterSpacing,
@@ -669,7 +669,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                 code,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'Poppins-Bold',
+                  fontFamily: 'Linotte',
                   fontSize: 30,
                   letterSpacing: 6,
                   color: cs.primary,

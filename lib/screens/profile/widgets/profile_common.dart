@@ -344,7 +344,7 @@ class ProfileDesktopTabs extends StatelessWidget {
                   child: AnymeXText(
                     entry.value,
                     style: TextStyle(
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       fontSize: 14,
                       fontWeight:
                           isSelected ? FontWeight.w700 : FontWeight.w600,

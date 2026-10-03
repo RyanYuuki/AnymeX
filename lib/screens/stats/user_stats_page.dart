@@ -193,11 +193,11 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      _buildPrimaryStatsRow(
-                          context, totalHrs, totalMins, displayedUnits),
-                      const SizedBox(height: 14),
                       _buildRankProgressCard(
                           context, totalWatchTime + totalReadTime),
+                      const SizedBox(height: 14),
+                      _buildPrimaryStatsRow(
+                          context, totalHrs, totalMins, displayedUnits),
                       const SizedBox(height: 14),
                       _buildDailyAveragesRow(context),
                       const SizedBox(height: 20),
@@ -208,7 +208,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                       _buildDetailedInsightsSection(context),
                       const SizedBox(height: 24),
                       _buildFrequentlyRevisitedSection(context),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 150),
                     ]),
                   ),
                 ),
@@ -279,8 +279,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
 
   Widget _buildPrimaryStatsRow(
       BuildContext context, int hrs, int mins, int units) {
-    final timeReadCard = _buildDashboardCard(
-      context: context,
+    final timeReadCard = _buildSmallInfoCard(
       title: activeFilter.value == 'Anime'
           ? 'TIME WATCHED'
           : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
@@ -290,8 +289,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       icon: IconlyLight.timeCircle,
     );
 
-    final pagesCard = _buildDashboardCard(
-      context: context,
+    final pagesCard = _buildSmallInfoCard(
       title: activeFilter.value == 'Anime'
           ? 'Episodes'
           : (activeFilter.value == 'Manga' || activeFilter.value == 'Novel'
@@ -302,8 +300,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       icon: IconlyLight.paper,
     );
 
-    final daysCard = _buildDashboardCard(
-      context: context,
+    final daysCard = _buildSmallInfoCard(
       title: 'DAYS ACTIVE',
       value: "${controller.totalDaysActive}",
       icon: IconlyLight.calendar,
@@ -311,11 +308,11 @@ class _UserStatsPageState extends State<UserStatsPage> {
 
     return Row(
       children: [
-        Expanded(child: SizedBox(height: 94, child: timeReadCard)),
+        Expanded(child: timeReadCard),
         const SizedBox(width: 8),
-        Expanded(child: SizedBox(height: 94, child: pagesCard)),
+        Expanded(child: pagesCard),
         const SizedBox(width: 8),
-        Expanded(child: SizedBox(height: 94, child: daysCard)),
+        Expanded(child: daysCard),
       ],
     );
   }
@@ -442,73 +439,6 @@ class _UserStatsPageState extends State<UserStatsPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildDashboardCard({
-    required BuildContext context,
-    required String title,
-    required String value,
-    required IconData icon,
-    int valueMaxLines = 1,
-    bool isChildOnRight = false,
-    Widget? child,
-  }) {
-    return AnymeXCard(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: Stack(
-        children: [
-          if (child != null && isChildOnRight)
-            Align(
-              alignment: Alignment.centerRight,
-              child: child,
-            ),
-          Padding(
-            padding: EdgeInsets.only(
-                right: (child != null && isChildOnRight) ? 56.0 : 0.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(icon,
-                        size: 12,
-                        color:
-                            context.colors.onSurfaceVariant.withOpacity(0.5)),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: AnymeXText(
-                        title.toUpperCase(),
-                        size: 8.5,
-                        variant: TextVariant.bold,
-                        color: context.colors.onSurfaceVariant.withOpacity(0.5),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: AnymeXText(
-                      value,
-                      size: (child != null && isChildOnRight) ? 12 : 16.5,
-                      variant: TextVariant.bold,
-                      color: context.colors.onSurface,
-                      maxLines: valueMaxLines,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-                if (child != null && !isChildOnRight) child,
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 

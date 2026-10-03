@@ -16,7 +16,6 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/media_items/media_item.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -39,10 +38,11 @@ class _HomePageState extends State<HomePage> {
   Widget _buildNewEpisodesSection() {
     final serviceHandler = Get.find<ServiceHandler>();
     return Obx(() {
-      final entries = <(Media, int, int)>[];
+      final entries = <(Media, int, int, DateTime?)>[];
 
       if (serviceHandler.isLoggedIn.value ||
           serviceHandler.animeList.isNotEmpty) {
+        final now = DateTime.now();
         for (final item in serviceHandler.animeList) {
           if (item.type?.toUpperCase() == 'MANGA' || item.id == null) continue;
           final watched = item.effectiveProgress;
@@ -50,7 +50,8 @@ class _HomePageState extends State<HomePage> {
           if (item.releasedEpisodes != null &&
               item.releasedEpisodes!.isNotEmpty) {
             latestReleased = int.tryParse(item.releasedEpisodes!) ?? 0;
-          } else if (item.mediaStatus?.toUpperCase() == 'COMPLETED') {
+          } else if (item.mediaStatus?.toUpperCase() == 'COMPLETED' ||
+              item.mediaStatus?.toUpperCase() == 'FINISHED') {
             latestReleased = int.tryParse(item.totalEpisodes ?? '') ?? 0;
           }
 
@@ -60,30 +61,41 @@ class _HomePageState extends State<HomePage> {
               status == 'REPEATING' ||
               status == 'REWATCHING';
 
-          if (isWatching && latestReleased > watched) {
-            final media = CardData.fromTrackedMedia(item).data;
-            entries.add((media, watched, latestReleased));
+          if (!isWatching || latestReleased <= watched) {
+            continue;
           }
-        }
-      }
 
-      if (entries.isEmpty &&
-          kDebugMode &&
-          serviceHandler.animeList.isNotEmpty) {
-        final animeList = serviceHandler.animeList
-            .where((i) => i.type?.toUpperCase() != 'MANGA' && i.id != null)
-            .take(3)
-            .toList();
-        for (int i = 0; i < animeList.length; i++) {
-          final item = animeList[i];
-          final dummyWatched = (i + 1) * 3;
-          final dummyLatest = dummyWatched + (i % 2 == 0 ? 1 : 2);
-          entries.add((
-            CardData.fromTrackedMedia(item).data,
-            dummyWatched,
-            dummyLatest
-          ));
+          final media = CardData.fromTrackedMedia(item).data;
+          final releaseDate = NewEpisodeReleaseCard.calculateReleaseDate(
+            media: media,
+            latestReleasedEpisode: latestReleased,
+            itemEndDate: item.endDate,
+            mediaStatus: item.mediaStatus,
+          );
+
+          final mediaStatus = item.mediaStatus?.toUpperCase();
+          final isStillAiring = mediaStatus == 'RELEASING' ||
+              mediaStatus == 'AIRING' ||
+              item.nextAiringEpisode != null;
+
+          if (!isStillAiring) {
+            if (releaseDate == null ||
+                now.isAfter(releaseDate.add(const Duration(days: 7)))) {
+              continue;
+            }
+          }
+
+          entries.add((media, watched, latestReleased, releaseDate));
         }
+
+        entries.sort((a, b) {
+          final dateA = a.$4;
+          final dateB = b.$4;
+          if (dateA == null && dateB == null) return 0;
+          if (dateA == null) return 1;
+          if (dateB == null) return -1;
+          return dateB.compareTo(dateA);
+        });
       }
 
       if (entries.isEmpty) {
@@ -92,38 +104,20 @@ class _HomePageState extends State<HomePage> {
 
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: AnymeXText(
-                'New Episode Releases',
-                variant: TextVariant.semiBold,
-                size: 17,
-                color: context.colors.primary,
-                isMarquee: true,
+        child: SizedBox(
+          height: 110,
+          child: RepaintBoundary(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: entries.length,
+              itemBuilder: (context, i) => NewEpisodeReleaseCard(
+                media: entries[i].$1,
+                watchedEpisode: entries[i].$2,
+                latestReleasedEpisode: entries[i].$3,
+                releaseDate: entries[i].$4,
               ),
             ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: SizedBox(
-                height: 155,
-                child: RepaintBoundary(
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: entries.length,
-                    itemBuilder: (context, i) => NewEpisodeReleaseCard(
-                      media: entries[i].$1,
-                      watchedEpisode: entries[i].$2,
-                      latestReleasedEpisode: entries[i].$3,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       );
     });
@@ -290,7 +284,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                     ],
                   ),
-                  SizedBox(height: bottomNavBarHeight),
+                  SizedBox(height: bottomNavBarHeight + 150),
                 ],
               ),
             ),

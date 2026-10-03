@@ -26,8 +26,9 @@ class EpisodeStyle {
     double progress,
     Media? media,
     VoidCallback? onTap,
-    VoidCallback? onLongPress,
-  ) builder;
+    VoidCallback? onLongPress, {
+    Widget? downloadButton,
+  }) builder;
 
   const EpisodeStyle({
     required this.id,
@@ -42,11 +43,11 @@ class EpisodeStyle {
 
 class EpisodeStyleRegistry {
   static final RxString currentStyleId =
-      PlayerUiKeys.mediaIndicatorTheme.get<String>('compact').obs;
+      PlayerUiKeys.episodeStyle.get<String>('compact').obs;
 
   static void setStyle(String id) {
     currentStyleId.value = id;
-    PlayerUiKeys.mediaIndicatorTheme.set(id);
+    PlayerUiKeys.episodeStyle.set(id);
   }
 
   static EpisodeStyle get activeStyle => getStyle(currentStyleId.value);

@@ -1,5 +1,6 @@
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/database/isar_models/track.dart' as t;
 import 'package:anymex/database/isar_models/video.dart' as hive;
 
@@ -48,6 +49,7 @@ class ActiveDownloadTask {
   String? errorMessage;
   List<t.Track>? subtitles;
   List<hive.Video>? availableServers;
+  OfflineMedia? media;
 
   ActiveDownloadTask({
     required this.taskId,
@@ -64,6 +66,7 @@ class ActiveDownloadTask {
     this.errorMessage,
     this.subtitles,
     this.availableServers,
+    this.media,
   });
 
   Map<String, dynamic> toJson() => {
@@ -80,6 +83,7 @@ class ActiveDownloadTask {
         'filePath': filePath,
         'errorMessage': errorMessage,
         'subtitles': subtitles?.map((t) => t.toJson()).toList(),
+        if (media != null) 'media': media!.toJson(),
       };
 
   factory ActiveDownloadTask.fromJson(Map<String, dynamic> json) =>
@@ -100,6 +104,9 @@ class ActiveDownloadTask {
         subtitles: (json['subtitles'] as List<dynamic>?)
             ?.map((e) => t.Track.fromJson(e as Map<String, dynamic>))
             .toList(),
+        media: json['media'] != null
+            ? OfflineMedia.fromJson(json['media'] as Map<String, dynamic>)
+            : null,
       );
 
   String get episodeDisplayId {
@@ -194,15 +201,18 @@ class DownloadedMediaSummary {
 class DownloadedMediaMeta {
   final List<DownloadedEpisodeMeta> episodes;
   final Map<String, int> watchedProgress;
+  final OfflineMedia? media;
 
   const DownloadedMediaMeta({
     required this.episodes,
     this.watchedProgress = const {},
+    this.media,
   });
 
   Map<String, dynamic> toJson() => {
         'episodes': episodes.map((e) => e.toJson()).toList(),
         'watchedProgress': watchedProgress,
+        if (media != null) 'media': media!.toJson(),
       };
 
   factory DownloadedMediaMeta.fromJson(Map<String, dynamic> json) =>
@@ -214,6 +224,9 @@ class DownloadedMediaMeta {
         watchedProgress: (json['watchedProgress'] as Map<dynamic, dynamic>?)
                 ?.map((k, v) => MapEntry(k.toString(), v as int)) ??
             {},
+        media: json['media'] != null
+            ? OfflineMedia.fromJson(json['media'] as Map<String, dynamic>)
+            : null,
       );
 }
 
@@ -256,11 +269,16 @@ class DownloadedChapterMeta {
 
 class DownloadedMangaMeta {
   final List<DownloadedChapterMeta> chapters;
+  final OfflineMedia? media;
 
-  const DownloadedMangaMeta({required this.chapters});
+  const DownloadedMangaMeta({
+    required this.chapters,
+    this.media,
+  });
 
   Map<String, dynamic> toJson() => {
         'chapters': chapters.map((c) => c.toJson()).toList(),
+        if (media != null) 'media': media!.toJson(),
       };
 
   factory DownloadedMangaMeta.fromJson(Map<String, dynamic> json) =>
@@ -269,6 +287,9 @@ class DownloadedMangaMeta {
             .map((e) =>
                 DownloadedChapterMeta.fromJson(e as Map<String, dynamic>))
             .toList(),
+        media: json['media'] != null
+            ? OfflineMedia.fromJson(json['media'] as Map<String, dynamic>)
+            : null,
       );
 }
 
@@ -290,6 +311,7 @@ class ActiveMangaDownloadTask {
   MangaDownloadStatus status;
   double progress;
   String? errorMessage;
+  OfflineMedia? media;
 
   ActiveMangaDownloadTask({
     required this.taskId,
@@ -299,6 +321,7 @@ class ActiveMangaDownloadTask {
     this.status = MangaDownloadStatus.queued,
     this.progress = 0.0,
     this.errorMessage,
+    this.media,
   });
 
   Map<String, dynamic> toJson() => {
@@ -309,6 +332,7 @@ class ActiveMangaDownloadTask {
         'status': status.index,
         'progress': progress,
         'errorMessage': errorMessage,
+        if (media != null) 'media': media!.toJson(),
       };
 
   factory ActiveMangaDownloadTask.fromJson(Map<String, dynamic> json) =>
@@ -320,6 +344,9 @@ class ActiveMangaDownloadTask {
         status: MangaDownloadStatus.values[json['status'] as int? ?? 0],
         progress: (json['progress'] as num? ?? 0.0).toDouble(),
         errorMessage: json['errorMessage'] as String?,
+        media: json['media'] != null
+            ? OfflineMedia.fromJson(json['media'] as Map<String, dynamic>)
+            : null,
       );
 
   String get chapterDisplay {
@@ -328,3 +355,26 @@ class ActiveMangaDownloadTask {
     return chapter.title ?? 'Chapter';
   }
 }
+
+enum DownloadItemStatus {
+  notDownloaded,
+  queued,
+  downloading,
+  downloaded,
+  failed,
+}
+
+class DownloadItemState {
+  final DownloadItemStatus status;
+  final double progress;
+  final String? taskId;
+  final String? errorMessage;
+
+  const DownloadItemState({
+    required this.status,
+    this.progress = 0.0,
+    this.taskId,
+    this.errorMessage,
+  });
+}
+

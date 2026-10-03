@@ -1,8 +1,12 @@
 import 'package:anymex/database/isar_models/episode.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+
+export 'package:anymex/utils/function.dart'
+    show formatEpisodeNumberLabel, parseEpisodeInfo, EpisodeInfo;
 
 class EpisodeChunkSelector extends StatelessWidget {
   final RxInt selectedChunkIndex;
@@ -24,10 +28,11 @@ class EpisodeChunkSelector extends StatelessWidget {
         scrollPadding: const EdgeInsets.fromLTRB(0, 10, 0, 5),
         items: List.generate(chunks.length, (index) {
           final label = index == 0
-              ? 'All (${chunks[0].length})'
-              : '${formatEpisodeNumberLabel(chunks[index].first.number)} - ${formatEpisodeNumberLabel(chunks[index].last.number)} (${chunks[index].length})';
+              ? 'All'
+              : '${formatEpisodeNumberLabel(chunks[index].first.number, title: chunks[index].first.title)} - ${formatEpisodeNumberLabel(chunks[index].last.number, title: chunks[index].last.title)}';
           return PillItem(
             label: label,
+            count: chunks[index].length,
             isSelected: selected == index,
             onTap: () => onChunkSelected(index),
           );
@@ -63,7 +68,7 @@ class EpisodeSortKeySelector extends StatelessWidget {
           child: AnymeXText(
             title,
             style: TextStyle(
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
               fontWeight: FontWeight.w700,
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -155,19 +160,3 @@ int compareEpisodeSortValues(String first, String second) {
   return first.compareTo(second);
 }
 
-String formatEpisodeNumberLabel(dynamic rawNumber) {
-  if (rawNumber == null) return '';
-  final parsed = double.tryParse(rawNumber.toString().trim());
-  if (parsed == null) return rawNumber.toString();
-
-  if (parsed == parsed.toInt()) {
-    return parsed.toInt().toString();
-  }
-
-  final rounded = double.parse(parsed.toStringAsFixed(2));
-  if (rounded == rounded.toInt()) {
-    return rounded.toInt().toString();
-  }
-
-  return rounded.toString().replaceAll(RegExp(r'\.?0+$'), '');
-}

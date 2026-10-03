@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/scheduler.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -38,6 +37,7 @@ import 'package:anymex/utils/aniskip.dart' as aniskip;
 import 'package:anymex/utils/media_syncer.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/color_profiler.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/sub_parser.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
@@ -368,6 +368,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       DeviceOrientation.landscapeLeft.obs;
   final Rx<DeviceOrientation> physicalOrientation =
       DeviceOrientation.portraitUp.obs;
+  final RxBool isOrientationLocked = false.obs;
   StreamSubscription? _accelerometerSub;
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
@@ -703,9 +704,18 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _initPhysicalOrientationListener();
 
     if (Platform.isAndroid || Platform.isIOS) {
-      if (playerSettings.defaultPortraitMode) {
+      final defaultMode = playerSettings.defaultOrientation;
+      if (defaultMode == 'portrait' || playerSettings.defaultPortraitMode) {
+        isOrientationLocked.value = true;
         _applyOrientation(DeviceOrientation.portraitUp);
+      } else if (defaultMode == 'landscape_left') {
+        isOrientationLocked.value = true;
+        _applyOrientation(DeviceOrientation.landscapeLeft);
+      } else if (defaultMode == 'landscape_right') {
+        isOrientationLocked.value = true;
+        _applyOrientation(DeviceOrientation.landscapeRight);
       } else {
+        isOrientationLocked.value = false;
         final orientation = await _getClosestLandscapeOrientation();
         _applyOrientation(orientation);
       }
@@ -720,17 +730,36 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .listen((event) {
         final x = event.x;
         final y = event.y;
-        if (x.abs() > y.abs()) {
-          if (x > 5.0) {
-            physicalOrientation.value = DeviceOrientation.landscapeLeft;
-          } else if (x < -5.0) {
-            physicalOrientation.value = DeviceOrientation.landscapeRight;
+        final defaultMode = playerSettings.defaultOrientation;
+        DeviceOrientation? targetOrientation;
+
+        if (defaultMode == 'auto_full') {
+          if (x.abs() > y.abs()) {
+            if (x > 3.0) {
+              targetOrientation = DeviceOrientation.landscapeLeft;
+            } else if (x < -3.0) {
+              targetOrientation = DeviceOrientation.landscapeRight;
+            }
+          } else {
+            if (y > 3.0) {
+              targetOrientation = DeviceOrientation.portraitUp;
+            } else if (y < -3.0) {
+              targetOrientation = DeviceOrientation.portraitDown;
+            }
           }
         } else {
-          if (y > 5.0) {
-            physicalOrientation.value = DeviceOrientation.portraitUp;
-          } else if (y < -5.0) {
-            physicalOrientation.value = DeviceOrientation.portraitDown;
+          if (x > 2.5) {
+            targetOrientation = DeviceOrientation.landscapeLeft;
+          } else if (x < -2.5) {
+            targetOrientation = DeviceOrientation.landscapeRight;
+          }
+        }
+
+        if (targetOrientation != null) {
+          physicalOrientation.value = targetOrientation;
+          if (!isOrientationLocked.value &&
+              currentOrientation.value != targetOrientation) {
+            _applyOrientation(targetOrientation);
           }
         }
       });
@@ -782,19 +811,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleOrientation() {
-    if (currentOrientation.value != physicalOrientation.value) {
-      _applyOrientation(physicalOrientation.value);
-      return;
-    }
-    DeviceOrientation next;
-    if (currentOrientation.value == DeviceOrientation.landscapeLeft) {
-      next = DeviceOrientation.portraitUp;
-    } else if (currentOrientation.value == DeviceOrientation.portraitUp) {
-      next = DeviceOrientation.landscapeRight;
+    isOrientationLocked.value = !isOrientationLocked.value;
+    if (!isOrientationLocked.value) {
+      if (currentOrientation.value != physicalOrientation.value) {
+        _applyOrientation(physicalOrientation.value);
+      }
+      snackBar('Orientation Unlocked');
     } else {
-      next = DeviceOrientation.landscapeLeft;
+      snackBar('Orientation Locked');
     }
-    _applyOrientation(next);
   }
 
   void _performSegmentSkip(aniskip.SkipIntervals interval) {
@@ -893,18 +918,24 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _initializeSwipeStuffs() async {
     try {
-      VolumeController.instance.showSystemUI = false;
-      volume.value = await VolumeController.instance.getVolume();
+      if (Platform.isAndroid || Platform.isIOS) {
+        VolumeController.instance.showSystemUI = false;
+        volume.value = await VolumeController.instance.getVolume();
+      } else {
+        volume.value = _basePlayer.state.volume;
+      }
     } catch (_) {}
 
     try {
-      brightness.value = await ScreenBrightness.instance.application;
-      _subscriptions
-          .add(ScreenBrightness.instance.onCurrentBrightnessChanged.listen(
-        (value) {
-          brightness.value = value;
-        },
-      ));
+      if (Platform.isAndroid || Platform.isIOS) {
+        brightness.value = await ScreenBrightness.instance.application;
+        _subscriptions
+            .add(ScreenBrightness.instance.onCurrentBrightnessChanged.listen(
+          (value) {
+            brightness.value = value;
+          },
+        ));
+      }
     } catch (_) {}
   }
 
@@ -971,6 +1002,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       await _openWithCloudFallback(
           startPositionOverride: startPositionOverride);
     }
+    _autoSelectAudioTrack();
 
     if (subtitleToRestore != null) {
       await _applySubtitleTrack(
@@ -1301,6 +1333,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
       embeddedQuality.value = e.video;
       _tryAutoSelectPreferredSubtitle();
+      if (selectedExternalAudio.value == null &&
+          selectedVideo.value?.audios?.isNotEmpty == true) {
+        _autoSelectAudioTrack();
+      }
     }));
 
     _playerSubscriptions.add(_basePlayer.rateStream.listen((e) {
@@ -1686,6 +1722,13 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (previousTrack == null) {
+      final savedAnime = offlineStorage.getAnimeById(anilistData.id);
+      final prevTrack = savedAnime?.currentEpisode?.currentTrack ??
+          savedAnime?.watchedEpisodes?.lastOrNull?.currentTrack;
+      if (prevTrack != null && prevTrack.isDub) {
+        final dubTrack = tracks.firstWhereOrNull((t) => t.isDub);
+        if (dubTrack != null) return dubTrack;
+      }
       return tracks.first;
     }
 
@@ -1898,6 +1941,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     await _basePlayer.open(url, headers: headers, startPosition: startPosition);
     await _basePlayer.setRate(_sessionSpeed);
+    _autoSelectAudioTrack();
   }
 
   Future<void> delete() async {
@@ -1924,11 +1968,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     try {
       _trackLocally(syncToCloud: false);
       if (!isOffline.value) {
-        final durationMs = episodeDuration.value.inMilliseconds;
-        final hasCrossedLimit = durationMs > 0
-            ? (currentPosition.value.inMilliseconds / durationMs >=
-                settings.markAsCompleted)
-            : false;
+        final hasCrossedLimit = _shouldMarkAsCompleted;
         _trackOnline(hasCrossedLimit);
         _syncCloudProgressOnExit();
       }
@@ -1954,7 +1994,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     TorrentStreamResolver.stopActiveStream();
 
-    ScreenBrightness.instance.resetApplicationScreenBrightness();
+    try {
+      if (Platform.isAndroid || Platform.isIOS) {
+        await ScreenBrightness.instance.resetApplicationScreenBrightness();
+      }
+    } catch (_) {}
   }
 
   void _revertOrientations() {
@@ -2151,13 +2195,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     volumeIndicator.value = false;
     _volumeTimer?.cancel();
 
-    unawaited(
-      ScreenBrightness.instance
-          .setApplicationScreenBrightness(value)
-          .catchError((e) {
-        Logger.e("Error setting brightness: $e");
-      }),
-    );
+    if (Platform.isAndroid || Platform.isIOS) {
+      unawaited(
+        ScreenBrightness.instance
+            .setApplicationScreenBrightness(value)
+            .catchError((e) {
+          Logger.e("Error setting brightness: $e");
+        }),
+      );
+    }
 
     if (!isDragging) {
       _hideBrightnessIndicatorAfterDelay();
@@ -2241,9 +2287,6 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   void _autoSelectAudioTrack() {
     final audios = selectedVideo.value?.audios ?? [];
-    embeddedAudioTracks.value = audios
-        .map((e) => AudioTrack.uri(e.file ?? '', title: e.label))
-        .toList();
     if (audios.isNotEmpty) {
       final firstAudio = audios.first;
       if (firstAudio.file != null && firstAudio.file!.isNotEmpty) {
@@ -2799,21 +2842,27 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             hasCrossedLimit ? currEpisodeNum : currEpisodeNum - 1;
         if (newProgress <= 0) return;
 
+        final detectedSeason = extractSeason(currentEpisode.value);
+        final statusUpper = anilistData.status.toUpperCase();
+        final isCompleted = hasCrossedLimit &&
+            !hasNextEpisode &&
+            (statusUpper == 'COMPLETED' || statusUpper == 'FINISHED');
         await trackCtrl.pushProgress(mediaId, newProgress,
             isAnime: true,
-            status: hasCrossedLimit && !hasNextEpisode
-                ? 'COMPLETED'
-                : null);
+            status: isCompleted ? 'COMPLETED' : null,
+            season: detectedSeason);
         Logger.i(
-            'Extension tracking completed for episode $currEpisodeNum, progress: $newProgress');
+            'Extension tracking completed for episode $currEpisodeNum (season $detectedSeason), progress: $newProgress');
       } catch (e) {
         Logger.i('Failed to track extension media: $e');
       }
       return;
     }
 
-    if (currentEpisode.value.number.toString() ==
-        anilistData.serviceType.onlineService.currentMedia.value.episodeCount) {
+    if (!hasCrossedLimit &&
+        currentEpisode.value.number.toString() ==
+            anilistData
+                .serviceType.onlineService.currentMedia.value.episodeCount) {
       return;
     }
 
@@ -2827,19 +2876,22 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final int previousProgress =
           int.tryParse(service.currentMedia.value.episodeCount ?? '0') ?? 0;
 
-      if (newProgress <= previousProgress) {
+      if (newProgress < previousProgress ||
+          (!hasCrossedLimit && newProgress <= previousProgress)) {
         return;
       }
 
+      final detectedSeason = extractSeason(currentEpisode.value);
+      final statusUpper = anilistData.status.toUpperCase();
+      final isFinished = hasCrossedLimit &&
+          (statusUpper == 'COMPLETED' || statusUpper == 'FINISHED') &&
+          !hasNextEpisode;
       await service.updateListEntry(UpdateListEntryParams(
           listId: anilistData.id,
           progress: newProgress,
           isAnime: true,
-          status: hasCrossedLimit &&
-                  anilistData.status == 'COMPLETED' &&
-                  !hasNextEpisode
-              ? 'COMPLETED'
-              : 'CURRENT',
+          season: detectedSeason,
+          status: isFinished ? 'COMPLETED' : 'CURRENT',
           syncIds: [anilistData.idMal]));
 
       service.setCurrentMedia(anilistData.id.toString());

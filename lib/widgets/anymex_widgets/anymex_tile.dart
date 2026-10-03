@@ -518,7 +518,7 @@ class AnymeXTile extends StatelessWidget {
                         variant: TextVariant.regular,
                         color:
                             colors.onSurface.opaque(0.45, iReallyMeanIt: true),
-                        maxLines: 2,
+                        maxLines: 4,
                         overflow: TextOverflow.ellipsis,
                         style: subtitleStyle,
                       ),

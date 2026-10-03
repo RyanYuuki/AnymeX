@@ -79,7 +79,7 @@ class _FutureReusableCarouselState extends State<FutureReusableCarousel> {
                             AnymeXText(
                               widget.title,
                               style: TextStyle(
-                                fontFamily: 'Poppins-SemiBold',
+                                fontFamily: 'Linotte',
                                 fontSize: 14,
                                 color: theme.colorScheme.error,
                               ),

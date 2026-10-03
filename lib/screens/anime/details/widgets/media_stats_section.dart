@@ -166,6 +166,8 @@ Widget buildAlternativeTitles(BuildContext context, Media media) {
                       child: AnymeXText(
                         entry.value,
                         size: 12,
+                        maxLines: null,
+                        overflow: TextOverflow.visible,
                         variant: TextVariant.semiBold,
                       ),
                     ),
@@ -600,37 +602,44 @@ Widget buildStatsGrid(BuildContext context, Media media) {
 
   if (stats.isEmpty) return const SizedBox.shrink();
 
-  return Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(14),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-      ),
-    ),
-    child: Wrap(
-      spacing: 20,
-      runSpacing: 12,
-      children: stats.map((entry) {
-        VoidCallback? onTap;
-        if (entry.key == 'Studio' && (media.studios ?? []).isNotEmpty) {
-          final studioName = media.studios!.first;
-          onTap = () async {
-            final studioId = await AnilistData.fetchStudioIdByName(studioName);
-            if (studioId != null && context.mounted) {
-              showStudioDetailsSheet(
-                context,
-                studioId,
-                studioName,
-              );
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+          ),
+        ),
+        child: Wrap(
+          spacing: 20,
+          runSpacing: 12,
+          children: stats.map((entry) {
+            VoidCallback? onTap;
+            if (entry.key == 'Studio' && (media.studios ?? []).isNotEmpty) {
+              final studioName = media.studios!.first;
+              onTap = () async {
+                final studioId = await AnilistData.fetchStudioIdByName(studioName);
+                if (studioId != null && context.mounted) {
+                  showStudioDetailsSheet(
+                    context,
+                    studioId,
+                    studioName,
+                  );
+                }
+              };
             }
-          };
-        }
-        return buildStatCard(context, entry.key, entry.value, onTap: onTap);
-      }).toList(),
-    ),
+            return ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: constraints.maxWidth - 28),
+              child: buildStatCard(context, entry.key, entry.value, onTap: onTap),
+            );
+          }).toList(),
+        ),
+      );
+    },
   );
 }
 
@@ -651,6 +660,8 @@ Widget buildStatCard(BuildContext context, String label, String value,
       AnymeXText(
         value,
         size: 13,
+        maxLines: null,
+        overflow: TextOverflow.visible,
         variant: TextVariant.semiBold,
       ),
     ],

@@ -397,7 +397,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                 Positioned(
                   bottom: 8,
                   left: 8,
-                  child: _buildEpisodeNumberBadge(episode.number, context),
+                  child: _buildEpisodeNumberBadge(episode.number, context, title: episode.title),
                 ),
               ],
             ),
@@ -406,7 +406,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: AnymeXText(episode.title ?? 'Episode ${episode.number}',
+              child: AnymeXText(episode.title ?? 'Episode ${formatEpisodeNumberLabel(episode.number, title: episode.title)}',
                 variant: TextVariant.bold,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -454,7 +454,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                   Positioned(
                     bottom: 8,
                     left: 8,
-                    child: _buildEpisodeNumberBadge(episode.number, context),
+                    child: _buildEpisodeNumberBadge(episode.number, context, title: episode.title),
                   ),
                 ],
               ),
@@ -462,7 +462,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
               Expanded(
                 child: SizedBox(
                   height: 100,
-                  child: AnymeXText(episode.title ?? 'Episode ${episode.number}',
+                  child: AnymeXText(episode.title ?? 'Episode ${formatEpisodeNumberLabel(episode.number, title: episode.title)}',
                     variant: TextVariant.bold,
                     maxLines: 4,
                     overflow: TextOverflow.ellipsis,
@@ -487,7 +487,8 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
   }
 
   // 11. EXTRACT REUSABLE BADGE WIDGET
-  Widget _buildEpisodeNumberBadge(String episodeNumber, BuildContext context) {
+  Widget _buildEpisodeNumberBadge(String episodeNumber, BuildContext context, {String? title}) {
+    final formatted = formatEpisodeNumberLabel(episodeNumber, title: title);
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: BackdropFilter(
@@ -503,7 +504,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             ),
             boxShadow: [glowingShadow(context)],
           ),
-          child: AnymeXText("EP $episodeNumber",
+          child: AnymeXText("EP $formatted",
             variant: TextVariant.bold,
           ),
         ),

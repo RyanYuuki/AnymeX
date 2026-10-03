@@ -318,7 +318,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     '${_cachedChapters.length}',
                     style: TextStyle(
                       fontSize: 11,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       fontWeight: FontWeight.w600,
                       color: colors.primary,
                     ),
@@ -529,7 +529,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     'Ch. $formattedNum',
                     style: TextStyle(
                       fontSize: 11,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       fontWeight: FontWeight.bold,
                       color: isCurrent ? colors.onPrimary : colors.primary,
                     ),
@@ -590,7 +590,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                 'Ch. $formattedNum',
                 style: TextStyle(
                   fontSize: 13,
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontWeight: FontWeight.bold,
                   color: isCurrent ? colors.primary : colors.onSurface,
                 ),
@@ -604,7 +604,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     chapter.title!.trim(),
                     style: TextStyle(
                       fontSize: 10,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       color: isCurrent
                           ? colors.primary.withOpacity(0.8)
                           : colors.onSurface.withOpacity(0.5),

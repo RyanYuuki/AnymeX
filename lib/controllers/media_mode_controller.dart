@@ -22,6 +22,27 @@ class MediaModeController extends GetxController {
     super.onInit();
     final storage = Get.find<OfflineStorageController>();
 
+    animeHistory.value = storage
+        .getAnimeLibrarySync()
+        .where((e) => e.hasRequiredHistoryMedia(ItemType.anime))
+        .toList()
+      ..sort((a, b) => (b.currentEpisode?.lastWatchedTime ?? 0)
+          .compareTo(a.currentEpisode?.lastWatchedTime ?? 0));
+
+    mangaHistory.value = storage
+        .getMangaLibrarySync()
+        .where((e) => e.hasRequiredHistoryMedia(ItemType.manga))
+        .toList()
+      ..sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
+          .compareTo(a.currentChapter?.lastReadTime ?? 0));
+
+    novelHistory.value = storage
+        .getNovelLibrarySync()
+        .where((e) => e.hasRequiredHistoryMedia(ItemType.novel))
+        .toList()
+      ..sort((a, b) => (b.currentChapter?.lastReadTime ?? 0)
+          .compareTo(a.currentChapter?.lastReadTime ?? 0));
+
     _animeSub = storage.watchAnimeLibrary().listen((items) {
       animeHistory.value = items
           .where((e) => e.hasRequiredHistoryMedia(ItemType.anime))

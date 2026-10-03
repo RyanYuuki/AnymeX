@@ -128,7 +128,7 @@ class _AnymeXSearchBarState extends State<AnymeXSearchBar> {
               onSubmitted: widget.onSubmitted,
               style: TextStyle(
                 fontSize: 14,
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 fontWeight: FontWeight.w500,
                 color: colors.onSurface,
               ),
@@ -139,7 +139,7 @@ class _AnymeXSearchBarState extends State<AnymeXSearchBar> {
                 hintText: widget.hintText,
                 hintStyle: TextStyle(
                   fontSize: 13,
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   color: colors.onSurface.withOpacity(0.45),
                 ),
                 prefixIcon: widget.prefixIcon ??

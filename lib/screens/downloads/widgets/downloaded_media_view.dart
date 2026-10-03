@@ -122,7 +122,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         await downloadController.deleteMedia(
             widget.summary.extensionName, widget.summary.title,
             mediaType: widget.summary.mediaType);
-        if (mounted) Navigator.pop(context);
+        if (mounted) Navigator.of(this.context).pop();
       },
     ).show(context);
   }
@@ -248,11 +248,17 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     final chapterList = _mangaMeta!.chapters.map((meta) {
       final baseChapter = meta.chapter;
       baseChapter.localPath = meta.imageDir;
+      if (baseChapter.link == null || baseChapter.link!.isEmpty) {
+        baseChapter.link = meta.imageDir;
+      }
       return baseChapter;
     }).toList();
 
     final currentChapter = ch.chapter;
     currentChapter.localPath = ch.imageDir;
+    if (currentChapter.link == null || currentChapter.link!.isEmpty) {
+      currentChapter.link = ch.imageDir;
+    }
 
     await navigate(() => ReadingPage(
           anilistData: media,
@@ -475,7 +481,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                           child: AnymeXText(
                             '$count ${_isManga ? 'CH' : 'EPS'}',
                             style: TextStyle(
-                              fontFamily: 'Poppins-SemiBold',
+                              fontFamily: 'Linotte',
                               fontSize: 10.0,
                               color: theme.secondary.computeLuminance() > 0.5
                                   ? Colors.black
@@ -496,7 +502,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                           child: AnymeXText(
                             'DOWNLOADED',
                             style: TextStyle(
-                              fontFamily: 'Poppins-SemiBold',
+                              fontFamily: 'Linotte',
                               fontSize: 10.0,
                               color: theme.tertiary.computeLuminance() > 0.5
                                   ? Colors.black
@@ -659,30 +665,6 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     );
   }
 
-  Widget _buildInfoChip({
-    required ColorScheme theme,
-    required String label,
-    required bool useSecondary,
-  }) {
-    final color = useSecondary ? theme.tertiary : theme.primary;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: AnymeXText(
-        label,
-        style: TextStyle(
-          color: color.withOpacity(0.85),
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.1,
-        ),
-      ),
-    );
-  }
 
   Widget _buildInfoBadge(ColorScheme theme, String text, Color color) {
     return Container(
@@ -1096,7 +1078,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                   child: AnymeXText(
                                     relativeTime.toUpperCase(),
                                     style: TextStyle(
-                                      fontFamily: 'Poppins-SemiBold',
+                                      fontFamily: 'Linotte',
                                       fontSize: 9.0,
                                       color:
                                           theme.secondary.computeLuminance() >
@@ -1119,7 +1101,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                   child: AnymeXText(
                                     '${chapter.pageCount} PAGES',
                                     style: TextStyle(
-                                      fontFamily: 'Poppins-SemiBold',
+                                      fontFamily: 'Linotte',
                                       fontSize: 9.0,
                                       color: theme.tertiary.computeLuminance() >
                                               0.5

@@ -31,7 +31,7 @@ class CharactersCarousel extends StatelessWidget {
           padding: const EdgeInsets.only(left: 20.0),
           child: AnymeXText("Characters",
               style: TextStyle(
-                  fontFamily: "Poppins-SemiBold",
+                  fontFamily: 'Linotte',
                   fontSize: isDesktop ? 20 : 17,
                   color: context.colors.primary)),
         ),
@@ -107,7 +107,7 @@ class CharactersCarousel extends StatelessWidget {
                                       itemData.favourites.toString(),
                                       style: TextStyle(
                                           fontSize: 12,
-                                          fontFamily: "Poppins-Bold",
+                                          fontFamily: 'Linotte',
                                           fontStyle: FontStyle.italic,
                                           color: Theme.of(context)
                                               .colorScheme
@@ -145,7 +145,7 @@ class CharactersCarousel extends StatelessWidget {
             padding: const EdgeInsets.only(left: 20.0),
             child: AnymeXText("Voice Actors",
                 style: TextStyle(
-                    fontFamily: "Poppins-SemiBold",
+                    fontFamily: 'Linotte',
                     fontSize: 18,
                     color: context.colors.primary)),
           ),
@@ -238,7 +238,7 @@ class CharactersCarousel extends StatelessWidget {
                                             characterName ?? '',
                                             style: TextStyle(
                                                 fontSize: 12,
-                                                fontFamily: "Poppins-Bold",
+                                                fontFamily: 'Linotte',
                                                 fontStyle: FontStyle.italic,
                                                 color: Theme.of(context)
                                                     .colorScheme
@@ -297,7 +297,7 @@ class StaffCarousel extends StatelessWidget {
           padding: const EdgeInsets.only(left: 20.0),
           child: AnymeXText("Staff",
               style: TextStyle(
-                  fontFamily: "Poppins-SemiBold",
+                  fontFamily: 'Linotte',
                   fontSize: 18,
                   color: context.colors.primary)),
         ),
@@ -367,7 +367,7 @@ class StaffCarousel extends StatelessWidget {
                                       itemData.role!,
                                       style: TextStyle(
                                           fontSize: 10,
-                                          fontFamily: "Poppins-Bold",
+                                          fontFamily: 'Linotte',
                                           fontStyle: FontStyle.italic,
                                           color: Theme.of(context)
                                               .colorScheme

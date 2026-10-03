@@ -144,7 +144,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                           'More Options',
                           style: TextStyle(
                             fontSize: 18,
-                            fontFamily: 'Poppins-Bold',
+                            fontFamily: 'Linotte',
                             fontWeight: FontWeight.bold,
                             color: context.theme.colorScheme.onSurface,
                           ),
@@ -354,7 +354,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   fontSize: 15,
-                                  fontFamily: 'Poppins-Bold',
+                                  fontFamily: 'Linotte',
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white,
                                   shadows: [
@@ -422,7 +422,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                                 widget.isFollowerOfUser),
                                         style: TextStyle(
                                           fontSize: 9.5,
-                                          fontFamily: 'Poppins-Bold',
+                                          fontFamily: 'Linotte',
                                           fontWeight: FontWeight.w700,
                                           color: widget.isFollowingUser == true
                                               ? context

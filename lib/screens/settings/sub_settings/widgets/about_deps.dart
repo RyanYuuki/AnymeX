@@ -40,7 +40,7 @@ class ProfileInfo extends StatelessWidget {
           child: AnymeXText(
             version,
             style: theme.textTheme.bodyLarge?.copyWith(
-              fontFamily: "Poppins-SemiBold",
+              fontFamily: 'Linotte',
               color: theme.colorScheme.onSurface.opaque(0.7),
             ),
           ),
@@ -263,7 +263,7 @@ class CustomSection extends StatelessWidget {
                       AnymeXText(
                         title,
                         style: const TextStyle(
-                            fontSize: 16, fontFamily: 'Poppins-SemiBold'),
+                            fontSize: 16, fontFamily: 'Linotte'),
                       ),
                       if (subtitle != null)
                         AnymeXText(
@@ -328,7 +328,7 @@ class CustomListTile extends StatelessWidget {
                       title,
                       style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface.opaque(0.9),
-                          fontFamily: 'Poppins-SemiBold'),
+                          fontFamily: 'Linotte'),
                     ),
                     const SizedBox(height: 1),
                     if (subtitle != null)

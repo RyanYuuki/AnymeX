@@ -246,6 +246,17 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _syncPageToSpread();
   }
 
+  String _getChapterKey(Chapter? chapter) {
+    if (chapter == null) return '';
+    if (chapter.link != null && chapter.link!.isNotEmpty) {
+      return chapter.link!;
+    }
+    if (chapter.localPath != null && chapter.localPath!.isNotEmpty) {
+      return chapter.localPath!;
+    }
+    return chapter.number?.toString() ?? '';
+  }
+
   Future<List<PageUrl>> _fetchChapterPages(Chapter chapter) async {
     if (chapter.localPath != null &&
         Directory(chapter.localPath!).existsSync()) {
@@ -261,7 +272,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           .toList();
       files.sort((a, b) => a.path.compareTo(b.path));
       return files.map((f) => PageUrl(f.path)).toList();
-    } else if (chapter.link != null) {
+    } else if (chapter.link != null && chapter.link!.isNotEmpty) {
       return await sourceController.activeMangaSource.value!.methods
           .getPageList(DEpisode(episodeNumber: '1', url: chapter.link!));
     }
@@ -292,21 +303,26 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     if (nextIdx == -1) return;
 
     final nextChapterObj = chapterList[nextIdx];
+    final nextChapterKey = _getChapterKey(nextChapterObj);
     if (loadedChapters.contains(nextChapterObj) ||
-        loadingChapterLinks.contains(nextChapterObj.link)) {
+        (nextChapterKey.isNotEmpty && loadingChapterLinks.contains(nextChapterKey))) {
       return;
     }
 
-    loadingChapterLinks.add(nextChapterObj.link ?? '');
+    if (nextChapterKey.isNotEmpty) {
+      loadingChapterLinks.add(nextChapterKey);
+    }
 
     try {
       final nextPages = await _fetchChapterPages(nextChapterObj);
       if (nextPages.isEmpty) {
-        loadingChapterLinks.remove(nextChapterObj.link);
+        if (nextChapterKey.isNotEmpty) {
+          loadingChapterLinks.remove(nextChapterKey);
+        }
         return;
       }
 
-      loadedChapterPages[nextChapterObj.link!] = nextPages;
+      loadedChapterPages[nextChapterKey] = nextPages;
 
       final List<ReaderPage> newSpreads = [];
       if (!isDualPage) {
@@ -336,7 +352,9 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         print("Error loading next chapter inline: $e");
       }
     } finally {
-      loadingChapterLinks.remove(nextChapterObj.link);
+      if (nextChapterKey.isNotEmpty) {
+        loadingChapterLinks.remove(nextChapterKey);
+      }
     }
   }
 
@@ -766,6 +784,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     if (chapter.title == null || chapter.title!.isEmpty) {
       final matched = chapterList.firstWhereOrNull((c) =>
+          (c.localPath != null && c.localPath!.isNotEmpty && c.localPath == chapter.localPath) ||
           (c.link != null && c.link!.isNotEmpty && c.link == chapter.link) ||
           (c.number != null && c.number == chapter.number));
       if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
@@ -872,8 +891,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     currentPageIndex.value = initialAtBottom ? 999999 : 1;
 
     final chapter = currentChapter.value;
-    if (chapter?.link != null) {
-      await fetchImages(chapter!.link!, initialAtBottom: initialAtBottom);
+    final hasLocal = chapter?.localPath != null &&
+        Directory(chapter!.localPath!).existsSync();
+    final hasLink = chapter?.link != null && chapter!.link!.isNotEmpty;
+    if (hasLocal || hasLink) {
+      await fetchImages(chapter.link ?? chapter.localPath ?? '',
+          initialAtBottom: initialAtBottom);
     } else {
       _isNavigating = false;
     }
@@ -1434,8 +1457,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
         chapter: currentChapter.value!,
         totalChapters: chapterList.length.toString());
 
-    if (curCh.link != null) {
-      fetchImages(curCh.link!);
+    final hasLocal = curCh.localPath != null &&
+        Directory(curCh.localPath!).existsSync();
+    final hasLink = curCh.link != null && curCh.link!.isNotEmpty;
+    if (hasLocal || hasLink) {
+      fetchImages(curCh.link ?? curCh.localPath ?? '');
     }
   }
 
@@ -1445,6 +1471,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
     if (chapter.title == null || chapter.title!.isEmpty) {
       final matched = chapterList.firstWhereOrNull((c) =>
+          (c.localPath != null && c.localPath!.isNotEmpty && c.localPath == chapter.localPath) ||
           (c.link != null && c.link!.isNotEmpty && c.link == chapter.link) ||
           c.number == chapter.number);
       if (matched != null && matched.title != null && matched.title!.isNotEmpty) {
@@ -1656,6 +1683,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   int _findChapterIndex(Chapter? chapter) {
     if (chapter == null) return -1;
+    if (chapter.localPath != null && chapter.localPath!.isNotEmpty) {
+      final index = chapterList.indexWhere((c) => c.localPath == chapter.localPath);
+      if (index != -1) return index;
+    }
     if (chapter.link != null && chapter.link!.isNotEmpty) {
       final index = chapterList.indexWhere((c) => c.link == chapter.link);
       if (index != -1) return index;
@@ -1702,7 +1733,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     final activeChapter = currentChapter.value;
     if (activeChapter == null) return;
 
-    final activePages = loadedChapterPages[activeChapter.link] ?? [];
+    final activeKey = _getChapterKey(activeChapter);
+    final activePages = loadedChapterPages[activeKey] ?? pageList;
     if (index < 0 || index >= activePages.length) return;
 
     final pageNumber = index + 1;
@@ -1856,10 +1888,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
         loadedChapters.clear();
         loadedChapterPages.clear();
-        if (currentChapter.value != null &&
-            currentChapter.value!.link != null) {
-          loadedChapters.add(currentChapter.value!);
-          loadedChapterPages[currentChapter.value!.link!] = data;
+        if (currentChapter.value != null) {
+          final curKey = _getChapterKey(currentChapter.value);
+          if (curKey.isNotEmpty) {
+            loadedChapters.add(currentChapter.value!);
+            loadedChapterPages[curKey] = data;
+          }
         }
 
         _computeSpreads();
@@ -1901,8 +1935,11 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   void retryFetchImages() {
     final chapter = currentChapter.value;
-    if (chapter?.link != null) {
-      fetchImages(chapter!.link!);
+    if (chapter != null) {
+      final key = _getChapterKey(chapter);
+      if (key.isNotEmpty) {
+        fetchImages(key);
+      }
     }
   }
 
@@ -2028,7 +2065,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     } else {
       final activeChapter = currentChapter.value;
       final activePages = activeChapter != null
-          ? (loadedChapterPages[activeChapter.link] ?? pageList)
+          ? (loadedChapterPages[_getChapterKey(activeChapter)] ?? pageList)
           : pageList;
       if (currentPageIndex.value >= activePages.length) {
         chapterNavigator(true);

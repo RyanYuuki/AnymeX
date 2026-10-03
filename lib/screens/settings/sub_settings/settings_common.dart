@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/community_service.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -9,7 +9,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
-import 'package:anymex/widgets/non_widgets/snackbar.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -29,16 +29,12 @@ class _SettingsCommonState extends State<SettingsCommon> {
   late bool showCommunityRecs =
       General.showCommunityRecommendations.get<bool>(true);
   bool get isMal => serviceHandler.serviceType.value.isMal;
-  late Map<String, bool> homePageCards;
   late bool unifiedLibrary = General.unifiedLibrary.get<bool>(true);
 
   @override
   void initState() {
     super.initState();
     uniScrapper = General.universalScrapper.get<bool>(false);
-    homePageCards = isMal ? settings.homePageCardsMal : settings.homePageCards;
-    homePageCards.putIfAbsent('Recommended Animes', () => true);
-    homePageCards.putIfAbsent('Recommended Mangas', () => true);
   }
 
   @override
@@ -53,20 +49,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (Platform.isWindows || Platform.isLinux)
-                      AnymeXSectionBuilder(
-                        title: 'Bridge Settings (Desktop)',
-                        children: [
-                          Obx(() => AnymeXTile(
-                                icon: Icons.settings_input_component_rounded,
-                                title: 'Bridge Mode (Requires Restart)',
-                                subtitle: settings.bridgeMode.value == 'jni'
-                                    ? 'JNI Mode is on. Reliable performance.'
-                                    : 'Sidecar Mode is on. Independent process.',
-                                onTap: () => _showBridgeModeDialog(),
-                              )),
-                        ],
-                      ),
                     AnymeXSectionBuilder(
                       title: 'Universal',
                       children: [
@@ -109,6 +91,16 @@ class _SettingsCommonState extends State<SettingsCommon> {
                             });
                           },
                         ),
+                        Obx(() => AnymeXTile.toggle(
+                              icon: Icons.play_circle_outline_rounded,
+                              title: 'Show Continue Watching on Home',
+                              subtitle:
+                                  'If enabled, a continue watching bar will be shown above the bottom navigation bar on the home page.',
+                              value: settings.showHomeContinueWatching.value,
+                              onChanged: (e) {
+                                settings.saveShowHomeContinueWatching(e);
+                              },
+                            )),
                       ],
                     ),
                     AnymeXSectionBuilder(
@@ -288,48 +280,96 @@ class _SettingsCommonState extends State<SettingsCommon> {
 
     final defaultKeys = type.isMal
         ? [
-            'Watching Anime',
-            'Reading Manga',
-            'Plan to Watch Anime',
-            'Plan to Read Manga',
-            'Completed Anime',
+            'Continue Watching',
+            'Continue Reading',
+            'Planning Animes',
+            'Planning Manga',
+            'Completed TV',
             'Completed Manga',
-            'On-Hold Anime',
-            'On-Hold Manga',
-            'Dropped Anime',
+            'Paused Animes',
+            'Paused Manga',
+            'Dropped Animes',
             'Dropped Manga',
+            'Recommended Animes',
+            'Recommended Mangas',
           ]
         : type.isAL
             ? [
-                'Watching Anime',
-                'Reading Manga',
-                'Plan to Watch Anime',
-                'Plan to Read Manga',
-                'Completed Anime',
+                'Continue Watching',
+                'Continue Reading',
+                'Planning Animes',
+                'Planning Manga',
+                'Completed TV',
                 'Completed Manga',
-                'Paused Anime',
+                'Completed Movie',
+                'Paused Animes',
                 'Paused Manga',
-                'Dropped Anime',
+                'Dropped Animes',
                 'Dropped Manga',
+                'Rewatching Animes',
+                'Rewatching Manga',
+                'Recommended Animes',
+                'Recommended Mangas',
               ]
             : [
-                'Watching Anime',
-                'Reading Manga',
-                'Plan to Watch Anime',
-                'Plan to Read Manga',
-                'Completed Anime',
-                'Completed Manga',
-                'Hold Anime',
-                'Hold Manga',
-                'Dropped Anime',
-                'Dropped Manga',
+                'Continue Watching (Movies)',
+                'Continue Watching (Shows)',
+                'Planning Movies',
+                'Planning Shows',
+                'Completed Movies',
+                'Completed Shows',
+                'Paused Movies',
+                'Paused Shows',
+                'Dropped Movies',
+                'Dropped Shows',
               ];
 
-    for (var key in defaultKeys) {
-      targetCards.putIfAbsent(key, () => true);
-    }
+    final legacyMapping = type.isSimkl
+        ? {
+            'Watching Anime': 'Continue Watching (Shows)',
+            'Continue Watching': 'Continue Watching (Shows)',
+            'Reading Manga': 'Continue Watching (Shows)',
+            'Plan to Watch Anime': 'Planning Shows',
+            'Planning Animes': 'Planning Shows',
+            'Plan to Read Manga': 'Planning Shows',
+            'Planning Manga': 'Planning Shows',
+            'Completed Anime': 'Completed Shows',
+            'Completed TV': 'Completed Shows',
+            'Completed Manga': 'Completed Shows',
+            'On-Hold Anime': 'Paused Shows',
+            'Hold Anime': 'Paused Shows',
+            'Paused Anime': 'Paused Shows',
+            'Paused Animes': 'Paused Shows',
+            'On-Hold Manga': 'Paused Shows',
+            'Hold Manga': 'Paused Shows',
+            'Paused Manga': 'Paused Shows',
+            'Dropped Anime': 'Dropped Shows',
+            'Dropped Animes': 'Dropped Shows',
+            'Dropped Manga': 'Dropped Shows',
+          }
+        : {
+            'Watching Anime': 'Continue Watching',
+            'Reading Manga': 'Continue Reading',
+            'Plan to Watch Anime': 'Planning Animes',
+            'Plan to Read Manga': 'Planning Manga',
+            'Completed Anime': 'Completed TV',
+            'On-Hold Anime': 'Paused Animes',
+            'Hold Anime': 'Paused Animes',
+            'Paused Anime': 'Paused Animes',
+            'On-Hold Manga': 'Paused Manga',
+            'Hold Manga': 'Paused Manga',
+            'Dropped Anime': 'Dropped Animes',
+          };
 
-    final localState = Map<String, bool>.from(targetCards);
+    final localState = <String, bool>{};
+    for (final key in defaultKeys) {
+      localState[key] = targetCards[key] ?? true;
+    }
+    for (final entry in legacyMapping.entries) {
+      if (targetCards.containsKey(entry.key) && localState.containsKey(entry.value)) {
+        localState[entry.value] = targetCards[entry.key] ?? localState[entry.value]!;
+      }
+    }
 
     showDialog(
       context: context,
@@ -367,44 +407,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
             },
           );
         },
-      ),
-    );
-  }
-
-  void _showBridgeModeDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AnymeXDialog(
-        title: 'Select Bridge Mode',
-        showCancelButton: false,
-        confirmText: 'Dismiss',
-        onConfirm: () {},
-        contentWidget: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnymeXTile.radio(
-              title: 'JNI Mode (Recommended)',
-              subtitle: 'Faster performance and direct integration.',
-              selected: settings.bridgeMode.value == 'jni',
-              onTap: () {
-                settings.saveBridgeMode('jni');
-                Navigator.pop(context);
-                snackBar('Bridge Mode set to JNI. Restart required.');
-              },
-            ),
-            const SizedBox(height: 8),
-            AnymeXTile.radio(
-              title: 'Sidecar Mode',
-              subtitle: 'Separate process, higher stability.',
-              selected: settings.bridgeMode.value == 'sidecar',
-              onTap: () {
-                settings.saveBridgeMode('sidecar');
-                Navigator.pop(context);
-                snackBar('Bridge Mode set to Sidecar. Restart required.');
-              },
-            ),
-          ],
-        ),
       ),
     );
   }

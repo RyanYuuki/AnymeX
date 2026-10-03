@@ -65,7 +65,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
                     itemType: ItemType.novel,
                   );
                 }),
-                SizedBox(height: bottomNavBarHeight),
+                SizedBox(height: bottomNavBarHeight + 150),
               ],
             ),
           ),

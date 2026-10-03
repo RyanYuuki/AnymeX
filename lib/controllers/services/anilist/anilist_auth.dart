@@ -259,7 +259,7 @@ class AnilistAuth extends GetxController {
         title: AnymeXText(
           'Login with Token',
           style: TextStyle(
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
             fontWeight: FontWeight.bold,
             color: theme.onSurface,
           ),
@@ -271,7 +271,7 @@ class AnilistAuth extends GetxController {
             AnymeXText(
               'Please paste the token from the browser',
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 color: theme.onSurface.opaque(0.7),
               ),
             ),
@@ -281,7 +281,7 @@ class AnilistAuth extends GetxController {
               decoration: InputDecoration(
                 hintText: 'Enter token here',
                 hintStyle: TextStyle(
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   color: theme.onSurface.opaque(0.5),
                 ),
                 filled: true,
@@ -296,7 +296,7 @@ class AnilistAuth extends GetxController {
                 ),
               ),
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 color: theme.onSurface,
               ),
               maxLines: 3,
@@ -309,7 +309,7 @@ class AnilistAuth extends GetxController {
             child: AnymeXText(
               'Cancel',
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 color: theme.onSurface.opaque(0.7),
               ),
             ),
@@ -344,7 +344,7 @@ class AnilistAuth extends GetxController {
             child: AnymeXText(
               'Login',
               style: TextStyle(
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
                 fontWeight: FontWeight.bold,
                 color: theme.onPrimaryContainer,
               ),

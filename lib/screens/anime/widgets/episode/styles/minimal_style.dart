@@ -1,5 +1,6 @@
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class MinimalEpisodeWidget extends StatelessWidget {
   final Media? media;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+  final Widget? downloadButton;
 
   const MinimalEpisodeWidget({
     super.key,
@@ -22,13 +24,14 @@ class MinimalEpisodeWidget extends StatelessWidget {
     this.media,
     this.onTap,
     this.onLongPress,
+    this.downloadButton,
   });
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     final isFiller = episode.filler ?? false;
-    final epNum = episode.number.contains('.0') ? episode.number.split('.').first : episode.number;
+    final epNum = formatEpisodeNumberLabel(episode.number, title: episode.title);
     final raw = episode.title?.trim();
     final isGeneric = raw == null ||
         raw.isEmpty ||
@@ -122,6 +125,10 @@ class MinimalEpisodeWidget extends StatelessWidget {
                   color: colors.primary.opaque(0.7, iReallyMeanIt: true),
                 ),
               ],
+              if (downloadButton != null) ...[
+                const SizedBox(width: 6),
+                downloadButton!,
+              ],
             ],
           ),
         ),
@@ -138,8 +145,9 @@ Widget buildMinimalEpisodeStyle(
   double progress,
   Media? media,
   VoidCallback? onTap,
-  VoidCallback? onLongPress,
-) {
+  VoidCallback? onLongPress, {
+  Widget? downloadButton,
+}) {
   return MinimalEpisodeWidget(
     episode: episode,
     isSelected: isSelected,
@@ -148,5 +156,6 @@ Widget buildMinimalEpisodeStyle(
     media: media,
     onTap: onTap,
     onLongPress: onLongPress,
+    downloadButton: downloadButton,
   );
 }

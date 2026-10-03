@@ -1167,6 +1167,8 @@ class _SpoilerTextState extends State<_SpoilerText> {
     if (!widget.isSpoiler) {
       return AnymeXText(
         widget.text,
+        maxLines: null,
+        overflow: TextOverflow.visible,
         style: widget.theme.textTheme.bodyLarge?.copyWith(
           color: widget.colorScheme.onSurface,
           fontSize: 16,
@@ -1193,6 +1195,8 @@ class _SpoilerTextState extends State<_SpoilerText> {
         ),
         child: AnymeXText(
           widget.text,
+          maxLines: null,
+          overflow: TextOverflow.visible,
           style: widget.theme.textTheme.bodyLarge?.copyWith(
             color:
                 _isRevealed ? widget.colorScheme.onSurface : Colors.transparent,

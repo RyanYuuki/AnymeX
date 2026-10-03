@@ -456,12 +456,17 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
         tooltip: 'Audio',
         compact: true,
       ),
-      'orientation': ControlButton(
-        icon: Icons.screen_rotation_rounded,
-        onPressed: controller.toggleOrientation,
-        tooltip: 'Orientation',
-        compact: true,
-      ),
+      'orientation': Obx(() {
+        final isLocked = controller.isOrientationLocked.value;
+        return ControlButton(
+          icon: isLocked
+              ? Icons.screen_lock_rotation_rounded
+              : Icons.screen_rotation_rounded,
+          onPressed: controller.toggleOrientation,
+          tooltip: isLocked ? 'Unlock Orientation' : 'Lock Orientation',
+          compact: true,
+        );
+      }),
       'cast': ControlButton(
         icon: Icons.cast_rounded,
         onPressed: () => CastDeviceDialog.show(context, controller),

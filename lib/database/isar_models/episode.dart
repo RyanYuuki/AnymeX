@@ -124,18 +124,14 @@ class Episode {
 
 extension EpisodeMap on Episode {
   Map<String, String> get sortMap {
-    if (sortKeys == null || sortVals == null) return {};
-    if (sortKeys!.isEmpty || sortVals!.isEmpty) return {};
+    if (sortKeys == null || sortKeys!.isEmpty) return {};
 
     final result = <String, String>{};
-    final pairCount = sortKeys!.length < sortVals!.length
-        ? sortKeys!.length
-        : sortVals!.length;
-
-    for (int i = 0; i < pairCount; i++) {
+    final vals = sortVals ?? [];
+    for (int i = 0; i < sortKeys!.length; i++) {
       final k = sortKeys![i].trim();
-      final v = sortVals![i].trim();
-      if (k.isNotEmpty && v.isNotEmpty) {
+      final v = i < vals.length ? vals[i].trim() : '';
+      if (k.isNotEmpty && v.isNotEmpty && v.toLowerCase() != k.toLowerCase()) {
         result[k] = v;
       }
     }
@@ -149,7 +145,9 @@ extension EpisodeMap on Episode {
         other.link != null &&
         link!.isNotEmpty &&
         other.link!.isNotEmpty &&
-        link == other.link) {
+        link == other.link &&
+        link != '#' &&
+        link != '/') {
       return true;
     }
     final thisNum = double.tryParse(number.trim());
@@ -159,20 +157,51 @@ extension EpisodeMap on Episode {
     } else if (number.trim() != other.number.trim()) {
       return false;
     }
+
     final thisSort = sortMap;
     final otherSort = other.sortMap;
-    if (thisSort.isNotEmpty && otherSort.isNotEmpty) {
-      if (thisSort.length != otherSort.length) return false;
-      for (final entry in thisSort.entries) {
-        if (otherSort[entry.key]?.trim() != entry.value.trim()) {
-          return false;
-        }
-      }
-      return true;
-    }
-    if (thisSort.isNotEmpty != otherSort.isNotEmpty) {
+
+    final thisSeason = _extractSeason(thisSort);
+    final otherSeason = _extractSeason(otherSort);
+    if (thisSeason != null && otherSeason != null && thisSeason != otherSeason) {
       return false;
     }
+
+    for (final entry in thisSort.entries) {
+      final key = entry.key.trim().toLowerCase();
+      final thisVal = entry.value.trim().toLowerCase();
+      if (thisVal.isEmpty || thisVal == key || key.contains('season')) continue;
+
+      for (final otherEntry in otherSort.entries) {
+        if (otherEntry.key.trim().toLowerCase() == key) {
+          final otherVal = otherEntry.value.trim().toLowerCase();
+          if (otherVal.isEmpty || otherVal == key) continue;
+          if (thisVal != otherVal) {
+            return false;
+          }
+        }
+      }
+    }
     return true;
+  }
+
+  int? _extractSeason(Map<String, String> map) {
+    for (final entry in map.entries) {
+      if (entry.key.trim().toLowerCase().contains('season')) {
+        final val = entry.value.trim().toLowerCase();
+        if (val.isEmpty || val == entry.key.trim().toLowerCase()) continue;
+        final match = RegExp(r'\d+').firstMatch(val);
+        if (match != null) {
+          final parsed = int.tryParse(match.group(0)!);
+          if (parsed != null && parsed > 0) return parsed;
+        }
+        final keyMatch = RegExp(r'\d+').firstMatch(entry.key);
+        if (keyMatch != null) {
+          final parsed = int.tryParse(keyMatch.group(0)!);
+          if (parsed != null && parsed > 0) return parsed;
+        }
+      }
+    }
+    return null;
   }
 }

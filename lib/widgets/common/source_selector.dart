@@ -122,7 +122,7 @@ class SourceSelectorWidget extends StatelessWidget {
                           : 'SELECT SOURCE',
                       style: TextStyle(
                         fontSize: 13,
-                        fontFamily: 'Poppins',
+                        fontFamily: 'Linotte',
                         fontWeight: FontWeight.w600,
                         color: hasSource
                             ? colors.onSurface
@@ -150,7 +150,7 @@ class SourceSelectorWidget extends StatelessWidget {
                         'Tap to choose a source',
                         style: TextStyle(
                           fontSize: 11,
-                          fontFamily: 'Poppins',
+                          fontFamily: 'Linotte',
                           color: colors.onSurfaceVariant.withOpacity(0.55),
                         ),
                       ),
@@ -296,7 +296,7 @@ class _Badge extends StatelessWidget {
         label,
         style: TextStyle(
           fontSize: 10,
-          fontFamily: 'Poppins',
+          fontFamily: 'Linotte',
           fontWeight: FontWeight.w700,
           color: textColor,
         ),
@@ -366,7 +366,7 @@ class _EmptySourceState extends StatelessWidget {
                           : 'No Anime Sources Installed'),
                   style: TextStyle(
                     fontSize: 13,
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                     fontWeight: FontWeight.w600,
                     color: colors.onSurfaceVariant,
                   ),
@@ -376,7 +376,7 @@ class _EmptySourceState extends StatelessWidget {
                   'Go to Extensions to get started',
                   style: TextStyle(
                     fontSize: 11,
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                     color: colors.onSurfaceVariant.withOpacity(0.55),
                   ),
                 ),
@@ -483,7 +483,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                   '${widget.installedSources.length} installed',
                   style: TextStyle(
                     fontSize: 11,
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                     fontWeight: FontWeight.w600,
                     color: colors.primary,
                   ),
@@ -498,13 +498,13 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
           style: TextStyle(
             fontSize: 14,
             color: colors.onSurface,
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
           ),
           decoration: InputDecoration(
             hintText: 'Search sources...',
             hintStyle: TextStyle(
               fontSize: 14,
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
               color: colors.onSurfaceVariant.withOpacity(0.5),
             ),
             prefixIcon: Icon(
@@ -584,7 +584,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                         'No sources found',
                         style: TextStyle(
                           fontSize: 14,
-                          fontFamily: 'Poppins',
+                          fontFamily: 'Linotte',
                           color: colors.onSurfaceVariant.withOpacity(0.55),
                         ),
                       ),
@@ -703,7 +703,7 @@ class _SourceTile extends StatelessWidget {
                       source.name?.toUpperCase() ?? 'UNKNOWN',
                       style: TextStyle(
                         fontSize: 13,
-                        fontFamily: 'Poppins',
+                        fontFamily: 'Linotte',
                         fontWeight: FontWeight.w600,
                         color: isSelected ? colors.primary : colors.onSurface,
                       ),
@@ -784,7 +784,7 @@ class _LangSubPicker extends StatelessWidget {
                 'Language Variant',
                 style: TextStyle(
                   fontSize: 12,
-                  fontFamily: 'Poppins',
+                  fontFamily: 'Linotte',
                   fontWeight: FontWeight.w600,
                   color: colors.onSurfaceVariant.withOpacity(0.7),
                 ),
@@ -824,7 +824,7 @@ class _LangSubPicker extends StatelessWidget {
                       extensionLanguageName(lang.lang),
                       style: TextStyle(
                         fontSize: 12,
-                        fontFamily: 'Poppins',
+                        fontFamily: 'Linotte',
                         fontWeight: FontWeight.w600,
                         color: isActive ? colors.onPrimary : colors.onSurface,
                       ),

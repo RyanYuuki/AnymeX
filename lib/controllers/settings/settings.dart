@@ -13,6 +13,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/updater.dart';
+import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme_registry.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -39,6 +40,7 @@ class Settings extends GetxController {
   RxBool useAlternateTitle = false.obs;
   RxBool enableBetaUpdates = false.obs;
   RxBool writeLogToFile = false.obs;
+  RxBool showHomeContinueWatching = true.obs;
   Rxn<DisplayMode> preferredDisplayMode = Rxn<DisplayMode>();
   Rxn<DisplayMode> activeDisplayMode = Rxn<DisplayMode>();
   RxList<DisplayMode> supportedModes = <DisplayMode>[].obs;
@@ -87,8 +89,12 @@ class Settings extends GetxController {
     selectedProfile = PlayerUiKeys.selectedProfile.get<String>("MID-END");
     playerControlThemeRx.value =
         PlayerUiKeys.playerControlTheme.get<String>('default');
-    mediaIndicatorThemeRx.value =
+    final savedIndicatorTheme =
         PlayerUiKeys.mediaIndicatorTheme.get<String>('default');
+    mediaIndicatorThemeRx.value = MediaIndicatorThemeRegistry.themes
+            .any((t) => t.id == savedIndicatorTheme)
+        ? savedIndicatorTheme
+        : 'default';
     readerControlThemeRx.value =
         ReaderKeys.readerControlTheme.get<String>('default');
     chapterStyleRx.value = ReaderKeys.chapterStyle.get<String>('compact');
@@ -96,6 +102,8 @@ class Settings extends GetxController {
     useAlternateTitle.value = General.useAlternateTitle.get<bool>(false);
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
+    showHomeContinueWatching.value =
+        General.showHomeContinueWatching.get<bool>(true);
     customLogDirectory.value = General.customLogDirectory.get<String>("");
 
     downloadPath.value = DownloadKeys.downloadPath.get<String>("");
@@ -186,8 +194,9 @@ class Settings extends GetxController {
         if (data['telegram'] != null) {
           telegramUrl.value = data['telegram'];
         }
-        if (data['showJoinDialog'] != null) {
-          showJoinDialog.value = data['showJoinDialog'] as bool;
+        final joinVal = data['showJoinDialog'];
+        if (joinVal != null) {
+          showJoinDialog.value = joinVal as bool;
         }
       }
     } catch (e) {
@@ -227,9 +236,7 @@ class Settings extends GetxController {
   }
 
   void _updateBridgeDispatcher() {
-    final mode =
-        bridgeMode.value == 'sidecar' ? BridgeType.sidecar : BridgeType.jni;
-    Get.find<ExtensionManager>().setBridgeType(mode);
+    Get.find<ExtensionManager>().setBridgeType(BridgeType.sidecar);
   }
 
   void saveBridgeMode(String value) {
@@ -263,11 +270,12 @@ class Settings extends GetxController {
     DownloadKeys.enableJxlCompression.set(value);
   }
 
-  void showWelcomeDialog(BuildContext context) {
-    if (General.hasJoinedNewDiscord.get<bool>(false)) {
-      return;
-    }
+  void saveShowHomeContinueWatching(bool value) {
+    showHomeContinueWatching.value = value;
+    General.showHomeContinueWatching.set(value);
+  }
 
+  void showWelcomeDialog(BuildContext context) {
     if (General.isFirstTime.get<bool>(true)) {
       showWelcomeDialogg(context);
       return;
@@ -283,18 +291,14 @@ class Settings extends GetxController {
   }
 
   void _checkAndShowJoinDialog(BuildContext context) {
-    if (General.hasJoinedNewDiscord.get<bool>(false)) {
-      return;
-    }
-
     final showOnline = showJoinDialog.value;
     if (showOnline) {
-      showWelcomeDialogg(context);
+      showDiscordJoinDialog(context);
     } else {
       final count = General.joinDialogShowCount.get<int>(0);
       if (count < 3) {
         General.joinDialogShowCount.set(count + 1);
-        showWelcomeDialogg(context);
+        showDiscordJoinDialog(context);
       }
     }
   }
@@ -579,6 +583,13 @@ class Settings extends GetxController {
   set defaultPortraitMode(bool value) {
     playerSettings.update((s) => s?.defaultPortraitMode = value);
     PlayerSettingsKeys.defaultPortraitMode.set(value);
+  }
+
+  String get defaultOrientation =>
+      _getPlayerSetting((s) => s.defaultOrientation);
+  set defaultOrientation(String value) {
+    playerSettings.update((s) => s?.defaultOrientation = value);
+    PlayerSettingsKeys.defaultOrientation.set(value);
   }
 
   double get speed => _getPlayerSetting((s) => s.speed);

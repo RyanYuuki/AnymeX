@@ -218,7 +218,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                     widget.source.name!,
                     style: TextStyle(
                       color: theme.onSurface,
-                      fontFamily: 'Poppins',
+                      fontFamily: 'Linotte',
                       fontWeight: FontWeight.w600,
                       fontSize: 14.5,
                     ),
@@ -251,7 +251,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                                       widget.source.lang?.toLowerCase() ?? '')
                                   .toUpperCase(),
                               style: TextStyle(
-                                fontFamily: 'Poppins-SemiBold',
+                                fontFamily: 'Linotte',
                                 fontSize: 10.0,
                                 color: theme.secondary.computeLuminance() > 0.5
                                     ? Colors.black
@@ -272,7 +272,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                             child: AnymeXText(
                               version.toUpperCase(),
                               style: TextStyle(
-                                fontFamily: 'Poppins-SemiBold',
+                                fontFamily: 'Linotte',
                                 fontSize: 10.0,
                                 color: theme.tertiary.computeLuminance() > 0.5
                                     ? Colors.black
@@ -293,7 +293,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
                           child: AnymeXText(
                             '18+',
                             style: TextStyle(
-                              fontFamily: 'Poppins',
+                              fontFamily: 'Linotte',
                               fontWeight: FontWeight.w600,
                               fontSize: 10.0,
                               color: theme.error.computeLuminance() > 0.5

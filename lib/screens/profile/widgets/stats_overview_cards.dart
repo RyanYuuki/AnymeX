@@ -230,7 +230,7 @@ class DesktopStatsGrid extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w800,
-                                        fontFamily: 'Poppins-Bold',
+                                        fontFamily: 'Linotte',
                                         color: hasThumbs
                                             ? Colors.white
                                             : item.color,
@@ -405,7 +405,7 @@ class SectionHeader extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            fontFamily: 'Poppins-SemiBold',
+            fontFamily: 'Linotte',
           ),
         ),
       ],
@@ -549,7 +549,7 @@ class _PressableHighlightCardState extends State<_PressableHighlightCard> {
                             style: TextStyle(
                               fontSize: widget.compact ? 16 : 20,
                               fontWeight: FontWeight.bold,
-                              fontFamily: 'Poppins-Bold',
+                              fontFamily: 'Linotte',
                               color: widget.imageUrl != null
                                   ? Colors.white
                                   : colors.onSurface,

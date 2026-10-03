@@ -2,7 +2,6 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AnymeXTextSpan {
   final String text;
@@ -50,45 +49,30 @@ class AnymeXTextSpans extends StatelessWidget {
           color: baseColor,
         );
       }
-      if (customFamily == 'Google Sans') {
-        return TextStyle(
-          fontFamily: 'Google Sans',
-          fontSize: baseSize,
-          color: baseColor,
-        );
-      }
-      if (customFamily == 'SF Pro') {
-        return TextStyle(
-          fontFamily: 'SF Pro',
-          fontSize: baseSize,
-          color: baseColor,
-        );
-      }
       final weight = switch (variant) {
         TextVariant.bold => FontWeight.w700,
         TextVariant.semiBold => FontWeight.w600,
         _ => FontWeight.w400,
       };
-      try {
-        return GoogleFonts.getFont(
-          customFamily,
-          fontSize: baseSize,
-          color: baseColor,
-          fontWeight: weight,
-        );
-      } catch (_) {}
+      return TextStyle(
+        fontFamily: customFamily,
+        fontSize: baseSize,
+        color: baseColor,
+        fontWeight: weight,
+      );
     }
 
-    final fontFamily = switch (variant) {
-      TextVariant.semiBold => 'Poppins-SemiBold',
-      TextVariant.bold => 'Poppins-Bold',
-      _ => 'Poppins',
+    final weight = switch (variant) {
+      TextVariant.bold => FontWeight.w700,
+      TextVariant.semiBold => FontWeight.w600,
+      _ => FontWeight.w400,
     };
 
     return TextStyle(
-      fontFamily: fontFamily,
+      fontFamily: 'Linotte',
       fontSize: baseSize,
       color: baseColor,
+      fontWeight: weight,
     );
   }
 

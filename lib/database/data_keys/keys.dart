@@ -34,6 +34,7 @@ enum General {
   unifiedLibrary,
   joinDialogShowCount,
   wrongTitleIsCardView,
+  showHomeContinueWatching,
 }
 
 enum ThemeKeys {
@@ -57,6 +58,7 @@ enum PlayerUiKeys {
   playerControlTheme,
   playerControlThemesJson,
   mediaIndicatorTheme,
+  episodeStyle,
   mpvCoreSettings,
   betterPlayerCoreSettings,
   mpvVisualSettings,
@@ -239,6 +241,7 @@ enum PlayerSettingsKeys {
   bottomMargin,
   transculentControls,
   defaultPortraitMode,
+  defaultOrientation,
   playerStyle,
   subtitleOutlineWidth,
   autoSkipOP,
@@ -309,6 +312,7 @@ enum DownloadKeys {
   downloadChunks,
   hlsParallelSegments,
   enableJxlCompression,
+  hasSeenDownloadGuide,
 }
 
 enum DiscordRpcKeys {

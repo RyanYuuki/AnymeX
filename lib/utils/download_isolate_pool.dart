@@ -8,6 +8,14 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:pointycastle/export.dart';
 
+class _WorkerHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (cert, host, port) => true;
+  }
+}
+
 // GRABBED EVERYTHING FROM MANGAYOMI AND MODIFIED FOR ANYMEX, CREDIT TO MANGAYOMI TEAM FOR THE BASE IMPLEMENTATION
 
 class PageUrl {
@@ -93,6 +101,7 @@ class DownloadIsolatePool {
       taskId: taskId,
       type: _TaskType.fileDownload,
       params: FileDownloadParams(
+        taskId: taskId,
         pageUrls: pageUrls,
         concurrentDownloads: concurrentDownloads,
         itemType: itemType,
@@ -236,11 +245,13 @@ class _DownloadTask {
 }
 
 class FileDownloadParams {
+  final String taskId;
   final List<PageUrl> pageUrls;
   final int concurrentDownloads;
   final ItemType itemType;
 
   FileDownloadParams({
+    required this.taskId,
     required this.pageUrls,
     required this.concurrentDownloads,
     required this.itemType,
@@ -360,6 +371,8 @@ class _WorkerTask {
 }
 
 void _workerEntryPoint(_WorkerInit init) async {
+  HttpOverrides.global = _WorkerHttpOverrides();
+
   final httpClient = http.Client();
 
   final receivePort = ReceivePort();
@@ -397,43 +410,75 @@ Future<void> _processFileDownload(
   int completed = 0;
   final total = params.pageUrls.length;
   final queue = Queue<PageUrl>.from(params.pageUrls);
-  final List<Future<void>> activeTasks = [];
+  final List<PageUrl> failedPages = [];
+  const int maxPasses = 3;
 
   try {
-    while (queue.isNotEmpty || activeTasks.isNotEmpty) {
-      while (
-          queue.isNotEmpty && activeTasks.length < params.concurrentDownloads) {
-        final pageUrl = queue.removeFirst();
-        final task = _downloadFile(pageUrl, client, params.itemType, replyPort)
-            .then((_) {
-          if (params.itemType != ItemType.anime) {
-            completed++;
-            replyPort.send(
-              DownloadProgress(
-                completed,
-                total,
-                params.itemType,
-                pageUrl: pageUrl,
-              ),
-            );
-          }
-        }).catchError((error) {
-          replyPort.send(
-            DownloadPoolException(
-              'Error downloading ${pageUrl.fileName}',
-              error,
-            ),
-          );
-          throw error;
-        });
+    for (int pass = 1; pass <= maxPasses; pass++) {
+      if (queue.isEmpty && failedPages.isEmpty) break;
 
-        activeTasks.add(task);
+      if (pass > 1) {
+        if (kDebugMode) {
+          print('[DownloadIsolate] Pass ${pass - 1} finished with ${failedPages.length} failed pages. Retrying Pass $pass...');
+        }
+        await Future.delayed(const Duration(seconds: 1));
+        queue.addAll(failedPages);
+        failedPages.clear();
       }
 
-      if (activeTasks.isNotEmpty) {
-        await Future.wait(activeTasks.toList(), eagerError: true);
-        activeTasks.clear();
+      final List<Future<void>> activeTasks = [];
+
+      while (queue.isNotEmpty || activeTasks.isNotEmpty) {
+        if (downloadTaskCancellation[params.taskId] == true) {
+          throw DownloadPoolException('Download cancelled');
+        }
+
+        while (queue.isNotEmpty &&
+            activeTasks.length < params.concurrentDownloads) {
+          if (downloadTaskCancellation[params.taskId] == true) break;
+          final pageUrl = queue.removeFirst();
+          final task = _downloadFile(
+            pageUrl,
+            client,
+            params.itemType,
+            replyPort,
+            taskId: params.taskId,
+          ).then((_) {
+            if (params.itemType != ItemType.anime) {
+              completed++;
+              replyPort.send(
+                DownloadProgress(
+                  completed,
+                  total,
+                  params.itemType,
+                  pageUrl: pageUrl,
+                ),
+              );
+            }
+          }).catchError((error) {
+            if (kDebugMode) {
+              print('[DownloadIsolate] Page ${pageUrl.fileName} deferred to retry queue (Pass $pass): $error');
+            }
+            failedPages.add(pageUrl);
+          });
+
+          activeTasks.add(task);
+        }
+
+        if (activeTasks.isNotEmpty) {
+          await Future.wait(activeTasks.toList());
+          activeTasks.clear();
+        }
       }
+
+      if (failedPages.isEmpty) {
+        break;
+      }
+    }
+
+    if (failedPages.isNotEmpty) {
+      final names = failedPages.map((p) => path.basename(p.fileName ?? p.url)).join(', ');
+      throw DownloadPoolException('Failed pages after $maxPasses passes: $names');
     }
 
     replyPort.send(DownloadComplete());
@@ -446,25 +491,42 @@ Future<void> _downloadFile(
   PageUrl pageUrl,
   http.Client client,
   ItemType itemType,
-  SendPort replyPort,
-) async {
+  SendPort replyPort, {
+  String? taskId,
+}) async {
   try {
+    if (taskId != null && downloadTaskCancellation[taskId] == true) {
+      throw DownloadPoolException('Cancelled');
+    }
+
     if (itemType != ItemType.anime) {
       final response = await _withRetry(
-        (_) => client.get(Uri.parse(pageUrl.url), headers: pageUrl.headers),
+        (_) async {
+          if (taskId != null && downloadTaskCancellation[taskId] == true) {
+            throw DownloadPoolException('Cancelled');
+          }
+          final res = await client
+              .get(Uri.parse(pageUrl.url), headers: pageUrl.headers)
+              .timeout(const Duration(seconds: 30));
+          if (res.statusCode != 200) {
+            throw DownloadPoolException(
+              'HTTP ${res.statusCode} downloading ${pageUrl.url}',
+            );
+          }
+          return res;
+        },
         3,
+        tag: pageUrl.fileName,
       );
-      if (response.statusCode != 200) {
-        throw DownloadPoolException(
-          'Failed to download file: ${pageUrl.fileName!}',
-        );
-      }
 
       final file = File(pageUrl.fileName!);
       await file.parent.create(recursive: true);
       await file.writeAsBytes(response.bodyBytes);
     } else {
       await _withRetry((_) async {
+        if (taskId != null && downloadTaskCancellation[taskId] == true) {
+          throw DownloadPoolException('Cancelled');
+        }
         var request = http.Request('GET', Uri.parse(pageUrl.url));
         request.headers.addAll(pageUrl.headers ?? {});
         http.StreamedResponse response = await client.send(request);
@@ -481,6 +543,11 @@ Future<void> _downloadFile(
         final sink = file.openWrite();
         try {
           await for (var value in response.stream) {
+            if (taskId != null && downloadTaskCancellation[taskId] == true) {
+              await sink.close();
+              if (file.existsSync()) await file.delete();
+              throw DownloadPoolException('Cancelled');
+            }
             sink.add(value);
             received += value.length;
             try {

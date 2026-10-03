@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
@@ -15,7 +14,6 @@ import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -512,13 +510,13 @@ class HeaderSearchBar extends StatelessWidget {
             controller: controller,
             onChanged: onChanged,
             autofocus: true,
-            style: const TextStyle(fontSize: 14, fontFamily: 'Poppins'),
+            style: const TextStyle(fontSize: 14, fontFamily: 'Linotte'),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(
                 color: context.colors.onSurface.withOpacity(0.4),
                 fontSize: 14,
-                fontFamily: 'Poppins',
+                fontFamily: 'Linotte',
               ),
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -624,21 +622,34 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
 
   static const _tabs = ['Sort Options', 'Layout Settings'];
 
+  void _onTabChanged() {
+    if (!mounted) return;
+    final int newIndex;
+    if (_tabController.indexIsChanging) {
+      newIndex = _tabController.index;
+    } else if (_tabController.animation != null) {
+      newIndex = _tabController.animation!.value.round();
+    } else {
+      newIndex = _tabController.index;
+    }
+    final clamped = newIndex.clamp(0, _tabs.length - 1);
+    if (clamped != _selectedIndex) {
+      setState(() => _selectedIndex = clamped);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
-    _tabController.addListener(() {
-      if (_tabController.index != _selectedIndex) {
-        setState(() {
-          _selectedIndex = _tabController.index;
-        });
-      }
-    });
+    _tabController.addListener(_onTabChanged);
+    _tabController.animation?.addListener(_onTabChanged);
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
+    _tabController.animation?.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }
@@ -658,7 +669,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Poppins',
+              fontFamily: 'Linotte',
             ),
           ),
           const SizedBox(height: 10),
@@ -917,7 +928,7 @@ class SortTile extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            fontFamily: 'Poppins',
+            fontFamily: 'Linotte',
             color: isSelected
                 ? theme.colorScheme.secondary
                 : theme.colorScheme.onSurface,

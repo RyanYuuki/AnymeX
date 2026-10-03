@@ -32,18 +32,20 @@ mod init_android_context {
         _class: JClass<'caller>,
         context: JObject<'caller>,
     ) {
+        if CTX.get().is_some() {
+            return;
+        }
+
         unowned_env
             .with_env(|env| {
                 let jvm = env.get_java_vm().expect("Failed to get Java VM.");
                 let jvm_pointer = jvm.get_raw() as *mut c_void;
 
-                let global_ref = if let Some(reference) = CTX.get() {
-                    reference.clone()
-                } else {
-                    Arc::new(env.new_global_ref(&context)?)
-                };
+                let global_ref = Arc::new(env.new_global_ref(&context)?);
 
-                let _ = CTX.get_or_init(|| global_ref.clone());
+                if CTX.set(global_ref.clone()).is_err() {
+                    return Ok::<(), jni::errors::Error>(());
+                }
 
                 unsafe {
                     ndk_context::initialize_android_context(

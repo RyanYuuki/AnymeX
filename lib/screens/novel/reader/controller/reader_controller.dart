@@ -307,9 +307,11 @@ class NovelReaderController extends GetxController {
   Future<void> _waitForScrollAndJump() async {
     final current = savedChapter.value.currentOffset;
     final max = savedChapter.value.maxOffset;
-    if (current == null || max == null || current < 0 || current > max) return;
-    while (true) {
+    if (current == null || max == null || current <= 0 || current > max) return;
+    int retries = 0;
+    while (retries < 20) {
       await Future.delayed(const Duration(milliseconds: 50));
+      retries++;
       if (!scrollController.hasClients) continue;
       if (scrollController.position.maxScrollExtent >= current) {
         scrollController.animateTo(current,
@@ -325,7 +327,7 @@ class NovelReaderController extends GetxController {
       loadingState.value = LoadingState.loading;
       _saveTracking();
       final data = await source.methods.getNovelContent(
-          currentChapter.value.title!, currentChapter.value.link!);
+          currentChapter.value.title ?? '', currentChapter.value.link ?? '');
       if (data != null && data.isNotEmpty) {
         final processedContent = _buildHtml(data);
         _rawNovelContent = processedContent;
@@ -832,18 +834,21 @@ class NovelReaderController extends GetxController {
 
   void _saveTracking({bool syncToCloud = true}) {
     consecutiveReads.value++;
-    savedChapter.value = offlineStorageController.getReadChapter(
-            media.id, currentChapter.value.number!) ??
-        currentChapter.value;
-    if (consecutiveReads.value > 1) {
-      Future.microtask(() {
-        offlineStorageController.addOrUpdateNovel(
-            media, chapters, currentChapter.value, source);
-        offlineStorageController.addOrUpdateReadChapter(
-            media.id, currentChapter.value,
-            source: source, syncToCloud: syncToCloud);
-      });
+    final chNumber = currentChapter.value.number;
+    if (chNumber != null) {
+      savedChapter.value = offlineStorageController.getReadChapter(
+              media.id, chNumber) ??
+          currentChapter.value;
+    } else {
+      savedChapter.value = currentChapter.value;
     }
+    Future.microtask(() {
+      offlineStorageController.addOrUpdateNovel(
+          media, chapters, currentChapter.value, source);
+      offlineStorageController.addOrUpdateReadChapter(
+          media.id, currentChapter.value,
+          source: source, syncToCloud: syncToCloud);
+    });
   }
 
   Future<void> _syncCloudProgressOnExit() async {
@@ -1005,17 +1010,77 @@ class NovelReaderController extends GetxController {
       ? showControls.value = true
       : null;
 
+  int _findChapterIndex(Chapter? chapter) {
+    if (chapter == null || chapters.isEmpty) return -1;
+    if (chapter.link != null && chapter.link!.isNotEmpty) {
+      final index = chapters.indexWhere((c) => c.link == chapter.link);
+      if (index != -1) return index;
+    }
+    if (chapter.number != null) {
+      final index = chapters.indexWhere((c) => c.number == chapter.number);
+      if (index != -1) return index;
+    }
+    if (chapter.title != null && chapter.title!.isNotEmpty) {
+      final index = chapters.indexWhere((c) => c.title == chapter.title);
+      if (index != -1) return index;
+    }
+    return -1;
+  }
+
+  bool _isChaptersDescending() {
+    if (chapters.length < 2) return false;
+    double? firstNum;
+    double? lastNum;
+    for (int i = 0; i < chapters.length; i++) {
+      if (chapters[i].number != null) {
+        firstNum = chapters[i].number;
+        break;
+      }
+    }
+    for (int i = chapters.length - 1; i >= 0; i--) {
+      if (chapters[i].number != null) {
+        lastNum = chapters[i].number;
+        break;
+      }
+    }
+    if (firstNum != null && lastNum != null && firstNum != lastNum) {
+      return firstNum > lastNum;
+    }
+    return false;
+  }
+
+  int getNextChapterIndex(int currentIndex) {
+    if (currentIndex == -1 || chapters.isEmpty) return -1;
+    final isDesc = _isChaptersDescending();
+    if (isDesc) {
+      return (currentIndex - 1 >= 0) ? currentIndex - 1 : -1;
+    } else {
+      return (currentIndex + 1 < chapters.length) ? currentIndex + 1 : -1;
+    }
+  }
+
+  int getPreviousChapterIndex(int currentIndex) {
+    if (currentIndex == -1 || chapters.isEmpty) return -1;
+    final isDesc = _isChaptersDescending();
+    if (isDesc) {
+      return (currentIndex + 1 < chapters.length) ? currentIndex + 1 : -1;
+    } else {
+      return (currentIndex - 1 >= 0) ? currentIndex - 1 : -1;
+    }
+  }
+
   void updateNavigationButtons() {
-    int currentIndex =
-        chapters.indexWhere((ch) => ch.link == currentChapter.value.link);
-    canGoPrevious.value = currentIndex > 0;
-    canGoNext.value = currentIndex < chapters.length - 1;
+    int currentIndex = _findChapterIndex(currentChapter.value);
+    canGoPrevious.value =
+        currentIndex != -1 && getPreviousChapterIndex(currentIndex) != -1;
+    canGoNext.value =
+        currentIndex != -1 && getNextChapterIndex(currentIndex) != -1;
   }
 
   Future<void> goToNextChapter() async {
-    int currentIndex =
-        chapters.indexWhere((ch) => ch.link == currentChapter.value.link);
-    if (currentIndex < chapters.length - 1) {
+    int currentIndex = _findChapterIndex(currentChapter.value);
+    int nextIdx = getNextChapterIndex(currentIndex);
+    if (nextIdx != -1 && nextIdx < chapters.length) {
       _isNavigating = true;
       _stopAutoScroll();
       autoScrollEnabled.value = false;
@@ -1027,7 +1092,7 @@ class NovelReaderController extends GetxController {
         ttsCurrentWordEnd.value = 0;
         ttsCurrentElement.value = 0;
       }
-      currentChapter.value = chapters[currentIndex + 1];
+      currentChapter.value = chapters[nextIdx];
       updateNavigationButtons();
       await fetchData();
       if (scrollController.hasClients) scrollController.jumpTo(0);
@@ -1036,9 +1101,9 @@ class NovelReaderController extends GetxController {
   }
 
   Future<void> goToPreviousChapter() async {
-    int currentIndex =
-        chapters.indexWhere((ch) => ch.link == currentChapter.value.link);
-    if (currentIndex > 0) {
+    int currentIndex = _findChapterIndex(currentChapter.value);
+    int prevIdx = getPreviousChapterIndex(currentIndex);
+    if (prevIdx != -1 && prevIdx >= 0 && prevIdx < chapters.length) {
       _isNavigating = true;
       _stopAutoScroll();
       autoScrollEnabled.value = false;
@@ -1050,7 +1115,7 @@ class NovelReaderController extends GetxController {
         ttsCurrentWordEnd.value = 0;
         ttsCurrentElement.value = 0;
       }
-      currentChapter.value = chapters[currentIndex - 1];
+      currentChapter.value = chapters[prevIdx];
       updateNavigationButtons();
       await fetchData();
       if (scrollController.hasClients) scrollController.jumpTo(0);

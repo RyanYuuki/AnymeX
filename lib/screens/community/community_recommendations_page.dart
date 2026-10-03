@@ -560,7 +560,7 @@ class _AuthorBadge extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 10,
-                  fontFamily: 'Poppins-SemiBold',
+                  fontFamily: 'Linotte',
                   color: theme.colorScheme.onSecondaryContainer,
                   letterSpacing: 0.2,
                 ),
@@ -706,7 +706,7 @@ class _VoteBtn extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   color: active ? activeColor : colors.onSurfaceVariant,
-                  fontFamily: 'Poppins-SemiBold',
+                  fontFamily: 'Linotte',
                 ),
               ),
             ],
@@ -799,7 +799,7 @@ class _ReasonCountBadge extends StatelessWidget {
               maxLines: 1,
               style: TextStyle(
                 fontSize: 10,
-                fontFamily: 'Poppins-SemiBold',
+                fontFamily: 'Linotte',
                 color: theme.colorScheme.onTertiaryContainer,
               ),
             ),

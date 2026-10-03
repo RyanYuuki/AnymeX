@@ -116,6 +116,7 @@ class TrackBindingController extends GetxController {
     int progress, {
     required bool isAnime,
     String? status,
+    int? season,
   }) async {
     final bindings = getBindingsFor(mediaId);
     if (bindings.isEmpty) return;
@@ -130,6 +131,7 @@ class TrackBindingController extends GetxController {
           progress: progress,
           status: status ?? b.status,
           isAnime: isAnime,
+          season: season,
         ));
         b.progress = progress;
         if (status != null) b.status = status;

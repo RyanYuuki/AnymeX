@@ -294,7 +294,7 @@ class TopControls extends StatelessWidget {
                                 color: Get.isDarkMode
                                     ? theme.colorScheme.onSurface
                                     : Colors.white,
-                                fontFamily: 'Poppins-SemiBold',
+                                fontFamily: 'Linotte',
                                 letterSpacing: 0.2,
                               ),
                               maxLines: 1,

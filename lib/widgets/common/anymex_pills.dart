@@ -18,6 +18,10 @@ class PillItem {
 
   final Widget? child;
 
+  final int? count;
+
+  final String? countText;
+
   const PillItem({
     this.label = '',
     this.iconUrl,
@@ -25,6 +29,8 @@ class PillItem {
     required this.isSelected,
     required this.onTap,
     this.child,
+    this.count,
+    this.countText,
   });
 }
 
@@ -213,6 +219,26 @@ class _DefaultPillContent extends StatelessWidget {
           size: 12,
           color: item.isSelected ? colors.primary : colors.onSurface,
         ),
+        if (item.countText != null || item.count != null) ...[
+          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: item.isSelected
+                  ? colors.primary.opaque(0.2, iReallyMeanIt: true)
+                  : colors.surfaceContainerHighest.opaque(0.6, iReallyMeanIt: true),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: AnymeXText(
+              item.countText ?? item.count.toString(),
+              size: 10,
+              variant: TextVariant.bold,
+              color: item.isSelected
+                  ? colors.primary
+                  : colors.onSurface.opaque(0.7),
+            ),
+          ),
+        ],
       ],
     );
   }

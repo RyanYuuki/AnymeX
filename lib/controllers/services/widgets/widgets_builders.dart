@@ -172,7 +172,7 @@ class _UnderratedCarousel extends StatelessWidget {
                 AnymeXText(
                   title,
                   style: TextStyle(
-                    fontFamily: "Poppins-SemiBold",
+                    fontFamily: 'Linotte',
                     fontSize: 17,
                     color: theme.colorScheme.primary,
                   ),
@@ -186,7 +186,7 @@ class _UnderratedCarousel extends StatelessWidget {
                         AnymeXText(
                           'See All',
                           style: TextStyle(
-                            fontFamily: "Poppins-SemiBold",
+                            fontFamily: 'Linotte',
                             fontSize: 13,
                             color: theme.colorScheme.primary.withOpacity(0.7),
                           ),
@@ -330,7 +330,7 @@ class _UnderratedCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 10,
-                fontFamily: 'Poppins-SemiBold',
+                fontFamily: 'Linotte',
                 color: theme.colorScheme.onSecondaryContainer,
                 letterSpacing: 0.2,
               ),

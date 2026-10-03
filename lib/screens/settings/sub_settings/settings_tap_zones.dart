@@ -519,7 +519,7 @@ class _ElegantSegmentedControl extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'Poppins',
+                                fontFamily: 'Linotte',
                                 color: isSelected 
                                     ? Theme.of(context).colorScheme.onPrimary 
                                     : Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),

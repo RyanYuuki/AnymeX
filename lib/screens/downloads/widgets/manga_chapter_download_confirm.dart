@@ -2,6 +2,8 @@ import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
+import 'package:anymex/screens/downloads/widgets/download_permission_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -29,15 +31,18 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
     required Source source,
     required OfflineMedia media,
   }) async {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => MangaChapterDownloadConfirm(
+    if (!await DownloadPermissionDialog.checkAndPrompt(context)) {
+      return;
+    }
+    if (!context.mounted) return;
+    await AnymeXSheet.custom(
+      MangaChapterDownloadConfirm(
         chapters: chapters,
         source: source,
         media: media,
       ),
+      context,
+      showDragHandle: true,
     );
   }
 
@@ -46,36 +51,21 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
     final theme = context.colors;
     final count = chapters.length;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 20),
-            decoration: BoxDecoration(
-              color: theme.onSurface.opaque(0.2),
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-          Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: theme.primaryContainer.opaque(0.3),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(HugeIcons.strokeRoundedDownload04,
-                    color: theme.primary, size: 24),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: theme.primaryContainer.opaque(0.3),
+                borderRadius: BorderRadius.circular(14),
               ),
+              child: Icon(HugeIcons.strokeRoundedDownload04,
+                  color: theme.primary, size: 24),
+            ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -174,8 +164,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
           ),
           const SizedBox(height: 12),
         ],
-      ),
-    );
+      );
   }
 
   void _startDownload(BuildContext context) {

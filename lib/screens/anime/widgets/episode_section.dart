@@ -85,7 +85,8 @@ class EpisodeSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                 ],
-                const AnymeXText('Layout Style',
+                const AnymeXText(
+                  'Layout Style',
                   variant: TextVariant.bold,
                   size: 14,
                 ),
@@ -121,10 +122,13 @@ class EpisodeSection extends StatelessWidget {
         return const NoSourceSelectedWidget();
       }
 
-      final activeSource = sourceController.activeSource.value ?? installed.first;
+      final activeSource =
+          sourceController.activeSource.value ?? installed.first;
       final titleText = searchedTitle is RxString
           ? searchedTitle.value
-          : (searchedTitle is Rx ? searchedTitle.value : searchedTitle.toString());
+          : (searchedTitle is Rx
+              ? searchedTitle.value
+              : searchedTitle.toString());
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,8 +159,7 @@ class EpisodeSection extends StatelessWidget {
 
   Widget _buildEpisodeListSliver(BuildContext context) {
     return Obx(() {
-      final episodes =
-          Get.find<MediaDetailsController>(tag: tag).episodeList;
+      final episodes = Get.find<MediaDetailsController>(tag: tag).episodeList;
       if (episodeError.value) {
         return const SliverToBoxAdapter(
           child: Center(
@@ -188,18 +191,20 @@ class EpisodeSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final installed = sourceController.installedExtensions.isNotEmpty;
+
     if (isSliverMode) {
       return SliverMainAxisGroup(
         slivers: [
           SliverPadding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             sliver: SliverToBoxAdapter(child: _buildHeader(context)),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: _buildEpisodeListSliver(context),
-          ),
+          if (installed)
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: _buildEpisodeListSliver(context),
+            ),
         ],
       );
     }
@@ -265,15 +270,16 @@ class _ProviderOptionTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText(title,
+                    AnymeXText(
+                      title,
                       variant: TextVariant.semiBold,
                       size: 13,
                     ),
                     const SizedBox(height: 2),
-                    AnymeXText(subtitle,
+                    AnymeXText(
+                      subtitle,
                       size: 11,
-                      color: colors.onSurface
-                          .opaque(0.6, iReallyMeanIt: true),
+                      color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                     ),
                   ],
                 ),

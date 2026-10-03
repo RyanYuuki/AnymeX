@@ -67,7 +67,7 @@ class _DynamicStyleSelectorState<T> extends State<DynamicStyleSelector<T>> {
                 AnymeXText(
                   'LIVE PREVIEW',
                   style: TextStyle(
-                    fontFamily: 'Poppins',
+                    fontFamily: 'Linotte',
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,

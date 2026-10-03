@@ -322,10 +322,6 @@ class MalService extends GetxController implements BaseService, OnlineService {
   RxList<Widget> homeWidgets(BuildContext context) {
     final isDesktop = Get.width > 600;
     final settings = Get.find<Settings>();
-    final acceptedLists = settings.homePageCardsMal.entries
-        .where((entry) => entry.value)
-        .map<String>((entry) => entry.key)
-        .toList();
     return [
       if (isLoggedIn.value) ...[
         Obx(() {
@@ -414,27 +410,32 @@ class MalService extends GetxController implements BaseService, OnlineService {
           });
         }),
         const SizedBox(height: 10),
-        if (acceptedLists.isNotEmpty)
-          Obx(() {
-            mangaList.length;
-            animeList.length;
-            return Column(
-              children: acceptedLists.map((e) {
-                return ReusableCarousel(
-                  data: filterListByLabel(
-                      e.contains("Manga") || e.contains("Reading")
-                          ? mangaList
-                          : animeList,
-                      e),
-                  title: e,
-                  variant: DataVariant.anilist,
-                  type: e.contains("Manga") || e.contains("Reading")
-                      ? ItemType.manga
-                      : ItemType.anime,
-                );
-              }).toList(),
-            );
-          }),
+        Obx(() {
+          settings.uiSettings.value;
+          final acceptedLists = settings.homePageCardsMal.entries
+              .where((entry) => entry.value)
+              .map<String>((entry) => entry.key)
+              .toList();
+          if (acceptedLists.isEmpty) return const SizedBox.shrink();
+          mangaList.length;
+          animeList.length;
+          return Column(
+            children: acceptedLists.map((e) {
+              return ReusableCarousel(
+                data: filterListByLabel(
+                    e.contains("Manga") || e.contains("Reading")
+                        ? mangaList
+                        : animeList,
+                    e),
+                title: e,
+                variant: DataVariant.anilist,
+                type: e.contains("Manga") || e.contains("Reading")
+                    ? ItemType.manga
+                    : ItemType.anime,
+              );
+            }).toList(),
+          );
+        }),
       ],
       buildSectionIfNotEmpty("Trending Animes", trendingAnimes),
       buildSectionIfNotEmpty("Popular Animes", popularAnimes),

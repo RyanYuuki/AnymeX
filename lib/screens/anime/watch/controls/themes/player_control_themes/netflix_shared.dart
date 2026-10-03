@@ -371,14 +371,18 @@ class NFMoreSheet extends StatelessWidget {
               },
             ),
             if (MediaQuery.sizeOf(context).width < 600)
-              NFSheetTile(
-                icon: Icons.screen_rotation_alt_rounded,
-                label: 'Rotate',
-                onTap: () {
-                  Get.back();
-                  controller.toggleOrientation();
-                },
-              ),
+              Obx(() => NFSheetTile(
+                    icon: controller.isOrientationLocked.value
+                        ? Icons.screen_lock_rotation_rounded
+                        : Icons.screen_rotation_rounded,
+                    label: controller.isOrientationLocked.value
+                        ? 'Unlock orientation'
+                        : 'Lock orientation',
+                    onTap: () {
+                      Get.back();
+                      controller.toggleOrientation();
+                    },
+                  )),
             const SizedBox(height: 8),
           ],
         ),

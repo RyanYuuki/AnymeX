@@ -14,6 +14,7 @@ class PlayerSettings {
   double bottomMargin;
   bool transculentControls;
   bool defaultPortraitMode;
+  String defaultOrientation;
   int playerStyle;
   int subtitleOutlineWidth;
   bool autoSkipOP;
@@ -44,7 +45,7 @@ class PlayerSettings {
     this.resizeMode = "Contain",
     this.subtitleSize = 16,
     this.subtitleColor = "White",
-    this.subtitleFont = 'Poppins',
+    this.subtitleFont = 'Linotte',
     this.subtitleBackgroundColor = "None",
     this.subtitleOutlineColor = "Black",
     this.showSubtitle = true,
@@ -54,6 +55,7 @@ class PlayerSettings {
     this.playerStyle = 0,
     this.transculentControls = false,
     this.defaultPortraitMode = false,
+    this.defaultOrientation = 'landscape',
     this.subtitleOutlineWidth = 1,
     this.autoSkipED = false,
     this.autoSkipOP = false,
@@ -114,6 +116,8 @@ class PlayerSettings {
           .get<bool>(defaults.transculentControls),
       defaultPortraitMode: PlayerSettingsKeys.defaultPortraitMode
           .get<bool>(defaults.defaultPortraitMode),
+      defaultOrientation: PlayerSettingsKeys.defaultOrientation
+          .get<String>(defaults.defaultOrientation),
       playerStyle:
           PlayerSettingsKeys.playerStyle.get<int>(defaults.playerStyle),
       subtitleOutlineWidth: PlayerSettingsKeys.subtitleOutlineWidth

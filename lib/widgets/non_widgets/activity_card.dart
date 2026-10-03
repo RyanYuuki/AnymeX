@@ -427,7 +427,7 @@ class _ActivityCardState extends State<ActivityCard> {
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 15,
-                            fontFamily: 'Poppins-Bold',
+                            fontFamily: 'Linotte',
                             fontWeight: FontWeight.w600,
                             color: context.theme.colorScheme.onSurface,
                           ),
@@ -826,7 +826,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 16,
-                                      fontFamily: 'Poppins-Bold',
+                                      fontFamily: 'Linotte',
                                       fontWeight: FontWeight.bold,
                                       color:
                                           context.theme.colorScheme.onSurface,
