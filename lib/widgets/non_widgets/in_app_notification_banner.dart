@@ -279,8 +279,9 @@ class _InAppBannerWidgetState extends State<_InAppBannerWidget>
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildAvatar(ColorScheme cs) {
     // Prefer id-based resolution (frame included); plain avatar otherwise.

@@ -88,23 +88,19 @@ class _SettingsModerationState extends State<SettingsModeration> {
                               DiscordBadgeWidget(badge: badge, size: 18),
                               const SizedBox(width: 8),
                             ],
-                            Container(
+                            AnymeXContainer(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: roleColor.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: roleColor.withValues(alpha: 0.35),
-                                ),
+                              color: roleColor.withValues(alpha: 0.15),
+                              radius: 12,
+                              border: Border.all(
+                                color: roleColor.withValues(alpha: 0.35),
                               ),
-                              child: Text(
+                              child: AnymeXText(
                                 CommentumRoleConfig.getRoleLabel(role).toUpperCase(),
-                                style: TextStyle(
-                                  color: roleColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
+                                color: roleColor,
+                                variant: TextVariant.bold,
+                                size: 12,
                               ),
                             ),
                           ],
@@ -318,20 +314,17 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
+          AnymeXContainer(
             width: 40,
             height: 4,
             margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+            radius: 2,
           ),
-          Text(
+          AnymeXText(
             'Search User',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            variant: TextVariant.bold,
+            size: 16,
           ),
           const SizedBox(height: 20),
           Row(
@@ -467,14 +460,12 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                         ),
                         child: Row(
                           children: [
-                            Container(
+                            AnymeXContainer(
                               padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? colorScheme.primary.withValues(alpha: 0.2)
-                                    : colorScheme.surface,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                              color: isSelected
+                                  ? colorScheme.primary.withValues(alpha: 0.2)
+                                  : colorScheme.surface,
+                              radius: 8,
                               child: Image.asset(
                                 iconAsset,
                                 width: 20,
@@ -486,24 +477,21 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: Text(
+                              child: AnymeXText(
                                 ct.$2,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontSize: 14,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.normal,
-                                  color: isSelected
-                                      ? colorScheme.primary
-                                      : colorScheme.onSurface,
-                                ),
+                                size: 14,
+                                variant: isSelected
+                                    ? TextVariant.semiBold
+                                    : TextVariant.regular,
+                                color: isSelected
+                                    ? colorScheme.primary
+                                    : colorScheme.onSurface,
                               ),
                             ),
                             if (isSelected)
-                              Container(
+                              AnymeXContainer(
                                 padding: const EdgeInsets.all(4),
-                                decoration:
-                                    const BoxDecoration(shape: BoxShape.circle),
+                                shape: BoxShape.circle,
                                 child: Icon(Icons.check_rounded,
                                     size: 18, color: colorScheme.primary),
                               ),
@@ -680,13 +668,11 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                             );
                           },
                           borderRadius: BorderRadius.circular(12),
-                          child: Container(
+                          child: AnymeXContainer(
                             padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: colorScheme.surfaceContainer
-                                  .withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                            color: colorScheme.surfaceContainer
+                                .withValues(alpha: 0.3),
+                            radius: 12,
                             child: Row(
                               children: [
                                 AnymeXDecoratedAvatar(
@@ -703,37 +689,30 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                                       Row(
                                         children: [
                                           Flexible(
-                                            child: Text(
+                                            child: AnymeXText(
                                               username,
-                                              style: theme.textTheme.bodyMedium
-                                                  ?.copyWith(
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                              variant: TextVariant.semiBold,
+                                              size: 14,
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                           if (role != 'user') ...[
                                             const SizedBox(width: 6),
-                                            Container(
+                                            AnymeXContainer(
                                               padding:
                                                   const EdgeInsets.symmetric(
                                                       horizontal: 6,
                                                       vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: _getRoleColor(role)
-                                                    .withOpacity(0.15),
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                              ),
-                                              child: Text(
+                                              color: _getRoleColor(role)
+                                                  .withOpacity(0.15),
+                                              radius: 6,
+                                              child: AnymeXText(
                                                 role
                                                     .toUpperCase()
                                                     .replaceAll('_', ' '),
-                                                style: TextStyle(
-                                                  color: _getRoleColor(role),
-                                                  fontSize: 9,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                                color: _getRoleColor(role),
+                                                size: 9,
+                                                variant: TextVariant.bold,
                                               ),
                                             ),
                                           ],
@@ -948,26 +927,22 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                       ],
                     ),
                   ),
-                  Container(
+                  AnymeXContainer(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: colorScheme.error.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    color: colorScheme.error.withOpacity(0.1),
+                    radius: 8,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.flag_rounded,
                             size: 14, color: colorScheme.error),
                         const SizedBox(width: 4),
-                        Text(
+                        AnymeXText(
                           '$totalReports',
-                          style: TextStyle(
-                            color: colorScheme.error,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          color: colorScheme.error,
+                          size: 12,
+                          variant: TextVariant.bold,
                         ),
                       ],
                     ),
@@ -979,19 +954,15 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
           const Divider(height: 24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
+            child: AnymeXContainer(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
+              color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
+              radius: 10,
+              child: AnymeXText(
                 content,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  height: 1.4,
-                ),
+                variant: TextVariant.regular,
+                size: 13,
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1007,15 +978,13 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                   final reporterId = r['reporter_id']?.toString() ?? '';
                   final reporterUsername =
                       r['reporter_username']?.toString() ?? '';
-                  return Container(
+                  return AnymeXContainer(
                     margin: const EdgeInsets.only(bottom: 6),
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color:
-                          colorScheme.surfaceContainer.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    color:
+                        colorScheme.surfaceContainer.withValues(alpha: 0.3),
+                    radius: 8,
                     child: Row(
                       children: [
                         Icon(Icons.report_rounded,
@@ -1537,7 +1506,7 @@ class _UserListPageState extends State<UserListPage> {
   Widget _buildStatusFilters(ColorScheme colorScheme, ThemeData theme) {
     final statusFilters = ['All', 'Banned', 'Muted', 'Shadow Banned', 'Warned'];
 
-    return Container(
+    return AnymeXContainer(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Obx(() => SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -1546,7 +1515,7 @@ class _UserListPageState extends State<UserListPage> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: ChoiceChip(
-                    label: Text(statusFilters[index]),
+                    label: AnymeXText(statusFilters[index]),
                     selected: selectedStatusFilter.value == index,
                     onSelected: (selected) {
                       if (selected) {
@@ -1707,23 +1676,19 @@ class _UserListPageState extends State<UserListPage> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Container(
+                        AnymeXContainer(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: _getRoleColor(role).withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: _getRoleColor(role).withOpacity(0.3),
-                            ),
+                          color: _getRoleColor(role).withOpacity(0.15),
+                          radius: 8,
+                          border: Border.all(
+                            color: _getRoleColor(role).withOpacity(0.3),
                           ),
-                          child: Text(
+                          child: AnymeXText(
                             role.toUpperCase().replaceAll('_', ' '),
-                            style: TextStyle(
-                              color: _getRoleColor(role),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
-                            ),
+                            color: _getRoleColor(role),
+                            variant: TextVariant.bold,
+                            size: 10,
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -1929,18 +1894,15 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                               'user'),
                                       if (userInfo?['client_type'] != null) ...[
                                         const SizedBox(width: 8),
-                                        Container(
+                                        AnymeXContainer(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8, vertical: 3),
-                                          decoration: BoxDecoration(
+                                          color: colorScheme.primary
+                                              .withValues(alpha: 0.15),
+                                          radius: 6,
+                                          border: Border.all(
                                             color: colorScheme.primary
-                                                .withValues(alpha: 0.15),
-                                            borderRadius:
-                                                BorderRadius.circular(6),
-                                            border: Border.all(
-                                              color: colorScheme.primary
-                                                  .withValues(alpha: 0.3),
-                                            ),
+                                                .withValues(alpha: 0.3),
                                           ),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
@@ -2161,22 +2123,18 @@ class _UserManagementPageState extends State<UserManagementPage> {
           DiscordBadgeWidget(badge: badge, size: 16),
           const SizedBox(width: 6),
         ],
-        Container(
+        AnymeXContainer(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: color.withOpacity(0.3),
-            ),
+          color: color.withOpacity(0.15),
+          radius: 12,
+          border: Border.all(
+            color: color.withOpacity(0.3),
           ),
-          child: Text(
+          child: AnymeXText(
             CommentumRoleConfig.getRoleLabel(role).toUpperCase(),
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-            ),
+            color: color,
+            variant: TextVariant.bold,
+            size: 12,
           ),
         ),
       ],
@@ -2232,24 +2190,21 @@ class _UserManagementPageState extends State<UserManagementPage> {
             ),
           ),
           Expanded(
-            child: Container(
+            child: AnymeXContainer(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
+              color: colorScheme.surfaceContainer.withValues(alpha: 0.3),
+              radius: 8,
+              child: AnymeXText(
                 value,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: label == 'Banned' ||
-                          label == 'Muted' ||
-                          label == 'Shadow Banned'
-                      ? (value == 'Yes'
-                          ? colorScheme.error
-                          : colorScheme.primary)
-                      : null,
-                ),
+                size: 12,
+                variant: TextVariant.regular,
+                color: label == 'Banned' ||
+                        label == 'Muted' ||
+                        label == 'Shadow Banned'
+                    ? (value == 'Yes'
+                        ? colorScheme.error
+                        : colorScheme.primary)
+                    : null,
               ),
             ),
           ),
@@ -2276,21 +2231,18 @@ class _UserManagementPageState extends State<UserManagementPage> {
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
-            Container(
+            AnymeXContainer(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
+              color: color.withOpacity(0.1),
+              radius: 10,
               child: Icon(icon, color: color, size: 20),
             ),
             const SizedBox(width: 14),
-            Text(
+            AnymeXText(
               label,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+              size: 16,
+              variant: TextVariant.semiBold,
             ),
           ],
         ),

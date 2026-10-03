@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -310,7 +310,10 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                       _showUrlTab ? Icons.grid_view_rounded : Icons.link_rounded,
                       size: 16,
                     ),
-                    label: Text(_showUrlTab ? 'Browse GIFs' : 'Paste Link'),
+                    label: AnymeXText(
+                      _showUrlTab ? 'Browse GIFs' : 'Paste Link',
+                      size: 12,
+                    ),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 6),
@@ -416,7 +419,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('Insert'),
+                      child: const AnymeXText('Insert'),
                     ),
                   ],
                 ),
@@ -454,7 +457,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                               const SizedBox(height: 12),
                               OutlinedButton(
                                 onPressed: _fetchTrending,
-                                child: const Text('Retry'),
+                                child: const AnymeXText('Retry'),
                               ),
                             ],
                           ),
@@ -487,28 +490,10 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
 
                                 return GestureDetector(
                                   onTap: () => _selectGif(url),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: AnymeXContainer(
-                                      color: colorScheme
-                                          .surfaceContainerHighest
-                                          .withValues(alpha: 0.3),
-                                      child: CachedNetworkImage(
-                                        imageUrl: preview,
-                                        fit: BoxFit.cover,
-                                        placeholder: (context, url) =>
-                                            AnymeXContainer(
-                                          color: colorScheme
-                                              .surfaceContainerHighest
-                                              .withValues(alpha: 0.2),
-                                        ),
-                                        errorWidget: (context, url, err) =>
-                                            const Center(
-                                          child: Icon(Icons.broken_image_rounded,
-                                              size: 24),
-                                        ),
-                                      ),
-                                    ),
+                                  child: AnymeXImage(
+                                    imageUrl: preview,
+                                    fit: BoxFit.cover,
+                                    radius: 10,
                                   ),
                                 );
                               },

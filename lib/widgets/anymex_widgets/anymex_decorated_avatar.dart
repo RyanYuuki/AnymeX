@@ -2,7 +2,6 @@ import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -34,8 +33,8 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
     final iconSize = size <= 28 ? 14.0 : 18.0;
-    final _decoTrimmed = decorationUrl?.trim() ?? '';
-    final hasDecoration = _decoTrimmed.isNotEmpty && _decoTrimmed != 'null';
+    final decoTrimmed = decorationUrl?.trim() ?? '';
+    final hasDecoration = decoTrimmed.isNotEmpty && decoTrimmed != 'null';
     final isCircle = shape == BoxShape.circle && borderRadius == null;
 
     Widget avatarCore = AnymeXContainer(
@@ -115,11 +114,10 @@ class AnymeXDecoratedAvatar extends StatelessWidget {
       final decoSize = size * decorationScale;
       // Original layout: box is decoSize so the frame always has room
       // and never gets clipped by headers/lists (first implementation).
-      Widget frame = CachedNetworkImage(
+      Widget frame = AnymeXImage(
         imageUrl: decorationUrl!.trim(),
         fit: BoxFit.contain,
-        placeholder: (context, url) => const SizedBox.shrink(),
-        errorWidget: (context, url, error) => const SizedBox.shrink(),
+        radius: 0,
       );
       // Rectangle avatars (profile headers): the frame PNG is square, so
       // clip it to the avatar's rounding — otherwise its sharp corners

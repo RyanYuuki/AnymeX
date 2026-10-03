@@ -9,6 +9,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
@@ -39,197 +40,226 @@ class UserCommentsSheet {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withOpacity(0.55),
-      builder: (context) {
-        final colorScheme = Theme.of(context).colorScheme;
-        final currentUserId =
-            Get.find<ServiceHandler>().profileData.value.id?.toString();
-        final isSelf = comment.userId == currentUserId;
-        final canViewPrivate = isSelf || controller.canModerate();
+      builder: (context) => _UserCommentsSheetContent(
+        comment: comment,
+        controller: controller,
+      ),
+    );
+  }
+}
 
-        return AnymeXContainer(
-          height: MediaQuery.of(context).size.height * 0.82,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
-          color: colorScheme.surface,
-          border: Border.all(
-            color: colorScheme.outlineVariant.withOpacity(0.2),
-            width: 1,
-          ),
-          child: FutureBuilder<List<dynamic>>(
-            future: Future.wait([
-              controller.fetchUserPoints(comment.userId),
-              Get.isRegistered<CommentumService>()
-                  ? Get.find<CommentumService>()
-                      .fetchUserProfile(comment.userId)
-                  : Future.value(null),
-            ]),
-            builder: (context, snapshot) {
-              final isLoading =
-                  snapshot.connectionState == ConnectionState.waiting;
-              final points = (!isLoading && snapshot.hasData)
-                  ? snapshot.data![0] as UserPoints?
-                  : null;
-              final profile = (!isLoading && snapshot.hasData)
-                  ? snapshot.data![1] as Map<String, dynamic>?
-                  : null;
+class _UserCommentsSheetContent extends StatefulWidget {
+  final Comment comment;
+  final CommentSectionController controller;
 
-              return Column(
-                children: [
-                  // 1. Hero Banner + Avatar Header
-                  _buildHeroHeader(
-                    context,
-                    colorScheme: colorScheme,
-                    comment: comment,
-                    profile: profile,
-                  ),
+  const _UserCommentsSheetContent({
+    required this.comment,
+    required this.controller,
+  });
 
-                  // 2. Scrollable Body
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                      child: Column(
-                        children: [
-                          // Username, Badges & Nameplate
-                          _buildNameSection(
-                            context,
-                            colorScheme: colorScheme,
-                            comment: comment,
-                            profile: profile,
-                          ),
-                          const SizedBox(height: 12),
+  @override
+  State<_UserCommentsSheetContent> createState() =>
+      _UserCommentsSheetContentState();
+}
 
-                          // Points, Rank, Role & Streak Pills
-                          if (isLoading)
-                            const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16),
-                              child: Center(
-                                child: ExpressiveLoadingIndicator(),
-                              ),
-                            )
-                          else if (points != null)
-                            _buildPillsWrap(
-                              context,
-                              colorScheme: colorScheme,
-                              points: points,
-                            )
-                          else
-                            Center(
-                              child: AnymeXText(
-                                'Stats unavailable',
-                                size: 12,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          const SizedBox(height: 18),
+class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
+  late final Future<List<dynamic>> _dataFuture;
 
-                          // Activity & Public Stats Grid
-                          if (!isLoading && points != null) ...[
-                            _buildSectionHeader(
-                              icon: Icons.bar_chart_rounded,
-                              title: 'Activity & Stats',
-                              colorScheme: colorScheme,
-                            ),
-                            const SizedBox(height: 10),
-                            _buildStatsGrid(
-                              context,
-                              colorScheme: colorScheme,
-                              points: points,
-                              profile: profile,
-                            ),
-                            const SizedBox(height: 14),
-                          ],
+  @override
+  void initState() {
+    super.initState();
+    _dataFuture = Future.wait([
+      widget.controller.fetchUserPoints(widget.comment.userId),
+      Get.isRegistered<CommentumService>()
+          ? Get.find<CommentumService>()
+              .fetchUserProfile(widget.comment.userId)
+          : Future.value(null),
+    ]);
+  }
 
-                          // Points Breakdown
-                          if (!isLoading &&
-                              points != null &&
-                              _breakdownChips(context, points).isNotEmpty) ...[
-                            _buildSectionHeader(
-                              icon: Icons.pie_chart_outline_rounded,
-                              title: 'Points Breakdown',
-                              colorScheme: colorScheme,
-                            ),
-                            const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              alignment: WrapAlignment.center,
-                              children: _breakdownChips(context, points),
-                            ),
-                            const SizedBox(height: 14),
-                          ],
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final currentUserId =
+        Get.find<ServiceHandler>().profileData.value.id?.toString();
+    final isSelf = widget.comment.userId == currentUserId;
+    final canViewPrivate = isSelf || widget.controller.canModerate();
 
-                          // Moderation Record (Self + Mods Only)
-                          if (!isLoading &&
-                              canViewPrivate &&
-                              _hasPrivateInfo(points, profile)) ...[
-                            _buildSectionHeader(
-                              icon: Icons.shield_outlined,
-                              title: isSelf
-                                  ? 'Your Moderation Record'
-                                  : 'Moderation Record',
-                              colorScheme: colorScheme,
-                              iconColor: colorScheme.error,
-                            ),
-                            const SizedBox(height: 8),
-                            AnymeXContainer(
-                              radius: 16,
-                              color: colorScheme.errorContainer
-                                  .withOpacity(0.08),
-                              border: Border.all(
-                                color: colorScheme.error.withOpacity(0.25),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 10),
-                              child: Column(
-                                children: _privateRows(context, points, profile),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                          ],
+    return AnymeXContainer(
+      height: MediaQuery.of(context).size.height * 0.82,
+      clipBehavior: Clip.antiAlias,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
+      color: colorScheme.surface,
+      border: Border.all(
+        color: colorScheme.outlineVariant.withOpacity(0.2),
+        width: 1,
+      ),
+      child: FutureBuilder<List<dynamic>>(
+        future: _dataFuture,
+        builder: (context, snapshot) {
+          final isLoading =
+              snapshot.connectionState == ConnectionState.waiting;
+          final points = (!isLoading && snapshot.hasData)
+              ? snapshot.data![0] as UserPoints?
+              : null;
+          final profile = (!isLoading && snapshot.hasData)
+              ? snapshot.data![1] as Map<String, dynamic>?
+              : null;
 
-                          const SizedBox(height: 8),
+          return Column(
+            children: [
+              // 1. Hero Banner + Avatar Header
+              _buildHeroHeader(
+                context,
+                colorScheme: colorScheme,
+                comment: widget.comment,
+                profile: profile,
+              ),
 
-                          // Full Profile Button
-                          AnymeXButton(
-                            width: double.infinity,
-                            height: 48,
-                            borderRadius: BorderRadius.circular(14),
-                            backgroundColor: colorScheme.primary,
-                            onTap: () {
-                              Navigator.pop(context);
-                              final parsedId = int.tryParse(comment.userId);
-                              if (isSelf) {
-                                navigate(() => const ProfilePage());
-                              } else if (parsedId != null && parsedId > 0) {
-                                navigate(
-                                    () => UserProfilePage(userId: parsedId));
-                              }
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.person_outline_rounded,
-                                    size: 18, color: colorScheme.onPrimary),
-                                const SizedBox(width: 8),
-                                AnymeXText(
-                                  'View Full Profile',
-                                  variant: TextVariant.bold,
-                                  size: 14,
-                                  color: colorScheme.onPrimary,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+              // 2. Scrollable Body
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                  child: Column(
+                    children: [
+                      // Username, Badges & Nameplate
+                      _buildNameSection(
+                        context,
+                        colorScheme: colorScheme,
+                        comment: widget.comment,
+                        profile: profile,
                       ),
-                    ),
+                      const SizedBox(height: 12),
+
+                      // Points, Rank, Role & Streak Pills
+                      if (isLoading)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                            child: ExpressiveLoadingIndicator(),
+                          ),
+                        )
+                      else if (points != null)
+                        _buildPillsWrap(
+                          context,
+                          colorScheme: colorScheme,
+                          points: points,
+                        )
+                      else
+                        Center(
+                          child: AnymeXText(
+                            'Stats unavailable',
+                            size: 12,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      const SizedBox(height: 18),
+
+                      // Activity & Public Stats Grid
+                      if (!isLoading && points != null) ...[
+                        _buildSectionHeader(
+                          icon: Icons.bar_chart_rounded,
+                          title: 'Activity & Stats',
+                          colorScheme: colorScheme,
+                        ),
+                        const SizedBox(height: 10),
+                        _buildStatsGrid(
+                          context,
+                          colorScheme: colorScheme,
+                          points: points,
+                          profile: profile,
+                        ),
+                        const SizedBox(height: 14),
+                      ],
+
+                      // Points Breakdown
+                      if (!isLoading &&
+                          points != null &&
+                          _breakdownChips(context, points).isNotEmpty) ...[
+                        _buildSectionHeader(
+                          icon: Icons.pie_chart_outline_rounded,
+                          title: 'Points Breakdown',
+                          colorScheme: colorScheme,
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          alignment: WrapAlignment.center,
+                          children: _breakdownChips(context, points),
+                        ),
+                        const SizedBox(height: 14),
+                      ],
+
+                      // Moderation Record (Self + Mods Only)
+                      if (!isLoading &&
+                          canViewPrivate &&
+                          _hasPrivateInfo(points, profile)) ...[
+                        _buildSectionHeader(
+                          icon: Icons.shield_outlined,
+                          title: isSelf
+                              ? 'Your Moderation Record'
+                              : 'Moderation Record',
+                          colorScheme: colorScheme,
+                          iconColor: colorScheme.error,
+                        ),
+                        const SizedBox(height: 8),
+                        AnymeXContainer(
+                          radius: 16,
+                          color: colorScheme.errorContainer.withOpacity(0.08),
+                          border: Border.all(
+                            color: colorScheme.error.withOpacity(0.25),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
+                          child: Column(
+                            children: _privateRows(context, points, profile),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      const SizedBox(height: 8),
+
+                      // Full Profile Button
+                      AnymeXButton(
+                        width: double.infinity,
+                        height: 48,
+                        borderRadius: BorderRadius.circular(14),
+                        backgroundColor: colorScheme.primary,
+                        onTap: () {
+                          Navigator.pop(context);
+                          final parsedId = int.tryParse(widget.comment.userId);
+                          if (isSelf) {
+                            navigate(() => const ProfilePage());
+                          } else if (parsedId != null && parsedId > 0) {
+                            navigate(
+                                () => UserProfilePage(userId: parsedId));
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.person_outline_rounded,
+                                size: 18, color: colorScheme.onPrimary),
+                            const SizedBox(width: 8),
+                            AnymeXText(
+                              'View Full Profile',
+                              variant: TextVariant.bold,
+                              size: 14,
+                              color: colorScheme.onPrimary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              );
-            },
-          ),
-        );
-      },
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -265,10 +295,10 @@ class UserCommentsSheet {
                 fit: StackFit.expand,
                 children: [
                   if (banner != null)
-                    CachedNetworkImage(
+                    AnymeXImage(
                       imageUrl: banner,
                       fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => _buildDefaultBanner(colorScheme),
+                      radius: 0,
                     )
                   else
                     _buildDefaultBanner(colorScheme),
@@ -298,11 +328,10 @@ class UserCommentsSheet {
                       child: IgnorePointer(
                         child: Opacity(
                           opacity: 0.65,
-                          child: CachedNetworkImage(
+                          child: AnymeXImage(
                             imageUrl: effect,
                             fit: BoxFit.cover,
-                            errorWidget: (_, __, ___) =>
-                                const SizedBox.shrink(),
+                            radius: 0,
                           ),
                         ),
                       ),
@@ -333,18 +362,14 @@ class UserCommentsSheet {
             left: 0,
             right: 0,
             child: Center(
-              child: Container(
+              child: AnymeXContainer(
                 padding: const EdgeInsets.all(3.5),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colorScheme.surface,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.25),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+                shape: BoxShape.circle,
+                color: colorScheme.surface,
+                shadow: BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
                 ),
                 child: AnymeXDecoratedAvatar(
                   avatarUrl: comment.avatarUrl,
@@ -361,7 +386,7 @@ class UserCommentsSheet {
   }
 
   static Widget _buildDefaultBanner(ColorScheme colorScheme) {
-    return Container(
+    return AnymeXContainer(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -423,7 +448,7 @@ class UserCommentsSheet {
     );
 
     if (hasNameplate) {
-      final resolvedUrl = _resolveNameplateUrl(rawNameplate!.trim());
+      final resolvedUrl = _resolveNameplateUrl(rawNameplate.trim());
       return Center(
         child: AnymeXContainer(
           radius: 12,
@@ -446,7 +471,7 @@ class UserCommentsSheet {
               ),
             ],
           ),
-          child: Container(
+          child: AnymeXContainer(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
             color: Colors.black.withOpacity(0.38),
             child: nameRow,

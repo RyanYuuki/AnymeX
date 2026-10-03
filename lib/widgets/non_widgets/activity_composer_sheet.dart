@@ -24,6 +24,7 @@ class ActivityComposerSheet extends StatefulWidget {
   final Widget? leadingWidget;
   final VoidCallback? onGifTap;
   final LayerLink? layerLink;
+  final IconData? submitIcon;
 
   const ActivityComposerSheet({
     super.key,
@@ -41,6 +42,7 @@ class ActivityComposerSheet extends StatefulWidget {
     this.leadingWidget,
     this.onGifTap,
     this.layerLink,
+    this.submitIcon,
   });
 
   @override
@@ -650,7 +652,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                             child: CircularProgressIndicator(
                                 strokeWidth: 2, color: Colors.white))
                         : Icon(
-                            Icons.send,
+                            widget.submitIcon ?? Icons.send,
                             color: isEmpty
                                 ? Colors.grey
                                 : context.theme.colorScheme.onPrimary,

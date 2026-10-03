@@ -10,6 +10,7 @@ import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
@@ -205,15 +206,13 @@ class NotificationScreen extends GetView<NotificationController> {
                         ),
                         if (unreadCount > 0) ...[
                           const SizedBox(width: 6),
-                          Container(
+                          AnymeXContainer(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 6, vertical: 1),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? colorScheme.onPrimary.withValues(alpha: 0.25)
-                                  : colorScheme.primary,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            color: isSelected
+                                ? colorScheme.onPrimary.withValues(alpha: 0.25)
+                                : colorScheme.primary,
+                            radius: 10,
                             child: AnymeXText(
                               '$unreadCount',
                               variant: TextVariant.bold,
@@ -274,15 +273,13 @@ class NotificationScreen extends GetView<NotificationController> {
               ),
             ),
             if (controller.unreadCount.value > 0)
-              Container(
+              AnymeXContainer(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: colorScheme.primary.withValues(alpha: 0.3),
-                    width: 1,
-                  ),
+                color: colorScheme.primary.withValues(alpha: 0.15),
+                radius: 10,
+                border: Border.all(
+                  color: colorScheme.primary.withValues(alpha: 0.3),
+                  width: 1,
                 ),
                 child: AnymeXText(
                   '${controller.unreadCount.value} unread',
@@ -305,57 +302,47 @@ class NotificationScreen extends GetView<NotificationController> {
           6,
           (index) => Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: Container(
+                child: AnymeXContainer(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainer.opaque(0.3),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: colorScheme.outline.opaque(0.1),
-                    ),
+                  color: colorScheme.surfaceContainer.opaque(0.3),
+                  radius: 12,
+                  border: Border.all(
+                    color: colorScheme.outline.opaque(0.1),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
+                      AnymeXContainer(
                         width: 44,
                         height: 44,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHigh.opaque(0.4),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        color: colorScheme.surfaceContainerHigh.opaque(0.4),
+                        radius: 12,
                       ),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
+                            AnymeXContainer(
                               height: 14,
                               width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainerHigh
-                                    .opaque(0.4),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
+                              color: colorScheme.surfaceContainerHigh
+                                  .opaque(0.4),
+                              radius: 4,
                             ),
                             const SizedBox(height: 8),
-                            Container(
+                            AnymeXContainer(
                               height: 12,
                               width: 200,
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainer.opaque(0.3),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
+                              color: colorScheme.surfaceContainer.opaque(0.3),
+                              radius: 4,
                             ),
                             const SizedBox(height: 8),
-                            Container(
+                            AnymeXContainer(
                               height: 12,
                               width: 140,
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainer.opaque(0.3),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
+                              color: colorScheme.surfaceContainer.opaque(0.3),
+                              radius: 4,
                             ),
                           ],
                         ),
@@ -373,12 +360,10 @@ class NotificationScreen extends GetView<NotificationController> {
       child: Center(
         child: Column(
           children: [
-            Container(
+            AnymeXContainer(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainer.opaque(0.3),
-                shape: BoxShape.circle,
-              ),
+              shape: BoxShape.circle,
+              color: colorScheme.surfaceContainer.opaque(0.3),
               child: Icon(
                 Icons.notifications_none_rounded,
                 size: 48,
@@ -412,12 +397,10 @@ class NotificationScreen extends GetView<NotificationController> {
       child: Center(
         child: Column(
           children: [
-            Container(
+            AnymeXContainer(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: colorScheme.errorContainer.opaque(0.3),
-                shape: BoxShape.circle,
-              ),
+              shape: BoxShape.circle,
+              color: colorScheme.errorContainer.opaque(0.3),
               child: Icon(
                 Icons.error_outline_rounded,
                 size: 48,
@@ -437,13 +420,11 @@ class NotificationScreen extends GetView<NotificationController> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () => controller.refresh(),
-                child: Container(
+                child: AnymeXContainer(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  color: colorScheme.primary,
+                  radius: 12,
                   child: AnymeXText(
                     'Retry',
                     variant: TextVariant.semiBold,
@@ -565,19 +546,16 @@ class _NotificationCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Left Glowing Category Accent Bar
-                Container(
+                AnymeXContainer(
                   width: 4,
-                  decoration: BoxDecoration(
-                    color: categoryColor,
-                    boxShadow: [
-                      if (!notification.isRead)
-                        BoxShadow(
+                  color: categoryColor,
+                  shadow: !notification.isRead
+                      ? BoxShadow(
                           color: categoryColor.withValues(alpha: 0.6),
                           blurRadius: 6,
                           spreadRadius: 1,
-                        ),
-                    ],
-                  ),
+                        )
+                      : null,
                 ),
                 Expanded(
                   child: Padding(
@@ -613,13 +591,11 @@ class _NotificationCard extends StatelessWidget {
                                         ),
                                         if (!notification.isRead) ...[
                                           const SizedBox(width: 6),
-                                          Container(
+                                          AnymeXContainer(
                                             width: 7,
                                             height: 7,
-                                            decoration: BoxDecoration(
-                                              color: categoryColor,
-                                              shape: BoxShape.circle,
-                                            ),
+                                            shape: BoxShape.circle,
+                                            color: categoryColor,
                                           ),
                                         ],
                                       ],
@@ -650,16 +626,14 @@ class _NotificationCard extends StatelessWidget {
                               if (notification.mediaTitle != null &&
                                   notification.mediaTitle!.isNotEmpty) ...[
                                 const SizedBox(height: 8),
-                                Container(
+                                AnymeXContainer(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: categoryColor.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(6),
-                                    border: Border.all(
-                                      color: categoryColor.withValues(alpha: 0.2),
-                                      width: 1,
-                                    ),
+                                  color: categoryColor.withValues(alpha: 0.1),
+                                  radius: 6,
+                                  border: Border.all(
+                                    color: categoryColor.withValues(alpha: 0.2),
+                                    width: 1,
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -720,6 +694,8 @@ class _NotificationCard extends StatelessWidget {
     if (hasAvatar) {
       return _AvatarWithBadge(
         size: 42,
+        showBadge: !notification.isRead,
+        badgeColor: colorScheme.primary,
         child: ClipOval(
           child: AnymeXImage(
             imageUrl: notification.actorAvatar!,
@@ -728,8 +704,6 @@ class _NotificationCard extends StatelessWidget {
             radius: 21,
           ),
         ),
-        showBadge: !notification.isRead,
-        badgeColor: colorScheme.primary,
       );
     }
 
@@ -739,38 +713,34 @@ class _NotificationCard extends StatelessWidget {
           notification.actorUsername!.toUpperCase().characters.first;
       return _AvatarWithBadge(
         size: 42,
-        child: Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: categoryColor.opaque(0.15),
-            shape: BoxShape.circle,
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            initial,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: categoryColor,
-            ),
-          ),
-        ),
         showBadge: !notification.isRead,
         badgeColor: colorScheme.primary,
+        child: AnymeXContainer(
+          width: 42,
+          height: 42,
+          shape: BoxShape.circle,
+          color: categoryColor.opaque(0.15),
+          alignment: Alignment.center,
+          child: AnymeXText(
+            initial,
+            variant: TextVariant.semiBold,
+            size: 18,
+            color: categoryColor,
+          ),
+        ),
       );
     }
 
     // No actor (announcements, etc): category icon in circle
     return _AvatarWithBadge(
       size: 42,
-      child: Container(
+      showBadge: !notification.isRead,
+      badgeColor: colorScheme.primary,
+      child: AnymeXContainer(
         width: 42,
         height: 42,
-        decoration: BoxDecoration(
-          color: categoryColor.opaque(0.12),
-          shape: BoxShape.circle,
-        ),
+        shape: BoxShape.circle,
+        color: categoryColor.opaque(0.12),
         alignment: Alignment.center,
         child: Icon(
           _getCategoryIcon(),
@@ -778,8 +748,6 @@ class _NotificationCard extends StatelessWidget {
           color: categoryColor,
         ),
       ),
-      showBadge: !notification.isRead,
-      badgeColor: colorScheme.primary,
     );
   }
 
@@ -895,23 +863,19 @@ class _AvatarWithBadge extends StatelessWidget {
             Positioned(
               right: 0,
               top: 0,
-              child: Container(
+              child: AnymeXContainer(
                 width: 10,
                 height: 10,
-                decoration: BoxDecoration(
-                  color: badgeColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: badgeColor.withOpacity(0.4),
-                      blurRadius: 4,
-                      spreadRadius: 1,
-                    ),
-                  ],
+                shape: BoxShape.circle,
+                color: badgeColor,
+                border: Border.all(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  width: 2,
+                ),
+                shadow: BoxShadow(
+                  color: badgeColor.withOpacity(0.4),
+                  blurRadius: 4,
+                  spreadRadius: 1,
                 ),
               ),
             ),

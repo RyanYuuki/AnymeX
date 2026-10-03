@@ -116,6 +116,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
 
     return Obx(() {
       final replyingTo = controller.activeReplyComment.value;
+      final editingComment = controller.activeEditComment.value;
       final isAnime = controller.media.mediaType == ItemType.anime;
       final tagText = controller.tag.value.isNotEmpty
           ? controller.tag.value
@@ -144,11 +145,15 @@ class _CommentInputBarState extends State<CommentInputBar> {
                   textController: _effectiveTextController,
                   focusNode: _effectiveFocusNode,
                   layerLink: _layerLink,
-                  hintText: replyingTo != null
-                      ? (replyingTo.deleted
-                          ? 'Reply to thread...'
-                          : 'Reply to @${replyingTo.username}...')
-                      : 'Add a comment...',
+                  hintText: editingComment != null
+                      ? 'Edit your comment...'
+                      : (replyingTo != null
+                          ? (replyingTo.deleted
+                              ? 'Reply to thread...'
+                              : 'Reply to @${replyingTo.username}...')
+                          : 'Add a comment...'),
+                  submitIcon:
+                      editingComment != null ? Icons.check_rounded : null,
                   leadingWidget: Padding(
                     padding: const EdgeInsets.only(bottom: 3),
                     child: Obx(() {
@@ -168,8 +173,56 @@ class _CommentInputBarState extends State<CommentInputBar> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // 1. Replying to @user Sleek Micro-Chip
-                      if (replyingTo != null)
+                      // 1. Editing comment Micro-Chip
+                      if (editingComment != null)
+                        Padding(
+                          key: const ValueKey('comment_editing_chip'),
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: AnymeXContainer(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            color: colorScheme.primary.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color:
+                                  colorScheme.primary.withValues(alpha: 0.25),
+                              width: 1,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AnymeXText(
+                                  'Editing comment',
+                                  size: 12,
+                                  variant: TextVariant.bold,
+                                  color: colorScheme.primary,
+                                ),
+                                const SizedBox(width: 8),
+                                GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.selectionClick();
+                                    controller.cancelEdit();
+                                  },
+                                  child: AnymeXContainer(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: colorScheme.surfaceContainerHighest
+                                          .withValues(alpha: 0.7),
+                                    ),
+                                    child: Icon(
+                                      Icons.close_rounded,
+                                      size: 12,
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      // 2. Replying to @user Sleek Micro-Chip
+                      else if (replyingTo != null)
                         Padding(
                           key: const ValueKey('comment_replying_to_chip'),
                           padding: const EdgeInsets.only(bottom: 8),

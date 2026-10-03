@@ -2,6 +2,7 @@ import 'package:anymex/models/notification/announcement.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -98,37 +99,31 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
-        child: Container(
+        child: AnymeXContainer(
           height: MediaQuery.sizeOf(context).height * 0.85,
-          decoration: BoxDecoration(
-            color: colors.surface,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: colors.outline.withOpacity(0.1)),
-          ),
+          color: colors.surface,
+          radius: 24,
+          border: Border.all(color: colors.outline.withOpacity(0.1)),
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
-                child: Container(
+                child: AnymeXContainer(
                   width: 36,
                   height: 3.5,
                   margin: const EdgeInsets.only(bottom: 14),
-                  decoration: BoxDecoration(
-                    color: colors.onSurface.withOpacity(0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  color: colors.onSurface.withOpacity(0.15),
+                  radius: 10,
                 ),
               ),
               Row(
                 children: [
-                  Container(
+                  AnymeXContainer(
                     width: 38,
                     height: 38,
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.15),
-                      shape: BoxShape.circle,
-                    ),
+                    shape: BoxShape.circle,
+                    color: Colors.orange.withOpacity(0.15),
                     alignment: Alignment.center,
                     child: const Icon(
                       Icons.campaign_rounded,
@@ -288,12 +283,10 @@ class _AnnouncementSheetState extends State<AnnouncementSheet> {
   }
 
   Widget _chip(BuildContext context, String label, Color color, IconData icon) {
-    return Container(
+    return AnymeXContainer(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(20),
-      ),
+      color: color.withOpacity(0.12),
+      radius: 20,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

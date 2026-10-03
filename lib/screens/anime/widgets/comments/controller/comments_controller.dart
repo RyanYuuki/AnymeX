@@ -58,10 +58,57 @@ class CommentSectionController extends GetxController
   final RxString currentSort = 'newest'.obs;
   final RxString replyingToCommentId = ''.obs;
   final Rxn<Comment> activeReplyComment = Rxn<Comment>();
+  final Rxn<Comment> activeEditComment = Rxn<Comment>();
+  String? _preEditDraft;
 
   void setReplyTarget(Comment comment) {
+    if (activeEditComment.value != null) {
+      cancelEdit();
+    }
     activeReplyComment.value = comment;
     replyingToCommentId.value = comment.id;
+  }
+
+  void setEditTarget(Comment comment) {
+    clearReplyTarget();
+    activeEditComment.value = comment;
+    _preEditDraft = commentController.text;
+    commentController.text = comment.commentText;
+    commentController.selection = TextSelection.fromPosition(
+      TextPosition(offset: commentController.text.length),
+    );
+    focusCommentInput();
+  }
+
+  void cancelEdit() {
+    activeEditComment.value = null;
+    commentController.text = _preEditDraft ?? '';
+    _preEditDraft = null;
+    commentFocusNode.unfocus();
+  }
+
+  Future<void> submitEdit() async {
+    final comment = activeEditComment.value;
+    if (comment == null) return;
+    final newContent = commentController.text.trim();
+    if (newContent.isEmpty) {
+      snackBar('Comment cannot be empty');
+      return;
+    }
+    if (newContent == comment.commentText) {
+      cancelEdit();
+      return;
+    }
+    isSubmitting.value = true;
+    try {
+      await editComment(comment, newContent);
+      activeEditComment.value = null;
+      commentController.clear();
+      _preEditDraft = null;
+      commentFocusNode.unfocus();
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 
   void focusCommentInput([FocusNode? targetNode]) {
@@ -492,7 +539,9 @@ class CommentSectionController extends GetxController
     final text = commentController.text.trim();
     if (text.isEmpty || isSubmitting.value) return;
 
-    if (activeReplyComment.value != null) {
+    if (activeEditComment.value != null) {
+      await submitEdit();
+    } else if (activeReplyComment.value != null) {
       final parent = activeReplyComment.value!;
       await addReply(parent, text);
       clearInputs();
@@ -506,6 +555,8 @@ class CommentSectionController extends GetxController
     isInputExpanded.value = false;
     replyingToCommentId.value = '';
     activeReplyComment.value = null;
+    activeEditComment.value = null;
+    _preEditDraft = null;
     expandController.reverse();
     fadeController.reverse();
     commentFocusNode.unfocus();

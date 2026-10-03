@@ -1,7 +1,8 @@
 import 'package:anymex/database/comments/model/discord_badge.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -34,16 +35,12 @@ class DiscordBadgeWidget extends StatelessWidget {
         ),
       );
     } else {
-      badgeIcon = CachedNetworkImage(
+      badgeIcon = AnymeXImage(
         imageUrl: badge.iconUrl,
         width: size,
         height: size,
         fit: BoxFit.contain,
-        placeholder: (_, __) => SizedBox(
-          width: size,
-          height: size,
-        ),
-        errorWidget: (_, __, ___) => const SizedBox.shrink(),
+        radius: 0,
       );
     }
 
@@ -74,37 +71,31 @@ class DiscordBadgeWidget extends StatelessWidget {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) {
-        return Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHigh,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            border: Border.all(
-              color: colorScheme.outlineVariant.opaque(0.2),
-            ),
+        return AnymeXContainer(
+          color: colorScheme.surfaceContainerHigh,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(
+            color: colorScheme.outlineVariant.opaque(0.2),
           ),
           padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
+              AnymeXContainer(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(
-                  color: colorScheme.onSurfaceVariant.opaque(0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
+                color: colorScheme.onSurfaceVariant.opaque(0.3),
+                radius: 2,
               ),
               const SizedBox(height: 24),
-              Container(
+              AnymeXContainer(
                 width: 64,
                 height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: badge.badgeColor.withOpacity(0.12),
-                  border: Border.all(
-                    color: badge.badgeColor.withOpacity(0.35),
-                    width: 2,
-                  ),
+                shape: BoxShape.circle,
+                color: badge.badgeColor.withOpacity(0.12),
+                border: Border.all(
+                  color: badge.badgeColor.withOpacity(0.35),
+                  width: 2,
                 ),
                 padding: const EdgeInsets.all(12),
                 child: badge.isSvg
@@ -113,11 +104,12 @@ class DiscordBadgeWidget extends StatelessWidget {
                         width: 40,
                         height: 40,
                       )
-                    : CachedNetworkImage(
+                    : AnymeXImage(
                         imageUrl: badge.iconUrl,
                         width: 40,
                         height: 40,
                         fit: BoxFit.contain,
+                        radius: 0,
                       ),
               ),
               const SizedBox(height: 16),
@@ -129,14 +121,12 @@ class DiscordBadgeWidget extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              Container(
+              AnymeXContainer(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: badge.badgeColor.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: badge.badgeColor.withOpacity(0.3),
-                  ),
+                color: badge.badgeColor.withOpacity(0.15),
+                radius: 12,
+                border: Border.all(
+                  color: badge.badgeColor.withOpacity(0.3),
                 ),
                 child: AnymeXText(
                   badge.id.toUpperCase(),

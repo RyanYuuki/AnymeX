@@ -14,7 +14,6 @@ import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
-import 'package:anymex/database/comments/model/discord_badge.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +67,8 @@ class CommentsRepliesSheet extends StatefulWidget {
 class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _sheetFocusNode = FocusNode();
+  final Map<String, GlobalKey> _commentKeys = {};
+  String? _highlightedCommentId;
 
   @override
   void dispose() {
@@ -75,6 +76,28 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     _sheetFocusNode.dispose();
     widget.controller.clearReplyTarget();
     super.dispose();
+  }
+
+  void _scrollToComment(String commentId) {
+    final key = _commentKeys[commentId];
+    if (key?.currentContext != null) {
+      Scrollable.ensureVisible(
+        key!.currentContext!,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: 0.15,
+      );
+      setState(() {
+        _highlightedCommentId = commentId;
+      });
+      Future.delayed(const Duration(milliseconds: 600), () {
+        if (mounted && _highlightedCommentId == commentId) {
+          setState(() {
+            _highlightedCommentId = null;
+          });
+        }
+      });
+    }
   }
 
   String _formatTime(String timestamp) {
@@ -144,6 +167,8 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final controller = widget.controller;
+    final currentUserId =
+        Get.find<ServiceHandler>().profileData.value.id?.toString();
 
     final isUpvoted = comment.userVote == 1;
     final isDownvoted = comment.userVote == -1;
@@ -250,9 +275,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                             child: GestureDetector(
                               onTap: parentComment.deleted
                                   ? null
-                                  : () => UserCommentsSheet.show(context,
-                                      comment: parentComment,
-                                      controller: controller),
+                                  : () => _scrollToComment(parentComment.id),
                               child: AnymeXText(
                                 parentComment.deleted
                                     ? 'deleted'
@@ -322,113 +345,90 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                 ),
               ),
 
-              // Actions Row: Upvote + Reply
+              // Actions Row: Reply + Edit + Upvote + Downvote + 3-Dot (all right-aligned)
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Row(
                   children: [
-                    // Upvote Button
-                    GestureDetector(
-                      onTap: () => controller.handleVote(comment, 1),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 3),
-                        child: Row(
-                          children: [
-                            Icon(
-                              isUpvoted
-                                    ? Icons.thumb_up_rounded
-                                    : Icons.thumb_up_outlined,
-                              size: 13,
-                              color: isUpvoted
-                                  ? colorScheme.primary
-                                  : colorScheme.onSurfaceVariant,
-                            ),
-                            if (comment.likes > 0) ...[
-                              const SizedBox(width: 4),
-                              AnymeXText(
-                                '${comment.likes}',
-                                size: 11,
-                                variant: TextVariant.semiBold,
-                                color: isUpvoted
-                                    ? colorScheme.primary
-                                    : colorScheme.onSurfaceVariant,
-                                maxLines: null,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-
-                    // Downvote Button
-                    GestureDetector(
-                      onTap: () => controller.handleVote(comment, -1),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 3),
-                        child: Row(
-                          children: [
-                            Icon(
-                              isDownvoted
-                                  ? Icons.thumb_down_rounded
-                                  : Icons.thumb_down_outlined,
-                              size: 13,
-                              color: isDownvoted
-                                  ? colorScheme.primary
-                                  : colorScheme.onSurfaceVariant,
-                            ),
-                            if (comment.dislikes > 0) ...[
-                              const SizedBox(width: 4),
-                              AnymeXText(
-                                '${comment.dislikes}',
-                                size: 11,
-                                variant: TextVariant.semiBold,
-                                color: isDownvoted
-                                    ? colorScheme.primary
-                                    : colorScheme.onSurfaceVariant,
-                                maxLines: null,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-
+                    const Spacer(),
                     // Reply Button
-                    if (onReplyTap != null)
+                    if (onReplyTap != null) ...[
                       GestureDetector(
                         onTap: () {
                           HapticFeedback.selectionClick();
                           onReplyTap();
                         },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 3),
-                          child: AnymeXText(
-                            'Reply',
-                            size: 11.5,
-                            variant: TextVariant.bold,
-                            color: colorScheme.onSurfaceVariant,
-                            maxLines: null,
-                          ),
+                        child: AnymeXText(
+                          'Reply',
+                          size: 12,
+                          variant: TextVariant.semiBold,
+                          color: colorScheme.onSurfaceVariant,
+                          maxLines: null,
                         ),
                       ),
+                      const SizedBox(width: 12),
+                    ],
 
-                    // Context menu (3-dot) - full parity with the main list
-                    const Spacer(),
+                    // Edit Button (if own comment)
+                    if (comment.userId == currentUserId) ...[
+                      Obx(() {
+                        final isEditingThis =
+                            controller.activeEditComment.value?.id ==
+                                comment.id;
+                        return GestureDetector(
+                          onTap: () {
+                            HapticFeedback.selectionClick();
+                            if (isEditingThis) {
+                              controller.cancelEdit();
+                            } else {
+                              controller.setEditTarget(comment);
+                            }
+                          },
+                          child: AnymeXText(
+                            isEditingThis ? 'Cancel' : 'Edit',
+                            size: 12,
+                            variant: TextVariant.semiBold,
+                            color: isEditingThis
+                                ? colorScheme.error
+                                : colorScheme.onSurfaceVariant,
+                            maxLines: null,
+                          ),
+                        );
+                      }),
+                      const SizedBox(width: 12),
+                    ],
+
+                    // Upvote Button
+                    _buildCompactVoteButton(
+                      icon: Icons.arrow_upward_rounded,
+                      count: comment.likes,
+                      isActive: isUpvoted,
+                      onTap: () => controller.handleVote(comment, 1),
+                      colorScheme: colorScheme,
+                    ),
+                    const SizedBox(width: 10),
+
+                    // Downvote Button
+                    _buildCompactVoteButton(
+                      icon: Icons.arrow_downward_rounded,
+                      count: comment.dislikes,
+                      isActive: isDownvoted,
+                      onTap: () => controller.handleVote(comment, -1),
+                      colorScheme: colorScheme,
+                    ),
+                    const SizedBox(width: 10),
+
+                    // Context menu (3-dot)
                     if (widget.onShowContextMenu != null)
                       GestureDetector(
                         onTap: () => widget.onShowContextMenu!(comment),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                              horizontal: 4, vertical: 4),
                           child: Icon(
-                            Icons.more_horiz_rounded,
+                            Icons.more_vert_rounded,
                             size: 16,
-                            color: colorScheme.onSurfaceVariant,
+                            color: colorScheme.onSurfaceVariant.opaque(0.6),
                           ),
                         ),
                       ),
@@ -470,7 +470,7 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
             width: 0.8,
           ),
         ),
-        child: Container(
+        child: AnymeXContainer(
           padding: const EdgeInsets.all(10),
           color: Colors.black.withOpacity(0.55),
           child: card,
@@ -478,25 +478,39 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
       );
     }
 
-    // Slim indent with a branch line for sub-replies (kept minimal so
-    // deep threads don't drift right — the breadcrumb already shows target)
-    if (isNestedSubReply) {
-      return AnymeXContainer(
-        margin: const EdgeInsets.only(left: 2, top: 10),
-        padding: const EdgeInsets.only(left: 8),
-        border: Border(
-          left: BorderSide(
-            color: colorScheme.primary.withValues(alpha: 0.45),
-            width: 2,
-          ),
-        ),
-        child: card,
-      );
-    }
+    final isHighlighted = _highlightedCommentId == comment.id;
+    final avatarSize = isNestedSubReply ? 26.0 : (isRoot ? 34.0 : 30.0);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: card,
+    final content = isNestedSubReply && parentComment != null
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildReplyHook(
+                context: context,
+                parentComment: parentComment,
+                avatarSize: avatarSize,
+                onTap: () => _scrollToComment(parentComment.id),
+              ),
+              card,
+            ],
+          )
+        : card;
+
+    return KeyedSubtree(
+      key: _commentKeys.putIfAbsent(comment.id, () => GlobalKey()),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: isHighlighted
+              ? colorScheme.primary.withValues(alpha: 0.12)
+              : Colors.transparent,
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+        child: content,
+      ),
     );
   }
 
@@ -669,5 +683,128 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
         ],
       ),
     );
+  }
+
+  Widget _buildCompactVoteButton({
+    required IconData icon,
+    required int count,
+    required bool isActive,
+    required VoidCallback onTap,
+    required ColorScheme colorScheme,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(6),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color:
+                isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 3),
+          AnymeXText(
+            count > 999 ? '${(count / 1000).toStringAsFixed(1)}k' : '$count',
+            size: 12,
+            variant: TextVariant.semiBold,
+            color:
+                isActive ? colorScheme.primary : colorScheme.onSurfaceVariant,
+            maxLines: null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReplyHook({
+    required BuildContext context,
+    required Comment parentComment,
+    required double avatarSize,
+    required VoidCallback onTap,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final parentUsername =
+        parentComment.deleted ? 'deleted' : parentComment.username;
+    final parentSnippet = parentComment.deleted
+        ? '[deleted comment]'
+        : parentComment.commentText.replaceAll('\n', ' ').trim();
+    final avatarCenter = avatarSize / 2;
+
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 2),
+        child: MediaQuery.withClampedTextScaling(
+          minScaleFactor: 1.0,
+          maxScaleFactor: 1.0,
+          child: SizedBox(
+            height: 15,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CustomPaint(
+                  size: Size(avatarCenter + 6, 15),
+                  painter: _HookLinePainter(
+                    startX: avatarCenter,
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.35),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                AnymeXText(
+                  '@$parentUsername',
+                  size: 11,
+                  variant: TextVariant.bold,
+                  color: colorScheme.primary.withValues(alpha: 0.85),
+                  maxLines: 1,
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: AnymeXText(
+                    parentSnippet,
+                    size: 10.5,
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HookLinePainter extends CustomPainter {
+  final double startX;
+  final Color color;
+
+  _HookLinePainter({required this.startX, required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+    path.moveTo(startX, size.height);
+    path.lineTo(startX, size.height * 0.5 + 3);
+    path.quadraticBezierTo(
+        startX, size.height * 0.5, startX + 3, size.height * 0.5);
+    path.lineTo(size.width, size.height * 0.5);
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _HookLinePainter oldDelegate) {
+    return oldDelegate.startX != startX || oldDelegate.color != color;
   }
 }

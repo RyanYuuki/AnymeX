@@ -99,13 +99,11 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
         children: [
           const SizedBox(height: 12),
           Center(
-            child: Container(
+            child: AnymeXContainer(
               width: 42,
               height: 4.5,
-              decoration: BoxDecoration(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(3),
-              ),
+              color: colorScheme.outlineVariant.withValues(alpha: 0.4),
+              radius: 3,
             ),
           ),
           const SizedBox(height: 14),
@@ -115,12 +113,10 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                Container(
+                AnymeXContainer(
                   padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
+                  color: colorScheme.primary.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
                   child: Icon(Icons.emoji_events_rounded,
                       color: colorScheme.primary, size: 22),
                 ),
@@ -226,7 +222,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                     ),
                   ],
                 ),
-                child: Container(
+                child: AnymeXContainer(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 20, vertical: 12),
                   color: nameplateImg != null
@@ -236,13 +232,11 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                     top: false,
                     child: Row(
                       children: [
-                        Container(
+                        AnymeXContainer(
                           width: 32,
                           height: 32,
-                          decoration: BoxDecoration(
-                            color: colorScheme.primary.withValues(alpha: 0.18),
-                            shape: BoxShape.circle,
-                          ),
+                          color: colorScheme.primary.withValues(alpha: 0.18),
+                          shape: BoxShape.circle,
                           alignment: Alignment.center,
                           child: Builder(
                             builder: (context) {
@@ -299,15 +293,13 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                           ),
                         ),
                         if (_currentUserEntry!.currentStreak > 0)
-                          Container(
+                          AnymeXContainer(
                             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: Colors.orange.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                            color: Colors.orange.withValues(alpha: 0.15),
+                            radius: 8,
                             child: Row(
                               children: [
-                                const Text('🔥', style: TextStyle(fontSize: 11)),
+                                const AnymeXText('🔥', size: 11),
                                 const SizedBox(width: 3),
                                 AnymeXText(
                                   '${_currentUserEntry!.currentStreak}d',
@@ -393,7 +385,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                 width: isTop3 || isMyEntry ? 1.2 : 0.8,
               ),
             ),
-            child: Container(
+            child: AnymeXContainer(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               color: nameplateImg != null
                   ? Colors.black.withOpacity(0.52)
@@ -401,17 +393,15 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
               child: Row(
                 children: [
                   // Rank indicator
-                  Container(
+                  AnymeXContainer(
                     width: 36,
                     height: 36,
-                    decoration: BoxDecoration(
-                      color: rankBgColor ??
-                          colorScheme.surface.withValues(alpha: 0.4),
-                      shape: BoxShape.circle,
-                    ),
+                    color: rankBgColor ??
+                        colorScheme.surface.withValues(alpha: 0.4),
+                    shape: BoxShape.circle,
                     alignment: Alignment.center,
                     child: isTop3
-                        ? Text(rankBadge, style: const TextStyle(fontSize: 16))
+                        ? AnymeXText(rankBadge, size: 16)
                         : AnymeXText(
                             rankBadge,
                             variant: TextVariant.bold,
@@ -457,14 +447,12 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                             ] else if (entry.role != null &&
                                 entry.role != 'user') ...[
                               const SizedBox(width: 6),
-                              Container(
+                              AnymeXContainer(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 5, vertical: 1),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.primary
-                                      .withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
+                                color: colorScheme.primary
+                                    .withValues(alpha: 0.15),
+                                radius: 4,
                                 child: AnymeXText(
                                   entry.role!,
                                   size: 9.5,
@@ -479,8 +467,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                         Row(
                           children: [
                             if (entry.tierEmoji.isNotEmpty) ...[
-                              Text(entry.tierEmoji,
-                                  style: const TextStyle(fontSize: 11)),
+                              AnymeXText(entry.tierEmoji, size: 11),
                               const SizedBox(width: 4),
                             ],
                             AnymeXText(
@@ -491,8 +478,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                             ),
                             if (entry.currentStreak > 0) ...[
                               const SizedBox(width: 8),
-                              const Text('🔥',
-                                  style: TextStyle(fontSize: 10)),
+                              const AnymeXText('🔥', size: 10),
                               const SizedBox(width: 2),
                               AnymeXText(
                                 '${entry.currentStreak}d',
@@ -511,22 +497,20 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
+                      AnymeXContainer(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 9, vertical: 5),
-                        decoration: BoxDecoration(
+                        color: isTop3
+                            ? rankColor.withValues(alpha: 0.12)
+                            : colorScheme.surface.withValues(alpha: 0.5),
+                        radius: 10,
+                        border: Border.all(
                           color: isTop3
-                              ? rankColor.withValues(alpha: 0.12)
-                              : colorScheme.surface.withValues(alpha: 0.5),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: isTop3
-                                ? rankColor.withValues(alpha: 0.3)
-                                : colorScheme.outlineVariant
+                              ? rankColor.withValues(alpha: 0.3)
+                              : colorScheme.outlineVariant
                                     .withValues(alpha: 0.15),
                             width: 0.8,
                           ),
-                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -576,13 +560,11 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
           snackBar('${entry.username}: ${entry.realPoints} earned pts + ${tag.text} role bonus (${tag.label}). Ranking is based on real activity.');
         }
       },
-      child: Container(
+      child: AnymeXContainer(
         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-        decoration: BoxDecoration(
-          color: tagColor.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: tagColor.withValues(alpha: 0.4), width: 0.8),
-        ),
+        color: tagColor.withValues(alpha: 0.15),
+        radius: 8,
+        border: Border.all(color: tagColor.withValues(alpha: 0.4), width: 0.8),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

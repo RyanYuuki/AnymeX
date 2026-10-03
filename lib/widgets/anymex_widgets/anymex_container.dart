@@ -18,6 +18,7 @@ class AnymeXContainer extends StatelessWidget {
   final BoxShadow? shadow;
   final Clip clipBehavior;
   final bool enableGlow;
+  final BoxShape shape;
 
   const AnymeXContainer({
     super.key,
@@ -35,18 +36,22 @@ class AnymeXContainer extends StatelessWidget {
     this.shadow,
     this.clipBehavior = Clip.none,
     this.enableGlow = false,
+    this.shape = BoxShape.rectangle,
   });
 
   @override
   Widget build(BuildContext context) {
-    final BorderRadiusGeometry? effectiveRadius = radius != null
-        ? BorderRadius.circular(radius!.multiplyRadius())
-        : borderRadius;
+    final BorderRadiusGeometry? effectiveRadius = shape == BoxShape.circle
+        ? null
+        : (radius != null
+            ? BorderRadius.circular(radius!.multiplyRadius())
+            : borderRadius);
 
     final BoxDecoration effectiveDecoration = decoration ??
         BoxDecoration(
           color: color,
-          borderRadius: effectiveRadius,
+          shape: shape,
+          borderRadius: shape == BoxShape.circle ? null : effectiveRadius,
           border: border,
           boxShadow: enableGlow
               ? [

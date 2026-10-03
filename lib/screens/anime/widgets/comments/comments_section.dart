@@ -12,7 +12,6 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
@@ -894,7 +893,7 @@ class _CommentSectionState extends State<CommentSection> {
 
     return Obx(() {
       if (controller.isLoading.value) {
-        return Container(
+        return AnymeXContainer(
           padding: const EdgeInsets.all(60),
           child: Center(
             child: Column(
@@ -917,7 +916,7 @@ class _CommentSectionState extends State<CommentSection> {
       }
 
       if (controller.comments.isEmpty) {
-        return Container(
+        return AnymeXContainer(
           alignment: Alignment.center,
           padding: const EdgeInsets.all(60),
           child: Column(
@@ -925,10 +924,8 @@ class _CommentSectionState extends State<CommentSection> {
             children: [
               AnymeXContainer(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  shape: BoxShape.circle,
-                ),
+                shape: BoxShape.circle,
+                color: colorScheme.surfaceContainerLow,
                 child: Icon(
                   Icons.chat_bubble_outline_rounded,
                   size: 36,
@@ -1361,7 +1358,7 @@ class _CommentSectionState extends State<CommentSection> {
             GestureDetector(
               onTap: () => setState(() => _collapsedThreads.add(comment.id)),
               behavior: HitTestBehavior.opaque,
-              child: Container(
+              child: AnymeXContainer(
                 width: 18,
                 alignment: Alignment.center,
                 child: AnymeXContainer(
@@ -1975,6 +1972,7 @@ class _CommentSectionState extends State<CommentSection> {
                     const SizedBox(height: 10),
                     Row(
                       children: [
+                        const Spacer(),
                         if (!effectiveLocked) ...[
                           GestureDetector(
                             onTap: () {
@@ -1994,9 +1992,35 @@ class _CommentSectionState extends State<CommentSection> {
                               maxLines: null,
                             ),
                           ),
-                          const SizedBox(width: 14),
+                          const SizedBox(width: 12),
                         ],
-                        const Spacer(),
+                        if (isOwnComment) ...[
+                          Obx(() {
+                            final isEditingThis =
+                                controller.activeEditComment.value?.id ==
+                                    comment.id;
+                            return GestureDetector(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                if (isEditingThis) {
+                                  controller.cancelEdit();
+                                } else {
+                                  controller.setEditTarget(comment);
+                                }
+                              },
+                              child: AnymeXText(
+                                isEditingThis ? 'Cancel' : 'Edit',
+                                size: 12,
+                                variant: TextVariant.semiBold,
+                                color: isEditingThis
+                                    ? colorScheme.error
+                                    : colorScheme.onSurfaceVariant,
+                                maxLines: null,
+                              ),
+                            );
+                          }),
+                          const SizedBox(width: 12),
+                        ],
                         _buildCompactVoteButton(
                           context: context,
                           icon: Icons.arrow_upward_rounded,
@@ -2022,7 +2046,7 @@ class _CommentSectionState extends State<CommentSection> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 4, vertical: 4),
                             child: Icon(
-                              Icons.more_horiz_rounded,
+                              Icons.more_vert_rounded,
                               size: 16,
                               color: colorScheme.onSurfaceVariant.opaque(0.6),
                             ),
@@ -2069,7 +2093,7 @@ class _CommentSectionState extends State<CommentSection> {
             width: 0.8,
           ),
         ),
-        child: Container(
+        child: AnymeXContainer(
           padding: const EdgeInsets.all(10),
           color: Colors.black.withOpacity(0.55),
           child: commentContent,
@@ -2125,16 +2149,14 @@ class _CommentSectionState extends State<CommentSection> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
+          AnymeXContainer(
             width: avatarSize,
             height: avatarSize,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: colorScheme.surfaceContainerHighest.opaque(0.4),
-              border: Border.all(
-                color: colorScheme.outlineVariant.opaque(0.2),
-                width: 0.8,
-              ),
+            shape: BoxShape.circle,
+            color: colorScheme.surfaceContainerHighest.opaque(0.4),
+            border: Border.all(
+              color: colorScheme.outlineVariant.opaque(0.2),
+              width: 0.8,
             ),
             child: Icon(
               Icons.delete_outline_rounded,
@@ -2189,102 +2211,217 @@ class _CommentSectionState extends State<CommentSection> {
               borderRadius: BorderRadius.circular(24),
               color: colorScheme.surfaceContainerHigh,
               border: Border.all(
-                color: colorScheme.outlineVariant.withOpacity(0.2),
+                color: colorScheme.outlineVariant.withValues(alpha: 0.2),
               ),
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Center(
-                    child: AnymeXContainer(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      width: 36,
-                      height: 4,
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(2),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Center(
+                      child: AnymeXContainer(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        width: 36,
+                        height: 4,
+                        color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  _buildMenuOption(
-                    context: context,
-                    icon: Icons.copy_rounded,
-                    label: 'Copy Comment',
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      Clipboard.setData(
-                          ClipboardData(text: comment.commentText));
-                      snackBar('Comment copied to clipboard');
-                    },
-                  ),
-                  if (isOwnComment) ...[
-                    const SizedBox(height: 4),
-                    _buildMenuOption(
+                    _buildTextMenuOption(
                       context: context,
-                      icon: Icons.edit_outlined,
-                      label: 'Edit Comment',
+                      label: 'Copy',
                       onTap: () {
                         Navigator.pop(ctx);
-                        _showEditDialog(context, comment, controller);
+                        Clipboard.setData(
+                            ClipboardData(text: comment.commentText));
+                        snackBar('Comment copied to clipboard');
                       },
                     ),
-                    const SizedBox(height: 4),
-                    _buildMenuOption(
-                      context: context,
-                      icon: Icons.delete_outline_rounded,
-                      label: 'Delete Comment',
-                      isDestructive: true,
-                      onTap: () {
-                        Navigator.pop(ctx);
-                        _showDeleteDialog(context, comment, controller);
-                      },
-                    ),
-                  ],
-                  if (!isOwnComment) ...[
-                    const SizedBox(height: 4),
-                    _buildMenuOption(
-                      context: context,
-                      icon: Icons.flag_outlined,
-                      label: 'Report Comment',
-                      isDestructive: true,
-                      onTap: () {
-                        Navigator.pop(ctx);
-                        _showReportDialog(context, comment, controller);
-                      },
-                    ),
-                  ],
-                  if (canModerate) ...[
-                    const SizedBox(height: 8),
-                    AnymeXContainer(
-                      height: 1,
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      color: colorScheme.outlineVariant.withOpacity(0.2),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildMenuOption(
-                      context: context,
-                      icon: Icons.shield_outlined,
-                      label: 'Moderate',
-                      onTap: () {
-                        Navigator.pop(ctx);
-                        _showModerationSheet(context, comment, controller,
-                            isOwnComment: isOwnComment);
-                      },
-                    ),
-                    if (!isOwnComment) ...[
-                      const SizedBox(height: 4),
-                      _buildMenuOption(
+                    if (isOwnComment) ...[
+                      _buildTextMenuOption(
                         context: context,
-                        icon: Icons.admin_panel_settings_outlined,
-                        label: 'User Actions',
+                        label: 'Delete',
+                        isDestructive: true,
                         onTap: () {
                           Navigator.pop(ctx);
-                          _showUserManagementSheet(
-                              context, comment, controller);
+                          _showDeleteDialog(context, comment, controller);
                         },
                       ),
                     ],
+                    if (!isOwnComment) ...[
+                      _buildTextMenuOption(
+                        context: context,
+                        label: 'Report',
+                        isDestructive: true,
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _showReportDialog(context, comment, controller);
+                        },
+                      ),
+                    ],
+                    if (canModerate) ...[
+                      if (!isOwnComment) ...[
+                        _buildTextMenuOption(
+                          context: context,
+                          label: 'Delete',
+                          isDestructive: true,
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            _showReasonDialog(
+                              context: context,
+                              title: 'Delete Comment',
+                              isDestructive: true,
+                              onConfirm: (reason) {
+                                controller.deleteComment(comment);
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        child: Divider(
+                          color: colorScheme.outlineVariant.withValues(alpha: 0.2),
+                          height: 1,
+                        ),
+                      ),
+                      _buildTextMenuOption(
+                        context: context,
+                        label: comment.pinned == true
+                            ? 'Unpin Comment'
+                            : 'Pin Comment',
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _showReasonDialog(
+                            context: context,
+                            title: comment.pinned == true
+                                ? 'Unpin Comment'
+                                : 'Pin Comment',
+                            onConfirm: (reason) {
+                              controller.moderateComment(
+                                comment: comment,
+                                action: comment.pinned == true
+                                    ? 'unpin_comment'
+                                    : 'pin_comment',
+                                reason: reason,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      _buildTextMenuOption(
+                        context: context,
+                        label: comment.locked == true
+                            ? 'Unlock Thread'
+                            : 'Lock Thread',
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _showReasonDialog(
+                            context: context,
+                            title: comment.locked == true
+                                ? 'Unlock Thread'
+                                : 'Lock Thread',
+                            onConfirm: (reason) {
+                              controller.moderateComment(
+                                comment: comment,
+                                action: comment.locked == true
+                                    ? 'unlock_thread'
+                                    : 'lock_thread',
+                                reason: reason,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      if (!isOwnComment) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 4),
+                          child: Divider(
+                            color: colorScheme.outlineVariant
+                                .withValues(alpha: 0.2),
+                            height: 1,
+                          ),
+                        ),
+                        _buildTextMenuOption(
+                          context: context,
+                          label: 'Warn User',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            _openUserModeration(
+                                comment, ModerationActionType.warn);
+                          },
+                        ),
+                        _buildTextMenuOption(
+                          context: context,
+                          label: 'Mute User',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            _openUserModeration(
+                                comment, ModerationActionType.mute);
+                          },
+                        ),
+                        _buildTextMenuOption(
+                          context: context,
+                          label: 'Ban User',
+                          isDestructive: true,
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            _openUserModeration(
+                                comment, ModerationActionType.ban);
+                          },
+                        ),
+                        _buildTextMenuOption(
+                          context: context,
+                          label: 'Shadow Ban User',
+                          isDestructive: true,
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            _openUserModeration(
+                                comment, ModerationActionType.shadowBan);
+                          },
+                        ),
+                        _buildTextMenuOption(
+                          context: context,
+                          label: 'Unmute User',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            _openUserModeration(
+                                comment, ModerationActionType.unmute);
+                          },
+                        ),
+                        _buildTextMenuOption(
+                          context: context,
+                          label: 'Unban User',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            _openUserModeration(
+                                comment, ModerationActionType.unban);
+                          },
+                        ),
+                        _buildTextMenuOption(
+                          context: context,
+                          label: 'User Info',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            _showUserInfoDialog(
+                                context, comment.userId, controller);
+                          },
+                        ),
+                        _buildTextMenuOption(
+                          context: context,
+                          label: 'User History',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            _showUserHistoryDialog(
+                                context, comment.userId, controller);
+                          },
+                        ),
+                      ],
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
@@ -2293,44 +2430,25 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  Widget _buildMenuOption({
+  Widget _buildTextMenuOption({
     required BuildContext context,
-    required IconData icon,
     required String label,
     required VoidCallback onTap,
     bool isDestructive = false,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    final itemColor = isDestructive ? colorScheme.error : colorScheme.onSurface;
-    final iconColor = isDestructive ? colorScheme.error : colorScheme.primary;
+    final itemColor =
+        isDestructive ? colorScheme.error : colorScheme.onSurface;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: AnymeXContainer(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          borderRadius: BorderRadius.circular(14),
-          color: Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             children: [
-              AnymeXContainer(
-                width: 38,
-                height: 38,
-                borderRadius: BorderRadius.circular(10),
-                color: isDestructive
-                    ? colorScheme.error.withOpacity(0.12)
-                    : colorScheme.primary.withOpacity(0.1),
-                child: Center(
-                  child: Icon(
-                    icon,
-                    color: iconColor,
-                    size: 20,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
               Expanded(
                 child: AnymeXText(
                   label,
@@ -2339,11 +2457,6 @@ class _CommentSectionState extends State<CommentSection> {
                   variant: TextVariant.semiBold,
                   maxLines: null,
                 ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                size: 18,
-                color: colorScheme.onSurfaceVariant.withOpacity(0.4),
               ),
             ],
           ),
@@ -2669,7 +2782,7 @@ class _CommentSectionState extends State<CommentSection> {
       isScrollControlled: true,
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
-        return Container(
+        return AnymeXContainer(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -2886,7 +2999,7 @@ class _CommentSectionState extends State<CommentSection> {
       isScrollControlled: true,
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
-        return Container(
+        return AnymeXContainer(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -2905,7 +3018,7 @@ class _CommentSectionState extends State<CommentSection> {
                   comment.bannerUrl!.trim().isNotEmpty) ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(14),
-                  child: Container(
+                  child: AnymeXContainer(
                     height: 90,
                     width: double.infinity,
                     decoration: BoxDecoration(

@@ -1,6 +1,8 @@
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/material.dart';
 
@@ -232,7 +234,7 @@ class _AnymeXModerationActionSheetState
         _currentAction != ModerationActionType.unmute) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Please provide a reason for this action')),
+            content: AnymeXText('Please provide a reason for this action')),
       );
       return;
     }
@@ -292,63 +294,53 @@ class _AnymeXModerationActionSheetState
                       Row(
                         children: [
                           Flexible(
-                            child: Text(
+                            child: AnymeXText(
                               widget.targetUsername,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              variant: TextVariant.bold,
+                              size: 16,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           if (widget.targetClientType != null) ...[
                             const SizedBox(width: 8),
-                            Container(
+                            AnymeXContainer(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color:
-                                    colorScheme.primary.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
+                              color:
+                                  colorScheme.primary.withValues(alpha: 0.15),
+                              radius: 6,
+                              child: AnymeXText(
                                 widget.targetClientType!.toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.primary,
-                                ),
+                                size: 10,
+                                variant: TextVariant.bold,
+                                color: colorScheme.primary,
                               ),
                             ),
                           ],
                         ],
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      AnymeXText(
                         'User ID: #${widget.targetUserId}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+                        size: 12,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ),
                 ),
                 // Action Badge
-                Container(
+                AnymeXContainer(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: actionColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(8),
-                    border:
-                        Border.all(color: actionColor.withValues(alpha: 0.4)),
-                  ),
-                  child: Text(
+                  color: actionColor.withValues(alpha: 0.15),
+                  radius: 8,
+                  border:
+                      Border.all(color: actionColor.withValues(alpha: 0.4)),
+                  child: AnymeXText(
                     _getActionTitle(),
-                    style: TextStyle(
-                      color: actionColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
+                    color: actionColor,
+                    variant: TextVariant.bold,
+                    size: 12,
                   ),
                 ),
               ],
@@ -358,12 +350,11 @@ class _AnymeXModerationActionSheetState
 
           // Duration Selector (for Mute, Ban, Shadow Ban)
           if (_requiresDuration) ...[
-            Text(
+            AnymeXText(
               'Penalty Duration',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
+              variant: TextVariant.bold,
+              size: 14,
+              color: colorScheme.onSurface,
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -374,7 +365,7 @@ class _AnymeXModerationActionSheetState
                   final isSelected = !_isCustomDuration &&
                       _selectedDurationHours == preset.hours;
                   return ChoiceChip(
-                    label: Text(preset.label),
+                    label: AnymeXText(preset.label),
                     selected: isSelected,
                     selectedColor: actionColor.withValues(alpha: 0.2),
                     labelStyle: TextStyle(
@@ -393,7 +384,7 @@ class _AnymeXModerationActionSheetState
                   );
                 }),
                 ChoiceChip(
-                  label: const Text('Custom...'),
+                  label: const AnymeXText('Custom...'),
                   selected: _isCustomDuration,
                   selectedColor: actionColor.withValues(alpha: 0.2),
                   labelStyle: TextStyle(
@@ -436,8 +427,8 @@ class _AnymeXModerationActionSheetState
                   const SizedBox(width: 10),
                   SegmentedButton<String>(
                     segments: const [
-                      ButtonSegment(value: 'hours', label: Text('Hours')),
-                      ButtonSegment(value: 'days', label: Text('Days')),
+                      ButtonSegment(value: 'hours', label: AnymeXText('Hours')),
+                      ButtonSegment(value: 'days', label: AnymeXText('Days')),
                     ],
                     selected: {_customUnit},
                     onSelectionChanged: (selection) {
@@ -452,14 +443,12 @@ class _AnymeXModerationActionSheetState
 
             // Real-time Expiration Preview Banner
             const SizedBox(height: 10),
-            Container(
+            AnymeXContainer(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: actionColor.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: actionColor.withValues(alpha: 0.2)),
-              ),
+              color: actionColor.withValues(alpha: 0.08),
+              radius: 8,
+              border: Border.all(color: actionColor.withValues(alpha: 0.2)),
               child: Row(
                 children: [
                   Icon(
@@ -471,13 +460,11 @@ class _AnymeXModerationActionSheetState
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: AnymeXText(
                       _getExpirationPreview(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: actionColor,
-                      ),
+                      size: 12,
+                      variant: TextVariant.semiBold,
+                      color: actionColor,
                     ),
                   ),
                 ],
@@ -487,12 +474,11 @@ class _AnymeXModerationActionSheetState
           ],
 
           // Quick Reasons
-          Text(
+          AnymeXText(
             'Reason',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
+            variant: TextVariant.bold,
+            size: 14,
+            color: colorScheme.onSurface,
           ),
           const SizedBox(height: 8),
           SingleChildScrollView(
@@ -503,7 +489,7 @@ class _AnymeXModerationActionSheetState
                 return Padding(
                   padding: const EdgeInsets.only(right: 6),
                   child: ActionChip(
-                    label: Text(reason),
+                    label: AnymeXText(reason),
                     avatar: isCurrent
                         ? Icon(Icons.check, size: 14, color: actionColor)
                         : null,
@@ -560,12 +546,10 @@ class _AnymeXModerationActionSheetState
                       height: 20,
                       child: ExpressiveLoadingIndicator(),
                     )
-                  : Text(
+                  : AnymeXText(
                       'Confirm ${_getActionTitle()}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
+                      variant: TextVariant.bold,
+                      size: 15,
                     ),
             ),
           ),
