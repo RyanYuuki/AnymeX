@@ -270,10 +270,14 @@ class CommentumService extends GetxController {
         return 2069;
       }
 
+      final token = await _authToken;
+
       final requestBody = {
         'action': 'create',
         'client_type': _clientType,
         'content': content,
+        if (token != null) 'access_token': token,
+        if (token != null) 'token': token,
         'user_info': {
           "user_id": currentUserId,
           "username": currentUsername,
@@ -388,7 +392,7 @@ class CommentumService extends GetxController {
     }
 
     final isModDelete = userId != null && userId != currentUserId;
-    final token = isModDelete ? await _authToken : null;
+    final token = await _authToken;
 
     if (isModDelete && token == null) {
       Logger.i('Admin token required for deleting others\' comments');
@@ -403,6 +407,7 @@ class CommentumService extends GetxController {
           'comment_id': commentId,
           'client_type': _clientType,
           'access_token': token,
+          'token': token,
         };
       } else {
         body = {
@@ -413,6 +418,8 @@ class CommentumService extends GetxController {
             "username": currentUsername,
             "avatar": currentUserAvatar,
           },
+          if (token != null) 'access_token': token,
+          if (token != null) 'token': token,
         };
       }
 
@@ -447,6 +454,8 @@ class CommentumService extends GetxController {
       return null;
     }
 
+    final token = await _authToken;
+
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/votes'),
@@ -461,6 +470,8 @@ class CommentumService extends GetxController {
             if (currentUserAvatar != null) "avatar": currentUserAvatar,
           },
           'vote_type': voteType,
+          if (token != null) 'access_token': token,
+          if (token != null) 'token': token,
         }),
       );
 
@@ -495,6 +506,8 @@ class CommentumService extends GetxController {
       return false;
     }
 
+    final token = await _authToken;
+
     try {
       final response = await http.post(
         Uri.parse('$_baseUrl/reports'),
@@ -506,9 +519,12 @@ class CommentumService extends GetxController {
           'comment_id': commentId,
           'reporter_info': {
             'user_id': currentUserId,
+            'username': currentUsername,
           },
           'reason': reason,
           'notes': notes,
+          if (token != null) 'access_token': token,
+          if (token != null) 'token': token,
         }),
       );
 
