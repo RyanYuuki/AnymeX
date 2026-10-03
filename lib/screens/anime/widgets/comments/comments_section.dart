@@ -19,6 +19,7 @@ import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comments_replies_sheet.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/expandable_comment_text.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/user_comments_sheet.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
 import 'package:anymex/services/commentum_service.dart';
@@ -3881,7 +3882,7 @@ class _CommentSectionState extends State<CommentSection> {
   }
 }
 
-class _SpoilerText extends StatefulWidget {
+class _SpoilerText extends StatelessWidget {
   final String text;
   final bool isSpoiler;
   final ThemeData theme;
@@ -3897,58 +3898,15 @@ class _SpoilerText extends StatefulWidget {
   });
 
   @override
-  State<_SpoilerText> createState() => _SpoilerTextState();
-}
-
-class _SpoilerTextState extends State<_SpoilerText> {
-  bool _isRevealed = false;
-
-  @override
   Widget build(BuildContext context) {
-    final textStyle = widget.theme.textTheme.bodyMedium?.copyWith(
-          fontSize: widget.fontSize,
-          color: widget.colorScheme.onSurface,
-        ) ??
-        TextStyle(
-          color: widget.colorScheme.onSurface,
-          fontSize: widget.fontSize,
-        );
-
-    if (!widget.isSpoiler || _isRevealed) {
-      return DiscordMarkdown(
-        text: widget.text,
-        colorScheme: widget.colorScheme,
-        fontSize: widget.fontSize,
-        baseStyle: textStyle,
-      );
-    }
-
-    return GestureDetector(
-      onTap: () => setState(() => _isRevealed = true),
-      child: AnymeXContainer(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        color: widget.colorScheme.surfaceContainerHighest.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: widget.colorScheme.outlineVariant.opaque(0.3),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.visibility_off_rounded,
-                size: 16, color: widget.colorScheme.onSurfaceVariant),
-            const SizedBox(width: 8),
-            AnymeXText(
-              'Spoiler — tap to reveal',
-              style: widget.theme.textTheme.bodyMedium?.copyWith(
-                color: widget.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-                fontStyle: FontStyle.italic,
-              ),
-              maxLines: null,
-            ),
-          ],
-        ),
+    return ExpandableCommentText(
+      text: text,
+      isSpoiler: isSpoiler,
+      colorScheme: colorScheme,
+      fontSize: fontSize,
+      baseStyle: theme.textTheme.bodyMedium?.copyWith(
+        fontSize: fontSize,
+        color: colorScheme.onSurface,
       ),
     );
   }

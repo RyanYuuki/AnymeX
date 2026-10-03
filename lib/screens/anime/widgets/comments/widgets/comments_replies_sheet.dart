@@ -3,8 +3,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
-import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/expandable_comment_text.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/user_comments_sheet.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/profile/user_profile_page.dart';
@@ -331,12 +331,14 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                 ],
               ),
 
-              // Comment Markdown Content
+              // Comment Markdown Content with Expandable Read more / Show less & spoiler protection
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: DiscordMarkdown(
+                child: ExpandableCommentText(
                   text: comment.commentText,
                   colorScheme: colorScheme,
+                  isSpoiler: isSpoiler,
+                  fontSize: 13.5,
                   baseStyle: TextStyle(
                     fontSize: 13.5,
                     height: 1.4,
