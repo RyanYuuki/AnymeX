@@ -178,6 +178,8 @@ class CommentumService extends GetxController {
     }
   }
 
+  String? get _anilistToken => AuthKeys.authToken.get<String?>();
+
   String? getTokenForService(String serviceType) {
     final lower = serviceType.toLowerCase();
     if (lower == 'anilist') {
@@ -278,6 +280,8 @@ class CommentumService extends GetxController {
         'content': content,
         if (token != null) 'access_token': token,
         if (token != null) 'token': token,
+        if (_anilistToken != null && _anilistToken!.isNotEmpty)
+          'anilist_token': _anilistToken,
         'user_info': {
           "user_id": currentUserId,
           "username": currentUsername,
@@ -361,6 +365,9 @@ class CommentumService extends GetxController {
             if (currentUserAvatar != null) "avatar": currentUserAvatar,
           },
           'access_token': token,
+          'token': token,
+          if (_anilistToken != null && _anilistToken!.isNotEmpty)
+            'anilist_token': _anilistToken,
           'content': content,
         }),
       );
@@ -408,6 +415,8 @@ class CommentumService extends GetxController {
           'client_type': _clientType,
           'access_token': token,
           'token': token,
+          if (_anilistToken != null && _anilistToken!.isNotEmpty)
+            'anilist_token': _anilistToken,
         };
       } else {
         body = {
@@ -420,6 +429,8 @@ class CommentumService extends GetxController {
           },
           if (token != null) 'access_token': token,
           if (token != null) 'token': token,
+          if (_anilistToken != null && _anilistToken!.isNotEmpty)
+            'anilist_token': _anilistToken,
         };
       }
 
@@ -472,6 +483,8 @@ class CommentumService extends GetxController {
           'vote_type': voteType,
           if (token != null) 'access_token': token,
           if (token != null) 'token': token,
+          if (_anilistToken != null && _anilistToken!.isNotEmpty)
+            'anilist_token': _anilistToken,
         }),
       );
 
@@ -525,6 +538,8 @@ class CommentumService extends GetxController {
           'notes': notes,
           if (token != null) 'access_token': token,
           if (token != null) 'token': token,
+          if (_anilistToken != null && _anilistToken!.isNotEmpty)
+            'anilist_token': _anilistToken,
         }),
       );
 
