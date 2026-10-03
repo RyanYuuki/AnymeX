@@ -193,7 +193,13 @@ class CommentSectionController extends GetxController
         limit: 50,
       );
 
-      _rawCommentsPool.addAll(pageResult.comments);
+      final existingIds = <String>{};
+      _rawCommentsPool.clear();
+      for (final comment in pageResult.comments) {
+        if (existingIds.add(comment.id)) {
+          _rawCommentsPool.add(comment);
+        }
+      }
       currentPage.value = pageResult.page;
       totalPages.value = pageResult.totalPages;
       totalCommentsCount.value = pageResult.total;

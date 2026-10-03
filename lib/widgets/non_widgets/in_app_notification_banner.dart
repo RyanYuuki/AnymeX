@@ -1,7 +1,8 @@
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -175,11 +176,13 @@ class _InAppBannerWidgetState extends State<_InAppBannerWidget>
     final accent = _accentForType(context, widget.type);
 
     return Positioned.fill(
-      child: AnimatedBuilder(
-        animation: _entryController,
-        builder: (ctx, _) {
-          final slide = _slideAnimation.value;
-          return Align(
+      child: Material(
+        type: MaterialType.transparency,
+        child: AnimatedBuilder(
+          animation: _entryController,
+          builder: (ctx, _) {
+            final slide = _slideAnimation.value;
+            return Align(
             alignment: Alignment.topCenter,
             child: Padding(
               padding: EdgeInsets.only(
@@ -200,33 +203,27 @@ class _InAppBannerWidgetState extends State<_InAppBannerWidget>
                       child: GestureDetector(
                         onTap: widget.onTap,
                         behavior: HitTestBehavior.opaque,
-                        child: Container(
+                        child: AnymeXContainer(
                           padding: const EdgeInsets.fromLTRB(10, 10, 6, 10),
-                          decoration: BoxDecoration(
-                            color: cs.surfaceContainerHigh,
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(
-                              color: cs.outlineVariant.opaque(0.35),
-                              width: 0.8,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.opaque(0.25),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
+                          color: cs.surfaceContainerHigh,
+                          radius: 18,
+                          border: Border.all(
+                            color: cs.outlineVariant.opaque(0.35),
+                            width: 0.8,
+                          ),
+                          shadow: BoxShadow(
+                            color: Colors.black.opaque(0.25),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
+                              AnymeXContainer(
                                 width: 4,
                                 height: 44,
-                                decoration: BoxDecoration(
-                                  color: accent,
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
+                                color: accent,
+                                radius: 2,
                               ),
                               const SizedBox(width: 10),
                               _buildAvatar(cs),
@@ -296,13 +293,11 @@ class _InAppBannerWidgetState extends State<_InAppBannerWidget>
     }
     final url = widget.avatarUrl;
     if (url == null || url.isEmpty) {
-      return Container(
+      return AnymeXContainer(
         width: 40,
         height: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: cs.primary.opaque(0.15),
-        ),
+        borderRadius: BorderRadius.circular(20),
+        color: cs.primary.opaque(0.15),
         child: Icon(
           Icons.notifications_rounded,
           size: 20,
@@ -311,29 +306,12 @@ class _InAppBannerWidgetState extends State<_InAppBannerWidget>
       );
     }
     return ClipOval(
-      child: CachedNetworkImage(
+      child: AnymeXImage(
         imageUrl: url,
         width: 40,
         height: 40,
+        borderRadius: BorderRadius.circular(20),
         fit: BoxFit.cover,
-        placeholder: (_, __) => Container(
-          width: 40,
-          height: 40,
-          color: cs.surfaceContainerHighest,
-        ),
-        errorWidget: (_, __, ___) => Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: cs.primary.opaque(0.15),
-          ),
-          child: Icon(
-            Icons.person_rounded,
-            size: 20,
-            color: cs.primary,
-          ),
-        ),
       ),
     );
   }
