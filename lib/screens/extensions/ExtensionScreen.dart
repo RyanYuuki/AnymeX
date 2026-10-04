@@ -1,20 +1,21 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:anymex/database/database.dart';
-import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
-import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
 import 'package:anymex/screens/extensions/ExtensionTesting/extension_test_page.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_addons.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
+import 'package:anymex/widgets/common/source_selector.dart';
 import 'package:anymex/widgets/header/header.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -80,9 +81,6 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     });
   }
 
-  bool get _hasActiveFilters =>
-      _selectedLanguage.value != 'all' || _selectedSourceType.value != 'all';
-
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
@@ -101,6 +99,10 @@ class _ExtensionScreenState extends State<ExtensionScreen>
               title: 'Extensions',
               subtitle: 'Manage plugins & sources',
               actions: [
+                HeaderActionButton(
+                  icon: HugeIcons.strokeRoundedPlug01,
+                  onTap: () => navigate(() => const SettingsAddons()),
+                ),
                 HeaderActionButton(
                   icon: Icons.build_outlined,
                   onTap: () => navigate(() => const ExtensionTestPage()),
@@ -121,6 +123,17 @@ class _ExtensionScreenState extends State<ExtensionScreen>
             action: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                IconButton(
+                  icon: Icon(HugeIcons.strokeRoundedPlug01,
+                      color: theme.primary, size: 20),
+                  onPressed: () => navigate(() => const SettingsAddons()),
+                  tooltip: "Add-ons",
+                  style: IconButton.styleFrom(
+                    padding: const EdgeInsets.all(6),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ),
+                const SizedBox(width: 4),
                 IconButton(
                   icon: Icon(Icons.build_outlined,
                       color: theme.primary, size: 20),
@@ -164,10 +177,10 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     );
 
     return AnymeXScaffold(
-  disabled: widget.isTabScreen,
-  isTabScreen: widget.isTabScreen,
-  resizeToAvoidBottomInset: false,
-  body: Stack(
+        disabled: widget.isTabScreen,
+        isTabScreen: widget.isTabScreen,
+        resizeToAvoidBottomInset: false,
+        body: Stack(
           children: [
             mainContent,
             if (showMobileAppBar)
@@ -178,6 +191,10 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                   title: 'Extensions',
                   subtitle: 'Manage plugins & sources',
                   actions: [
+                    HeaderActionButton(
+                      icon: HugeIcons.strokeRoundedPlug01,
+                      onTap: () => navigate(() => const SettingsAddons()),
+                    ),
                     HeaderActionButton(
                       icon: Icons.build_outlined,
                       onTap: () => navigate(() => const ExtensionTestPage()),
@@ -209,8 +226,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                 ),
               ),
           ],
-        )
-);
+        ));
   }
 
   Widget _buildContentTypeBar() {
@@ -285,8 +301,8 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                 filled: true,
                 fillColor:
                     context.colors.surfaceContainerHighest.withOpacity(0.4),
-                contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide(
@@ -396,61 +412,70 @@ class _ExtensionScreenState extends State<ExtensionScreen>
   }
 
   String? _getManagerIcon(String type) {
-    switch (type) {
-      case 'Mangayomi':
-        return MSource(id: '', name: '', lang: '').managerIcon;
-      case 'Aniyomi':
-        return ASource(id: '', name: '', lang: '').managerIcon;
-      case 'Cloudstream':
-        return CloudStreamSource(id: '', name: '', lang: '').managerIcon;
-      case 'Sora':
-        return SSource(id: '', name: '', lang: '').managerIcon;
-      case 'Kotatsu':
-        return KotatsuSource(id: '', name: '', lang: '').managerIcon;
-      default:
-        return null;
+    if (type == 'all') return null;
+    final lower = type.toLowerCase();
+    final manager = Get.find<ExtensionManager>().managers.firstWhereOrNull(
+          (m) =>
+              m.name.toLowerCase() == lower ||
+              m.id.toLowerCase() == lower ||
+              m.name.toLowerCase().contains(lower) ||
+              lower.contains(m.name.toLowerCase()),
+        );
+    if (manager != null) return manager.icon;
+
+    final allSources = [
+      ...sourceController.installedExtensions,
+      ...sourceController.installedMangaExtensions,
+      ...sourceController.installedNovelExtensions,
+      ...sourceController.availableExtensions,
+      ...sourceController.availableMangaExtensions,
+      ...sourceController.availableNovelExtensions,
+    ];
+    final match = allSources.firstWhereOrNull((s) {
+      if (s.managerId != null && s.managerId!.isNotEmpty) {
+        if (s.managerId!.toLowerCase() == lower) return true;
+      }
+      return sourceTypeName(s).toLowerCase() == lower;
+    });
+    if (match != null && match.managerIcon.isNotEmpty) {
+      return match.managerIcon;
     }
+    return null;
   }
 
   bool _supportsContentType(String type, ItemType contentType) {
     if (type == 'all') return true;
+    final lower = type.toLowerCase();
     final activeManager =
         Get.find<ExtensionManager>().managers.firstWhereOrNull(
-              (m) => m.name.toLowerCase().contains(type.toLowerCase()),
+              (m) =>
+                  m.name.toLowerCase() == lower ||
+                  m.id.toLowerCase() == lower ||
+                  m.name.toLowerCase().contains(lower) ||
+                  lower.contains(m.name.toLowerCase()),
             );
     if (activeManager != null) {
-      switch (contentType) {
-        case ItemType.anime:
-          return activeManager.supportsAnime;
-        case ItemType.manga:
-          return activeManager.supportsManga;
-        case ItemType.novel:
-          return activeManager.supportsNovel;
-      }
+      return switch (contentType) {
+        ItemType.anime => activeManager.supportsAnime,
+        ItemType.manga => activeManager.supportsManga,
+        ItemType.novel => activeManager.supportsNovel,
+      };
     }
-    final lowerType = type.toLowerCase();
-    switch (contentType) {
-      case ItemType.anime:
-        return lowerType == 'mangayomi' ||
-            lowerType == 'aniyomi' ||
-            lowerType == 'cloudstream' ||
-            lowerType == 'sora';
-      case ItemType.manga:
-        return lowerType == 'mangayomi' ||
-            lowerType == 'aniyomi' ||
-            lowerType == 'sora' ||
-            lowerType == 'kotatsu';
-      case ItemType.novel:
-        return lowerType == 'mangayomi' || lowerType == 'sora';
-    }
+    return true;
   }
 
   Widget _buildSourceTypeChips() {
-    final allSourceTypes = Platform.isIOS
-        ? ['all', 'Mangayomi', 'Sora']
-        : ['all', 'Mangayomi', 'Aniyomi', 'Cloudstream', 'Sora', 'Kotatsu'];
-
     return Obx(() {
+      final em = Get.find<ExtensionManager>();
+      final activeManagers = em.managers;
+      final allSourceTypes = <String>['all'];
+
+      for (final m in activeManagers) {
+        if (!allSourceTypes.contains(m.name)) {
+          allSourceTypes.add(m.name);
+        }
+      }
+
       final selectedType = _selectedSourceType.value;
       final contentType = _selectedContentType.value;
       final filteredSourceTypes = allSourceTypes
@@ -467,7 +492,8 @@ class _ExtensionScreenState extends State<ExtensionScreen>
           itemCount: filteredSourceTypes.length,
           itemBuilder: (context, index) {
             final type = filteredSourceTypes[index];
-            final needsPlugin = _typeRequiresPlugin(type) && !_isPluginInstalled;
+            final needsPlugin =
+                _typeRequiresPlugin(type) && !_isPluginInstalled;
             final isSelected = !needsPlugin && selectedType == type;
             final label = type == 'all' ? 'All' : type;
             final iconUrl = _getManagerIcon(type);
@@ -588,12 +614,16 @@ class _ExtensionScreenState extends State<ExtensionScreen>
 
   bool _typeRequiresPlugin(String type) {
     if (type == 'all') return false;
+    final lower = type.toLowerCase();
     final activeManager =
         Get.find<ExtensionManager>().managers.firstWhereOrNull(
-              (m) => m.name.toLowerCase().contains(type.toLowerCase()),
+              (m) =>
+                  m.name.toLowerCase() == lower ||
+                  m.id.toLowerCase() == lower ||
+                  m.name.toLowerCase().contains(lower) ||
+                  lower.contains(m.name.toLowerCase()),
             );
-    if (activeManager != null) return activeManager.requiresPlugin;
-    return type == 'Aniyomi' || type == 'Cloudstream';
+    return activeManager?.requiresPlugin ?? false;
   }
 
   @override
