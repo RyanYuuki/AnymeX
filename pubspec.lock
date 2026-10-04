@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "7f5f884ba7e33845f8d7877aaba76a91cb29ee1c"
+      resolved-ref: "0800a7d60d042a87f1f6ce23bb0aa83df5fa2990"
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
@@ -1291,15 +1291,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  libtorrent_flutter:
-    dependency: "direct overridden"
-    description:
-      path: "packages/libtorrent_flutter"
-      ref: main
-      resolved-ref: fcf1d503156b3f9144095345d0dc673366329953
-      url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
-    source: git
-    version: "1.8.5"
   lints:
     dependency: transitive
     description:
