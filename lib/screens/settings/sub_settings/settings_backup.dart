@@ -469,7 +469,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               icon: Icons.folder_open_rounded,
               title: "Backup Archive",
               subtitle:
-                  _selectedFileName ?? "Select an .anymex or legacy JSON file",
+                  _selectedFileName ?? "Select an .anymex, .tachibk, .proto.gz, or .zip backup file",
               trailing: _selectedFileName != null
                   ? Container(
                       padding: const EdgeInsets.symmetric(
@@ -479,7 +479,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: AnymeXText(
-                        "LOADED",
+                        (info?['format'] as String?)?.toUpperCase() ?? "LOADED",
                         size: 10,
                         variant: TextVariant.bold,
                         color: theme.colorScheme.primary,

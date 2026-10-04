@@ -9,6 +9,8 @@ import 'package:anymex/database/isar_models/daily_activity.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/isar_models/media_stats.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
+import 'package:anymex/database/isar_models/chapter.dart';
+import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -28,6 +30,9 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'backup_format_detector.dart';
+import 'parsers/kotatsu_backup_parser.dart';
+import 'parsers/tachiyomi_backup_parser.dart';
 import '../../../main.dart';
 
 enum SettingCategory {
@@ -585,6 +590,15 @@ class BackupRestoreService extends GetxController {
           .map((e) => OfflineMedia.fromJson(
               (Map<String, dynamic>.from(e as Map))..["mediaTypeIndex"] = 1))
           .toList();
+      final existingIds = merge
+          ? (await isar.offlineMedias
+                  .filter()
+                  .mediaTypeIndexEqualTo(1)
+                  .findAll())
+              .map((e) => e.mediaId)
+              .whereType<String>()
+              .toSet()
+          : <String>{};
       await isar.writeTxn(() async {
         if (!merge) {
           await isar.offlineMedias
@@ -593,8 +607,7 @@ class BackupRestoreService extends GetxController {
               .deleteAll();
         }
         for (var item in list) {
-          if (!merge ||
-              _storageController.getMediaById(item.mediaId ?? '') == null) {
+          if (!merge || !existingIds.contains(item.mediaId ?? '')) {
             await isar.offlineMedias.put(item);
           }
         }
@@ -609,6 +622,15 @@ class BackupRestoreService extends GetxController {
           .map((e) => OfflineMedia.fromJson(
               (Map<String, dynamic>.from(e as Map))..["mediaTypeIndex"] = 0))
           .toList();
+      final existingIds = merge
+          ? (await isar.offlineMedias
+                  .filter()
+                  .mediaTypeIndexEqualTo(0)
+                  .findAll())
+              .map((e) => e.mediaId)
+              .whereType<String>()
+              .toSet()
+          : <String>{};
       await isar.writeTxn(() async {
         if (!merge) {
           await isar.offlineMedias
@@ -617,8 +639,7 @@ class BackupRestoreService extends GetxController {
               .deleteAll();
         }
         for (var item in list) {
-          if (!merge ||
-              _storageController.getMediaById(item.mediaId ?? '') == null) {
+          if (!merge || !existingIds.contains(item.mediaId ?? '')) {
             await isar.offlineMedias.put(item);
           }
         }
@@ -633,6 +654,15 @@ class BackupRestoreService extends GetxController {
           .map((e) => OfflineMedia.fromJson(
               (Map<String, dynamic>.from(e as Map))..["mediaTypeIndex"] = 2))
           .toList();
+      final existingIds = merge
+          ? (await isar.offlineMedias
+                  .filter()
+                  .mediaTypeIndexEqualTo(2)
+                  .findAll())
+              .map((e) => e.mediaId)
+              .whereType<String>()
+              .toSet()
+          : <String>{};
       await isar.writeTxn(() async {
         if (!merge) {
           await isar.offlineMedias
@@ -641,8 +671,7 @@ class BackupRestoreService extends GetxController {
               .deleteAll();
         }
         for (var item in list) {
-          if (!merge ||
-              _storageController.getMediaById(item.mediaId ?? '') == null) {
+          if (!merge || !existingIds.contains(item.mediaId ?? '')) {
             await isar.offlineMedias.put(item);
           }
         }
@@ -1114,6 +1143,34 @@ class BackupRestoreService extends GetxController {
       }
 
       final bytes = await file.readAsBytes();
+      final format = await BackupFormatDetector.detectFromFile(filePath);
+      if (format == ExternalBackupType.kotatsu) {
+        final archive = ZipDecoder().decodeBytes(bytes);
+        final parsed = KotatsuBackupParser.parse(archive);
+        await _applyExternalMangaAndAnime(
+          mangas: options.manga ? parsed.mangas : [],
+          animes: [],
+          mangaCustomLists: options.customLists ? parsed.customLists : [],
+          animeCustomLists: [],
+          merge: merge,
+        );
+        Logger.i('Kotatsu backup restored successfully from: $filePath');
+        return false;
+      } else if (format == ExternalBackupType.aniyomi ||
+          format == ExternalBackupType.mihon) {
+        final parsed = TachiyomiBackupParser.parseBytes(bytes);
+        await _applyExternalMangaAndAnime(
+          mangas: options.manga ? parsed.mangas : [],
+          animes: options.anime ? parsed.animes : [],
+          mangaCustomLists: options.customLists ? parsed.mangaCustomLists : [],
+          animeCustomLists: options.customLists ? parsed.animeCustomLists : [],
+          merge: merge,
+        );
+        Logger.i(
+            '${parsed.isAniyomi ? "Aniyomi" : "Mihon/Tachiyomi"} backup restored successfully from: $filePath');
+        return false;
+      }
+
       Map<String, dynamic> data;
       Archive? archive;
 
@@ -1190,9 +1247,17 @@ class BackupRestoreService extends GetxController {
         final pickedFile = result.files.first;
 
         if (pickedFile.path != null) {
-          final ext = pickedFile.path?.split('.').last.toLowerCase();
-          if (ext != "anymex") {
-            snackBar('Invalid file format. Please select a .anymex file');
+          final fileName = (pickedFile.name.isNotEmpty
+                  ? pickedFile.name
+                  : (pickedFile.path ?? ''))
+              .toLowerCase();
+          final isSupported = fileName.endsWith('.anymex') ||
+              fileName.endsWith('.tachibk') ||
+              fileName.endsWith('.proto.gz') ||
+              fileName.endsWith('.zip');
+          if (!isSupported) {
+            snackBar(
+                'Unsupported format. Please select an AnymeX, Aniyomi, Mihon, or Kotatsu backup');
             return "";
           }
 
@@ -1209,7 +1274,13 @@ class BackupRestoreService extends GetxController {
             final directory = await getApplicationDocumentsDirectory();
             final sandboxFiles = directory
                 .listSync()
-                .where((f) => f.path.endsWith('.anymex'))
+                .where((f) {
+                  final p = f.path.toLowerCase();
+                  return p.endsWith('.anymex') ||
+                      p.endsWith('.tachibk') ||
+                      p.endsWith('.proto.gz') ||
+                      p.endsWith('.zip');
+                })
                 .toList();
 
             if (sandboxFiles.isNotEmpty) {
@@ -1241,6 +1312,95 @@ class BackupRestoreService extends GetxController {
       if (!await file.exists()) return null;
 
       final bytes = await file.readAsBytes();
+      final format = await BackupFormatDetector.detectFromFile(filePath);
+
+      if (format == ExternalBackupType.kotatsu) {
+        final archive = ZipDecoder().decodeBytes(bytes);
+        final parsed = KotatsuBackupParser.parse(archive);
+        return {
+          'date': 'Kotatsu Backup',
+          'username': 'Kotatsu User',
+          'avatar': null,
+          'appVersion': 'Kotatsu',
+          'format': 'Kotatsu',
+          'animeLibrary': [],
+          'mangaLibrary': parsed.mangas.take(6).map((m) => m.toJson()).toList(),
+          'novelLibrary': [],
+          'animeCount': 0,
+          'mangaCount': parsed.mangas.length,
+          'novelCount': 0,
+          'totalCount': parsed.mangas.length,
+          'animeCustomListsCount': 0,
+          'mangaCustomListsCount': parsed.customLists.length,
+          'novelCustomListsCount': 0,
+          'hasAnime': false,
+          'hasManga': parsed.mangas.isNotEmpty,
+          'hasNovel': false,
+          'hasCustomLists': parsed.customLists.isNotEmpty,
+          'hasSettings': false,
+          'hasAppearance': false,
+          'hasPlayer': false,
+          'hasReader': false,
+          'hasExtSettings': false,
+          'hasDownloadSettings': false,
+          'hasGeneralSettings': false,
+          'hasAuthTokens': false,
+          'hasStats': false,
+          'hasExtensionsData': false,
+          'extensionsDataCount': 0,
+          'hasExtensionFiles': false,
+          'extensionFilesCount': 0,
+          'extensionFilesSize': 0,
+          'hasRuntimeHost': false,
+          'runtimeHostPlatform': '',
+          'runtimeHostSize': 0,
+        };
+      } else if (format == ExternalBackupType.aniyomi ||
+          format == ExternalBackupType.mihon) {
+        final parsed = TachiyomiBackupParser.parseBytes(bytes);
+        final formatName =
+            format == ExternalBackupType.aniyomi ? 'Aniyomi' : 'Mihon / Tachiyomi';
+        return {
+          'date': '$formatName Backup',
+          'username': '$formatName User',
+          'avatar': null,
+          'appVersion': formatName,
+          'format': formatName,
+          'animeLibrary': parsed.animes.take(6).map((a) => a.toJson()).toList(),
+          'mangaLibrary': parsed.mangas.take(6).map((m) => m.toJson()).toList(),
+          'novelLibrary': [],
+          'animeCount': parsed.animes.length,
+          'mangaCount': parsed.mangas.length,
+          'novelCount': 0,
+          'totalCount': parsed.animes.length + parsed.mangas.length,
+          'animeCustomListsCount': parsed.animeCustomLists.length,
+          'mangaCustomListsCount': parsed.mangaCustomLists.length,
+          'novelCustomListsCount': 0,
+          'hasAnime': parsed.animes.isNotEmpty,
+          'hasManga': parsed.mangas.isNotEmpty,
+          'hasNovel': false,
+          'hasCustomLists': parsed.animeCustomLists.isNotEmpty ||
+              parsed.mangaCustomLists.isNotEmpty,
+          'hasSettings': false,
+          'hasAppearance': false,
+          'hasPlayer': false,
+          'hasReader': false,
+          'hasExtSettings': false,
+          'hasDownloadSettings': false,
+          'hasGeneralSettings': false,
+          'hasAuthTokens': false,
+          'hasStats': false,
+          'hasExtensionsData': false,
+          'extensionsDataCount': 0,
+          'hasExtensionFiles': false,
+          'extensionFilesCount': 0,
+          'extensionFilesSize': 0,
+          'hasRuntimeHost': false,
+          'runtimeHostPlatform': '',
+          'runtimeHostSize': 0,
+        };
+      }
+
       Map<String, dynamic> data;
       bool hasRuntimeInArchive = false;
       String runtimePlatform = '';
@@ -1374,6 +1534,7 @@ class BackupRestoreService extends GetxController {
           (data['hasExtensionsData'] == true) || kvEntries.isNotEmpty;
 
       return {
+        'format': 'AnymeX',
         'date': data['date'] ?? 'Unknown Date',
         'username': data['username'] ?? 'User',
         'avatar': data['avatar'],
@@ -1429,6 +1590,13 @@ class BackupRestoreService extends GetxController {
       final file = File(filePath);
       if (!await file.exists()) return false;
 
+      final format = await BackupFormatDetector.detectFromFile(filePath);
+      if (format == ExternalBackupType.kotatsu ||
+          format == ExternalBackupType.aniyomi ||
+          format == ExternalBackupType.mihon) {
+        return false;
+      }
+
       final bytes = await file.readAsBytes();
       if (_isZip(bytes)) {
         final archive = ZipDecoder().decodeBytes(bytes);
@@ -1481,6 +1649,193 @@ class BackupRestoreService extends GetxController {
       'mangaCustomLists': mangaCustomLists.length,
       'novelCustomLists': novelCustomLists.length,
     };
+  }
+
+  Future<void> _applyExternalMangaAndAnime({
+    required List<OfflineMedia> mangas,
+    required List<OfflineMedia> animes,
+    required List<CustomList> mangaCustomLists,
+    required List<CustomList> animeCustomLists,
+    required bool merge,
+  }) async {
+    if (mangas.isNotEmpty) {
+      final existingMap = <String, OfflineMedia>{};
+      if (merge) {
+        final existingList = await isar.offlineMedias
+            .filter()
+            .mediaTypeIndexEqualTo(0)
+            .findAll();
+        for (final m in existingList) {
+          if (m.mediaId != null && m.mediaId!.isNotEmpty) {
+            existingMap[m.mediaId!] = m;
+          }
+        }
+      }
+
+      await isar.writeTxn(() async {
+        if (!merge) {
+          await isar.offlineMedias
+              .filter()
+              .mediaTypeIndexEqualTo(0)
+              .deleteAll();
+        }
+        for (var item in mangas) {
+          final existing = existingMap[item.mediaId ?? ''];
+          if (!merge || existing == null) {
+            await isar.offlineMedias.put(item);
+          } else {
+            if (item.chapters != null && item.chapters!.isNotEmpty) {
+              final chapterMap = <String, Chapter>{};
+              for (final ch in existing.chapters ?? <Chapter>[]) {
+                final key = ch.link ?? ch.formattedNumber;
+                chapterMap[key] = ch;
+              }
+              for (final ch in item.chapters!) {
+                final key = ch.link ?? ch.formattedNumber;
+                chapterMap[key] = ch;
+              }
+              existing.chapters = chapterMap.values.toList();
+            }
+
+            if (item.readChapters != null && item.readChapters!.isNotEmpty) {
+              final readMap = <String, Chapter>{};
+              for (final ch in existing.readChapters ?? <Chapter>[]) {
+                final key = ch.link ?? ch.formattedNumber;
+                readMap[key] = ch;
+              }
+              for (final ch in item.readChapters!) {
+                final key = ch.link ?? ch.formattedNumber;
+                readMap[key] = ch;
+              }
+              existing.readChapters = readMap.values.toList();
+            }
+
+            if (item.currentChapter != null) {
+              existing.currentChapter = item.currentChapter;
+            }
+            if (item.cover != null && (existing.cover == null || existing.cover!.isEmpty)) {
+              existing.cover = item.cover;
+            }
+            if (item.poster != null && (existing.poster == null || existing.poster!.isEmpty)) {
+              existing.poster = item.poster;
+            }
+            if (item.totalChapters != null && existing.totalChapters == null) {
+              existing.totalChapters = item.totalChapters;
+            }
+            await isar.offlineMedias.put(existing);
+          }
+        }
+      });
+    }
+
+    if (animes.isNotEmpty) {
+      final existingMap = <String, OfflineMedia>{};
+      if (merge) {
+        final existingList = await isar.offlineMedias
+            .filter()
+            .mediaTypeIndexEqualTo(1)
+            .findAll();
+        for (final a in existingList) {
+          if (a.mediaId != null && a.mediaId!.isNotEmpty) {
+            existingMap[a.mediaId!] = a;
+          }
+        }
+      }
+
+      await isar.writeTxn(() async {
+        if (!merge) {
+          await isar.offlineMedias
+              .filter()
+              .mediaTypeIndexEqualTo(1)
+              .deleteAll();
+        }
+        for (var item in animes) {
+          final existing = existingMap[item.mediaId ?? ''];
+          if (!merge || existing == null) {
+            await isar.offlineMedias.put(item);
+          } else {
+            if (item.episodes != null && item.episodes!.isNotEmpty) {
+              final epMap = <String, Episode>{};
+              for (final ep in existing.episodes ?? <Episode>[]) {
+                final key = ep.link ?? ep.number;
+                epMap[key] = ep;
+              }
+              for (final ep in item.episodes!) {
+                final key = ep.link ?? ep.number;
+                epMap[key] = ep;
+              }
+              existing.episodes = epMap.values.toList();
+            }
+
+            if (item.watchedEpisodes != null && item.watchedEpisodes!.isNotEmpty) {
+              final watchedMap = <String, Episode>{};
+              for (final ep in existing.watchedEpisodes ?? <Episode>[]) {
+                final key = ep.link ?? ep.number;
+                watchedMap[key] = ep;
+              }
+              for (final ep in item.watchedEpisodes!) {
+                final key = ep.link ?? ep.number;
+                watchedMap[key] = ep;
+              }
+              existing.watchedEpisodes = watchedMap.values.toList();
+            }
+
+            if (item.currentEpisode != null) {
+              existing.currentEpisode = item.currentEpisode;
+            }
+            if (item.cover != null && (existing.cover == null || existing.cover!.isEmpty)) {
+              existing.cover = item.cover;
+            }
+            if (item.poster != null && (existing.poster == null || existing.poster!.isEmpty)) {
+              existing.poster = item.poster;
+            }
+            if (item.totalEpisodes != null && existing.totalEpisodes == null) {
+              existing.totalEpisodes = item.totalEpisodes;
+            }
+            await isar.offlineMedias.put(existing);
+          }
+        }
+      });
+    }
+
+    if (mangaCustomLists.isNotEmpty || animeCustomLists.isNotEmpty) {
+      final existingLists = await isar.customLists.where().findAll();
+      final listMap = <String, CustomList>{};
+      for (final l in existingLists) {
+        listMap['${l.mediaTypeIndex}_${l.listName}'] = l;
+      }
+
+      await isar.writeTxn(() async {
+        if (!merge) {
+          if (mangaCustomLists.isNotEmpty) {
+            await isar.customLists
+                .filter()
+                .mediaTypeIndexEqualTo(0)
+                .deleteAll();
+          }
+          if (animeCustomLists.isNotEmpty) {
+            await isar.customLists
+                .filter()
+                .mediaTypeIndexEqualTo(1)
+                .deleteAll();
+          }
+        }
+        for (var list in [...mangaCustomLists, ...animeCustomLists]) {
+          final existing = listMap['${list.mediaTypeIndex}_${list.listName}'];
+          if (existing != null && merge) {
+            final merged = {...?existing.mediaIds, ...?list.mediaIds}.toList();
+            existing.mediaIds = merged;
+            await isar.customLists.put(existing);
+          } else {
+            await isar.customLists.put(list);
+          }
+        }
+      });
+    }
+
+    if (Get.isRegistered<LibraryController>()) {
+      Get.delete<LibraryController>();
+    }
   }
 
   void resetStates() {

@@ -50,6 +50,8 @@ dependencies:
     cross_platform_video_thumbnails: ^0.1.0
 
     outlined_text: ^1.0.1
+    protobuf: ^5.0.0
+    fixnum: ^1.1.1
     media_kit:
         git:
             url: https://github.com/RyanYuuki/media-kit.git

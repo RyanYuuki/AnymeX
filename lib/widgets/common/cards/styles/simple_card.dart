@@ -6,6 +6,7 @@ import 'package:anymex/widgets/common/cards/card_components.dart';
 import 'package:anymex/widgets/common/cards/media_card_registry.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 class DefaultCardStyle implements MediaCardStyle {
   @override
@@ -54,9 +55,20 @@ class DefaultCard extends CarouselCard {
     final desktop = isDesktop(context);
     final theme = context.colors;
 
-    final badgeText = getBadgeText(itemData, variant, type);
-    final badgeIcon =
-        getIconForVariant(itemData.extraData ?? '', variant, type);
+    final isLibrary = variant == DataVariant.library;
+    final progress = (itemData.source != null && itemData.source!.isNotEmpty)
+        ? itemData.source!
+        : '1';
+    final prefix = type == ItemType.anime ? 'Episode ' : 'Chapter ';
+    final badgeText = isLibrary
+        ? (progress.toLowerCase().startsWith('ch') ||
+                progress.toLowerCase().startsWith('ep')
+            ? progress
+            : '$prefix$progress')
+        : getBadgeText(itemData, variant, type);
+    final badgeIcon = isLibrary
+        ? (type == ItemType.anime ? Iconsax.play5 : Iconsax.book)
+        : getIconForVariant(itemData.extraData ?? '', variant, type);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -112,11 +124,15 @@ class DefaultCard extends CarouselCard {
                         color: theme.primary,
                       ),
                       2.width(),
-                      AnymeXText(
-                        badgeText,
-                        size: 10,
-                        color: theme.primary,
-                        variant: TextVariant.semiBold,
+                      Flexible(
+                        child: AnymeXText(
+                          badgeText,
+                          size: 10,
+                          color: theme.primary,
+                          variant: TextVariant.semiBold,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
