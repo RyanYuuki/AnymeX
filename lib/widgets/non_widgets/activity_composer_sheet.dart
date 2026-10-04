@@ -324,15 +324,36 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
     GifPickerSheet.show(
       context,
       onGifSelected: (url) {
-        final currentText = _textController.text;
-        final space = currentText.isNotEmpty &&
-                !currentText.endsWith(' ') &&
-                !currentText.endsWith('\n')
+        final cleanUrl = url.trim();
+        final formattedGif = widget.flavor == ComposerFlavor.comment
+            ? '![gif]($cleanUrl)'
+            : 'img($cleanUrl)';
+
+        final text = _textController.text;
+        final selection = _textController.selection;
+        final hasValidSelection =
+            selection.start >= 0 && selection.end >= selection.start;
+        final startIdx = hasValidSelection ? selection.start : text.length;
+        final endIdx = hasValidSelection ? selection.end : text.length;
+
+        final prefix = startIdx > 0 &&
+                !text.substring(0, startIdx).endsWith(' ') &&
+                !text.substring(0, startIdx).endsWith('\n')
             ? '\n'
             : '';
-        _textController.text = '$currentText$space$url\n';
-        _textController.selection =
-            TextSelection.collapsed(offset: _textController.text.length);
+        final suffix = endIdx < text.length &&
+                !text.substring(endIdx).startsWith(' ') &&
+                !text.substring(endIdx).startsWith('\n')
+            ? '\n'
+            : '\n';
+
+        final inserted = '$prefix$formattedGif$suffix';
+        final newText = text.replaceRange(startIdx, endIdx, inserted);
+
+        _textController.text = newText;
+        _textController.selection = TextSelection.collapsed(
+          offset: startIdx + inserted.length,
+        );
         if (mounted) setState(() {});
         _focusNode.requestFocus();
       },
