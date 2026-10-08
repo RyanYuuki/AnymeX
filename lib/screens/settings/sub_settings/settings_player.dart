@@ -12,7 +12,9 @@ import 'dart:io';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/models/player/shortcut_action.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/settings/sub_settings/widgets/shortcut_key_capture_dialog.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/media_indicator_theme_registry.dart';
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
 
@@ -34,6 +36,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:iconsax/iconsax.dart';
@@ -2313,6 +2316,13 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                             ],
                           ),
                           AnymeXSectionBuilder(
+                            title: 'Keyboard Shortcuts',
+                            children: [
+                              for (final action in ShortcutAction.values)
+                                _buildShortcutTile(action),
+                            ],
+                          ),
+                          AnymeXSectionBuilder(
                             title: 'Subtitles',
                             children: [
                               AnymeXTile(
@@ -2626,6 +2636,74 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                 ),
               )),
     );
+  }
+
+  Widget _buildShortcutTile(ShortcutAction action) {
+    final key = settings.shortcutFor(action);
+    final isCustom = key != action.defaultKey;
+
+    return AnymeXTile(
+      icon: Icons.keyboard_alt_outlined,
+      title: action.label,
+      subtitle:
+          isCustom ? 'Tap to change · Long-press to reset' : 'Tap to change',
+      trailing: _buildShortcutKeyChip(key),
+      onTap: () => _captureShortcut(action),
+      onLongPress: isCustom
+          ? () => setState(() => settings.resetShortcut(action))
+          : null,
+      showChevron: false,
+    );
+  }
+
+  Widget _buildShortcutKeyChip(LogicalKeyboardKey key) {
+    final colors = context.colors;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: colors.primary.opaque(0.12, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: colors.primary.opaque(0.3, iReallyMeanIt: true),
+        ),
+      ),
+      child: Text(
+        describeShortcutKey(key),
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: colors.primary,
+        ),
+      ),
+    );
+  }
+
+  ShortcutAction? _conflictingAction(
+      ShortcutAction action, LogicalKeyboardKey key) {
+    for (final other in ShortcutAction.values) {
+      if (other != action && settings.shortcutFor(other) == key) return other;
+    }
+    return null;
+  }
+
+  Future<void> _captureShortcut(ShortcutAction action) async {
+    final captured = await showShortcutCaptureDialog(
+      context,
+      actionLabel: action.label,
+      validate: (key) {
+        if (reservedShortcutKeys.contains(key)) {
+          return '${describeShortcutKey(key)} is reserved for seek/play-pause.';
+        }
+        final conflict = _conflictingAction(action, key);
+        if (conflict != null) {
+          return '${describeShortcutKey(key)} is already used for ${conflict.label}.';
+        }
+        return null;
+      },
+    );
+    if (captured != null) {
+      setState(() => settings.setShortcut(action, captured));
+    }
   }
 
   Widget _buildSectionLabel(String label) {

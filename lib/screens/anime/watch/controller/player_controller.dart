@@ -2127,8 +2127,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   }
 
   void toggleMute() {
-    final currentVolume = _basePlayer.state.volume;
-    _basePlayer.setVolume(currentVolume == 0 ? 1 : 0);
+    final isMuted = volume.value <= 0.0;
+    setVolume(isMuted ? 1.0 : 0.0);
     onUserInteraction();
   }
 
