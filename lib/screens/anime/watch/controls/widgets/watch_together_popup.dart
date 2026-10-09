@@ -5,6 +5,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -357,11 +358,73 @@ class _WatchTogetherPopupContentState
     );
   }
 
+  bool _isLocalProxyStream(String? url) {
+    if (url == null || url.trim().isEmpty) return false;
+    final uri = Uri.tryParse(url);
+    final host = uri?.host.toLowerCase() ?? '';
+    return host == '127.0.0.1' ||
+        host == 'localhost' ||
+        url.contains('127.0.0.1') ||
+        url.contains('localhost');
+  }
+
+  bool _hasLocalProxyStreams() {
+    final current = widget.controller.selectedVideo.value;
+    if (current != null && _isLocalProxyStream(current.url)) {
+      return true;
+    }
+    final tracks = widget.controller.episodeTracks;
+    if (tracks.isNotEmpty && tracks.every((v) => _isLocalProxyStream(v.url))) {
+      return true;
+    }
+    return false;
+  }
+
   Widget _buildCreateFields(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final isLocalProxy = _hasLocalProxyStreams();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (isLocalProxy) ...[
+          AnymeXContainer(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: cs.errorContainer.opaque(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: cs.error.opaque(0.3)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.warning_amber_rounded, size: 20, color: cs.error),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        'Extension Not Supported for Rooms',
+                        variant: TextVariant.semiBold,
+                        size: 13,
+                        color: cs.error,
+                      ),
+                      const SizedBox(height: 4),
+                      AnymeXText(
+                        'This extension routes video through an internal device proxy or IP-locked stream that cannot be shared with friends.\n\n'
+                        'Please switch to a different extension to host a Watch Together room. If you need help or recommendations for working extensions, feel free to ask in our Discord or Telegram support channels.\n\n'
+                        'We are working on a solution to support all extensions in an upcoming update.',
+                        size: 11,
+                        color: cs.onSurface.opaque(0.75),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         AnymeXSectionBuilder(
           margin: EdgeInsets.zero,
           title: 'Room Settings',
@@ -402,12 +465,13 @@ class _WatchTogetherPopupContentState
         SizedBox(
           width: double.infinity,
           child: FilledButton.icon(
-            onPressed: _isCreating ? null : _createRoom,
+            onPressed: (_isCreating || isLocalProxy) ? null : _createRoom,
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
+              backgroundColor: isLocalProxy ? cs.surfaceContainerHighest : null,
             ),
             icon: _isCreating
                 ? SizedBox(
@@ -418,12 +482,20 @@ class _WatchTogetherPopupContentState
                       color: cs.onPrimary,
                     ),
                   )
-                : const Icon(Icons.add_rounded, size: 18),
+                : Icon(
+                    isLocalProxy ? Icons.block_rounded : Icons.add_rounded,
+                    size: 18,
+                    color: isLocalProxy
+                        ? cs.onSurface.opaque(0.4)
+                        : cs.onPrimary,
+                  ),
             label: AnymeXText(
-              _isCreating ? 'Creating...' : 'Create Room',
+              _isCreating
+                  ? 'Creating...'
+                  : (isLocalProxy ? 'Extension Unsupported' : 'Create Room'),
               variant: TextVariant.semiBold,
               size: 14,
-              color: cs.onPrimary,
+              color: isLocalProxy ? cs.onSurface.opaque(0.4) : cs.onPrimary,
             ),
           ),
         ),
@@ -534,6 +606,13 @@ class _WatchTogetherPopupContentState
   }
 
   Future<void> _createRoom() async {
+    if (_hasLocalProxyStreams()) {
+      warningSnackBar(
+        'This extension is not supported for rooms yet. Please switch to a different extension.',
+        title: 'Unsupported Extension',
+      );
+      return;
+    }
     Logger.i('Create room from player pane', 'WATCHIUM_UI');
     setState(() {
       _isCreating = true;

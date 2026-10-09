@@ -483,6 +483,20 @@ class WatchiumService extends GetxController {
       Logger.w('Create room skipped: already joining', 'WATCHIUM');
       return null;
     }
+
+    final hasOnlyLocalServers = availableServers != null &&
+        availableServers.isNotEmpty &&
+        availableServers.every((s) =>
+            (s.url?.contains('127.0.0.1') ?? false) ||
+            (s.url?.contains('localhost') ?? false));
+    if (hasOnlyLocalServers) {
+      const msg =
+          'This extension routes streams through a local proxy and cannot be shared with friends. Please switch to a different extension.';
+      Logger.w(msg, 'WATCHIUM');
+      error.value = msg;
+      return null;
+    }
+
     Logger.i('Creating room: anime="$animeTitle", episode=$episodeNumber',
         'WATCHIUM');
     try {
