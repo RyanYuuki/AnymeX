@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/watchium/watchium_models.dart';
-import 'package:anymex/controllers/watchium/watchium_relay.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
@@ -46,10 +45,6 @@ class WatchiumService extends GetxController {
       WatchiumKeys.serverUrl.get<String>('');
 
   String get _apiToken => dotenv.env['WATCHIUM_API_TOKEN'] ?? '';
-
-  /// JWT + API token, exposed for [WatchiumRelay] (host stream relay).
-  String? get authToken => _token;
-  String get apiToken => _apiToken;
 
   final RxBool inRoom = false.obs;
 
@@ -682,7 +677,6 @@ class WatchiumService extends GetxController {
 
   void _leaveRoomInternal() {
     _stopHeartbeat();
-    if (Get.isRegistered<WatchiumRelay>()) Get.find<WatchiumRelay>().stop();
     _currentRoomCode = null;
     _roomPassword = null;
     _isHost = false;

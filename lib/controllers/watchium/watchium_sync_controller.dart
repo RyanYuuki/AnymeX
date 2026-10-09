@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:anymex/controllers/watchium/watchium_models.dart';
-import 'package:anymex/controllers/watchium/watchium_relay.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -106,15 +105,8 @@ class WatchiumSyncController extends GetxController {
     });
   }
 
-  Future<void> _sendContentForCurrentEpisode() async {
-    var content = _buildContentFromPlayer(playerController);
-
-    // The new episode may resolve to device-local URLs even if the previous
-    // one didn't. Start the relay if needed, then rebuild so they're rewritten.
-    final relay = Get.find<WatchiumRelay>();
-    if (await relay.startIfNeeded(content.availableServers)) {
-      content = _buildContentFromPlayer(playerController);
-    }
+  void _sendContentForCurrentEpisode() {
+    final content = _buildContentFromPlayer(playerController);
     _watchium.setContent(content);
   }
 
@@ -352,9 +344,7 @@ class WatchiumSyncController extends GetxController {
       totalEpisodes: int.tryParse(pc.anilistData.totalEpisodes),
       anilistId: int.tryParse(pc.anilistData.uniqueId),
       malId: int.tryParse(pc.anilistData.idMal),
-      availableServers: Get.isRegistered<WatchiumRelay>()
-          ? Get.find<WatchiumRelay>().rewriteServers(servers)
-          : servers,
+      availableServers: servers,
     );
   }
 
