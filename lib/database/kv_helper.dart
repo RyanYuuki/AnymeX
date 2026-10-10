@@ -11,7 +11,11 @@ extension KvExtensions on Enum {
 
   void set<T>(T value) => KvHelper.set(name, value);
 
+  Future<void> setAsync<T>(T value) => KvHelper.setAsync(name, value);
+
   void delete() => KvHelper.remove(name);
+
+  Future<void> deleteAsync() => KvHelper.removeAsync(name);
 }
 
 class KvHelper {
@@ -60,8 +64,24 @@ class KvHelper {
       ..key = key
       ..value = jsonEncode({'val': value});
 
-    isar.writeTxnSync(() {
-      isar.collection<KeyValue>().putSync(data);
+    try {
+      isar.writeTxnSync(() {
+        isar.collection<KeyValue>().putSync(data);
+      });
+    } catch (_) {
+      isar.writeTxn(() async {
+        await isar.collection<KeyValue>().put(data);
+      });
+    }
+  }
+
+  static Future<void> setAsync<T>(String key, T value) async {
+    final data = KeyValue()
+      ..key = key
+      ..value = jsonEncode({'val': value});
+
+    await isar.writeTxn(() async {
+      await isar.collection<KeyValue>().put(data);
     });
   }
 
@@ -71,8 +91,26 @@ class KvHelper {
 
     if (data == null) return;
 
-    isar.writeTxnSync(() {
-      col.deleteSync(data.id);
+    try {
+      isar.writeTxnSync(() {
+        col.deleteSync(data.id);
+      });
+    } catch (_) {
+      isar.writeTxn(() async {
+        await col.delete(data.id);
+      });
+    }
+  }
+
+  static Future<void> removeAsync(String key) async {
+    final col = isar.collection<KeyValue>();
+    final data = await col.filter().keyEqualTo(key).findFirst();
+
+    if (data == null) return;
+
+    await isar.writeTxn(() async {
+      await col.delete(data.id);
     });
   }
 }
+

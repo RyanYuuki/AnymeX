@@ -85,13 +85,18 @@ _ChapterTileData _computeTileData({
           savedPage >= savedTotal - 1 ||
           (savedPage / savedTotal) >= 0.95);
 
+  final isReadInHistory = readChaptersList.any((c) =>
+      (c.link != null && c.link!.isNotEmpty && c.link == chapter.link) ||
+      (c.number != null && c.number == chapter.number));
+
   final bool isRead;
   if (isLoggedInOnline) {
     isRead =
         (chapter.number != null && chapter.number! <= onlineProgress) ||
-            isPageComplete;
+            isPageComplete ||
+            isReadInHistory;
   } else {
-    isRead = isPageComplete;
+    isRead = isPageComplete || isReadInHistory;
   }
 
   final lastRead = savedMedia?.currentChapter;

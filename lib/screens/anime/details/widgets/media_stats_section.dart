@@ -67,7 +67,7 @@ Widget buildMediaStatsSection(
           ],
         ),
       ),
-    buildStatsGrid(context, media),
+    buildStatsGrid(context, media, controller: controller),
     buildAlternativeTitles(context, media),
     if (media.genres.isNotEmpty)
       _buildSection(
@@ -431,69 +431,74 @@ Widget buildAiringCountdownCard(
 
 Widget buildProgressContainer(
     BuildContext context, MediaDetailsController controller) {
-  final colors = context.colors;
-  final media = controller.media.value;
+  return Obx(() {
+    final colors = context.colors;
+    final media = controller.media.value;
 
-  final totalCount = int.tryParse(media.totalEpisodes) ??
-      int.tryParse(media.totalChapters ?? '') ??
-      0;
-  final currentProgress = controller.mediaProgress.value;
-  final pct =
-      totalCount > 0 ? (currentProgress / totalCount).clamp(0.0, 1.0) : 0.0;
+    final totalFromMedia = int.tryParse(media.totalEpisodes) ??
+        int.tryParse(media.totalChapters ?? '') ??
+        0;
+    final totalCount = totalFromMedia > 0
+        ? totalFromMedia
+        : (controller.chapterList.isNotEmpty ? controller.chapterList.length : 0);
+    final currentProgress = controller.mediaProgress.value;
+    final pct =
+        totalCount > 0 ? (currentProgress / totalCount).clamp(0.0, 1.0) : 0.0;
 
-  final relEp = controller.isAnime
-      ? (media.nextAiringEpisode != null
-          ? media.nextAiringEpisode!.episode - 1
-          : (int.tryParse(
-                  controller.trackedMedia.value?.releasedEpisodes ?? '') ??
-              0))
-      : 0;
+    final relEp = controller.isAnime
+        ? (media.nextAiringEpisode != null
+            ? media.nextAiringEpisode!.episode - 1
+            : (int.tryParse(
+                    controller.trackedMedia.value?.releasedEpisodes ?? '') ??
+                0))
+        : 0;
 
-  final progressText = (controller.isAnime &&
-          relEp > 0 &&
-          totalCount > 0 &&
-          relEp != totalCount)
-      ? '$currentProgress / $relEp / $totalCount'
-      : '$currentProgress / ${totalCount > 0 ? totalCount : "?"}';
+    final progressText = (controller.isAnime &&
+            relEp > 0 &&
+            totalCount > 0 &&
+            relEp != totalCount)
+        ? '$currentProgress / $relEp / $totalCount'
+        : '$currentProgress / ${totalCount > 0 ? totalCount : "?"}';
 
-  return Container(
-    padding: const EdgeInsets.all(14),
-    decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(14),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+        ),
       ),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            AnymeXText(
-              controller.isAnime ? 'Watching Progress' : 'Reading Progress',
-              size: 12,
-              color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
-            ),
-            AnymeXText(
-              progressText,
-              size: 13,
-              variant: TextVariant.bold,
-              color: colors.primary,
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        AnymeXLinearIndicator(
-          value: pct,
-          minHeight: 9,
-          backgroundColor: colors.onSurface.opaque(0.1, iReallyMeanIt: true),
-          color: colors.primary,
-        ),
-      ],
-    ),
-  );
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AnymeXText(
+                controller.isAnime ? 'Watching Progress' : 'Reading Progress',
+                size: 12,
+                color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
+              ),
+              AnymeXText(
+                progressText,
+                size: 13,
+                variant: TextVariant.bold,
+                color: colors.primary,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          AnymeXLinearIndicator(
+            value: pct,
+            minHeight: 9,
+            backgroundColor: colors.onSurface.opaque(0.1, iReallyMeanIt: true),
+            color: colors.primary,
+          ),
+        ],
+      ),
+    );
+  });
 }
 
 Widget buildGenreChip(BuildContext context, String genre, ItemType type) {
@@ -560,7 +565,8 @@ Widget buildTagChip(BuildContext context, MediaTag tag, ItemType type) {
   );
 }
 
-Widget buildStatsGrid(BuildContext context, Media media) {
+Widget buildStatsGrid(BuildContext context, Media media,
+    {MediaDetailsController? controller}) {
   final colors = context.colors;
   final isAnime = media.mediaType == ItemType.anime;
   final yearStr = media.seasonYear?.toString() ?? '';
@@ -570,6 +576,14 @@ Widget buildStatsGrid(BuildContext context, Media media) {
     if (yearStr.isNotEmpty) yearStr,
   ].join(' ');
 
+  final totalChaptersStr = (media.totalChapters ?? '').isNotEmpty &&
+          media.totalChapters != '0' &&
+          media.totalChapters != '?'
+      ? media.totalChapters!
+      : ((controller != null && controller.chapterList.isNotEmpty)
+          ? controller.chapterList.length.toString()
+          : '');
+
   final stats = [
     if ((media.studios ?? []).isNotEmpty)
       MapEntry('Studio', (media.studios ?? []).join(', ')),
@@ -578,11 +592,8 @@ Widget buildStatsGrid(BuildContext context, Media media) {
         media.totalEpisodes != '0' &&
         media.totalEpisodes != '?')
       MapEntry('Episodes', media.totalEpisodes),
-    if (!isAnime &&
-        (media.totalChapters ?? '').isNotEmpty &&
-        media.totalChapters != '0' &&
-        media.totalChapters != '?')
-      MapEntry('Chapters', media.totalChapters!),
+    if (!isAnime && totalChaptersStr.isNotEmpty)
+      MapEntry('Chapters', totalChaptersStr),
     if (isAnime && media.duration.isNotEmpty && media.duration != '?')
       MapEntry('Duration', media.duration),
     if (seasonText.trim().isNotEmpty) MapEntry('Season', seasonText.trim()),

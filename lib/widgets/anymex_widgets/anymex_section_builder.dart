@@ -1,4 +1,5 @@
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,33 @@ class AnymeXSectionBuilder extends StatelessWidget {
     this.borderSide,
     this.separatorIndent = 66.0,
   });
+
+  bool _isCheckboxTile(Widget w) {
+    if (w is AnymeXTile) {
+      return w.isCheckbox;
+    }
+    return false;
+  }
+
+  bool _isExpansionTile(Widget w) {
+    return w is AnymeXExpansionTile;
+  }
+
+  bool _shouldAddSeparator(Widget a, Widget b) {
+    if ((_isExpansionTile(a) && _isCheckboxTile(b)) ||
+        (_isCheckboxTile(a) && _isExpansionTile(b)) ||
+        (_isExpansionTile(a) && _isExpansionTile(b)) ||
+        (_isCheckboxTile(a) && _isCheckboxTile(b))) {
+      return false;
+    }
+    if (a is! AnymeXTile && a is! AnymeXExpansionTile) {
+      return false;
+    }
+    if (b is! AnymeXTile && b is! AnymeXExpansionTile) {
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +99,8 @@ class AnymeXSectionBuilder extends StatelessWidget {
           maxLines: child.maxLines,
           titleStyle: child.titleStyle,
           subtitleStyle: child.subtitleStyle,
+          isCheckbox: child.isCheckbox,
+          isRadio: child.isRadio,
         );
       } else {
         tileWidget = ClipRRect(
@@ -82,15 +112,18 @@ class AnymeXSectionBuilder extends StatelessWidget {
       formattedChildren.add(tileWidget);
 
       if (i < itemCount - 1 && !disableSeperator) {
-        formattedChildren.add(
-          Divider(
-            height: 1,
-            thickness: 0.6,
-            indent: separatorIndent,
-            endIndent: 16,
-            color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-          ),
-        );
+        final nextChild = children[i + 1];
+        if (_shouldAddSeparator(child, nextChild)) {
+          formattedChildren.add(
+            Divider(
+              height: 1,
+              thickness: 0.6,
+              indent: separatorIndent,
+              endIndent: 16,
+              color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+            ),
+          );
+        }
       }
     }
 

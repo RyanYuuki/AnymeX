@@ -17,8 +17,8 @@ subprojects {
                 buildToolsVersion "36.0.0"
 
                 compileOptions {
-                    sourceCompatibility JavaVersion.VERSION_11
-                    targetCompatibility JavaVersion.VERSION_11
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
                 }
             }
         }
@@ -35,7 +35,7 @@ subprojects {
 
         project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
             kotlinOptions {
-                jvmTarget = "11"
+                jvmTarget = "17"
             }
         }
     }
@@ -51,6 +51,17 @@ tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
 
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            force "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0"
+            force "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0"
+            force "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0"
+            force "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0"
+        }
+    }
+}
+
 configurations.all {
     resolutionStrategy.eachDependency { details ->
         if (details.requested.group == "io.flutter" &&
@@ -58,5 +69,11 @@ configurations.all {
 
             details.useVersion "1.0.0-ef0cd000916d64fa0c5d09cc809fa7ad244a5767"
         }
+    }
+    resolutionStrategy {
+        force "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0"
+        force "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0"
+        force "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0"
+        force "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0"
     }
 }

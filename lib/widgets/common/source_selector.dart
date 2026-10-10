@@ -10,8 +10,16 @@ import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 String sourceTypeName(Source source) {
+  if (source.managerId != null && source.managerId!.isNotEmpty) {
+    final mid = source.managerId!;
+    final em = Get.isRegistered<ExtensionManager>() ? Get.find<ExtensionManager>() : null;
+    final m = em?.managers.firstWhereOrNull((mgr) => mgr.id.toLowerCase() == mid.toLowerCase() || mgr.name.toLowerCase() == mid.toLowerCase());
+    if (m != null) return m.name;
+    return mid[0].toUpperCase() + mid.substring(1);
+  }
   if (source is ASource) return 'Aniyomi';
   if (source is MSource) return 'Mangayomi';
   if (source is CloudStreamSource) return 'Cloudstream';

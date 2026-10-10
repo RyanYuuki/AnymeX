@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -189,8 +190,11 @@ class GridAnimeCard extends StatelessWidget {
           if (itemType == ItemType.novel) {
             media.data.mediaType = ItemType.novel;
             final sourceController = Get.find<SourceController>();
-            var novSource =
-                sourceController.getNovelExtensionByName(media.data.season);
+            final sourceIdentifier =
+                media.data.sourceId ?? media.data.sourceName;
+            var novSource = sourceIdentifier != null
+                ? sourceController.getNovelExtensionByName(sourceIdentifier)
+                : null;
             novSource ??= sourceController.activeNovelSource.value ??
                 sourceController.installedNovelExtensions.firstOrNull;
             navigate(() => NovelDetailsPage(
@@ -200,10 +204,38 @@ class GridAnimeCard extends StatelessWidget {
                 ));
           } else if (itemType == ItemType.manga) {
             media.data.mediaType = ItemType.manga;
-            navigate(() => MangaDetailsPage(media: media.data, tag: heroTag));
+            final sourceController = Get.find<SourceController>();
+            final sourceIdentifier =
+                media.data.sourceId ?? media.data.sourceName;
+            var mangaSource = sourceIdentifier != null
+                ? sourceController.getMangaExtensionByName(sourceIdentifier)
+                : null;
+            mangaSource ??= (media.data.serviceType == ServicesType.extensions
+                ? (sourceController.activeMangaSource.value ??
+                    sourceController.installedMangaExtensions.firstOrNull)
+                : null);
+            navigate(() => MangaDetailsPage(
+                  media: media.data,
+                  tag: heroTag,
+                  source: mangaSource,
+                ));
           } else {
             media.data.mediaType = ItemType.anime;
-            navigate(() => AnimeDetailsPage(media: media.data, tag: heroTag));
+            final sourceController = Get.find<SourceController>();
+            final sourceIdentifier =
+                media.data.sourceId ?? media.data.sourceName;
+            var animeSource = sourceIdentifier != null
+                ? sourceController.getExtensionByValue(sourceIdentifier)
+                : null;
+            animeSource ??= (media.data.serviceType == ServicesType.extensions
+                ? (sourceController.activeSource.value ??
+                    sourceController.installedExtensions.firstOrNull)
+                : null);
+            navigate(() => AnimeDetailsPage(
+                  media: media.data,
+                  tag: heroTag,
+                  source: animeSource,
+                ));
           }
         },
         child: cardWidget,

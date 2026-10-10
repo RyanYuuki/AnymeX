@@ -883,7 +883,7 @@ class OfflineStorageController extends GetxController {
   }
 
   Chapter? getReadChapter(String anilistId, double number) {
-    final manga = getMangaById(anilistId);
+    final manga = getMangaById(anilistId) ?? getNovelById(anilistId);
     if (manga?.readChapters == null) return null;
 
     return manga!.readChapters!.firstWhereOrNull((c) => c.number == number);

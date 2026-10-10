@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,6 +12,8 @@ class CookieManager extends Interceptor {
   Map<String, StoredCookie>? _cache;
 
   final Map<String, StoredCookie> _sessionCookies = {};
+
+  Timer? _saveDebounceTimer;
 
   Map<String, StoredCookie> _loadAll() {
     if (_cache != null) {
@@ -41,25 +44,39 @@ class CookieManager extends Interceptor {
     }
   }
 
+  void _persistToDisk() {
+    if (_cache == null) return;
+    KvHelper.set<String>(
+      _storageKey,
+      jsonEncode(_cache!.map((k, v) => MapEntry(k, v.toJson()))),
+    );
+  }
+
+  void _scheduleSave() {
+    _saveDebounceTimer?.cancel();
+    _saveDebounceTimer = Timer(const Duration(seconds: 1), _persistToDisk);
+  }
+
   void _saveAll(Map<String, StoredCookie> cookies) {
     cookies.removeWhere((_, cookie) => cookie.isExpired);
 
     _cache = cookies;
 
-    KvHelper.set<String>(
-      _storageKey,
-      jsonEncode(cookies.map((k, v) => MapEntry(k, v.toJson()))),
-    );
+    _scheduleSave();
   }
 
   void _cleanup() {
     final persistent = _loadAll();
 
+    final beforeCount = persistent.length + _sessionCookies.length;
+
     persistent.removeWhere((_, cookie) => cookie.isExpired);
 
     _sessionCookies.removeWhere((_, cookie) => cookie.isExpired);
 
-    _saveAll(persistent);
+    if (persistent.length + _sessionCookies.length != beforeCount) {
+      _saveAll(persistent);
+    }
   }
 
   Iterable<StoredCookie> get _allCookies sync* {
@@ -114,10 +131,6 @@ class CookieManager extends Interceptor {
       return a.created.compareTo(b.created);
     });
 
-    if (_cache != null) {
-      _saveAll(_cache!);
-    }
-
     return result;
   }
 
@@ -152,6 +165,7 @@ class CookieManager extends Interceptor {
   }
 
   void clear() {
+    _saveDebounceTimer?.cancel();
     _cache = {};
     _sessionCookies.clear();
 
@@ -500,6 +514,7 @@ class CookieManager extends Interceptor {
   }
 
   void clearPersistentCookies() {
+    _saveDebounceTimer?.cancel();
     _cache?.clear();
 
     KvHelper.set<String>(_storageKey, "{}");
@@ -551,6 +566,7 @@ class CookieManager extends Interceptor {
   }
 
   Future<void> deleteAll() async {
+    _saveDebounceTimer?.cancel();
     _cache = {};
     _sessionCookies.clear();
 

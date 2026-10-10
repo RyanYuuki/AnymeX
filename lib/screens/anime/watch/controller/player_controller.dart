@@ -1072,12 +1072,27 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     } catch (_) {}
 
     if (isTorrentUrl(url)) {
+      final addonManager = Get.isRegistered<AddonManager>()
+          ? Get.find<AddonManager>()
+          : Get.put(AddonManager());
+      final torrServer = addonManager.get<TorrServerAddon>();
+      final isInstalled = await torrServer.isInstalled();
+      if (!isInstalled) {
+        snackBar('Torrent Add-on is not installed. Please install it from Add-ons.');
+        return;
+      }
+
       _isTorrentBuffering = true;
       isBuffering.value = true;
       try {
-        Logger.i('Torrent URL detected from extension, resolving stream...');
-        final resolved = await TorrentStreamResolver.resolve(url, episode: episodeNum);
-        url = resolved.streamUrl;
+        Logger.i('Torrent URL detected from extension, resolving stream via TorrServer...');
+        final episodeNumStr = episodeNum.toString();
+        final streamUrl = await torrServer.startStream(
+          url: url,
+          title: anilistData.title,
+          episode: episodeNumStr,
+        );
+        url = streamUrl;
         Logger.i('Torrent stream resolved: $url');
       } catch (e) {
         _isTorrentBuffering = false;
@@ -1922,13 +1937,27 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     }
 
     if (isTorrentUrl(url)) {
+      final addonManager = Get.isRegistered<AddonManager>()
+          ? Get.find<AddonManager>()
+          : Get.put(AddonManager());
+      final torrServer = addonManager.get<TorrServerAddon>();
+      final isInstalled = await torrServer.isInstalled();
+      if (!isInstalled) {
+        snackBar('Torrent Add-on is not installed. Please install it from Add-ons.');
+        return;
+      }
+
       _isTorrentBuffering = true;
       isBuffering.value = true;
       try {
-        Logger.i('Torrent URL detected (switch), resolving stream...');
+        Logger.i('Torrent URL detected (switch), resolving stream via TorrServer...');
         final episodeNum = currentEpisode.value.number;
-        final resolved = await TorrentStreamResolver.resolve(url, episode: episodeNum.toString());
-        url = resolved.streamUrl;
+        final streamUrl = await torrServer.startStream(
+          url: url,
+          title: anilistData.title,
+          episode: episodeNum.toString(),
+        );
+        url = streamUrl;
         Logger.i('Torrent stream resolved: $url');
       } catch (e) {
         _isTorrentBuffering = false;
@@ -1992,7 +2021,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     await _basePlayer.dispose();
 
-    TorrentStreamResolver.stopActiveStream();
+    try {
+      if (Get.isRegistered<AddonManager>()) {
+        await Get.find<AddonManager>().get<TorrServerAddon>().stopStream();
+      }
+    } catch (_) {}
 
     try {
       if (Platform.isAndroid || Platform.isIOS) {
