@@ -4,7 +4,6 @@ import 'package:anymex/screens/profile/widgets/profile_common.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -15,11 +14,21 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/screens/profile/compatibility/compatibility_input_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
+import 'package:anymex/database/comments/model/user_points.dart';
+import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UserProfileAppBar extends StatefulWidget {
   final Profile user;
   final String avatarUrl;
   final String? bannerUrl;
+  final String? avatarDecoration;
+  final String? profileEffect;
+  final UserPoints? userPoints;
+  final Map<String, dynamic>? linkedAccounts;
   final AnimationController bannerController;
   final Animation<Alignment> bannerAnim;
   final bool? isFollowingUser;
@@ -32,6 +41,10 @@ class UserProfileAppBar extends StatefulWidget {
     required this.user,
     required this.avatarUrl,
     this.bannerUrl,
+    this.avatarDecoration,
+    this.profileEffect,
+    this.userPoints,
+    this.linkedAccounts,
     required this.bannerController,
     required this.bannerAnim,
     this.isFollowingUser,
@@ -204,6 +217,15 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                             ));
                           },
                         ),
+                        buildProfileSheetOption(
+                          ctx,
+                          icon: Icons.emoji_events_outlined,
+                          label: 'Community Leaderboard',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            LeaderboardSheet.show(context);
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -281,6 +303,22 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                 ),
               ),
             ),
+            if ((Get.isRegistered<CommentumService>() &&
+                    Get.find<CommentumService>().renderProfileEffects.value) &&
+                widget.profileEffect != null &&
+                widget.profileEffect!.isNotEmpty)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: 0.6,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.profileEffect!,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              ),
             Positioned(
               left: 16,
               right: 16,
@@ -303,35 +341,14 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                           );
                         }
                       },
-                      child: Hero(
-                        tag: 'profile_avatar_$name',
-                        child: Container(
-                          width: 92,
-                          constraints: const BoxConstraints(
-                            minHeight: 92,
-                            maxHeight: 150,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.35),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: CachedNetworkImage(
-                              imageUrl: avatarUrl,
-                              fit: BoxFit.cover,
-                              alignment: Alignment.topCenter,
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.person),
-                            ),
-                          ),
-                        ),
+                      child: AnymeXDecoratedAvatar(
+                        avatarUrl: avatarUrl,
+                        decorationUrl: widget.avatarDecoration,
+                        size: 92,
+                        decorationScale: 1.25,
+                        borderRadius: BorderRadius.circular(14),
+                        shape: BoxShape.rectangle,
+                        heroTag: 'profile_avatar_$name',
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -508,6 +525,45 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                   ],
                                 ),
                               ),
+                              if (widget.userPoints != null)
+                                GestureDetector(
+                                  onTap: () => LeaderboardSheet.show(context),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.4),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.emoji_events_rounded,
+                                          size: 12,
+                                          color: Color(0xFFFFD700),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        AnymeXText(
+                                          '${widget.userPoints!.tier.toUpperCase()} • ${widget.userPoints!.displayPoints} pts',
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              if (widget.linkedAccounts != null &&
+                                  widget.linkedAccounts!.isNotEmpty)
+                                LinkedAccountsBadges(
+                                  linkedAccounts: widget.linkedAccounts!,
+                                  fontSize: 10,
+                                ),
                               if (user.createdAt != null)
                                 Container(
                                   padding: const EdgeInsets.symmetric(

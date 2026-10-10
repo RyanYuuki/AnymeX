@@ -22,6 +22,8 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:anymex/screens/profile/widgets/widgets.dart';
 import 'dart:developer';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/database/comments/model/user_points.dart';
 
 class UserProfilePage extends StatefulWidget {
   final int userId;
@@ -60,6 +62,12 @@ class _UserProfilePageState extends State<UserProfilePage>
   bool _isAboutExpanded = true;
 
   Color? _avatarDominantColor;
+  String? _customBanner;
+  String? _customDecoration;
+  String? _customNameplate;
+  String? _customEffect;
+  UserPoints? _userPoints;
+  Map<String, dynamic>? _linkedAccounts;
 
   Future<void> _extractDominantColor(String imageUrl) async {
     if (imageUrl.isEmpty) return;
@@ -105,6 +113,35 @@ class _UserProfilePageState extends State<UserProfilePage>
   Future<void> _fetchProfile() async {
     final anilistAuth = Get.find<AnilistAuth>();
     final profile = await anilistAuth.fetchUserDetails(widget.userId);
+
+    if (Get.isRegistered<CommentumService>()) {
+      try {
+        final commentum = Get.find<CommentumService>();
+        final profileData =
+            await commentum.fetchUserProfile(widget.userId.toString());
+        if (profileData != null && mounted) {
+          setState(() {
+            _customBanner = profileData['banner_url'] as String?;
+            _customDecoration = profileData['avatar_decoration'] as String?;
+            _customNameplate = profileData['nameplate_theme'] as String?;
+            _customEffect = profileData['profile_effect_url'] as String?;
+            if (profileData['linked_accounts'] is Map) {
+              _linkedAccounts =
+                  Map<String, dynamic>.from(profileData['linked_accounts']);
+            }
+          });
+        }
+        final points =
+            await commentum.getUserPoints(targetUserId: widget.userId.toString());
+        if (points != null && mounted) {
+          setState(() {
+            _userPoints = points;
+          });
+        }
+      } catch (e) {
+        log("Error fetching user Commentum profile: $e");
+      }
+    }
 
     if (profile != null) {
       if (mounted) {
@@ -930,6 +967,11 @@ class _UserProfilePageState extends State<UserProfilePage>
       bannerController: _bannerController,
       bannerAnim: bannerAnim,
       avatarDominantColor: _avatarDominantColor,
+      avatarDecoration: _customDecoration,
+      customBanner: _customBanner,
+      profileEffect: _customEffect,
+      userPoints: _userPoints,
+      linkedAccounts: _linkedAccounts,
       isFollowingUser: _isFollowingUser,
       isFollowerOfUser: _isFollowerOfUser,
       followToggling: _followToggling,
@@ -947,10 +989,17 @@ class _UserProfilePageState extends State<UserProfilePage>
 
   Widget _buildSliverAppBar(BuildContext context, String avatarUrl,
       String? bannerUrl, Profile user, Animation<Alignment> bannerAnim) {
+    final effectiveBanner = (_customBanner != null && _customBanner!.trim().isNotEmpty)
+        ? _customBanner
+        : bannerUrl;
     return UserProfileAppBar(
       user: user,
       avatarUrl: avatarUrl,
-      bannerUrl: bannerUrl,
+      bannerUrl: effectiveBanner,
+      avatarDecoration: _customDecoration,
+      profileEffect: _customEffect,
+      userPoints: _userPoints,
+      linkedAccounts: _linkedAccounts,
       bannerController: _bannerController,
       bannerAnim: bannerAnim,
       isFollowingUser: _isFollowingUser,

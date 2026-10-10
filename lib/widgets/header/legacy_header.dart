@@ -8,8 +8,9 @@ import 'package:anymex/widgets/anymex_widgets/anymex_badge.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_animated_logo.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
@@ -398,13 +399,14 @@ class Header extends StatelessWidget {
             child: profileData.isLoggedIn.value
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(50),
-                    child: AnymeXImage(
-                      width: 45,
-                      height: 45,
-                      fit: BoxFit.cover,
-                      radius: 0,
-                      errorImage: '',
-                      imageUrl: profileData.profileData.value.avatar ?? '',
+                    child: AnymeXDecoratedAvatar(
+                      avatarUrl: profileData.profileData.value.avatar,
+                      decorationUrl: Get.isRegistered<CommentumService>()
+                          ? Get.find<CommentumService>()
+                              .currentUserDecoration
+                              .value
+                          : null,
+                      size: 45,
                     ),
                   )
                 : Icon(IconlyBold.profile,

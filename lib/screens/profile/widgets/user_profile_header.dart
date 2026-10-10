@@ -4,7 +4,6 @@ import 'package:anymex/screens/profile/widgets/hover_action_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -14,12 +13,23 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/screens/profile/compatibility/compatibility_input_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
+import 'package:anymex/database/comments/model/user_points.dart';
+import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
+import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UserProfileHeader extends StatefulWidget {
   final Profile user;
   final AnimationController bannerController;
   final Animation<Alignment> bannerAnim;
   final Color? avatarDominantColor;
+  final String? avatarDecoration;
+  final String? customBanner;
+  final String? profileEffect;
+  final UserPoints? userPoints;
+  final Map<String, dynamic>? linkedAccounts;
   final bool? isFollowingUser;
   final bool? isFollowerOfUser;
   final bool followToggling;
@@ -31,6 +41,11 @@ class UserProfileHeader extends StatefulWidget {
     required this.bannerController,
     required this.bannerAnim,
     this.avatarDominantColor,
+    this.avatarDecoration,
+    this.customBanner,
+    this.profileEffect,
+    this.userPoints,
+    this.linkedAccounts,
     this.isFollowingUser,
     this.isFollowerOfUser,
     required this.followToggling,
@@ -47,8 +62,11 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
   @override
   Widget build(BuildContext context) {
     final user = widget.user;
-    final hasBanner = user.cover != null && user.cover!.trim().isNotEmpty;
-    final imageUrl = hasBanner ? user.cover! : '';
+    final effectiveBanner =
+        (widget.customBanner != null && widget.customBanner!.trim().isNotEmpty)
+            ? widget.customBanner!
+            : (user.cover ?? '');
+    final imageUrl = effectiveBanner;
     final name = user.name ?? 'Guest';
 
     final donatorTier = user.donatorTier ?? 0;
@@ -107,7 +125,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                     Container(
                         color:
                             context.theme.colorScheme.surfaceContainerHighest),
-                  
+
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -122,6 +140,25 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                       ),
                     ),
                   ),
+                  if ((Get.isRegistered<CommentumService>() &&
+                          Get.find<CommentumService>()
+                              .renderProfileEffects
+                              .value) &&
+                      widget.profileEffect != null &&
+                      widget.profileEffect!.isNotEmpty)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Opacity(
+                          opacity: 0.6,
+                          child: CachedNetworkImage(
+                            imageUrl: widget.profileEffect!,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, __, ___) =>
+                                const SizedBox.shrink(),
+                          ),
+                        ),
+                      ),
+                    ),
                   // Back Button
                   Positioned(
                     top: 0,
@@ -147,7 +184,7 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
               ),
             ),
           ),
-         
+
           Positioned(
             bottom: 0,
             left: 0,
@@ -162,40 +199,27 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       // Avatar
-                      Container(
-                        width: 190,
-                        constraints: const BoxConstraints(
-                          minHeight: 190,
-                          maxHeight: 280,
-                        ),
-                        decoration: BoxDecoration(
+                      GestureDetector(
+                        onTap: () {
+                          if (user.avatar?.isNotEmpty == true) {
+                            Navigator.of(context, rootNavigator: true).push(
+                              MaterialPageRoute(
+                                builder: (_) => AnymeXFullscreenImageViewer(
+                                  imageUrl: user.avatar!,
+                                  tag: 'profile_avatar_$name',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: AnymeXDecoratedAvatar(
+                          avatarUrl: user.avatar,
+                          decorationUrl: widget.avatarDecoration,
+                          size: 190,
+                          decorationScale: 1.25,
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            if (widget.avatarDominantColor != null)
-                              BoxShadow(
-                                color: widget.avatarDominantColor!
-                                    .withOpacity(0.5),
-                                blurRadius: 20,
-                                spreadRadius: 2,
-                                offset: const Offset(0, 0),
-                              )
-                            else
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.4),
-                                blurRadius: 15,
-                                offset: const Offset(0, 5),
-                              )
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: CachedNetworkImage(
-                            imageUrl: user.avatar ?? '',
-                            fit: BoxFit.cover,
-                            alignment: Alignment.topCenter,
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.person, size: 50),
-                          ),
+                          shape: BoxShape.rectangle,
+                          heroTag: 'profile_avatar_$name',
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -208,27 +232,46 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              AnymeXText(
-                                name,
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontFamily: 'Linotte',
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -0.5,
-                                  color: context.theme.colorScheme.onSurface,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.black.withOpacity(0.7),
-                                      blurRadius: 12,
-                                      offset: const Offset(0, 2),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                    child: AnymeXText(
+                                      name,
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontFamily: 'Linotte',
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: -0.5,
+                                        color:
+                                            context.theme.colorScheme.onSurface,
+                                        shadows: [
+                                          Shadow(
+                                            color:
+                                                Colors.black.withOpacity(0.7),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                          Shadow(
+                                            color:
+                                                Colors.black.withOpacity(0.4),
+                                            blurRadius: 24,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    Shadow(
-                                      color: Colors.black.withOpacity(0.4),
-                                      blurRadius: 24,
-                                      offset: const Offset(0, 4),
+                                  ),
+                                  if (widget.userPoints?.badges != null &&
+                                      widget
+                                          .userPoints!.badges!.isNotEmpty) ...[
+                                    const SizedBox(width: 8),
+                                    DiscordBadgesRow(
+                                      badges: widget.userPoints!.badges,
+                                      size: 20,
                                     ),
                                   ],
-                                ),
+                                ],
                               ),
                               const SizedBox(height: 6),
                               Flexible(
@@ -267,6 +310,51 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                           ],
                                         ),
                                       ),
+                                      if (widget.userPoints != null) ...[
+                                        const SizedBox(width: 10),
+                                        GestureDetector(
+                                          // Leaderboard entry hidden.
+                                          // onTap: () => LeaderboardSheet.show(context),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Colors.black.withOpacity(0.4),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(
+                                                    Icons.emoji_events_rounded,
+                                                    size: 12,
+                                                    color: Color(0xFFFFD700)),
+                                                const SizedBox(width: 4),
+                                                AnymeXText(
+                                                  '${widget.userPoints!.tier.toUpperCase()} • ${widget.userPoints!.displayPoints} pts',
+                                                  style: const TextStyle(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                      if (widget.linkedAccounts != null &&
+                                          widget
+                                              .linkedAccounts!.isNotEmpty) ...[
+                                        const SizedBox(width: 10),
+                                        LinkedAccountsBadges(
+                                          linkedAccounts:
+                                              widget.linkedAccounts!,
+                                          fontSize: 10,
+                                        ),
+                                      ],
                                       if (user.createdAt != null) ...[
                                         const SizedBox(width: 10),
                                         Container(
@@ -313,11 +401,12 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                           children: [
                             HoverActionButton(
                               icon: Iconsax.heart5,
-                              onTap: () => navigate(() => CompatibilityInputPage(
-                                    prefillProfile: widget.user,
-                                    prefillUsername: name,
-                                    useLoggedInUser: true,
-                                  )),
+                              onTap: () =>
+                                  navigate(() => CompatibilityInputPage(
+                                        prefillProfile: widget.user,
+                                        prefillUsername: name,
+                                        useLoggedInUser: true,
+                                      )),
                             ),
                             const SizedBox(width: 10),
                             HoverActionButton(
@@ -326,6 +415,12 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                   'https://anilist.co/user/$name'),
                             ),
                             const SizedBox(width: 10),
+                            // Leaderboard entry hidden.
+                            // HoverActionButton(
+                            //   icon: Icons.emoji_events_outlined,
+                            //   onTap: () => LeaderboardSheet.show(context),
+                            // ),
+                            // const SizedBox(width: 10),
                             HoverActionButton(
                               icon: Icons.more_horiz,
                               onTap: () {
@@ -423,13 +518,24 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                             label: 'Check Compatibility',
                                             onTap: () {
                                               Navigator.pop(ctx);
-                                              navigate(() => CompatibilityInputPage(
-                                                prefillProfile: widget.user,
-                                                prefillUsername: name,
-                                                useLoggedInUser: true,
-                                              ));
+                                              navigate(() =>
+                                                  CompatibilityInputPage(
+                                                    prefillProfile: widget.user,
+                                                    prefillUsername: name,
+                                                    useLoggedInUser: true,
+                                                  ));
                                             },
                                           ),
+                                          // Leaderboard entry hidden.
+                                          // buildProfileSheetOption(
+                                          //   ctx,
+                                          //   icon: Icons.emoji_events_outlined,
+                                          //   label: 'Community Leaderboard',
+                                          //   onTap: () {
+                                          //     Navigator.pop(ctx);
+                                          //     LeaderboardSheet.show(context);
+                                          //   },
+                                          // ),
                                         ],
                                       ),
                                     ),
@@ -549,7 +655,11 @@ class _UserProfileHeaderState extends State<UserProfileHeader> {
                                                   widget.isFollowingUser ==
                                                       true)
                                               ? 'Unfollow'
-                                              : getFollowLabel(isFollowing: widget.isFollowingUser, isFollower: widget.isFollowerOfUser),
+                                              : getFollowLabel(
+                                                  isFollowing:
+                                                      widget.isFollowingUser,
+                                                  isFollower:
+                                                      widget.isFollowerOfUser),
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontFamily: 'Linotte',
