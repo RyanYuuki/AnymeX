@@ -6,6 +6,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/navbar/navbar_registry.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class FloatingPillNavBarStyle extends NavBarStyleDef {
@@ -244,20 +245,108 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar>
                     final flex = isSelected ? selectedFlex : unselectedFlex;
                     final targetWidth = totalWidth * flex / totalFlex;
 
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 450),
-                      curve: const Cubic(0.34, 1.56, 0.64, 1.0),
-                      width: targetWidth,
-                      child: GestureDetector(
-                        onTap: () => widget.items[index].onTap(index),
-                        behavior: HitTestBehavior.opaque,
-                        child: _FloatingPillNavItem(
-                          item: widget.items[index],
-                          isSelected: isSelected,
-                          theme: theme,
-                          isVertical: false,
-                        ),
-                      ),
+                    return DragTarget<int>(
+                      onWillAcceptWithDetails: (details) => details.data != index,
+                      onAcceptWithDetails: (details) {
+                        final fromIndex = details.data;
+                        final toIndex = index;
+                        if (fromIndex == toIndex) return;
+
+                        HapticFeedback.lightImpact();
+                        final settings = Get.find<Settings>();
+                        final currentOrder =
+                            List<String>.from(settings.navigationTabOrder);
+                        if (fromIndex >= 0 &&
+                            fromIndex < currentOrder.length &&
+                            toIndex >= 0 &&
+                            toIndex < currentOrder.length) {
+                          final draggedItem = currentOrder.removeAt(fromIndex);
+                          currentOrder.insert(toIndex, draggedItem);
+                          settings.navigationTabOrder = currentOrder;
+
+                          if (widget.currentIndex == fromIndex) {
+                            widget.items[fromIndex].onTap(toIndex);
+                          } else if (fromIndex < widget.currentIndex &&
+                              toIndex >= widget.currentIndex) {
+                            widget.items[fromIndex]
+                                .onTap(widget.currentIndex - 1);
+                          } else if (fromIndex > widget.currentIndex &&
+                              toIndex <= widget.currentIndex) {
+                            widget.items[fromIndex]
+                                .onTap(widget.currentIndex + 1);
+                          }
+                        }
+                      },
+                      builder: (context, candidateData, rejectedData) {
+                        final isHovered = candidateData.isNotEmpty;
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 450),
+                          curve: const Cubic(0.34, 1.56, 0.64, 1.0),
+                          width: targetWidth,
+                          transform: isHovered
+                              ? Matrix4.diagonal3Values(1.05, 1.05, 1.0)
+                              : Matrix4.identity(),
+                          child: LongPressDraggable<int>(
+                            data: index,
+                            axis: Axis.horizontal,
+                            onDragStarted: () {
+                              HapticFeedback.mediumImpact();
+                            },
+                            feedback: Material(
+                              color: Colors.transparent,
+                              child: SizedBox(
+                                width: targetWidth * 1.08,
+                                height: 52,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.surfaceContainer
+                                        .withValues(alpha: 0.95),
+                                    borderRadius: BorderRadius.circular(26),
+                                    border: Border.all(
+                                      color: theme.colorScheme.primary
+                                          .withValues(alpha: 0.6),
+                                      width: 1.5,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black
+                                            .withValues(alpha: 0.35),
+                                        blurRadius: 16,
+                                        offset: const Offset(0, 6),
+                                      ),
+                                    ],
+                                  ),
+                                  child: _FloatingPillNavItem(
+                                    item: widget.items[index],
+                                    isSelected: isSelected,
+                                    theme: theme,
+                                    isVertical: false,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            childWhenDragging: Opacity(
+                              opacity: 0.25,
+                              child: _FloatingPillNavItem(
+                                item: widget.items[index],
+                                isSelected: isSelected,
+                                theme: theme,
+                                isVertical: false,
+                              ),
+                            ),
+                            child: GestureDetector(
+                              onTap: () => widget.items[index].onTap(index),
+                              behavior: HitTestBehavior.opaque,
+                              child: _FloatingPillNavItem(
+                                item: widget.items[index],
+                                isSelected: isSelected,
+                                theme: theme,
+                                isVertical: false,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     );
                   }),
                 );

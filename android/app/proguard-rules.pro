@@ -52,9 +52,10 @@
 -keepclassmembers class kotlin.Metadata {
     public <methods>;
 }
--keep,allowoptimization class kotlin.** { public protected *; }
--keep,allowoptimization class kotlinx.coroutines.** { public protected *; }
--keep,allowoptimization class kotlinx.serialization.** { public protected *; }
+-keep class kotlin.** { *; }
+-keep class kotlinx.coroutines.** { *; }
+-keepclassmembers class kotlinx.coroutines.** { *; }
+-keep class kotlinx.serialization.** { *; }
 -dontwarn kotlin.**
 -dontwarn kotlinx.coroutines.**
 

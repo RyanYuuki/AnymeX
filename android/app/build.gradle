@@ -19,13 +19,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
         coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = JavaVersion.VERSION_17
     }
 
     defaultConfig {
@@ -34,6 +34,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        vectorDrawables.useSupportLibrary = true
     }
 
     packagingOptions {
@@ -69,11 +70,9 @@ android {
         }
 
         debug {
-            // minifyEnabled false
-            // shrinkResources false
             signingConfig = signingConfigs.debug
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -88,7 +87,8 @@ flutter {
 }
 
 dependencies {
-    // TESTING - CS SETTINGS
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "androidx.fragment:fragment-ktx:1.7.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0"
 }

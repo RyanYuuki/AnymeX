@@ -2,10 +2,9 @@ import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/common/source_selector.dart';
 import 'package:flutter/gestures.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:anymex_extension_runtime_bridge/Services/Aniyomi/Models/Source.dart';
-import 'package:anymex_extension_runtime_bridge/Services/Sora/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
@@ -150,14 +149,18 @@ class _ExtensionListState extends State<ExtensionList>
 
   bool _matchesSourceType(Source source, String type) {
     if (type == 'all') return true;
-    return switch (type) {
-      'Mangayomi' => source is MSource,
-      'Aniyomi' => source is ASource,
-      'Cloudstream' => source is CloudStreamSource,
-      'Sora' => source is SSource,
-      'Kotatsu' => source is KotatsuSource,
-      _ => true,
-    };
+    final lower = type.toLowerCase();
+    if (source.managerId != null && source.managerId!.isNotEmpty) {
+      final sMid = source.managerId!.toLowerCase();
+      if (sMid == lower || sMid.contains(lower) || lower.contains(sMid)) {
+        return true;
+      }
+    }
+    final name = sourceTypeName(source).toLowerCase();
+    if (name == lower || name.contains(lower) || lower.contains(name)) {
+      return true;
+    }
+    return source.runtimeType.toString().toLowerCase().contains(lower);
   }
 
   String _idFor(Source source) => source.id?.toString() ?? '';

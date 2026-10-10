@@ -48,9 +48,23 @@ class StorageManagerService {
   }
 
   Future<int> getTorrentCacheSize() async {
+    int size = 0;
     final docsDir = await getApplicationDocumentsDirectory();
     final torrentDir = Directory('${docsDir.path}/torrent_cache');
-    return await _computeDirectorySize(torrentDir);
+    size += await _computeDirectorySize(torrentDir);
+    final supportDir = await getApplicationSupportDirectory();
+    final torrDir = Directory('${supportDir.path}/AnymeXExtensionBridge/bridge/torrserver');
+    if (await torrDir.exists()) {
+      try {
+        final entities = torrDir.listSync();
+        for (final e in entities) {
+          if (e is File && !e.path.endsWith('.exe') && !e.path.contains('torrserver')) {
+            size += await e.length();
+          }
+        }
+      } catch (_) {}
+    }
+    return size;
   }
 
   Future<int> getSnapshotsCacheSize() async {
@@ -86,6 +100,20 @@ class StorageManagerService {
     final docsDir = await getApplicationDocumentsDirectory();
     final torrentDir = Directory('${docsDir.path}/torrent_cache');
     await _clearDirectoryContents(torrentDir);
+    final supportDir = await getApplicationSupportDirectory();
+    final torrDir = Directory('${supportDir.path}/AnymeXExtensionBridge/bridge/torrserver');
+    if (await torrDir.exists()) {
+      try {
+        final entities = torrDir.listSync();
+        for (final e in entities) {
+          if (e is File && !e.path.endsWith('.exe') && !e.path.contains('torrserver')) {
+            try {
+              await e.delete();
+            } catch (_) {}
+          }
+        }
+      } catch (_) {}
+    }
   }
 
   Future<void> clearSnapshotsOnly() async {

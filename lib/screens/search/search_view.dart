@@ -372,7 +372,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           final rawList = await match.future;
           final mediaList = rawList
               .map((e) => Media.froDMedia(e, effectiveType)
-                ..sourceId = _selectedSource!.id)
+                ..sourceId = _selectedSource!.id
+                ..sourceName = _selectedSource!.name)
               .toList();
           _singleSourceCache[cacheKey] = mediaList;
           setState(() {
@@ -398,8 +399,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       if (!mounted) return;
 
       final mediaList = rawList
-          .map((e) =>
-              Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id)
+          .map((e) => Media.froDMedia(e, effectiveType)
+            ..sourceId = _selectedSource!.id
+            ..sourceName = _selectedSource!.name)
           .toList();
       _singleSourceCache[cacheKey] = mediaList;
 
@@ -430,8 +432,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       final pages = await _selectedSource!.methods.getPopular(1);
       if (!mounted) return;
       final mediaList = pages.list
-          .map((e) =>
-              Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id)
+          .map((e) => Media.froDMedia(e, effectiveType)
+            ..sourceId = _selectedSource!.id
+            ..sourceName = _selectedSource!.name)
           .toList();
       setState(() {
         _searchResults = mediaList;
@@ -459,8 +462,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
       final pages = await _selectedSource!.methods.getLatestUpdates(1);
       if (!mounted) return;
       final mediaList = pages.list
-          .map((e) =>
-              Media.froDMedia(e, effectiveType)..sourceId = _selectedSource!.id)
+          .map((e) => Media.froDMedia(e, effectiveType)
+            ..sourceId = _selectedSource!.id
+            ..sourceName = _selectedSource!.name)
           .toList();
       setState(() {
         _searchResults = mediaList;
@@ -587,21 +591,24 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           final pages = await _selectedSource!.methods.getPopular(nextPage);
           results = pages.list
               .map((e) => Media.froDMedia(e, effectiveType)
-                ..sourceId = _selectedSource!.id)
+                ..sourceId = _selectedSource!.id
+                ..sourceName = _selectedSource!.name)
               .toList();
         } else if (_extensionBrowseMode == _ExtensionBrowseMode.latest) {
           final pages =
               await _selectedSource!.methods.getLatestUpdates(nextPage);
           results = pages.list
               .map((e) => Media.froDMedia(e, effectiveType)
-                ..sourceId = _selectedSource!.id)
+                ..sourceId = _selectedSource!.id
+                ..sourceName = _selectedSource!.name)
               .toList();
         } else {
           final res = await _selectedSource!.methods
               .search(_lastSearchQuery, nextPage, _extensionActiveFilters);
           results = res.list
               .map((e) => Media.froDMedia(e, effectiveType)
-                ..sourceId = _selectedSource!.id)
+                ..sourceId = _selectedSource!.id
+                ..sourceName = _selectedSource!.name)
               .toList();
         }
       } else {
@@ -1600,14 +1607,26 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             source: novSource,
           ));
     } else if (effectiveType == ItemType.manga) {
+      final mangaSource = _selectedSource ??
+          (media.serviceType == ServicesType.extensions
+              ? (_sourceController.activeMangaSource.value ??
+                  _sourceController.installedMangaExtensions.firstOrNull)
+              : null);
       navigateWithAnimation(() => MangaDetailsPage(
             media: media,
             tag: heroTag,
+            source: mangaSource,
           ));
     } else {
+      final animeSource = _selectedSource ??
+          (media.serviceType == ServicesType.extensions
+              ? (_sourceController.activeSource.value ??
+                  _sourceController.installedExtensions.firstOrNull)
+              : null);
       navigateWithAnimation(() => AnimeDetailsPage(
             media: media,
             tag: heroTag,
+            source: animeSource,
           ));
     }
   }

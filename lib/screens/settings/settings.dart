@@ -8,6 +8,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_downloads.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_addons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
@@ -246,6 +247,12 @@ class _SettingsPageState extends State<SettingsPage> {
               title: "Extensions",
               description: "Extensions tailored to your needs",
               destination: SettingsExtensions.new,
+            ),
+            _buildTile(
+              icon: HugeIcons.strokeRoundedPlug01,
+              title: "Add-ons",
+              description: "TorrServer & streaming add-ons",
+              destination: SettingsAddons.new,
             ),
             _buildTile(
               icon: HugeIcons.strokeRoundedFile01,

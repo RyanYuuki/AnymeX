@@ -156,7 +156,15 @@ class MediaDetailsController extends GetxController {
     isAnilistLoading.value = cached == null;
     isSecondaryLoading.value = cached == null;
 
-    searchedTitle.value = "Searching: ${initialMedia.title}...";
+    final isDirectInitial =
+        initialMedia.serviceType == ServicesType.extensions &&
+            initialMedia.id.isNotEmpty &&
+            initialMedia.id != '0';
+    searchedTitle.value = isDirectInitial
+        ? (initialMedia.title.isNotEmpty && initialMedia.title != '?'
+            ? "Loading: ${initialMedia.title}..."
+            : "Loading details...")
+        : "Searching: ${initialMedia.title}...";
     selectedEpisodeStyle.value =
         PlayerUiKeys.episodeStyle.get<String>('compact');
 
@@ -225,6 +233,19 @@ class MediaDetailsController extends GetxController {
     if (initialSource != null) {
       activeSource.value = initialSource;
       return;
+    }
+
+    final sourceIdentifier = initialMedia.sourceId ?? initialMedia.sourceName;
+    if (sourceIdentifier != null && sourceIdentifier.isNotEmpty) {
+      final matchedSource = isAnime
+          ? sourceController.getExtensionByValue(sourceIdentifier)
+          : (isManga
+              ? sourceController.getMangaExtensionByName(sourceIdentifier)
+              : sourceController.getNovelExtensionByName(sourceIdentifier));
+      if (matchedSource != null) {
+        activeSource.value = matchedSource;
+        return;
+      }
     }
 
     if (activeSource.value != null) return;
@@ -311,12 +332,15 @@ class MediaDetailsController extends GetxController {
   }
 
   void _initOfflineAndTrackedData() {
+    final targetId = media.value.id.isNotEmpty && media.value.id != '0'
+        ? media.value.id
+        : initialMedia.id;
     if (isAnime) {
-      offlineMedia.value = offlineStorage.getAnimeById(initialMedia.id);
+      offlineMedia.value = offlineStorage.getAnimeById(targetId);
     } else if (isManga) {
-      offlineMedia.value = offlineStorage.getMangaById(initialMedia.id);
+      offlineMedia.value = offlineStorage.getMangaById(targetId);
     } else {
-      offlineMedia.value = offlineStorage.getNovelById(initialMedia.id);
+      offlineMedia.value = offlineStorage.getNovelById(targetId);
     }
 
     int trackerProgress = 0;
@@ -325,10 +349,10 @@ class MediaDetailsController extends GetxController {
       final list = isAnime
           ? serviceHandler.onlineService.animeList
           : serviceHandler.onlineService.mangaList;
-      final targetId = initialMedia.id.toString();
+      final targetIdStr = targetId.toString();
       final found = list.firstWhereOrNull((e) =>
-          e.id?.toString() == targetId ||
-          (e.idMal != null && e.idMal.toString() == targetId));
+          e.id?.toString() == targetIdStr ||
+          (e.idMal != null && e.idMal.toString() == targetIdStr));
       if (found != null) {
         trackedMedia.value = found;
         isListedMedia.value = true;
@@ -357,6 +381,20 @@ class MediaDetailsController extends GetxController {
             localProgress = max(0, epNum - 1);
           }
         }
+      } else if (isNovel) {
+        final currentCh = offline.currentChapter;
+        final currentNum = currentCh != null
+            ? (double.tryParse(currentCh.number.toString())?.toInt() ?? 0)
+            : 0;
+        int maxRead = 0;
+        final readList = offline.readChapters ?? <Chapter>[];
+        for (final c in readList) {
+          final num = double.tryParse(c.number.toString())?.toInt() ?? 0;
+          if (num > maxRead) {
+            maxRead = num;
+          }
+        }
+        localProgress = max(maxRead, currentNum);
       } else {
         final currentCh = offline.currentChapter;
         if (currentCh != null) {
@@ -487,18 +525,36 @@ class MediaDetailsController extends GetxController {
 
     _updateAnifyAvailabilityForSource();
 
-    final key =
-        '${source.id}-${media.value.id}-${media.value.serviceType.index}';
-    final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
+    final isDirectSourceMedia =
+        media.value.serviceType == ServicesType.extensions &&
+            media.value.id.isNotEmpty &&
+            media.value.id != '0' &&
+            (media.value.sourceId == source.id ||
+                media.value.sourceName == source.name ||
+                initialSource?.id == source.id ||
+                (media.value.sourceId == null && initialSource != null));
 
-    final mappedData = await SourceMapper.mapMedia(
-      _formatTitles(media.value),
-      searchedTitle,
-      mediaId: media.value.id.toString(),
-      type: media.value.mediaType,
-      savedTitle: savedTitle,
-      synonyms: media.value.synonyms,
-    );
+    final Media? mappedData;
+    if (isDirectSourceMedia) {
+      searchedTitle.value =
+          media.value.title.isNotEmpty && media.value.title != '?'
+              ? "Loading: ${media.value.title}..."
+              : "Loading details...";
+      mappedData = media.value;
+    } else {
+      final key =
+          '${source.id}-${media.value.id}-${media.value.serviceType.index}';
+      final savedTitle = DynamicKeys.mappedMediaTitle.get<String?>(key, null);
+
+      mappedData = await SourceMapper.mapMedia(
+        _formatTitles(media.value),
+        searchedTitle,
+        mediaId: media.value.id.toString(),
+        type: media.value.mediaType,
+        savedTitle: savedTitle,
+        synonyms: media.value.synonyms,
+      );
+    }
 
     if (_isStaleSourceRequest(reqId)) return;
 
@@ -541,9 +597,35 @@ class MediaDetailsController extends GetxController {
               ? data.title!
               : mappedData.title;
           searchedTitle.value = "Found: $foundTitle";
+          if (chapterList.isNotEmpty) {
+            media.value.totalChapters = chapterList.length.toString();
+            media.value.altMediaContent = chapterList.toList();
+            refreshProgress();
+          }
           isLoading.value = false;
           _isInitialFetchDone = true;
         }
+
+        if (media.value.serviceType == ServicesType.extensions) {
+          if (data.description != null &&
+              data.description!.isNotEmpty &&
+              data.description != '??') {
+            media.value.description = data.description!;
+          }
+          if (data.cover != null && data.cover!.isNotEmpty) {
+            media.value.poster = data.cover!;
+            media.value.cover = data.cover;
+          }
+          if (data.genre != null && data.genre!.isNotEmpty) {
+            media.value.genres = data.genre!;
+          }
+          if (chapterList.isNotEmpty) {
+            media.value.totalChapters = chapterList.length.toString();
+            media.value.altMediaContent = chapterList.toList();
+          }
+          media.refresh();
+        }
+
         CommentPreloader.to.preloadComments(media.value);
       } catch (e) {
         if (_isStaleSourceRequest(reqId)) return;
@@ -605,6 +687,11 @@ class MediaDetailsController extends GetxController {
         final fetched = Media.fromDManga(data, media.value.mediaType);
         chapterList.assignAll(fetched.altMediaContent ?? []);
         searchedTitle.value = "Found: ${mappedMedia.title}";
+        if (chapterList.isNotEmpty) {
+          media.value.totalChapters = chapterList.length.toString();
+          media.value.altMediaContent = chapterList.toList();
+          refreshProgress();
+        }
         isLoading.value = false;
       }
 
@@ -849,10 +936,18 @@ class MediaDetailsController extends GetxController {
       if (index != -1) {
         final page = currentCh.pageNumber;
         final total = currentCh.totalPages;
-        final isComplete = page != null &&
+        final isMangaComplete = page != null &&
             total != null &&
             total > 0 &&
             (page >= total || page >= total - 1 || (page / total) >= 0.95);
+        final isNovelComplete = isNovel &&
+            ((offline?.readChapters ?? []).any((c) =>
+                (c.link != null && c.link!.isNotEmpty && c.link == currentCh.link) ||
+                (c.number != null && c.number == currentCh.number)) ||
+             (currentCh.maxOffset != null &&
+                 currentCh.maxOffset! > 0 &&
+                 (currentCh.currentOffset ?? 0) / currentCh.maxOffset! >= 0.95));
+        final isComplete = isNovel ? isNovelComplete : isMangaComplete;
 
         if (isComplete) {
           final sortedChapters = List<Chapter>.from(chapters)
@@ -928,12 +1023,25 @@ class MediaDetailsController extends GetxController {
     final offline = offlineMedia.value;
     if (offline == null) return 0.0;
     final readChaptersList = offline.readChapters ?? <Chapter>[];
+    final isAlreadyRead = readChaptersList.any((c) =>
+        (c.link != null && c.link!.isNotEmpty && c.link == chapter.link) ||
+        (c.number != null && c.number == chapter.number));
+    if (isAlreadyRead) return 1.0;
+
     final savedChap =
         readChaptersList.firstWhereOrNull((c) => c.number == chapter.number) ??
             chapter;
     final totalPages = savedChap.totalPages ?? 0;
     final currentPage = savedChap.pageNumber ?? 0;
-    return totalPages > 0 ? (currentPage / totalPages).clamp(0.0, 1.0) : 0.0;
+    if (totalPages > 0) {
+      return (currentPage / totalPages).clamp(0.0, 1.0);
+    }
+    final maxOffset = savedChap.maxOffset ?? 0.0;
+    final currentOffset = savedChap.currentOffset ?? 0.0;
+    if (maxOffset > 0) {
+      return (currentOffset / maxOffset).clamp(0.0, 1.0);
+    }
+    return 0.0;
   }
 
   Future<void> checkIfInCustomList() async {

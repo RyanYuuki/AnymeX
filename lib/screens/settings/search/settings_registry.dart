@@ -4,6 +4,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_discord.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_addons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
@@ -96,6 +97,7 @@ final categoryRoutes = <String, Widget Function()>{
   'Reader': () => const SettingsReader(),
   'Theme': () => const SettingsTheme(),
   'Extensions': () => const SettingsExtensions(),
+  'Add-ons': () => const SettingsAddons(),
   'Downloads': () => const SettingsDownloads(),
   'Logs': () => const SettingsLogs(),
   'About': () => const AboutPage(),

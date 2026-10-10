@@ -25,6 +25,8 @@ class AnymeXTile extends StatelessWidget {
   final TextStyle? subtitleStyle;
   final int? maxLines;
   final bool autoResize;
+  final bool isCheckbox;
+  final bool isRadio;
 
   const AnymeXTile({
     super.key,
@@ -45,6 +47,8 @@ class AnymeXTile extends StatelessWidget {
     this.customContent,
     this.maxLines = 4,
     this.autoResize = true,
+    this.isCheckbox = false,
+    this.isRadio = false,
     this.titleStyle,
     this.subtitleStyle,
   });
@@ -278,6 +282,7 @@ class AnymeXTile extends StatelessWidget {
       onLongPress: enabled ? onLongPress : null,
       titleStyle: titleStyle,
       subtitleStyle: subtitleStyle,
+      isRadio: true,
       trailing: Builder(
         builder: (context) {
           final colors = context.colors;
@@ -344,6 +349,7 @@ class AnymeXTile extends StatelessWidget {
       onTap: enabled && onChanged != null ? () => onChanged(!value) : null,
       titleStyle: titleStyle,
       subtitleStyle: subtitleStyle,
+      isCheckbox: true,
       trailing: Builder(
         builder: (context) {
           final colors = context.colors;

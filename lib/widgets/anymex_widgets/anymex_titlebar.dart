@@ -11,6 +11,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:win32/win32.dart';
 import 'dart:ffi';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide isar;
+import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class AnymeXTitleBar {
@@ -104,9 +105,11 @@ class _WindowListener extends WindowListener {
       debugPrint('Error disposing AnymeXExtensionBridge: $e');
     }
     try {
-      await TorrentStreamResolver.dispose();
+      if (Get.isRegistered<AddonManager>()) {
+        await Get.find<AddonManager>().get<TorrServerAddon>().stop();
+      }
     } catch (e) {
-      debugPrint('Error disposing TorrentStreamResolver: $e');
+      debugPrint('Error disposing TorrServerAddon: $e');
     }
     await windowManager.destroy();
   }

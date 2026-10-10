@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class MangaDetailsPage extends StatelessWidget {
   final Media media;
   final String tag;
+  final Source? source;
   final int initialTabIndex;
   final String? scrollToCommentId;
 
@@ -13,6 +14,7 @@ class MangaDetailsPage extends StatelessWidget {
     super.key,
     required this.media,
     required this.tag,
+    this.source,
     this.initialTabIndex = 0,
     this.scrollToCommentId,
   });
@@ -25,6 +27,7 @@ class MangaDetailsPage extends StatelessWidget {
     return MediaDetailsPage(
       media: media,
       tag: tag,
+      source: source,
       initialTabIndex: initialTabIndex,
       scrollToCommentId: scrollToCommentId,
     );

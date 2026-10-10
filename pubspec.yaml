@@ -50,6 +50,8 @@ dependencies:
     cross_platform_video_thumbnails: ^0.1.0
 
     outlined_text: ^1.0.1
+    protobuf: ^5.0.0
+    fixnum: ^1.1.1
     media_kit:
         git:
             url: https://github.com/RyanYuuki/media-kit.git
@@ -116,9 +118,10 @@ dependencies:
     anymex_extension_runtime_bridge:
         git:
             url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
-            ref: main    
-    # anymex_extension_runtime_bridge: 
-    #     path: ../AnymeXExtensionRuntimeBridge
+            ref: main
+    # anymex_extension_runtime_bridge:
+    #   path: ../AnymeXExtensionRuntimeBridge
+    
     jxl_coder: ^0.1.0
     thanos_snap_effect: ^0.0.9
     code_assets: ^1.2.1
@@ -143,11 +146,6 @@ dev_dependencies:
     inno_bundle: ^0.7.4
 
 dependency_overrides:
-  libtorrent_flutter:
-    git:
-      url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
-      ref: main
-      path: packages/libtorrent_flutter
   flutter_inappwebview: 6.2.0-beta.2
   media_kit:
     git:
