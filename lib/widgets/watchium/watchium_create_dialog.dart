@@ -4,6 +4,7 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -12,16 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-/// Shows the create/join watch party sheet from inside the player.
 Future<void> showWatchiumCreateSheet({
   required BuildContext context,
   required PlayerController playerController,
-}) {
-  return AnymeXSheet.custom(
-    WatchiumCreateSheet(playerController: playerController),
-    context,
-    showDragHandle: true,
-  );
+}) async {
+  playerController.isWatchTogetherPaneOpened.value = true;
 }
 
 class WatchiumCreateSheet extends StatefulWidget {
@@ -196,10 +192,72 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
     );
   }
 
+  bool _isLocalProxyStream(String? url) {
+    if (url == null || url.trim().isEmpty) return false;
+    final uri = Uri.tryParse(url);
+    final host = uri?.host.toLowerCase() ?? '';
+    return host == '127.0.0.1' ||
+        host == 'localhost' ||
+        url.contains('127.0.0.1') ||
+        url.contains('localhost');
+  }
+
+  bool _hasLocalProxyStreams() {
+    final current = widget.playerController.selectedVideo.value;
+    if (current != null && _isLocalProxyStream(current.url)) {
+      return true;
+    }
+    final tracks = widget.playerController.episodeTracks;
+    if (tracks.isNotEmpty && tracks.every((v) => _isLocalProxyStream(v.url))) {
+      return true;
+    }
+    return false;
+  }
+
   Widget _buildCreateFields(ColorScheme cs) {
+    final isLocalProxy = _hasLocalProxyStreams();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (isLocalProxy) ...[
+          AnymeXContainer(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: cs.errorContainer.opaque(0.2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: cs.error.opaque(0.3)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.warning_amber_rounded, size: 20, color: cs.error),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        'Extension Not Supported for Rooms',
+                        variant: TextVariant.semiBold,
+                        size: 13,
+                        color: cs.error,
+                      ),
+                      const SizedBox(height: 4),
+                      AnymeXText(
+                        'This extension routes video through an internal device proxy or IP-locked stream that cannot be shared with friends.\n\n'
+                        'Please switch to a different extension to host a Watch Together room. If you need help or recommendations for working extensions, feel free to ask in our Discord or Telegram support channels.\n\n'
+                        'We are working on a solution to support all extensions in an upcoming update.',
+                        size: 11,
+                        color: cs.onSurface.opaque(0.75),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         Row(
           children: [
             Icon(Icons.people_alt_rounded,
@@ -305,37 +363,39 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
           ),
         ],
         const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: cs.primary.opaque(0.08),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: cs.primary.opaque(0.15)),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.info_outline_rounded,
-                  size: 16, color: cs.primary),
-              const SizedBox(width: 10),
-              Expanded(
-                child: AnymeXText('Share the code or invite link with friends.',
-                  size: 12,
-                  color: cs.onSurface.opaque(0.6),
+        if (!isLocalProxy)
+          AnymeXContainer(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: cs.primary.opaque(0.08),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: cs.primary.opaque(0.15)),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline_rounded,
+                    size: 16, color: cs.primary),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: AnymeXText('Share the code or invite link with friends.',
+                    size: 12,
+                    color: cs.onSurface.opaque(0.6),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
           child: FilledButton.icon(
-            onPressed: _isCreating ? null : _createRoom,
+            onPressed: (_isCreating || isLocalProxy) ? null : _createRoom,
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
+              backgroundColor: isLocalProxy ? cs.surfaceContainerHighest : null,
             ),
             icon: _isCreating
                 ? SizedBox(
@@ -346,11 +406,20 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                       color: cs.onPrimary,
                     ),
                   )
-                : const Icon(Icons.add_rounded, size: 18),
-            label: AnymeXText(_isCreating ? 'Creating...' : 'Create Room',
+                : Icon(
+                    isLocalProxy ? Icons.block_rounded : Icons.add_rounded,
+                    size: 18,
+                    color: isLocalProxy
+                        ? cs.onSurface.opaque(0.4)
+                        : cs.onPrimary,
+                  ),
+            label: AnymeXText(
+              _isCreating
+                  ? 'Creating...'
+                  : (isLocalProxy ? 'Extension Unsupported' : 'Create Room'),
               variant: TextVariant.semiBold,
               size: 14,
-              color: cs.onPrimary,
+              color: isLocalProxy ? cs.onSurface.opaque(0.4) : cs.onPrimary,
             ),
           ),
         ),
@@ -458,6 +527,13 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
   }
 
   Future<void> _createRoom() async {
+    if (_hasLocalProxyStreams()) {
+      warningSnackBar(
+        'This extension is not supported for rooms yet. Please switch to a different extension.',
+        title: 'Unsupported Extension',
+      );
+      return;
+    }
     Logger.i('Create room from dialog', 'WATCHIUM_UI');
     setState(() {
       _isCreating = true;
@@ -530,25 +606,46 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
   }
 
   Future<void> _joinRoom() async {
-    if (_joinCode.length != 6) {
-      Logger.w(
-          'Join room from dialog: invalid code length ${_joinCode.length}',
+    final watchium = Get.find<WatchiumService>();
+    if (_isCreating || watchium.isJoining.value) {
+      Logger.d('Join room from dialog skipped: already in progress',
+          'WATCHIUM_UI');
+      return;
+    }
+    final code = _joinCode.trim().toUpperCase();
+    final suppliedPassword = _joinPassword.trim();
+    if (code.length != 6) {
+      Logger.w('Join room from dialog: invalid code length ${code.length}',
           'WATCHIUM_UI');
       setState(() => _error = 'Room code must be 6 characters');
       return;
     }
 
-    Logger.i('Join room from dialog: $_joinCode', 'WATCHIUM_UI');
+    Logger.i('Join room from dialog: $code', 'WATCHIUM_UI');
     setState(() {
       _isCreating = true;
       _error = null;
     });
 
     try {
-      final watchium = Get.find<WatchiumService>();
+      final preview = await watchium.getRoomInfo(code);
+      if (!mounted) return;
+      if (preview == null) {
+        Logger.w('Join room from dialog: room $code not found', 'WATCHIUM_UI');
+        setState(() => _error = 'Room not found or expired');
+        return;
+      }
+      if (preview.hasPassword && suppliedPassword.isEmpty) {
+        Logger.i('Join room from dialog: room $code requires a password',
+            'WATCHIUM_UI');
+        setState(() => _error =
+            'This room requires a password. Please enter it above.');
+        return;
+      }
+
       final ok = await watchium.joinRoom(
-        _joinCode,
-        password: _joinPassword.isEmpty ? null : _joinPassword,
+        code,
+        password: suppliedPassword.isEmpty ? null : suppliedPassword,
       );
       if (ok && mounted) {
         Logger.i('Join room succeeded', 'WATCHIUM_UI');
@@ -556,7 +653,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
       } else if (mounted) {
         final err = watchium.error.value;
         Logger.w('Join room failed: $err', 'WATCHIUM_UI');
-        setState(() => _error = err);
+        setState(
+            () => _error = err.isEmpty ? 'Failed to join room' : err);
       }
     } catch (e) {
       Logger.e('Join room exception', error: e, loggerName: 'WATCHIUM_UI');

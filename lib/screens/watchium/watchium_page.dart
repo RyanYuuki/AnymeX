@@ -7,6 +7,7 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/widgets/watchium/watchium_server_sheet.dart';
@@ -25,19 +26,96 @@ class WatchiumPage extends StatefulWidget {
 class _WatchiumPageState extends State<WatchiumPage> {
   final WatchiumService _watchium = Get.find<WatchiumService>();
   final _joinCodeController = TextEditingController();
+  final _codeFocusNode = FocusNode();
   bool _isLoading = false;
   String? _error;
+
+  Worker? _deepLinkWorker;
+  String? _handlingDeepLinkCode;
 
   @override
   void initState() {
     super.initState();
     _loadRooms();
+    _codeFocusNode.addListener(() {
+      if (mounted) setState(() {});
+    });
+    _joinCodeController.addListener(() {
+      if (mounted) setState(() {});
+    });
+    _deepLinkWorker =
+        ever<String>(_watchium.pendingDeepLinkCode, (code) {
+      if (code.isNotEmpty && mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _handleDeepLinkRoom(code);
+        });
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final pending = _watchium.pendingDeepLinkCode.value;
+      if (pending.isNotEmpty && mounted) {
+        _handleDeepLinkRoom(pending);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _deepLinkWorker?.dispose();
+
+    if (_handlingDeepLinkCode != null &&
+        _watchium.pendingDeepLinkCode.value == _handlingDeepLinkCode) {
+      _watchium.completeDeepLinkJoin(false);
+    }
+    _handlingDeepLinkCode = null;
     _joinCodeController.dispose();
+    _codeFocusNode.dispose();
     super.dispose();
+  }
+
+  /// Handles a deeplinked room by reusing the exact Active Rooms join flow.
+  Future<void> _handleDeepLinkRoom(String code) async {
+    final normalized = code.trim().toUpperCase();
+    if (!mounted) return;
+    final route = ModalRoute.of(context);
+    if (route != null && !route.isCurrent) return;
+    if (_handlingDeepLinkCode == normalized) return;
+    if (_handlingDeepLinkCode != null) return;
+    _handlingDeepLinkCode = normalized;
+    try {
+      int waits = 0;
+      while (_isLoading && mounted && waits < 100) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        waits++;
+      }
+      if (!mounted) {
+        _watchium.completeDeepLinkJoin(false);
+        return;
+      }
+      WatchiumRoomState? room;
+      try {
+        room = _watchium.publicRooms.firstWhere(
+          (r) => r.code.trim().toUpperCase() == normalized,
+        );
+      } catch (_) {
+        room = null;
+      }
+      room ??= await _watchium.getRoomInfo(normalized);
+      if (!mounted) {
+        _watchium.completeDeepLinkJoin(false);
+        return;
+      }
+      if (room == null) {
+        _watchium.completeDeepLinkJoin(false);
+        return;
+      }
+      final success = await _joinRoomFromCard(room, fromDeepLink: true);
+      try {
+        _watchium.completeDeepLinkJoin(success);
+      } catch (_) {}
+    } finally {
+      _handlingDeepLinkCode = null;
+    }
   }
 
   Future<void> _loadRooms() async {
@@ -52,6 +130,10 @@ class _WatchiumPageState extends State<WatchiumPage> {
 
 
   Future<void> _joinByCode({String? password}) async {
+    if (_isLoading || _watchium.isJoining.value) {
+      Logger.d('Join by code skipped: already in progress', 'WATCHIUM_UI');
+      return;
+    }
     final code = _joinCodeController.text.trim().toUpperCase();
     Logger.i('Join by code: $code', 'WATCHIUM_UI');
     if (code.length != 6) {
@@ -60,91 +142,330 @@ class _WatchiumPageState extends State<WatchiumPage> {
       return;
     }
 
+    final suppliedPassword = password?.trim() ?? '';
+    if (suppliedPassword.isNotEmpty) {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+      bool ok = false;
+      try {
+        ok = await _watchium.joinRoom(code, password: suppliedPassword);
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+      if (ok) {
+        Logger.i('Join by code $code succeeded (with password)', 'WATCHIUM_UI');
+        if (mounted) _handleJoinSuccess(code);
+      } else if (mounted) {
+        final err = _watchium.error.value;
+        Logger.w('Join by code $code failed (with password): $err',
+            'WATCHIUM_UI');
+        if (err == 'Incorrect password') {
+          _showPasswordDialog(code, initialError: err);
+        } else {
+          setState(() => _error = err);
+          errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
+        }
+      }
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _error = null;
     });
 
-    final ok = await _watchium.joinRoom(code, password: password);
-    if (mounted) setState(() => _isLoading = false);
+    WatchiumRoomState? preview;
+    try {
+      preview = await _watchium.getRoomInfo(code);
+    } catch (e) {
+      Logger.w('Resolve room $code failed: $e', 'WATCHIUM_UI');
+      preview = null;
+    }
+    if (!mounted) return;
+
+    if (preview == null) {
+      Logger.w('Resolve room $code: not found', 'WATCHIUM_UI');
+      setState(() {
+        _isLoading = false;
+        _error = 'Room not found or expired';
+      });
+      errorSnackBar('Room not found or expired');
+      return;
+    }
+
+    if (preview.hasPassword) {
+      Logger.i('Room $code requires a password, showing password UI',
+          'WATCHIUM_UI');
+      setState(() => _isLoading = false);
+      _showPasswordDialog(code);
+      return;
+    }
+
+    bool ok = false;
+    try {
+      ok = await _watchium.joinRoom(code);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
 
     if (ok) {
       Logger.i('Join by code $code succeeded', 'WATCHIUM_UI');
-      if (mounted) {
-        snackBar('Joined room!');
-        final roomState = _watchium.roomState.value;
-        final content = roomState?.content;
-        if (content != null && content.availableServers.isNotEmpty) {
-          showWatchiumServerSheet(context: context, content: content);
-        }
-      }
-    } else {
+      if (mounted) _handleJoinSuccess(code);
+    } else if (mounted) {
       final err = _watchium.error.value;
       Logger.w('Join by code $code failed: $err', 'WATCHIUM_UI');
-      // If password incorrect, show password dialog
-      if (err == 'Incorrect password' && mounted) {
+      if (err == 'Incorrect password') {
         _showPasswordDialog(code);
         return;
       }
-      if (mounted) {
-        setState(() => _error = err);
-        errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
-      }
+      setState(() => _error = err);
+      errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
     }
   }
 
-  void _showPasswordDialog(String code) {
+  void _handleJoinSuccess(String code) {
+    snackBar('Joined room $code!');
+    final roomState = _watchium.roomState.value;
+    final content = roomState?.content;
+    if (content != null && content.availableServers.isNotEmpty) {
+      showWatchiumServerSheet(context: context, content: content);
+    }
+  }
+
+  Future<bool> _showPasswordDialog(String code,
+      {String? initialError, bool fromDeepLink = false}) async {
     final pwController = TextEditingController();
-    Get.dialog(
+    bool obscure = true;
+    bool joining = false;
+    String? dialogError = initialError;
+
+    final result = await Get.dialog<bool>(
       Dialog(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.lock, size: 40),
-              const SizedBox(height: 12),
-              const AnymeXText('This room requires a password',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 16),
-              TextField(
-                controller: pwController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock_outline),
-                ),
-                onSubmitted: (v) {
-                  Get.back();
-                  _joinByCode(password: v);
-                },
-              ),
-              const SizedBox(height: 12),
-              Row(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: StatefulBuilder(
+          builder: (context, setDialogState) {
+            final cs = Theme.of(context).colorScheme;
+            Future<void> submit() async {
+              if (joining || _watchium.isJoining.value) return;
+              final pw = pwController.text.trim();
+              if (pw.isEmpty) {
+                setDialogState(() =>
+                    dialogError = 'Please enter the room password');
+                return;
+              }
+              setDialogState(() {
+                joining = true;
+                dialogError = null;
+              });
+              final ok =
+                  await _watchium.joinRoom(code, password: pw);
+              if (Get.isDialogOpen != true) {
+                return;
+              }
+              if (ok) {
+                Logger.i('Join room $code succeeded (dialog password)',
+                    'WATCHIUM_UI');
+                Get.back(result: true);
+                // For deeplinked rooms the deeplink handler shows the
+                // successful-join state; avoid showing it twice.
+                if (!fromDeepLink) {
+                  _handleJoinSuccess(code);
+                }
+              } else {
+                final err = _watchium.error.value;
+                Logger.w('Join room $code failed (dialog password): $err',
+                    'WATCHIUM_UI');
+                setDialogState(() {
+                  joining = false;
+                  dialogError = err.isEmpty ? 'Failed to join room' : err;
+                });
+              }
+            }
+
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Get.back(),
-                      child: const AnymeXText('Cancel'),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: cs.primaryContainer.opaque(0.35,
+                              iReallyMeanIt: true),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: cs.primary.opaque(0.15, iReallyMeanIt: true),
+                          ),
+                        ),
+                        child: Icon(Icons.lock_rounded,
+                            size: 20, color: cs.primary),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const AnymeXText(
+                              'Password Required',
+                              variant: TextVariant.semiBold,
+                              size: 15,
+                            ),
+                            const SizedBox(height: 2),
+                            AnymeXText(
+                              'Room $code is private',
+                              size: 12,
+                              color: cs.onSurface.opaque(0.6),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: joining
+                            ? null
+                            : () => Get.back(result: false),
+                        icon: Icon(Icons.close_rounded,
+                            color: cs.onSurface.opaque(0.5)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: pwController,
+                    obscureText: obscure,
+                    enabled: !joining,
+                    autofocus: true,
+                    onSubmitted: (_) => submit(),
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 14,
+                      color: cs.onSurface,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Room password',
+                      hintText: 'Enter the room password',
+                      labelStyle: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        color: cs.onSurfaceVariant,
+                      ),
+                      hintStyle: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 13,
+                        color: cs.onSurface.opaque(0.35),
+                      ),
+                      prefixIcon: Icon(Icons.lock_outline_rounded,
+                          size: 18, color: cs.onSurface.opaque(0.5)),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          obscure
+                              ? Icons.visibility_off_rounded
+                              : Icons.visibility_rounded,
+                          size: 18,
+                          color: cs.onSurface.opaque(0.5),
+                        ),
+                        onPressed: () => setDialogState(
+                            () => obscure = !obscure),
+                      ),
+                      filled: true,
+                      fillColor: cs.surfaceContainerLow,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 14),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: cs.outlineVariant),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: cs.primary, width: 1.5),
+                      ),
                     ),
                   ),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: () {
-                        Get.back();
-                        _joinByCode(password: pwController.text);
-                      },
-                      child: const AnymeXText('Join'),
+                  if (dialogError != null) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: cs.error.opaque(0.1, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error_outline_rounded,
+                              size: 16, color: cs.error),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: AnymeXText(
+                              dialogError!,
+                              size: 12,
+                              color: cs.error,
+                              maxLines: 3,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ],
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          onPressed: joining
+                              ? null
+                              : () => Get.back(result: false),
+                          child: const AnymeXText('Cancel'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: joining ? null : submit,
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: joining
+                              ? SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: cs.onPrimary,
+                                  ),
+                                )
+                              : const Icon(Icons.login_rounded, size: 18),
+                          label: AnymeXText(
+                            joining ? 'Joining...' : 'Join',
+                            variant: TextVariant.semiBold,
+                            size: 14,
+                            color: cs.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
+      barrierDismissible: true,
     );
+    return result == true;
   }
 
   @override
@@ -177,32 +498,67 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       return const SizedBox.shrink();
                     }),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const AnymeXText('Active Rooms',
-                          size: 16,
-                          variant: TextVariant.semiBold,
-                        ),
-                        const SizedBox(width: 8),
-                        Obx(() {
-                          final count = _watchium.publicRooms.length;
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(10),
+                    AnymeXCard(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primaryContainer
+                                      .opaque(0.35, iReallyMeanIt: true),
+                                  borderRadius: BorderRadius.circular(
+                                      10.multiplyRadius()),
+                                  border: Border.all(
+                                    color: theme.colorScheme.primary
+                                        .opaque(0.15, iReallyMeanIt: true),
+                                  ),
+                                ),
+                                child: Icon(Iconsax.people,
+                                    size: 18,
+                                    color: theme.colorScheme.primary),
+                              ),
+                              const SizedBox(width: 10),
+                              const AnymeXText('Active Rooms',
+                                size: 15,
+                                variant: TextVariant.semiBold,
+                              ),
+                              const SizedBox(width: 8),
+                              Obx(() {
+                                final count = _watchium.publicRooms.length;
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        theme.colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: AnymeXText('$count',
+                                    size: 12,
+                                    color: theme
+                                        .colorScheme.onPrimaryContainer,
+                                  ),
+                                );
+                              }),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 14, bottom: 14),
+                            child: Divider(
+                              height: 1,
+                              thickness: 0.6,
+                              color: theme.colorScheme.outline
+                                  .opaque(0.08, iReallyMeanIt: true),
                             ),
-                            child: AnymeXText('$count',
-                              size: 12,
-                              color: theme.colorScheme.onPrimaryContainer,
-                            ),
-                          );
-                        }),
-                      ],
+                          ),
+                          _buildRoomsList(theme),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 12),
-                    _buildRoomsList(theme),
                   ],
                 ),
               ),
@@ -213,74 +569,210 @@ class _WatchiumPageState extends State<WatchiumPage> {
   }
 
   Widget _buildJoinByCodeSection(ThemeData theme) {
-    return Container(
+    final cs = theme.colorScheme;
+    return AnymeXCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: theme.colorScheme.outline.opaque(0.1),
-        ),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AnymeXText('Join with Code',
-            size: 14,
-            variant: TextVariant.semiBold,
-          ),
-          const SizedBox(height: 8),
-          AnymeXText('Enter a 6-character room code to join a watch party',
-            size: 12,
-            color: theme.colorScheme.onSurface.opaque(0.6),
-          ),
-          const SizedBox(height: 12),
           Row(
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _joinCodeController,
-                  onChanged: (v) => setState(() => _error = null),
-                  decoration: InputDecoration(
-                    hintText: 'ABC123',
-                    hintStyle: TextStyle(
-                      letterSpacing: 4,
-                      color: theme.colorScheme.onSurface.opaque(0.3),
-                    ),
-                    prefixIcon: const Icon(Icons.vpn_key),
-                    border: const OutlineInputBorder(),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 14),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: cs.primaryContainer.opaque(0.35, iReallyMeanIt: true),
+                  borderRadius: BorderRadius.circular(12.multiplyRadius()),
+                  border: Border.all(
+                    color: cs.primary.opaque(0.15, iReallyMeanIt: true),
                   ),
-                  textCapitalization: TextCapitalization.characters,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
-                    LengthLimitingTextInputFormatter(6),
-                  ],
-                  onSubmitted: (_) => _joinByCode(),
                 ),
+                child: Icon(Icons.vpn_key_rounded, size: 20, color: cs.primary),
               ),
               const SizedBox(width: 12),
-              FilledButton(
-                onPressed: _isLoading ? null : _joinByCode,
-                child: _isLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const AnymeXText('Join'),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AnymeXText('Join with Code',
+                      size: 15,
+                      variant: TextVariant.semiBold,
+                    ),
+                    const SizedBox(height: 2),
+                    AnymeXText(
+                      'Enter a 6-character room code to join a watch party',
+                      size: 12,
+                      color: cs.onSurface.opaque(0.6),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 14, bottom: 14),
+            child: Divider(
+              height: 1,
+              thickness: 0.6,
+              color: cs.outline.opaque(0.08, iReallyMeanIt: true),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              if (!_codeFocusNode.hasFocus) _codeFocusNode.requestFocus();
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final code = _joinCodeController.text.toUpperCase();
+                    final hasError = _error != null;
+                    final isFocused = _codeFocusNode.hasFocus;
+                    const gap = 8.0;
+                    const maxBoxSize = 48.0;
+                    double availableWidth = constraints.maxWidth;
+                    double boxSize = (availableWidth - gap * 5) / 6;
+                    boxSize = boxSize.clamp(36.0, maxBoxSize);
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(6, (i) {
+                        final char = i < code.length ? code[i] : '';
+                        final hasChar = char.isNotEmpty;
+                        final isNext = i == code.length && isFocused;
+                        Color borderColor;
+                        Color boxColor;
+                        double borderWidth = 1;
+                        if (hasError) {
+                          borderColor = cs.error.opaque(0.6, iReallyMeanIt: true);
+                          boxColor = hasChar
+                              ? cs.errorContainer
+                                  .opaque(0.35, iReallyMeanIt: true)
+                              : cs.surfaceContainerLow;
+                          if (isNext) borderWidth = 1.4;
+                        } else if (isNext) {
+                          borderColor = cs.primary;
+                          borderWidth = 1.4;
+                          boxColor = cs.surfaceContainerLow;
+                        } else if (hasChar) {
+                          borderColor =
+                              cs.primary.opaque(0.55, iReallyMeanIt: true);
+                          borderWidth = 1.2;
+                          boxColor = cs.primaryContainer
+                              .opaque(0.35, iReallyMeanIt: true);
+                        } else {
+                          borderColor = cs.outlineVariant
+                              .opaque(0.6, iReallyMeanIt: true);
+                          boxColor = cs.surfaceContainerLow;
+                        }
+                        return Container(
+                          width: boxSize,
+                          height: boxSize,
+                          margin: EdgeInsets.only(right: i < 5 ? gap : 0),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: boxColor,
+                            borderRadius:
+                                BorderRadius.circular(12.multiplyRadius()),
+                            border: Border.all(
+                                color: borderColor, width: borderWidth),
+                          ),
+                          child: AnymeXText(
+                            char,
+                            size: 18,
+                            variant: TextVariant.semiBold,
+                            color: hasChar && !hasError
+                                ? cs.onPrimaryContainer
+                                : hasError && hasChar
+                                    ? cs.onErrorContainer
+                                    : cs.onSurface,
+                          ),
+                        );
+                      }),
+                    );
+                  },
+                ),
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0,
+                    child: TextField(
+                      controller: _joinCodeController,
+                      focusNode: _codeFocusNode,
+                      onChanged: (v) => setState(() => _error = null),
+                      textCapitalization: TextCapitalization.characters,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9]')),
+                        LengthLimitingTextInputFormatter(6),
+                      ],
+                      onSubmitted: (_) => _joinByCode(),
+                      showCursor: false,
+                      enableInteractiveSelection: false,
+                      style: const TextStyle(
+                          color: Colors.transparent, fontSize: 1),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        counterText: '',
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      cursorColor: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: _isLoading ? null : _joinByCode,
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.multiplyRadius()),
+                ),
+                backgroundColor: cs.primary,
+                foregroundColor: cs.onPrimary,
+              ),
+              icon: _isLoading
+                  ? SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.2,
+                        color: cs.onPrimary,
+                      ),
+                    )
+                  : const Icon(Icons.login_rounded, size: 18),
+              label: AnymeXText(
+                _isLoading ? 'Joining...' : 'Join Room',
+                variant: TextVariant.semiBold,
+                size: 14,
+                color: cs.onPrimary,
+              ),
+            ),
+          ),
           if (_error != null) ...[
-            const SizedBox(height: 8),
-            AnymeXText(
-              _error!,
-              style: TextStyle(color: theme.colorScheme.error, fontSize: 12),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: cs.error.opaque(0.1, iReallyMeanIt: true),
+                borderRadius: BorderRadius.circular(10.multiplyRadius()),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.error_outline_rounded, size: 16, color: cs.error),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: AnymeXText(
+                      _error!,
+                      size: 12,
+                      color: cs.error,
+                      maxLines: 3,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ],
@@ -537,32 +1029,95 @@ class _WatchiumPageState extends State<WatchiumPage> {
         );
       }
 
-      return Column(
-        children: _watchium.publicRooms.map((room) {
-          return _buildRoomCard(theme, room);
-        }).toList(),
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final screenWidth = MediaQuery.sizeOf(context).width;
+          final orientation = MediaQuery.orientationOf(context);
+          final isDesktop = screenWidth > 600;
+          final crossAxisCount =
+              (isDesktop || orientation == Orientation.landscape) ? 3 : 1;
+
+          const spacing = 12.0;
+          final availableWidth = constraints.maxWidth;
+          final itemWidth = crossAxisCount == 1
+              ? availableWidth
+              : (availableWidth - spacing * (crossAxisCount - 1)) /
+                  crossAxisCount;
+
+          return Wrap(
+            spacing: spacing,
+            runSpacing: spacing,
+            children: _watchium.publicRooms.map((room) {
+              return SizedBox(
+                width: itemWidth,
+                child: _buildRoomCard(theme, room),
+              );
+            }).toList(),
+          );
+        },
       );
     });
   }
 
-  Future<void> _joinRoomFromCard(WatchiumRoomState room) async {
+  Future<bool> _joinRoomFromCard(WatchiumRoomState room,
+      {bool fromDeepLink = false}) async {
     Logger.i('Join room from card: ${room.code}', 'WATCHIUM_UI');
-    setState(() => _isLoading = true);
-    final ok = await _watchium.joinRoom(room.code);
-    if (mounted) setState(() => _isLoading = false);
-    if (ok) {
-      snackBar('Joined room ${room.code}!');
-      final rs = _watchium.roomState.value;
-      final c = rs?.content;
-      if (c != null && c.availableServers.isNotEmpty && mounted) {
-        showWatchiumServerSheet(context: context, content: c);
-      }
-    } else {
-      errorSnackBar(
-          _watchium.error.value.isEmpty
-              ? 'Failed to join room'
-              : _watchium.error.value);
+    if (_isLoading || _watchium.isJoining.value) {
+      Logger.d('Join room from card skipped: already in progress',
+          'WATCHIUM_UI');
+      return false;
     }
+    final code = room.code.trim().toUpperCase();
+    if (room.hasPassword) {
+      Logger.i('Room $code requires a password (from list), showing UI',
+          'WATCHIUM_UI');
+      return await _showPasswordDialog(code, fromDeepLink: fromDeepLink);
+    }
+    setState(() => _isLoading = true);
+    WatchiumRoomState? preview;
+    try {
+      preview = await _watchium.getRoomInfo(code);
+    } catch (e) {
+      Logger.w('Resolve room $code failed: $e', 'WATCHIUM_UI');
+      preview = null;
+    }
+    if (!mounted) return false;
+    if (preview == null) {
+      setState(() => _isLoading = false);
+      if (!fromDeepLink) {
+        errorSnackBar('Room not found or expired');
+      }
+      return false;
+    }
+    if (preview.hasPassword) {
+      setState(() => _isLoading = false);
+      return await _showPasswordDialog(code, fromDeepLink: fromDeepLink);
+    }
+    bool ok = false;
+    try {
+      ok = await _watchium.joinRoom(code);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+    if (ok) {
+      if (!fromDeepLink) {
+        _handleJoinSuccess(code);
+      }
+      return true;
+    } else if (mounted) {
+      final err = _watchium.error.value;
+      if (err == 'Incorrect password' ||
+          (fromDeepLink &&
+              (err == 'Password required' ||
+                  err.toLowerCase().contains('password')))) {
+        return await _showPasswordDialog(code, fromDeepLink: fromDeepLink);
+      }
+      if (!fromDeepLink) {
+        errorSnackBar(err.isEmpty ? 'Failed to join room' : err);
+      }
+      return false;
+    }
+    return false;
   }
 
   String _timeAgo(int createdAtMs) {
@@ -594,7 +1149,6 @@ class _WatchiumPageState extends State<WatchiumPage> {
     final remainingCount = otherMembers.length - maxShowAvatars;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: cs.surfaceContainer,
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
@@ -643,6 +1197,45 @@ class _WatchiumPageState extends State<WatchiumPage> {
                         ],
                         stops: const [0.0, 0.45, 1.0],
                       ),
+                    ),
+                  ),
+                ),
+
+                // Privacy badge — top left
+                Positioned(
+                  top: 10,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.opaque(0.5),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          room.hasPassword
+                              ? Icons.lock_rounded
+                              : Icons.lock_open_rounded,
+                          size: 12,
+                          color: room.hasPassword
+                              ? Colors.orangeAccent
+                              : Colors.white70,
+                        ),
+                        const SizedBox(width: 4),
+                        AnymeXText(
+                          room.hasPassword ? 'Private' : 'Open',
+                          style: TextStyle(
+                            color: room.hasPassword
+                                ? Colors.orangeAccent
+                                : Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

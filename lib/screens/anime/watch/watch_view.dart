@@ -15,11 +15,11 @@ import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/source_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/audio_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/speed_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/watch_together_popup.dart';
 import 'package:anymex/widgets/watchium/watchium_live_overlays.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
-import 'package:anymex/widgets/watchium/watchium_overlay.dart';
 import 'package:anymex/widgets/watchium/watchium_party_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -220,6 +220,13 @@ class _WatchScreenState extends State<WatchScreen> {
                   left: 0,
                   child: SpeedPopup(controller: controller),
                 ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: WatchTogetherPopup(controller: controller),
+                ),
                 const Positioned(
                   right: 0,
                   top: 0,
@@ -227,7 +234,6 @@ class _WatchScreenState extends State<WatchScreen> {
                   left: 0,
                   child: WatchiumPartyPopup(),
                 ),
-                const WatchiumOverlay(),
                 const _WatchiumOverlays(),
               ],
             ],
