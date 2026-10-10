@@ -356,3 +356,79 @@ jobs:
               -X POST \
               -d "$discord_data" \
               "$DISCORD_WEBHOOK_URL"
+
+      - name: Broadcast announcement to AnymeX App
+        if: !cancelled()
+        env:
+          ANNOUNCEMENT_API_URL: ${{ secrets.ANNOUNCEMENT_API_URL || 'http://anymex.duckdns.org:8000/functions/v1/announcements' }}
+          ANNOUNCEMENT_API_KEY: ${{ secrets.ANNOUNCEMENT_API_KEY }}
+        run: |
+          if [ -z "$ANNOUNCEMENT_API_KEY" ]; then
+            echo "ANNOUNCEMENT_API_KEY secret is not configured in repository secrets. Skipping app announcement broadcast."
+            exit 0
+          fi
+
+          TAG="${{ env.LATEST_TAG }}"
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${TAG}"
+
+          if [[ "$TAG" == *"alpha"* ]]; then
+            CATEGORY="update"
+            TITLE="AnymeX Alpha ${TAG} Released"
+            SHORT_DESC="AnymeX Alpha ${TAG} is now available! Check out what's new."
+          elif [[ "$TAG" == *"beta"* ]]; then
+            CATEGORY="update"
+            TITLE="AnymeX Beta ${TAG} Released"
+            SHORT_DESC="AnymeX Beta ${TAG} is now available! Check out what's new."
+          else
+            CATEGORY="update"
+            TITLE="AnymeX ${TAG} Released"
+            SHORT_DESC="AnymeX ${TAG} is now live! Check out what's new and update now."
+          fi
+
+          if [ -s formatted_notes.txt ]; then
+            BODY=$(cat formatted_notes.txt)
+          elif [ -s clean_release_notes.txt ]; then
+            BODY=$(cat clean_release_notes.txt)
+          else
+            BODY="A new update **${TAG}** has been released!"
+          fi
+
+          FULL_CONTENT="${BODY}"$'\n\n'"[View Full GitHub Release](${RELEASE_URL})"
+
+          PAYLOAD=$(jq -nc \
+            --arg app_id "anymex" \
+            --arg title "$TITLE" \
+            --arg short_desc "$SHORT_DESC" \
+            --arg content "$FULL_CONTENT" \
+            --arg category "$CATEGORY" \
+            --arg announcement_key "$ANNOUNCEMENT_API_KEY" \
+            '{
+              "app_id": $app_id,
+              "title": $title,
+              "short_description": $short_desc,
+              "full_content": $content,
+              "category": $category,
+              "pinned": true,
+              "priority": 1,
+              "publish": true,
+              "announcement_key": $announcement_key
+            }')
+
+          echo "Broadcasting announcement to AnymeX app ($TITLE)..."
+          HTTP_STATUS=$(curl -s -o response.json -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -H "x-announcement-key: $ANNOUNCEMENT_API_KEY" \
+            -X POST \
+            -d "$PAYLOAD" \
+            "$ANNOUNCEMENT_API_URL")
+
+          echo "Response HTTP status: $HTTP_STATUS"
+          cat response.json
+          echo ""
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "Successfully broadcasted announcement to AnymeX app!"
+          else
+            echo "Failed to broadcast announcement (HTTP $HTTP_STATUS). Continuing workflow."
+          fi
+
