@@ -358,6 +358,7 @@ jobs:
               "$DISCORD_WEBHOOK_URL"
 
       - name: Broadcast announcement to AnymeX App
+        if: !cancelled()
         env:
           ANNOUNCEMENT_API_URL: ${{ secrets.ANNOUNCEMENT_API_URL || 'http://anymex.duckdns.org:8000/functions/v1/announcements' }}
           ANNOUNCEMENT_API_KEY: ${{ secrets.ANNOUNCEMENT_API_KEY }}
