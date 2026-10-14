@@ -326,3 +326,19 @@ enum DiscordRpcKeys {
   novelDetailsFormat,
   idleFormat,
 }
+
+enum CloudSyncKeys {
+  provider,
+  webdavUrl,
+  webdavUsername,
+  webdavPassword,
+  autoSyncOnLaunch,
+  autoSyncOnExit,
+  lastSyncTime,
+  lastSyncSuccess,
+  lastSyncError,
+  syncLibrary,
+  syncHistory,
+  syncSettings,
+  syncStats,
+}

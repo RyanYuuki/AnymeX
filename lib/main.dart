@@ -43,6 +43,7 @@ import 'package:anymex/controllers/media_mode_controller.dart';
 import 'package:anymex/services/fcm_service.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/controllers/sync/cloud/cloud_sync_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/external_font_loader.dart';
@@ -278,6 +279,7 @@ void _initializeGetxController() async {
     Get.put(CommentPreloader());
     Get.put(WatchiumService(), permanent: true);
     Get.put(GistSyncController(), permanent: true);
+    Get.put(CloudSyncController(), permanent: true);
     Get.put(DownloadController(), permanent: true);
     Get.put(StatsTracker());
     Get.lazyPut(() => CacheController());

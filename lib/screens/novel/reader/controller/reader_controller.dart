@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
+import 'package:anymex/controllers/sync/cloud/cloud_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/controllers/stats/stats_tracker.dart';
@@ -865,6 +866,15 @@ class NovelReaderController extends GetxController {
       chapter: currentChapter.value,
       isCompleted: shouldRemove,
     );
+
+    final cloudSync = Get.isRegistered<CloudSyncController>()
+        ? Get.find<CloudSyncController>()
+        : null;
+    if (cloudSync != null &&
+        cloudSync.isConnected.value &&
+        cloudSync.autoSyncOnExit.value) {
+      cloudSync.syncNow(userInitiated: false);
+    }
   }
 
   bool _hasFinishedCurrentMedia() {

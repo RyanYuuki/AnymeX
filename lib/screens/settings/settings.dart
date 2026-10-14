@@ -2,6 +2,7 @@ import 'package:anymex/screens/settings/search/settings_registry.dart';
 import 'package:anymex/screens/settings/search/settings_search_icons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_cloud_sync.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_discord.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
@@ -159,6 +160,12 @@ class _SettingsPageState extends State<SettingsPage> {
               title: "Accounts",
               description: "Manage your MyAnimeList, Anilist, Simkl Accounts!",
               destination: SettingsAccounts.new,
+            ),
+            _buildTile(
+              icon: HugeIcons.strokeRoundedCloudCheck,
+              title: "Cloud Sync",
+              description: "Cross-device sync via WebDAV & cloud storage",
+              destination: SettingsCloudSync.new,
             ),
             _buildTile(
               icon: Icons.discord,

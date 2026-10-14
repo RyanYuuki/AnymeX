@@ -17,6 +17,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
+import 'package:anymex/controllers/sync/cloud/cloud_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as model;
@@ -2949,6 +2950,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       episode: currentEpisode.value,
       isCompleted: shouldRemove,
     );
+
+    final cloudSync = Get.isRegistered<CloudSyncController>()
+        ? Get.find<CloudSyncController>()
+        : null;
+    if (cloudSync != null &&
+        cloudSync.isConnected.value &&
+        cloudSync.autoSyncOnExit.value) {
+      cloudSync.syncNow(userInitiated: false);
+    }
   }
 }
 
