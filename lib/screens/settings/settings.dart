@@ -162,7 +162,7 @@ class _SettingsPageState extends State<SettingsPage> {
               destination: SettingsAccounts.new,
             ),
             _buildTile(
-              icon: HugeIcons.strokeRoundedCloudCheck,
+              icon: Icons.cloud_sync_outlined,
               title: "Cloud Sync",
               description: "Cross-device sync via WebDAV & cloud storage",
               destination: SettingsCloudSync.new,

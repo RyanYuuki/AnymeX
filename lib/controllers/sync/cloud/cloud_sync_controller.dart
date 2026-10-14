@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/database/isar_models/custom_list.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/database/isar_models/key_value.dart';
 import 'package:anymex/database/isar_models/daily_activity.dart';
 import 'package:anymex/database/isar_models/media_stats.dart';
+import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/main.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
 import 'package:anymex/utils/logger.dart';
@@ -84,32 +84,32 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
   void _loadPreferences() {
     try {
       selectedProvider.value =
-          getVal<String>(CloudSyncKeys.provider.name) ?? 'webdav';
+          CloudSyncKeys.provider.get<String>('webdav');
 
       webdavUrl.value =
-          getVal<String>(CloudSyncKeys.webdavUrl.name) ?? '';
+          CloudSyncKeys.webdavUrl.get<String>('');
       webdavUsername.value =
-          getVal<String>(CloudSyncKeys.webdavUsername.name) ?? '';
+          CloudSyncKeys.webdavUsername.get<String>('');
       webdavPassword.value =
-          getVal<String>(CloudSyncKeys.webdavPassword.name) ?? '';
+          CloudSyncKeys.webdavPassword.get<String>('');
 
       autoSyncOnLaunch.value =
-          getVal<bool>(CloudSyncKeys.autoSyncOnLaunch.name) ?? true;
+          CloudSyncKeys.autoSyncOnLaunch.get<bool>(true);
       autoSyncOnExit.value =
-          getVal<bool>(CloudSyncKeys.autoSyncOnExit.name) ?? true;
+          CloudSyncKeys.autoSyncOnExit.get<bool>(true);
 
       syncLibrary.value =
-          getVal<bool>(CloudSyncKeys.syncLibrary.name) ?? true;
+          CloudSyncKeys.syncLibrary.get<bool>(true);
       syncHistory.value =
-          getVal<bool>(CloudSyncKeys.syncHistory.name) ?? true;
+          CloudSyncKeys.syncHistory.get<bool>(true);
       syncSettings.value =
-          getVal<bool>(CloudSyncKeys.syncSettings.name) ?? true;
+          CloudSyncKeys.syncSettings.get<bool>(true);
       syncStats.value =
-          getVal<bool>(CloudSyncKeys.syncStats.name) ?? false;
+          CloudSyncKeys.syncStats.get<bool>(false);
 
       final lastTimeStr =
-          getVal<String>(CloudSyncKeys.lastSyncTime.name);
-      if (lastTimeStr != null && lastTimeStr.isNotEmpty) {
+          CloudSyncKeys.lastSyncTime.get<String>('');
+      if (lastTimeStr.isNotEmpty) {
         lastSyncTime.value = DateTime.tryParse(lastTimeStr);
       }
 
@@ -158,10 +158,10 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
       _activeProvider = tempProvider;
       isConnected.value = true;
 
-      setVal(CloudSyncKeys.webdavUrl.name, url);
-      setVal(CloudSyncKeys.webdavUsername.name, username);
-      setVal(CloudSyncKeys.webdavPassword.name, password);
-      setVal(CloudSyncKeys.provider.name, 'webdav');
+      CloudSyncKeys.webdavUrl.set(url);
+      CloudSyncKeys.webdavUsername.set(username);
+      CloudSyncKeys.webdavPassword.set(password);
+      CloudSyncKeys.provider.set('webdav');
 
       statusMessage.value = 'Connected successfully';
       snackBar('WebDAV connected successfully!');
@@ -180,9 +180,9 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
     webdavUsername.value = '';
     webdavPassword.value = '';
 
-    setVal(CloudSyncKeys.webdavUrl.name, '');
-    setVal(CloudSyncKeys.webdavUsername.name, '');
-    setVal(CloudSyncKeys.webdavPassword.name, '');
+    CloudSyncKeys.webdavUrl.set('');
+    CloudSyncKeys.webdavUsername.set('');
+    CloudSyncKeys.webdavPassword.set('');
     statusMessage.value = 'Disconnected';
     snackBar('Cloud sync disconnected');
   }
@@ -261,7 +261,7 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
 
       final now = DateTime.now();
       lastSyncTime.value = now;
-      setVal(CloudSyncKeys.lastSyncTime.name, now.toIso8601String());
+      CloudSyncKeys.lastSyncTime.set(now.toIso8601String());
 
       syncStatus.value = CloudSyncStatus.success;
       statusMessage.value = 'Synced at ${_formatTime(now)}';
@@ -271,9 +271,6 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
       }
 
       // Refresh UI controllers
-      if (Get.isRegistered<OfflineStorageController>()) {
-        Get.find<OfflineStorageController>().init();
-      }
       if (Get.isRegistered<LibraryController>()) {
         Get.delete<LibraryController>();
       }
