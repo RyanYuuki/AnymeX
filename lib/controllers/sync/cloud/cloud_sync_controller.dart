@@ -414,10 +414,21 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
             .toList();
 
         final localLists = await isar.customLists.where().findAll();
-        final localNames = localLists.map((e) => e.listName).toSet();
+        final localMap = {
+          for (final l in localLists) '${l.listName}_${l.mediaTypeIndex}': l
+        };
 
         for (final rList in remoteLists) {
-          if (!localNames.contains(rList.listName)) {
+          final key = '${rList.listName}_${rList.mediaTypeIndex}';
+          final existing = localMap[key];
+          if (existing != null) {
+            final merged = <String>{
+              ...?existing.mediaIds,
+              ...?rList.mediaIds,
+            }.toList();
+            existing.mediaIds = merged;
+            await isar.customLists.put(existing);
+          } else {
             await isar.customLists.put(rList);
           }
         }
