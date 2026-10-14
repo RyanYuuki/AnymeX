@@ -329,6 +329,21 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
             .toList()
         : <Map<String, dynamic>>[];
 
+    // Source mappings (sticky source, sticky server, mapped media title)
+    final sourceMappings = syncLibrary.value
+        ? isar
+            .collection<KeyValue>()
+            .where()
+            .findAllSync()
+            .where((e) =>
+                e.key.startsWith('stickySource_') ||
+                e.key.startsWith('stickyServer_') ||
+                e.key.startsWith('mappedMediaTitle_') ||
+                e.key.startsWith('trackBindings_'))
+            .map((e) => {'key': e.key, 'value': e.value})
+            .toList()
+        : <Map<String, dynamic>>[];
+
     // Gather daily activity and stats
     final dailyActivities = syncStats.value
         ? isar.dailyActivitys.where().findAllSync().map((e) => {
@@ -366,6 +381,7 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
       'manga': mangaList.map((e) => e.toJson()).toList(),
       'novel': novelList.map((e) => e.toJson()).toList(),
       'customLists': customLists.map((e) => e.toJson()).toList(),
+      'sourceMappings': sourceMappings,
       'settings': settingsList,
       'dailyActivities': dailyActivities,
       'mediaStats': mediaStats,
@@ -430,6 +446,19 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
             await isar.customLists.put(existing);
           } else {
             await isar.customLists.put(rList);
+          }
+        }
+      }
+
+      // 4b. Merge Source Mappings
+      if (remoteData['sourceMappings'] is List && syncLibrary.value) {
+        final mappings = remoteData['sourceMappings'] as List;
+        for (final item in mappings) {
+          if (item is Map && item['key'] != null && item['value'] != null) {
+            final kv = KeyValue()
+              ..key = item['key'] as String
+              ..value = item['value'] as String;
+            await isar.collection<KeyValue>().put(kv);
           }
         }
       }
@@ -537,6 +566,53 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
               .toList();
           if (newEps.isNotEmpty) {
             local.episodes = [...(local.episodes ?? []), ...newEps];
+            modified = true;
+          }
+        }
+
+        // Combine chapters list
+        if (remoteMedia.chapters != null && remoteMedia.chapters!.isNotEmpty) {
+          final existingChapNumbers =
+              local.chapters?.map((c) => c.number).toSet() ?? <String>{};
+          final newChaps = remoteMedia.chapters!
+              .where((c) => !existingChapNumbers.contains(c.number))
+              .toList();
+          if (newChaps.isNotEmpty) {
+            local.chapters = [...(local.chapters ?? []), ...newChaps];
+            modified = true;
+          }
+        }
+
+        // Merge watched episodes (checkmarks)
+        if (remoteMedia.watchedEpisodes != null &&
+            remoteMedia.watchedEpisodes!.isNotEmpty) {
+          final existingWatchedNumbers =
+              local.watchedEpisodes?.map((e) => e.number).toSet() ?? <String>{};
+          final newWatched = remoteMedia.watchedEpisodes!
+              .where((e) => !existingWatchedNumbers.contains(e.number))
+              .toList();
+          if (newWatched.isNotEmpty) {
+            local.watchedEpisodes = [
+              ...(local.watchedEpisodes ?? []),
+              ...newWatched
+            ];
+            modified = true;
+          }
+        }
+
+        // Merge read chapters (checkmarks)
+        if (remoteMedia.readChapters != null &&
+            remoteMedia.readChapters!.isNotEmpty) {
+          final existingReadNumbers =
+              local.readChapters?.map((c) => c.number).toSet() ?? <String>{};
+          final newRead = remoteMedia.readChapters!
+              .where((c) => !existingReadNumbers.contains(c.number))
+              .toList();
+          if (newRead.isNotEmpty) {
+            local.readChapters = [
+              ...(local.readChapters ?? []),
+              ...newRead
+            ];
             modified = true;
           }
         }
