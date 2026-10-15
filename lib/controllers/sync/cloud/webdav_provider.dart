@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:anymex/utils/logger.dart';
 import 'package:http/http.dart' as http;
 import 'cloud_sync_provider.dart';
 
 class WebDavProvider implements CloudSyncProvider {
+  static const String syncFileName = 'anymex_cloud_sync.json.gz';
   final String serverUrl;
   final String username;
   final String password;
@@ -172,9 +174,29 @@ class WebDavProvider implements CloudSyncProvider {
   }
 
   @override
-  Future<bool> deleteFile(String remoteFileName) async {
+  Future<void> uploadData(Map<String, dynamic> data) async {
+    final compressed = gzip.encode(utf8.encode(jsonEncode(data)));
+    await uploadFile(syncFileName, compressed);
+  }
+
+  @override
+  Future<Map<String, dynamic>?> downloadData() async {
+    final bytes = await downloadFile(syncFileName);
+    if (bytes == null || bytes.isEmpty) return null;
+    final decompressed = utf8.decode(gzip.decode(bytes));
+    return jsonDecode(decompressed) as Map<String, dynamic>;
+  }
+
+  @override
+  Future<CloudFileMetadata?> getMetadata() async {
+    return getFileMetadata(syncFileName);
+  }
+
+  @override
+  Future<bool> deleteFile([String? remoteFileName]) async {
+    final fileName = remoteFileName ?? syncFileName;
     try {
-      final targetPath = '$subDirectory/$remoteFileName';
+      final targetPath = '$subDirectory/$fileName';
       final uri = _buildUri(targetPath);
 
       final response = await http
