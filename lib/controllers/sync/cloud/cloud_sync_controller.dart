@@ -19,6 +19,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import 'cloud_sync_provider.dart';
 import 'webdav_provider.dart';
+import 'gist_cloud_sync_provider.dart';
 
 import 'package:flutter/widgets.dart';
 
@@ -84,7 +85,7 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
   void _loadPreferences() {
     try {
       selectedProvider.value =
-          CloudSyncKeys.provider.get<String>('webdav');
+          CloudSyncKeys.provider.get<String>('gist');
 
       webdavUrl.value =
           CloudSyncKeys.webdavUrl.get<String>('');
@@ -113,11 +114,27 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
         lastSyncTime.value = DateTime.tryParse(lastTimeStr);
       }
 
-      if (webdavUrl.value.isNotEmpty &&
-          webdavUsername.value.isNotEmpty &&
-          webdavPassword.value.isNotEmpty) {
-        _rebuildProvider();
-        isConnected.value = true;
+      if (selectedProvider.value == 'gist') {
+        final token = SyncKeys.gistGithubToken.get<String>('');
+        if (token.isNotEmpty) {
+          _rebuildProvider();
+          isConnected.value = true;
+        }
+      } else if (selectedProvider.value == 'webdav') {
+        if (webdavUrl.value.isNotEmpty &&
+            webdavUsername.value.isNotEmpty &&
+            webdavPassword.value.isNotEmpty) {
+          _rebuildProvider();
+          isConnected.value = true;
+        }
+      } else {
+        // Fallback: Check if GitHub token exists
+        final token = SyncKeys.gistGithubToken.get<String>('');
+        if (token.isNotEmpty) {
+          selectedProvider.value = 'gist';
+          _rebuildProvider();
+          isConnected.value = true;
+        }
       }
     } catch (e) {
       Logger.w('CloudSyncController: failed to load preferences: $e');
@@ -125,12 +142,41 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
   }
 
   void _rebuildProvider() {
-    if (selectedProvider.value == 'webdav') {
+    if (selectedProvider.value == 'gist') {
+      _activeProvider = GistCloudSyncProvider();
+    } else if (selectedProvider.value == 'webdav') {
       _activeProvider = WebDavProvider(
         serverUrl: webdavUrl.value,
         username: webdavUsername.value,
         password: webdavPassword.value,
       );
+    }
+  }
+
+  Future<bool> connectGist({String? token}) async {
+    isBusy.value = true;
+    statusMessage.value = 'Connecting to GitHub Gist...';
+
+    if (token != null && token.trim().isNotEmpty) {
+      SyncKeys.gistGithubToken.set(token.trim());
+    }
+
+    final tempProvider = GistCloudSyncProvider();
+    final success = await tempProvider.testConnection();
+    isBusy.value = false;
+
+    if (success) {
+      selectedProvider.value = 'gist';
+      CloudSyncKeys.provider.set('gist');
+      _activeProvider = tempProvider;
+      isConnected.value = true;
+      statusMessage.value = 'Connected to GitHub Gist';
+      snackBar('GitHub Gist connected successfully!');
+      return true;
+    } else {
+      statusMessage.value = 'Failed to connect to GitHub Gist.';
+      errorSnackBar('GitHub Gist connection failed. Check your GitHub login.');
+      return false;
     }
   }
 
@@ -155,6 +201,7 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
       webdavUrl.value = url;
       webdavUsername.value = username;
       webdavPassword.value = password;
+      selectedProvider.value = 'webdav';
       _activeProvider = tempProvider;
       isConnected.value = true;
 
@@ -176,13 +223,15 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
   Future<void> disconnect() async {
     _activeProvider = null;
     isConnected.value = false;
-    webdavUrl.value = '';
-    webdavUsername.value = '';
-    webdavPassword.value = '';
-
-    CloudSyncKeys.webdavUrl.set('');
-    CloudSyncKeys.webdavUsername.set('');
-    CloudSyncKeys.webdavPassword.set('');
+    if (selectedProvider.value == 'webdav') {
+      webdavUrl.value = '';
+      webdavUsername.value = '';
+      webdavPassword.value = '';
+      CloudSyncKeys.webdavUrl.set('');
+      CloudSyncKeys.webdavUsername.set('');
+      CloudSyncKeys.webdavPassword.set('');
+    }
+    CloudSyncKeys.provider.set('');
     statusMessage.value = 'Disconnected';
     snackBar('Cloud sync disconnected');
   }
@@ -231,32 +280,19 @@ class CloudSyncController extends GetxController with WidgetsBindingObserver {
       // 1. Gather local state
       final localData = await _buildLocalPayload();
 
-      // 2. Check remote metadata
-      final remoteMeta = await _activeProvider!.getFileMetadata(syncFileName);
+      // 2. Fetch remote state via active provider
+      final remoteData = await _activeProvider!.downloadData();
 
-      if (remoteMeta == null) {
-        // First time sync: simply upload local state
-        final compressed = gzip.encode(utf8.encode(jsonEncode(localData)));
-        await _activeProvider!.uploadFile(syncFileName, compressed);
+      if (remoteData == null) {
+        // First time sync: upload local state
+        await _activeProvider!.uploadData(localData);
       } else {
-        // Download remote state and merge
-        final remoteBytes = await _activeProvider!.downloadFile(syncFileName);
-        if (remoteBytes != null && remoteBytes.isNotEmpty) {
-          final decompressed = utf8.decode(gzip.decode(remoteBytes));
-          final remoteData = jsonDecode(decompressed) as Map<String, dynamic>;
+        // Smart merge remote into local Isar
+        await _mergeRemoteIntoLocal(remoteData);
 
-          // Smart merge remote into local Isar
-          await _mergeRemoteIntoLocal(remoteData);
-
-          // Build updated merged payload to upload back to cloud
-          final mergedData = await _buildLocalPayload();
-          final mergedCompressed =
-              gzip.encode(utf8.encode(jsonEncode(mergedData)));
-          await _activeProvider!.uploadFile(syncFileName, mergedCompressed);
-        } else {
-          final compressed = gzip.encode(utf8.encode(jsonEncode(localData)));
-          await _activeProvider!.uploadFile(syncFileName, compressed);
-        }
+        // Build updated merged payload to upload back to cloud
+        final mergedData = await _buildLocalPayload();
+        await _activeProvider!.uploadData(mergedData);
       }
 
       final now = DateTime.now();

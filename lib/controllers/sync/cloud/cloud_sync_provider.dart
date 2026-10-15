@@ -21,8 +21,8 @@ abstract class CloudSyncProvider {
   String get displayName;
 
   Future<bool> testConnection();
-  Future<void> uploadFile(String remoteFileName, List<int> bytes);
-  Future<List<int>?> downloadFile(String remoteFileName);
-  Future<CloudFileMetadata?> getFileMetadata(String remoteFileName);
-  Future<bool> deleteFile(String remoteFileName);
+  Future<void> uploadData(Map<String, dynamic> data);
+  Future<Map<String, dynamic>?> downloadData();
+  Future<CloudFileMetadata?> getMetadata();
+  Future<bool> deleteFile();
 }

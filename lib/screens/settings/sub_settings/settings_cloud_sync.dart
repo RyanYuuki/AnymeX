@@ -1,8 +1,11 @@
 import 'package:anymex/controllers/sync/cloud/cloud_sync_controller.dart';
+import 'package:anymex/controllers/sync/gist_sync_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -36,24 +39,9 @@ class WebDavPreset {
 
 const List<WebDavPreset> kWebDavPresets = [
   WebDavPreset(
-    id: 'infinicloud',
-    name: 'InfiniCLOUD',
-    description: 'High capacity cloud storage',
-    defaultUrl: 'https://<your-id>.infini-cloud.net/dav/',
-    websiteUrl: 'https://infini-cloud.net',
-    usernameHint: 'Connection ID from My Page',
-    setupGuide: [
-      'Create an account at infini-cloud.net',
-      'Go to "My Page" and enable "Apps Connection"',
-      'Copy your Connection URL and Connection ID',
-      'Generate an App Password and enter below',
-    ],
-    icon: Icons.cloud_outlined,
-  ),
-  WebDavPreset(
     id: 'koofr',
     name: 'Koofr',
-    description: 'Reliable general cloud storage',
+    description: 'Reliable cloud storage with WebDAV',
     defaultUrl: 'https://app.koofr.net/dav/Koofr/',
     websiteUrl: 'https://koofr.eu',
     usernameHint: 'Koofr account email',
@@ -63,7 +51,7 @@ const List<WebDavPreset> kWebDavPresets = [
       'Generate an App Password (name it "AnymeX")',
       'Enter your email and the generated password',
     ],
-    icon: Icons.dns_outlined,
+    icon: Icons.cloud_outlined,
   ),
   WebDavPreset(
     id: 'yandex',
@@ -82,7 +70,7 @@ const List<WebDavPreset> kWebDavPresets = [
   WebDavPreset(
     id: 'hidrive',
     name: 'HiDrive',
-    description: 'Secure cloud storage',
+    description: 'Secure cloud storage by IONOS',
     defaultUrl: 'https://webdav.hidrive.ionos.com/',
     websiteUrl: 'https://hidrive.ionos.com',
     usernameHint: 'HiDrive username',
@@ -92,20 +80,6 @@ const List<WebDavPreset> kWebDavPresets = [
       'Enter your HiDrive credentials below',
     ],
     icon: Icons.folder_shared_outlined,
-  ),
-  WebDavPreset(
-    id: 'custom',
-    name: 'Custom WebDAV',
-    description: 'Nextcloud, ownCloud, or NAS',
-    defaultUrl: '',
-    websiteUrl: '',
-    usernameHint: 'Username or email',
-    setupGuide: [
-      'Enter the full WebDAV URL provided by your server',
-      'Nextcloud format: https://domain/remote.php/dav/files/USER/',
-      'Enter your server login credentials',
-    ],
-    icon: Icons.settings_ethernet_rounded,
   ),
 ];
 
@@ -131,12 +105,9 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
         : Get.put(CloudSyncController());
   }
 
-  void _openSetupSheet(BuildContext context, [WebDavPreset? preset]) {
+  void _openSetupSheet(BuildContext context) {
     AnymeXSheet.custom(
-      _WebDavConfigSheet(
-        controller: controller,
-        initialPreset: preset ?? kWebDavPresets[1],
-      ),
+      _CloudSyncConfigSheet(controller: controller),
       context,
       showDragHandle: true,
     );
@@ -161,6 +132,33 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
               final connected = controller.isConnected.value;
               final isSyncing = controller.isBusy.value;
               final lastSync = controller.lastSyncTime.value;
+              final isGist = controller.selectedProvider.value == 'gist';
+
+              String providerLabel = 'Not Connected';
+              IconData providerIcon = Icons.cloud_off_rounded;
+              String providerDesc = 'Connect a provider to sync across devices';
+
+              if (connected) {
+                if (isGist) {
+                  final ghUser =
+                      SyncKeys.gistGithubUsername.get<String>('');
+                  providerLabel = 'GitHub Gist Synced';
+                  providerIcon = Icons.code_rounded;
+                  providerDesc = ghUser.isNotEmpty
+                      ? 'Connected as @$ghUser · anymex_progress.json'
+                      : 'Connected with GitHub Gist';
+                } else {
+                  final matchedPreset = kWebDavPresets.firstWhere(
+                    (p) => controller.webdavUrl.value.contains(p.id),
+                    orElse: () => kWebDavPresets.first,
+                  );
+                  providerLabel = '${matchedPreset.name} Synced';
+                  providerIcon = matchedPreset.icon;
+                  providerDesc = controller.webdavUsername.value.isNotEmpty
+                      ? '${controller.webdavUsername.value} · ${matchedPreset.defaultUrl}'
+                      : matchedPreset.defaultUrl;
+                }
+              }
 
               return AnymeXContainer(
                 padding: const EdgeInsets.all(20),
@@ -185,9 +183,7 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                               ? colors.primary.withOpacity(0.12)
                               : colors.surfaceContainerHighest.withOpacity(0.5),
                           child: Icon(
-                            connected
-                                ? Icons.cloud_done_rounded
-                                : Icons.cloud_off_rounded,
+                            connected ? providerIcon : Icons.cloud_off_rounded,
                             color: connected
                                 ? colors.primary
                                 : colors.onSurfaceVariant,
@@ -202,7 +198,7 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                               Row(
                                 children: [
                                   AnymeXText(
-                                    connected ? 'WebDAV Synced' : 'Not Connected',
+                                    providerLabel,
                                     variant: TextVariant.bold,
                                     size: 16,
                                   ),
@@ -227,11 +223,7 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                               ),
                               const SizedBox(height: 3),
                               AnymeXText(
-                                connected
-                                    ? (controller.statusMessage.value.isNotEmpty
-                                        ? controller.statusMessage.value
-                                        : controller.webdavUrl.value)
-                                    : 'Connect a cloud provider to sync across devices',
+                                providerDesc,
                                 size: 12,
                                 maxLines: 1,
                                 color: colors.onSurfaceVariant,
@@ -277,12 +269,12 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   if (isSyncing)
-                                    const SizedBox(
+                                    SizedBox(
                                       width: 16,
                                       height: 16,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        color: Colors.white,
+                                        color: colors.onPrimary,
                                       ),
                                     )
                                   else
@@ -297,15 +289,26 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          IconButton.filledTonal(
-                            tooltip: 'Configure Account',
-                            icon: const Icon(Icons.settings_outlined, size: 18),
-                            onPressed: () => _openSetupSheet(context),
+                          AnymeXContainer(
+                            radius: 12,
+                            color: colors.surfaceContainerHighest.withOpacity(0.5),
+                            child: IconButton(
+                              tooltip: 'Configure Provider',
+                              icon: Icon(Icons.tune_rounded,
+                                  size: 20, color: colors.onSurface),
+                              onPressed: () => _openSetupSheet(context),
+                            ),
                           ),
-                          IconButton.filledTonal(
-                            tooltip: 'Disconnect',
-                            icon: const Icon(Icons.logout_rounded, size: 18),
-                            onPressed: () => controller.disconnect(),
+                          const SizedBox(width: 8),
+                          AnymeXContainer(
+                            radius: 12,
+                            color: colors.surfaceContainerHighest.withOpacity(0.5),
+                            child: IconButton(
+                              tooltip: 'Disconnect',
+                              icon: Icon(Icons.logout_rounded,
+                                  size: 20, color: colors.error),
+                              onPressed: () => controller.disconnect(),
+                            ),
                           ),
                         ] else ...[
                           Expanded(
@@ -335,23 +338,6 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
             }),
 
             const SizedBox(height: 24),
-
-            // Provider List
-            AnymeXSectionBuilder(
-              title: 'Providers',
-              children: kWebDavPresets.map((preset) {
-                final isCurrent = controller.webdavUrl.value.isNotEmpty &&
-                    controller.webdavUrl.value.contains(preset.id);
-
-                return _ProviderCard(
-                  preset: preset,
-                  isCurrent: isCurrent,
-                  onTap: () => _openSetupSheet(context, preset),
-                );
-              }).toList(),
-            ),
-
-            const SizedBox(height: 16),
 
             // Sync Triggers
             AnymeXSectionBuilder(
@@ -433,123 +419,49 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
   }
 }
 
-class _ProviderCard extends StatelessWidget {
-  final WebDavPreset preset;
-  final bool isCurrent;
-  final VoidCallback onTap;
-
-  const _ProviderCard({
-    required this.preset,
-    required this.isCurrent,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: AnymeXContainer(
-        radius: 16,
-        color: colors.surfaceContainerLow.withOpacity(0.4),
-        border: Border.all(
-          color: isCurrent
-              ? colors.primary.withOpacity(0.4)
-              : colors.outline.withOpacity(0.06),
-          width: 1,
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              child: Row(
-                children: [
-                  AnymeXContainer(
-                    padding: const EdgeInsets.all(10),
-                    radius: 12,
-                    color: colors.primary.withOpacity(0.08),
-                    child: Icon(preset.icon, color: colors.primary, size: 22),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AnymeXText(
-                          preset.name,
-                          variant: TextVariant.semiBold,
-                          size: 15,
-                        ),
-                        const SizedBox(height: 2),
-                        AnymeXText(
-                          preset.description,
-                          size: 12,
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ],
-                    ),
-                  ),
-                  AnymeXContainer(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
-                    radius: 8,
-                    color: isCurrent
-                        ? colors.primary.withOpacity(0.15)
-                        : colors.surfaceContainerHighest.withOpacity(0.4),
-                    child: AnymeXText(
-                      isCurrent ? 'Active' : 'Configure',
-                      variant: TextVariant.bold,
-                      size: 12,
-                      color: isCurrent ? colors.primary : colors.onSurface,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _WebDavConfigSheet extends StatefulWidget {
+class _CloudSyncConfigSheet extends StatefulWidget {
   final CloudSyncController controller;
-  final WebDavPreset initialPreset;
 
-  const _WebDavConfigSheet({
-    required this.controller,
-    required this.initialPreset,
-  });
+  const _CloudSyncConfigSheet({required this.controller});
 
   @override
-  State<_WebDavConfigSheet> createState() => _WebDavConfigSheetState();
+  State<_CloudSyncConfigSheet> createState() => _CloudSyncConfigSheetState();
 }
 
-class _WebDavConfigSheetState extends State<_WebDavConfigSheet> {
-  late final Rx<WebDavPreset> selectedPreset;
-  late final TextEditingController urlController;
+class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
+  late final RxString selectedProviderId;
   late final TextEditingController userController;
   late final TextEditingController passController;
+  late final TextEditingController tokenController;
   final isPasswordVisible = false.obs;
+
+  GistSyncController get gistCtrl => Get.isRegistered<GistSyncController>()
+      ? Get.find<GistSyncController>()
+      : Get.put(GistSyncController());
 
   @override
   void initState() {
     super.initState();
-    selectedPreset = widget.initialPreset.obs;
-    urlController = TextEditingController(
-      text: widget.controller.webdavUrl.value.isNotEmpty
-          ? widget.controller.webdavUrl.value
-          : widget.initialPreset.defaultUrl,
-    );
+    selectedProviderId = (widget.controller.selectedProvider.value.isNotEmpty
+            ? widget.controller.selectedProvider.value
+            : 'gist')
+        .obs;
+
     userController =
         TextEditingController(text: widget.controller.webdavUsername.value);
     passController =
         TextEditingController(text: widget.controller.webdavPassword.value);
+    tokenController = TextEditingController(
+      text: SyncKeys.gistGithubToken.get<String>(''),
+    );
+  }
+
+  @override
+  void dispose() {
+    userController.dispose();
+    passController.dispose();
+    tokenController.dispose();
+    super.dispose();
   }
 
   @override
@@ -557,188 +469,540 @@ class _WebDavConfigSheetState extends State<_WebDavConfigSheet> {
     final colors = context.colors;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnymeXText(
-                'Configure WebDAV',
-                variant: TextVariant.bold,
-                size: 18,
-              ),
-              const Spacer(),
-              Obx(() {
-                final website = selectedPreset.value.websiteUrl;
-                if (website.isEmpty) return const SizedBox.shrink();
-                return TextButton.icon(
-                  onPressed: () {
-                    launchUrl(Uri.parse(website),
-                        mode: LaunchMode.externalApplication);
-                  },
-                  icon: const Icon(Icons.open_in_new_rounded, size: 14),
-                  label: const AnymeXText('Visit Site', size: 12),
-                );
-              }),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          // Provider selector chips
-          Obx(() => SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: kWebDavPresets.map((p) {
-                    final isSel = selectedPreset.value.id == p.id;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: ChoiceChip(
-                        label: Text(p.name),
-                        selected: isSel,
-                        onSelected: (selected) {
-                          if (selected) {
-                            selectedPreset.value = p;
-                            if (p.defaultUrl.isNotEmpty) {
-                              urlController.text = p.defaultUrl;
-                            }
-                          }
-                        },
-                      ),
-                    );
-                  }).toList(),
-                ),
-              )),
-
-          const SizedBox(height: 12),
-
-          // Setup Guide Box
-          Obx(() {
-            final p = selectedPreset.value;
-            return AnymeXContainer(
-              padding: const EdgeInsets.all(12),
-              radius: 12,
-              color: colors.surfaceContainerHighest.withOpacity(0.3),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  AnymeXText(
-                    'Setup Guide for ${p.name}',
+                  const AnymeXText(
+                    'Configure Cloud Sync',
                     variant: TextVariant.bold,
-                    size: 12,
-                    color: colors.primary,
+                    size: 18,
                   ),
-                  const SizedBox(height: 6),
-                  ...p.setupGuide.asMap().entries.map((e) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 3.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymeXText(
-                            '${e.key + 1}. ',
-                            size: 11,
-                            variant: TextVariant.bold,
-                            color: colors.primary,
-                          ),
-                          Expanded(
-                            child: AnymeXText(
-                              e.value,
-                              size: 11,
-                              color: colors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
+                  const Spacer(),
+                  Obx(() {
+                    if (selectedProviderId.value == 'gist') {
+                      return const SizedBox.shrink();
+                    }
+                    final p = kWebDavPresets.firstWhere(
+                      (preset) => preset.id == selectedProviderId.value,
+                      orElse: () => kWebDavPresets.first,
+                    );
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () {
+                        launchUrl(Uri.parse(p.websiteUrl),
+                            mode: LaunchMode.externalApplication);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.open_in_new_rounded,
+                                size: 14, color: colors.primary),
+                            const SizedBox(width: 4),
+                            AnymeXText('Visit Site',
+                                size: 12, color: colors.primary),
+                          ],
+                        ),
                       ),
                     );
                   }),
                 ],
               ),
-            );
-          }),
+              const SizedBox(height: 14),
 
-          const SizedBox(height: 14),
+              // Themed Provider Selector Pills
+              Obx(() => SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildProviderPill(
+                          id: 'gist',
+                          name: 'GitHub Gist',
+                          icon: Icons.code_rounded,
+                          colors: colors,
+                        ),
+                        ...kWebDavPresets.map((p) => _buildProviderPill(
+                              id: p.id,
+                              name: p.name,
+                              icon: p.icon,
+                              colors: colors,
+                            )),
+                      ],
+                    ),
+                  )),
 
-          TextField(
-            controller: urlController,
-            decoration: InputDecoration(
-              labelText: 'Server WebDAV URL',
-              prefixIcon: const Icon(Icons.link_rounded, size: 20),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            ),
+              const SizedBox(height: 16),
+
+              // Dynamic content based on selected provider
+              Obx(() {
+                if (selectedProviderId.value == 'gist') {
+                  return _buildGistConfig(colors);
+                } else {
+                  final preset = kWebDavPresets.firstWhere(
+                    (p) => p.id == selectedProviderId.value,
+                    orElse: () => kWebDavPresets.first,
+                  );
+                  return _buildWebDavConfig(preset, colors);
+                }
+              }),
+            ],
           ),
-          const SizedBox(height: 10),
-          Obx(() => TextField(
-                controller: userController,
-                decoration: InputDecoration(
-                  labelText: 'Username or Email',
-                  hintText: selectedPreset.value.usernameHint,
-                  prefixIcon:
-                      const Icon(Icons.person_outline_rounded, size: 20),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-              )),
-          const SizedBox(height: 10),
-          Obx(() => TextField(
-                controller: passController,
-                obscureText: !isPasswordVisible.value,
-                decoration: InputDecoration(
-                  labelText: 'Password or App Password',
-                  prefixIcon:
-                      const Icon(Icons.lock_outline_rounded, size: 20),
-                  suffixIcon: IconButton(
-                    icon: Icon(isPasswordVisible.value
-                        ? Icons.visibility_off_rounded
-                        : Icons.visibility_rounded),
-                    onPressed: () => isPasswordVisible.toggle(),
-                  ),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-              )),
+        ),
+      ),
+    );
+  }
 
-          const SizedBox(height: 18),
+  Widget _buildProviderPill({
+    required String id,
+    required String name,
+    required IconData icon,
+    required ColorScheme colors,
+  }) {
+    final isSel = selectedProviderId.value == id;
 
-          Obx(() => AnymeXButton(
-                height: 44,
-                borderRadius: BorderRadius.circular(12),
-                onTap: widget.controller.isBusy.value
-                    ? () {}
-                    : () async {
-                        final url = urlController.text.trim();
-                        final user = userController.text.trim();
-                        final pass = passController.text.trim();
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: GestureDetector(
+        onTap: () => selectedProviderId.value = id,
+        child: AnymeXContainer(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          radius: 12,
+          color: isSel
+              ? colors.primary.withOpacity(0.18)
+              : colors.surfaceContainerHighest.withOpacity(0.35),
+          border: Border.all(
+            color: isSel
+                ? colors.primary.withOpacity(0.7)
+                : colors.outline.withOpacity(0.1),
+            width: isSel ? 1.4 : 1,
+          ),
+          enableGlow: isSel,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: isSel ? colors.primary : colors.onSurfaceVariant,
+              ),
+              const SizedBox(width: 8),
+              AnymeXText(
+                name,
+                variant: isSel ? TextVariant.bold : TextVariant.regular,
+                size: 13,
+                color: isSel ? colors.primary : colors.onSurface,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-                        if (url.isEmpty || user.isEmpty || pass.isEmpty) {
-                          return;
-                        }
+  Widget _buildGistConfig(ColorScheme colors) {
+    return Obx(() {
+      final isLogged = gistCtrl.isLoggedIn.value;
+      final ghUser = gistCtrl.githubUsername.value ??
+          SyncKeys.gistGithubUsername.get<String>('');
+      final avatar = gistCtrl.githubAvatarUrl.value;
 
-                        final ok = await widget.controller.saveWebDavConfig(
-                          url: url,
-                          username: user,
-                          password: pass,
-                        );
-                        if (ok && context.mounted) {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                child: widget.controller.isBusy.value
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnymeXContainer(
+            padding: const EdgeInsets.all(14),
+            radius: 14,
+            color: colors.surfaceContainerHighest.withOpacity(0.3),
+            border: Border.all(color: colors.outline.withOpacity(0.1)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if (avatar != null && avatar.isNotEmpty)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: AnymeXImage(
+                          imageUrl: avatar,
+                          width: 32,
+                          height: 32,
                         ),
                       )
-                    : const AnymeXText(
-                        'Save & Connect',
-                        variant: TextVariant.bold,
+                    else
+                      AnymeXContainer(
+                        padding: const EdgeInsets.all(6),
+                        radius: 8,
+                        color: colors.primary.withOpacity(0.12),
+                        child: Icon(Icons.code_rounded,
+                            size: 20, color: colors.primary),
                       ),
-              )),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymeXText(
+                            isLogged
+                                ? 'Connected as @$ghUser'
+                                : 'GitHub Gist Storage',
+                            variant: TextVariant.bold,
+                            size: 14,
+                          ),
+                          const SizedBox(height: 2),
+                          AnymeXText(
+                            'Stores your data securely in anymex_progress.json',
+                            size: 11,
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                AnymeXText(
+                  'Syncs your library, watched episodes, read chapters, source mappings, and preferences directly to your personal GitHub Gist.',
+                  size: 12,
+                  color: colors.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          if (isLogged) ...[
+            AnymeXButton(
+              height: 44,
+              borderRadius: BorderRadius.circular(12),
+              onTap: widget.controller.isBusy.value
+                  ? () {}
+                  : () async {
+                      final ok = await widget.controller.connectGist();
+                      if (ok && mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+              child: widget.controller.isBusy.value
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: colors.onPrimary,
+                      ),
+                    )
+                  : const AnymeXText(
+                      'Use This GitHub Account & Save',
+                      variant: TextVariant.bold,
+                    ),
+            ),
+          ] else ...[
+            AnymeXButton(
+              height: 44,
+              borderRadius: BorderRadius.circular(12),
+              onTap: gistCtrl.isAuthenticating.value
+                  ? () {}
+                  : () async {
+                      await gistCtrl.login(context);
+                      if (gistCtrl.isLoggedIn.value) {
+                        await widget.controller.connectGist();
+                        if (mounted) Navigator.of(context).pop();
+                      }
+                    },
+              child: gistCtrl.isAuthenticating.value
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: colors.onPrimary,
+                      ),
+                    )
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.login_rounded, size: 18),
+                        SizedBox(width: 8),
+                        AnymeXText(
+                          'Sign In with GitHub',
+                          variant: TextVariant.bold,
+                        ),
+                      ],
+                    ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(child: Divider(color: colors.outline.withOpacity(0.15))),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: AnymeXText('or Personal Token',
+                      size: 11, color: colors.onSurfaceVariant),
+                ),
+                Expanded(child: Divider(color: colors.outline.withOpacity(0.15))),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildThemedTextField(
+              controller: tokenController,
+              label: 'GitHub Personal Access Token (PAT)',
+              hint: 'ghp_xxxxxxxxxxxxxxxxxxxx',
+              icon: Icons.key_rounded,
+              colors: colors,
+            ),
+            const SizedBox(height: 6),
+            Align(
+              alignment: Alignment.centerRight,
+              child: InkWell(
+                onTap: () {
+                  launchUrl(
+                    Uri.parse(
+                        'https://github.com/settings/tokens/new?scopes=gist&description=AnymeX%20Sync'),
+                    mode: LaunchMode.externalApplication,
+                  );
+                },
+                child: AnymeXText(
+                  'Generate Token on GitHub ➔',
+                  size: 11,
+                  color: colors.primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            AnymeXButton(
+              height: 44,
+              borderRadius: BorderRadius.circular(12),
+              onTap: widget.controller.isBusy.value
+                  ? () {}
+                  : () async {
+                      final token = tokenController.text.trim();
+                      if (token.isEmpty) return;
+                      final ok =
+                          await widget.controller.connectGist(token: token);
+                      if (ok && mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+              child: const AnymeXText(
+                'Connect with Token',
+                variant: TextVariant.bold,
+              ),
+            ),
+          ],
+        ],
+      );
+    });
+  }
+
+  Widget _buildWebDavConfig(WebDavPreset preset, ColorScheme colors) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Setup Guide Box
+        AnymeXContainer(
+          padding: const EdgeInsets.all(12),
+          radius: 12,
+          color: colors.surfaceContainerHighest.withOpacity(0.3),
+          border: Border.all(color: colors.outline.withOpacity(0.1)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AnymeXText(
+                'Setup Guide for ${preset.name}',
+                variant: TextVariant.bold,
+                size: 12,
+                color: colors.primary,
+              ),
+              const SizedBox(height: 6),
+              ...preset.setupGuide.asMap().entries.map((e) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 3.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        '${e.key + 1}. ',
+                        size: 11,
+                        variant: TextVariant.bold,
+                        color: colors.primary,
+                      ),
+                      Expanded(
+                        child: AnymeXText(
+                          e.value,
+                          size: 11,
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Automated Endpoint Pill
+        AnymeXContainer(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          radius: 12,
+          color: colors.surfaceContainerLow.withOpacity(0.5),
+          border: Border.all(color: colors.outline.withOpacity(0.1)),
+          child: Row(
+            children: [
+              Icon(Icons.link_rounded, size: 18, color: colors.primary),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymeXText('Server Endpoint (Automated)',
+                        size: 10, color: colors.onSurfaceVariant),
+                    const SizedBox(height: 1),
+                    AnymeXText(
+                      preset.defaultUrl,
+                      size: 12,
+                      variant: TextVariant.bold,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        _buildThemedTextField(
+          controller: userController,
+          label: 'Username or Email',
+          hint: preset.usernameHint,
+          icon: Icons.person_outline_rounded,
+          colors: colors,
+        ),
+
+        const SizedBox(height: 10),
+
+        Obx(() => _buildThemedTextField(
+              controller: passController,
+              label: 'Password or App Password',
+              hint: 'Generated app password',
+              icon: Icons.lock_outline_rounded,
+              obscureText: !isPasswordVisible.value,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  isPasswordVisible.value
+                      ? Icons.visibility_off_rounded
+                      : Icons.visibility_rounded,
+                  size: 20,
+                  color: colors.onSurfaceVariant,
+                ),
+                onPressed: () => isPasswordVisible.toggle(),
+              ),
+              colors: colors,
+            )),
+
+        const SizedBox(height: 18),
+
+        Obx(() => AnymeXButton(
+              height: 44,
+              borderRadius: BorderRadius.circular(12),
+              onTap: widget.controller.isBusy.value
+                  ? () {}
+                  : () async {
+                      final user = userController.text.trim();
+                      final pass = passController.text.trim();
+
+                      if (user.isEmpty || pass.isEmpty) return;
+
+                      final ok = await widget.controller.saveWebDavConfig(
+                        url: preset.defaultUrl,
+                        username: user,
+                        password: pass,
+                      );
+                      if (ok && mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+              child: widget.controller.isBusy.value
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: colors.onPrimary,
+                      ),
+                    )
+                  : const AnymeXText(
+                      'Save & Connect',
+                      variant: TextVariant.bold,
+                    ),
+            )),
+      ],
+    );
+  }
+
+  Widget _buildThemedTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    required ColorScheme colors,
+    bool obscureText = false,
+    Widget? suffixIcon,
+  }) {
+    return AnymeXContainer(
+      radius: 14,
+      color: colors.surfaceContainerHighest.withOpacity(0.35),
+      border: Border.all(color: colors.outline.withOpacity(0.15)),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: colors.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              obscureText: obscureText,
+              style: TextStyle(
+                fontSize: 14,
+                fontFamily: 'Linotte',
+                color: colors.onSurface,
+              ),
+              decoration: InputDecoration(
+                labelText: label,
+                labelStyle: TextStyle(
+                  color: colors.onSurfaceVariant,
+                  fontSize: 12,
+                  fontFamily: 'Linotte',
+                ),
+                hintText: hint,
+                hintStyle: TextStyle(
+                  color: colors.onSurfaceVariant.withOpacity(0.5),
+                  fontSize: 13,
+                  fontFamily: 'Linotte',
+                ),
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 8),
+              ),
+            ),
+          ),
+          if (suffixIcon != null) suffixIcon,
         ],
       ),
     );
