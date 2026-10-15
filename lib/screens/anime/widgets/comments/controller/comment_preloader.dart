@@ -25,8 +25,6 @@ class CommentPreloader extends GetxService {
 
       _preloadedControllers[media.uniqueId] = controller;
 
-      controller.loadComments();
-
       print('Started preloading comments for media: ${media.uniqueId}');
     } catch (e) {
       print('Error preloading comments for media ${media.uniqueId}: $e');

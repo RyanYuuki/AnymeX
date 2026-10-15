@@ -1,5 +1,6 @@
 export 'about_section.dart';
 export 'activity_heatmap.dart';
+export 'decoration_closet_sheet.dart';
 export 'favorites_section.dart';
 export 'hover_action_button.dart';
 export 'list_status_card.dart';
