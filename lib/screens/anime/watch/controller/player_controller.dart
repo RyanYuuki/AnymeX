@@ -228,6 +228,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
   final Rx<bool> isSpeedPaneOpened = false.obs;
+  final Rx<bool> isWatchTogetherPaneOpened = false.obs;
   final RxBool canGoForward = false.obs;
   final RxBool canGoBackward = false.obs;
   final RxDouble volume = 0.0.obs;
@@ -1561,7 +1562,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             !isTracksPaneOpened.value &&
             !isAudioPaneOpened.value &&
             !isSyncSubsPaneOpened.value &&
-            !isEpisodePaneOpened.value) {
+            !isEpisodePaneOpened.value &&
+            !isWatchTogetherPaneOpened.value) {
           showControls.value = false;
         }
       });
@@ -1636,6 +1638,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isAudioPaneOpened.value = false;
       isSyncSubsPaneOpened.value = false;
       isSpeedPaneOpened.value = false;
+      isWatchTogetherPaneOpened.value = false;
       currentEpisode.value = episode;
       final stamp = DynamicKeys.offlineVideoProgress.get<int?>(videoPath, null);
       await _basePlayer.open(
@@ -2677,6 +2680,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     isAudioPaneOpened.value = false;
     isSyncSubsPaneOpened.value = false;
     isSpeedPaneOpened.value = false;
+    isWatchTogetherPaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
     _updateMediaSessionMetadata();
