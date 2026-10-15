@@ -163,11 +163,11 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
               return AnymeXContainer(
                 padding: const EdgeInsets.all(20),
                 radius: 20,
-                color: colors.surfaceContainerLow.withOpacity(0.5),
+                color: colors.surfaceContainerHighest.opaque(0.35),
                 border: Border.all(
                   color: connected
-                      ? colors.primary.withOpacity(0.4)
-                      : colors.outline.withOpacity(0.1),
+                      ? colors.primary.opaque(0.4)
+                      : colors.outline.opaque(0.15),
                   width: 1,
                 ),
                 enableGlow: connected,
@@ -180,8 +180,8 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                           padding: const EdgeInsets.all(12),
                           radius: 14,
                           color: connected
-                              ? colors.primary.withOpacity(0.12)
-                              : colors.surfaceContainerHighest.withOpacity(0.5),
+                              ? colors.primary.opaque(0.15)
+                              : colors.surfaceContainerHighest.opaque(0.5),
                           child: Icon(
                             connected ? providerIcon : Icons.cloud_off_rounded,
                             color: connected
@@ -208,8 +208,8 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                                         horizontal: 8, vertical: 2),
                                     radius: 6,
                                     color: connected
-                                        ? colors.primary.withOpacity(0.15)
-                                        : colors.error.withOpacity(0.12),
+                                        ? colors.primary.opaque(0.15)
+                                        : colors.error.opaque(0.12),
                                     child: AnymeXText(
                                       connected ? 'ACTIVE' : 'IDLE',
                                       size: 10,
@@ -259,39 +259,54 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                       children: [
                         if (connected) ...[
                           Expanded(
-                            child: AnymeXButton(
-                              height: 42,
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: isSyncing
-                                  ? () {}
-                                  : () => controller.syncNow(),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (isSyncing)
-                                    SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: colors.onPrimary,
-                                      ),
-                                    )
-                                  else
-                                    const Icon(Icons.sync_rounded, size: 18),
-                                  const SizedBox(width: 8),
-                                  AnymeXText(
-                                    isSyncing ? 'Syncing...' : 'Sync Now',
-                                    variant: TextVariant.bold,
+                            child: SizedBox(
+                              height: 48,
+                              child: ElevatedButton(
+                                onPressed: isSyncing
+                                    ? null
+                                    : () => controller.syncNow(),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colors.primary,
+                                  foregroundColor: colors.onPrimary,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
-                                ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (isSyncing)
+                                      SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  colors.onPrimary),
+                                        ),
+                                      )
+                                    else
+                                      Icon(Icons.sync_rounded,
+                                          size: 18, color: colors.onPrimary),
+                                    const SizedBox(width: 8),
+                                    AnymeXText(
+                                      isSyncing ? 'Syncing...' : 'Sync Now',
+                                      variant: TextVariant.bold,
+                                      color: colors.onPrimary,
+                                      size: 14,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                           const SizedBox(width: 8),
                           AnymeXContainer(
-                            radius: 12,
-                            color: colors.surfaceContainerHighest.withOpacity(0.5),
+                            radius: 16,
+                            color: colors.surfaceContainerHighest.opaque(0.35),
                             child: IconButton(
                               tooltip: 'Configure Provider',
                               icon: Icon(Icons.tune_rounded,
@@ -301,8 +316,8 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                           ),
                           const SizedBox(width: 8),
                           AnymeXContainer(
-                            radius: 12,
-                            color: colors.surfaceContainerHighest.withOpacity(0.5),
+                            radius: 16,
+                            color: colors.surfaceContainerHighest.opaque(0.35),
                             child: IconButton(
                               tooltip: 'Disconnect',
                               icon: Icon(Icons.logout_rounded,
@@ -312,20 +327,33 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                           ),
                         ] else ...[
                           Expanded(
-                            child: AnymeXButton(
-                              height: 42,
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () => _openSetupSheet(context),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.add_link_rounded, size: 18),
-                                  SizedBox(width: 8),
-                                  AnymeXText(
-                                    'Connect Cloud Provider',
-                                    variant: TextVariant.bold,
+                            child: SizedBox(
+                              height: 48,
+                              child: ElevatedButton(
+                                onPressed: () => _openSetupSheet(context),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colors.primary,
+                                  foregroundColor: colors.onPrimary,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
                                   ),
-                                ],
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_link_rounded,
+                                        size: 18, color: colors.onPrimary),
+                                    const SizedBox(width: 8),
+                                    AnymeXText(
+                                      'Connect Cloud Provider',
+                                      variant: TextVariant.bold,
+                                      color: colors.onPrimary,
+                                      size: 14,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -684,64 +712,91 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
           const SizedBox(height: 16),
 
           if (isLogged) ...[
-            AnymeXButton(
-              height: 44,
-              borderRadius: BorderRadius.circular(12),
-              onTap: widget.controller.isBusy.value
-                  ? () {}
-                  : () async {
-                      final ok = await widget.controller.connectGist();
-                      if (ok && mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    },
-              child: widget.controller.isBusy.value
-                  ? SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: widget.controller.isBusy.value
+                    ? null
+                    : () async {
+                        final ok = await widget.controller.connectGist();
+                        if (ok && mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: widget.controller.isBusy.value
+                    ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              colors.onPrimary),
+                        ),
+                      )
+                    : AnymeXText(
+                        'Use This GitHub Account & Save',
+                        variant: TextVariant.bold,
                         color: colors.onPrimary,
+                        size: 14,
                       ),
-                    )
-                  : const AnymeXText(
-                      'Use This GitHub Account & Save',
-                      variant: TextVariant.bold,
-                    ),
+              ),
             ),
           ] else ...[
-            AnymeXButton(
-              height: 44,
-              borderRadius: BorderRadius.circular(12),
-              onTap: gistCtrl.isAuthenticating.value
-                  ? () {}
-                  : () async {
-                      await gistCtrl.login(context);
-                      if (gistCtrl.isLoggedIn.value) {
-                        await widget.controller.connectGist();
-                        if (mounted) Navigator.of(context).pop();
-                      }
-                    },
-              child: gistCtrl.isAuthenticating.value
-                  ? SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: colors.onPrimary,
-                      ),
-                    )
-                  : const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.login_rounded, size: 18),
-                        SizedBox(width: 8),
-                        AnymeXText(
-                          'Sign In with GitHub',
-                          variant: TextVariant.bold,
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: gistCtrl.isAuthenticating.value
+                    ? null
+                    : () async {
+                        await gistCtrl.login(context);
+                        if (gistCtrl.isLoggedIn.value) {
+                          await widget.controller.connectGist();
+                          if (mounted) Navigator.of(context).pop();
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: gistCtrl.isAuthenticating.value
+                    ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              colors.onPrimary),
                         ),
-                      ],
-                    ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.login_rounded,
+                              size: 18, color: colors.onPrimary),
+                          const SizedBox(width: 8),
+                          AnymeXText(
+                            'Sign In with GitHub',
+                            variant: TextVariant.bold,
+                            color: colors.onPrimary,
+                            size: 14,
+                          ),
+                        ],
+                      ),
+              ),
             ),
             const SizedBox(height: 12),
             Row(
@@ -782,23 +837,35 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
               ),
             ),
             const SizedBox(height: 14),
-            AnymeXButton(
-              height: 44,
-              borderRadius: BorderRadius.circular(12),
-              onTap: widget.controller.isBusy.value
-                  ? () {}
-                  : () async {
-                      final token = tokenController.text.trim();
-                      if (token.isEmpty) return;
-                      final ok =
-                          await widget.controller.connectGist(token: token);
-                      if (ok && mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    },
-              child: const AnymeXText(
-                'Connect with Token',
-                variant: TextVariant.bold,
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: widget.controller.isBusy.value
+                    ? null
+                    : () async {
+                        final token = tokenController.text.trim();
+                        if (token.isEmpty) return;
+                        final ok =
+                            await widget.controller.connectGist(token: token);
+                        if (ok && mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: AnymeXText(
+                  'Connect with Token',
+                  variant: TextVariant.bold,
+                  color: colors.onPrimary,
+                  size: 14,
+                ),
               ),
             ),
           ],
@@ -918,39 +985,52 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
 
         const SizedBox(height: 18),
 
-        Obx(() => AnymeXButton(
-              height: 44,
-              borderRadius: BorderRadius.circular(12),
-              onTap: widget.controller.isBusy.value
-                  ? () {}
-                  : () async {
-                      final user = userController.text.trim();
-                      final pass = passController.text.trim();
+        Obx(() => SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: widget.controller.isBusy.value
+                    ? null
+                    : () async {
+                        final user = userController.text.trim();
+                        final pass = passController.text.trim();
 
-                      if (user.isEmpty || pass.isEmpty) return;
+                        if (user.isEmpty || pass.isEmpty) return;
 
-                      final ok = await widget.controller.saveWebDavConfig(
-                        url: preset.defaultUrl,
-                        username: user,
-                        password: pass,
-                      );
-                      if (ok && mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    },
-              child: widget.controller.isBusy.value
-                  ? SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
+                        final ok = await widget.controller.saveWebDavConfig(
+                          url: preset.defaultUrl,
+                          username: user,
+                          password: pass,
+                        );
+                        if (ok && mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: widget.controller.isBusy.value
+                    ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              colors.onPrimary),
+                        ),
+                      )
+                    : AnymeXText(
+                        'Save & Connect',
+                        variant: TextVariant.bold,
                         color: colors.onPrimary,
+                        size: 14,
                       ),
-                    )
-                  : const AnymeXText(
-                      'Save & Connect',
-                      variant: TextVariant.bold,
-                    ),
+              ),
             )),
       ],
     );
