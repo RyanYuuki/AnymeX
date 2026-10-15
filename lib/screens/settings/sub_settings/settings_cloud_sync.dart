@@ -3,14 +3,16 @@ import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_dropdown.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -113,10 +115,19 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
     );
   }
 
+  void _showDisconnectDialog(BuildContext context) {
+    AnymeXDialog(
+      title: 'Disconnect Cloud Sync?',
+      message:
+          'Your local library will stay on this device, but automatic syncing will stop until you connect again.',
+      confirmText: 'Disconnect',
+      cancelText: 'Keep Connected',
+      onConfirm: () => controller.disconnect(),
+    ).show(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
-
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Cloud Sync',
@@ -126,248 +137,11 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
           customPadding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
           children: [
             SizedBox(height: AnymeXHeaderScope.of(ctx)),
-
-            // Hero Status Card
-            Obx(() {
-              final connected = controller.isConnected.value;
-              final isSyncing = controller.isBusy.value;
-              final lastSync = controller.lastSyncTime.value;
-              final isGist = controller.selectedProvider.value == 'gist';
-
-              String providerLabel = 'Not Connected';
-              IconData providerIcon = Icons.cloud_off_rounded;
-              String providerDesc = 'Connect a provider to sync across devices';
-
-              if (connected) {
-                if (isGist) {
-                  final ghUser =
-                      SyncKeys.gistGithubUsername.get<String>('');
-                  providerLabel = 'GitHub Gist Synced';
-                  providerIcon = Icons.code_rounded;
-                  providerDesc = ghUser.isNotEmpty
-                      ? 'Connected as @$ghUser · anymex_progress.json'
-                      : 'Connected with GitHub Gist';
-                } else {
-                  final matchedPreset = kWebDavPresets.firstWhere(
-                    (p) => controller.webdavUrl.value.contains(p.id),
-                    orElse: () => kWebDavPresets.first,
-                  );
-                  providerLabel = '${matchedPreset.name} Synced';
-                  providerIcon = matchedPreset.icon;
-                  providerDesc = controller.webdavUsername.value.isNotEmpty
-                      ? '${controller.webdavUsername.value} · ${matchedPreset.defaultUrl}'
-                      : matchedPreset.defaultUrl;
-                }
-              }
-
-              return AnymeXContainer(
-                padding: const EdgeInsets.all(20),
-                radius: 20,
-                color: colors.surfaceContainerHighest.opaque(0.35),
-                border: Border.all(
-                  color: connected
-                      ? colors.primary.opaque(0.4)
-                      : colors.outline.opaque(0.15),
-                  width: 1,
-                ),
-                enableGlow: connected,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        AnymeXContainer(
-                          padding: const EdgeInsets.all(12),
-                          radius: 14,
-                          color: connected
-                              ? colors.primary.opaque(0.15)
-                              : colors.surfaceContainerHighest.opaque(0.5),
-                          child: Icon(
-                            connected ? providerIcon : Icons.cloud_off_rounded,
-                            color: connected
-                                ? colors.primary
-                                : colors.onSurfaceVariant,
-                            size: 26,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  AnymeXText(
-                                    providerLabel,
-                                    variant: TextVariant.bold,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  AnymeXContainer(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 2),
-                                    radius: 6,
-                                    color: connected
-                                        ? colors.primary.opaque(0.15)
-                                        : colors.error.opaque(0.12),
-                                    child: AnymeXText(
-                                      connected ? 'ACTIVE' : 'IDLE',
-                                      size: 10,
-                                      variant: TextVariant.bold,
-                                      color: connected
-                                          ? colors.primary
-                                          : colors.error,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 3),
-                              AnymeXText(
-                                providerDesc,
-                                size: 12,
-                                maxLines: 1,
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    if (connected && lastSync != null) ...[
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.access_time_rounded,
-                            size: 14,
-                            color: colors.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 6),
-                          AnymeXText(
-                            'Last updated: ${lastSync.day}/${lastSync.month}/${lastSync.year} at ${lastSync.hour.toString().padLeft(2, '0')}:${lastSync.minute.toString().padLeft(2, '0')}',
-                            size: 12,
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
-                    ],
-
-                    const SizedBox(height: 16),
-
-                    Row(
-                      children: [
-                        if (connected) ...[
-                          Expanded(
-                            child: SizedBox(
-                              height: 48,
-                              child: ElevatedButton(
-                                onPressed: isSyncing
-                                    ? null
-                                    : () => controller.syncNow(),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: colors.primary,
-                                  foregroundColor: colors.onPrimary,
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    if (isSyncing)
-                                      SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                  colors.onPrimary),
-                                        ),
-                                      )
-                                    else
-                                      Icon(Icons.sync_rounded,
-                                          size: 18, color: colors.onPrimary),
-                                    const SizedBox(width: 8),
-                                    AnymeXText(
-                                      isSyncing ? 'Syncing...' : 'Sync Now',
-                                      variant: TextVariant.bold,
-                                      color: colors.onPrimary,
-                                      size: 14,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          AnymeXContainer(
-                            radius: 16,
-                            color: colors.surfaceContainerHighest.opaque(0.35),
-                            child: IconButton(
-                              tooltip: 'Configure Provider',
-                              icon: Icon(Icons.tune_rounded,
-                                  size: 20, color: colors.onSurface),
-                              onPressed: () => _openSetupSheet(context),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          AnymeXContainer(
-                            radius: 16,
-                            color: colors.surfaceContainerHighest.opaque(0.35),
-                            child: IconButton(
-                              tooltip: 'Disconnect',
-                              icon: Icon(Icons.logout_rounded,
-                                  size: 20, color: colors.error),
-                              onPressed: () => controller.disconnect(),
-                            ),
-                          ),
-                        ] else ...[
-                          Expanded(
-                            child: SizedBox(
-                              height: 48,
-                              child: ElevatedButton(
-                                onPressed: () => _openSetupSheet(context),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: colors.primary,
-                                  foregroundColor: colors.onPrimary,
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.add_link_rounded,
-                                        size: 18, color: colors.onPrimary),
-                                    const SizedBox(width: 8),
-                                    AnymeXText(
-                                      'Connect Cloud Provider',
-                                      variant: TextVariant.bold,
-                                      color: colors.onPrimary,
-                                      size: 14,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            }),
-
-            const SizedBox(height: 24),
-
-            // Sync Triggers
+            _CloudSyncStatusCard(
+              controller: controller,
+              onConfigure: () => _openSetupSheet(context),
+              onDisconnect: () => _showDisconnectDialog(context),
+            ),
             AnymeXSectionBuilder(
               title: 'Sync Automation',
               children: [
@@ -393,18 +167,13 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
                     )),
               ],
             ),
-
-            const SizedBox(height: 16),
-
-            // Items to Sync
             AnymeXSectionBuilder(
               title: 'Synced Data',
               children: [
                 Obx(() => AnymeXTile.toggle(
                       icon: Icons.video_library_rounded,
                       title: 'Library',
-                      subtitle:
-                          'Anime, Manga, Novels, and Custom Lists',
+                      subtitle: 'Anime, Manga, Novels, and Custom Lists',
                       value: controller.syncLibrary.value,
                       onChanged: (v) {
                         controller.syncLibrary.value = v;
@@ -444,6 +213,300 @@ class _SettingsCloudSyncState extends State<SettingsCloudSync> {
         ),
       ),
     );
+  }
+}
+
+class _CloudSyncStatusCard extends StatelessWidget {
+  final CloudSyncController controller;
+  final VoidCallback onConfigure;
+  final VoidCallback onDisconnect;
+
+  const _CloudSyncStatusCard({
+    required this.controller,
+    required this.onConfigure,
+    required this.onDisconnect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final colors = context.colors;
+      final connected = controller.isConnected.value;
+      final isSyncing = controller.isBusy.value;
+      final lastSync = controller.lastSyncTime.value;
+      final isGist = controller.selectedProvider.value == 'gist';
+      // Read these inside Obx so the card updates correctly.
+      final webdavUrl = controller.webdavUrl.value;
+      final webdavUsername = controller.webdavUsername.value;
+
+      String providerTitle = 'Not Connected';
+      String providerSubtitle = 'Connect a provider to sync across devices';
+      IconData providerIcon = Icons.cloud_off_rounded;
+
+      if (connected) {
+        if (isGist) {
+          final ghUser = SyncKeys.gistGithubUsername.get<String>('');
+          providerTitle = 'GitHub Gist';
+          providerIcon = Icons.code_rounded;
+          providerSubtitle = ghUser.isNotEmpty
+              ? 'Connected as @$ghUser'
+              : 'Connected with GitHub Gist';
+        } else {
+          final matched = kWebDavPresets.firstWhere(
+            (p) => webdavUrl.toLowerCase().contains(p.id.toLowerCase()),
+            orElse: () => kWebDavPresets.first,
+          );
+          providerTitle = matched.name;
+          providerIcon = matched.icon;
+          providerSubtitle = webdavUsername.isNotEmpty
+              ? webdavUsername
+              : matched.defaultUrl;
+        }
+      }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: connected
+              ? colors.primary.opaque(0.35, iReallyMeanIt: true)
+              : colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+          width: 0.8,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: connected
+                        ? colors.primary.opaque(0.12, iReallyMeanIt: true)
+                        : colors.surfaceContainerHighest
+                            .opaque(0.4, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    providerIcon,
+                    size: 22,
+                    color: connected ? colors.primary : colors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: AnymeXText(
+                              providerTitle,
+                              variant: TextVariant.semiBold,
+                              size: 15,
+                              maxLines: 1,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: connected
+                                  ? colors.primary
+                                      .opaque(0.12, iReallyMeanIt: true)
+                                  : colors.error
+                                      .opaque(0.12, iReallyMeanIt: true),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: AnymeXText(
+                              connected ? 'ACTIVE' : 'IDLE',
+                              size: 10,
+                              variant: TextVariant.bold,
+                              color: connected ? colors.primary : colors.error,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 2),
+                      AnymeXText(
+                        providerSubtitle,
+                        size: 12,
+                        color: connected
+                            ? colors.primary
+                            : colors.onSurface
+                                .opaque(0.45, iReallyMeanIt: true),
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (connected && lastSync != null) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(
+                    Icons.access_time_rounded,
+                    size: 14,
+                    color: colors.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 6),
+                  AnymeXText(
+                    'Last synced ${lastSync.day}/${lastSync.month}/${lastSync.year} at ${lastSync.hour.toString().padLeft(2, '0')}:${lastSync.minute.toString().padLeft(2, '0')}',
+                    size: 12,
+                    color: colors.onSurface.opaque(0.45, iReallyMeanIt: true),
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 16),
+            if (connected) ...[
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: isSyncing ? null : () => controller.syncNow(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (isSyncing)
+                        SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                colors.onPrimary),
+                          ),
+                        )
+                      else
+                        Icon(Icons.sync_rounded,
+                            color: colors.onPrimary, size: 20),
+                      const SizedBox(width: 8),
+                      AnymeXText(
+                        isSyncing ? 'Syncing...' : 'Sync Now',
+                        variant: TextVariant.bold,
+                        color: colors.onPrimary,
+                        size: 15,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: AnymexOnTap(
+                      onTap: onConfigure,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceContainerHighest
+                              .opaque(0.4, iReallyMeanIt: true),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: colors.outlineVariant
+                                .opaque(0.5, iReallyMeanIt: true),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.tune_rounded,
+                                size: 18, color: colors.onSurface),
+                            const SizedBox(width: 8),
+                            const AnymeXText('Configure',
+                                variant: TextVariant.semiBold, size: 13),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: AnymexOnTap(
+                      onTap: onDisconnect,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: colors.error.opaque(0.08, iReallyMeanIt: true),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color:
+                                colors.error.opaque(0.25, iReallyMeanIt: true),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.logout_rounded,
+                                size: 18, color: colors.error),
+                            const SizedBox(width: 8),
+                            AnymeXText('Disconnect',
+                                variant: TextVariant.semiBold,
+                                size: 13,
+                                color: colors.error),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ] else ...[
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: onConfigure,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    foregroundColor: colors.onPrimary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add_link_rounded,
+                          color: colors.onPrimary, size: 20),
+                      const SizedBox(width: 8),
+                      AnymeXText(
+                        'Connect Cloud Provider',
+                        variant: TextVariant.bold,
+                        color: colors.onPrimary,
+                        size: 15,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+    });
   }
 }
 
@@ -492,154 +555,210 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
     super.dispose();
   }
 
+  List<DropdownItem> get _providerItems => [
+        DropdownItem(
+          value: 'gist',
+          text: 'GitHub Gist',
+          subtitle: 'Free · anymex_progress.json in your Gist',
+          leadingIcon: Icon(
+            Icons.code_rounded,
+            size: 18,
+            color: Get.theme.colorScheme.primary,
+          ),
+        ),
+        ...kWebDavPresets.map(
+          (p) => DropdownItem(
+            value: p.id,
+            text: p.name,
+            subtitle: p.description,
+            leadingIcon: Icon(
+              p.icon,
+              size: 18,
+              color: Get.theme.colorScheme.primary,
+            ),
+          ),
+        ),
+      ];
+
+  DropdownItem _providerItemFor(String id) {
+    return _providerItems.firstWhere(
+      (e) => e.value == id,
+      orElse: () => _providerItems.first,
+    );
+  }
+
+  void _showPresetInfo(BuildContext context, WebDavPreset preset) {
+    final colors = Theme.of(context).colorScheme;
+    AnymeXDialog(
+      title: preset.name,
+      confirmText: 'Visit Site',
+      cancelText: 'Close',
+      onConfirm: () {
+        launchUrl(Uri.parse(preset.websiteUrl),
+            mode: LaunchMode.externalApplication);
+      },
+      contentWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnymeXText(
+            preset.description,
+            size: 13,
+            color: colors.onSurfaceVariant,
+            maxLines: 10,
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainer.opaque(0.4),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: colors.outlineVariant.opaque(0.5),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.link_rounded,
+                  size: 18,
+                  color: colors.primary,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        'SERVER ENDPOINT',
+                        size: 10,
+                        variant: TextVariant.bold,
+                        color: colors.onSurfaceVariant,
+                      ),
+                      const SizedBox(height: 2),
+                      AnymeXText(
+                        preset.defaultUrl,
+                        size: 12.5,
+                        color: colors.onSurface,
+                        maxLines: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ).show(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
+    final theme = Theme.of(context);
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.82,
       ),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const AnymeXText(
-                    'Configure Cloud Sync',
-                    variant: TextVariant.bold,
-                    size: 18,
-                  ),
-                  const Spacer(),
-                  Obx(() {
-                    if (selectedProviderId.value == 'gist') {
-                      return const SizedBox.shrink();
-                    }
-                    final p = kWebDavPresets.firstWhere(
-                      (preset) => preset.id == selectedProviderId.value,
-                      orElse: () => kWebDavPresets.first,
-                    );
-                    return InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () {
-                        launchUrl(Uri.parse(p.websiteUrl),
-                            mode: LaunchMode.externalApplication);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.open_in_new_rounded,
-                                size: 14, color: colors.primary),
-                            const SizedBox(width: 4),
-                            AnymeXText('Visit Site',
-                                size: 12, color: colors.primary),
-                          ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 8, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        'Configure Cloud Sync',
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    );
-                  }),
-                ],
-              ),
-              const SizedBox(height: 14),
-
-              // Themed Provider Selector Pills
-              Obx(() => SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildProviderPill(
-                          id: 'gist',
-                          name: 'GitHub Gist',
-                          icon: Icons.code_rounded,
-                          colors: colors,
+                      const SizedBox(height: 2),
+                      AnymeXText(
+                        'Choose a provider to sync your library',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontSize: 13,
                         ),
-                        ...kWebDavPresets.map((p) => _buildProviderPill(
-                              id: p.id,
-                              name: p.name,
-                              icon: p.icon,
-                              colors: colors,
-                            )),
-                      ],
-                    ),
-                  )),
-
-              const SizedBox(height: 16),
-
-              // Dynamic content based on selected provider
-              Obx(() {
-                if (selectedProviderId.value == 'gist') {
-                  return _buildGistConfig(colors);
-                } else {
+                      ),
+                    ],
+                  ),
+                ),
+                Obx(() {
+                  final isGist =
+                      selectedProviderId.value == 'gist';
+                  final preset = isGist
+                      ? null
+                      : kWebDavPresets.firstWhere(
+                          (e) => e.id == selectedProviderId.value,
+                          orElse: () => kWebDavPresets.first,
+                        );
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (preset != null)
+                        IconButton(
+                          tooltip: '${preset.name} info',
+                          onPressed: () =>
+                              _showPresetInfo(context, preset),
+                          icon: const Icon(Icons.info_outline_rounded),
+                        ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close_rounded),
+                      ),
+                    ],
+                  );
+                }),
+              ],
+            ),
+          ),
+          Divider(
+            height: 1,
+            color: theme.colorScheme.outlineVariant.opaque(0.2),
+          ),
+          Flexible(
+            child: ListView(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(4, 12, 4, 8),
+              children: [
+                Obx(() => AnymeXDropdown(
+                      label: 'CLOUD PROVIDER',
+                      icon: Icons.cloud_outlined,
+                      items: _providerItems,
+                      selectedItem:
+                          _providerItemFor(selectedProviderId.value),
+                      onChanged: (item) =>
+                          selectedProviderId.value = item.value,
+                    )),
+                const SizedBox(height: 12),
+                Obx(() {
+                  if (selectedProviderId.value == 'gist') {
+                    return _buildGistConfig(context);
+                  }
                   final preset = kWebDavPresets.firstWhere(
                     (p) => p.id == selectedProviderId.value,
                     orElse: () => kWebDavPresets.first,
                   );
-                  return _buildWebDavConfig(preset, colors);
-                }
-              }),
-            ],
+                  return _buildWebDavConfig(context, preset);
+                }),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildProviderPill({
-    required String id,
-    required String name,
-    required IconData icon,
-    required ColorScheme colors,
-  }) {
-    final isSel = selectedProviderId.value == id;
+  Widget _buildGistConfig(BuildContext context) {
+    final theme = Theme.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.only(right: 8.0),
-      child: GestureDetector(
-        onTap: () => selectedProviderId.value = id,
-        child: AnymeXContainer(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          radius: 12,
-          color: isSel
-              ? colors.primary.withOpacity(0.18)
-              : colors.surfaceContainerHighest.withOpacity(0.35),
-          border: Border.all(
-            color: isSel
-                ? colors.primary.withOpacity(0.7)
-                : colors.outline.withOpacity(0.1),
-            width: isSel ? 1.4 : 1,
-          ),
-          enableGlow: isSel,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 16,
-                color: isSel ? colors.primary : colors.onSurfaceVariant,
-              ),
-              const SizedBox(width: 8),
-              AnymeXText(
-                name,
-                variant: isSel ? TextVariant.bold : TextVariant.regular,
-                size: 13,
-                color: isSel ? colors.primary : colors.onSurface,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGistConfig(ColorScheme colors) {
     return Obx(() {
       final isLogged = gistCtrl.isLoggedIn.value;
       final ghUser = gistCtrl.githubUsername.value ??
@@ -649,111 +768,148 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AnymeXContainer(
-            padding: const EdgeInsets.all(14),
-            radius: 14,
-            color: colors.surfaceContainerHighest.withOpacity(0.3),
-            border: Border.all(color: colors.outline.withOpacity(0.1)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    if (avatar != null && avatar.isNotEmpty)
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: AnymeXImage(
-                          imageUrl: avatar,
-                          width: 32,
-                          height: 32,
+          Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainer.opaque(0.4),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                  color: theme.colorScheme.outlineVariant.opaque(0.5)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      if (avatar != null && avatar.isNotEmpty)
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: theme.colorScheme.primary.opaque(0.3),
+                              width: 2,
+                            ),
+                          ),
+                          child: ClipOval(
+                            child: AnymeXImage(
+                              imageUrl: avatar,
+                              width: 44,
+                              height: 44,
+                              radius: 22,
+                            ),
+                          ),
+                        )
+                      else
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.opaque(0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(Icons.code_rounded,
+                              size: 22, color: theme.colorScheme.primary),
                         ),
-                      )
-                    else
-                      AnymeXContainer(
-                        padding: const EdgeInsets.all(6),
-                        radius: 8,
-                        color: colors.primary.withOpacity(0.12),
-                        child: Icon(Icons.code_rounded,
-                            size: 20, color: colors.primary),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AnymeXText(
+                              isLogged && ghUser.isNotEmpty
+                                  ? '@$ghUser'
+                                  : 'GitHub Gist Storage',
+                              variant: TextVariant.semiBold,
+                              size: 15,
+                              maxLines: 1,
+                            ),
+                            const SizedBox(height: 2),
+                            AnymeXText(
+                              'anymex_progress.json in your Gist',
+                              size: 12,
+                              color: isLogged
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurfaceVariant,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
                       ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AnymeXText(
-                            isLogged
-                                ? 'Connected as @$ghUser'
-                                : 'GitHub Gist Storage',
+                      if (isLogged)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color:
+                                theme.colorScheme.primary.opaque(0.12),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: AnymeXText(
+                            'LINKED',
+                            size: 10,
                             variant: TextVariant.bold,
-                            size: 14,
+                            color: theme.colorScheme.primary,
                           ),
-                          const SizedBox(height: 2),
-                          AnymeXText(
-                            'Stores your data securely in anymex_progress.json',
-                            size: 11,
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                AnymeXText(
-                  'Syncs your library, watched episodes, read chapters, source mappings, and preferences directly to your personal GitHub Gist.',
-                  size: 12,
-                  color: colors.onSurfaceVariant,
-                ),
-              ],
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  AnymeXText(
+                    'Syncs your library, watched episodes, read chapters, source mappings, and preferences directly to your personal GitHub Gist.',
+                    size: 12,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    maxLines: 10,
+                  ),
+                ],
+              ),
             ),
           ),
-
-          const SizedBox(height: 16),
-
+          const SizedBox(height: 12),
           if (isLogged) ...[
             SizedBox(
               width: double.infinity,
-              height: 48,
               child: ElevatedButton(
                 onPressed: widget.controller.isBusy.value
                     ? null
                     : () async {
                         final ok = await widget.controller.connectGist();
-                        if (ok && mounted) {
+                        if (ok && context.mounted) {
                           Navigator.of(context).pop();
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onPrimary,
-                  elevation: 0,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
+                  elevation: 0,
                 ),
                 child: widget.controller.isBusy.value
                     ? SizedBox(
-                        width: 18,
-                        height: 18,
+                        width: 20,
+                        height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                              colors.onPrimary),
+                              theme.colorScheme.onPrimary),
                         ),
                       )
                     : AnymeXText(
-                        'Use This GitHub Account & Save',
+                        'Use This GitHub Account',
                         variant: TextVariant.bold,
-                        color: colors.onPrimary,
-                        size: 14,
+                        color: theme.colorScheme.onPrimary,
+                        size: 15,
                       ),
               ),
             ),
           ] else ...[
             SizedBox(
               width: double.infinity,
-              height: 48,
               child: ElevatedButton(
                 onPressed: gistCtrl.isAuthenticating.value
                     ? null
@@ -761,38 +917,39 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
                         await gistCtrl.login(context);
                         if (gistCtrl.isLoggedIn.value) {
                           await widget.controller.connectGist();
-                          if (mounted) Navigator.of(context).pop();
+                          if (context.mounted) Navigator.of(context).pop();
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onPrimary,
-                  elevation: 0,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
+                  elevation: 0,
                 ),
                 child: gistCtrl.isAuthenticating.value
                     ? SizedBox(
-                        width: 18,
-                        height: 18,
+                        width: 20,
+                        height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                              colors.onPrimary),
+                              theme.colorScheme.onPrimary),
                         ),
                       )
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.login_rounded,
-                              size: 18, color: colors.onPrimary),
+                              size: 20, color: theme.colorScheme.onPrimary),
                           const SizedBox(width: 8),
                           AnymeXText(
                             'Sign In with GitHub',
                             variant: TextVariant.bold,
-                            color: colors.onPrimary,
-                            size: 14,
+                            color: theme.colorScheme.onPrimary,
+                            size: 15,
                           ),
                         ],
                       ),
@@ -801,28 +958,30 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
             const SizedBox(height: 12),
             Row(
               children: [
-                Expanded(child: Divider(color: colors.outline.withOpacity(0.15))),
+                Expanded(
+                    child: Divider(
+                        color: theme.colorScheme.outlineVariant.opaque(0.3))),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: AnymeXText('or Personal Token',
-                      size: 11, color: colors.onSurfaceVariant),
+                      size: 11, color: theme.colorScheme.onSurfaceVariant),
                 ),
-                Expanded(child: Divider(color: colors.outline.withOpacity(0.15))),
+                Expanded(
+                    child: Divider(
+                        color: theme.colorScheme.outlineVariant.opaque(0.3))),
               ],
             ),
             const SizedBox(height: 12),
-            _buildThemedTextField(
+            _buildField(
+              context,
               controller: tokenController,
-              label: 'GitHub Personal Access Token (PAT)',
               hint: 'ghp_xxxxxxxxxxxxxxxxxxxx',
               icon: Icons.key_rounded,
-              colors: colors,
             ),
-            const SizedBox(height: 6),
             Align(
               alignment: Alignment.centerRight,
-              child: InkWell(
-                onTap: () {
+              child: TextButton(
+                onPressed: () {
                   launchUrl(
                     Uri.parse(
                         'https://github.com/settings/tokens/new?scopes=gist&description=AnymeX%20Sync'),
@@ -830,42 +989,51 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
                   );
                 },
                 child: AnymeXText(
-                  'Generate Token on GitHub ➔',
-                  size: 11,
-                  color: colors.primary,
+                  'Generate Token on GitHub',
+                  size: 12,
+                  variant: TextVariant.semiBold,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ),
-            const SizedBox(height: 14),
             SizedBox(
               width: double.infinity,
-              height: 48,
               child: ElevatedButton(
                 onPressed: widget.controller.isBusy.value
                     ? null
                     : () async {
                         final token = tokenController.text.trim();
                         if (token.isEmpty) return;
-                        final ok =
-                            await widget.controller.connectGist(token: token);
-                        if (ok && mounted) {
+                        final ok = await widget.controller
+                            .connectGist(token: token);
+                        if (ok && context.mounted) {
                           Navigator.of(context).pop();
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onPrimary,
-                  elevation: 0,
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest
+                      .opaque(0.5, iReallyMeanIt: true),
+                  foregroundColor: theme.colorScheme.onSurface,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
+                    side: BorderSide(
+                      color: theme.colorScheme.outlineVariant.opaque(0.5),
+                    ),
                   ),
+                  elevation: 0,
                 ),
-                child: AnymeXText(
-                  'Connect with Token',
-                  variant: TextVariant.bold,
-                  color: colors.onPrimary,
-                  size: 14,
-                ),
+                child: widget.controller.isBusy.value
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const AnymeXText(
+                        'Connect with Token',
+                        variant: TextVariant.bold,
+                        size: 15,
+                      ),
               ),
             ),
           ],
@@ -874,161 +1042,127 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
     });
   }
 
-  Widget _buildWebDavConfig(WebDavPreset preset, ColorScheme colors) {
+  Widget _buildWebDavConfig(BuildContext context, WebDavPreset preset) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Setup Guide Box
-        AnymeXContainer(
-          padding: const EdgeInsets.all(12),
-          radius: 12,
-          color: colors.surfaceContainerHighest.withOpacity(0.3),
-          border: Border.all(color: colors.outline.withOpacity(0.1)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AnymeXText(
-                'Setup Guide for ${preset.name}',
-                variant: TextVariant.bold,
-                size: 12,
-                color: colors.primary,
-              ),
-              const SizedBox(height: 6),
-              ...preset.setupGuide.asMap().entries.map((e) {
+        AnymeXExpansionTile(
+          title: 'Setup Guide · ${preset.name}',
+          subtitle: '${preset.setupGuide.length} quick steps',
+          icon: Icons.info_outline_rounded,
+          initialExpanded: true,
+          content: Padding(
+            padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+            child: Column(
+              children: preset.setupGuide.asMap().entries.map((e) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 3.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymeXText(
-                        '${e.key + 1}. ',
-                        size: 11,
-                        variant: TextVariant.bold,
-                        color: colors.primary,
+                      Container(
+                        width: 22,
+                        height: 22,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary.opaque(0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: AnymeXText(
+                          '${e.key + 1}',
+                          size: 11,
+                          variant: TextVariant.bold,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: AnymeXText(
                           e.value,
-                          size: 11,
-                          color: colors.onSurfaceVariant,
+                          size: 12.5,
+                          color: theme.colorScheme.onSurfaceVariant,
+                          maxLines: 10,
                         ),
                       ),
                     ],
                   ),
                 );
-              }),
-            ],
+              }).toList(),
+            ),
           ),
         ),
-
-        const SizedBox(height: 12),
-
-        // Automated Endpoint Pill
-        AnymeXContainer(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          radius: 12,
-          color: colors.surfaceContainerLow.withOpacity(0.5),
-          border: Border.all(color: colors.outline.withOpacity(0.1)),
-          child: Row(
-            children: [
-              Icon(Icons.link_rounded, size: 18, color: colors.primary),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnymeXText('Server Endpoint (Automated)',
-                        size: 10, color: colors.onSurfaceVariant),
-                    const SizedBox(height: 1),
-                    AnymeXText(
-                      preset.defaultUrl,
-                      size: 12,
-                      variant: TextVariant.bold,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 12),
-
-        _buildThemedTextField(
+        const SizedBox(height: 10),
+        _buildField(
+          context,
           controller: userController,
-          label: 'Username or Email',
           hint: preset.usernameHint,
           icon: Icons.person_outline_rounded,
-          colors: colors,
         ),
-
         const SizedBox(height: 10),
-
-        Obx(() => _buildThemedTextField(
+        Obx(() => _buildField(
+              context,
               controller: passController,
-              label: 'Password or App Password',
-              hint: 'Generated app password',
+              hint: 'App password',
               icon: Icons.lock_outline_rounded,
               obscureText: !isPasswordVisible.value,
               suffixIcon: IconButton(
                 icon: Icon(
                   isPasswordVisible.value
-                      ? Icons.visibility_off_rounded
-                      : Icons.visibility_rounded,
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   size: 20,
-                  color: colors.onSurfaceVariant,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
                 onPressed: () => isPasswordVisible.toggle(),
               ),
-              colors: colors,
             )),
-
-        const SizedBox(height: 18),
-
+        const SizedBox(height: 14),
         Obx(() => SizedBox(
               width: double.infinity,
-              height: 48,
               child: ElevatedButton(
                 onPressed: widget.controller.isBusy.value
                     ? null
                     : () async {
                         final user = userController.text.trim();
                         final pass = passController.text.trim();
-
                         if (user.isEmpty || pass.isEmpty) return;
-
-                        final ok = await widget.controller.saveWebDavConfig(
+                        final ok =
+                            await widget.controller.saveWebDavConfig(
                           url: preset.defaultUrl,
                           username: user,
                           password: pass,
                         );
-                        if (ok && mounted) {
+                        if (ok && context.mounted) {
                           Navigator.of(context).pop();
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  foregroundColor: colors.onPrimary,
-                  elevation: 0,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
+                  elevation: 0,
                 ),
                 child: widget.controller.isBusy.value
                     ? SizedBox(
-                        width: 18,
-                        height: 18,
+                        width: 20,
+                        height: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                              colors.onPrimary),
+                              theme.colorScheme.onPrimary),
                         ),
                       )
                     : AnymeXText(
                         'Save & Connect',
                         variant: TextVariant.bold,
-                        color: colors.onPrimary,
-                        size: 14,
+                        color: theme.colorScheme.onPrimary,
+                        size: 15,
                       ),
               ),
             )),
@@ -1036,53 +1170,67 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
     );
   }
 
-  Widget _buildThemedTextField({
+  Widget _buildField(
+    BuildContext context, {
     required TextEditingController controller,
-    required String label,
     required String hint,
     required IconData icon,
-    required ColorScheme colors,
     bool obscureText = false,
     Widget? suffixIcon,
   }) {
-    return AnymeXContainer(
-      radius: 14,
-      color: colors.surfaceContainerHighest.withOpacity(0.35),
-      border: Border.all(color: colors.outline.withOpacity(0.15)),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: colorScheme.surface.opaque(0.3, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: colorScheme.outlineVariant.opaque(0.2, iReallyMeanIt: true),
+          width: 1,
+        ),
+      ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: colors.primary),
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Icon(
+              icon,
+              size: 20,
+              color: colorScheme.primary,
+            ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
               controller: controller,
               obscureText: obscureText,
               style: TextStyle(
-                fontSize: 14,
-                fontFamily: 'Linotte',
-                color: colors.onSurface,
+                color: colorScheme.onSurface,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                height: 1.4,
               ),
               decoration: InputDecoration(
-                labelText: label,
-                labelStyle: TextStyle(
-                  color: colors.onSurfaceVariant,
-                  fontSize: 12,
-                  fontFamily: 'Linotte',
-                ),
                 hintText: hint,
                 hintStyle: TextStyle(
-                  color: colors.onSurfaceVariant.withOpacity(0.5),
-                  fontSize: 13,
-                  fontFamily: 'Linotte',
+                  color: colorScheme.onSurfaceVariant.opaque(0.6),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w400,
                 ),
                 border: InputBorder.none,
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                filled: true,
+                fillColor: Colors.transparent,
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
               ),
             ),
           ),
-          if (suffixIcon != null) suffixIcon,
+          if (suffixIcon != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: suffixIcon,
+            )
+          else
+            const SizedBox(width: 16),
         ],
       ),
     );
