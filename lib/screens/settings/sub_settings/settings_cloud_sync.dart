@@ -635,7 +635,7 @@ class _CloudSyncConfigSheetState extends State<_CloudSyncConfigSheet> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: AnymeXImage(
-                          url: avatar,
+                          imageUrl: avatar,
                           width: 32,
                           height: 32,
                         ),
