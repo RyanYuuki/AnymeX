@@ -5,7 +5,6 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:anymex/screens/profile/widgets/hover_action_button.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -16,7 +15,13 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/screens/profile/widgets/decoration_closet_sheet.dart';
+import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/screens/profile/compatibility/compatibility_input_page.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
+import 'package:anymex/widgets/anymex_widgets/linked_accounts_badges.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 Widget _buildBottomSheetOption(
   BuildContext context, {
@@ -50,6 +55,7 @@ Widget _buildBottomSheetOption(
   );
 }
 
+
 class DesktopProfileHeader extends StatelessWidget {
   final Profile user;
   final Animation<Alignment> bannerAnim;
@@ -66,8 +72,17 @@ class DesktopProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasBanner = user.cover != null && user.cover!.trim().isNotEmpty;
-    final imageUrl = hasBanner ? user.cover! : '';
+    final commentum = Get.isRegistered<CommentumService>()
+        ? Get.find<CommentumService>()
+        : null;
+    final equippedBanner = commentum?.currentUserBanner.value;
+    final equippedDeco = commentum?.currentUserDecoration.value;
+    final effectiveCover = (equippedBanner != null && equippedBanner.isNotEmpty)
+        ? equippedBanner
+        : user.cover;
+    final hasBanner =
+        effectiveCover != null && effectiveCover.trim().isNotEmpty;
+    final imageUrl = hasBanner ? effectiveCover : '';
     final name = user.name ?? 'Guest';
 
     final donatorTier =
@@ -144,6 +159,32 @@ class DesktopProfileHeader extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Obx(() {
+                    final commentum = Get.isRegistered<CommentumService>()
+                        ? Get.find<CommentumService>()
+                        : null;
+                    final effectUrl =
+                        commentum?.currentUserProfileEffect.value;
+                    final renderEffect =
+                        (commentum?.renderProfileEffects.value ?? true) &&
+                            effectUrl != null &&
+                            effectUrl.isNotEmpty;
+                    if (!renderEffect) return const SizedBox.shrink();
+
+                    return Positioned.fill(
+                      child: IgnorePointer(
+                        child: Opacity(
+                          opacity: 0.6,
+                          child: CachedNetworkImage(
+                            imageUrl: effectUrl,
+                            fit: BoxFit.cover,
+                            errorWidget: (_, __, ___) =>
+                                const SizedBox.shrink(),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
                   Positioned(
                     top: 0,
                     left: 0,
@@ -184,39 +225,27 @@ class DesktopProfileHeader extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Container(
-                        width: 190,
-                        constraints: const BoxConstraints(
-                          minHeight: 190,
-                          maxHeight: 280,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            if (avatarDominantColor != null)
-                              BoxShadow(
-                                color: avatarDominantColor!.withOpacity(0.5),
-                                blurRadius: 20,
-                                spreadRadius: 2,
-                                offset: const Offset(0, 0),
-                              )
-                            else
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.4),
-                                blurRadius: 15,
-                                offset: const Offset(0, 5),
+                      GestureDetector(
+                        onTap: () {
+                          if (user.avatar?.isNotEmpty == true) {
+                            Navigator.of(context, rootNavigator: true).push(
+                              MaterialPageRoute(
+                                builder: (_) => AnymeXFullscreenImageViewer(
+                                  imageUrl: user.avatar!,
+                                  tag: 'profile_avatar_$name',
+                                ),
                               ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: CachedNetworkImage(
-                            imageUrl: user.avatar ?? '',
-                            fit: BoxFit.cover,
-                            alignment: Alignment.topCenter,
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.person, size: 50),
-                          ),
+                            );
+                          }
+                        },
+                        child: AnymeXDecoratedAvatar(
+                          avatarUrl: user.avatar,
+                          decorationUrl: equippedDeco,
+                          size: 190,
+                          decorationScale: 1.25,
+                          borderRadius: BorderRadius.circular(12),
+                          shape: BoxShape.rectangle,
+                          heroTag: 'profile_avatar_$name',
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -298,16 +327,15 @@ class DesktopProfileHeader extends StatelessWidget {
                                           final days = remaining.inDays;
                                           final hours =
                                               remaining.inHours.remainder(24);
-                                          final minutes = remaining.inMinutes
-                                              .remainder(60);
+                                          final minutes =
+                                              remaining.inMinutes.remainder(60);
                                           final countdownText = days > 0
                                               ? 'Reconnect in ${days}d ${hours}h ${minutes}m'
                                               : hours > 0
                                                   ? 'Reconnect in ${hours}h ${minutes}m'
                                                   : 'Reconnect in ${minutes}m';
                                           return Container(
-                                            padding:
-                                                const EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                               horizontal: 10,
                                               vertical: 4,
                                             ),
@@ -331,8 +359,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                                   countdownText,
                                                   style: const TextStyle(
                                                     fontSize: 10,
-                                                    fontWeight:
-                                                        FontWeight.w600,
+                                                    fontWeight: FontWeight.w600,
                                                     color: Colors.white,
                                                   ),
                                                 ),
@@ -377,6 +404,18 @@ class DesktopProfileHeader extends StatelessWidget {
                                         ),
                                       ),
                                     ],
+                                    if (commentum != null)
+                                      Obx(() {
+                                        final linked = commentum
+                                            .currentUserLinkedAccounts.value;
+                                        if (linked.isEmpty) {
+                                          return const SizedBox.shrink();
+                                        }
+                                        return LinkedAccountsBadges(
+                                          linkedAccounts: linked,
+                                          fontSize: 10,
+                                        );
+                                      }),
                                   ],
                                 ),
                               ),
@@ -388,6 +427,19 @@ class DesktopProfileHeader extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 15.0),
                         child: Row(
                           children: [
+                            if (Get.isRegistered<CommentumService>()) ...[
+                              HoverActionButton(
+                                icon: Icons.palette_outlined,
+                                onTap: () =>
+                                    DecorationClosetSheet.show(context),
+                              ),
+                              const SizedBox(width: 10),
+                            ],
+                            HoverActionButton(
+                              icon: Icons.emoji_events_outlined,
+                              onTap: () => LeaderboardSheet.show(context),
+                            ),
+                            const SizedBox(width: 10),
                             HoverActionButton(
                               icon: Icons.north_east_rounded,
                               onTap: () => launchUrlString(
@@ -498,7 +550,8 @@ class DesktopProfileHeader extends StatelessWidget {
                                             label: 'AniList Settings',
                                             onTap: () {
                                               Navigator.pop(ctx);
-                                              navigate(() => const SettingsAnilistApi());
+                                              navigate(() =>
+                                                  const SettingsAnilistApi());
                                             },
                                           ),
                                           _buildBottomSheetOption(
@@ -507,7 +560,17 @@ class DesktopProfileHeader extends StatelessWidget {
                                             label: 'Check Compatibility',
                                             onTap: () {
                                               Navigator.pop(ctx);
-                                              navigate(() => const CompatibilityInputPage());
+                                              navigate(() =>
+                                                  const CompatibilityInputPage());
+                                            },
+                                          ),
+                                          _buildBottomSheetOption(
+                                            ctx,
+                                            icon: Icons.emoji_events_outlined,
+                                            label: 'Community Leaderboard',
+                                            onTap: () {
+                                              Navigator.pop(ctx);
+                                              LeaderboardSheet.show(context);
                                             },
                                           ),
                                         ],
@@ -550,8 +613,18 @@ class MobileProfileHeaderSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasBanner = bannerUrl != null && bannerUrl!.trim().isNotEmpty;
-    final imageUrl = hasBanner ? bannerUrl! : avatarUrl;
+    final commentum = Get.isRegistered<CommentumService>()
+        ? Get.find<CommentumService>()
+        : null;
+    final equippedBanner = commentum?.currentUserBanner.value;
+    final effectiveBanner =
+        (equippedBanner != null && equippedBanner.isNotEmpty)
+            ? equippedBanner
+            : bannerUrl;
+    final hasBanner =
+        effectiveBanner != null && effectiveBanner.trim().isNotEmpty;
+    final imageUrl = hasBanner ? effectiveBanner : avatarUrl;
+    final equippedDeco = commentum?.currentUserDecoration.value;
     final name = user.name ?? 'Guest';
     final handler = Get.find<ServiceHandler>();
     final donatorTier = handler.profileData.value.donatorTier ?? 0;
@@ -604,6 +677,31 @@ class MobileProfileHeaderSliver extends StatelessWidget {
         ),
       ),
       actions: [
+        if (commentum != null)
+          Container(
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: context.theme.colorScheme.surface.withOpacity(0.5),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.palette_outlined),
+              tooltip: 'Decoration Closet',
+              onPressed: () => DecorationClosetSheet.show(context),
+            ),
+          ),
+        Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.theme.colorScheme.surface.withOpacity(0.5),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.emoji_events_outlined),
+            tooltip: 'Leaderboard',
+            onPressed: () => LeaderboardSheet.show(context),
+          ),
+        ),
         Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -648,6 +746,16 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
+                        if (commentum != null)
+                          _buildBottomSheetOption(
+                            ctx,
+                            icon: Icons.checkroom_rounded,
+                            label: 'Decoration Closet',
+                            onTap: () {
+                              Navigator.pop(ctx);
+                              DecorationClosetSheet.show(context);
+                            },
+                          ),
                         _buildBottomSheetOption(
                           ctx,
                           icon: Icons.north_east_rounded,
@@ -705,6 +813,15 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           onTap: () {
                             Navigator.pop(ctx);
                             navigate(() => const CompatibilityInputPage());
+                          },
+                        ),
+                        _buildBottomSheetOption(
+                          ctx,
+                          icon: Icons.emoji_events_outlined,
+                          label: 'Community Leaderboard',
+                          onTap: () {
+                            Navigator.pop(ctx);
+                            LeaderboardSheet.show(context);
                           },
                         ),
                       ],
@@ -784,6 +901,27 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                 ),
               ),
             ),
+            Obx(() {
+              final effectUrl = commentum?.currentUserProfileEffect.value;
+              final renderEffect =
+                  (commentum?.renderProfileEffects.value ?? true) &&
+                      effectUrl != null &&
+                      effectUrl.isNotEmpty;
+              if (!renderEffect) return const SizedBox.shrink();
+
+              return Positioned.fill(
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: 0.6,
+                    child: CachedNetworkImage(
+                      imageUrl: effectUrl,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+              );
+            }),
             Positioned(
               left: 16,
               right: 16,
@@ -806,35 +944,14 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           );
                         }
                       },
-                      child: Hero(
-                        tag: 'profile_avatar_$name',
-                        child: Container(
-                          width: 110,
-                          constraints: const BoxConstraints(
-                            minHeight: 110,
-                            maxHeight: 160,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(14),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.35),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(14),
-                            child: CachedNetworkImage(
-                              imageUrl: avatarUrl,
-                              fit: BoxFit.cover,
-                              alignment: Alignment.topCenter,
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.person),
-                            ),
-                          ),
-                        ),
+                      child: AnymeXDecoratedAvatar(
+                        avatarUrl: avatarUrl,
+                        decorationUrl: equippedDeco,
+                        size: 110,
+                        decorationScale: 1.25,
+                        borderRadius: BorderRadius.circular(14),
+                        shape: BoxShape.rectangle,
+                        heroTag: 'profile_avatar_$name',
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -962,6 +1079,18 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                                     ],
                                   ),
                                 ),
+                              if (commentum != null)
+                                Obx(() {
+                                  final linked =
+                                      commentum.currentUserLinkedAccounts.value;
+                                  if (linked.isEmpty) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  return LinkedAccountsBadges(
+                                    linkedAccounts: linked,
+                                    fontSize: 10,
+                                  );
+                                }),
                             ],
                           ),
                         ],

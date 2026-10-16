@@ -65,10 +65,12 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   late Animation<double> _speedScaleAnimation;
   late AnimationController _glowAnimationController;
   late Animation<double> _glowAnimation;
+  late final FocusNode _playerFocusNode;
 
   @override
   void initState() {
     super.initState();
+    _playerFocusNode = FocusNode(debugLabel: 'PlayerKeyboardShortcuts');
     _speedAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -106,7 +108,17 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     _rightTapTimer?.cancel();
     _speedAnimationController.dispose();
     _glowAnimationController.dispose();
+    _playerFocusNode.dispose();
     super.dispose();
+  }
+
+  void _refocusPlayerForShortcuts() {
+    final primary = FocusManager.instance.primaryFocus;
+    final context = primary?.context;
+    if (context != null && context.widget is EditableText) return;
+    if (!_playerFocusNode.hasFocus) {
+      _playerFocusNode.requestFocus();
+    }
   }
 
   bool _isFollowMode() {
@@ -765,6 +777,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
 
   void _handleSingleTap() {
     _cancelAllTapTimers();
+    _refocusPlayerForShortcuts();
     if (widget.controller.isLocked.value) {
       widget.controller.toggleControls();
       return;
@@ -817,7 +830,8 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
               {widget.controller.toggleControls(val: true)}
           },
           child: KeyboardListener(
-            focusNode: FocusNode()..requestFocus(),
+            focusNode: _playerFocusNode,
+            autofocus: !Platform.isAndroid && !Platform.isIOS,
             onKeyEvent: _handleKeyboard,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,

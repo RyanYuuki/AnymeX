@@ -342,3 +342,11 @@ enum CloudSyncKeys {
   syncSettings,
   syncStats,
 }
+
+enum CommentKeys {
+  renderAvatarDecorations,
+  renderNameplates,
+  renderProfileEffects,
+  renderBanners,
+}
+

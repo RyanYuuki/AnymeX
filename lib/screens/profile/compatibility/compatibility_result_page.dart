@@ -21,6 +21,7 @@ import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
@@ -45,12 +46,13 @@ class CompatibilityResultPage extends StatefulWidget {
   const CompatibilityResultPage({super.key, required this.controller});
 
   @override
-  State<CompatibilityResultPage> createState() => _CompatibilityResultPageState();
+  State<CompatibilityResultPage> createState() =>
+      _CompatibilityResultPageState();
 }
 
 class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
   final GlobalKey _shareCardKey = GlobalKey();
-  int _selectedTab = 0; 
+  int _selectedTab = 0;
   bool _isSharing = false;
   bool _isHowItWorksExpanded = false;
   final Set<String> _expandedSections = <String>{};
@@ -121,24 +123,18 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                    
                       if (isLargeScreen) ...[
                         _buildTopActionBar(context, user1, user2, result),
                         const SizedBox(height: 14),
                       ],
-
-                    
                       RepaintBoundary(
                         key: _shareCardKey,
-                        child: _buildOverallHeader(context, user1, user2, result, rank),
+                        child: _buildOverallHeader(
+                            context, user1, user2, result, rank),
                       ),
                       const SizedBox(height: 16),
-
-                   
                       _buildSectionTabsWithProgress(context, result),
                       const SizedBox(height: 18),
-
-                    
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 320),
                         switchInCurve: Curves.easeOutCubic,
@@ -157,28 +153,34 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         },
                         child: KeyedSubtree(
                           key: ValueKey<int>(_selectedTab),
-                          child: (_selectedTab == 0 && result.animeSection.hasData)
-                              ? _buildSectionGrid(context, result.animeSection, isManga: false, isLargeScreen: isLargeScreen)
-                              : (_selectedTab == 1 && result.mangaSection.hasData)
-                                  ? _buildSectionGrid(context, result.mangaSection, isManga: true, isLargeScreen: isLargeScreen)
+                          child: (_selectedTab == 0 &&
+                                  result.animeSection.hasData)
+                              ? _buildSectionGrid(context, result.animeSection,
+                                  isManga: false, isLargeScreen: isLargeScreen)
+                              : (_selectedTab == 1 &&
+                                      result.mangaSection.hasData)
+                                  ? _buildSectionGrid(
+                                      context, result.mangaSection,
+                                      isManga: true,
+                                      isLargeScreen: isLargeScreen)
                                   : Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 48),
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 48),
                                       child: Center(
                                         child: AnymeXText(
                                           'No data available for this section',
                                           size: 14,
-                                          color: context.colors.onSurfaceVariant.opaque(0.7),
+                                          color: context.colors.onSurfaceVariant
+                                              .opaque(0.7),
                                         ),
                                       ),
                                     ),
                         ),
                       ),
-
                       const SizedBox(height: 16),
-
-                     
                       if (result.socialData != null) ...[
-                        _buildSocialConnectionsCard(context, user1, user2, result.socialData!),
+                        _buildSocialConnectionsCard(
+                            context, user1, user2, result.socialData!),
                         const SizedBox(height: 16),
                       ],
                       _buildHowItWorksCard(context),
@@ -192,8 +194,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       );
     });
   }
-
-
 
   Widget _buildTopActionBar(
     BuildContext context,
@@ -239,8 +239,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-  
-
   Color _getRankColor(RankInfo rank) {
     try {
       final hex = rank.colorHex.replaceAll('#', '');
@@ -266,7 +264,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
 
     String formatUserSubtitle(Profile u, String name) {
       if (u.createdAt != null && u.createdAt! > 0) {
-        final year = DateTime.fromMillisecondsSinceEpoch(u.createdAt! * 1000).year;
+        final year =
+            DateTime.fromMillisecondsSinceEpoch(u.createdAt! * 1000).year;
         return '@${name.toLowerCase()} · Joined $year';
       }
       return '@${name.toLowerCase()}';
@@ -301,13 +300,10 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             ],
           ),
           const SizedBox(height: 18),
-
-         
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-             
               Expanded(
                 child: _buildUserAvatarColumn(
                   context,
@@ -318,8 +314,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   borderColor: c.primary,
                 ),
               ),
-
-           
               Expanded(
                 flex: 2,
                 child: Column(
@@ -331,7 +325,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         TweenAnimationBuilder<double>(
-                          tween: Tween<double>(begin: 0, end: result.percentage),
+                          tween:
+                              Tween<double>(begin: 0, end: result.percentage),
                           duration: const Duration(milliseconds: 1200),
                           curve: Curves.easeOutCubic,
                           builder: (context, val, _) {
@@ -355,7 +350,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                             );
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 4),
                             decoration: BoxDecoration(
                               color: rankColor.withOpacity(0.18),
                               borderRadius: BorderRadius.circular(10),
@@ -385,8 +381,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   ],
                 ),
               ),
-
-           
               Expanded(
                 child: _buildUserAvatarColumn(
                   context,
@@ -457,7 +451,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         alignment: Alignment.center,
                         child: Text(
                           name.isNotEmpty ? name[0].toUpperCase() : '?',
-                          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 26, fontWeight: FontWeight.bold),
                         ),
                       ),
               ),
@@ -507,14 +502,14 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-
-
   Widget _buildSectionTabsWithProgress(
     BuildContext context,
     CompatibilityResult result,
   ) {
-    final animeRank = getRankForScore(result.animeSection.percentage.roundToDouble());
-    final mangaRank = getRankForScore(result.mangaSection.percentage.roundToDouble());
+    final animeRank =
+        getRankForScore(result.animeSection.percentage.roundToDouble());
+    final mangaRank =
+        getRankForScore(result.mangaSection.percentage.roundToDouble());
 
     return Row(
       children: [
@@ -570,7 +565,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   ? c.surfaceContainerHighest.opaque(0.45)
                   : c.surfaceContainerHighest.opaque(0.2),
               border: Border.all(
-                color: isSelected ? c.primary.opaque(0.8) : c.outline.opaque(0.1),
+                color:
+                    isSelected ? c.primary.opaque(0.8) : c.outline.opaque(0.1),
                 width: isSelected ? 1.5 : 1,
               ),
             ),
@@ -613,11 +609,12 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-
-  HeuristicDetail? _findDetail(CompatibilitySection section, List<String> possibleKeys) {
+  HeuristicDetail? _findDetail(
+      CompatibilitySection section, List<String> possibleKeys) {
     return section.details.where((d) {
       final k = d.key.toLowerCase().replaceAll('_', '');
-      return possibleKeys.any((pk) => k == pk.toLowerCase().replaceAll('_', ''));
+      return possibleKeys
+          .any((pk) => k == pk.toLowerCase().replaceAll('_', ''));
     }).firstOrNull;
   }
 
@@ -627,44 +624,56 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     required bool isManga,
     required bool isLargeScreen,
   }) {
-    final watchStatsDetail = _findDetail(section, ['watchStats', 'mangaReadStats', 'watch_stats', 'read_stats']);
-    final releaseYearDetail = _findDetail(section, ['releaseYear', 'mangaReleaseYear', 'release_year']);
-    final genresDetail = _findDetail(section, ['genres', 'mangaGenres', 'genre']);
+    final watchStatsDetail = _findDetail(
+        section, ['watchStats', 'mangaReadStats', 'watch_stats', 'read_stats']);
+    final releaseYearDetail = _findDetail(
+        section, ['releaseYear', 'mangaReleaseYear', 'release_year']);
+    final genresDetail =
+        _findDetail(section, ['genres', 'mangaGenres', 'genre']);
     final tagsDetail = _findDetail(section, ['tags', 'mangaTags', 'tag']);
-    final perfectMediaDetail = _findDetail(section, ['perfectAnime', 'perfectManga', 'perfect_anime', 'perfect_manga']);
-    final favMediaDetail = _findDetail(section, ['favouriteAnime', 'favouriteManga', 'fav_anime', 'fav_manga']);
-    final favCharactersDetail = _findDetail(section, ['favouriteCharacters', 'fav_characters', 'characters']);
-    final voiceActorsDetail = _findDetail(section, ['voiceActors', 'voice_actors', 'voiceactor']);
+    final perfectMediaDetail = _findDetail(section,
+        ['perfectAnime', 'perfectManga', 'perfect_anime', 'perfect_manga']);
+    final favMediaDetail = _findDetail(section,
+        ['favouriteAnime', 'favouriteManga', 'fav_anime', 'fav_manga']);
+    final favCharactersDetail = _findDetail(
+        section, ['favouriteCharacters', 'fav_characters', 'characters']);
+    final voiceActorsDetail =
+        _findDetail(section, ['voiceActors', 'voice_actors', 'voiceactor']);
     final studiosDetail = _findDetail(section, ['studios', 'studio']);
-    final favStaffDetail = _findDetail(section, ['staff', 'fav_staff', 'favouritestaff']);
+    final favStaffDetail =
+        _findDetail(section, ['staff', 'fav_staff', 'favouritestaff']);
 
     if (isLargeScreen) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-        
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (watchStatsDetail != null) ...[
-                  _buildWatchStatsCard(context, watchStatsDetail, isManga: isManga, isLargeScreen: isLargeScreen),
+                  _buildWatchStatsCard(context, watchStatsDetail,
+                      isManga: isManga, isLargeScreen: isLargeScreen),
                   const SizedBox(height: 16),
                 ],
                 if (genresDetail != null) ...[
-                  _buildGenresCard(context, genresDetail, isLargeScreen: isLargeScreen, isManga: isManga),
+                  _buildGenresCard(context, genresDetail,
+                      isLargeScreen: isLargeScreen, isManga: isManga),
                   const SizedBox(height: 16),
                 ],
                 if (perfectMediaDetail != null) ...[
-                  _buildPerfectMediaCard(context, perfectMediaDetail, isManga: isManga, isLargeScreen: isLargeScreen),
+                  _buildPerfectMediaCard(context, perfectMediaDetail,
+                      isManga: isManga, isLargeScreen: isLargeScreen),
                   const SizedBox(height: 16),
                 ],
                 if (!isManga && favCharactersDetail != null) ...[
-                  _buildCharactersCard(context, favCharactersDetail, isLargeScreen: isLargeScreen),
+                  _buildCharactersCard(context, favCharactersDetail,
+                      isLargeScreen: isLargeScreen),
                   const SizedBox(height: 16),
                 ],
                 if (!isManga && studiosDetail != null) ...[
-                  _buildStudiosCard(context, studiosDetail, isLargeScreen: isLargeScreen),
+                  _buildStudiosCard(context, studiosDetail,
+                      isLargeScreen: isLargeScreen),
                   const SizedBox(height: 16),
                 ],
               ],
@@ -676,23 +685,28 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (releaseYearDetail != null) ...[
-                  _buildReleaseYearCard(context, releaseYearDetail, isLargeScreen: isLargeScreen),
+                  _buildReleaseYearCard(context, releaseYearDetail,
+                      isLargeScreen: isLargeScreen),
                   const SizedBox(height: 16),
                 ],
                 if (tagsDetail != null) ...[
-                  _buildTagsCard(context, tagsDetail, isLargeScreen: isLargeScreen, isManga: isManga),
+                  _buildTagsCard(context, tagsDetail,
+                      isLargeScreen: isLargeScreen, isManga: isManga),
                   const SizedBox(height: 16),
                 ],
                 if (favMediaDetail != null) ...[
-                  _buildFavouritesMediaCard(context, favMediaDetail, isManga: isManga, isLargeScreen: isLargeScreen),
+                  _buildFavouritesMediaCard(context, favMediaDetail,
+                      isManga: isManga, isLargeScreen: isLargeScreen),
                   const SizedBox(height: 16),
                 ],
                 if (!isManga && voiceActorsDetail != null) ...[
-                  _buildVoiceActorsCard(context, voiceActorsDetail, isLargeScreen: isLargeScreen),
+                  _buildVoiceActorsCard(context, voiceActorsDetail,
+                      isLargeScreen: isLargeScreen),
                   const SizedBox(height: 16),
                 ],
                 if (!isManga && favStaffDetail != null) ...[
-                  _buildStaffCard(context, favStaffDetail, isLargeScreen: isLargeScreen),
+                  _buildStaffCard(context, favStaffDetail,
+                      isLargeScreen: isLargeScreen),
                   const SizedBox(height: 16),
                 ],
               ],
@@ -709,47 +723,38 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           _buildWatchStatsCard(context, watchStatsDetail, isManga: isManga),
           const SizedBox(height: 16),
         ],
-
         if (releaseYearDetail != null) ...[
           _buildReleaseYearCard(context, releaseYearDetail),
           const SizedBox(height: 16),
         ],
-
         if (genresDetail != null) ...[
           _buildGenresCard(context, genresDetail, isManga: isManga),
           const SizedBox(height: 16),
         ],
-
         if (tagsDetail != null) ...[
           _buildTagsCard(context, tagsDetail, isManga: isManga),
           const SizedBox(height: 16),
         ],
-
         if (perfectMediaDetail != null) ...[
           _buildPerfectMediaCard(context, perfectMediaDetail, isManga: isManga),
           const SizedBox(height: 16),
         ],
-
         if (favMediaDetail != null) ...[
           _buildFavouritesMediaCard(context, favMediaDetail, isManga: isManga),
           const SizedBox(height: 16),
         ],
-
         if (favCharactersDetail != null) ...[
           _buildCharactersCard(context, favCharactersDetail),
           const SizedBox(height: 16),
         ],
-
         if (voiceActorsDetail != null) ...[
           _buildVoiceActorsCard(context, voiceActorsDetail),
           const SizedBox(height: 16),
         ],
-
         if (studiosDetail != null) ...[
           _buildStudiosCard(context, studiosDetail),
           const SizedBox(height: 16),
         ],
-
         if (favStaffDetail != null) ...[
           _buildStaffCard(context, favStaffDetail),
           const SizedBox(height: 16),
@@ -758,8 +763,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-  
-
   Widget _buildWatchStatsCard(
     BuildContext context,
     HeuristicDetail detail, {
@@ -767,7 +770,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     bool isLargeScreen = false,
   }) {
     final c = context.colors;
-    final totalsCard = detail.cards.where((c) => c.title == 'Totals').firstOrNull;
+    final totalsCard =
+        detail.cards.where((c) => c.title == 'Totals').firstOrNull;
     final rows = totalsCard?.rows ?? [];
 
     Widget body;
@@ -788,11 +792,14 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           final labelLower = row.label.toLowerCase();
           if (labelLower.contains('completed')) {
             rowIcon = Iconsax.send_2;
-          } else if (labelLower.contains('episodes') || labelLower.contains('chapters')) {
+          } else if (labelLower.contains('episodes') ||
+              labelLower.contains('chapters')) {
             rowIcon = Iconsax.play_circle;
-          } else if (labelLower.contains('hours') || labelLower.contains('volumes')) {
+          } else if (labelLower.contains('hours') ||
+              labelLower.contains('volumes')) {
             rowIcon = Iconsax.clock;
-          } else if (labelLower.contains('mean') || labelLower.contains('score')) {
+          } else if (labelLower.contains('mean') ||
+              labelLower.contains('score')) {
             rowIcon = Icons.star_rounded;
           }
 
@@ -811,7 +818,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     child: Icon(rowIcon, size: 18, color: c.primary),
                   ),
                   const SizedBox(height: 8),
-               
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -827,7 +833,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       ),
                       Container(
                         margin: const EdgeInsets.symmetric(horizontal: 3),
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4, vertical: 1),
                         decoration: BoxDecoration(
                           color: c.primary.opaque(0.12),
                           borderRadius: BorderRadius.circular(4),
@@ -901,14 +908,19 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-  
-
-  Widget _buildReleaseYearCard(BuildContext context, HeuristicDetail detail, {bool isLargeScreen = false}) {
+  Widget _buildReleaseYearCard(BuildContext context, HeuristicDetail detail,
+      {bool isLargeScreen = false}) {
     final c = context.colors;
     final decadeCards = detail.cards.where((card) {
-      final propRow = card.rows.where((r) => r.label.toLowerCase().contains('proportion')).firstOrNull;
-      final prop1 = double.tryParse(propRow?.user1Value.replaceAll('%', '') ?? '0') ?? 0.0;
-      final prop2 = double.tryParse(propRow?.user2Value.replaceAll('%', '') ?? '0') ?? 0.0;
+      final propRow = card.rows
+          .where((r) => r.label.toLowerCase().contains('proportion'))
+          .firstOrNull;
+      final prop1 =
+          double.tryParse(propRow?.user1Value.replaceAll('%', '') ?? '0') ??
+              0.0;
+      final prop2 =
+          double.tryParse(propRow?.user2Value.replaceAll('%', '') ?? '0') ??
+              0.0;
       return prop1 > 0 || prop2 > 0;
     }).toList();
 
@@ -952,7 +964,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             context,
             icon: Iconsax.calendar,
             title: 'Release Year Stats',
-            subtitle: 'Calculated based on which release decades you watched the most and scored the highest.',
+            subtitle:
+                'Calculated based on which release decades you watched the most and scored the highest.',
             percentage: detail.percentage,
             weight: detail.weight,
           ),
@@ -965,9 +978,13 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
 
   Widget _buildDecadeGaugeItem(BuildContext context, HeuristicCardData card) {
     final c = context.colors;
-    final propRow = card.rows.where((r) => r.label.toLowerCase().contains('proportion')).firstOrNull;
-    final prop1 = double.tryParse(propRow?.user1Value.replaceAll('%', '') ?? '0') ?? 0.0;
-    final prop2 = double.tryParse(propRow?.user2Value.replaceAll('%', '') ?? '0') ?? 0.0;
+    final propRow = card.rows
+        .where((r) => r.label.toLowerCase().contains('proportion'))
+        .firstOrNull;
+    final prop1 =
+        double.tryParse(propRow?.user1Value.replaceAll('%', '') ?? '0') ?? 0.0;
+    final prop2 =
+        double.tryParse(propRow?.user2Value.replaceAll('%', '') ?? '0') ?? 0.0;
     final avgPct = ((prop1 + prop2) / 2.0).clamp(0.0, 100.0);
 
     return Column(
@@ -992,21 +1009,25 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AnymeXText(propRow.user1Value, size: 11, variant: TextVariant.bold, color: c.primary),
+              AnymeXText(propRow.user1Value,
+                  size: 11, variant: TextVariant.bold, color: c.primary),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
-                child: AnymeXText('vs', size: 9, color: c.onSurfaceVariant.opaque(0.6), variant: TextVariant.bold),
+                child: AnymeXText('vs',
+                    size: 9,
+                    color: c.onSurfaceVariant.opaque(0.6),
+                    variant: TextVariant.bold),
               ),
-              AnymeXText(propRow.user2Value, size: 11, variant: TextVariant.bold, color: c.secondary),
+              AnymeXText(propRow.user2Value,
+                  size: 11, variant: TextVariant.bold, color: c.secondary),
             ],
           ),
       ],
     );
   }
 
-  
-
-  Widget _buildGenresCard(BuildContext context, HeuristicDetail detail, {bool isLargeScreen = false, bool isManga = false}) {
+  Widget _buildGenresCard(BuildContext context, HeuristicDetail detail,
+      {bool isLargeScreen = false, bool isManga = false}) {
     return _buildHeuristicCardContainer(
       context,
       icon: Iconsax.category,
@@ -1025,8 +1046,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-
-  Widget _buildTagsCard(BuildContext context, HeuristicDetail detail, {bool isLargeScreen = false, bool isManga = false}) {
+  Widget _buildTagsCard(BuildContext context, HeuristicDetail detail,
+      {bool isLargeScreen = false, bool isManga = false}) {
     return _buildHeuristicCardContainer(
       context,
       icon: Icons.tag,
@@ -1065,7 +1086,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ...displayedCards.map((card) => _buildGenreOrTagRowItem(context, card, isTag: isTag, isManga: isManga)),
+        ...displayedCards.map((card) => _buildGenreOrTagRowItem(context, card,
+            isTag: isTag, isManga: isManga)),
         if (cards.length > 2) ...[
           const SizedBox(height: 4),
           Center(
@@ -1075,7 +1097,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                 _toggleExpanded(detail.key);
               },
               child: AnymeXText(
-                isExpanded ? 'Collapse $itemTypeLabel' : 'View all $itemTypeLabel (${cards.length})',
+                isExpanded
+                    ? 'Collapse $itemTypeLabel'
+                    : 'View all $itemTypeLabel (${cards.length})',
                 size: 12,
                 variant: TextVariant.semiBold,
                 color: context.colors.primary,
@@ -1094,8 +1118,12 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     bool isManga = false,
   }) {
     final c = context.colors;
-    final meanScoreRow = card.rows.where((r) => r.label.toLowerCase().contains('mean')).firstOrNull;
-    final countRow = card.rows.where((r) => r.label.toLowerCase().contains('count')).firstOrNull;
+    final meanScoreRow = card.rows
+        .where((r) => r.label.toLowerCase().contains('mean'))
+        .firstOrNull;
+    final countRow = card.rows
+        .where((r) => r.label.toLowerCase().contains('count'))
+        .firstOrNull;
     final commonMedia = card.commonMediaItems;
 
     return GestureDetector(
@@ -1164,7 +1192,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 variant: TextVariant.bold,
                                 color: c.primary,
                               ),
-                              AnymeXText('Mean Score', size: 10, color: c.onSurfaceVariant.opaque(0.75)),
+                              AnymeXText('Mean Score',
+                                  size: 10,
+                                  color: c.onSurfaceVariant.opaque(0.75)),
                               AnymeXText(
                                 meanScoreRow.user2Value,
                                 size: 12,
@@ -1184,7 +1214,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 variant: TextVariant.bold,
                                 color: c.primary.opaque(0.9),
                               ),
-                              AnymeXText('Count', size: 10, color: c.onSurfaceVariant.opaque(0.75)),
+                              AnymeXText('Count',
+                                  size: 10,
+                                  color: c.onSurfaceVariant.opaque(0.75)),
                               AnymeXText(
                                 countRow.user2Value,
                                 size: 12,
@@ -1226,7 +1258,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: Colors.black.withOpacity(0.5), width: 1),
+                border:
+                    Border.all(color: Colors.black.withOpacity(0.5), width: 1),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.35),
@@ -1317,7 +1350,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                           ),
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
                               color: c.primary.opaque(0.15),
                               borderRadius: BorderRadius.circular(12),
@@ -1387,112 +1421,116 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   maxHeight: MediaQuery.sizeOf(context).height * 0.58,
                 ),
                 child: GridView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.only(top: 4, bottom: 4),
-                physics: const BouncingScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 12.0,
-                  childAspectRatio: 0.58,
-                ),
-                itemCount: mediaList.length,
-                itemBuilder: (context, index) {
-                  final item = mediaList[index];
-                  final id = item.id ?? '';
-                  final mTitle = item.title ?? 'Media';
-                  final cover = item.cover ?? '';
-                  final tag = 'compat_modal_${isManga ? 'manga' : 'anime'}_${id}_$mTitle';
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(top: 4, bottom: 4),
+                  physics: const BouncingScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 12.0,
+                    childAspectRatio: 0.58,
+                  ),
+                  itemCount: mediaList.length,
+                  itemBuilder: (context, index) {
+                    final item = mediaList[index];
+                    final id = item.id ?? '';
+                    final mTitle = item.title ?? 'Media';
+                    final cover = item.cover ?? '';
+                    final tag =
+                        'compat_modal_${isManga ? 'manga' : 'anime'}_${id}_$mTitle';
 
-                  final media = Media(
-                    id: id,
-                    title: mTitle,
-                    cover: cover,
-                    poster: cover,
-                    description: '',
-                    serviceType: ServicesType.anilist,
-                  );
+                    final media = Media(
+                      id: id,
+                      title: mTitle,
+                      cover: cover,
+                      poster: cover,
+                      description: '',
+                      serviceType: ServicesType.anilist,
+                    );
 
-                  return GestureDetector(
-                    onSecondaryTap: () {
-                      MediaPeekPopup.showIfUntracked(
-                        context,
-                        media,
-                        isManga ? ItemType.manga : ItemType.anime,
-                        tag,
-                      );
-                    },
-                    onLongPress: () {
-                      MediaPeekPopup.showIfUntracked(
-                        context,
-                        media,
-                        isManga ? ItemType.manga : ItemType.anime,
-                        tag,
-                      );
-                    },
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      if (id.isNotEmpty) {
-                        Navigator.of(context).pop();
-                        if (isManga) {
-                          navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
-                        } else {
-                          navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));
+                    return GestureDetector(
+                      onSecondaryTap: () {
+                        MediaPeekPopup.showIfUntracked(
+                          context,
+                          media,
+                          isManga ? ItemType.manga : ItemType.anime,
+                          tag,
+                        );
+                      },
+                      onLongPress: () {
+                        MediaPeekPopup.showIfUntracked(
+                          context,
+                          media,
+                          isManga ? ItemType.manga : ItemType.anime,
+                          tag,
+                        );
+                      },
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        if (id.isNotEmpty) {
+                          Navigator.of(context).pop();
+                          if (isManga) {
+                            navigateWithAnimation(
+                                () => MangaDetailsPage(media: media, tag: tag));
+                          } else {
+                            navigateWithAnimation(
+                                () => AnimeDetailsPage(media: media, tag: tag));
+                          }
                         }
-                      }
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: (cover.isNotEmpty)
-                                  ? AnymeXImage(
-                                      imageUrl: cover,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                    )
-                                  : Container(
-                                      color: c.surfaceContainerHigh,
-                                      child: const Icon(Icons.movie_outlined, size: 28),
-                                    ),
+                      },
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: (cover.isNotEmpty)
+                                    ? AnymeXImage(
+                                        imageUrl: cover,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      )
+                                    : Container(
+                                        color: c.surfaceContainerHigh,
+                                        child: const Icon(Icons.movie_outlined,
+                                            size: 28),
+                                      ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 6),
-                          SizedBox(
-                            height: 28,
-                            child: AnymeXText(
-                              mTitle,
-                              size: 11,
-                              variant: TextVariant.semiBold,
-                              maxLines: 2,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.ellipsis,
-                              color: c.onSurface,
+                            const SizedBox(height: 6),
+                            SizedBox(
+                              height: 28,
+                              child: AnymeXText(
+                                mTitle,
+                                size: 11,
+                                variant: TextVariant.semiBold,
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                color: c.onSurface,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
             const SizedBox(height: 16),
             AnymeXButton(
               onTap: () {
                 Navigator.of(context).pop();
                 navigate(() => SearchPage(
-                  searchTerm: '',
-                  isManga: isManga,
-                  initialFilters: {
-                    isTag ? 'tags' : 'genres': [title],
-                  },
-                ));
+                      searchTerm: '',
+                      isManga: isManga,
+                      initialFilters: {
+                        isTag ? 'tags' : 'genres': [title],
+                      },
+                    ));
               },
               variant: ButtonVariant.simple,
               backgroundColor: c.primary.opaque(0.18),
@@ -1510,7 +1548,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     color: c.onSurface,
                   ),
                   const SizedBox(width: 6),
-                  Icon(Icons.arrow_outward_rounded, size: 15, color: c.onSurfaceVariant),
+                  Icon(Icons.arrow_outward_rounded,
+                      size: 15, color: c.onSurfaceVariant),
                 ],
               ),
             ),
@@ -1520,7 +1559,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       context,
     );
   }
-
 
   Widget _buildFavouritesMediaCard(
     BuildContext context,
@@ -1532,10 +1570,13 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       context,
       icon: Iconsax.heart5,
       title: isManga ? 'Common Favourite Manga' : 'Common Favourite Anime',
-      subtitle: isManga ? 'Based on your favourite manga.' : 'Based on your favourite anime.',
+      subtitle: isManga
+          ? 'Based on your favourite manga.'
+          : 'Based on your favourite anime.',
       detail: detail,
       padding: const EdgeInsets.all(18),
-      child: _buildHorizontalMediaPosterList(context, detail.mediaItems, isManga: isManga),
+      child: _buildHorizontalMediaPosterList(context, detail.mediaItems,
+          isManga: isManga),
     );
   }
 
@@ -1549,10 +1590,13 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       context,
       icon: Iconsax.star5,
       title: isManga ? 'Common Perfect Manga' : 'Common Perfect Anime',
-      subtitle: isManga ? 'Based on manga scored 10/10.' : 'Based on anime scored 10/10.',
+      subtitle: isManga
+          ? 'Based on manga scored 10/10.'
+          : 'Based on anime scored 10/10.',
       detail: detail,
       padding: const EdgeInsets.all(18),
-      child: _buildHorizontalMediaPosterList(context, detail.mediaItems, isManga: isManga, isPerfect: true),
+      child: _buildHorizontalMediaPosterList(context, detail.mediaItems,
+          isManga: isManga, isPerfect: true),
     );
   }
 
@@ -1563,7 +1607,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     bool isPerfect = false,
   }) {
     if (items.isEmpty) {
-      return Center(child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
+      return Center(
+          child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
     }
     return Align(
       alignment: Alignment.centerLeft,
@@ -1574,7 +1619,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           children: items
               .map((item) => Padding(
                     padding: const EdgeInsets.only(right: 12),
-                    child: _buildMediaPosterItem(context, item, isManga: isManga, isPerfect: isPerfect),
+                    child: _buildMediaPosterItem(context, item,
+                        isManga: isManga, isPerfect: isPerfect),
                   ))
               .toList(),
         ),
@@ -1627,9 +1673,11 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           HapticFeedback.lightImpact();
           if (id.isNotEmpty) {
             if (isManga) {
-              navigateWithAnimation(() => MangaDetailsPage(media: media, tag: tag));
+              navigateWithAnimation(
+                  () => MangaDetailsPage(media: media, tag: tag));
             } else {
-              navigateWithAnimation(() => AnimeDetailsPage(media: media, tag: tag));
+              navigateWithAnimation(
+                  () => AnimeDetailsPage(media: media, tag: tag));
             }
           }
         },
@@ -1678,9 +1726,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
- 
-
-  Widget _buildCharactersCard(BuildContext context, HeuristicDetail? detail, {bool isLargeScreen = false}) {
+  Widget _buildCharactersCard(BuildContext context, HeuristicDetail? detail,
+      {bool isLargeScreen = false}) {
     return _buildHeuristicCardContainer(
       context,
       icon: Iconsax.profile_2user,
@@ -1701,14 +1748,15 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-
-  Widget _buildVoiceActorsCard(BuildContext context, HeuristicDetail? detail, {bool isLargeScreen = false}) {
+  Widget _buildVoiceActorsCard(BuildContext context, HeuristicDetail? detail,
+      {bool isLargeScreen = false}) {
     final c = context.colors;
     final cards = detail?.cards ?? [];
 
     Widget body;
     if (cards.isEmpty) {
-      body = Center(child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
+      body =
+          Center(child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
     } else {
       body = Align(
         alignment: Alignment.centerLeft,
@@ -1718,7 +1766,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           child: Row(
             children: cards.map((card) {
               final tag = 'compat_va_${card.mediaId ?? card.title}';
-              final meanScoreRow = card.rows.where((r) => r.label.toLowerCase().contains('mean')).firstOrNull;
+              final meanScoreRow = card.rows
+                  .where((r) => r.label.toLowerCase().contains('mean'))
+                  .firstOrNull;
 
               return Padding(
                 padding: const EdgeInsets.only(right: 14),
@@ -1728,7 +1778,10 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     if (card.mediaId != null && card.mediaId!.isNotEmpty) {
                       showCharacterStaffSheet(
                         context,
-                        item: PersonItem(id: card.mediaId, name: card.title, image: card.imageUrl),
+                        item: PersonItem(
+                            id: card.mediaId,
+                            name: card.title,
+                            image: card.imageUrl),
                         isCharacter: false,
                         heroTag: tag,
                       );
@@ -1758,8 +1811,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                               ],
                             ),
                             child: ClipOval(
-                              child: (card.imageUrl != null && card.imageUrl!.isNotEmpty)
-                                   ? AnymeXImage(
+                              child: (card.imageUrl != null &&
+                                      card.imageUrl!.isNotEmpty)
+                                  ? AnymeXImage(
                                       imageUrl: card.imageUrl!,
                                       width: 70,
                                       height: 70,
@@ -1769,7 +1823,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                       width: 70,
                                       height: 70,
                                       color: c.surfaceContainerHigh,
-                                      child: Icon(Icons.person, color: c.onSurfaceVariant),
+                                      child: Icon(Icons.person,
+                                          color: c.onSurfaceVariant),
                                     ),
                             ),
                           ),
@@ -1793,7 +1848,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         if (meanScoreRow != null)
                           Container(
                             margin: const EdgeInsets.only(top: 2),
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: c.surfaceContainerHigh.opaque(0.5),
                               borderRadius: BorderRadius.circular(6),
@@ -1801,12 +1857,22 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                AnymeXText(meanScoreRow.user1Value, size: 10, variant: TextVariant.bold, color: c.primary),
+                                AnymeXText(meanScoreRow.user1Value,
+                                    size: 10,
+                                    variant: TextVariant.bold,
+                                    color: c.primary),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                                  child: AnymeXText('vs', size: 8, color: c.onSurfaceVariant.opaque(0.6), variant: TextVariant.bold),
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 2),
+                                  child: AnymeXText('vs',
+                                      size: 8,
+                                      color: c.onSurfaceVariant.opaque(0.6),
+                                      variant: TextVariant.bold),
                                 ),
-                                AnymeXText(meanScoreRow.user2Value, size: 10, variant: TextVariant.bold, color: c.secondary),
+                                AnymeXText(meanScoreRow.user2Value,
+                                    size: 10,
+                                    variant: TextVariant.bold,
+                                    color: c.secondary),
                               ],
                             ),
                           ),
@@ -1834,15 +1900,15 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
- 
-
-  Widget _buildStudiosCard(BuildContext context, HeuristicDetail? detail, {bool isLargeScreen = false}) {
+  Widget _buildStudiosCard(BuildContext context, HeuristicDetail? detail,
+      {bool isLargeScreen = false}) {
     final c = context.colors;
     final cards = detail?.cards ?? [];
 
     Widget body;
     if (cards.isEmpty) {
-      body = Center(child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
+      body =
+          Center(child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
     } else {
       body = Align(
         alignment: Alignment.centerLeft,
@@ -1851,7 +1917,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           runSpacing: 8,
           children: cards.map((card) {
             final studioId = int.tryParse(card.mediaId ?? '') ?? 0;
-            final meanScoreRow = card.rows.where((r) => r.label.toLowerCase().contains('mean')).firstOrNull;
+            final meanScoreRow = card.rows
+                .where((r) => r.label.toLowerCase().contains('mean'))
+                .firstOrNull;
 
             return GestureDetector(
               onTap: () {
@@ -1861,9 +1929,12 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                 }
               },
               child: MouseRegion(
-                cursor: studioId > 0 ? SystemMouseCursors.click : SystemMouseCursors.basic,
+                cursor: studioId > 0
+                    ? SystemMouseCursors.click
+                    : SystemMouseCursors.basic,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     color: c.surfaceContainerHigh.opaque(0.45),
                     borderRadius: BorderRadius.circular(20),
@@ -1889,7 +1960,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       if (meanScoreRow != null) ...[
                         const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: c.surfaceContainerHighest.opaque(0.6),
                             borderRadius: BorderRadius.circular(8),
@@ -1904,7 +1976,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 color: c.primary,
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 2),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 2),
                                 child: AnymeXText(
                                   'vs',
                                   size: 8,
@@ -1924,7 +1997,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       ],
                       if (studioId > 0) ...[
                         const SizedBox(width: 4),
-                        Icon(Icons.arrow_outward_rounded, size: 11, color: c.primary.opaque(0.7)),
+                        Icon(Icons.arrow_outward_rounded,
+                            size: 11, color: c.primary.opaque(0.7)),
                       ],
                     ],
                   ),
@@ -1949,9 +2023,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
- 
-
-  Widget _buildStaffCard(BuildContext context, HeuristicDetail? detail, {bool isLargeScreen = false}) {
+  Widget _buildStaffCard(BuildContext context, HeuristicDetail? detail,
+      {bool isLargeScreen = false}) {
     return _buildHeuristicCardContainer(
       context,
       icon: Iconsax.user_tag,
@@ -1981,7 +2054,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     required bool isCharacter,
   }) {
     if (items.isEmpty) {
-      return Center(child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
+      return Center(
+          child: _buildEmptyPlaceholder(context, 'Nothing in Common!'));
     }
     return Align(
       alignment: Alignment.centerLeft,
@@ -2006,7 +2080,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-  
   Widget _buildPersonCircleItem(
     BuildContext context, {
     required String? id,
@@ -2033,7 +2106,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           }
         },
         child: MouseRegion(
-          cursor: (id != null && id.isNotEmpty) ? SystemMouseCursors.click : SystemMouseCursors.basic,
+          cursor: (id != null && id.isNotEmpty)
+              ? SystemMouseCursors.click
+              : SystemMouseCursors.basic,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -2096,8 +2171,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       ),
     );
   }
-
- 
 
   Widget _buildHeuristicCardContainer(
     BuildContext context, {
@@ -2235,8 +2308,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-  
-
   Widget _buildSocialConnectionsCard(
     BuildContext context,
     Profile user1,
@@ -2296,7 +2367,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               ),
               if (social.isMutualFriends)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: c.primary.opaque(0.15),
                     borderRadius: BorderRadius.circular(10),
@@ -2311,7 +2383,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             ],
           ),
           const SizedBox(height: 12),
-         
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -2333,7 +2404,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               ],
             ),
           ),
-         
           if (social.mutualFollowing.isNotEmpty) ...[
             const SizedBox(height: 14),
             AnymeXText(
@@ -2351,7 +2421,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   .toList(),
             ),
           ],
-
           if (social.mutualFollowers.isNotEmpty) ...[
             const SizedBox(height: 14),
             AnymeXText(
@@ -2369,10 +2438,11 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   .toList(),
             ),
           ],
-          
-          if (social.mutualFollowing.isEmpty && social.mutualFollowers.isEmpty) ...[
+          if (social.mutualFollowing.isEmpty &&
+              social.mutualFollowers.isEmpty) ...[
             const SizedBox(height: 10),
-            _buildEmptyPlaceholder(context, 'No mutual connections found on AniList'),
+            _buildEmptyPlaceholder(
+                context, 'No mutual connections found on AniList'),
           ],
         ],
       ),
@@ -2401,24 +2471,10 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ClipOval(
-                child: (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
-                    ? AnymeXImage(
-                        imageUrl: user.avatarUrl!,
-                        width: 22,
-                        height: 22,
-                        fit: BoxFit.cover,
-                      )
-                    : Container(
-                        width: 22,
-                        height: 22,
-                        color: c.surfaceContainerHigh,
-                        alignment: Alignment.center,
-                        child: Text(
-                          user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-                        ),
-                      ),
+              CommentumAvatar(
+                userId: user.id.toString(),
+                avatarUrl: user.avatarUrl,
+                size: 22,
               ),
               const SizedBox(width: 8),
               ConstrainedBox(
@@ -2440,7 +2496,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
-
   Widget _buildHowItWorksCard(BuildContext context) {
     final c = context.colors;
     return AnymeXContainer(
@@ -2454,10 +2509,10 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-         
           InkWell(
             borderRadius: BorderRadius.circular(20),
-            onTap: () => setState(() => _isHowItWorksExpanded = !_isHowItWorksExpanded),
+            onTap: () =>
+                setState(() => _isHowItWorksExpanded = !_isHowItWorksExpanded),
             child: Padding(
               padding: const EdgeInsets.all(18),
               child: Row(
@@ -2509,8 +2564,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               ),
             ),
           ),
-
-         
           AnimatedCrossFade(
             crossFadeState: _isHowItWorksExpanded
                 ? CrossFadeState.showSecond
@@ -2535,7 +2588,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     color: c.onSurfaceVariant.opaque(0.6),
                   ),
                   const SizedBox(height: 18),
-
                   AnymeXText(
                     'Compatibility Ranks',
                     variant: TextVariant.bold,
@@ -2549,9 +2601,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     color: c.onSurfaceVariant.opaque(0.75),
                   ),
                   const SizedBox(height: 12),
-
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     child: Row(
                       children: [
                         SizedBox(
@@ -2592,14 +2644,15 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       ],
                     ),
                   ),
-
                   ...kRanks.reversed.map((r) {
                     final rankColor = _getRankColor(r);
-                    final rangeStr = '${r.min.toInt()}-${r.max > 100 ? 100 : r.max.toInt()}%';
+                    final rangeStr =
+                        '${r.min.toInt()}-${r.max > 100 ? 100 : r.max.toInt()}%';
 
                     return Container(
                       margin: const EdgeInsets.only(bottom: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
                         color: c.surfaceContainerHigh.opaque(0.25),
                         borderRadius: BorderRadius.circular(10),
@@ -2615,7 +2668,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 7, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: rankColor.withOpacity(0.16),
                                   borderRadius: BorderRadius.circular(6),
@@ -2671,8 +2725,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     );
   }
 
- 
-
   String _buildShareUrl(String name1, String name2) {
     String serverUrl = (dotenv.env['WATCHIUM_SERVER_URL'] ?? '').trim();
     if (serverUrl.isEmpty) {
@@ -2686,7 +2738,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           for (final line in lines) {
             final trimmed = line.trim();
             if (trimmed.startsWith('WATCHIUM_SERVER_URL=')) {
-              serverUrl = trimmed.substring('WATCHIUM_SERVER_URL='.length).trim();
+              serverUrl =
+                  trimmed.substring('WATCHIUM_SERVER_URL='.length).trim();
               break;
             }
           }
@@ -2700,7 +2753,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return 'anymex://animatch?user1=${Uri.encodeComponent(name1)}&user2=${Uri.encodeComponent(name2)}';
   }
 
-  Future<void> _shareCard(String name1, String name2, CompatibilityResult result) async {
+  Future<void> _shareCard(
+      String name1, String name2, CompatibilityResult result) async {
     final shareUrl = _buildShareUrl(name1, name2);
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
@@ -2714,14 +2768,16 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     setState(() => _isSharing = true);
     try {
       await WidgetsBinding.instance.endOfFrame;
-      final boundary = _shareCardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary = _shareCardKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
       if (boundary == null) {
         _shareTextFallback(name1, name2, result);
         return;
       }
 
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      final ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) {
         _shareTextFallback(name1, name2, result);
         return;
@@ -2729,11 +2785,13 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
 
       final Uint8List pngBytes = byteData.buffer.asUint8List();
       final tempDir = await getTemporaryDirectory();
-      final fileName = 'animatch_${name1}_${name2}_${DateTime.now().millisecondsSinceEpoch}.png';
+      final fileName =
+          'animatch_${name1}_${name2}_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsBytes(pngBytes);
 
-      final text = '$name1 \u2764 $name2 | Compatibility: ${result.percentage.toStringAsFixed(0)}% (Rank ${result.rank})\nCheck Compatibility: $shareUrl\nCalculated with AnymeX';
+      final text =
+          '$name1 \u2764 $name2 | Compatibility: ${result.percentage.toStringAsFixed(0)}% (Rank ${result.rank})\nCheck Compatibility: $shareUrl\nCalculated with AnymeX';
 
       await Share.shareXFiles(
         [XFile(file.path, mimeType: 'image/png', name: fileName)],
@@ -2749,7 +2807,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     }
   }
 
-  void _shareTextFallback(String name1, String name2, CompatibilityResult result) {
+  void _shareTextFallback(
+      String name1, String name2, CompatibilityResult result) {
     final shareUrl = _buildShareUrl(name1, name2);
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
@@ -2765,8 +2824,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
         ? 'Manga: ${result.mangaSection.percentage.toStringAsFixed(1)}%'
         : 'Manga: N/A';
 
-    final text =
-        '$name1 \u2764 $name2\n\n'
+    final text = '$name1 \u2764 $name2\n\n'
         'AniMatch Compatibility: ${result.percentage.toStringAsFixed(0)}% (Rank ${result.rank})\n'
         '$anime\n'
         '$manga\n\n'
@@ -2775,7 +2833,6 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     Share.share(text);
   }
 }
-
 
 class _BikeMeterSweepGauge extends StatefulWidget {
   final double targetPercentage;
@@ -2874,4 +2931,3 @@ class _BikeMeterSweepGaugeState extends State<_BikeMeterSweepGauge>
     );
   }
 }
-

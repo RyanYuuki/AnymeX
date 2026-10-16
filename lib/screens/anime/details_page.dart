@@ -8,6 +8,7 @@ class AnimeDetailsPage extends StatelessWidget {
   final String tag;
   final Source? source;
   final int initialTabIndex;
+  final String? scrollToCommentId;
 
   const AnimeDetailsPage({
     super.key,
@@ -15,6 +16,7 @@ class AnimeDetailsPage extends StatelessWidget {
     required this.tag,
     this.source,
     this.initialTabIndex = 0,
+    this.scrollToCommentId,
   });
 
   @override
@@ -24,6 +26,7 @@ class AnimeDetailsPage extends StatelessWidget {
       tag: tag,
       source: source,
       initialTabIndex: initialTabIndex,
+      scrollToCommentId: scrollToCommentId,
     );
   }
 }
