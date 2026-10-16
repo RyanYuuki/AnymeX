@@ -44,6 +44,7 @@ import 'package:anymex/services/fcm_service.dart'
     hide firebaseMessagingBackgroundHandler;
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/controllers/sync/cloud/cloud_sync_controller.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/screens/notifications/notification_screen.dart';
 import 'package:anymex/screens/notifications/notification_controller.dart';
@@ -284,6 +285,7 @@ void _initializeGetxController() async {
     Get.put(CommentPreloader());
     Get.put(WatchiumService(), permanent: true);
     Get.put(GistSyncController(), permanent: true);
+    Get.put(CloudSyncController(), permanent: true);
     Get.put(DownloadController(), permanent: true);
     Get.lazyPut(() => NotificationService());
     Get.put(StatsTracker());

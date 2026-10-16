@@ -17,6 +17,7 @@ import 'package:anymex/services/volume_key_handler.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/controllers/sync/cloud/cloud_sync_controller.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -734,6 +735,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       chapter: chapter,
       isCompleted: shouldRemove,
     );
+
+    final cloudSync = Get.isRegistered<CloudSyncController>()
+        ? Get.find<CloudSyncController>()
+        : null;
+    if (cloudSync != null &&
+        cloudSync.isConnected.value &&
+        cloudSync.autoSyncOnExit.value) {
+      cloudSync.syncNow(userInitiated: false);
+    }
   }
 
   bool _hasFinishedCurrentMedia(Chapter chapter) {

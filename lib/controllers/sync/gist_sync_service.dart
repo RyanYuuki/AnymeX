@@ -436,7 +436,10 @@ class GistSyncService {
     if (!isReady) return false;
     try {
       final raw = await _downloadRaw();
-      final existing = raw[entry.mediaId] as Map<String, dynamic>?;
+      final isV2 = raw['progress'] is Map;
+      final targetMap = isV2 ? (raw['progress'] as Map<String, dynamic>) : raw;
+
+      final existing = targetMap[entry.mediaId] as Map<String, dynamic>?;
 
       if (existing != null &&
           (existing['updatedAt'] as int? ?? 0) >= entry.updatedAt) {
@@ -444,9 +447,9 @@ class GistSyncService {
         return true;
       }
 
-      raw[entry.mediaId] = entry.toJson();
+      targetMap[entry.mediaId] = entry.toJson();
       if (entry.malId != null && entry.malId!.isNotEmpty) {
-        raw[entry.malId!] = entry.toJson();
+        targetMap[entry.malId!] = entry.toJson();
       }
 
       await _upload(raw);
@@ -462,10 +465,21 @@ class GistSyncService {
     if (!isReady) return GistRemoveResult.failed;
     try {
       final raw = await _downloadRaw();
-      bool changed = raw.remove(mediaId) != null;
-      if (malId != null && malId.isNotEmpty) {
-        if (raw.remove(malId) != null) changed = true;
+      bool changed = false;
+
+      if (raw['progress'] is Map) {
+        final progressMap = raw['progress'] as Map;
+        if (progressMap.remove(mediaId) != null) changed = true;
+        if (malId != null && malId.isNotEmpty && progressMap.remove(malId) != null) {
+          changed = true;
+        }
       }
+
+      if (raw.remove(mediaId) != null) changed = true;
+      if (malId != null && malId.isNotEmpty && raw.remove(malId) != null) {
+        changed = true;
+      }
+
       if (changed) {
         await _upload(raw);
         Logger.i('[GistSync] Removed $mediaId');
@@ -482,10 +496,21 @@ class GistSyncService {
     if (!isReady) return null;
     try {
       final raw = await _downloadRaw();
-      Map<String, dynamic>? found = raw[mediaId] as Map<String, dynamic>?;
+      Map<String, dynamic>? found;
+
+      if (raw['progress'] is Map) {
+        final p = raw['progress'] as Map;
+        found = p[mediaId] as Map<String, dynamic>?;
+        if (found == null && malId != null && malId.isNotEmpty) {
+          found = p[malId] as Map<String, dynamic>?;
+        }
+      }
+
+      found ??= raw[mediaId] as Map<String, dynamic>?;
       if (found == null && malId != null && malId.isNotEmpty) {
         found = raw[malId] as Map<String, dynamic>?;
       }
+
       if (found == null) return null;
       return GistProgressEntry.fromJson(found);
     } catch (e) {
