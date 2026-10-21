@@ -1,7 +1,6 @@
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:get/get.dart';
 
 class AnymeXContainer extends StatelessWidget {
   final Widget? child;

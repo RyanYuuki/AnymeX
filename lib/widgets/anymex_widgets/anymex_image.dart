@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' show PlatformDispatcher;
 
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -243,12 +244,24 @@ class _AnymeXImageState extends State<AnymeXImage> {
       "Referer": "${url.origin}/",
       "Origin": url.origin,
     } : {};
+    final dpr = PlatformDispatcher.instance.views.isEmpty
+        ? 2.0
+        : PlatformDispatcher.instance.views.first.devicePixelRatio.clamp(1.0, 3.0);
+    final decodeWidth = widget.width != null && widget.width!.isFinite && widget.width! > 0
+        ? (widget.width! * dpr).round()
+        : null;
+    final decodeHeight = widget.height != null && widget.height!.isFinite && widget.height! > 0
+        ? (widget.height! * dpr).round()
+        : null;
     return CachedNetworkImage(
       cacheManager: AnymeXCacheManager.instance,
       imageUrl: imageUrl,
       httpHeaders: widget.headers ?? headers,
       width: widget.width,
       height: widget.height,
+      memCacheWidth: decodeWidth,
+      memCacheHeight: decodeWidth == null ? decodeHeight : null,
+      filterQuality: FilterQuality.low,
       fit: widget.fit,
       alignment: widget.alignment,
       color: widget.color,
@@ -298,11 +311,23 @@ class _AnymeXImageState extends State<AnymeXImage> {
     }
 
     if (isNetworkImageUrl(imageUrl)) {
+      final dpr = PlatformDispatcher.instance.views.isEmpty
+          ? 2.0
+          : PlatformDispatcher.instance.views.first.devicePixelRatio.clamp(1.0, 3.0);
+      final decodeWidth = widget.width != null && widget.width!.isFinite && widget.width! > 0
+          ? (widget.width! * dpr).round()
+          : null;
+      final decodeHeight = widget.height != null && widget.height!.isFinite && widget.height! > 0
+          ? (widget.height! * dpr).round()
+          : null;
       return CachedNetworkImage(
         cacheManager: AnymeXCacheManager.instance,
         imageUrl: imageUrl,
         width: widget.width,
         height: widget.height,
+        memCacheWidth: decodeWidth,
+        memCacheHeight: decodeWidth == null ? decodeHeight : null,
+        filterQuality: FilterQuality.low,
         fit: widget.fit,
         placeholder: (_, __) => _placeholder(context),
         fadeInDuration:

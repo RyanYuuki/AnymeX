@@ -53,6 +53,8 @@ class AnymeXPills extends StatelessWidget {
 
   final bool expandEqually;
 
+  final bool wrap;
+
   const AnymeXPills({
     super.key,
     required this.items,
@@ -64,6 +66,7 @@ class AnymeXPills extends StatelessWidget {
     this.scrollPadding = const EdgeInsets.symmetric(vertical: 4),
     this.selectedOuterRadius = 50.0,
     this.expandEqually = false,
+    this.wrap = false,
   });
 
   double get _effectiveGap =>
@@ -108,6 +111,24 @@ class AnymeXPills extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) return const SizedBox.shrink();
+
+    if (wrap) {
+      return Padding(
+        padding: scrollPadding,
+        child: Wrap(
+          spacing: _effectiveGap,
+          runSpacing: 8.0,
+          children: [
+            for (int i = 0; i < items.length; i++)
+              _PillCell(
+                item: items[i],
+                borderRadius: _borderFor(i),
+                selectedBorderRadius: _selectedBorderFor(i),
+              ),
+          ],
+        ),
+      );
+    }
 
     final row = Row(
       mainAxisSize: expandEqually ? MainAxisSize.max : MainAxisSize.min,

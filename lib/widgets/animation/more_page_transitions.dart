@@ -182,7 +182,6 @@ class _PageAnimationWrapperState extends State<PageAnimationWrapper>
       case AnimationType.slideLeft:
       case AnimationType.slideRight:
       case AnimationType.elasticSlide:
-      default:
         return SlideTransition(
           position: _slideAnimation,
           child: FadeTransition(

@@ -275,21 +275,27 @@ class AnymeXScaffold extends StatelessWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: Obx(() => _buildCachedColorFilteredImage(
-                  context: context,
-                  imagePath: imagePath,
-                  color: settingsController.retainOriginalColor
-                      ? null
-                      : theme.primary.opaque(0.6),
-                )),
-          ),
-          Positioned.fill(
-            child: isOled
-                ? Container(color: Colors.black)
-                : _buildGradientOverlay(
-                    gradientVariant: GradientVariant.subtle,
-                    theme: theme,
-                  ),
+            child: RepaintBoundary(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Obx(() => _buildCachedColorFilteredImage(
+                        context: context,
+                        imagePath: imagePath,
+                        color: settingsController.retainOriginalColor
+                            ? null
+                            : theme.primary.opaque(0.6),
+                      )),
+                  if (isOled)
+                    Container(color: Colors.black)
+                  else
+                    _buildGradientOverlay(
+                      gradientVariant: GradientVariant.subtle,
+                      theme: theme,
+                    ),
+                ],
+              ),
+            ),
           ),
           child,
         ],
@@ -432,21 +438,15 @@ class AnymeXScaffold extends StatelessWidget {
     final image = isFile
         ? Image.file(
             File(imagePath.replaceFirst('file://', '')),
-            fit: getResponsiveValue(
-              context,
-              mobileValue: BoxFit.fitHeight,
-              desktopValue: BoxFit.cover,
-            ),
+            fit: BoxFit.cover,
             filterQuality: FilterQuality.low,
+            cacheWidth: 720,
           )
         : Image.asset(
             imagePath,
-            fit: getResponsiveValue(
-              context,
-              mobileValue: BoxFit.fitHeight,
-              desktopValue: BoxFit.cover,
-            ),
+            fit: BoxFit.cover,
             filterQuality: FilterQuality.low,
+            cacheWidth: 720,
           );
 
     return color != null

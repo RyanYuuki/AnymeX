@@ -59,16 +59,18 @@ class MediaHeader extends StatelessWidget {
           Positioned.fill(
             child: Obx(() {
               final liquidMode = settingsController.liquidMode;
-              return ImageFiltered(
-                imageFilter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
-                child: AnymeXImage(
-                  imageUrl: coverUrl,
-                  errorImage: data?.poster,
-                  radius: 0,
-                  height: headerHeight,
-                  width: double.infinity,
-                  color: liquidMode ? colors.primary.opaque(0.4) : null,
-                  fit: BoxFit.cover,
+              return RepaintBoundary(
+                child: ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+                  child: AnymeXImage(
+                    imageUrl: coverUrl,
+                    errorImage: data?.poster,
+                    radius: 0,
+                    height: headerHeight,
+                    width: double.infinity,
+                    color: liquidMode ? colors.primary.opaque(0.4) : null,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               );
             }),

@@ -80,212 +80,205 @@ class AnymeXDialog extends StatelessWidget {
     return PopScope(
       canPop: !forceAction,
       child: RepaintBoundary(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: MediaQuery.removeViewInsets(
-            removeBottom: true,
-            context: context,
-            child: Dialog(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              insetAnimationDuration: Duration.zero,
-              insetPadding: EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: isLandscape ? 8 : 24,
-              ),
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          insetAnimationDuration: Duration.zero,
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: isLandscape ? 8 : 24,
+          ),
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              if (!forceAction) {
+                Navigator.of(context).pop();
+              }
+            },
+            child: Center(
               child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  if (!forceAction) {
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: getResponsiveValue(
-                        context,
-                        mobileValue: Get.width * 0.9,
-                        desktopValue: 440.0,
+                onTap: () {},
+                child: Container(
+                  width: getResponsiveValue(
+                    context,
+                    mobileValue: Get.width * 0.9,
+                    desktopValue: 440.0,
+                  ),
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(context).height *
+                        (isLandscape ? 0.95 : 0.85),
+                  ),
+                  decoration: BoxDecoration(
+                    color: translucent
+                        ? context.colors.surfaceContainer.withOpacity(0.5)
+                        : context.colors.surfaceContainer,
+                    borderRadius: BorderRadius.circular(radius),
+                    border: Border.all(
+                      color: context.colors.onSurface.withOpacity(0.08),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 25,
+                        offset: const Offset(0, 8),
                       ),
-                      constraints: BoxConstraints(
-                        maxHeight: MediaQuery.sizeOf(context).height *
-                            (isLandscape ? 0.95 : 0.85),
-                      ),
-                      decoration: BoxDecoration(
-                        color: translucent
-                            ? context.colors.surfaceContainer.withOpacity(0.5)
-                            : context.colors.surfaceContainer,
-                        borderRadius: BorderRadius.circular(radius),
-                        border: Border.all(
-                          color: context.colors.onSurface.withOpacity(0.08),
-                          width: 1,
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(radius),
+                    child: RepaintBoundary(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaX: translucent ? 20 : 0,
+                          sigmaY: translucent ? 20 : 0,
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 25,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(radius),
-                        child: RepaintBoundary(
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(
-                              sigmaX: translucent ? 20 : 0,
-                              sigmaY: translucent ? 20 : 0,
-                            ),
-                            child: Padding(
-                              padding: padding == const EdgeInsets.all(24)
-                                  ? (isLandscape
-                                      ? const EdgeInsets.symmetric(
-                                          horizontal: 24, vertical: 12)
-                                      : padding)
-                                  : padding,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                        child: Padding(
+                          padding: padding == const EdgeInsets.all(24)
+                              ? (isLandscape
+                                  ? const EdgeInsets.symmetric(
+                                      horizontal: 24, vertical: 12)
+                                  : padding)
+                              : padding,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (title != null) ...[
+                                AnymeXText(
+                                  title!,
+                                  size: 20,
+                                  variant: TextVariant.semiBold,
+                                  color: context.colors.onSurface,
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                              Flexible(
+                                child: SingleChildScrollView(
+                                  physics: const BouncingScrollPhysics(),
+                                  child: message != null
+                                      ? Padding(
+                                          padding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 4.0),
+                                          child: AnymeXText(
+                                            message!,
+                                            size: 14,
+                                            color: context
+                                                .colors.onSurfaceVariant,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 100,
+                                          ),
+                                        )
+                                      : (contentWidget ??
+                                          const SizedBox.shrink()),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
                                 children: [
-                                  if (title != null) ...[
-                                    AnymeXText(
-                                      title!,
-                                      size: 20,
-                                      variant: TextVariant.semiBold,
-                                      color: context.colors.onSurface,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 12),
-                                  ],
-                                  Flexible(
-                                    child: SingleChildScrollView(
-                                      physics: const BouncingScrollPhysics(),
-                                      child: message != null
-                                          ? Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 4.0),
-                                              child: AnymeXText(
-                                                message!,
-                                                size: 14,
-                                                color: context
-                                                    .colors.onSurfaceVariant,
-                                                textAlign: TextAlign.center,
-                                                maxLines: 100,
-                                              ),
-                                            )
-                                          : (contentWidget ??
-                                              const SizedBox.shrink()),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  Row(
-                                    children: [
-                                      if (showCancelButton) ...[
-                                        Expanded(
-                                          child: AnymexOnTap(
-                                            onTap: () {
-                                              final result =
-                                                  cancelResultGetter?.call();
-                                              Get.back(result: result);
-                                              onCancel?.call();
-                                            },
-                                            scale: 0.95,
-                                            child: Container(
-                                              height: 48,
-                                              alignment: Alignment.center,
-                                              decoration: BoxDecoration(
-                                                color: context.colors
-                                                    .surfaceContainerHighest,
-                                                borderRadius:
-                                                    BorderRadius.horizontal(
-                                                  right:
-                                                      const Radius.circular(2),
-                                                  left: Radius.circular(
-                                                      buttonRadius),
-                                                ),
-                                                border: Border.all(
-                                                  color: context
-                                                      .colors.onSurface
-                                                      .withOpacity(0.04),
-                                                  width: 1,
-                                                ),
-                                              ),
-                                              child: AnymeXText(
-                                                cancelText,
-                                                size: 14,
-                                                color: context.colors.onSurface,
-                                                variant: TextVariant.bold,
-                                              ),
+                                  if (showCancelButton) ...[
+                                    Expanded(
+                                      child: AnymexOnTap(
+                                        onTap: () {
+                                          final result =
+                                              cancelResultGetter?.call();
+                                          Get.back(result: result);
+                                          onCancel?.call();
+                                        },
+                                        scale: 0.95,
+                                        child: Container(
+                                          height: 48,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                            color: context.colors
+                                                .surfaceContainerHighest,
+                                            borderRadius:
+                                                BorderRadius.horizontal(
+                                              right:
+                                                  const Radius.circular(2),
+                                              left: Radius.circular(
+                                                  buttonRadius),
+                                            ),
+                                            border: Border.all(
+                                              color: context
+                                                  .colors.onSurface
+                                                  .withOpacity(0.04),
+                                              width: 1,
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                      ],
-                                      Expanded(
-                                          child: AnymexOnTap(
-                                            onTap: isConfirmEnabled
-                                                ? () {
-                                                    if (autoDismiss) {
-                                                      final result =
-                                                          confirmResultGetter
-                                                              ?.call();
-                                                      Get.back(result: result);
-                                                    }
-                                                    onConfirm.call();
-                                                  }
-                                                : () {},
-                                            scale: 0.95,
-                                            child: Container(
-                                            height: 48,
-                                            alignment: Alignment.center,
-                                            decoration: BoxDecoration(
-                                              color: isConfirmEnabled
-                                                  ? context.colors.primary
-                                                  : context.colors
-                                                      .surfaceContainerHighest
-                                                      .withOpacity(0.4),
-                                              borderRadius:
-                                                  BorderRadius.horizontal(
-                                                left: Radius.circular(
-                                                    showCancelButton
-                                                        ? 2
-                                                        : buttonRadius),
-                                                right: Radius.circular(
-                                                    buttonRadius),
-                                              ),
-                                              boxShadow: isConfirmEnabled
-                                                  ? [
-                                                      BoxShadow(
-                                                        color: context
-                                                            .colors.primary
-                                                            .withOpacity(0.15),
-                                                        blurRadius: 10,
-                                                        offset:
-                                                            const Offset(0, 4),
-                                                      ),
-                                                    ]
-                                                  : null,
-                                            ),
-                                            child: AnymeXText(
-                                              confirmText,
-                                              size: 14,
-                                              color: isConfirmEnabled
-                                                  ? context.colors.onPrimary
-                                                  : context.colors.onSurface
-                                                      .withOpacity(0.4),
-                                              variant: TextVariant.bold,
-                                            ),
+                                          child: AnymeXText(
+                                            cancelText,
+                                            size: 14,
+                                            color: context.colors.onSurface,
+                                            variant: TextVariant.bold,
                                           ),
                                         ),
                                       ),
-                                    ],
+                                    ),
+                                    const SizedBox(width: 4),
+                                  ],
+                                  Expanded(
+                                      child: AnymexOnTap(
+                                        onTap: isConfirmEnabled
+                                            ? () {
+                                                if (autoDismiss) {
+                                                  final result =
+                                                      confirmResultGetter
+                                                          ?.call();
+                                                  Get.back(result: result);
+                                                }
+                                                onConfirm.call();
+                                              }
+                                            : () {},
+                                        scale: 0.95,
+                                        child: Container(
+                                        height: 48,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: isConfirmEnabled
+                                              ? context.colors.primary
+                                              : context.colors
+                                                  .surfaceContainerHighest
+                                                  .withOpacity(0.4),
+                                          borderRadius:
+                                              BorderRadius.horizontal(
+                                            left: Radius.circular(
+                                                showCancelButton
+                                                    ? 2
+                                                    : buttonRadius),
+                                            right: Radius.circular(
+                                                buttonRadius),
+                                          ),
+                                          boxShadow: isConfirmEnabled
+                                              ? [
+                                                  BoxShadow(
+                                                    color: context
+                                                        .colors.primary
+                                                        .withOpacity(0.15),
+                                                    blurRadius: 10,
+                                                    offset:
+                                                        const Offset(0, 4),
+                                                  ),
+                                                ]
+                                              : null,
+                                        ),
+                                        child: AnymeXText(
+                                          confirmText,
+                                          size: 14,
+                                          color: isConfirmEnabled
+                                              ? context.colors.onPrimary
+                                              : context.colors.onSurface
+                                                  .withOpacity(0.4),
+                                          variant: TextVariant.bold,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
