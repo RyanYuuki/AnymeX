@@ -1,6 +1,7 @@
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/screens/settings/sub_settings/contributors/contributors.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_donation.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/about_deps.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -244,15 +245,14 @@ class _AboutPageState extends State<AboutPage> {
                             subtitle: "See people who contributed to AnymeX",
                           ),
                           CustomListTile(
-                            onTap: () async {
-                              await launchUrlHelper(
-                                  'https://ko-fi.com/ryanyuuki7');
+                            onTap: () {
+                              navigate(() => const SettingsDonation());
                             },
-                            leading:
-                                const Icon(HugeIcons.strokeRoundedCoffee01),
-                            title: "Ko-fi",
+                            leading: const Icon(Icons.favorite_rounded,
+                                color: Colors.pinkAccent),
+                            title: "Support AnymeX",
                             subtitle:
-                                "Consider donating to support the maintainer of AnymeX",
+                                "Donate via UPI or PayPal to support development",
                           ),
                           CustomListTile(
                             onTap: () async {

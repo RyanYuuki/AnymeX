@@ -66,6 +66,15 @@
     <true/>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>phonepe</string>
+      <string>gpay</string>
+      <string>paytmmp</string>
+      <string>bhim</string>
+      <string>credpay</string>
+      <string>upi</string>
+    </array>
     <key>CFBundleURLTypes</key>
     <array>
       <dict>
