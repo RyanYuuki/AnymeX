@@ -135,6 +135,7 @@ class MediaKitPlayer extends base.BasePlayer {
 
     await PlayerCoreVisualSettings.applyMpvCoreSettings(_player);
     await PlayerCoreVisualSettings.applyMpvVisualSettings(_player);
+    await PlayerCoreVisualSettings.applyMpvConf(_player);
   }
 
   void _setupListeners() {
@@ -354,6 +355,16 @@ class MediaKitPlayer extends base.BasePlayer {
   Future<void> setSubtitleDelay(Duration delay) async {
     final seconds = delay.inMicroseconds / 1000000.0;
     (_player.platform as dynamic).setProperty('sub-delay', seconds.toString());
+  }
+
+  @override
+  Future<void> setAudioDelay(Duration delay) async {
+    final seconds = delay.inMicroseconds / 1000000.0;
+    try {
+      (_player.platform as dynamic).setProperty('audio-delay', seconds.toString());
+    } catch (e) {
+      debugPrint('Error setting audio-delay: $e');
+    }
   }
 
   @override

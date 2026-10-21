@@ -240,6 +240,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final RxBool showShaderOsd = false.obs;
   Timer? _shaderOsdTimer;
   final Rx<Duration> subtitleDelay = Duration.zero.obs;
+  final Rx<Duration> audioDelay = Duration.zero.obs;
   RxMap<String, int> customSettings = <String, int>{}.obs;
   bool _hasTrackedInitialOnline = false;
   bool _hasTrackedInitialLocal = false;
@@ -1620,6 +1621,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _basePlayer.setSubtitleDelay(delay);
   }
 
+  void setAudioDelay(Duration delay) {
+    audioDelay.value = delay;
+    _basePlayer.setAudioDelay(delay);
+  }
+
   Future<void> fetchEpisode(Episode episode, {Duration? savedPosition}) async {
     if (isOffline.value) {
       // Support local file switching for offline episode list
@@ -2023,7 +2029,11 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     try {
       if (Get.isRegistered<AddonManager>()) {
-        await Get.find<AddonManager>().get<TorrServerAddon>().stopStream();
+        final torrServer = Get.find<AddonManager>().get<TorrServerAddon>();
+        await torrServer.stopStream();
+        if (torrServer.isRunning) {
+          await torrServer.stop();
+        }
       }
     } catch (_) {}
 

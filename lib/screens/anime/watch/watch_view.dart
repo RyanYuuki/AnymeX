@@ -21,6 +21,8 @@ import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
 import 'package:anymex/widgets/watchium/watchium_party_popup.dart';
+import 'package:anymex_extension_runtime_bridge/AddonManager.dart';
+import 'package:anymex_extension_runtime_bridge/Engines/TorrentEngine/TorrServerAddon.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -125,6 +127,14 @@ class _WatchScreenState extends State<WatchScreen> {
   void dispose() {
     _inRoomWorker?.dispose();
     _disposeSyncController();
+    try {
+      if (Get.isRegistered<AddonManager>()) {
+        final torr = Get.find<AddonManager>().get<TorrServerAddon>();
+        if (torr.isRunning) {
+          torr.stop();
+        }
+      }
+    } catch (_) {}
     Get.delete<PlayerController>();
     super.dispose();
   }
@@ -136,7 +146,7 @@ class _WatchScreenState extends State<WatchScreen> {
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
         final shouldPop = await _onWillPop();
-        if (shouldPop && mounted) {
+        if (shouldPop && context.mounted) {
           Navigator.of(context).pop();
         }
       },

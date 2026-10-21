@@ -1,4 +1,5 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/delay_row.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
@@ -79,8 +80,18 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
       return WatchSettingsPane(
         title: 'Audio Settings',
         onClose: widget.onClose,
-        tabBar: _buildTabBar(cs, theme,
-            hasSource: hasSource, hasInbuilt: hasInbuilt),
+        tabBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Obx(() => DelayRow(
+                  label: 'Audio Delay',
+                  delay: widget.controller.audioDelay.value,
+                  onChange: widget.controller.setAudioDelay,
+                )),
+            _buildTabBar(cs, theme,
+                hasSource: hasSource, hasInbuilt: hasInbuilt),
+          ],
+        ),
         child: switch (_currentTab) {
           _AudioTab.source => _buildSourceAudio(cs, theme, externalAudios),
           _AudioTab.inbuilt => _buildInbuiltAudio(cs, theme, embeddedAudios),
