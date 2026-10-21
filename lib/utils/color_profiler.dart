@@ -262,7 +262,7 @@ class ColorProfileBottomSheet extends StatefulWidget {
               width: MediaQuery.sizeOf(context).width * 0.85,
               height: double.infinity,
               child: ColorProfileBottomSheet(
-                activeSettings: controller.customSettings.value,
+                activeSettings: controller.customSettings,
                 currentProfile: controller.currentVisualProfile.value,
                 player: player,
                 onProfileSelected: (profile) {
@@ -775,7 +775,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
       _selectedShader = message;
     });
     HapticFeedback.lightImpact();
-    if (backOut) {
+    if (backOut && mounted) {
       Navigator.pop(context);
     }
   }
