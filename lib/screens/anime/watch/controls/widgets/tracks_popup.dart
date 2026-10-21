@@ -2,12 +2,17 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/database/isar_models/track.dart' as model;
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
+import 'package:anymex/utils/online_subtitles.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_search_bar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -53,6 +58,68 @@ class _TracksPopupContent extends StatefulWidget {
 class _TracksPopupContentState extends State<_TracksPopupContent> {
   _SubtitleTab _currentTab = _SubtitleTab.source;
   final RxBool _showAllStreams = false.obs;
+
+  late final TextEditingController _onlineSearchController;
+  final RxString _selectedLanguageCode = 'eng'.obs;
+  final RxList<OnlineSubtitle> _onlineResults = <OnlineSubtitle>[].obs;
+  final RxBool _isSearchingOnline = false.obs;
+  final RxString _downloadingSubtitleId = ''.obs;
+  final RxnString _activeOnlineSubtitleId = RxnString();
+
+  @override
+  void initState() {
+    super.initState();
+    final animeName = widget.controller.itemName ??
+        widget.controller.anilistData.title;
+    final ep = widget.controller.currentEpisode.value.number;
+    _onlineSearchController = TextEditingController(
+      text: '$animeName $ep'.trim(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _onlineSearchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _performOnlineSearch() async {
+    final term = _onlineSearchController.text.trim();
+    if (term.isEmpty) return;
+    _isSearchingOnline.value = true;
+    try {
+      final epNum = int.tryParse(widget.controller.currentEpisode.value.number);
+      final list = await searchOnlineSubtitles(
+        query: term,
+        language: _selectedLanguageCode.value,
+        episode: epNum,
+        imdbTitle: widget.controller.itemName ??
+            widget.controller.anilistData.title,
+      );
+      _onlineResults.value = list;
+    } catch (e) {
+      debugPrint('Online subtitle search error: $e');
+      _onlineResults.clear();
+    } finally {
+      _isSearchingOnline.value = false;
+    }
+  }
+
+  Future<void> _selectOnlineSubtitle(OnlineSubtitle sub) async {
+    _downloadingSubtitleId.value = sub.id;
+    try {
+      final filePath = await downloadOnlineSubtitle(sub);
+      widget.controller.setSubtitleTrack(
+        SubtitleTrack.uri(filePath, title: sub.name),
+      );
+      _activeOnlineSubtitleId.value = sub.id;
+      snackBar('Loaded subtitle: ${sub.name}');
+    } catch (e) {
+      errorSnackBar('Failed to download subtitle: $e');
+    } finally {
+      _downloadingSubtitleId.value = '';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -252,8 +319,108 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
   }
 
   Widget _buildOnlineSubtitles(ColorScheme cs, ThemeData theme) {
-    return _buildEmpty(cs, theme, Icons.language_rounded,
-        'Online subtitle search coming soon');
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: AnymeXSearchBar(
+                  controller: _onlineSearchController,
+                  hintText: 'Search anime / episode...',
+                  onSubmitted: (_) => _performOnlineSearch(),
+                ),
+              ),
+              const SizedBox(width: 8),
+              AnymexOnTap(
+                onTap: _performOnlineSearch,
+                child: Container(
+                  height: 44,
+                  width: 44,
+                  decoration: BoxDecoration(
+                    color: cs.primaryContainer,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    Icons.search_rounded,
+                    size: 20,
+                    color: cs.onPrimaryContainer,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Obx(() {
+          final selectedLang = _selectedLanguageCode.value;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: AnymeXPills(
+              items: subtitleLanguages.map((lang) {
+                final isSelected = selectedLang == lang.code;
+                return PillItem(
+                  label: lang.name,
+                  isSelected: isSelected,
+                  onTap: () {
+                    _selectedLanguageCode.value = lang.code;
+                    _performOnlineSearch();
+                  },
+                );
+              }).toList(),
+            ),
+          );
+        }),
+        const SizedBox(height: 8),
+        Expanded(
+          child: Obx(() {
+            if (_isSearchingOnline.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (_onlineResults.isEmpty) {
+              return _buildEmpty(
+                cs,
+                theme,
+                Icons.language_rounded,
+                'No subtitles found. Try searching with a different title.',
+              );
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              itemCount: _onlineResults.length,
+              itemBuilder: (context, index) {
+                final sub = _onlineResults[index];
+                final isDownloading = _downloadingSubtitleId.value == sub.id;
+                final isSelected = _activeOnlineSubtitleId.value == sub.id;
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: AnymeXTile(
+                    title: sub.name,
+                    subtitle:
+                        '${sub.format.toUpperCase()} • ${sub.provider}${sub.downloads > 0 ? " • ${sub.downloads} dl" : ""}',
+                    icon: sub.hearingImpaired
+                        ? Icons.hearing_disabled_rounded
+                        : Icons.subtitles_rounded,
+                    trailing: isDownloading
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : (isSelected
+                            ? Icon(Icons.check_circle_rounded,
+                                color: cs.primary)
+                            : null),
+                    onTap: () => _selectOnlineSubtitle(sub),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                );
+              },
+            );
+          }),
+        ),
+      ],
+    );
   }
 
   Widget _buildEmpty(
