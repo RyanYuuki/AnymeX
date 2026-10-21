@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/utils/al_about_me.dart';
 import 'package:anymex/utils/markdown.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/gif_picker_sheet.dart';
@@ -63,7 +64,6 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
   bool _isSubmitting = false;
   bool _isExpanded = false;
   bool _isPrivate = false;
-  bool _isPickingGif = false;
 
   bool get isExpanded => _isExpanded;
   set isExpanded(bool value) {
@@ -110,10 +110,6 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
   void _onFocusChange() {
     if (_focusNode.hasFocus) {
       if (!_isExpanded && mounted) setState(() => _isExpanded = true);
-    } else {
-      if (!widget.isModal && !_previewMode && !_isPickingGif && _isExpanded && mounted) {
-        setState(() => _isExpanded = false);
-      }
     }
   }
 
@@ -320,7 +316,6 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
       widget.onGifTap!();
       return;
     }
-    _isPickingGif = true;
     GifPickerSheet.show(
       context,
       onGifSelected: (url) {
@@ -357,9 +352,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
         if (mounted) setState(() {});
         _focusNode.requestFocus();
       },
-    ).then((_) {
-      _isPickingGif = false;
-    });
+    );
   }
 
   Widget _buildGifButton() {
@@ -443,10 +436,19 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
               Expanded(
                 child: SegmentedButton<int>(
                   style: SegmentedButton.styleFrom(
-                    backgroundColor: context.theme.colorScheme.surface,
-                    selectedBackgroundColor:
-                        context.theme.colorScheme.primaryContainer,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    backgroundColor: context.theme.colorScheme.surfaceContainerLow
+                        .opaque(0.4, iReallyMeanIt: true),
+                    selectedBackgroundColor: context.theme.colorScheme.primary
+                        .opaque(0.18, iReallyMeanIt: true),
+                    selectedForegroundColor: context.theme.colorScheme.primary,
+                    side: BorderSide(
+                      color: context.theme.colorScheme.onSurface
+                          .opaque(0.08, iReallyMeanIt: true),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
                   ),
                   showSelectedIcon: false,
                   segments: [
@@ -572,8 +574,13 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                           const BoxConstraints(minHeight: 50, maxHeight: 200),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: context.theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
+                        color: context.theme.colorScheme.surfaceContainerLow
+                            .opaque(0.4, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: context.theme.colorScheme.onSurface
+                              .opaque(0.08, iReallyMeanIt: true),
+                        ),
                       ),
                       child: SingleChildScrollView(
                         child: _textController.text.trim().isEmpty
@@ -601,16 +608,43 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                       maxLines: 4,
                       minLines: _isExpanded ? 2 : 1,
                       inputFormatters: [MarkdownListInputFormatter()],
+                      style: TextStyle(
+                        color: context.theme.colorScheme.onSurface,
+                        fontSize: 14,
+                      ),
                       decoration: InputDecoration(
                         hintText: widget.hintText,
+                        hintStyle: TextStyle(
+                          color: context.theme.colorScheme.onSurfaceVariant
+                              .opaque(0.6),
+                          fontSize: 14,
+                        ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: context.theme.colorScheme.onSurface
+                                .opaque(0.08, iReallyMeanIt: true),
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: context.theme.colorScheme.onSurface
+                                .opaque(0.08, iReallyMeanIt: true),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: context.theme.colorScheme.primary
+                                .opaque(0.5, iReallyMeanIt: true),
+                          ),
                         ),
                         filled: true,
-                        fillColor: context.theme.colorScheme.surface,
+                        fillColor: context.theme.colorScheme.surfaceContainerLow
+                            .opaque(0.4, iReallyMeanIt: true),
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                            horizontal: 14, vertical: 10),
                       ),
                     ),
             ),
@@ -633,7 +667,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                   },
                 ),
               ),
-            if (widget.showCancelButton)
+            if (widget.showCancelButton || _isExpanded)
               Container(
                 margin: EdgeInsets.only(bottom: _isExpanded ? 16 : 2, right: 8),
                 child: IconButton(
@@ -642,13 +676,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                     Icons.close_rounded,
                     color: context.theme.colorScheme.onSurfaceVariant,
                   ),
-                  onPressed: () {
-                    _textController.clear();
-                    setState(() {
-                       _isExpanded = false;
-                    });
-                    if (widget.onCancel != null) widget.onCancel!();
-                  },
+                  onPressed: cancelAction,
                 ),
               ),
             ValueListenableBuilder<TextEditingValue>(
