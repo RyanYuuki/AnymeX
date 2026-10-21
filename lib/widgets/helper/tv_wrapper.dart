@@ -47,6 +47,18 @@ class AnymexOnTap extends StatelessWidget {
           ActivateIntent: CallbackAction<ActivateIntent>(
             onInvoke: (ActivateIntent intent) => onTap?.call(),
           ),
+          ButtonActivateIntent: CallbackAction<ButtonActivateIntent>(
+            onInvoke: (ButtonActivateIntent intent) => onTap?.call(),
+          ),
+        },
+        onFocusChange: (bool focused) {
+          if (focused) {
+            Scrollable.ensureVisible(
+              context,
+              alignment: 0.5,
+              duration: animationDuration,
+            );
+          }
         },
         child: Builder(
           builder: (BuildContext context) {
@@ -127,14 +139,26 @@ class AnymexOnTapAdv extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Focus(
+      onFocusChange: (bool focused) {
+        if (focused) {
+          Scrollable.ensureVisible(
+            context,
+            alignment: 0.5,
+            duration: animationDuration,
+          );
+        }
+      },
       onKeyEvent: (node, event) {
-        if (event.logicalKey == LogicalKeyboardKey.enter &&
-            event.logicalKey == LogicalKeyboardKey.space) {
-          if (onTap != null) {
+        if (event is KeyDownEvent) {
+          final isSelect = event.logicalKey == LogicalKeyboardKey.select ||
+              event.logicalKey == LogicalKeyboardKey.enter ||
+              event.logicalKey == LogicalKeyboardKey.space ||
+              event.logicalKey == LogicalKeyboardKey.numpadEnter ||
+              event.logicalKey == LogicalKeyboardKey.gameButtonA;
+          if (isSelect && onTap != null) {
             onTap!.call();
             return KeyEventResult.handled;
           }
-          return KeyEventResult.ignored;
         }
         return onKeyEvent?.call(node, event) ?? KeyEventResult.ignored;
       },
