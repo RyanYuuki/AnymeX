@@ -41,8 +41,7 @@ class JikanService {
           break;
         }
       }
-    } catch (e) {
-    }
+    } catch (_) {}
     
     return fillerMap;
   }

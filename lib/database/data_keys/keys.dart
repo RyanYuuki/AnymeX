@@ -35,6 +35,8 @@ enum General {
   joinDialogShowCount,
   wrongTitleIsCardView,
   showHomeContinueWatching,
+  incognitoMode,
+  dontShowDonationDialog,
 }
 
 enum ThemeKeys {
@@ -69,6 +71,7 @@ enum PlayerUiKeys {
   selectedProfile,
   shadersEnabled,
   cacheDays,
+  useMpvConf,
 }
 
 enum ReaderKeys {
@@ -333,3 +336,12 @@ enum CommentKeys {
   renderProfileEffects,
   renderBanners,
 }
+
+enum NetworkKeys {
+  customDnsUrl,
+  proxyUrl,
+  verifyTls,
+  customUserAgent,
+  fetchedUserAgent,
+}
+

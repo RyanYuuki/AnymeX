@@ -58,6 +58,7 @@ subprojects {
             force "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0"
             force "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0"
             force "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0"
+            force "com.google.code.gson:gson:2.11.0"
         }
     }
 }
@@ -75,5 +76,6 @@ configurations.all {
         force "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0"
         force "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0"
         force "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0"
+            force "com.google.code.gson:gson:2.11.0"
     }
 }

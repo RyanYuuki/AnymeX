@@ -51,12 +51,17 @@ class MalApi {
     }
   }
 
-  Future<List<Media>> fetchRanking(String url, {String? customFields}) async {
+  Future<List<dynamic>> fetchRankingRaw(String url, {String? customFields}) async {
     final newField = customFields ?? _defaultFields;
     final data = await request('$url&$newField') as Map<String, dynamic>?;
     if (data == null || data['data'] == null) return [];
+    return data['data'] as List<dynamic>;
+  }
+
+  Future<List<Media>> fetchRanking(String url, {String? customFields}) async {
+    final raw = await fetchRankingRaw(url, customFields: customFields);
     final isManga = url.contains('/manga/');
-    return (data['data'] as List<dynamic>)
+    return raw
         .map((e) => Media.fromMAL(e, isManga: isManga))
         .toList()
         .removeDupes();
