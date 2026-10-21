@@ -4,7 +4,6 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
-import 'package:anymex/screens/anime/widgets/comments/discord_markdown.dart';
 import 'package:anymex/screens/anime/widgets/comments/mention_autocomplete.dart';
 import 'package:anymex/screens/settings/sub_settings/widgets/moderation_action_sheet.dart';
 import 'package:anymex/utils/function.dart';
@@ -19,6 +18,9 @@ import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/comments_replies_sheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/expandable_comment_text.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/user_comments_sheet.dart';
 import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
@@ -335,18 +337,15 @@ class _CommentSectionState extends State<CommentSection> {
         }
         return false;
       },
-      child: AnymeXContainer(
+      child: Container(
         margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
         decoration: BoxDecoration(
-          color: colorScheme.surface.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.opaque(0.05, iReallyMeanIt: true),
-              blurRadius: 24,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          color: colorScheme.surfaceContainer.opaque(0.35, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+            width: 1,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,30 +358,19 @@ class _CommentSectionState extends State<CommentSection> {
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeOutCubic,
-                  margin: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.fromLTRB(14, 12, 14, 4),
                   alignment: Alignment.center,
-                  padding: const EdgeInsets.all(20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerLowest
-                        .withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(20),
+                    color: colorScheme.surfaceContainerHighest
+                        .opaque(0.2, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: controller.commentFocusNode.hasFocus
-                          ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                          : colorScheme.outlineVariant
-                              .opaque(0.3, iReallyMeanIt: true),
-                      width: 1.5,
+                      color: colorScheme.onSurface
+                          .opaque(0.08, iReallyMeanIt: true),
+                      width: 1,
                     ),
-                    boxShadow: controller.commentFocusNode.hasFocus
-                        ? [
-                            BoxShadow(
-                              color: colorScheme.primary
-                                  .opaque(0.1, iReallyMeanIt: true),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
-                            ),
-                          ]
-                        : null,
                   ),
                   child: AnymeXText(
                     'You need to be logged in to comment.',
@@ -407,97 +395,160 @@ class _CommentSectionState extends State<CommentSection> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Obx(() => AnymeXContainer(
-          padding: const EdgeInsets.fromLTRB(24, 28, 16, 20),
-          color: colorScheme.surfaceContainer.opaque(0.3),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final String formatName;
+    switch (widget.media.mediaType) {
+      case ItemType.anime:
+        formatName = 'Anime';
+        break;
+      case ItemType.novel:
+        formatName = 'Novel';
+        break;
+      default:
+        formatName = 'Manga';
+        break;
+    }
+
+    return Obx(() => Container(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest
+                .opaque(0.2, iReallyMeanIt: true),
+            borderRadius:
+                const BorderRadius.vertical(top: Radius.circular(16)),
+            border: Border(
+              bottom: BorderSide(
+                color: colorScheme.onSurface
+                    .opaque(0.06, iReallyMeanIt: true),
+              ),
+            ),
+          ),
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: AnymeXText(
-                      'Comments',
-                      variant: TextVariant.semiBold,
-                      color: colorScheme.onSurface,
-                      size: 24,
-                      autoResize: true,
-                      maxLines: 1,
-                    ),
+              if (widget.media.poster.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: AnymeXImage(
+                    imageUrl: widget.media.poster,
+                    width: 32,
+                    height: 44,
+                    fit: BoxFit.cover,
                   ),
-                  if (widget.showInlineInput) ...[
-                    _buildSortChip(context, controller),
-                    const SizedBox(width: 4),
-                    SizedBox(
-                      width: 36,
-                      height: 36,
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () => LeaderboardSheet.show(context),
-                        icon: Icon(
-                          Icons.emoji_events_outlined,
-                          color: colorScheme.primary,
-                          size: 18,
-                        ),
-                        tooltip: 'Leaderboard',
-                      ),
+                )
+              else
+                AnymeXContainer(
+                  width: 32,
+                  height: 44,
+                  color: colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(6),
+                  child: Icon(
+                    Icons.movie_outlined,
+                    size: 18,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AnymeXText(
+                      widget.media.title.isNotEmpty
+                          ? widget.media.title
+                          : 'Comments',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      size: 14.5,
+                      variant: TextVariant.bold,
+                      color: colorScheme.onSurface,
                     ),
-                    SizedBox(
-                      width: 36,
-                      height: 36,
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () =>
-                            showPolicySheet(context, PolicyType.commentRules),
-                        icon: Icon(
-                          Icons.assignment_outlined,
-                          color: colorScheme.primary,
-                          size: 18,
-                        ),
-                        tooltip: 'Comment Rules',
-                      ),
-                    ),
-                    Obx(() => SizedBox(
-                          width: 36,
-                          height: 36,
-                          child: IconButton(
-                            padding: EdgeInsets.zero,
-                            onPressed: controller.isRefreshing.value
-                                ? null
-                                : () => controller.forceRefresh(),
-                            icon: controller.isRefreshing.value
-                                ? SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        colorScheme.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.refresh,
-                                    size: 18,
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                            tooltip: 'Refresh comments',
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        AnymeXContainer(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 1),
+                          color: colorScheme.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(4),
+                          child: AnymeXText(
+                            formatName,
+                            size: 10,
+                            variant: TextVariant.bold,
+                            color: colorScheme.primary,
                           ),
-                        )),
+                        ),
+                        const SizedBox(width: 6),
+                        AnymeXText(
+                          controller.totalCommentsCount.value > 0
+                              ? '${controller.totalCommentsCount.value} comments'
+                              : _getTotalCommentCount(controller.comments),
+                          color: colorScheme.onSurfaceVariant,
+                          size: 11.5,
+                        ),
+                      ],
+                    ),
                   ],
-                ],
+                ),
               ),
-              const SizedBox(height: 4),
-              AnymeXText(
-                controller.totalCommentsCount.value > 0
-                    ? '${controller.totalCommentsCount.value} comments'
-                    : _getTotalCommentCount(controller.comments),
-                color: colorScheme.onSurfaceVariant,
-                size: 13,
-                autoResize: true,
-                maxLines: 1,
-              ),
+              if (widget.showInlineInput) ...[
+                _buildSortChip(context, controller),
+                const SizedBox(width: 4),
+                SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => LeaderboardSheet.show(context),
+                    icon: Icon(
+                      Icons.emoji_events_outlined,
+                      color: colorScheme.primary,
+                      size: 18,
+                    ),
+                    tooltip: 'Leaderboard',
+                  ),
+                ),
+                SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () =>
+                        showPolicySheet(context, PolicyType.commentRules),
+                    icon: Icon(
+                      Icons.assignment_outlined,
+                      color: colorScheme.primary,
+                      size: 18,
+                    ),
+                    tooltip: 'Comment Rules',
+                  ),
+                ),
+                Obx(() => SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: controller.isRefreshing.value
+                            ? null
+                            : () => controller.forceRefresh(),
+                        icon: controller.isRefreshing.value
+                            ? SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              )
+                            : Icon(
+                                Icons.refresh,
+                                size: 18,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                        tooltip: 'Refresh comments',
+                      ),
+                    )),
+              ],
             ],
           ),
         ));
@@ -598,177 +649,10 @@ class _CommentSectionState extends State<CommentSection> {
 
   Widget _buildCommentInput(
       BuildContext context, CommentSectionController controller) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Obx(() => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CompositedTransformTarget(
-              link: _getMentionLayerLink('main'),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutCubic,
-                margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color:
-                      colorScheme.surfaceContainerLowest.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: controller.commentFocusNode.hasFocus
-                        ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                        : colorScheme.outlineVariant
-                            .opaque(0.3, iReallyMeanIt: true),
-                    width: 1.5,
-                  ),
-                  boxShadow: controller.commentFocusNode.hasFocus
-                      ? [
-                          BoxShadow(
-                            color: colorScheme.primary
-                                .opaque(0.1, iReallyMeanIt: true),
-                            blurRadius: 16,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _buildUserAvatar(colorScheme, controller),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: AnymeXContainer(
-                            height: 50,
-                            clipBehavior: Clip.antiAlias,
-                            color: colorScheme.surface
-                                .opaque(0.3, iReallyMeanIt: true),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: colorScheme.outlineVariant
-                                  .opaque(0.2, iReallyMeanIt: true),
-                              width: 1,
-                            ),
-                            child: TextField(
-                              controller: controller.commentController,
-                              focusNode: controller.commentFocusNode,
-                              inputFormatters: [MarkdownListInputFormatter()],
-                              maxLines:
-                                  controller.isInputExpanded.value ? 5 : 1,
-                              minLines: 1,
-                              style: TextStyle(
-                                color: colorScheme.onSurface,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                height: 1.4,
-                              ),
-                              decoration: InputDecoration(
-                                  hintText: 'What\'s on your mind?',
-                                  hintStyle: TextStyle(
-                                    color: colorScheme.onSurfaceVariant
-                                        .opaque(0.6),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  border: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  filled: true,
-                                  fillColor: Colors.transparent),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (controller.isInputExpanded.value) ...[
-                      const SizedBox(height: 16),
-                      Divider(
-                        color: colorScheme.outlineVariant.opaque(0.3),
-                        height: 1,
-                      ),
-                      const SizedBox(height: 12),
-                      MarkdownFormattingToolbar(
-                        controller: controller.commentController,
-                        colorScheme: colorScheme,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildTagSelector(context, controller),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: controller.clearInputs,
-                            style: TextButton.styleFrom(
-                              foregroundColor: colorScheme.onSurfaceVariant,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const AnymeXText(
-                              'Cancel',
-                              variant: TextVariant.semiBold,
-                              maxLines: null,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Obx(() {
-                            return FilledButton(
-                              onPressed: controller.isSubmitting.value ||
-                                      controller.tag.value.isEmpty ||
-                                      controller.commentContent.value.isEmpty
-                                  ? null
-                                  : () => _handlePostComment(),
-                              style: FilledButton.styleFrom(
-                                backgroundColor: colorScheme.primary,
-                                foregroundColor: colorScheme.onPrimary,
-                                disabledBackgroundColor:
-                                    colorScheme.surfaceContainerHigh,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: controller.isSubmitting.value
-                                  ? const SizedBox(
-                                      width: 18,
-                                      height: 18,
-                                      child: ExpressiveLoadingIndicator(),
-                                    )
-                                  : const AnymeXText(
-                                      'Post',
-                                      variant: TextVariant.bold,
-                                      size: 15,
-                                      maxLines: null,
-                                    ),
-                            );
-                          }),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-            MentionAutocomplete(
-              controller: controller.commentController,
-              layerLink: _getMentionLayerLink('main'),
-              focusNode: controller.commentFocusNode,
-              localUsers: _extractLocalUsers(controller.comments),
-            ),
-          ],
-        ));
+    return CommentInputBar(
+      controller: controller,
+      focusNode: controller.commentFocusNode,
+    );
   }
 
   Widget _buildTagSelector(
@@ -1064,7 +948,7 @@ class _CommentSectionState extends State<CommentSection> {
     } else if (totalReplies > 0) {
       return '$total ($totalReplies replies)';
     } else {
-      return '$total';
+      return '$total comments';
     }
   }
 

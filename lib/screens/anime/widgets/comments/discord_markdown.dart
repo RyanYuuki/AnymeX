@@ -638,8 +638,8 @@ class _ImageThumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final targetWidth = image.width != null ? image.width!.clamp(40.0, defaultMaxWidth) : null;
-    final targetHeight = image.height != null ? image.height!.clamp(40.0, defaultMaxHeight) : null;
+    final targetWidth = image.width?.clamp(40.0, defaultMaxWidth);
+    final targetHeight = image.height?.clamp(40.0, defaultMaxHeight);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
@@ -858,6 +858,8 @@ class MarkdownFormattingToolbar extends StatelessWidget {
           children: [
             _ToolbarButton(
               label: 'Bold',
+              colorScheme: colorScheme,
+              onTap: () => _wrapSelection('**', '**'),
               child: Text(
                 'B',
                 style: TextStyle(
@@ -866,12 +868,12 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
-              colorScheme: colorScheme,
-              onTap: () => _wrapSelection('**', '**'),
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
               label: 'Italic',
+              colorScheme: colorScheme,
+              onTap: () => _wrapSelection('*', '*'),
               child: Text(
                 'I',
                 style: TextStyle(
@@ -880,12 +882,12 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
-              colorScheme: colorScheme,
-              onTap: () => _wrapSelection('*', '*'),
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
               label: 'Strikethrough',
+              colorScheme: colorScheme,
+              onTap: () => _wrapSelection('~~', '~~'),
               child: Text(
                 'S',
                 style: TextStyle(
@@ -896,12 +898,12 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
-              colorScheme: colorScheme,
-              onTap: () => _wrapSelection('~~', '~~'),
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
               label: 'Code',
+              colorScheme: colorScheme,
+              onTap: () => _wrapSelection('`', '`'),
               child: Text(
                 '< >',
                 style: TextStyle(
@@ -910,12 +912,12 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                   color: colorScheme.onSurface,
                 ),
               ),
-              colorScheme: colorScheme,
-              onTap: () => _wrapSelection('`', '`'),
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
               label: 'Spoiler',
+              colorScheme: colorScheme,
+              onTap: onSpoilerTap ?? () => _wrapSelection('||', '||'),
               child: Text(
                 '||S||',
                 style: TextStyle(
@@ -924,12 +926,12 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              colorScheme: colorScheme,
-              onTap: onSpoilerTap ?? () => _wrapSelection('||', '||'),
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
               label: 'Quote',
+              colorScheme: colorScheme,
+              onTap: () => _wrapSelection('> ', ''),
               child: Text(
                 '“ ”',
                 style: TextStyle(
@@ -938,35 +940,35 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              colorScheme: colorScheme,
-              onTap: () => _wrapSelection('> ', ''),
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
               label: 'Bullet List',
+              colorScheme: colorScheme,
+              onTap: _insertBulletList,
               child: Icon(
                 Icons.format_list_bulleted_rounded,
                 size: 16,
                 color: colorScheme.onSurfaceVariant,
               ),
-              colorScheme: colorScheme,
-              onTap: _insertBulletList,
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
               label: 'Numbered List',
+              colorScheme: colorScheme,
+              onTap: _insertNumberedList,
               child: Icon(
                 Icons.format_list_numbered_rounded,
                 size: 16,
                 color: colorScheme.onSurfaceVariant,
               ),
-              colorScheme: colorScheme,
-              onTap: _insertNumberedList,
             ),
             if (onGifTap != null) ...[
               const SizedBox(width: 4),
               _ToolbarButton(
                 label: 'GIF',
+                colorScheme: colorScheme,
+                onTap: onGifTap!,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                   decoration: BoxDecoration(
@@ -982,8 +984,6 @@ class MarkdownFormattingToolbar extends StatelessWidget {
                     ),
                   ),
                 ),
-                colorScheme: colorScheme,
-                onTap: onGifTap!,
               ),
             ],
 

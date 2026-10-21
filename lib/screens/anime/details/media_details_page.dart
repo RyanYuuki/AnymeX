@@ -7,7 +7,12 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:anymex/screens/anime/details/widgets/media_stats_section.dart';
 import 'package:anymex/screens/anime/details/widgets/media_characters_section.dart';
 import 'package:anymex/screens/anime/details/widgets/media_quick_actions.dart';
-import 'package:anymex/screens/anime/widgets/comments/media_comments_page.dart';
+import 'package:anymex/screens/anime/widgets/comments/comments_section.dart';
+import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
+import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/comment_input_bar.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
+import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/manga/widgets/chapter_section.dart';
 import 'package:anymex/screens/anime/widgets/voice_actor.dart';
@@ -27,7 +32,7 @@ import 'package:anymex/widgets/anime/media_header.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
-import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -62,16 +67,39 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   bool _isAnimatingPage = false;
   bool _isContinueExpanded = false;
 
+  CommentSectionController get _commentController {
+    final media = widget.media;
+    final tag = media.uniqueId;
+    if (Get.isRegistered<CommentSectionController>(tag: tag)) {
+      return Get.find<CommentSectionController>(tag: tag);
+    }
+    final preloaded = CommentPreloader.to.getPreloadedController(tag);
+    if (preloaded != null) {
+      preloaded.updateProgress(controller.mediaProgress.value);
+      return preloaded;
+    }
+    return Get.put(
+      CommentSectionController(
+        media: media,
+        initialProgress: controller.mediaProgress.value,
+      ),
+      tag: tag,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    pageController = PageController(initialPage: widget.initialTabIndex);
+    final initialPage = widget.scrollToCommentId != null
+        ? 2
+        : widget.initialTabIndex;
+    pageController = PageController(initialPage: initialPage);
     controller = Get.put(
       MediaDetailsController(
         initialMedia: widget.media,
         tag: widget.tag,
         initialSource: widget.source,
-        initialTabIndex: widget.initialTabIndex,
+        initialTabIndex: initialPage,
       ),
       tag: widget.tag,
     );
@@ -85,15 +113,6 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   }
 
   void _onTabSelected(int index) {
-    if (index == 2) {
-      navigate(() => MediaCommentsPage(
-            media: controller.media.value,
-            initialProgress: controller.mediaProgress.value,
-            scrollToCommentId: widget.scrollToCommentId,
-          ));
-      return;
-    }
-
     if (controller.selectedPage.value == index) return;
     controller.selectedPage.value = index;
     _isAnimatingPage = true;
@@ -112,6 +131,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       extendBody: true,
+      resizeToAvoidBottomInset: false,
       bottomNavigationBar: buildBottomNavBar(context),
       body: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
@@ -192,10 +212,11 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
       final selected = controller.selectedPage.value;
       final isDesktop =
           getResponsiveValue(context, mobileValue: false, desktopValue: true);
+
       final child = Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildContinueButton(context),
+          if (selected == 1) _buildContinueButton(context),
           SafeArea(
             child: ResponsiveNavBar(
               isDesktop: false,
@@ -439,66 +460,212 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   }
 
   Widget _buildCommentsTab(BuildContext context) {
-    final colors = context.colors;
+    final commentCtrl = _commentController;
+    final colorScheme = Theme.of(context).colorScheme;
+    final media = controller.media.value;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 36.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(22),
+    final String formatName;
+    switch (media.mediaType) {
+      case ItemType.anime:
+        formatName = 'Anime';
+        break;
+      case ItemType.novel:
+        formatName = 'Novel';
+        break;
+      default:
+        formatName = 'Manga';
+        break;
+    }
+
+    return CustomScrollView(
+      key: const PageStorageKey<String>('Comments'),
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                HugeIcons.strokeRoundedComment01,
-                size: 44,
-                color: colors.primary,
-              ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              'Community Comments',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colors.onSurface,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Join discussions, share your reactions, and see episode thoughts.',
-              style: TextStyle(
-                fontSize: 13,
-                color: colors.onSurfaceVariant.opaque(0.7),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () {
-                navigate(() => MediaCommentsPage(
-                      media: controller.media.value,
-                      initialProgress: controller.mediaProgress.value,
-                      scrollToCommentId: widget.scrollToCommentId,
-                    ));
-              },
-              icon: const Icon(Icons.forum_rounded, size: 18),
-              label: const Text('View All Comments'),
-              style: FilledButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                color: colorScheme.surfaceContainerHighest
+                    .opaque(0.25, iReallyMeanIt: true),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+                  width: 1,
                 ),
               ),
+              child: Row(
+                children: [
+                  if (media.poster.isNotEmpty)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: AnymeXImage(
+                        imageUrl: media.poster,
+                        width: 34,
+                        height: 46,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  else
+                    AnymeXContainer(
+                      width: 34,
+                      height: 46,
+                      color: colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Icon(
+                        Icons.forum_outlined,
+                        size: 20,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AnymeXText(
+                          media.title.isNotEmpty ? media.title : 'Comments',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          size: 15,
+                          variant: TextVariant.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                        const SizedBox(height: 3),
+                        Row(
+                          children: [
+                            AnymeXContainer(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              color: colorScheme.primary.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(4),
+                              child: AnymeXText(
+                                formatName,
+                                size: 10,
+                                variant: TextVariant.bold,
+                                color: colorScheme.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Obx(() {
+                              final count = commentCtrl.commentCount.value;
+                              return AnymeXText(
+                                '$count ${count == 1 ? 'comment' : 'comments'}',
+                                size: 12,
+                                color: colorScheme.onSurfaceVariant,
+                              );
+                            }),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    onSelected: (sort) => commentCtrl.setSort(sort),
+                    icon: Icon(
+                      Icons.sort_rounded,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    tooltip: 'Sort comments',
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'top',
+                        child: Row(
+                          children: [
+                            if (commentCtrl.currentSort.value == 'top')
+                              Icon(Icons.check_rounded,
+                                  size: 18, color: colorScheme.primary)
+                            else
+                              const SizedBox(width: 18),
+                            const SizedBox(width: 8),
+                            const AnymeXText('Top comments', maxLines: null),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'newest',
+                        child: Row(
+                          children: [
+                            if (commentCtrl.currentSort.value == 'newest')
+                              Icon(Icons.check_rounded,
+                                  size: 18, color: colorScheme.primary)
+                            else
+                              const SizedBox(width: 18),
+                            const SizedBox(width: 8),
+                            const AnymeXText('Newest first', maxLines: null),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'oldest',
+                        child: Row(
+                          children: [
+                            if (commentCtrl.currentSort.value == 'oldest')
+                              Icon(Icons.check_rounded,
+                                  size: 18, color: colorScheme.primary)
+                            else
+                              const SizedBox(width: 18),
+                            const SizedBox(width: 8),
+                            const AnymeXText('Oldest first', maxLines: null),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.emoji_events_outlined, size: 21),
+                    onPressed: () => LeaderboardSheet.show(context),
+                    tooltip: 'Leaderboard',
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.assignment_outlined, size: 20),
+                    onPressed: () =>
+                        showPolicySheet(context, PolicyType.commentRules),
+                    tooltip: 'Comment Rules',
+                  ),
+                  Obx(() => IconButton(
+                        icon: commentCtrl.isRefreshing.value
+                            ? SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              )
+                            : const Icon(Icons.refresh_rounded, size: 20),
+                        onPressed: commentCtrl.isRefreshing.value
+                            ? null
+                            : () => commentCtrl.forceRefresh(),
+                        tooltip: 'Refresh comments',
+                      )),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
-      ),
+        SliverToBoxAdapter(
+          child: CommentInputBar(
+            controller: commentCtrl,
+            focusNode: commentCtrl.commentFocusNode,
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: CommentSection(
+            media: media,
+            scrollToCommentId: widget.scrollToCommentId,
+            showInlineInput: false,
+            showHeader: false,
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 120)),
+      ],
     );
   }
 

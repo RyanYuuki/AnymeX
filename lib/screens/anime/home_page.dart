@@ -145,21 +145,24 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
                 ItemType.novel => sourceController.installedNovelExtensions,
                 _ => sourceController.installedExtensions,
               };
-              return SingleChildScrollView(
+              return CustomScrollView(
                 controller: _extensionsScrollController,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: statusBarHeight + appBarHeight),
-                    const SizedBox(height: 10),
-                    Obx(() => InstalledExtensionsGridView(
+                cacheExtent: 600,
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: statusBarHeight + appBarHeight + 10),
+                  ),
+                  SliverToBoxAdapter(
+                    child: Obx(() => InstalledExtensionsGridView(
                           key: ValueKey(currentType),
                           sources: sources.value,
                           itemType: currentType,
                         )),
-                    SizedBox(height: bottomNavBarHeight + 150),
-                  ],
-                ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(height: bottomNavBarHeight + 150),
+                  ),
+                ],
               );
             }
 
@@ -170,21 +173,21 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
             return LazyIndexedStack(
               index: index,
               children: [
-                _ContentPage(
+                _buildContentPage(
                   scrollController: _animeScrollController,
                   statusBarHeight: statusBarHeight,
                   appBarHeight: appBarHeight,
                   bottomNavBarHeight: bottomNavBarHeight,
                   widgetsBuilder: () => serviceHandler.animeWidgets(context),
                 ),
-                _ContentPage(
+                _buildContentPage(
                   scrollController: _mangaScrollController,
                   statusBarHeight: statusBarHeight,
                   appBarHeight: appBarHeight,
                   bottomNavBarHeight: bottomNavBarHeight,
                   widgetsBuilder: () => serviceHandler.mangaWidgets(context),
                 ),
-                _ContentPage(
+                _buildContentPage(
                   scrollController: _novelScrollController,
                   statusBarHeight: statusBarHeight,
                   appBarHeight: appBarHeight,
@@ -248,37 +251,32 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
           })
         ]));
   }
-}
 
-class _ContentPage extends StatelessWidget {
-  final ScrollController scrollController;
-  final double statusBarHeight;
-  final double appBarHeight;
-  final double bottomNavBarHeight;
-  final List<Widget> Function() widgetsBuilder;
-
-  const _ContentPage({
-    required this.scrollController,
-    required this.statusBarHeight,
-    required this.appBarHeight,
-    required this.bottomNavBarHeight,
-    required this.widgetsBuilder,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildContentPage({
+    required ScrollController scrollController,
+    required double statusBarHeight,
+    required double appBarHeight,
+    required double bottomNavBarHeight,
+    required List<Widget> Function() widgetsBuilder,
+  }) {
     final widgets = widgetsBuilder();
-    return SingleChildScrollView(
+    return CustomScrollView(
       controller: scrollController,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: statusBarHeight + appBarHeight),
-          const SizedBox(height: 10),
-          ...widgets,
-          SizedBox(height: bottomNavBarHeight + 150),
-        ],
-      ),
+      cacheExtent: 600,
+      slivers: [
+        SliverToBoxAdapter(
+          child: SizedBox(height: statusBarHeight + appBarHeight + 10),
+        ),
+        SliverList.builder(
+          itemCount: widgets.length,
+          itemBuilder: (context, index) => RepaintBoundary(
+            child: widgets[index],
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: SizedBox(height: bottomNavBarHeight + 150),
+        ),
+      ],
     );
   }
 }

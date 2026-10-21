@@ -2,7 +2,7 @@ import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comments_controller.dart';
 import 'package:anymex/screens/anime/widgets/comments/mention_autocomplete.dart';
 import 'package:anymex/services/commentum_service.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
+import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/non_widgets/activity_composer_sheet.dart';
@@ -125,217 +125,298 @@ class _CommentInputBarState extends State<CommentInputBar> {
 
       final localUsers = _getLocalUsers(controller.comments);
 
-      return AnymeXContainer(
-        color: colorScheme.surface,
-        border: Border(
-          top: BorderSide(
-            color: colorScheme.outlineVariant.withValues(alpha: 0.12),
-            width: 0.8,
+      return Container(
+        margin: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest
+              .opaque(0.2, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+            width: 1,
           ),
         ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                ActivityComposerSheet(
-                  flavor: ComposerFlavor.comment,
-                  textController: _effectiveTextController,
-                  focusNode: _effectiveFocusNode,
-                  layerLink: _layerLink,
-                  hintText: editingComment != null
-                      ? 'Edit your comment...'
-                      : (replyingTo != null
-                          ? (replyingTo.deleted
-                              ? 'Reply to thread...'
-                              : 'Reply to @${replyingTo.username}...')
-                          : 'Add a comment...'),
-                  submitIcon:
-                      editingComment != null ? Icons.check_rounded : null,
-                  leadingWidget: Padding(
-                    padding: const EdgeInsets.only(bottom: 3),
-                    child: Obx(() {
-                      final deco = Get.isRegistered<CommentumService>()
-                          ? Get.find<CommentumService>()
-                              .currentUserDecoration
-                              .value
-                          : null;
-                      return AnymeXDecoratedAvatar(
-                        avatarUrl: controller.profile.avatar,
-                        decorationUrl: deco,
-                        size: 34,
-                      );
-                    }),
-                  ),
-                  headerWidget: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // 1. Editing comment Micro-Chip
-                      if (editingComment != null)
-                        Padding(
-                          key: const ValueKey('comment_editing_chip'),
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: AnymeXContainer(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            color: colorScheme.primary.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color:
-                                  colorScheme.primary.withValues(alpha: 0.25),
-                              width: 1,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                AnymeXText(
-                                  'Editing comment',
-                                  size: 12,
-                                  variant: TextVariant.bold,
-                                  color: colorScheme.primary,
-                                ),
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () {
-                                    HapticFeedback.selectionClick();
-                                    controller.cancelEdit();
-                                  },
-                                  child: AnymeXContainer(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: colorScheme.surfaceContainerHighest
-                                          .withValues(alpha: 0.7),
-                                    ),
-                                    child: Icon(
-                                      Icons.close_rounded,
-                                      size: 12,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            ActivityComposerSheet(
+              flavor: ComposerFlavor.comment,
+              textController: _effectiveTextController,
+              focusNode: _effectiveFocusNode,
+              layerLink: _layerLink,
+              hintText: editingComment != null
+                  ? 'Edit your comment...'
+                  : (replyingTo != null
+                      ? (replyingTo.deleted
+                          ? 'Reply to thread...'
+                          : 'Reply to @${replyingTo.username}...')
+                      : 'Add a comment...'),
+              submitIcon:
+                  editingComment != null ? Icons.check_rounded : null,
+              leadingWidget: Padding(
+                padding: const EdgeInsets.only(bottom: 3),
+                child: Obx(() {
+                  final deco = Get.isRegistered<CommentumService>()
+                      ? Get.find<CommentumService>()
+                          .currentUserDecoration
+                          .value
+                      : null;
+                  return AnymeXDecoratedAvatar(
+                    avatarUrl: controller.profile.avatar,
+                    decorationUrl: deco,
+                    size: 34,
+                  );
+                }),
+              ),
+              headerWidget: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (editingComment != null)
+                    Padding(
+                      key: const ValueKey('comment_editing_chip'),
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color:
+                                colorScheme.primary.withValues(alpha: 0.25),
+                            width: 1,
                           ),
-                        )
-                      // 2. Replying to @user Sleek Micro-Chip
-                      else if (replyingTo != null)
-                        Padding(
-                          key: const ValueKey('comment_replying_to_chip'),
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: AnymeXContainer(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            color: colorScheme.primary.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color:
-                                  colorScheme.primary.withValues(alpha: 0.25),
-                              width: 1,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AnymeXText(
+                              'Editing comment',
+                              size: 12,
+                              variant: TextVariant.bold,
+                              color: colorScheme.primary,
                             ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.reply_rounded,
-                                  size: 14,
-                                  color: colorScheme.primary,
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                controller.cancelEdit();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: colorScheme.surfaceContainerHighest
+                                      .withValues(alpha: 0.7),
                                 ),
-                                const SizedBox(width: 5),
-                                AnymeXText(
-                                  'Replying to ',
+                                child: Icon(
+                                  Icons.close_rounded,
                                   size: 12,
                                   color: colorScheme.onSurfaceVariant,
                                 ),
-                                AnymeXText(
-                                  replyingTo.deleted
-                                      ? 'thread'
-                                      : '@${replyingTo.username}',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else if (replyingTo != null)
+                    Padding(
+                      key: const ValueKey('comment_replying_to_chip'),
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color:
+                                colorScheme.primary.withValues(alpha: 0.25),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.reply_rounded,
+                              size: 14,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(width: 5),
+                            AnymeXText(
+                              'Replying to ',
+                              size: 12,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            AnymeXText(
+                              replyingTo.deleted
+                                  ? 'thread'
+                                  : '@${replyingTo.username}',
+                              size: 12,
+                              variant: TextVariant.bold,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                controller.clearReplyTarget();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: colorScheme.surfaceContainerHighest
+                                      .withValues(alpha: 0.7),
+                                ),
+                                child: Icon(
+                                  Icons.close_rounded,
                                   size: 12,
-                                  variant: TextVariant.bold,
-                                  color: colorScheme.primary,
+                                  color: colorScheme.onSurfaceVariant,
                                 ),
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () {
-                                    HapticFeedback.selectionClick();
-                                    controller.clearReplyTarget();
-                                  },
-                                  child: AnymeXContainer(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: colorScheme.surfaceContainerHighest
-                                          .withValues(alpha: 0.7),
-                                    ),
-                                    child: Icon(
-                                      Icons.close_rounded,
-                                      size: 12,
-                                      color: colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
-
-                      // 2. Progress Tag Chip if text is not empty or focused
-                      if (_effectiveFocusNode.hasFocus ||
-                          _effectiveTextController.text.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: AnymeXContainer(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3.5),
-                            color: colorScheme.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color:
-                                  colorScheme.primary.withValues(alpha: 0.22),
-                              width: 1,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  isAnime
-                                      ? Icons.play_circle_outline_rounded
-                                      : Icons.menu_book_rounded,
-                                  size: 13,
-                                  color: colorScheme.primary,
-                                ),
-                                const SizedBox(width: 4),
-                                AnymeXText(
-                                  tagText,
-                                  size: 11,
-                                  variant: TextVariant.bold,
-                                  color: colorScheme.primary,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  onSubmit: (text, {isPrivate = false}) async {
-                    HapticFeedback.lightImpact();
-                    await controller.submitCurrentText();
-                    widget.onSubmitted?.call();
-                    return true;
-                  },
-                ),
-                MentionAutocomplete(
-                  controller: _effectiveTextController,
-                  layerLink: _layerLink,
-                  focusNode: _effectiveFocusNode,
-                  localUsers: localUsers,
-                ),
-              ],
+                      ),
+                    ),
+                  _buildTagsAndProgressRow(
+                      colorScheme, controller, isAnime, tagText),
+                ],
+              ),
+              onSubmit: (text, {isPrivate = false}) async {
+                HapticFeedback.lightImpact();
+                await controller.submitCurrentText();
+                widget.onSubmitted?.call();
+                return true;
+              },
             ),
+            MentionAutocomplete(
+              controller: _effectiveTextController,
+              layerLink: _layerLink,
+              focusNode: _effectiveFocusNode,
+              localUsers: localUsers,
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildTagsAndProgressRow(ColorScheme colorScheme,
+      CommentSectionController controller, bool isAnime, String tagText) {
+    const quickTags = ['General', 'Spoiler', 'Theory', 'Review'];
+
+    return Obx(() {
+      final selectedTag = controller.tag.value;
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: Row(
+            children: [
+              if (tagText.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: InkWell(
+                    onTap: () {
+                      final isSelected = selectedTag == tagText;
+                      controller.tag.value = isSelected ? '' : tagText;
+                      controller.tagController.value.text =
+                          isSelected ? '' : tagText;
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: selectedTag == tagText
+                            ? colorScheme.primary.opaque(0.18, iReallyMeanIt: true)
+                            : colorScheme.surfaceContainerLow
+                                .opaque(0.4, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: selectedTag == tagText
+                              ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                              : colorScheme.onSurface
+                                  .opaque(0.08, iReallyMeanIt: true),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isAnime
+                                ? Icons.play_circle_outline_rounded
+                                : Icons.menu_book_rounded,
+                            size: 13,
+                            color: selectedTag == tagText
+                                ? colorScheme.primary
+                                : colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 4),
+                          AnymeXText(
+                            tagText,
+                            size: 11,
+                            variant: TextVariant.bold,
+                            color: selectedTag == tagText
+                                ? colorScheme.primary
+                                : colorScheme.onSurfaceVariant,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ...quickTags.map((t) {
+                final isSelected = selectedTag == t;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: InkWell(
+                    onTap: () {
+                      controller.tag.value = isSelected ? '' : t;
+                      controller.tagController.value.text = isSelected ? '' : t;
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? colorScheme.primary.opaque(0.18, iReallyMeanIt: true)
+                            : colorScheme.surfaceContainerLow
+                                .opaque(0.4, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected
+                              ? colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
+                              : colorScheme.onSurface
+                                  .opaque(0.08, iReallyMeanIt: true),
+                          width: 1,
+                        ),
+                      ),
+                      child: AnymeXText(
+                        t,
+                        size: 11.5,
+                        variant: isSelected
+                            ? TextVariant.bold
+                            : TextVariant.regular,
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ],
           ),
         ),
       );

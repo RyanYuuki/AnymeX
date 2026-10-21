@@ -50,6 +50,7 @@ class CommentSectionController extends GetxController
   final RxInt currentPage = 1.obs;
   final RxInt totalPages = 1.obs;
   final RxInt totalCommentsCount = 0.obs;
+  RxInt get commentCount => totalCommentsCount;
   final RxBool hasMore = false.obs;
   final RxBool isLoadingMore = false.obs;
   final List<Comment> _rawCommentsPool = [];
