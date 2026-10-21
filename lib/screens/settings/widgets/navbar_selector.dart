@@ -43,30 +43,30 @@ class NavBarStyleSelector extends StatelessWidget {
     required this.initialStyle,
   });
 
+  static final previewItems = [
+    NavItem(
+      selectedIcon: Icons.home_rounded,
+      unselectedIcon: Icons.home_outlined,
+      label: 'Home',
+      onTap: (_) {},
+    ),
+    NavItem(
+      selectedIcon: Icons.explore_rounded,
+      unselectedIcon: Icons.explore_outlined,
+      label: 'Explore',
+      onTap: (_) {},
+    ),
+    NavItem(
+      selectedIcon: Icons.library_books_rounded,
+      unselectedIcon: Icons.library_books_outlined,
+      label: 'Library',
+      onTap: (_) {},
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     registerBuiltInNavBarStyles();
-
-    final previewItems = [
-      NavItem(
-        selectedIcon: Icons.home_rounded,
-        unselectedIcon: Icons.home_outlined,
-        label: 'Home',
-        onTap: (_) {},
-      ),
-      NavItem(
-        selectedIcon: Icons.explore_rounded,
-        unselectedIcon: Icons.explore_outlined,
-        label: 'Explore',
-        onTap: (_) {},
-      ),
-      NavItem(
-        selectedIcon: Icons.library_books_rounded,
-        unselectedIcon: Icons.library_books_outlined,
-        label: 'Library',
-        onTap: (_) {},
-      ),
-    ];
 
     return DynamicStyleSelector<NavStyleVariant>(
       values: NavStyleVariant.values,

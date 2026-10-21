@@ -24,7 +24,8 @@ import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:file_picker/file_picker.dart';
-
+import 'package:flutter/services.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -163,6 +164,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
   bool _shouldApplyResizeModeOnClose = false;
   late bool _useLibass;
   late bool _useExternalPlayer;
+  late bool _useMpvConf;
   List<String> _customFonts = [];
 
   @override
@@ -178,6 +180,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     _buttonConfigs = {};
     _useLibass = PlayerKeys.useLibass.get<bool>(false);
     _useExternalPlayer = PlayerKeys.useExternalPlayer.get<bool>(false);
+    _useMpvConf = PlayerUiKeys.useMpvConf.get<bool>(false);
 
     final String jsonString =
         PlayerUiKeys.bottomControlsSettings.get<String>('{}');
@@ -1213,6 +1216,203 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     );
   }
 
+  void _showMpvVisualSelectionDialog({
+    required String title,
+    required List<String> items,
+    required String selected,
+    required String Function(String) getTitle,
+    required String key,
+  }) {
+    showSelectionDialog<String>(
+      title: title,
+      items: items,
+      selectedItem: selected.obs,
+      getTitle: getTitle,
+      onItemSelected: (value) {
+        PlayerCoreVisualSettings.setMpvVisualSetting(key, value);
+        setState(() {});
+      },
+      leadingIcon: Icons.tune_rounded,
+    );
+  }
+
+  Future<void> _showMpvConfEditorSheet(BuildContext context) async {
+    await PlayerShaders.createMpvConfigFolder();
+    final configPath = await PlayerShaders.getMpvConfigPath();
+    final file = File(configPath);
+    final initialContent = (await file.exists()) ? await file.readAsString() : '';
+    final controller = TextEditingController(text: initialContent);
+
+    if (!context.mounted) return;
+
+    await AnymeXSheet.custom(
+      StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          final colors = ctx.colors;
+
+          return Container(
+            height: MediaQuery.sizeOf(ctx).height * 0.85,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: colors.primary.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(Icons.description_rounded, color: colors.primary, size: 22),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const AnymeXText(
+                            'mpv.conf',
+                            variant: TextVariant.bold,
+                            size: 18,
+                          ),
+                          AnymeXText(
+                            'Custom player flags & parameters',
+                            variant: TextVariant.semiBold,
+                            color: colors.onSurface.withValues(alpha: 0.6),
+                            size: 12,
+                          ),
+                        ],
+                      ),
+                    ),
+                    FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () async {
+                        await file.writeAsString(controller.text);
+                        if (ctx.mounted) Navigator.pop(ctx);
+                        snackBar('mpv.conf saved successfully');
+                      },
+                      icon: const Icon(Icons.save_rounded, size: 18),
+                      label: const AnymeXText('Save', variant: TextVariant.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHighest.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: colors.outline.withValues(alpha: 0.1)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.folder_open_rounded, size: 16, color: colors.primary),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: SelectableText(
+                          configPath,
+                          style: TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 11,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: const Icon(Icons.copy_rounded, size: 16),
+                        tooltip: 'Copy path',
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: configPath));
+                          snackBar('Path copied to clipboard');
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                AnymeXText(
+                  'One option per line, like hwdec=auto or scale=ewa_lanczossharp. Lines starting with # are comments. Profiles in [brackets] are ignored.',
+                  variant: TextVariant.regular,
+                  color: colors.onSurface.withValues(alpha: 0.6),
+                  size: 11,
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHighest.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: colors.outline.withValues(alpha: 0.2)),
+                    ),
+                    padding: const EdgeInsets.all(12),
+                    child: TextField(
+                      controller: controller,
+                      expands: true,
+                      maxLines: null,
+                      minLines: null,
+                      keyboardType: TextInputType.multiline,
+                      textAlignVertical: TextAlignVertical.top,
+                      style: const TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 13,
+                        height: 1.4,
+                      ),
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                        border: InputBorder.none,
+                        hintText: '# Example options:\nhwdec=auto\nscale=ewa_lanczossharp\ncscale=ewa_lanczossharp\ndscale=mitchell\ncorrect-downscaling=yes\nsigmoid-upscaling=yes\ndeband=yes',
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      onPressed: () {
+                        controller.text =
+                            '# High Quality Video Options\nhwdec=auto\nscale=ewa_lanczossharp\ncscale=ewa_lanczossharp\ndscale=mitchell\ncorrect-downscaling=yes\nsigmoid-upscaling=yes\ndeband=yes\n\n# Network & Caching\ncache=yes\ndemuxer-readahead-secs=60\n';
+                        setSheetState(() {});
+                      },
+                      icon: const Icon(Icons.auto_fix_high_rounded, size: 16),
+                      label: const AnymeXText('Load Template', variant: TextVariant.semiBold, size: 12),
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      onPressed: () {
+                        controller.clear();
+                        setSheetState(() {});
+                      },
+                      icon: const Icon(Icons.clear_all_rounded, size: 16),
+                      label: const AnymeXText('Clear', variant: TextVariant.semiBold, size: 12),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+      context,
+      showDragHandle: true,
+    );
+
+    controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
@@ -1933,6 +2133,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                     .get<bool>(false);
                                 final mpvCore = PlayerCoreVisualSettings
                                     .getMpvCoreSettings();
+                                final mpvVisual = PlayerCoreVisualSettings
+                                    .getMpvVisualSettings();
 
                                 return Column(
                                   children: [
@@ -2089,11 +2291,129 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                               setState(() {});
                                             },
                                           ),
+                                          AnymeXTile(
+                                            icon: Icons.aspect_ratio_rounded,
+                                            title: 'Scaling Algorithm',
+                                            subtitle: (mpvVisual['scale'] as String?) ?? 'spline36',
+                                            onTap: () => _showMpvVisualSelectionDialog(
+                                              title: 'Scaling Algorithm',
+                                              items: const [
+                                                'spline36',
+                                                'ewa_lanczossharp',
+                                                'bilinear',
+                                                'bicubic',
+                                                'oversample',
+                                              ],
+                                              selected: (mpvVisual['scale'] as String?) ?? 'spline36',
+                                              getTitle: (item) => item,
+                                              key: 'scale',
+                                            ),
+                                          ),
+                                          AnymeXTile(
+                                            icon: Icons.palette_outlined,
+                                            title: 'Chroma Scaler',
+                                            subtitle: (mpvVisual['cscale'] as String?) ?? 'spline36',
+                                            onTap: () => _showMpvVisualSelectionDialog(
+                                              title: 'Chroma Scaler',
+                                              items: const [
+                                                'spline36',
+                                                'ewa_lanczossharp',
+                                                'bilinear',
+                                                'mitchell',
+                                              ],
+                                              selected: (mpvVisual['cscale'] as String?) ?? 'spline36',
+                                              getTitle: (item) => item,
+                                              key: 'cscale',
+                                            ),
+                                          ),
+                                          AnymeXTile(
+                                            icon: Icons.photo_size_select_small_rounded,
+                                            title: 'Downscaling Algorithm',
+                                            subtitle: (mpvVisual['dscale'] as String?) ?? 'mitchell',
+                                            onTap: () => _showMpvVisualSelectionDialog(
+                                              title: 'Downscaling Algorithm',
+                                              items: const [
+                                                'mitchell',
+                                                'bicubic',
+                                                'bilinear',
+                                                'hermite',
+                                              ],
+                                              selected: (mpvVisual['dscale'] as String?) ?? 'mitchell',
+                                              getTitle: (item) => item,
+                                              key: 'dscale',
+                                            ),
+                                          ),
+                                          AnymeXTile.toggle(
+                                            icon: Icons.blur_linear_rounded,
+                                            title: 'Debanding',
+                                            subtitle: 'Reduce color banding artifacts',
+                                            value: (mpvVisual['deband'] as bool?) ?? true,
+                                            onChanged: (val) {
+                                              PlayerCoreVisualSettings.setMpvVisualSetting('deband', val);
+                                              setState(() {});
+                                            },
+                                          ),
+                                          AnymeXTile(
+                                            icon: Icons.hdr_auto_rounded,
+                                            title: 'Tone Mapping',
+                                            subtitle: (mpvVisual['toneMapping'] as String?) ?? 'auto',
+                                            onTap: () => _showMpvVisualSelectionDialog(
+                                              title: 'Tone Mapping',
+                                              items: const [
+                                                'auto',
+                                                'clip',
+                                                'mobius',
+                                                'reinhard',
+                                                'hable',
+                                                'bt.2390',
+                                                'spline',
+                                              ],
+                                              selected: (mpvVisual['toneMapping'] as String?) ?? 'auto',
+                                              getTitle: (item) => item,
+                                              key: 'toneMapping',
+                                            ),
+                                          ),
+                                          AnymeXTile(
+                                            icon: Icons.grain_rounded,
+                                            title: 'Dither Depth',
+                                            subtitle: (mpvVisual['ditherDepth'] as String?) ?? 'auto',
+                                            onTap: () => _showMpvVisualSelectionDialog(
+                                              title: 'Dither Depth',
+                                              items: const ['auto', '8', '10', 'no'],
+                                              selected: (mpvVisual['ditherDepth'] as String?) ?? 'auto',
+                                              getTitle: (item) => item,
+                                              key: 'ditherDepth',
+                                            ),
+                                          ),
                                         ],
                                       ),
                                   ],
                                 );
                               }),
+                            ],
+                          ),
+                          AnymeXSectionBuilder(
+                            title: 'MPV Configuration',
+                            children: [
+                              AnymeXTile.toggle(
+                                icon: Icons.description_rounded,
+                                title: 'Use mpv.conf',
+                                subtitle:
+                                    'Apply options from your mpv.conf when playback starts',
+                                value: _useMpvConf,
+                                onChanged: (val) {
+                                  _useMpvConf = val;
+                                  PlayerUiKeys.useMpvConf.set<bool>(val);
+                                  setState(() {});
+                                },
+                              ),
+                              AnymeXTile(
+                                icon: Icons.edit_note_rounded,
+                                title: 'mpv.conf',
+                                subtitle:
+                                    'Edit custom mpv flags, properties, and configuration file',
+                                onTap: () => _showMpvConfEditorSheet(context),
+                              ),
                             ],
                           ),
                           AnymeXSectionBuilder(

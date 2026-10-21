@@ -87,10 +87,20 @@ class Header extends StatelessWidget {
       }
 
       final effectiveLeading = leading ?? const HeaderProfileAvatar();
-      final effectiveTitle = titleWidget ??
+      final baseTitle = titleWidget ??
           (title != null
               ? HeaderTitle(title: title!, color: titleColor)
               : const SizedBox.shrink());
+      final effectiveTitle = settingsController.isIncognito.value
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                baseTitle,
+                _buildIncognitoBadge(context),
+              ],
+            )
+          : baseTitle;
       final effectiveSubtitle = subtitleWidget ??
           (subtitle != null
               ? HeaderSubtitle(subtitle: subtitle!)
@@ -218,6 +228,35 @@ class Header extends StatelessWidget {
       );
       return _FloatingHeaderWrapper(child: content);
     });
+  }
+
+  Widget _buildIncognitoBadge(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+    return AnymexOnTap(
+      onTap: () => SettingsSheet.show(context),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        margin: const EdgeInsets.only(left: 8),
+        decoration: BoxDecoration(
+          color: theme.error.opaque(0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: theme.error.opaque(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Iconsax.eye_slash, size: 12, color: theme.error),
+            const SizedBox(width: 4),
+            AnymeXText(
+              'Incognito',
+              size: 11,
+              variant: TextVariant.bold,
+              color: theme.error,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

@@ -16,7 +16,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:anymex/database/kv_helper.dart';
 
 class CommentsPageResult {
   final List<Comment> comments;
@@ -77,7 +76,6 @@ class CommentumService extends GetxController {
   final Rx<Map<String, dynamic>> currentUserLinkedAccounts =
       Rx<Map<String, dynamic>>({});
   final Set<String> _registeredClientTypes = {};
-  String? _pendingFcmToken;
 
   Profile? get currentUser => serviceHandler.profileData.value;
   String? get currentUserId => currentUser?.id?.toString();
@@ -163,7 +161,6 @@ class CommentumService extends GetxController {
     final success = await registerFcmToken(token);
     if (success) {
       _registeredClientTypes.add(clientType);
-      _pendingFcmToken = token;
     }
   }
 
@@ -767,8 +764,9 @@ class CommentumService extends GetxController {
         'page': page,
         'limit': limit,
       };
-      if (targetClientType != null)
+      if (targetClientType != null) {
         body['target_client_type'] = targetClientType;
+      }
       if (role != null) body['role'] = role;
       if (banned != null) body['banned'] = banned;
       if (muted != null) body['muted'] = muted;
@@ -808,8 +806,9 @@ class CommentumService extends GetxController {
         'access_token': token,
         'username': username.trim(),
       };
-      if (targetClientType != null)
+      if (targetClientType != null) {
         body['target_client_type'] = targetClientType;
+      }
 
       final response = await http.post(
         Uri.parse('$_baseUrl/users'),

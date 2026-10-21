@@ -122,7 +122,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
       return SizedBox(
         height: getCardHeight(cardStyleIndex, getPlatform(context)),
         child: ListView.builder(
-          key: ValueKey('${widget.title}-${processedData.length}-${widget.data.hashCode}'),
+          key: PageStorageKey<String>('carousel-${widget.title}'),
           itemCount: processedData.length,
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.only(left: 15, top: 5, bottom: 10),
@@ -134,7 +134,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   }
 
   Widget _buildCarouselItem(CarouselData itemData, bool enableAnimation, int index) {
-    final tag = '${widget.title}-${itemData.id}-$index-${DateTime.now().microsecondsSinceEpoch}';
+    final tag = '${widget.title}-${itemData.id}-$index';
 
     final card = enableAnimation
         ? SlideAndScaleAnimation(child: _buildCard(itemData, tag))
@@ -147,7 +147,10 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
         child: card,
       ),
     );
-    return child;
+    return RepaintBoundary(
+      key: ValueKey(tag),
+      child: child,
+    );
   }
 
   void _showPeekPopup(BuildContext context, CarouselData itemData, String tag) {

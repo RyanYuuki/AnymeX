@@ -161,7 +161,7 @@ class MangaAnimeUtil {
             if (latestChapterStr == null && cleanChapter.contains(RegExp(r'\d'))) {
               latestChapterStr = cleanChapter;
             }
-          } catch (e) {}
+          } catch (_) {}
         }
       }
 

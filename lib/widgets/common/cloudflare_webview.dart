@@ -3,6 +3,8 @@ import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:get/get.dart';
+import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class CloudflareBypassWebView extends StatefulWidget {
@@ -26,8 +28,8 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
   String get _displayHost =>
       _parsedUri.host.isNotEmpty ? _parsedUri.host : widget.url;
 
-  Future<void> _syncCookiesAndUserAgent() async {
-    if (_controller == null) return;
+  Future<bool> _syncCookiesAndUserAgent() async {
+    if (_controller == null) return false;
     final currentUrlObj = await _controller!.getUrl();
     final currentUrl = currentUrlObj?.toString() ?? widget.url;
 
@@ -39,10 +41,17 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
     final cookieManager = CookieManager.instance();
     final cookies = await cookieManager.getCookies(url: WebUri(origin));
 
+    bool hasClearance = false;
     if (cookies.isNotEmpty) {
       final cookieString =
           cookies.map((c) => '${c.name}=${c.value}').join('; ');
       await AnymeXRuntimeBridge.setCookies(origin, cookieString);
+      try {
+        await Get.find<NetworkManager>()
+            .cookieManager
+            .readCookiesFromWebView(WebUri(origin), _controller);
+      } catch (_) {}
+      hasClearance = cookies.any((c) => c.name == 'cf_clearance');
     }
 
     final uaResult =
@@ -54,13 +63,15 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
         await AnymeXRuntimeBridge.setUserAgent(origin, ua);
       }
     }
+    return hasClearance;
   }
 
   void _onSyncPressed() async {
     await _syncCookiesAndUserAgent();
     if (mounted) {
       setState(() => _synced = true);
-      snackBar('Cookies & User-Agent synced! You can now close this view.');
+      snackBar('Cookies & User-Agent synced!');
+      Navigator.of(context).pop(true);
     }
   }
 
@@ -232,7 +243,14 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                     });
                   }
 
-                  await _syncCookiesAndUserAgent();
+                  final cleared = await _syncCookiesAndUserAgent();
+                  if (cleared && mounted) {
+                    setState(() => _synced = true);
+                    snackBar('Cloudflare challenge solved!');
+                    await Future.delayed(const Duration(milliseconds: 600));
+                    if (!context.mounted) return;
+                    Navigator.of(context).pop(true);
+                  }
                 },
                 onProgressChanged: (controller, progress) {
                   if (mounted) {
