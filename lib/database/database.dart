@@ -8,6 +8,7 @@ import 'package:anymex/database/isar_models/media_stats.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
     hide isar;
+import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:isar_community/isar.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/network/network_manager.dart';
@@ -109,6 +110,14 @@ class Database {
         if (show) {
           snackBar(log);
         }
+      };
+      AnymeXRuntimeBridge.onSolveCloudflare = (url) async {
+        if (Get.context == null) return false;
+        final solved = await Get.to<bool>(
+          () => CloudflareBypassWebView(url: url),
+          fullscreenDialog: true,
+        );
+        return solved ?? false;
       };
     } catch (e) {
       Logger.e(e.toString());

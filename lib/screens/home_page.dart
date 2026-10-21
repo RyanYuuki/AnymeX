@@ -211,18 +211,17 @@ class _HomePageState extends State<HomePage> {
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
-            SingleChildScrollView(
+            CustomScrollView(
               controller: _scrollController,
-              child: Column(
-                crossAxisAlignment: isMobile
-                    ? CrossAxisAlignment.center
-                    : CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: isDesktop ? 10 : statusBarHeight + appBarHeight,
+              cacheExtent: 600,
+              slivers: [
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: isDesktop ? 10 : statusBarHeight + appBarHeight + 10,
                   ),
-                  const SizedBox(height: 10),
-                  Obx(
+                ),
+                SliverToBoxAdapter(
+                  child: Obx(
                     () => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: AnymeXTextSpans(
@@ -247,7 +246,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  Column(
+                ),
+                SliverToBoxAdapter(
+                  child: Column(
                     crossAxisAlignment: isMobile
                         ? CrossAxisAlignment.center
                         : CrossAxisAlignment.start,
@@ -267,26 +268,36 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      Column(
-                        children: _buildHomeWidgets(
-                          context: context,
-                          serviceHandler: serviceHandler,
-                          offlineStorageController: offlineStorageController,
-                          settings: settings,
-                        ),
-                      ),
-                      if (novelData.isNotEmpty)
-                        ReusableCarousel(
-                          title: "Recommended Novels",
-                          data: novelData,
-                          type: ItemType.novel,
-                          source: sourceController.activeNovelSource.value,
-                        ),
                     ],
                   ),
-                  SizedBox(height: bottomNavBarHeight + 150),
-                ],
-              ),
+                ),
+                () {
+                  final homeWidgets = _buildHomeWidgets(
+                    context: context,
+                    serviceHandler: serviceHandler,
+                    offlineStorageController: offlineStorageController,
+                    settings: settings,
+                  );
+                  return SliverList.builder(
+                    itemCount: homeWidgets.length,
+                    itemBuilder: (context, index) => RepaintBoundary(
+                      child: homeWidgets[index],
+                    ),
+                  );
+                }(),
+                if (novelData.isNotEmpty)
+                  SliverToBoxAdapter(
+                    child: ReusableCarousel(
+                      title: "Recommended Novels",
+                      data: novelData,
+                      type: ItemType.novel,
+                      source: sourceController.activeNovelSource.value,
+                    ),
+                  ),
+                SliverToBoxAdapter(
+                  child: SizedBox(height: bottomNavBarHeight + 150),
+                ),
+              ],
             ),
             if (!isDesktop)
               CustomAnimatedAppBar(

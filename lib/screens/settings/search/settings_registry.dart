@@ -1,4 +1,5 @@
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_donation.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_discord.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
@@ -6,6 +7,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_addons.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_network.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
@@ -99,7 +101,9 @@ final categoryRoutes = <String, Widget Function()>{
   'Extensions': () => const SettingsExtensions(),
   'Add-ons': () => const SettingsAddons(),
   'Downloads': () => const SettingsDownloads(),
+  'Network': () => const SettingsNetwork(),
   'Logs': () => const SettingsLogs(),
+  'Support AnymeX': () => const SettingsDonation(),
   'About': () => const AboutPage(),
 };
 

@@ -140,6 +140,10 @@ const settingsSearchIndex = <String, Map<String?, List<String>>>{
       'Auto Play',
       'Use Buffering',
     ],
+    'MPV Configuration': [
+      'Use mpv.conf',
+      'mpv.conf',
+    ],
   },
   'Reader': {
     'Manga': [
@@ -228,6 +232,8 @@ const settingsSearchIndex = <String, Map<String?, List<String>>>{
 };
 
 const settingsSearchTitleIcons = <String, IconData>{
+  'Use mpv.conf': Icons.description_rounded,
+  'mpv.conf': Icons.edit_note_rounded,
   'Anilist Settings': Icons.tune_rounded,
   'Ask for tracking permission': Icons.touch_app_rounded,
   'Hide Adult Content': Icons.play_disabled_rounded,

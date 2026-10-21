@@ -167,6 +167,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
       return;
     }
 
+    if (!context.mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -321,7 +322,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
             radius: 2,
           ),
-          AnymeXText(
+          const AnymeXText(
             'Search User',
             variant: TextVariant.bold,
             size: 16,
@@ -1699,20 +1700,20 @@ class _UserListPageState extends State<UserListPage> {
                                 size: 16, color: colorScheme.error),
                           ),
                         if (isMuted)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 4),
                             child: Icon(Icons.volume_off_rounded,
                                 size: 16, color: Colors.amber),
                           ),
                         if (isShadowBanned)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 4),
                             child: Icon(Icons.visibility_off_rounded,
                                 size: 16, color: Colors.purple),
                           ),
                         if (warningCount > 0)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 4),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 4),
                             child: Icon(Icons.warning_rounded,
                                 size: 16, color: Colors.orange),
                           ),
@@ -2144,7 +2145,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
   String _formatDate(dynamic dateStr) {
     if (dateStr == null ||
         dateStr.toString().isEmpty ||
-        dateStr.toString() == 'null') return 'N/A';
+        dateStr.toString() == 'null') {
+      return 'N/A';
+    }
     try {
       return timeago.format(DateTime.parse(dateStr.toString()));
     } catch (_) {

@@ -100,22 +100,6 @@ class _SettingsAddonsState extends State<SettingsAddons> {
     );
   }
 
-  Future<void> _toggleTorrServer(TorrServerAddon addon) async {
-    try {
-      if (addon.isRunning) {
-        await addon.stop();
-        snackBar('TorrServer stopped');
-      } else {
-        await addon.ensureStarted();
-        snackBar(
-            'TorrServer started on port ${addon.controller?.port ?? 'default'}');
-      }
-    } catch (e) {
-      errorSnackBar('Failed to toggle TorrServer: $e');
-    }
-    if (mounted) setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = context.colors;
@@ -362,92 +346,39 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                 ),
               ),
             ],
-            if (isInstalled && !isDownloading) ...[
+            if (isInstalled && !isDownloading && hasUpdate) ...[
               const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => _toggleTorrServer(addon),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isRunning
-                            ? theme.surfaceContainerHighest.opaque(0.6)
-                            : theme.primary,
-                        foregroundColor: isRunning ? theme.onSurface : theme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            isRunning ? Icons.stop_rounded : Icons.play_arrow_rounded,
-                            size: 20,
-                            color: isRunning ? theme.onSurface : theme.onPrimary,
-                          ),
-                          const SizedBox(width: 8),
-                          AnymeXText(
-                            isRunning ? 'Stop Service' : 'Start Service',
-                            variant: TextVariant.bold,
-                            size: 15,
-                            color: isRunning ? theme.onSurface : theme.onPrimary,
-                          ),
-                        ],
-                      ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _updateAddon(addon),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.tertiary,
+                    foregroundColor: theme.onTertiary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
+                    elevation: 0,
                   ),
-                  if (hasUpdate) ...[
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () => _updateAddon(addon),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.tertiary,
-                        foregroundColor: theme.onTertiary,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.system_update_alt_rounded,
+                        size: 20,
+                        color: theme.onTertiary,
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.system_update_alt_rounded,
-                            size: 20,
-                            color: theme.onTertiary,
-                          ),
-                          const SizedBox(width: 8),
-                          AnymeXText(
-                            'Update',
-                            variant: TextVariant.bold,
-                            size: 15,
-                            color: theme.onTertiary,
-                          ),
-                        ],
+                      const SizedBox(width: 8),
+                      AnymeXText(
+                        'Update to Latest Version',
+                        variant: TextVariant.bold,
+                        size: 15,
+                        color: theme.onTertiary,
                       ),
-                    ),
-                  ],
-                  const SizedBox(width: 10),
-                  OutlinedButton(
-                    onPressed: () => _uninstallAddon(addon),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: theme.error.opaque(0.4)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.delete_outline_rounded,
-                      size: 20,
-                      color: theme.error,
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ],
           ],
