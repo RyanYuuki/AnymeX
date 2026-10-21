@@ -5,7 +5,6 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/screens/anime/watch/player/base_player.dart';
 
-import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';

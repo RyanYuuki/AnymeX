@@ -366,7 +366,6 @@ class _ContinuousReaderViewState extends State<ContinuousReaderView>
   Widget _buildImage(BuildContext context, PageUrl page, int index, Chapter? chapter) {
     return Obx(() {
       final ctrl = widget.controller;
-      final sourceController = Get.find<SourceController>();
 
       int relativePageNum = 1;
       if (chapter != null) {

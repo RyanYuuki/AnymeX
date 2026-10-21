@@ -5,7 +5,6 @@ import 'package:anymex/utils/subtitle_style_renderer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'package:flutter/foundation.dart';
 
 class SubtitleText extends StatelessWidget {
   final PlayerController controller;

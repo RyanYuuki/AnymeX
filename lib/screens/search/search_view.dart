@@ -31,6 +31,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_search_bar.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
@@ -178,6 +179,9 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   }
 
   void _saveHistory() {
+    if (Get.isRegistered<Settings>() && Get.find<Settings>().isIncognito.value) {
+      return;
+    }
     DynamicKeys.searchHistory.set(
       '${effectiveType.name}_${serviceHandler.serviceType.value.name}',
       _searchedTerms.toList(),

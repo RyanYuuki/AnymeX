@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/services/mal/mal_service.dart';
@@ -133,8 +134,12 @@ class ServiceHandler extends GetxController {
 
   Future<void> updateListEntry(
     UpdateListEntryParams params,
-  ) async =>
-      await onlineService.updateListEntry(params);
+  ) async {
+    if (Get.isRegistered<Settings>() && Get.find<Settings>().isIncognito.value) {
+      return;
+    }
+    await onlineService.updateListEntry(params);
+  }
 
   RxList<Widget> animeWidgets(BuildContext context) =>
       service.animeWidgets(context);

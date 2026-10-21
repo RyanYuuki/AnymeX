@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -21,6 +22,9 @@ enum MediaLibraryType {
 }
 
 class OfflineStorageController extends GetxController {
+  bool get _isIncognito =>
+      Get.isRegistered<Settings>() && Get.find<Settings>().isIncognito.value;
+
   GistSyncController? get _syncCtrl => Get.isRegistered<GistSyncController>()
       ? Get.find<GistSyncController>()
       : null;
@@ -606,6 +610,7 @@ class OfflineStorageController extends GetxController {
     List<Episode>? episodes,
     Episode? currentEpisode,
   ) async {
+    if (_isIncognito) return;
     if (currentEpisode != null &&
         (currentEpisode.title == null || currentEpisode.title!.isEmpty) &&
         episodes != null) {
@@ -648,6 +653,7 @@ class OfflineStorageController extends GetxController {
     List<Chapter>? chapters,
     Chapter? currentChapter,
   ) async {
+    if (_isIncognito) return;
     if (currentChapter != null &&
         (currentChapter.title == null || currentChapter.title!.isEmpty) &&
         chapters != null) {
@@ -689,6 +695,7 @@ class OfflineStorageController extends GetxController {
     Chapter? currentChapter,
     Source source,
   ) async {
+    if (_isIncognito) return;
     if (currentChapter != null &&
         (currentChapter.title == null || currentChapter.title!.isEmpty) &&
         chapters != null) {
@@ -728,6 +735,7 @@ class OfflineStorageController extends GetxController {
     Episode episode, {
     bool syncToCloud = true,
   }) async {
+    if (_isIncognito) return;
     await _synchronizedWrite(animeId, () async {
       final existingAnime = getAnimeById(animeId);
       if (existingAnime == null) {
@@ -812,6 +820,7 @@ class OfflineStorageController extends GetxController {
     Source? source,
     bool syncToCloud = true,
   }) async {
+    if (_isIncognito) return;
     await _synchronizedWrite(mangaId, () async {
       OfflineMedia? existingManga = getMangaById(mangaId);
       existingManga ??= getNovelById(mangaId);
@@ -890,6 +899,7 @@ class OfflineStorageController extends GetxController {
   }
 
   Future<void> addOrUpdateNovelChapter(String novelId, Chapter chapter) async {
+    if (_isIncognito) return;
     final existingNovel = getNovelById(novelId);
     if (existingNovel == null) {
       Logger.i(

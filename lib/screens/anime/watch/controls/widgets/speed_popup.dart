@@ -2,9 +2,7 @@ import 'package:anymex/database/kv_helper.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 
-import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -68,7 +66,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
     super.initState();
     _currentSpeed = widget.controller.playbackSpeed.value;
     final saved = KvHelper.get<List<dynamic>>('custom_playback_speeds', defaultVal: []);
-    if (saved != null && saved.isNotEmpty) {
+    if (saved.isNotEmpty) {
       _speedChips = saved.map((e) => (e as num).toDouble()).toList();
     } else {
       _speedChips = List<double>.from(_defaultSpeeds);

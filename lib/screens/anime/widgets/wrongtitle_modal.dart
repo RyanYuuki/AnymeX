@@ -11,13 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:get/get.dart';
-import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/cards/card_gate.dart';
 import 'package:anymex/models/models_convertor/carousel_mapper.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/widgets/common/cards/base_card.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
-import 'package:anymex/widgets/common/cards/card_components.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 
 class WrongTitleModal extends StatefulWidget {

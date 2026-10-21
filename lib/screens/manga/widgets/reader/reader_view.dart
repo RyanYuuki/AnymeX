@@ -332,7 +332,6 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
   Widget _buildImageForPaged(BuildContext context, PageUrl page, int index) {
     return Obx(() {
       final ctrl = widget.controller;
-      final sourceController = Get.find<SourceController>();
 
       final screenWidth = MediaQuery.sizeOf(context).width;
       final multiplier = ctrl.pageWidthMultiplier.value;

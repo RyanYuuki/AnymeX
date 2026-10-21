@@ -38,6 +38,7 @@ class Settings extends GetxController {
   final chapterStyleRx = 'compact'.obs;
 
   RxBool useAlternateTitle = false.obs;
+  RxBool isIncognito = false.obs;
   RxBool enableBetaUpdates = false.obs;
   RxBool writeLogToFile = false.obs;
   RxBool showHomeContinueWatching = true.obs;
@@ -100,6 +101,7 @@ class Settings extends GetxController {
     chapterStyleRx.value = ReaderKeys.chapterStyle.get<String>('compact');
 
     useAlternateTitle.value = General.useAlternateTitle.get<bool>(false);
+    isIncognito.value = General.incognitoMode.get<bool>(false);
     enableBetaUpdates.value = General.enableBetaUpdates.get<bool>(false);
     writeLogToFile.value = General.writeLogToFile.get<bool>(false);
     showHomeContinueWatching.value =
@@ -131,6 +133,12 @@ class Settings extends GetxController {
     }
   }
 
+  void toggleIncognito([bool? value]) {
+    final next = value ?? !isIncognito.value;
+    isIncognito.value = next;
+    General.incognitoMode.set(next);
+  }
+
   Future<void> _initDisplayModes() async {
     try {
       final modes = await FlutterDisplayMode.supported;
@@ -144,7 +152,21 @@ class Settings extends GetxController {
         );
         await applyDisplayRefreshMode();
       } else {
-        preferredDisplayMode.value = DisplayMode.auto;
+        final validModes = modes
+            .where((m) =>
+                m != DisplayMode.auto &&
+                m.id != 0 &&
+                m.width != 0 &&
+                m.height != 0)
+            .toList();
+
+        if (Platform.isAndroid && validModes.isNotEmpty) {
+          validModes.sort((a, b) => b.refreshRate.compareTo(a.refreshRate));
+          preferredDisplayMode.value = validModes.first;
+          await FlutterDisplayMode.setHighRefreshRate();
+        } else {
+          preferredDisplayMode.value = DisplayMode.auto;
+        }
       }
 
       activeDisplayMode.value = await FlutterDisplayMode.active;
@@ -160,6 +182,8 @@ class Settings extends GetxController {
       if (savedStr != null) {
         final mode = preferredDisplayMode.value ?? DisplayMode.auto;
         await FlutterDisplayMode.setPreferredMode(mode);
+      } else {
+        await FlutterDisplayMode.setHighRefreshRate();
       }
       await Future.delayed(const Duration(milliseconds: 100));
       activeDisplayMode.value = await FlutterDisplayMode.active;

@@ -2,6 +2,7 @@ import 'package:anymex/database/comments/model/user_customization.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
@@ -56,6 +57,11 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging && mounted) {
+        setState(() {});
+      }
+    });
     _previewDecorationUrl =
         _commentumService.currentUserDecoration.value.isNotEmpty
             ? _commentumService.currentUserDecoration.value
@@ -114,18 +120,6 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
       return true;
     }
     return _commentumService.unlockedCustomizations.contains(id);
-  }
-
-  Future<void> _unlockItem(String id, String title) async {
-    final res = await _commentumService.unlockCustomization(id);
-    if (mounted) {
-      if (res['success'] == true) {
-        snackBar(res['message']?.toString() ?? 'Successfully unlocked $title!');
-        setState(() {});
-      } else {
-        snackBar(res['error']?.toString() ?? 'Failed to unlock');
-      }
-    }
   }
 
   Future<void> _onSavePressed() async {
@@ -380,29 +374,25 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
           const SizedBox(height: 12),
 
           // 4 Tabs: Decorations, Nameplates, Banners, Effects
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicatorSize: TabBarIndicatorSize.tab,
-              dividerColor: Colors.transparent,
-              indicator: BoxDecoration(
-                color: colorScheme.primary,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              labelColor: colorScheme.onPrimary,
-              unselectedLabelColor: colorScheme.onSurfaceVariant,
-              labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-              tabs: const [
-                Tab(text: 'Decorations'),
-                Tab(text: 'Nameplates'),
-                Tab(text: 'Banners'),
-                Tab(text: 'Effects'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: AnymeXTabBar(
+              selectTabs: const [
+                'Decorations',
+                'Nameplates',
+                'Banners',
+                'Effects',
               ],
+              selectedIndex: _tabController.index,
+              height: 44,
+              activeColor: colorScheme.primary,
+              activeTextColor: colorScheme.onPrimary,
+              inactiveTextColor: colorScheme.onSurfaceVariant,
+              onTabSelected: (index) {
+                setState(() {
+                  _tabController.animateTo(index);
+                });
+              },
             ),
           ),
           const SizedBox(height: 8),

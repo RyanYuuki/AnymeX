@@ -23,7 +23,6 @@ import 'package:get/get.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/database/isar_models/track.dart' as hive;
 
-import 'package:flutter/foundation.dart';
 
 class LocalEpisode {
   final String folderName;

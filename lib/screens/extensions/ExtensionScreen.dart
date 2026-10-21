@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:anymex/database/database.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/controllers/source/source_controller.dart';

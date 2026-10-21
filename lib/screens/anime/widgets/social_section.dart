@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:flutter/material.dart';
 

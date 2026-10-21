@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -33,6 +34,9 @@ class InlineSearchHistory extends StatelessWidget {
   }
 
   void _saveToDatabase(List<String> terms) {
+    if (Get.isRegistered<Settings>() && Get.find<Settings>().isIncognito.value) {
+      return;
+    }
     DynamicKeys.searchHistory.set(
       '${isManga ? 'manga' : 'anime'}_${serviceHandler.serviceType.value.name}',
       terms,

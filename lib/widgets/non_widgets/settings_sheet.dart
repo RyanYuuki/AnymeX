@@ -8,6 +8,7 @@ import 'package:anymex/screens/local_source/local_source_view.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/notifications/notification_screen.dart';
 import 'package:anymex/screens/notifications/notification_controller.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/settings.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
@@ -454,6 +455,22 @@ class SettingsSheet extends StatelessWidget {
         onTap: () {
           Get.back();
           navigate(() => const WatchiumPage());
+        },
+      ),
+      _SheetMenuItem(
+        icon: settingsController.isIncognito.value
+            ? Iconsax.eye_slash
+            : Iconsax.eye,
+        label: settingsController.isIncognito.value
+            ? 'Incognito (Active)'
+            : 'Incognito Mode',
+        onTap: () {
+          settingsController.toggleIncognito();
+          snackBar(
+            settingsController.isIncognito.value
+                ? 'Incognito mode enabled. History & sync paused.'
+                : 'Incognito mode disabled.',
+          );
         },
       ),
       _SheetMenuItem(

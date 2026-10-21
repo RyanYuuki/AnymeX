@@ -199,6 +199,7 @@ class NotificationController extends GetxController {
     loadNotifications();
   }
 
+  @override
   Future<void> refresh() async {
     await loadNotifications();
     await loadUnreadCount();

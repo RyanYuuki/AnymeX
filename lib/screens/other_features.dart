@@ -1,10 +1,7 @@
-import 'dart:io';
-import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/anime/misc/list_exporter.dart';
 import 'package:anymex/screens/anime/misc/recommendation.dart';
 import 'package:anymex/utils/function.dart';
-import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';

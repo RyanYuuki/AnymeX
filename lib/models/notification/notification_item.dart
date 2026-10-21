@@ -1,4 +1,3 @@
-import 'package:get/get.dart';
 
 class NotificationItem {
   final int id;
