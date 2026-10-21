@@ -4,6 +4,7 @@ import 'package:anymex/utils/oauth_helper.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/cacher/cold_cache.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
@@ -112,7 +113,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Widget buildSectionIfNotEmpty(String title, RxList<Media> list,
       {bool isManga = false}) {
     return list.isEmpty
-        ? const AnymeXProgressIndicator()
+        ? const Center(child: AnymeXProgressIndicator())
         : buildSection(title, list,
             type: isManga ? ItemType.manga : ItemType.anime);
   }
@@ -214,33 +215,103 @@ class MalService extends GetxController implements BaseService, OnlineService {
   }
 
   @override
+  void onInit() {
+    super.onInit();
+    _paintCached();
+  }
+
+  Future<void> _paintCached() async {
+    try {
+      final cached = await ColdCache.read('mal_home');
+      if (cached != null) {
+        if (cached['trendingAnimes'] is List) {
+          trendingAnimes.value = (cached['trendingAnimes'] as List)
+              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
+              .toList()
+              .removeDupes();
+        }
+        if (cached['popularAnimes'] is List) {
+          popularAnimes.value = (cached['popularAnimes'] as List)
+              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
+              .toList()
+              .removeDupes();
+        }
+        if (cached['topAnimes'] is List) {
+          topAnimes.value = (cached['topAnimes'] as List)
+              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
+              .toList()
+              .removeDupes();
+        }
+        if (cached['upcomingAnimes'] is List) {
+          upcomingAnimes.value = (cached['upcomingAnimes'] as List)
+              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
+              .toList()
+              .removeDupes();
+        }
+        if (cached['trendingManga'] is List) {
+          trendingManga.value = (cached['trendingManga'] as List)
+              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
+              .toList()
+              .removeDupes();
+        }
+        if (cached['topManga'] is List) {
+          topManga.value = (cached['topManga'] as List)
+              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
+              .toList()
+              .removeDupes();
+        }
+        if (cached['topManhwa'] is List) {
+          topManhwa.value = (cached['topManhwa'] as List)
+              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
+              .toList()
+              .removeDupes();
+        }
+        if (cached['topManhua'] is List) {
+          topManhua.value = (cached['topManhua'] as List)
+              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
+              .toList()
+              .removeDupes();
+        }
+      }
+    } catch (e) {
+      Logger.i('Error painting cached MAL feed: $e');
+    }
+  }
+
+  @override
   Future<void> fetchHomePage() async {
     try {
-      trendingAnimes.value = (await api.fetchRanking(
-              'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15'))
-          .removeDupes();
-      popularAnimes.value = (await api.fetchRanking(
-              'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15'))
-          .removeDupes();
-      topAnimes.value = (await api.fetchRanking(
-              'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15'))
-          .removeDupes();
-      upcomingAnimes.value = (await api.fetchRanking(
-              'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15'))
-          .removeDupes();
+      final results = await Future.wait([
+        api.fetchRankingRaw('https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15'),
+        api.fetchRankingRaw('https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15'),
+        api.fetchRankingRaw('https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15'),
+        api.fetchRankingRaw('https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15'),
+        api.fetchRankingRaw('https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15'),
+        api.fetchRankingRaw('https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15'),
+        api.fetchRankingRaw('https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15'),
+        api.fetchRankingRaw('https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'),
+      ]);
 
-      trendingManga.value = (await api.fetchRanking(
-              'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15'))
-          .removeDupes();
-      topManga.value = (await api.fetchRanking(
-              'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15'))
-          .removeDupes();
-      topManhwa.value = (await api.fetchRanking(
-              'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15'))
-          .removeDupes();
-      topManhua.value = (await api.fetchRanking(
-              'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'))
-          .removeDupes();
+      ColdCache.write('mal_home', {
+        'trendingAnimes': results[0],
+        'popularAnimes': results[1],
+        'topAnimes': results[2],
+        'upcomingAnimes': results[3],
+        'trendingManga': results[4],
+        'topManga': results[5],
+        'topManhwa': results[6],
+        'topManhua': results[7],
+      });
+
+      trendingAnimes.value = results[0].map((e) => Media.fromMAL(e, isManga: false)).toList().removeDupes();
+      popularAnimes.value = results[1].map((e) => Media.fromMAL(e, isManga: false)).toList().removeDupes();
+      topAnimes.value = results[2].map((e) => Media.fromMAL(e, isManga: false)).toList().removeDupes();
+      upcomingAnimes.value = results[3].map((e) => Media.fromMAL(e, isManga: false)).toList().removeDupes();
+
+      trendingManga.value = results[4].map((e) => Media.fromMAL(e, isManga: true)).toList().removeDupes();
+      topManga.value = results[5].map((e) => Media.fromMAL(e, isManga: true)).toList().removeDupes();
+      topManhwa.value = results[6].map((e) => Media.fromMAL(e, isManga: true)).toList().removeDupes();
+      topManhua.value = results[7].map((e) => Media.fromMAL(e, isManga: true)).toList().removeDupes();
 
       await communityService.fetchAll();
     } catch (e) {

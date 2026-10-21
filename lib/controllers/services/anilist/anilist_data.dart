@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math' show min;
 
 import 'package:anymex/controllers/cacher/cache_controller.dart';
+import 'package:anymex/controllers/cacher/cold_cache.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
@@ -329,7 +330,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     sourceController.initNovelExtensions();
     return [
       Obx(() => InstalledExtensionsGridView(
-            sources: sourceController.installedNovelExtensions.value,
+            sources: sourceController.installedNovelExtensions,
             itemType: ItemType.novel,
           )),
     ].obs;
@@ -363,6 +364,70 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
   void onInit() {
     super.onInit();
     _initFallback();
+    _paintCached();
+  }
+
+  Future<void> _paintCached() async {
+    try {
+      final animeCached = await ColdCache.read('anilist_anime_home');
+      if (animeCached != null) {
+        if (animeCached['upcomingAnimes']?['media'] != null) {
+          upcomingAnimes.value =
+              parseMediaList(animeCached['upcomingAnimes']['media']);
+        }
+        if (animeCached['popularAnimes']?['media'] != null) {
+          popularAnimes.value =
+              parseMediaList(animeCached['popularAnimes']['media']);
+        }
+        if (animeCached['trendingAnimes']?['media'] != null) {
+          trendingAnimes.value =
+              parseMediaList(animeCached['trendingAnimes']['media']);
+        }
+        if (animeCached['latestAnimes']?['media'] != null) {
+          latestAnimes.value =
+              parseMediaList(animeCached['latestAnimes']['media']);
+        }
+        if (animeCached['recentlyUpdatedAnimes']?['media'] != null) {
+          recentlyUpdatedAnimes.value =
+              parseMediaList(animeCached['recentlyUpdatedAnimes']['media']);
+        }
+      }
+      final mangaCached = await ColdCache.read('anilist_manga_home');
+      if (mangaCached != null) {
+        if (mangaCached['popularMangas']?['media'] != null) {
+          popularMangas.value =
+              parseMediaList(mangaCached['popularMangas']['media']);
+        }
+        if (mangaCached['morePopularMangas']?['media'] != null) {
+          morePopularMangas.value =
+              parseMediaList(mangaCached['morePopularMangas']['media']);
+        }
+        if (mangaCached['latestMangas']?['media'] != null) {
+          latestMangas.value =
+              parseMediaList(mangaCached['latestMangas']['media']);
+        }
+        if (mangaCached['mostFavoriteMangas']?['media'] != null) {
+          mostFavoriteMangas.value =
+              parseMediaList(mangaCached['mostFavoriteMangas']['media']);
+        }
+        if (mangaCached['topRated']?['media'] != null) {
+          topRatedMangas.value =
+              parseMediaList(mangaCached['topRated']['media']);
+        }
+        if (mangaCached['topUpdated']?['media'] != null) {
+          topUpdatedMangas.value =
+              parseMediaList(mangaCached['topUpdated']['media']);
+        }
+        if (mangaCached['topOngoing']?['media'] != null) {
+          topOngoingMangas.value =
+              parseMediaList(mangaCached['topOngoing']['media']);
+        }
+        if (mangaCached['trendingManga']?['media'] != null) {
+          trendingMangas.value =
+              parseMediaList(mangaCached['trendingManga']['media']);
+        }
+      }
+    } catch (_) {}
   }
 
   void _initFallback() {
@@ -501,6 +566,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body)['data'];
+      ColdCache.write('anilist_anime_home', responseData);
       upcomingAnimes.value =
           parseMediaList(responseData['upcomingAnimes']['media']);
       popularAnimes.value =
@@ -698,6 +764,7 @@ averageScore
     if (response.statusCode == 200) {
       final dynamic responsee = json.decode(response.body);
       final responseData = responsee['data'];
+      ColdCache.write('anilist_manga_home', responseData);
       popularMangas.value =
           parseMediaList(responseData['popularMangas']['media']);
       morePopularMangas.value =

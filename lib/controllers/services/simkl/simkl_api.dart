@@ -63,29 +63,37 @@ class SimklApi {
     }
   }
 
-  Future<List<Media>> fetchTrending(bool isMovie) async {
+  Future<List<dynamic>> fetchTrendingRaw(bool isMovie) async {
     final path = isMovie ? 'movies' : 'tv';
     final url =
         "https://api.simkl.com/$path/trending?extended=overview&client_id=$_clientId${isMovie ? '&perPage=20' : ''}";
     final resp = await _client.get(Uri.parse(url));
     if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as List<dynamic>;
-      return data.map((e) => Media.fromSimkl(e, isMovie)).toList();
+      return jsonDecode(resp.body) as List<dynamic>;
     }
     return [];
   }
 
-  Future<List<Media>> fetchGenres(String type, String country) async {
+  Future<List<Media>> fetchTrending(bool isMovie) async {
+    final data = await fetchTrendingRaw(isMovie);
+    return data.map((e) => Media.fromSimkl(e, isMovie)).toList();
+  }
+
+  Future<List<dynamic>> fetchGenresRaw(String type, String country) async {
     final endpoint = type == 'tv' ? 'tv' : 'movies';
     final url = type == 'tv'
         ? "https://api.simkl.com/$endpoint/genres/all/all-types/$country/all-networks/all-years/rank?extended=overview&client_id=$_clientId&limit=20"
         : "https://api.simkl.com/$endpoint/genres/all/all-types/$country/all-years/rank?extended=overview&client_id=$_clientId&limit=20";
     final resp = await _client.get(Uri.parse(url));
     if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as List<dynamic>;
-      return data.map((e) => Media.fromSimkl(e, type != 'tv')).toList();
+      return jsonDecode(resp.body) as List<dynamic>;
     }
     return [];
+  }
+
+  Future<List<Media>> fetchGenres(String type, String country) async {
+    final data = await fetchGenresRaw(type, country);
+    return data.map((e) => Media.fromSimkl(e, type != 'tv')).toList();
   }
 
   Future<List<Media>> searchMedia(String category, String query, {int page = 1}) async {
