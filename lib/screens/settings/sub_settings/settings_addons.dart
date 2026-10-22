@@ -65,6 +65,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
       successSnackBar('${addon.name} installed successfully');
     } catch (e) {
       errorSnackBar('Failed to install ${addon.name}: $e');
+      print(e);
     }
     if (mounted) setState(() {});
   }
@@ -75,6 +76,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
       successSnackBar('${addon.name} updated successfully');
     } catch (e) {
       errorSnackBar('Failed to update ${addon.name}: $e');
+      print(e);
     }
     if (mounted) setState(() {});
   }
@@ -93,6 +95,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
             snackBar('${addon.name} uninstalled');
           } catch (e) {
             errorSnackBar('Failed to uninstall ${addon.name}: $e');
+            print(e);
           }
           if (mounted) setState(() {});
         },
@@ -259,7 +262,8 @@ class _SettingsAddonsState extends State<SettingsAddons> {
             if (isDownloading) ...[
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
                   color: theme.surfaceContainerHighest.opaque(0.3),
                   borderRadius: BorderRadius.circular(14),
@@ -279,7 +283,8 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                               height: 14,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(theme.primary),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    theme.primary),
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -306,8 +311,10 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                       borderRadius: BorderRadius.circular(999),
                       child: LinearProgressIndicator(
                         value: progress > 0 ? progress : null,
-                        backgroundColor: theme.surfaceContainerHighest.opaque(0.5),
-                        valueColor: AlwaysStoppedAnimation<Color>(theme.primary),
+                        backgroundColor:
+                            theme.surfaceContainerHighest.opaque(0.5),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(theme.primary),
                         minHeight: 6,
                       ),
                     ),
@@ -333,7 +340,8 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.download_rounded, color: theme.onPrimary, size: 20),
+                      Icon(Icons.download_rounded,
+                          color: theme.onPrimary, size: 20),
                       const SizedBox(width: 8),
                       AnymeXText(
                         'Install ${addon.name}',
@@ -443,7 +451,8 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.download_rounded, color: theme.onPrimary, size: 20),
+                      Icon(Icons.download_rounded,
+                          color: theme.onPrimary, size: 20),
                       const SizedBox(width: 8),
                       AnymeXText(
                         'Install ${addon.name}',
@@ -472,7 +481,8 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.delete_outline_rounded, color: theme.error, size: 20),
+                      Icon(Icons.delete_outline_rounded,
+                          color: theme.error, size: 20),
                       const SizedBox(width: 8),
                       AnymeXText(
                         'Uninstall ${addon.name}',

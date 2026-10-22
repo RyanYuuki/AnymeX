@@ -109,6 +109,7 @@ class Database {
       AnymeXExtensionBridge.onLog = (log, show) {
         if (show) {
           snackBar(log);
+          print(log);
         }
       };
       AnymeXRuntimeBridge.onSolveCloudflare = (url) async {
