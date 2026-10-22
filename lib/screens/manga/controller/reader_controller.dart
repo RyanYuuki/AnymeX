@@ -394,6 +394,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final Map<String, List<PageUrl>> loadedChapterPages = {};
 
   late Worker _rpcWorker;
+  late Worker _pageRpcWorker;
+  Timer? _rpcPageDebounceTimer;
   final VolumeKeyHandler _volumeKeyHandler = VolumeKeyHandler();
   StreamSubscription? _volumeSubscription;
   Timer? _statsTimer;
@@ -429,11 +431,32 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _startStatsTimer();
 
     _rpcWorker = ever(currentChapter, (_) {
+      final totalPages = pageList.isNotEmpty
+          ? pageList.length
+          : (currentChapter.value?.totalPages ?? 1);
       DiscordRPCController.instance.updateMangaPresence(
           manga: media,
           chapter: currentChapter.value!,
           totalChapters: chapterList.length.toString(),
-          currentPage: 1);
+          currentPage: currentPageIndex.value + 1,
+          totalPages: totalPages);
+    });
+
+    _pageRpcWorker = ever(currentPageIndex, (index) {
+      _rpcPageDebounceTimer?.cancel();
+      _rpcPageDebounceTimer = Timer(const Duration(seconds: 10), () {
+        if (isClosed || currentChapter.value == null) return;
+        final totalPages = pageList.isNotEmpty
+            ? pageList.length
+            : (currentChapter.value!.totalPages ?? 1);
+        DiscordRPCController.instance.updateMangaPresence(
+          manga: media,
+          chapter: currentChapter.value!,
+          totalChapters: chapterList.length.toString(),
+          currentPage: index + 1,
+          totalPages: totalPages,
+        );
+      });
     });
 
     ever(readingLayout, (_) => _computeSpreads());
@@ -573,6 +596,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       media: media,
     );
 
+    _rpcPageDebounceTimer?.cancel();
+    _pageRpcWorker.dispose();
     _rpcWorker.dispose();
     WakelockPlus.disable();
     _disableVolumeKeys();
@@ -1378,10 +1403,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
       currentChapter.value = activeChapter;
       _syncAvailability();
       _initTracking();
+      final totalPages = pageList.isNotEmpty
+          ? pageList.length
+          : (activeChapter.totalPages ?? 1);
       DiscordRPCController.instance.updateMangaPresence(
           manga: media,
           chapter: activeChapter,
-          totalChapters: chapterList.length.toString());
+          totalChapters: chapterList.length.toString(),
+          currentPage: currentPageIndex.value + 1,
+          totalPages: totalPages);
     }
 
     if (activePages.isNotEmpty &&
@@ -1464,10 +1494,15 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     activeTapIsWebtoon.value = _tapRepo.getActiveIsWebtoon();
     activeTapIsVertical.value = _tapRepo.getActiveIsVertical();
 
+    final totalPages = pageList.isNotEmpty
+        ? pageList.length
+        : (currentChapter.value?.totalPages ?? 1);
     DiscordRPCController.instance.updateMangaPresence(
         manga: media,
         chapter: currentChapter.value!,
-        totalChapters: chapterList.length.toString());
+        totalChapters: chapterList.length.toString(),
+        currentPage: currentPageIndex.value + 1,
+        totalPages: totalPages);
 
     final hasLocal = curCh.localPath != null &&
         Directory(curCh.localPath!).existsSync();

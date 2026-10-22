@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -63,6 +64,17 @@ class NovelDetailsController extends GetxController {
 
     getOfflineMedia();
     _fetchChaptersOnly(url: initialMedia.id);
+    if (Get.isRegistered<DiscordRPCController>()) {
+      DiscordRPCController.instance.updateMediaPresence(media: media.value);
+    }
+  }
+
+  @override
+  void onClose() {
+    if (Get.isRegistered<DiscordRPCController>()) {
+      DiscordRPCController.instance.updateBrowsingPresence();
+    }
+    super.onClose();
   }
 
   void getOfflineMedia() async {

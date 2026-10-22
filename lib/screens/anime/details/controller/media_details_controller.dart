@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart' show VoidCallback;
+import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/cacher/cache_controller.dart';
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -153,6 +154,9 @@ class MediaDetailsController extends GetxController {
     selectedPage = initialTabIndex.obs;
     final cached = Get.find<CacheController>().getCacheById(initialMedia.id);
     media = Rx<Media>(cached ?? initialMedia);
+    if (Get.isRegistered<DiscordRPCController>()) {
+      DiscordRPCController.instance.updateMediaPresence(media: media.value);
+    }
     isAnilistLoading.value = cached == null;
     isSecondaryLoading.value = cached == null;
 
@@ -207,6 +211,9 @@ class MediaDetailsController extends GetxController {
     sourceController.cancelInProgress('manga_detail');
     if (_offlineStorageListener != null) {
       offlineStorage.removeListener(_offlineStorageListener!);
+    }
+    if (Get.isRegistered<DiscordRPCController>()) {
+      DiscordRPCController.instance.updateBrowsingPresence();
     }
     super.onClose();
   }

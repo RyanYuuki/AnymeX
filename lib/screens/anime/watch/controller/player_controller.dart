@@ -243,7 +243,9 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<Duration> audioDelay = Duration.zero.obs;
   RxMap<String, int> customSettings = <String, int>{}.obs;
   bool _hasTrackedInitialOnline = false;
+  bool _hasTrackedCompletedOnline = false;
   bool _hasTrackedInitialLocal = false;
+  Timer? _rpcSeekDebounceTimer;
   bool _hasAutoSelectedPreferredSub = false;
   aniskip.EpisodeSkipTimes? skipTimes;
   final isOPSkippedOnce = false.obs;
@@ -1261,7 +1263,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
         isBuffering.value = _basePlayer.state.isBuffering;
       }
 
-      if (_shouldMarkAsCompleted && !isOffline.value) {
+      if (_shouldMarkAsCompleted && !_hasTrackedCompletedOnline && !isOffline.value) {
+        _hasTrackedCompletedOnline = true;
         _trackOnline(true);
       }
 
@@ -1646,6 +1649,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isSpeedPaneOpened.value = false;
       isWatchTogetherPaneOpened.value = false;
       currentEpisode.value = episode;
+      _hasTrackedCompletedOnline = false;
       final stamp = DynamicKeys.offlineVideoProgress.get<int?>(videoPath, null);
       await _basePlayer.open(
         videoPath,
@@ -1691,6 +1695,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       await _basePlayer.stop();
       setExternalSub(null);
       currentEpisode.value = episode;
+      _hasTrackedCompletedOnline = false;
       _hasTrackedInitialLocal = false;
       _hasTrackedInitialOnline = false;
       _hasAutoSelectedPreferredSub = false;
@@ -1994,6 +1999,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     await _basePlayer.pause();
     _subSyncWorker?.dispose();
     _seekDebounce?.cancel();
+    _rpcSeekDebounceTimer?.cancel();
     _brightnessTimer?.cancel();
     _volumeTimer?.cancel();
     _controlsTimer?.cancel();
@@ -2063,6 +2069,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     _seekDebounce?.cancel();
     _seekDebounce = Timer(const Duration(milliseconds: 100), () {
       _seekTo(pos);
+    });
+
+    _rpcSeekDebounceTimer?.cancel();
+    _rpcSeekDebounceTimer = Timer(const Duration(seconds: 10), () {
+      if (isClosed || isOffline.value) return;
+      currentEpisode.value.timeStampInMilliseconds = currentPosition.value.inMilliseconds;
+      if (isPlaying.value) {
+        _updateRpc();
+      } else {
+        DiscordRPCController.instance.updateAnimePresencePaused(
+          anime: anilistData,
+          episode: currentEpisode.value,
+          totalEpisodes: episodeList.length.toString(),
+        );
+      }
     });
   }
 

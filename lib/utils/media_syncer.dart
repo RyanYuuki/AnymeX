@@ -90,13 +90,14 @@ class MediaSyncer {
       final location = response.headers['location'];
       if (location != null) {
         final match =
-            RegExp(r'/(?:anime|shows|movies)/(\d+)').firstMatch(location);
+            RegExp(r'/(anime|shows|movies)/(\d+)').firstMatch(location);
         if (match != null) {
-          return match.group(1);
+          final type = match.group(1);
+          final id = match.group(2)!;
+          return type == 'movies' ? '$id*MOVIE' : id;
         }
       }
 
-      // If resolving via anilist failed, fallback to malId if available
       if (paramName == 'anilist' && malId != null) {
         final fallbackUrl =
             Uri.parse('https://api.simkl.com/redirect?to=simkl&mal=$malId');
@@ -105,9 +106,11 @@ class MediaSyncer {
         final fallbackLoc = fallbackResp.headers['location'];
         if (fallbackLoc != null) {
           final match =
-              RegExp(r'/(?:anime|shows|movies)/(\d+)').firstMatch(fallbackLoc);
+              RegExp(r'/(anime|shows|movies)/(\d+)').firstMatch(fallbackLoc);
           if (match != null) {
-            return match.group(1);
+            final type = match.group(1);
+            final id = match.group(2)!;
+            return type == 'movies' ? '$id*MOVIE' : id;
           }
         }
       }

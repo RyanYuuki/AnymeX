@@ -738,11 +738,9 @@ class SimklService extends GetxController
       if (progress != null) {
         currentMedia.value.episodeCount = progress.toString();
       }
-      // snackBar('${isMovie ? "Movie" : "Series"} Tracked Successfully');
       isMovie ? fetchUserMovieList() : fetchUserSeriesList();
     } catch (e, stack) {
       Logger.i('Exception: $e\n$stack');
-      errorSnackBar('An unexpected error occurred');
     }
   }
 

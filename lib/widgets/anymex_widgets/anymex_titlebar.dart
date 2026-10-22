@@ -5,6 +5,7 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
@@ -99,6 +100,14 @@ class _WindowListener extends WindowListener {
 
   @override
   void onWindowClose() async {
+    try {
+      if (Get.isRegistered<DiscordRPCController>()) {
+        await DiscordRPCController.instance.clearPresence();
+        await DiscordRPCController.instance.pause();
+      }
+    } catch (e) {
+      debugPrint('Error clearing Discord presence on close: $e');
+    }
     try {
       AnymeXExtensionBridge.dispose();
     } catch (e) {

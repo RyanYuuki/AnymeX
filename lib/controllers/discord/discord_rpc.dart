@@ -1,7 +1,7 @@
-// discord_rpc_controller.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
@@ -125,6 +125,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   final _isLoading = false.obs;
   final _enabled = true.obs;
   final Map<String, String> _assetCache = {};
+  Future<void>? _pendingPresenceUpdate;
 
   bool get isConnected => _isConnected.value;
   bool get isMobile => _isMobile.value;
@@ -136,6 +137,21 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   DiscordProfile? get userProfile => profile.value;
 
   static DiscordRPCController get instance => Get.find<DiscordRPCController>();
+
+  Future<void> _enqueuePresenceUpdate(Future<void> Function() updateFn) async {
+    final previous = _pendingPresenceUpdate;
+    final completer = Completer<void>();
+    _pendingPresenceUpdate = completer.future;
+
+    try {
+      if (previous != null) {
+        await previous.catchError((_) {});
+      }
+      await updateFn();
+    } finally {
+      completer.complete();
+    }
+  }
 
   @override
   Future<void> onInit() async {
@@ -156,8 +172,11 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       print('App resumed: Reconnecting to Discord RPC');
       _reconnect();
-    } else if (state == AppLifecycleState.paused) {
-      print('App backgrounded/screen off: Clearing RPC connection');
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.detached) {
+      print('App backgrounded/screen off/detached: Clearing RPC connection');
       _cleanBackgroundDisconnect();
     }
   }
@@ -169,6 +188,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _cleanBackgroundDisconnect() async {
     await clearPresence();
+    await Future.delayed(const Duration(milliseconds: 150));
     await _disconnect();
   }
 
@@ -455,6 +475,8 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
             'Authorization': _token.value,
             'Content-Type': 'application/json',
           },
+          sendTimeout: const Duration(seconds: 4),
+          receiveTimeout: const Duration(seconds: 4),
         ),
         data: jsonEncode({
           "urls": [url]
@@ -498,133 +520,170 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     return result;
   }
 
+  Future<String> formatPresenceStringAsync(
+      String template, Map<String, String> variables) async {
+    try {
+      return await Isolate.run(() {
+        var result = template;
+        for (final entry in variables.entries) {
+          result = result.replaceAll(entry.key, entry.value);
+        }
+        return result;
+      });
+    } catch (_) {
+      return formatPresenceString(template, variables);
+    }
+  }
+
   Future<void> updateAnimePresence({
     required Media anime,
     required Episode episode,
     required String totalEpisodes,
   }) async {
-    if (!isEnabled) return;
-    if (shouldHideNsfw(anime)) {
-      await clearPresence();
-      return;
-    }
-    if (!_isConnected.value) await connect();
-    if (!_isConnected.value || !_canUseDesktopRpc('updateAnimePresence')) {
-      print('Discord not connected');
-      return;
-    }
-
-    final currentSeconds =
-        Duration(milliseconds: episode.timeStampInMilliseconds ?? 0).inSeconds;
-    final totalSeconds =
-        Duration(milliseconds: episode.durationInMilliseconds ?? 0).inSeconds;
-    final startTime =
-        DateTime.now().subtract(Duration(seconds: currentSeconds));
-    final endTime =
-        DateTime.now().add(Duration(seconds: totalSeconds - currentSeconds));
-    final episodeNumber = episode.number.toString();
-    final episodeName = episode.title ?? 'Episode $episodeNumber';
-    final coverUrl = anime.cover ?? anime.poster;
-    final anilistUrl = 'https://anilist.co/anime/${anime.id}';
-    final animeTitle = anime.title;
-    final showTimestamps = DiscordRpcKeys.showTimestamps.get<bool>(true);
-
-    final template =
-        DiscordRpcKeys.animeWatchingFormat.get<String>('Watching \$anime');
-    final formattedWatching = formatPresenceString(
-      template,
-      {
-        '\$anime': animeTitle,
-        '\$title': animeTitle,
-        '\$episode': episodeNumber,
-        '\$totalEpisodes': totalEpisodes,
-        '\$total': totalEpisodes,
-      },
-    );
-
-    final detailsText = formattedWatching.contains(episodeNumber)
-        ? animeTitle
-        : formattedWatching;
-    final stateText = formattedWatching.contains(episodeNumber)
-        ? formattedWatching
-        : 'Episode $episodeNumber ${!episodeName.toLowerCase().contains('episode') ? '– $episodeName' : ''}';
-
-    if (isMobile) {
-      final presencePayload = jsonEncode({
-        'op': 3,
-        'd': {
-          'since': null,
-          'activities': [
-            {
-              'application_id': _applicationId,
-              'name': 'AnymeX',
-              'type': 3, // Watching
-              'details': detailsText,
-              'state': stateText,
-              if (showTimestamps)
-                'timestamps': {
-                  'start': startTime.millisecondsSinceEpoch,
-                  'end': endTime.millisecondsSinceEpoch,
-                },
-              'assets': {
-                'large_image': await _processImageUrl(coverUrl),
-                'large_text': animeTitle,
-                'small_image': await _processImageUrl(_getAppIconUrl()),
-                'small_text': 'AnymeX',
-              },
-              'buttons': [
-                'View Anime',
-                'Watch on AnymeX',
-              ],
-              'metadata': {
-                'button_urls': [
-                  anilistUrl,
-                  'https://github.com/RyanYuuki/AnymeX/',
-                ],
-              }
-            }
-          ],
-          'status': 'online',
-          'afk': false,
-        },
-      });
-      _gatewaySocket?.add(presencePayload);
-      print('Anime presence updated successfully (Mobile)');
-    } else {
-      try {
-        await _discordRPC!.setPresence(
-          DiscordPresence(
-            type: DiscordActivityType.watching,
-            details: detailsText,
-            state: '$stateText - $totalEpisodes',
-            timestamps: showTimestamps
-                ? DiscordTimestamps(
-                    start: startTime.millisecondsSinceEpoch ~/ 1000,
-                    end: endTime.millisecondsSinceEpoch ~/ 1000,
-                  )
-                : null,
-            largeAsset: DiscordAsset(
-              key: await _processImageUrl(coverUrl),
-              text: animeTitle,
-            ),
-            smallAsset: DiscordAsset(
-              key: await _processImageUrl(_getAppIconUrl()),
-              text: 'AnymeX',
-            ),
-            buttons: [
-              DiscordButton(label: 'View Anime', url: anilistUrl),
-              const DiscordButton(
-                label: 'Watch on AnymeX',
-                url: 'https://github.com/RyanYuuki/AnymeX/',
-              ),
-            ],
-          ),
-        );
-        print('Anime presence updated successfully');
-      } catch (e) {
-        print('Error updating anime presence: $e');
+    return _enqueuePresenceUpdate(() async {
+      if (!isEnabled) return;
+      if (shouldHideNsfw(anime)) {
+        await clearPresence();
+        return;
       }
-    }
+      if (!_isConnected.value) await connect();
+      if (!_isConnected.value || !_canUseDesktopRpc('updateAnimePresence')) {
+        print('Discord not connected');
+        return;
+      }
+
+      final currentSeconds =
+          Duration(milliseconds: episode.timeStampInMilliseconds ?? 0).inSeconds;
+      final totalSeconds =
+          Duration(milliseconds: episode.durationInMilliseconds ?? 0).inSeconds;
+      final startTime =
+          DateTime.now().subtract(Duration(seconds: currentSeconds));
+      final endTime =
+          DateTime.now().add(Duration(seconds: totalSeconds - currentSeconds));
+      final episodeNumber = episode.number.toString();
+      final episodeName = episode.title ?? 'Episode $episodeNumber';
+      final coverUrl = anime.cover ?? anime.poster;
+      final anilistUrl = 'https://anilist.co/anime/${anime.id}';
+      final animeTitle = anime.title;
+      final showTimestamps = DiscordRpcKeys.showTimestamps.get<bool>(true);
+
+      final template =
+          DiscordRpcKeys.animeWatchingFormat.get<String>('Watching \$anime');
+      final formattedWatching = await formatPresenceStringAsync(
+        template,
+        {
+          '\$anime': animeTitle,
+          '\$title': animeTitle,
+          '\$episode': episodeNumber,
+          '\$totalEpisodes': totalEpisodes,
+          '\$total': totalEpisodes,
+        },
+      );
+
+      var detailsText = animeTitle;
+      var stateText = 'Episode $episodeNumber';
+      if (!episodeName.toLowerCase().contains('episode') &&
+          episodeName.trim().isNotEmpty) {
+        stateText = 'Episode $episodeNumber – $episodeName';
+      }
+      if (totalEpisodes.isNotEmpty && totalEpisodes != '0') {
+        stateText = '$stateText ($totalEpisodes eps)';
+      }
+
+      if (template != 'Watching \$anime' && template.trim().isNotEmpty) {
+        if (formattedWatching.contains(episodeNumber)) {
+          final stripped = formattedWatching.replaceAll(animeTitle, '').trim();
+          stateText = stripped.isNotEmpty ? stripped : formattedWatching;
+          if (stateText.startsWith('-') ||
+              stateText.startsWith('–') ||
+              stateText.startsWith(':')) {
+            stateText = stateText.substring(1).trim();
+          }
+        } else if (formattedWatching.trim() != animeTitle.trim()) {
+          detailsText = formattedWatching;
+        }
+      }
+
+      final largeImg = await _processImageUrl(coverUrl);
+      final smallImg = await _processImageUrl(_getAppIconUrl());
+
+      if (isMobile) {
+        final presencePayload = jsonEncode({
+          'op': 3,
+          'd': {
+            'since': null,
+            'activities': [
+              {
+                'application_id': _applicationId,
+                'name': 'AnymeX',
+                'type': 3, // Watching
+                'details': detailsText,
+                'state': stateText,
+                if (showTimestamps && totalSeconds > 0)
+                  'timestamps': {
+                    'start': startTime.millisecondsSinceEpoch,
+                    'end': endTime.millisecondsSinceEpoch,
+                  },
+                'assets': {
+                  'large_image': largeImg,
+                  'large_text': animeTitle,
+                  'small_image': smallImg,
+                  'small_text': 'AnymeX',
+                },
+                'buttons': [
+                  'View Anime',
+                  'Watch on AnymeX',
+                ],
+                'metadata': {
+                  'button_urls': [
+                    anilistUrl,
+                    'https://github.com/RyanYuuki/AnymeX/',
+                  ],
+                }
+              }
+            ],
+            'status': 'online',
+            'afk': false,
+          },
+        });
+        _gatewaySocket?.add(presencePayload);
+        print('Anime presence updated successfully (Mobile)');
+      } else {
+        try {
+          await _discordRPC!.setPresence(
+            DiscordPresence(
+              type: DiscordActivityType.watching,
+              details: detailsText,
+              state: stateText,
+              timestamps: showTimestamps && totalSeconds > 0
+                  ? DiscordTimestamps(
+                      start: startTime.millisecondsSinceEpoch ~/ 1000,
+                      end: endTime.millisecondsSinceEpoch ~/ 1000,
+                    )
+                  : null,
+              largeAsset: DiscordAsset(
+                key: largeImg,
+                text: animeTitle,
+              ),
+              smallAsset: DiscordAsset(
+                key: smallImg,
+                text: 'AnymeX',
+              ),
+              buttons: [
+                DiscordButton(label: 'View Anime', url: anilistUrl),
+                const DiscordButton(
+                  label: 'Watch on AnymeX',
+                  url: 'https://github.com/RyanYuuki/AnymeX/',
+                ),
+              ],
+            ),
+          );
+          print('Anime presence updated successfully');
+        } catch (e) {
+          print('Error updating anime presence: $e');
+        }
+      }
+    });
   }
 
   Future<void> updateAnimePresencePaused({
@@ -632,114 +691,104 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     required Episode episode,
     required String totalEpisodes,
   }) async {
-    if (!isEnabled) return;
-    if (shouldHideNsfw(anime)) {
-      await clearPresence();
-      return;
-    }
-    if (!_isConnected.value) await connect();
-    if (!_isConnected.value ||
-        !_canUseDesktopRpc('updateAnimePresencePaused')) {
-      print('Discord not connected');
-      return;
-    }
-
-    final episodeNumber = episode.number.toString();
-    final coverUrl = anime.cover ?? anime.poster;
-    final anilistUrl = 'https://anilist.co/anime/${anime.id}';
-    final animeTitle = anime.title;
-
-    final template =
-        DiscordRpcKeys.animeWatchingFormat.get<String>('Watching \$anime');
-    final formattedWatching = formatPresenceString(
-      template,
-      {
-        '\$anime': animeTitle,
-        '\$title': animeTitle,
-        '\$episode': episodeNumber,
-        '\$totalEpisodes': totalEpisodes,
-        '\$total': totalEpisodes,
-      },
-    );
-
-    final currentSeconds =
-        Duration(milliseconds: episode.timeStampInMilliseconds ?? 0).inSeconds;
-    final totalSeconds =
-        Duration(milliseconds: episode.durationInMilliseconds ?? 0).inSeconds;
-    final timeDisplay = (currentSeconds > 0 && totalSeconds > 0)
-        ? ' • ${_formatDuration(Duration(seconds: currentSeconds))} / ${_formatDuration(Duration(seconds: totalSeconds))}'
-        : '';
-
-    final detailsText = formattedWatching.contains(episodeNumber)
-        ? animeTitle
-        : formattedWatching;
-    final stateText = 'Paused • Episode $episodeNumber$timeDisplay';
-
-    if (isMobile) {
-      final presencePayload = jsonEncode({
-        'op': 3,
-        'd': {
-          'since': null,
-          'activities': [
-            {
-              'application_id': _applicationId,
-              'name': 'AnymeX',
-              'type': 3, // Watching
-              'details': detailsText,
-              'state': stateText,
-              'assets': {
-                'large_image': await _processImageUrl(coverUrl),
-                'large_text': animeTitle,
-                'small_image': await _processImageUrl(_getAppIconUrl()),
-                'small_text': 'AnymeX',
-              },
-              'buttons': [
-                'View Anime',
-                'Watch on AnymeX',
-              ],
-              'metadata': {
-                'button_urls': [
-                  anilistUrl,
-                  'https://github.com/RyanYuuki/AnymeX/',
-                ],
-              }
-            }
-          ],
-          'status': 'online',
-          'afk': false,
-        },
-      });
-      _gatewaySocket?.add(presencePayload);
-      print('Paused anime presence updated successfully (Mobile)');
-    } else {
-      try {
-        await _discordRPC!.setPresence(
-          DiscordPresence(
-            type: DiscordActivityType.watching,
-            details: detailsText,
-            state: stateText,
-            largeAsset: DiscordAsset(
-              key: await _processImageUrl(coverUrl),
-              text: animeTitle,
-            ),
-            smallAsset: DiscordAsset(
-              key: await _processImageUrl(_getAppIconUrl()),
-              text: 'AnymeX',
-            ),
-            buttons: [
-              DiscordButton(label: 'View Anime', url: anilistUrl),
-              const DiscordButton(
-                label: 'Watch on AnymeX',
-                url: 'https://github.com/RyanYuuki/AnymeX/',
-              ),
-            ],
-          ),
-        );
-        print('Paused anime presence updated successfully');
-      } catch (e) {
-        print('Error updating paused anime presence: $e');
+    return _enqueuePresenceUpdate(() async {
+      if (!isEnabled) return;
+      if (shouldHideNsfw(anime)) {
+        await clearPresence();
+        return;
       }
-    }
+      if (!_isConnected.value) await connect();
+      if (!_isConnected.value ||
+          !_canUseDesktopRpc('updateAnimePresencePaused')) {
+        print('Discord not connected');
+        return;
+      }
+
+      final episodeNumber = episode.number.toString();
+      final coverUrl = anime.cover ?? anime.poster;
+      final anilistUrl = 'https://anilist.co/anime/${anime.id}';
+      final animeTitle = anime.title;
+
+      final currentSeconds =
+          Duration(milliseconds: episode.timeStampInMilliseconds ?? 0).inSeconds;
+      final totalSeconds =
+          Duration(milliseconds: episode.durationInMilliseconds ?? 0).inSeconds;
+      final timeDisplay = (currentSeconds > 0 && totalSeconds > 0)
+          ? ' • ${_formatDuration(Duration(seconds: currentSeconds))} / ${_formatDuration(Duration(seconds: totalSeconds))}'
+          : '';
+
+      final detailsText = animeTitle;
+      final stateText = 'Paused • Episode $episodeNumber$timeDisplay';
+
+      final largeImg = await _processImageUrl(coverUrl);
+      final smallImg = await _processImageUrl(_getAppIconUrl());
+
+      if (isMobile) {
+        final presencePayload = jsonEncode({
+          'op': 3,
+          'd': {
+            'since': null,
+            'activities': [
+              {
+                'application_id': _applicationId,
+                'name': 'AnymeX',
+                'type': 3, // Watching
+                'details': detailsText,
+                'state': stateText,
+                'assets': {
+                  'large_image': largeImg,
+                  'large_text': animeTitle,
+                  'small_image': smallImg,
+                  'small_text': 'AnymeX',
+                },
+                'buttons': [
+                  'View Anime',
+                  'Watch on AnymeX',
+                ],
+                'metadata': {
+                  'button_urls': [
+                    anilistUrl,
+                    'https://github.com/RyanYuuki/AnymeX/',
+                  ],
+                }
+              }
+            ],
+            'status': 'online',
+            'afk': false,
+          },
+        });
+        _gatewaySocket?.add(presencePayload);
+        print('Paused anime presence updated successfully (Mobile)');
+      } else {
+        try {
+          await _discordRPC!.setPresence(
+            DiscordPresence(
+              type: DiscordActivityType.watching,
+              details: detailsText,
+              state: stateText,
+              largeAsset: DiscordAsset(
+                key: largeImg,
+                text: animeTitle,
+              ),
+              smallAsset: DiscordAsset(
+                key: smallImg,
+                text: 'AnymeX',
+              ),
+              buttons: [
+                DiscordButton(label: 'View Anime', url: anilistUrl),
+                const DiscordButton(
+                  label: 'Watch on AnymeX',
+                  url: 'https://github.com/RyanYuuki/AnymeX/',
+                ),
+              ],
+            ),
+          );
+          print('Paused anime presence updated successfully');
+        } catch (e) {
+          print('Error updating paused anime presence: $e');
+        }
+      }
+    });
   }
 
   Future<void> updateMangaPresence({
@@ -747,216 +796,247 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     required Chapter chapter,
     required String totalChapters,
     int currentPage = 1,
+    int? totalPages,
   }) async {
-    if (!isEnabled) return;
-    if (shouldHideNsfw(manga)) {
-      await clearPresence();
-      return;
-    }
-    if (!_isConnected.value) await connect();
-    if (!_isConnected.value || !_canUseDesktopRpc('updateMangaPresence')) {
-      print('Discord not connected');
-      return;
-    }
-
-    final coverUrl = manga.cover ?? manga.poster;
-    final anilistUrl = 'https://anilist.co/manga/${manga.id}';
-    final mangaTitle = manga.title;
-    final chapterNumber = chapter.number?.toString() ?? 'Unknown';
-    final totalPages = chapter.totalPages ?? 1;
-
-    final template =
-        DiscordRpcKeys.mangaReadingFormat.get<String>('Reading \$manga');
-    final formattedReading = formatPresenceString(
-      template,
-      {
-        '\$manga': mangaTitle,
-        '\$title': mangaTitle,
-        '\$chapter': chapterNumber,
-        '\$totalChapters': totalChapters,
-        '\$total': totalChapters,
-        '\$page': currentPage.toString(),
-        '\$totalPages': totalPages.toString(),
-      },
-    );
-
-    final detailsText = formattedReading.contains(chapterNumber)
-        ? mangaTitle
-        : formattedReading;
-    final stateText = formattedReading.contains(chapterNumber)
-        ? formattedReading
-        : 'Chapter: $chapterNumber/$totalChapters • Page: $currentPage/$totalPages';
-
-    if (isMobile) {
-      final presencePayload = jsonEncode({
-        'op': 3,
-        'd': {
-          'since': null,
-          'activities': [
-            {
-              'application_id': _applicationId,
-              'name': 'AnymeX',
-              'type': 0, // Playing
-              'details': detailsText,
-              'state': stateText,
-              'assets': {
-                'large_image': await _processImageUrl(coverUrl),
-                'large_text': mangaTitle,
-                'small_image': await _processImageUrl(_getAppIconUrl()),
-                'small_text': 'AnymeX',
-              },
-              'buttons': [
-                'View Manga',
-                'Read on AnymeX',
-              ],
-              'metadata': {
-                'button_urls': [
-                  anilistUrl,
-                  'https://github.com/RyanYuuki/AnymeX/',
-                ],
-              }
-            }
-          ],
-          'status': 'online',
-          'afk': false,
-        },
-      });
-      _gatewaySocket?.add(presencePayload);
-      print('Manga presence updated successfully (Mobile)');
-    } else {
-      try {
-        await _discordRPC!.setPresence(
-          DiscordPresence(
-            type: DiscordActivityType.playing,
-            details: detailsText,
-            state: stateText,
-            largeAsset: DiscordAsset(
-              key: await _processImageUrl(coverUrl),
-              text: mangaTitle,
-            ),
-            smallAsset: DiscordAsset(
-              key: await _processImageUrl(_getAppIconUrl()),
-              text: 'AnymeX',
-            ),
-            buttons: [
-              DiscordButton(label: 'View Manga', url: anilistUrl),
-              const DiscordButton(
-                label: 'Read on AnymeX',
-                url: 'https://github.com/RyanYuuki/AnymeX/',
-              ),
-            ],
-          ),
-        );
-        print('Manga presence updated successfully');
-      } catch (e) {
-        print('Error updating manga presence: $e');
+    return _enqueuePresenceUpdate(() async {
+      if (!isEnabled) return;
+      if (shouldHideNsfw(manga)) {
+        await clearPresence();
+        return;
       }
-    }
+      if (!_isConnected.value) await connect();
+      if (!_isConnected.value || !_canUseDesktopRpc('updateMangaPresence')) {
+        print('Discord not connected');
+        return;
+      }
+
+      final coverUrl = manga.cover ?? manga.poster;
+      final anilistUrl = 'https://anilist.co/manga/${manga.id}';
+      final mangaTitle = manga.title;
+      final chapterNumber = chapter.number?.toString() ?? 'Unknown';
+      final effectiveTotalPages = totalPages ?? chapter.totalPages ?? 1;
+
+      final template =
+          DiscordRpcKeys.mangaReadingFormat.get<String>('Reading \$manga');
+      final formattedReading = await formatPresenceStringAsync(
+        template,
+        {
+          '\$manga': mangaTitle,
+          '\$title': mangaTitle,
+          '\$chapter': chapterNumber,
+          '\$totalChapters': totalChapters,
+          '\$total': totalChapters,
+          '\$page': currentPage.toString(),
+          '\$totalPages': effectiveTotalPages.toString(),
+        },
+      );
+
+      var detailsText = mangaTitle;
+      var stateText =
+          'Chapter $chapterNumber/$totalChapters • Page $currentPage/$effectiveTotalPages';
+
+      if (template != 'Reading \$manga' && template.trim().isNotEmpty) {
+        if (formattedReading.contains(chapterNumber)) {
+          final stripped = formattedReading.replaceAll(mangaTitle, '').trim();
+          stateText = stripped.isNotEmpty ? stripped : formattedReading;
+          if (stateText.startsWith('-') ||
+              stateText.startsWith('–') ||
+              stateText.startsWith(':')) {
+            stateText = stateText.substring(1).trim();
+          }
+        } else if (formattedReading.trim() != mangaTitle.trim()) {
+          detailsText = formattedReading;
+        }
+      }
+
+      final largeImg = await _processImageUrl(coverUrl);
+      final smallImg = await _processImageUrl(_getAppIconUrl());
+
+      if (isMobile) {
+        final presencePayload = jsonEncode({
+          'op': 3,
+          'd': {
+            'since': null,
+            'activities': [
+              {
+                'application_id': _applicationId,
+                'name': 'AnymeX',
+                'type': 0, // Playing
+                'details': detailsText,
+                'state': stateText,
+                'assets': {
+                  'large_image': largeImg,
+                  'large_text': mangaTitle,
+                  'small_image': smallImg,
+                  'small_text': 'AnymeX',
+                },
+                'buttons': [
+                  'View Manga',
+                  'Read on AnymeX',
+                ],
+                'metadata': {
+                  'button_urls': [
+                    anilistUrl,
+                    'https://github.com/RyanYuuki/AnymeX/',
+                  ],
+                }
+              }
+            ],
+            'status': 'online',
+            'afk': false,
+          },
+        });
+        _gatewaySocket?.add(presencePayload);
+        print('Manga presence updated successfully (Mobile)');
+      } else {
+        try {
+          await _discordRPC!.setPresence(
+            DiscordPresence(
+              type: DiscordActivityType.playing,
+              details: detailsText,
+              state: stateText,
+              largeAsset: DiscordAsset(
+                key: largeImg,
+                text: mangaTitle,
+              ),
+              smallAsset: DiscordAsset(
+                key: smallImg,
+                text: 'AnymeX',
+              ),
+              buttons: [
+                DiscordButton(label: 'View Manga', url: anilistUrl),
+                const DiscordButton(
+                  label: 'Read on AnymeX',
+                  url: 'https://github.com/RyanYuuki/AnymeX/',
+                ),
+              ],
+            ),
+          );
+          print('Manga presence updated successfully');
+        } catch (e) {
+          print('Error updating manga presence: $e');
+        }
+      }
+    });
   }
 
   Future<void> updateMediaPresence({required Media media}) async {
-    if (!isEnabled) return;
-    if (shouldHideNsfw(media)) {
-      await clearPresence();
-      return;
-    }
-    if (!_isConnected.value) await connect();
-    if (!_isConnected.value || !_canUseDesktopRpc('updateMediaPresence')) {
-      print('Discord not connected');
-      return;
-    }
-
-    final anilistUrl =
-        'https://anilist.co/${media.mediaType.isAnime ? 'anime' : 'manga'}/${media.id}';
-    final mediaTitle = media.title;
-    final type = media.mediaType.name.capitalizeFirst ?? '';
-
-    final isAnime = media.mediaType.isAnime;
-    final isManga = media.mediaType.isManga;
-    final defaultTemplate = isAnime
-        ? DiscordRpcKeys.animeDetailsFormat.get<String>('Viewing \$anime')
-        : (isManga
-            ? DiscordRpcKeys.mangaDetailsFormat.get<String>('Viewing \$manga')
-            : DiscordRpcKeys.novelDetailsFormat.get<String>('Viewing \$novel'));
-
-    final formattedState = formatPresenceString(
-      defaultTemplate,
-      {
-        '\$anime': mediaTitle,
-        '\$manga': mediaTitle,
-        '\$novel': mediaTitle,
-        '\$media': mediaTitle,
-        '\$title': mediaTitle,
-        '\$type': type,
-      },
-    );
-
-    if (isMobile) {
-      final presencePayload = jsonEncode({
-        'op': 3,
-        'd': {
-          'since': null,
-          'activities': [
-            {
-              'application_id': _applicationId,
-              'name': 'AnymeX',
-              'type': 0,
-              'details': mediaTitle,
-              'state': formattedState,
-              'assets': {
-                'large_image':
-                    await _processImageUrl(media.cover ?? media.poster),
-                'large_text': mediaTitle,
-                'small_image': await _processImageUrl(_getAppIconUrl()),
-                'small_text': 'AnymeX',
-              },
-              'buttons': [
-                'View $type',
-                '${media.mediaType.isAnime ? 'Watch' : 'Read'} on AnymeX',
-              ],
-              'metadata': {
-                'button_urls': [
-                  anilistUrl,
-                  'https://github.com/RyanYuuki/AnymeX',
-                ],
-              }
-            }
-          ],
-          'status': 'online',
-          'afk': false,
-        },
-      });
-      _gatewaySocket?.add(presencePayload);
-      print('Media presence updated successfully (Mobile)');
-    } else {
-      try {
-        await _discordRPC!.setPresence(
-          DiscordPresence(
-            type: DiscordActivityType.watching,
-            details: mediaTitle,
-            state: formattedState,
-            largeAsset: DiscordAsset(
-              key: await _processImageUrl(media.cover ?? media.poster),
-              text: mediaTitle,
-            ),
-            smallAsset: DiscordAsset(
-              key: await _processImageUrl(_getAppIconUrl()),
-              text: 'AnymeX',
-            ),
-            buttons: [
-              DiscordButton(label: 'View $type', url: anilistUrl),
-              const DiscordButton(
-                label: 'Watch on AnymeX',
-                url: 'https://github.com/RyanYuuki/AnymeX/',
-              ),
-            ],
-          ),
-        );
-        print('Media presence updated successfully');
-      } catch (e) {
-        print('Error updating media presence: $e');
+    return _enqueuePresenceUpdate(() async {
+      if (!isEnabled) return;
+      if (shouldHideNsfw(media)) {
+        await clearPresence();
+        return;
       }
-    }
+      if (!_isConnected.value) await connect();
+      if (!_isConnected.value || !_canUseDesktopRpc('updateMediaPresence')) {
+        print('Discord not connected');
+        return;
+      }
+
+      final anilistUrl =
+          'https://anilist.co/${media.mediaType.isAnime ? 'anime' : 'manga'}/${media.id}';
+      final mediaTitle = media.title;
+      final type = media.mediaType.name.capitalizeFirst ?? '';
+
+      final isAnime = media.mediaType.isAnime;
+      final isManga = media.mediaType.isManga;
+      final defaultTemplate = isAnime
+          ? DiscordRpcKeys.animeDetailsFormat.get<String>('Viewing \$anime')
+          : (isManga
+              ? DiscordRpcKeys.mangaDetailsFormat.get<String>('Viewing \$manga')
+              : DiscordRpcKeys.novelDetailsFormat.get<String>('Viewing \$novel'));
+
+      final formattedState = await formatPresenceStringAsync(
+        defaultTemplate,
+        {
+          '\$anime': mediaTitle,
+          '\$manga': mediaTitle,
+          '\$novel': mediaTitle,
+          '\$media': mediaTitle,
+          '\$title': mediaTitle,
+          '\$type': type,
+        },
+      );
+
+      final detailsText = mediaTitle;
+      var stateText = formattedState.replaceAll(mediaTitle, '').trim();
+      if (stateText.isEmpty || stateText == 'Viewing') {
+        stateText = 'Viewing $type Details';
+      } else if (stateText.startsWith('-') ||
+          stateText.startsWith('–') ||
+          stateText.startsWith(':')) {
+        stateText = stateText.substring(1).trim();
+      }
+
+      final largeImg = await _processImageUrl(media.cover ?? media.poster);
+      final smallImg = await _processImageUrl(_getAppIconUrl());
+
+      if (isMobile) {
+        final presencePayload = jsonEncode({
+          'op': 3,
+          'd': {
+            'since': null,
+            'activities': [
+              {
+                'application_id': _applicationId,
+                'name': 'AnymeX',
+                'type': 0,
+                'details': detailsText,
+                'state': stateText,
+                'assets': {
+                  'large_image': largeImg,
+                  'large_text': mediaTitle,
+                  'small_image': smallImg,
+                  'small_text': 'AnymeX',
+                },
+                'buttons': [
+                  'View $type',
+                  '${media.mediaType.isAnime ? 'Watch' : 'Read'} on AnymeX',
+                ],
+                'metadata': {
+                  'button_urls': [
+                    anilistUrl,
+                    'https://github.com/RyanYuuki/AnymeX',
+                  ],
+                }
+              }
+            ],
+            'status': 'online',
+            'afk': false,
+          },
+        });
+        _gatewaySocket?.add(presencePayload);
+        print('Media presence updated successfully (Mobile)');
+      } else {
+        try {
+          await _discordRPC!.setPresence(
+            DiscordPresence(
+              type: DiscordActivityType.watching,
+              details: detailsText,
+              state: stateText,
+              largeAsset: DiscordAsset(
+                key: largeImg,
+                text: mediaTitle,
+              ),
+              smallAsset: DiscordAsset(
+                key: smallImg,
+                text: 'AnymeX',
+              ),
+              buttons: [
+                DiscordButton(label: 'View $type', url: anilistUrl),
+                const DiscordButton(
+                  label: 'Watch on AnymeX',
+                  url: 'https://github.com/RyanYuuki/AnymeX/',
+                ),
+              ],
+            ),
+          );
+          print('Media presence updated successfully');
+        } catch (e) {
+          print('Error updating media presence: $e');
+        }
+      }
+    });
   }
 
   String _formatDuration(Duration duration) {
@@ -975,74 +1055,84 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
     String? activity,
     String? details,
   }) async {
-    if (!isEnabled) return;
-    if (!_isConnected.value) await connect();
-    if (!_isConnected.value || !_canUseDesktopRpc('updateBrowsingPresence')) {
-      print('Discord not connected');
-      return;
-    }
-
-    final template = DiscordRpcKeys.idleFormat.get<String>('Browsing \$status');
-    final formattedState = formatPresenceString(
-      template,
-      {
-        '\$status': details ?? activity ?? 'AnymeX',
-        '\$title': activity ?? 'Using AnymeX',
-      },
-    );
-
-    final detailsText = activity ?? 'Using AnymeX';
-
-    if (isMobile) {
-      final presencePayload = jsonEncode({
-        'op': 3,
-        'd': {
-          'since': null,
-          'activities': [
-            {
-              'application_id': _applicationId,
-              'name': 'AnymeX',
-              'type': 0,
-              'details': detailsText,
-              'state': formattedState,
-              'assets': {
-                'large_image': await _processImageUrl(_getAppIconUrl()),
-                'large_text': 'AnymeX - Anime & Manga',
-              },
-              'buttons': [
-                'Download AnymeX',
-              ],
-              'metadata': {
-                'button_urls': [
-                  'https://github.com/RyanYuuki/AnymeX/',
-                ],
-              }
-            }
-          ],
-          'status': 'online',
-          'afk': false,
-        },
-      });
-      _gatewaySocket?.add(presencePayload);
-      print('Browsing presence updated successfully (Mobile)');
-    } else {
-      try {
-        await _discordRPC!.setPresence(
-          DiscordPresence(
-            type: DiscordActivityType.playing,
-            details: detailsText,
-            state: formattedState,
-            largeAsset: DiscordAsset(
-              key: await _processImageUrl(_getAppIconUrl()),
-              text: 'AnymeX - Anime & Manga',
-            ),
-          ),
-        );
-        print('Browsing presence updated successfully');
-      } catch (e) {
-        print('Error updating browsing presence: $e');
+    return _enqueuePresenceUpdate(() async {
+      if (!isEnabled) return;
+      if (!_isConnected.value) await connect();
+      if (!_isConnected.value || !_canUseDesktopRpc('updateBrowsingPresence')) {
+        print('Discord not connected');
+        return;
       }
-    }
+
+      final template =
+          DiscordRpcKeys.idleFormat.get<String>('Browsing \$status');
+      final formattedState = await formatPresenceStringAsync(
+        template,
+        {
+          '\$status': details ?? activity ?? 'AnymeX',
+          '\$title': activity ?? 'Using AnymeX',
+        },
+      );
+
+      final detailsText = activity ?? 'Using AnymeX';
+      var stateText = formattedState;
+      if (detailsText.trim().toLowerCase() ==
+          stateText.trim().toLowerCase()) {
+        stateText = 'Idle';
+      }
+
+      final iconImg = await _processImageUrl(_getAppIconUrl());
+
+      if (isMobile) {
+        final presencePayload = jsonEncode({
+          'op': 3,
+          'd': {
+            'since': null,
+            'activities': [
+              {
+                'application_id': _applicationId,
+                'name': 'AnymeX',
+                'type': 0,
+                'details': detailsText,
+                'state': stateText,
+                'assets': {
+                  'large_image': iconImg,
+                  'large_text': 'AnymeX - Anime & Manga',
+                },
+                'buttons': [
+                  'Download AnymeX',
+                ],
+                'metadata': {
+                  'button_urls': [
+                    'https://github.com/RyanYuuki/AnymeX/',
+                  ],
+                }
+              }
+            ],
+            'status': 'online',
+            'afk': false,
+          },
+        });
+        _gatewaySocket?.add(presencePayload);
+        print('Browsing presence updated successfully (Mobile)');
+      } else {
+        try {
+          await _discordRPC!.setPresence(
+            DiscordPresence(
+              type: DiscordActivityType.playing,
+              details: detailsText,
+              state: stateText,
+              largeAsset: DiscordAsset(
+                key: iconImg,
+                text: 'AnymeX - Anime & Manga',
+              ),
+            ),
+          );
+          print('Browsing presence updated successfully');
+        } catch (e) {
+          print('Error updating browsing presence: $e');
+        }
+      }
+    });
   }
 
   Future<void> clearPresence() async {
@@ -1133,6 +1223,7 @@ class DiscordRPCController extends GetxController with WidgetsBindingObserver {
   @override
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
+    clearPresence();
     _disconnect();
     super.onClose();
   }
