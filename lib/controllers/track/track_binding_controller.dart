@@ -126,15 +126,17 @@ class TrackBindingController extends GetxController {
       final service = _online(tracker);
       if (!service.isLoggedIn.value) return;
       try {
+        final targetStatus =
+            b.status == 'REPEATING' ? 'REPEATING' : (status ?? b.status);
         await service.updateListEntry(UpdateListEntryParams(
           listId: b.remoteId,
           progress: progress,
-          status: status ?? b.status,
+          status: targetStatus,
           isAnime: isAnime,
           season: season,
         ));
         b.progress = progress;
-        if (status != null) b.status = status;
+        b.status = targetStatus;
       } catch (e) {
         Logger.e('Track sync failed for ${tracker.label} ($mediaId): $e');
       }

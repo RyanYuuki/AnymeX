@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/track/track_binding_controller.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -170,12 +171,64 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   Widget? _buildContinueFab() {
     if (_isManga) {
       if (_mangaMeta == null || _mangaMeta!.chapters.isEmpty) return null;
-      final firstChapter = _mangaMeta!.chapters.first;
+      final chapters = _mangaMeta!.chapters;
+      final offlineStorage = Get.find<OfflineStorageController>();
+      final offlineManga =
+          offlineStorage.getMangaById(widget.summary.folderName);
+      final currentCh = offlineManga?.currentChapter;
+
+      DownloadedChapterMeta? target;
+      if (currentCh != null) {
+        final matchIdx = chapters.indexWhere((c) =>
+            (c.chapter.number != null &&
+                c.chapter.number == currentCh.number) ||
+            (c.chapter.link != null &&
+                c.chapter.link!.isNotEmpty &&
+                c.chapter.link == currentCh.link));
+        if (matchIdx != -1) {
+          final matched = chapters[matchIdx];
+          final page = currentCh.pageNumber ?? matched.chapter.pageNumber ?? 0;
+          final total =
+              currentCh.totalPages ?? matched.chapter.totalPages ?? 0;
+          final isComplete = total > 0 && page >= total;
+          if (isComplete && matchIdx + 1 < chapters.length) {
+            target = chapters[matchIdx + 1];
+          } else {
+            target = matched;
+          }
+        }
+      }
+
+      if (target == null) {
+        final readChapters = chapters.where((c) {
+          final lastRead = c.chapter.lastReadTime ?? 0;
+          final page = c.chapter.pageNumber ?? 0;
+          return lastRead > 0 || page > 0;
+        }).toList();
+
+        if (readChapters.isNotEmpty) {
+          readChapters.sort((a, b) => (b.chapter.lastReadTime ?? 0)
+              .compareTo(a.chapter.lastReadTime ?? 0));
+          final latestRead = readChapters.first;
+          final latestIdx = chapters.indexOf(latestRead);
+          final page = latestRead.chapter.pageNumber ?? 0;
+          final total = latestRead.chapter.totalPages ?? 0;
+          final isComplete = total > 0 && page >= total;
+          if (isComplete && latestIdx + 1 < chapters.length) {
+            target = chapters[latestIdx + 1];
+          } else {
+            target = latestRead;
+          }
+        }
+      }
+
+      target ??= chapters.first;
+
       return continueFab(
         label: 'Continue Reading',
-        subtitle: firstChapter.displayTitle,
+        subtitle: target.displayTitle,
         icon: HugeIcons.strokeRoundedBookOpen01,
-        onTap: () => _playChapter(firstChapter),
+        onTap: () => _playChapter(target!),
       );
     }
 
@@ -266,6 +319,18 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           currentChapter: currentChapter,
           shouldTrack: false,
         ));
+    final offlineStorage = Get.find<OfflineStorageController>();
+    final updatedManga = offlineStorage.getMangaById(widget.summary.folderName);
+    final cur = updatedManga?.currentChapter;
+    if (cur != null && cur.number != null) {
+      await downloadController.updateChapterProgress(
+        _currentSummary.extensionName,
+        _currentSummary.folderName,
+        cur.number.toString(),
+        cur.pageNumber ?? 0,
+        cur.totalPages ?? 0,
+      );
+    }
     await Future.delayed(const Duration(milliseconds: 300));
     await _refresh();
     await _syncBoundTrackersAfterPlay();
@@ -279,7 +344,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
 
       int progress = 0;
       final threshold =
-          settingsController.markAsCompleted; // user-configured % (default 90)
+          settingsController.markAsCompleted;
       if (!_isManga && _meta != null) {
         for (final e in _meta!.episodes) {
           final n = int.tryParse(e.number) ?? 0;
@@ -290,15 +355,21 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           if (watched && n > progress) progress = n;
         }
       } else if (_isManga && _mangaMeta != null) {
+        final offlineStorage = Get.find<OfflineStorageController>();
+        final readChs =
+            offlineStorage.getMangaById(mediaId)?.readChapters ?? [];
         for (final c in _mangaMeta!.chapters) {
           final num = c.chapter.number;
           if (num == null) continue;
-          final isRead = (c.chapter.lastReadTime ?? 0) > 0 ||
+          final isReadLocally = (c.chapter.lastReadTime ?? 0) > 0 ||
               (c.chapter.totalPages != null &&
                   c.chapter.pageNumber != null &&
                   c.chapter.totalPages! > 0 &&
                   c.chapter.pageNumber! >= c.chapter.totalPages!);
-          if (isRead && num.toInt() > progress) progress = num.toInt();
+          final isReadInDb = readChs.any((r) => r.number == num);
+          if ((isReadLocally || isReadInDb) && num.toInt() > progress) {
+            progress = num.toInt();
+          }
         }
       }
 

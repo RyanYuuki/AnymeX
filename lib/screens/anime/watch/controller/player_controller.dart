@@ -2929,12 +2929,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       final isFinished = hasCrossedLimit &&
           (statusUpper == 'COMPLETED' || statusUpper == 'FINISHED') &&
           !hasNextEpisode;
+      final currentListStatus =
+          (service.currentMedia.value.watchingStatus ?? anilistData.status)
+              .toUpperCase();
+      final isRepeating = currentListStatus == 'REPEATING';
+      final newStatus = isFinished
+          ? 'COMPLETED'
+          : (isRepeating ? 'REPEATING' : 'CURRENT');
       await service.updateListEntry(UpdateListEntryParams(
           listId: anilistData.id,
           progress: newProgress,
           isAnime: true,
           season: detectedSeason,
-          status: isFinished ? 'COMPLETED' : 'CURRENT',
+          status: newStatus,
           syncIds: [anilistData.idMal]));
 
       service.setCurrentMedia(anilistData.id.toString());
