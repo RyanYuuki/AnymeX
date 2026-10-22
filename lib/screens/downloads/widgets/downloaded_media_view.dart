@@ -97,9 +97,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 const SizedBox(width: 20),
                 Expanded(
                   child: AnymeXText(
-                    text: message,
+                    message,
                     size: 15,
-                    weight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -172,7 +171,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       message:
           '"${widget.summary.title}" — $count ${_isManga ? 'chapters' : 'episodes'} will be permanently removed.',
       onConfirm: () async {
-        _showLoadingDialog(context, 'Deleting ${_isManga ? "manga" : "anime"}...');
+        _showLoadingDialog(
+            context, 'Deleting ${_isManga ? "manga" : "anime"}...');
         try {
           await downloadController.deleteMedia(
               widget.summary.extensionName, _currentSummary.folderName,
@@ -251,8 +251,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         if (matchIdx != -1) {
           final matched = chapters[matchIdx];
           final page = currentCh.pageNumber ?? matched.chapter.pageNumber ?? 0;
-          final total =
-              currentCh.totalPages ?? matched.chapter.totalPages ?? 0;
+          final total = currentCh.totalPages ?? matched.chapter.totalPages ?? 0;
           final isComplete = total > 0 && page >= total;
           if (isComplete && matchIdx + 1 < chapters.length) {
             target = chapters[matchIdx + 1];
@@ -406,8 +405,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       if (!trackCtrl.hasAnyBinding(mediaId)) return;
 
       int progress = 0;
-      final threshold =
-          settingsController.markAsCompleted;
+      final threshold = settingsController.markAsCompleted;
       if (!_isManga && _meta != null) {
         for (final e in _meta!.episodes) {
           final n = int.tryParse(e.number) ?? 0;
@@ -799,7 +797,6 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     );
   }
 
-
   Widget _buildInfoBadge(ColorScheme theme, String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
@@ -1001,7 +998,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                             right: Radius.circular(5),
                                           ),
                                         ),
-                                        child: AnymeXText.semiBold(relativeTime.toUpperCase(),
+                                        child: AnymeXText.semiBold(
+                                          relativeTime.toUpperCase(),
                                           size: 9.0,
                                           color: theme.secondary
                                                       .computeLuminance() >
@@ -1023,7 +1021,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                               right: Radius.circular(8),
                                             ),
                                           ),
-                                          child: AnymeXText.semiBold((episode.quality ?? 'VIDEO')
+                                          child: AnymeXText.semiBold(
+                                            (episode.quality ?? 'VIDEO')
                                                 .toUpperCase(),
                                             maxLines: 1,
                                             size: 9.0,
