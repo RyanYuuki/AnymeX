@@ -98,18 +98,29 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
       } else {
         final file = File(url);
         if (file.existsSync()) {
-          final imageStream =
-              FileImage(file).resolve(const ImageConfiguration());
-          imageStream.addListener(ImageStreamListener((info, _) {
-            widget.onImageLoaded?.call(
-                info.image.width.toDouble(), info.image.height.toDouble());
-          }));
-          return Image.file(
+          return ext.ExtendedImage.file(
             file,
             width: widget.width,
             height: widget.height,
             fit: widget.fit,
             alignment: widget.alignment,
+            enableLoadState: true,
+            clearMemoryCacheWhenDispose: true,
+            loadStateChanged: (ext.ExtendedImageState state) {
+              if (state.extendedImageLoadState == ext.LoadState.loading) {
+                return widget.placeholder;
+              }
+              if (state.extendedImageLoadState == ext.LoadState.completed &&
+                  state.extendedImageInfo != null) {
+                final img = state.extendedImageInfo!.image;
+                widget.onImageLoaded
+                    ?.call(img.width.toDouble(), img.height.toDouble());
+              }
+              if (state.extendedImageLoadState == ext.LoadState.failed) {
+                return _buildErrorWidget(context, () => state.reLoadImage());
+              }
+              return null;
+            },
           );
         } else {
           return _buildErrorWidget(context, () {
@@ -155,12 +166,14 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
         } else {
           final file = File(url);
           if (file.existsSync()) {
-            return Image.file(
+            return ext.ExtendedImage.file(
               file,
               width: widget.width,
               height: widget.height,
               fit: widget.fit,
               alignment: widget.alignment,
+              enableLoadState: true,
+              clearMemoryCacheWhenDispose: true,
             );
           } else {
             return _buildErrorWidget(context, () {
