@@ -101,6 +101,13 @@ class _MangaHomePageState extends State<MangaHomePage> {
                             initialTerm: '',
                             type: ItemType.manga,
                           ));
+                    } else if (serviceHandler.serviceType.value ==
+                        ServicesType.simkl) {
+                      navigate(() => const SearchPage(
+                            searchTerm: '',
+                            isManga: false,
+                            type: ItemType.anime,
+                          ));
                     } else {
                       final hasNovelExts = Get.find<SourceController>()
                           .installedNovelExtensions

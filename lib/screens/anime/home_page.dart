@@ -99,7 +99,13 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
 
   void _openSearch(BuildContext context, ItemType currentType,
       ServiceHandler serviceHandler) {
-    if (serviceHandler.serviceType.value == ServicesType.extensions) {
+    if (serviceHandler.serviceType.value == ServicesType.simkl) {
+      navigate(() => const SearchPage(
+            searchTerm: '',
+            isManga: false,
+            type: ItemType.anime,
+          ));
+    } else if (serviceHandler.serviceType.value == ServicesType.extensions) {
       navigateWithAnimation(() => SourceSearchPage(
             initialTerm: '',
             type: currentType,

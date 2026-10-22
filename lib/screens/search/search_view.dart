@@ -107,10 +107,17 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   final Map<String, List<ExtensionSearchItem>> _allSourcesCache = {};
   final Map<String, List<Media>> _singleSourceCache = {};
 
-  ItemType get effectiveType =>
-      widget.type ?? (widget.isManga ? ItemType.manga : ItemType.anime);
+  ItemType get effectiveType {
+    if (_serviceHandler.serviceType.value == ServicesType.simkl) {
+      return ItemType.anime;
+    }
+    return widget.type ?? (widget.isManga ? ItemType.manga : ItemType.anime);
+  }
 
-  bool get isManga => effectiveType == ItemType.manga;
+  bool get isManga =>
+      _serviceHandler.serviceType.value == ServicesType.simkl
+          ? false
+          : effectiveType == ItemType.manga;
 
   bool get isExtensionMode =>
       _serviceHandler.serviceType.value == ServicesType.extensions ||
