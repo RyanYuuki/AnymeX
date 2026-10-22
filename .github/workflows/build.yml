@@ -113,7 +113,7 @@ jobs:
         if: matrix.platform == 'linux'
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq ninja-build cmake maven clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 fuse rpm
+          sudo apt-get install -y -qq ninja-build cmake maven clang mpv libgtk-3-dev libblkid-dev liblzma-dev pkg-config libmpv-dev webkit2gtk-4.1 fuse rpm elfutils
           wget -qO appimagetool "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod +x appimagetool && sudo mv appimagetool /usr/local/bin/
       
@@ -283,6 +283,7 @@ jobs:
           License: MIT
           Source0: %{name}-%{version}.tar.gz
           BuildArch: x86_64
+          %global debug_package %{nil}
           %description
           AnymeX is a Flutter-based opensource app for tracking anime, mangas and novels.
           %prep
@@ -306,7 +307,7 @@ jobs:
           /usr/share/applications/anymex.desktop
           /usr/share/icons/hicolor/256x256/apps/anymex.png
           EOF
-          rpmbuild --define "_topdir $(pwd)/rpm_build" -ba rpm_build/SPECS/anymex.spec
+          rpmbuild --define "_topdir $(pwd)/rpm_build" -bb rpm_build/SPECS/anymex.spec
           mv rpm_build/RPMS/x86_64/*.rpm build/linux/x64/release/AnymeX-Linux.rpm
           cd build/linux/x64/release/bundle && zip -qr ../AnymeX-Linux.zip ./*
       
