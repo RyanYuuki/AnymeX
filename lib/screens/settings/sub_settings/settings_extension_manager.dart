@@ -347,20 +347,6 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final bridge = AnymeXRuntimeBridge.controller;
-    if (Platform.isIOS) {
-      return const Scaffold(
-        body: Column(
-          children: [
-            NestedHeader(title: 'Extension Manager'),
-            Expanded(
-              child: Center(
-                child: AnymeXText('Extension Manager is not supported on iOS.'),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
 
     return AnymeXScaffold(
       showHeader: true,
@@ -411,26 +397,27 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                       )
                                     : null,
                               ),
-                              if (Platform.isAndroid)
-                                AnymeXTile(
-                                  icon: Icons.install_mobile_rounded,
-                                  title: 'Load Plugin APK from Storage',
-                                  subtitle: Platform.isAndroid
-                                      ? 'Select a runtime APK from local storage to manually install'
-                                      : 'Select a runtime JAR from local storage to manually install',
-                                  onTap:
-                                      _isSyncingLocalApk ? null : _syncLocalApk,
-                                  trailing: _isSyncingLocalApk
-                                      ? SizedBox(
-                                          width: 18,
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: colors.primary,
-                                          ),
-                                        )
-                                      : null,
-                                ),
+                              AnymeXTile(
+                                icon: Icons.install_mobile_rounded,
+                                title: Platform.isAndroid
+                                    ? 'Load Plugin APK from Storage'
+                                    : 'Load Plugin JAR from Storage',
+                                subtitle: Platform.isAndroid
+                                    ? 'Select a runtime APK from local storage to manually install'
+                                    : 'Select a runtime JAR from local storage to manually install',
+                                onTap:
+                                    _isSyncingLocalApk ? null : _syncLocalApk,
+                                trailing: _isSyncingLocalApk
+                                    ? SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: colors.primary,
+                                        ),
+                                      )
+                                    : null,
+                              ),
                               if (hasInstalled || bridge.error.value.isNotEmpty)
                                 AnymeXTile(
                                   icon: Icons.refresh_rounded,
