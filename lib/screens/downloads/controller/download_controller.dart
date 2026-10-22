@@ -1915,6 +1915,39 @@ class DownloadController extends GetxController {
     await _loadIndex();
   }
 
+  Future<void> updateChapterProgress(
+    String ext,
+    String title,
+    String chapterNumber,
+    int pageNumber,
+    int totalPages,
+  ) async {
+    final mediaDir = await _getMangaMediaDirPath(title, ext);
+    final metaFile = File(p.join(mediaDir, 'metadata.json'));
+    if (!await metaFile.exists()) return;
+
+    final raw =
+        jsonDecode(await metaFile.readAsString()) as Map<String, dynamic>;
+    final meta = DownloadedMangaMeta.fromJson(raw);
+
+    final updatedChapters = meta.chapters.map((ch) {
+      final chNum = ch.chapter.number?.toString();
+      if (chNum == chapterNumber) {
+        ch.chapter.pageNumber = pageNumber;
+        ch.chapter.totalPages = totalPages;
+        ch.chapter.lastReadTime = DateTime.now().millisecondsSinceEpoch;
+      }
+      return ch;
+    }).toList();
+
+    final updated = DownloadedMangaMeta(
+      chapters: updatedChapters,
+      media: meta.media,
+    );
+    await metaFile.writeAsString(jsonEncode(updated.toJson()), flush: true);
+    mangaMetaCache[_cacheKey(ext, title)] = updated;
+  }
+
   Future<DownloadedMediaMeta?> getMediaMeta(String ext, String title) async {
     final mediaDir = await _getMediaDirPath(title, ext, mediaType: 'Anime');
     await _syncMediaFolderMeta(
