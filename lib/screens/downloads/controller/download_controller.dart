@@ -1967,9 +1967,15 @@ class DownloadController extends GetxController {
 
   Future<void> deleteMedia(String ext, String title,
       {String mediaType = 'Anime'}) async {
-    final mediaDir = await _getMediaDirPath(title, ext, mediaType: mediaType);
-    final dir = Directory(mediaDir);
-    if (await dir.exists()) await dir.delete(recursive: true);
+    final root = await _getRootDir();
+    final directDir = Directory(p.join(root.path, mediaType, ext, title));
+    if (await directDir.exists()) {
+      await directDir.delete(recursive: true);
+    } else {
+      final mediaDir = await _getMediaDirPath(title, ext, mediaType: mediaType);
+      final dir = Directory(mediaDir);
+      if (await dir.exists()) await dir.delete(recursive: true);
+    }
     mediaMetaCache.remove(_cacheKey(ext, title));
     mangaMetaCache.remove(_cacheKey(ext, title));
     await _removeFromGlobalIndex(ext, title);
@@ -1978,8 +1984,13 @@ class DownloadController extends GetxController {
 
   Future<void> deleteEpisode(String ext, String title, String epNumber,
       Map<String, String> sortMap) async {
-    final mediaDir = await _getMediaDirPath(title, ext, mediaType: 'Anime');
-    final metaFile = File(p.join(mediaDir, 'metadata.json'));
+    final root = await _getRootDir();
+    var mediaDir = p.join(root.path, 'Anime', ext, title);
+    var metaFile = File(p.join(mediaDir, 'metadata.json'));
+    if (!await metaFile.exists()) {
+      mediaDir = await _getMediaDirPath(title, ext, mediaType: 'Anime');
+      metaFile = File(p.join(mediaDir, 'metadata.json'));
+    }
     if (!await metaFile.exists()) return;
 
     final raw =
@@ -2010,8 +2021,13 @@ class DownloadController extends GetxController {
 
   Future<void> deleteChapter(
       String ext, String title, double? chapterNum) async {
-    final mediaDir = await _getMediaDirPath(title, ext, mediaType: 'Manga');
-    final metaFile = File(p.join(mediaDir, 'metadata.json'));
+    final root = await _getRootDir();
+    var mediaDir = p.join(root.path, 'Manga', ext, title);
+    var metaFile = File(p.join(mediaDir, 'metadata.json'));
+    if (!await metaFile.exists()) {
+      mediaDir = await _getMediaDirPath(title, ext, mediaType: 'Manga');
+      metaFile = File(p.join(mediaDir, 'metadata.json'));
+    }
     if (!await metaFile.exists()) return;
 
     final raw =
@@ -2047,7 +2063,8 @@ class DownloadController extends GetxController {
         jsonDecode(await indexFile.readAsString()) as Map<String, dynamic>;
     final items = (raw['items'] as List<dynamic>? ?? [])
         .map((e) => e as Map<String, dynamic>)
-        .where((i) => !(i['extensionName'] == ext && i['folderName'] == title))
+        .where((i) => !(i['extensionName'] == ext &&
+            (i['folderName'] == title || i['title'] == title)))
         .toList();
     await indexFile.writeAsString(jsonEncode({'items': items}), flush: true);
   }

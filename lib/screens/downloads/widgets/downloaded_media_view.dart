@@ -16,6 +16,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
@@ -76,6 +78,38 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     return '${diff.inDays ~/ 7}w ago';
   }
 
+  void _showLoadingDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => PopScope(
+        canPop: false,
+        child: Dialog(
+          backgroundColor: Theme.of(ctx).colorScheme.surfaceContainer,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const AnymeXProgressIndicator(),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: AnymeXText(
+                    text: message,
+                    size: 15,
+                    weight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showDeleteEpisodeDialog(
       BuildContext context, DownloadedEpisodeMeta ep) {
     AnymeXDialog(
@@ -83,13 +117,22 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       message:
           'Episode ${ep.number} will be permanently removed from your downloads.',
       onConfirm: () async {
-        await downloadController.deleteEpisode(
-          widget.summary.extensionName,
-          widget.summary.title,
-          ep.number,
-          ep.sortMap,
-        );
-        await _refresh();
+        _showLoadingDialog(context, 'Deleting episode...');
+        try {
+          await downloadController.deleteEpisode(
+            widget.summary.extensionName,
+            _currentSummary.folderName,
+            ep.number,
+            ep.sortMap,
+          );
+          await _refresh();
+        } catch (e) {
+          snackBar('Failed to delete episode');
+        } finally {
+          if (context.mounted) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }
+        }
       },
     ).show(context);
   }
@@ -101,12 +144,21 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       title: 'Delete chapter?',
       message: '$display will be permanently removed from your downloads.',
       onConfirm: () async {
-        await downloadController.deleteChapter(
-          widget.summary.extensionName,
-          widget.summary.title,
-          ch.chapter.number,
-        );
-        await _refresh();
+        _showLoadingDialog(context, 'Deleting chapter...');
+        try {
+          await downloadController.deleteChapter(
+            widget.summary.extensionName,
+            _currentSummary.folderName,
+            ch.chapter.number,
+          );
+          await _refresh();
+        } catch (e) {
+          snackBar('Failed to delete chapter');
+        } finally {
+          if (context.mounted) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }
+        }
       },
     ).show(context);
   }
@@ -120,10 +172,21 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       message:
           '"${widget.summary.title}" — $count ${_isManga ? 'chapters' : 'episodes'} will be permanently removed.',
       onConfirm: () async {
-        await downloadController.deleteMedia(
-            widget.summary.extensionName, widget.summary.title,
-            mediaType: widget.summary.mediaType);
-        if (mounted) Navigator.of(this.context).pop();
+        _showLoadingDialog(context, 'Deleting ${_isManga ? "manga" : "anime"}...');
+        try {
+          await downloadController.deleteMedia(
+              widget.summary.extensionName, _currentSummary.folderName,
+              mediaType: widget.summary.mediaType);
+          if (context.mounted) {
+            Navigator.of(context, rootNavigator: true).pop();
+            Navigator.of(this.context).pop();
+          }
+        } catch (e) {
+          if (context.mounted) {
+            Navigator.of(context, rootNavigator: true).pop();
+            snackBar('Failed to delete media');
+          }
+        }
       },
     ).show(context);
   }
