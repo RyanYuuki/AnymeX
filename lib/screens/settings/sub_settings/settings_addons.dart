@@ -184,6 +184,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
                   'Add-ons power background services such as the TorrServer torrent streaming engine for direct magnet link playback.',
                   variant: TextVariant.regular,
                   size: 13,
+                  maxLines: 99,
                   color: theme.onSurfaceVariant,
                 ),
               ],
