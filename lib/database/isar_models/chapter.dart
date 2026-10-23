@@ -95,15 +95,15 @@ class Chapter {
       releaseDate: json['releaseDate'] as String?,
       scanlator: json['scanlator'] as String?,
       number: (json['number'] as num?)?.toDouble(),
-      pageNumber: json['pageNumber'] as int?,
-      totalPages: json['totalPages'] as int?,
-      lastReadTime: json['lastReadTime'] as int?,
+      pageNumber: (json['pageNumber'] as num?)?.toInt(),
+      totalPages: (json['totalPages'] as num?)?.toInt(),
+      lastReadTime: (json['lastReadTime'] as num?)?.toInt(),
       currentOffset: (json['currentOffset'] as num?)?.toDouble(),
       maxOffset: (json['maxOffset'] as num?)?.toDouble(),
       sourceName: json['sourceName'] as String?,
       localPath: json['localPath'] as String?,
-      headerKeys: (json['headerKeys'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      headerValues: (json['headerValues'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      headerKeys: (json['headerKeys'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
+      headerValues: (json['headerValues'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
     );
   }
 

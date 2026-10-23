@@ -360,7 +360,8 @@ class ExtensionFilesInfo {
 }
 
 class BackupRestoreService extends GetxController {
-  final OfflineStorageController _storageController = Get.find();
+  OfflineStorageController get _storageController =>
+      Get.find<OfflineStorageController>();
 
   var isBackingUp = false.obs;
   var isRestoring = false.obs;
@@ -700,15 +701,30 @@ class BackupRestoreService extends GetxController {
               .toList() ??
           [];
 
+      final existingLists = await isar.customLists.where().findAll();
+      final listMap = <String, CustomList>{};
+      for (final l in existingLists) {
+        listMap['${l.mediaTypeIndex}_${l.listName}'] = l;
+      }
+
       await isar.writeTxn(() async {
         if (!merge) {
           await isar.customLists.clear();
         }
-        await isar.customLists.putAll([
+        for (var list in [
           ...animeCustomLists,
           ...mangaCustomLists,
           ...novelCustomLists,
-        ]);
+        ]) {
+          final existing = listMap['${list.mediaTypeIndex}_${list.listName}'];
+          if (existing != null && merge) {
+            final merged = {...?existing.mediaIds, ...?list.mediaIds}.toList();
+            existing.mediaIds = merged;
+            await isar.customLists.put(existing);
+          } else {
+            await isar.customLists.put(list);
+          }
+        }
       });
     }
 
@@ -771,9 +787,18 @@ class BackupRestoreService extends GetxController {
 
             if (!shouldRestore) continue;
 
+            final rawVal = setting['value'];
+            final String? storedVal;
+            if (rawVal == null) {
+              storedVal = null;
+            } else if (rawVal is String) {
+              storedVal = rawVal;
+            } else {
+              storedVal = jsonEncode({'val': rawVal});
+            }
             final kv = KeyValue()
               ..key = key
-              ..value = setting['value'];
+              ..value = storedVal;
             await isar.collection<KeyValue>().put(kv);
           }
         });
@@ -810,8 +835,8 @@ class BackupRestoreService extends GetxController {
       final entries = kvEntriesData.map((e) {
         final map = Map<String, dynamic>.from(e as Map);
         final entry = KvEntry();
-        entry.key = map['key'] as String;
-        entry.value = map['value'] as String;
+        entry.key = (map['key'] ?? '').toString();
+        entry.value = (map['value'] ?? '').toString();
         return entry;
       }).toList();
 

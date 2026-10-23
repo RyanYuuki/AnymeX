@@ -30,8 +30,8 @@ class CustomList {
   factory CustomList.fromJson(Map<String, dynamic> json) {
     return CustomList(
       listName: json['listName'] as String? ?? "Default",
-      mediaIds: (json['mediaIds'] as List<dynamic>?)?.cast<String>(),
-      mediaTypeIndex: json['mediaTypeIndex'] as int? ?? 0,
+      mediaIds: (json['mediaIds'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
+      mediaTypeIndex: (json['mediaTypeIndex'] as num?)?.toInt() ?? 0,
     );
   }
 }
