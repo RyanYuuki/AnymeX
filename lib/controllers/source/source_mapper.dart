@@ -90,6 +90,7 @@ class SourceMapper {
     required ItemType type,
     String? savedTitle,
     List<String> synonyms = const [],
+    void Function(String error)? onSearchError,
   }) async {
     final sourceController = Get.find<SourceController>();
     final isManga = type == ItemType.manga;
@@ -126,6 +127,7 @@ class SourceMapper {
     if (activeSource == null) {
       Logger.i("No active source found!");
       searchedTitle.value = "No active source";
+      onSearchError?.call("No active source found.");
       return null;
     }
 
@@ -156,6 +158,7 @@ class SourceMapper {
         Logger.e("Error searching source for '$query': $e");
         hasError = true;
         searchedTitle.value = "Error Searching";
+        onSearchError?.call(e.toString());
         return;
       }
 

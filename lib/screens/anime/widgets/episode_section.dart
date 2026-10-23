@@ -17,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:anymex/screens/anime/details/controller/media_details_controller.dart';
+import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
+import 'package:anymex/widgets/common/content_error_widget.dart';
 import 'package:anymex/widgets/common/unified_source_section.dart';
 
 class EpisodeSection extends StatelessWidget {
@@ -159,33 +161,57 @@ class EpisodeSection extends StatelessWidget {
 
   Widget _buildEpisodeListSliver(BuildContext context) {
     return Obx(() {
-      final episodes = Get.find<MediaDetailsController>(tag: tag).episodeList;
-      if (episodeError.value) {
+      final controller = Get.find<MediaDetailsController>(tag: tag);
+      final episodes = controller.episodeList;
+      final isLoading = controller.isLoading.value;
+      final hasError = episodeError.value || controller.episodeError.value;
+
+      if (isLoading) {
         return const SliverToBoxAdapter(
           child: Center(
             child: Padding(
-              padding: EdgeInsets.all(24),
-              child: AnymeXText('Error loading episodes from source'),
-            ),
-          ),
-        );
-      } else if (episodes.isEmpty) {
-        return const SliverToBoxAdapter(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
+              padding: EdgeInsets.all(32),
               child: AnymeXProgressIndicator(),
             ),
           ),
         );
-      } else {
-        return EpisodeListBuilder(
-          episodeList: episodes,
-          anilistData: anilistData is Media ? anilistData : null,
-          isSliverMode: true,
-          onSettingsTap: () => _showEpisodeSettingsDialog(context),
+      }
+
+      if (hasError || episodes.isEmpty) {
+        return SliverToBoxAdapter(
+          child: ContentErrorWidget(
+            errorType: controller.errorType.value,
+            errorMessage: controller.errorMessage.value,
+            isManga: false,
+            onRetry: () => controller.retryFetch(),
+            onWrongTitle: () {
+              final media = anilistData is Media
+                  ? anilistData as Media
+                  : controller.media.value;
+              showWrongTitleModal(
+                context,
+                media.title,
+                (manga) async {
+                  controller.episodeList.clear();
+                  await controller.fetchSourceDetailsFromMedia(
+                    Media.froDMedia(manga, controller.media.value.mediaType),
+                  );
+                },
+                isManga: false,
+                isNovel: false,
+                mediaId: media.id.toString(),
+              );
+            },
+          ),
         );
       }
+
+      return EpisodeListBuilder(
+        episodeList: episodes,
+        anilistData: anilistData is Media ? anilistData : null,
+        isSliverMode: true,
+        onSettingsTap: () => _showEpisodeSettingsDialog(context),
+      );
     });
   }
 

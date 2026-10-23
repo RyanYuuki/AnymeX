@@ -83,9 +83,15 @@ class MediaDetailsController extends GetxController {
   final RxBool isLoading = true.obs;
   final RxBool isSyncing = false.obs;
   final RxBool episodeError = false.obs;
+  final RxString errorMessage = ''.obs;
+  final RxString errorType = ''.obs;
   final RxString searchedTitle = ''.obs;
   final RxBool isAnilistLoading = false.obs;
   final RxBool isSecondaryLoading = false.obs;
+
+  void retryFetch() {
+    _fetchContentFromSource();
+  }
 
   final Rxn<d.Source> activeSource = Rxn<d.Source>();
   late RxInt selectedPage;
@@ -516,6 +522,8 @@ class MediaDetailsController extends GetxController {
   Future<void> _fetchContentFromSource({int? requestId}) async {
     final reqId = requestId ?? _beginSourceRequest();
     episodeError.value = false;
+    errorMessage.value = '';
+    errorType.value = '';
     isLoading.value = true;
     episodeList.clear();
     rawEpisodes.clear();
@@ -525,6 +533,10 @@ class MediaDetailsController extends GetxController {
     final source = activeSource.value;
     if (source == null) {
       isLoading.value = false;
+      episodeError.value = true;
+      errorType.value = 'no_source';
+      errorMessage.value =
+          "No source selected. Please install or select a source extension.";
       searchedTitle.value = "No Source Selected";
       _isInitialFetchDone = true;
       return;
@@ -541,6 +553,7 @@ class MediaDetailsController extends GetxController {
                 initialSource?.id == source.id ||
                 (media.value.sourceId == null && initialSource != null));
 
+    String? capturedSearchError;
     final Media? mappedData;
     if (isDirectSourceMedia) {
       searchedTitle.value =
@@ -560,6 +573,9 @@ class MediaDetailsController extends GetxController {
         type: media.value.mediaType,
         savedTitle: savedTitle,
         synonyms: media.value.synonyms,
+        onSearchError: (err) {
+          capturedSearchError = err;
+        },
       );
     }
 
@@ -590,6 +606,12 @@ class MediaDetailsController extends GetxController {
           rawEpisodes.assignAll(converted);
           episodeList.assignAll(_renewEpisodeData(converted));
           searchedTitle.value = "Found: $foundTitle";
+          if (episodeList.isEmpty) {
+            episodeError.value = true;
+            errorType.value = 'empty';
+            errorMessage.value = "No episodes found in ${source.name}";
+            searchedTitle.value = "No Episodes Found";
+          }
           isLoading.value = false;
           _isInitialFetchDone = true;
 
@@ -608,6 +630,11 @@ class MediaDetailsController extends GetxController {
             media.value.totalChapters = chapterList.length.toString();
             media.value.altMediaContent = chapterList.toList();
             refreshProgress();
+          } else {
+            episodeError.value = true;
+            errorType.value = 'empty';
+            errorMessage.value = "No chapters found in ${source.name}";
+            searchedTitle.value = "No Chapters Found";
           }
           isLoading.value = false;
           _isInitialFetchDone = true;
@@ -638,21 +665,35 @@ class MediaDetailsController extends GetxController {
         if (_isStaleSourceRequest(reqId)) return;
         Logger.e('Failed to fetch details from mapped media: $e');
         episodeError.value = true;
+        errorType.value = 'detail';
+        errorMessage.value = e.toString();
+        searchedTitle.value = "Details Error";
         isLoading.value = false;
         _isInitialFetchDone = true;
       }
     } else {
       if (_isStaleSourceRequest(reqId)) return;
       episodeError.value = true;
-      searchedTitle.value = "No Match Found";
       isLoading.value = false;
       _isInitialFetchDone = true;
+      if (capturedSearchError != null && capturedSearchError!.isNotEmpty) {
+        errorType.value = 'search';
+        errorMessage.value = capturedSearchError!;
+        searchedTitle.value = "Search Error";
+      } else {
+        errorType.value = 'no_match';
+        errorMessage.value =
+            "No match found for '${media.value.title}' in ${source.name}";
+        searchedTitle.value = "No Match Found";
+      }
     }
   }
 
   Future<void> fetchSourceDetailsFromMedia(Media mappedMedia) async {
     final reqId = _beginSourceRequest();
     episodeError.value = false;
+    errorMessage.value = '';
+    errorType.value = '';
     isLoading.value = true;
     searchedTitle.value = "Searching: ${mappedMedia.title}...";
 
@@ -660,6 +701,9 @@ class MediaDetailsController extends GetxController {
       final source = activeSource.value;
       if (source == null) {
         isLoading.value = false;
+        episodeError.value = true;
+        errorType.value = 'no_source';
+        errorMessage.value = "No source selected.";
         searchedTitle.value = "No Source Selected";
         return;
       }
@@ -684,6 +728,12 @@ class MediaDetailsController extends GetxController {
         rawEpisodes.assignAll(converted);
         episodeList.assignAll(_renewEpisodeData(converted));
         searchedTitle.value = "Found: ${mappedMedia.title}";
+        if (episodeList.isEmpty) {
+          episodeError.value = true;
+          errorType.value = 'empty';
+          errorMessage.value = "No episodes found in ${source.name}";
+          searchedTitle.value = "No Episodes Found";
+        }
         isLoading.value = false;
 
         _fetchFillerInfo();
@@ -698,6 +748,11 @@ class MediaDetailsController extends GetxController {
           media.value.totalChapters = chapterList.length.toString();
           media.value.altMediaContent = chapterList.toList();
           refreshProgress();
+        } else {
+          episodeError.value = true;
+          errorType.value = 'empty';
+          errorMessage.value = "No chapters found in ${source.name}";
+          searchedTitle.value = "No Chapters Found";
         }
         isLoading.value = false;
       }
@@ -709,7 +764,9 @@ class MediaDetailsController extends GetxController {
       if (_isStaleSourceRequest(reqId)) return;
       Logger.e('Failed to fetch source details from mapped media: $e');
       episodeError.value = true;
-      searchedTitle.value = "No Match Found";
+      errorType.value = 'detail';
+      errorMessage.value = e.toString();
+      searchedTitle.value = "Details Error";
       isLoading.value = false;
     }
   }

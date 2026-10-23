@@ -11,6 +11,8 @@ import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
+import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
+import 'package:anymex/widgets/common/content_error_widget.dart';
 import 'package:anymex/widgets/common/no_source.dart';
 import 'package:anymex/widgets/common/unified_source_section.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -112,34 +114,59 @@ class ChapterSection extends StatelessWidget {
 
   Widget _buildChapterListSliver(BuildContext context) {
     return Obx(() {
-      final chapters = chapterList ?? <Chapter>[];
-      if (chapterError.value) {
+      final controller = Get.find<MediaDetailsController>(tag: tag);
+      final chapters = chapterList ?? controller.chapterList;
+      final isLoading = controller.isLoading.value;
+      final hasError = chapterError.value || controller.episodeError.value;
+
+      if (isLoading) {
         return const SliverToBoxAdapter(
           child: Center(
             child: Padding(
-              padding: EdgeInsets.all(24),
-              child: AnymeXText('Error loading chapters from source'),
-            ),
-          ),
-        );
-      } else if (chapters.isEmpty) {
-        return const SliverToBoxAdapter(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.all(24),
+              padding: EdgeInsets.all(32),
               child: AnymeXProgressIndicator(),
             ),
           ),
         );
-      } else {
-        final controller = Get.find<MediaDetailsController>(tag: tag);
-        return ChapterListBuilder(
-          chapterList: chapters,
-          anilistData: anilistData is Media ? anilistData : null,
-          selectedScanlatorIndex: controller.selectedScanlatorIndex,
-          onSettingsTap: () => _showChapterSettingsDialog(context),
+      }
+
+      if (hasError || chapters.isEmpty) {
+        final isNovel = anilistData is Media &&
+            (anilistData as Media).mediaType == ItemType.novel;
+        return SliverToBoxAdapter(
+          child: ContentErrorWidget(
+            errorType: controller.errorType.value,
+            errorMessage: controller.errorMessage.value,
+            isManga: !isNovel,
+            onRetry: () => controller.retryFetch(),
+            onWrongTitle: () {
+              final media = anilistData is Media
+                  ? anilistData as Media
+                  : controller.media.value;
+              showWrongTitleModal(
+                context,
+                media.title,
+                (manga) async {
+                  controller.chapterList.clear();
+                  await controller.fetchSourceDetailsFromMedia(
+                    Media.froDMedia(manga, media.mediaType),
+                  );
+                },
+                isManga: !isNovel,
+                isNovel: isNovel,
+                mediaId: media.id.toString(),
+              );
+            },
+          ),
         );
       }
+
+      return ChapterListBuilder(
+        chapterList: chapters,
+        anilistData: anilistData is Media ? anilistData : null,
+        selectedScanlatorIndex: controller.selectedScanlatorIndex,
+        onSettingsTap: () => _showChapterSettingsDialog(context),
+      );
     });
   }
 

@@ -109,6 +109,12 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   void dispose() {
     pageController.dispose();
     Get.delete<MediaDetailsController>(tag: widget.tag);
+    final isPreloaded = CommentPreloader.to.isPreloaded(widget.media.uniqueId);
+    if (!isPreloaded &&
+        Get.isRegistered<CommentSectionController>(
+            tag: widget.media.uniqueId)) {
+      Get.delete<CommentSectionController>(tag: widget.media.uniqueId);
+    }
     super.dispose();
   }
 
@@ -651,10 +657,15 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
           ),
         ),
         SliverToBoxAdapter(
-          child: CommentInputBar(
-            controller: commentCtrl,
-            focusNode: commentCtrl.commentFocusNode,
-          ),
+          child: Obx(() {
+            if (!serviceHandler.isLoggedIn.value) {
+              return _buildLoginToCommentCard(context);
+            }
+            return CommentInputBar(
+              controller: commentCtrl,
+              focusNode: commentCtrl.commentFocusNode,
+            );
+          }),
         ),
         SliverToBoxAdapter(
           child: CommentSection(
@@ -666,6 +677,57 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 120)),
       ],
+    );
+  }
+
+  Widget _buildLoginToCommentCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return AnymeXContainer(
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      color: colorScheme.surfaceContainerHighest.opaque(0.25, iReallyMeanIt: true),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
+        width: 1,
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.lock_outline_rounded,
+            size: 22,
+            color: colorScheme.primary,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: AnymeXText(
+              'Log in to join the conversation and comment.',
+              size: 13,
+              color: colorScheme.onSurfaceVariant,
+              maxLines: 2,
+            ),
+          ),
+          const SizedBox(width: 12),
+          InkWell(
+            onTap: () => serviceHandler.login(context),
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: colorScheme.primary,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: AnymeXText(
+                'Log In',
+                size: 13,
+                variant: TextVariant.semiBold,
+                color: colorScheme.onPrimary,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
