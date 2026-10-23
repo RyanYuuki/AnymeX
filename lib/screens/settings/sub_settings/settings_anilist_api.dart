@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Anilist/anilist_user_settings.dart';
@@ -199,6 +200,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
   bool _aboutEditorExpanded = false;
   bool _aboutPreviewExpanded = true;
   String? _error;
+  String? _initialSnapshot;
   AnilistUserSettings? _settings;
 
   List<String> _titleLanguageValues = List.from(_fallbackTitleLanguageValues);
@@ -215,6 +217,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
 
   @override
   void dispose() {
+    _saveSettings();
     _aboutController.dispose();
     super.dispose();
   }
@@ -255,13 +258,18 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     final mediaFormats = List<String>.from(meta.mediaFormatValues);
     final animeSplit = _buildCompletedSectionsFromMediaFormats(mediaFormats, anime: true);
     final mangaSplit = _buildCompletedSectionsFromMediaFormats(mediaFormats, anime: false);
+    final applied = fetched.copyWith(
+      splitCompletedAnime: fetched.splitCompletedAnime ||
+          _hasAnySection(fetched.animeSectionOrder, animeSplit),
+      splitCompletedManga: fetched.splitCompletedManga ||
+          _hasAnySection(fetched.mangaSectionOrder, mangaSplit),
+    );
+    _initialSnapshot = jsonEncode(applied.copyWith(
+      about: _aboutController.text.trim().isEmpty ? null : _aboutController.text.trim(),
+      timezone: (applied.timezone ?? '').trim().isEmpty ? null : applied.timezone!.trim(),
+    ).toGraphQlVariables());
     setState(() {
-      _settings = fetched.copyWith(
-        splitCompletedAnime: fetched.splitCompletedAnime ||
-            _hasAnySection(fetched.animeSectionOrder, animeSplit),
-        splitCompletedManga: fetched.splitCompletedManga ||
-            _hasAnySection(fetched.mangaSectionOrder, mangaSplit),
-      );
+      _settings = applied;
       _titleLanguageValues = meta.titleLanguageValues.isEmpty
           ? List.from(_fallbackTitleLanguageValues)
           : List.from(meta.titleLanguageValues.where((v) => !v.contains('STYLISED')));
@@ -280,23 +288,41 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
   Future<void> _saveSettings() async {
     final current = _settings;
     if (current == null || _saving) return;
+    final aboutText = _aboutController.text;
     final updated = current.copyWith(
-      about: _aboutController.text.trim().isEmpty ? null : _aboutController.text.trim(),
+      about: aboutText.trim().isEmpty ? null : aboutText.trim(),
       timezone: (current.timezone ?? '').trim().isEmpty ? null : current.timezone!.trim(),
     );
-    setState(() { _saving = true; _error = null; });
+    final serialized = jsonEncode(updated.toGraphQlVariables());
+    if (_initialSnapshot != null && _initialSnapshot == serialized) return;
+    if (mounted) {
+      setState(() { _saving = true; _error = null; });
+    } else {
+      _saving = true;
+    }
     try {
       final saved = await _auth.updateUserSettings(updated);
-      setState(() { _settings = saved ?? updated; _saving = false; });
+      _initialSnapshot = jsonEncode((saved ?? updated).toGraphQlVariables());
+      if (mounted) {
+        setState(() { _settings = saved ?? updated; _saving = false; });
+      } else {
+        _settings = saved ?? updated;
+        _saving = false;
+      }
       final anilistData = Get.find<AnilistData>();
       anilistData.fetchAnilistHomepage();
       anilistData.fetchAnilistMangaPage();
       _auth.fetchUserAnimeList();
       _auth.fetchUserMangaList();
-      if (mounted) snackBar('Settings saved successfully.', snackPosition: SnackPosition.BOTTOM);
+      snackBar('Settings saved successfully.', snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
-      setState(() { _saving = false; _error = e.toString().replaceFirst('Exception: ', ''); });
-      if (mounted) snackBar(_error ?? 'Failed to save.', snackPosition: SnackPosition.BOTTOM);
+      if (mounted) {
+        setState(() { _saving = false; _error = e.toString().replaceFirst('Exception: ', ''); });
+      } else {
+        _saving = false;
+        _error = e.toString().replaceFirst('Exception: ', '');
+      }
+      snackBar(_error ?? 'Failed to save.', snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -558,7 +584,6 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                               _buildGeneralSection(),
                               _buildListSection(),
                               _buildOtherSection(),
-                              _buildSaveButton(),
                             ],
                           )
       )
@@ -880,20 +905,6 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
       ]),
     );
   }
-
-  Widget _buildSaveButton() => Padding(
-    padding: const EdgeInsets.only(top: 18),
-    child: SizedBox(width: double.infinity, child: FilledButton.icon(
-      onPressed: _saving ? null : _saveSettings,
-      icon: _saving
-          ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-          : const Icon(Icons.save_rounded),
-      label: AnymeXText(_saving ? 'Saving...' : 'Save AniList Settings'),
-      style: FilledButton.styleFrom(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        padding: const EdgeInsets.symmetric(vertical: 14)),
-    )),
-  );
 
   Widget _buildError() => Center(child: Padding(
     padding: const EdgeInsets.all(24),
