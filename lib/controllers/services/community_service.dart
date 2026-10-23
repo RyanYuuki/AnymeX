@@ -1247,6 +1247,8 @@ class CommunityMedia {
     return CarouselData(
       id: media.id.toString(),
       title: displayTitle,
+      romajiTitle: media.romajiTitle,
+      englishTitle: media.title,
       poster: media.poster,
       extraData: media.rating.toString(),
       servicesType: media.serviceType,

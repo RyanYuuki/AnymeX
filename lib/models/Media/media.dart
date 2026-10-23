@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/database/isar_models/chapter.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -21,12 +22,32 @@ class Media {
   MediaIds? mediaIds;
   String title;
   String romajiTitle;
+  String? nativeTitle;
+  String? englishTitle;
 
   String get displayTitle {
     if (Get.isRegistered<Settings>() &&
         Get.find<Settings>().useAlternateTitle.value) {
       if (romajiTitle.isNotEmpty && romajiTitle != '?') {
         return romajiTitle;
+      }
+    }
+    if (Get.isRegistered<AnilistAuth>() &&
+        Get.find<AnilistAuth>().isLoggedIn.value) {
+      final lang =
+          Get.find<AnilistAuth>().cachedSettings?.titleLanguage?.toUpperCase();
+      if (lang == 'ROMAJI' && romajiTitle.isNotEmpty && romajiTitle != '?') {
+        return romajiTitle;
+      } else if (lang == 'NATIVE' &&
+          nativeTitle != null &&
+          nativeTitle!.isNotEmpty &&
+          nativeTitle != '?') {
+        return nativeTitle!;
+      } else if (lang == 'ENGLISH' &&
+          englishTitle != null &&
+          englishTitle!.isNotEmpty &&
+          englishTitle != '?') {
+        return englishTitle!;
       }
     }
     return title;
@@ -84,6 +105,8 @@ class Media {
       this.title = '?',
       this.color = '',
       this.romajiTitle = '?',
+      this.nativeTitle,
+      this.englishTitle,
       this.description = '?',
       this.poster = '?',
       this.largePoster = '?',
@@ -128,7 +151,9 @@ class Media {
       mediaId: id,
       idMal: idMal,
       name: title,
+      english: englishTitle ?? (title != romajiTitle ? title : null) ?? title,
       jname: romajiTitle,
+      japanese: nativeTitle ?? romajiTitle,
       description: description,
       poster: poster,
       cover: cover,
@@ -193,19 +218,31 @@ class Media {
     }
 
     final dynamic rawTitle = node['title'];
-    final String parsedTitle = (rawTitle is Map)
-        ? (rawTitle['english']?.toString() ??
-            rawTitle['romaji']?.toString() ??
-            rawTitle['native']?.toString() ??
-            '??')
-        : (rawTitle?.toString() ?? '??');
-
     final dynamic rawAltTitles = node['alternative_titles'];
-    final String parsedRomaji = (rawAltTitles is Map)
+    final String? englishCandidate = (rawAltTitles is Map)
         ? (rawAltTitles['en']?.toString() ??
-            rawAltTitles['english']?.toString() ??
-            '??')
-        : '??';
+            rawAltTitles['english']?.toString())
+        : null;
+    final String? romajiCandidate = (rawTitle is Map)
+        ? (rawTitle['romaji']?.toString() ??
+            rawTitle['userPreferred']?.toString() ??
+            rawTitle['english']?.toString())
+        : rawTitle?.toString();
+    final String parsedTitle =
+        (englishCandidate != null && englishCandidate.trim().isNotEmpty)
+            ? englishCandidate
+            : (romajiCandidate != null && romajiCandidate.trim().isNotEmpty)
+                ? romajiCandidate
+                : '??';
+    final String parsedRomaji =
+        (romajiCandidate != null && romajiCandidate.trim().isNotEmpty)
+            ? romajiCandidate
+            : (englishCandidate != null && englishCandidate.trim().isNotEmpty)
+                ? englishCandidate
+                : '??';
+    final String? parsedNative = (rawAltTitles is Map)
+        ? rawAltTitles['ja']?.toString()
+        : null;
 
     final dynamic rawMainPic = node['main_picture'];
     final String parsedPoster = (rawMainPic is Map)
@@ -250,6 +287,7 @@ class Media {
       id: node['id']?.toString() ?? '0',
       title: parsedTitle,
       romajiTitle: parsedRomaji,
+      nativeTitle: parsedNative,
       description: node['synopsis']?.toString() ?? '??',
       poster: parsedPoster,
       cover: parsedCover,
@@ -289,10 +327,27 @@ class Media {
   }
 
   factory Media.fromJikan(Map<String, dynamic> json, {bool isManga = false}) {
+    final String? jikanTitle = json['title']?.toString();
+    final String? jikanEnglish = json['title_english']?.toString();
+    final String? jikanJapanese = json['title_japanese']?.toString();
+    final String parsedTitle =
+        (jikanEnglish != null && jikanEnglish.trim().isNotEmpty)
+            ? jikanEnglish
+            : (jikanTitle != null && jikanTitle.trim().isNotEmpty)
+                ? jikanTitle
+                : '??';
+    final String parsedRomaji =
+        (jikanTitle != null && jikanTitle.trim().isNotEmpty)
+            ? jikanTitle
+            : (jikanEnglish != null && jikanEnglish.trim().isNotEmpty)
+                ? jikanEnglish
+                : '??';
+
     return Media(
       id: json['mal_id']?.toString() ?? '0',
-      title: json['title'] ?? '??',
-      romajiTitle: json['title_english'] ?? json['title'] ?? '??',
+      title: parsedTitle,
+      romajiTitle: parsedRomaji,
+      nativeTitle: jikanJapanese,
       description: json['synopsis'] ?? '??',
       poster: json['images']?['jpg']?['image_url'] ?? '??',
       cover: json['images']?['jpg']?['large_image_url'] ??
@@ -368,19 +423,31 @@ class Media {
     }
 
     final dynamic rawTitle = node['title'];
-    final String parsedTitle = (rawTitle is Map)
-        ? (rawTitle['english']?.toString() ??
-            rawTitle['romaji']?.toString() ??
-            rawTitle['native']?.toString() ??
-            '??')
-        : (rawTitle?.toString() ?? '??');
-
     final dynamic rawAltTitles = node['alternative_titles'];
-    final String parsedRomaji = (rawAltTitles is Map)
+    final String? englishCandidate = (rawAltTitles is Map)
         ? (rawAltTitles['en']?.toString() ??
-            rawAltTitles['english']?.toString() ??
-            '??')
-        : '??';
+            rawAltTitles['english']?.toString())
+        : null;
+    final String? romajiCandidate = (rawTitle is Map)
+        ? (rawTitle['romaji']?.toString() ??
+            rawTitle['userPreferred']?.toString() ??
+            rawTitle['english']?.toString())
+        : rawTitle?.toString();
+    final String parsedTitle =
+        (englishCandidate != null && englishCandidate.trim().isNotEmpty)
+            ? englishCandidate
+            : (romajiCandidate != null && romajiCandidate.trim().isNotEmpty)
+                ? romajiCandidate
+                : '??';
+    final String parsedRomaji =
+        (romajiCandidate != null && romajiCandidate.trim().isNotEmpty)
+            ? romajiCandidate
+            : (englishCandidate != null && englishCandidate.trim().isNotEmpty)
+                ? englishCandidate
+                : '??';
+    final String? parsedNative = (rawAltTitles is Map)
+        ? rawAltTitles['ja']?.toString()
+        : null;
 
     final dynamic rawMainPic = node['main_picture'];
     final String parsedPoster = (rawMainPic is Map)
@@ -450,6 +517,7 @@ class Media {
       id: node['id']?.toString() ?? '0',
       title: parsedTitle,
       romajiTitle: parsedRomaji,
+      nativeTitle: parsedNative,
       description: node['synopsis']?.toString() ?? '??',
       poster: parsedPoster,
       cover: parsedCover,
@@ -792,10 +860,16 @@ class Media {
       }
     }
 
+    final simklTitle = json['title']?.toString() ?? 'Unknown Title';
+    final simklEnTitle = json['en_title']?.toString();
+    final parsedSimklTitle = (simklEnTitle != null && simklEnTitle.trim().isNotEmpty)
+        ? simklEnTitle
+        : simklTitle;
+
     return Media(
       id: '${json['ids']?['simkl_id']?.toString() ?? json['ids']?['simkl']?.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
-      title: json['title'] ?? 'Unknown Title',
-      romajiTitle: json['title'] ?? 'Unknown Romaji Title',
+      title: parsedSimklTitle,
+      romajiTitle: simklTitle,
       description: json['overview'] ?? 'No description available.',
       poster: json['poster'] != null
           ? 'https://wsrv.nl/?url=https://simkl.in/posters/${json['poster']}_m.jpg'
@@ -862,8 +936,12 @@ class Media {
     final status = json['status']?.toString();
     final rating = json['ratings']?['simkl']?['rating']?.toString();
     final rank = json['rank']?.toString();
-    final title = json['title']?.toString() ?? 'Unknown Title';
-    final romaji = json['title_romaji']?.toString() ?? title;
+    final rawTitle = json['title']?.toString() ?? 'Unknown Title';
+    final rawEnTitle = json['en_title']?.toString();
+    final title = (rawEnTitle != null && rawEnTitle.isNotEmpty)
+        ? rawEnTitle
+        : rawTitle;
+    final romaji = json['title_romaji']?.toString() ?? rawTitle;
 
     return Media(
       id: '$simklId*${isMovie ? "MOVIE" : "SERIES"}',
@@ -949,10 +1027,16 @@ class Media {
         ? rawRating.toString()
         : '0.0';
 
+    final simklSmallTitle = json['title']?.toString() ?? 'Unknown Title';
+    final simklSmallEnTitle = json['en_title']?.toString();
+    final parsedSimklSmallTitle = (simklSmallEnTitle != null && simklSmallEnTitle.trim().isNotEmpty)
+        ? simklSmallEnTitle
+        : simklSmallTitle;
+
     return Media(
       id: '${json['ids']?['simkl_id']?.toString() ?? json['ids']?['simkl']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString()}*${isMovie ? "MOVIE" : "SERIES"}',
-      title: json['title'] ?? 'Unknown Title',
-      romajiTitle: json['title'] ?? 'Unknown Title',
+      title: parsedSimklSmallTitle,
+      romajiTitle: simklSmallTitle,
       description:
           json['overview'] ?? json['plot'] ?? 'No description available.',
       poster: posterUrl,
@@ -1083,15 +1167,49 @@ class Media {
     }
 
     final titleVal = json['title'];
-    final String parsedTitle = (titleVal is Map)
-        ? (titleVal['userPreferred']?.toString() ??
-            titleVal['english']?.toString() ??
-            titleVal['romaji']?.toString() ??
-            '??')
-        : (titleVal?.toString() ?? '??');
-    final String parsedRomaji = (titleVal is Map)
-        ? (titleVal['romaji']?.toString() ?? '??')
-        : (titleVal?.toString() ?? '??');
+    final String? rawEnglish =
+        (titleVal is Map) ? titleVal['english']?.toString() : null;
+    final String? rawRomaji =
+        (titleVal is Map) ? titleVal['romaji']?.toString() : null;
+    final String? rawNative =
+        (titleVal is Map) ? titleVal['native']?.toString() : null;
+    final String? rawUserPref =
+        (titleVal is Map) ? titleVal['userPreferred']?.toString() : null;
+
+    final String? anilistTitleLang = (Get.isRegistered<AnilistAuth>() &&
+            Get.find<AnilistAuth>().isLoggedIn.value)
+        ? Get.find<AnilistAuth>().cachedSettings?.titleLanguage?.toUpperCase()
+        : null;
+
+    final String parsedEnglish =
+        (rawEnglish != null && rawEnglish.trim().isNotEmpty)
+            ? rawEnglish
+            : (rawUserPref != null && rawUserPref.trim().isNotEmpty)
+                ? rawUserPref
+                : (rawRomaji != null && rawRomaji.trim().isNotEmpty)
+                    ? rawRomaji
+                    : (titleVal is String && titleVal.trim().isNotEmpty)
+                        ? titleVal
+                        : '??';
+
+    final String parsedRomaji =
+        (rawRomaji != null && rawRomaji.trim().isNotEmpty)
+            ? rawRomaji
+            : (rawUserPref != null && rawUserPref.trim().isNotEmpty)
+                ? rawUserPref
+                : (rawEnglish != null && rawEnglish.trim().isNotEmpty)
+                    ? rawEnglish
+                    : (titleVal is String && titleVal.trim().isNotEmpty)
+                        ? titleVal
+                        : '??';
+
+    final String parsedTitle = (anilistTitleLang == 'ROMAJI')
+        ? parsedRomaji
+        : (anilistTitleLang == 'NATIVE')
+            ? (rawNative != null && rawNative.trim().isNotEmpty
+                ? rawNative
+                : parsedRomaji)
+            : parsedEnglish;
 
     final coverVal = json['coverImage'];
     final String parsedPoster = (coverVal is Map)
@@ -1144,6 +1262,8 @@ class Media {
       idMal: json['idMal']?.toString() ?? '0',
       romajiTitle: parsedRomaji,
       title: parsedTitle,
+      nativeTitle: rawNative,
+      englishTitle: parsedEnglish,
       description: json['description']?.toString() ?? '?',
       poster: parsedPoster,
       isAdult: json['isAdult'] ?? false,
@@ -1234,13 +1354,57 @@ class Media {
     if (json['type'] == 'MANGA') {
       // Logger.i('Parsing MANGA: ${json['title']['romaji']}');
     }
+    final titleMap = json['title'];
+    final String? rawEnglish =
+        (titleMap is Map) ? titleMap['english']?.toString() : null;
+    final String? rawRomaji =
+        (titleMap is Map) ? titleMap['romaji']?.toString() : null;
+    final String? rawNative =
+        (titleMap is Map) ? titleMap['native']?.toString() : null;
+    final String? rawUserPref =
+        (titleMap is Map) ? titleMap['userPreferred']?.toString() : null;
+
+    final String? anilistTitleLang = (Get.isRegistered<AnilistAuth>() &&
+            Get.find<AnilistAuth>().isLoggedIn.value)
+        ? Get.find<AnilistAuth>().cachedSettings?.titleLanguage?.toUpperCase()
+        : null;
+
+    final String parsedEnglish =
+        (rawEnglish != null && rawEnglish.trim().isNotEmpty)
+            ? rawEnglish
+            : (rawUserPref != null && rawUserPref.trim().isNotEmpty)
+                ? rawUserPref
+                : (rawRomaji != null && rawRomaji.trim().isNotEmpty)
+                    ? rawRomaji
+                    : (titleMap is String && titleMap.trim().isNotEmpty)
+                        ? titleMap
+                        : '?';
+
+    final String parsedRomaji =
+        (rawRomaji != null && rawRomaji.trim().isNotEmpty)
+            ? rawRomaji
+            : (rawUserPref != null && rawUserPref.trim().isNotEmpty)
+                ? rawUserPref
+                : (rawEnglish != null && rawEnglish.trim().isNotEmpty)
+                    ? rawEnglish
+                    : (titleMap is String && titleMap.trim().isNotEmpty)
+                        ? titleMap
+                        : '?';
+
+    final String parsedTitle = (anilistTitleLang == 'ROMAJI')
+        ? parsedRomaji
+        : (anilistTitleLang == 'NATIVE')
+            ? (rawNative != null && rawNative.trim().isNotEmpty
+                ? rawNative
+                : parsedRomaji)
+            : parsedEnglish;
+
     return Media(
       id: (isMal ? json['idMal']?.toString() : json['id'].toString()) ?? '',
-      romajiTitle: json['title']['romaji'] ?? '?',
-      title: json['title']['userPreferred'] ??
-          json['title']['english'] ??
-          json['title']['romaji'] ??
-          '?',
+      romajiTitle: parsedRomaji,
+      title: parsedTitle,
+      nativeTitle: rawNative,
+      englishTitle: parsedEnglish,
       description: json['description'] ?? '',
       isAdult: (json['isAdult'] as bool?) ?? false,
       totalEpisodes: (json['episodes'] as int?)?.toString() ?? '?',
@@ -1257,14 +1421,10 @@ class Media {
       characterRole: role,
       seasonYear: json['seasonYear'] ?? json['startDate']?['year'],
       synonyms: {
-        if (json['title']?['english'] != null)
-          json['title']['english'].toString(),
-        if (json['title']?['userPreferred'] != null)
-          json['title']['userPreferred'].toString(),
-        if (json['title']?['romaji'] != null)
-          json['title']['romaji'].toString(),
-        if (json['title']?['native'] != null)
-          json['title']['native'].toString(),
+        if (rawEnglish != null) rawEnglish,
+        if (rawUserPref != null) rawUserPref,
+        if (rawRomaji != null) rawRomaji,
+        if (rawNative != null) rawNative,
         ...?((json['synonyms'] as List?)?.cast<String>()),
       }.where((t) => t.isNotEmpty && t != '??' && t != '?').toList(),
     )..type = json['type'] ?? (isManga ? 'MANGA' : 'ANIME');
@@ -1272,8 +1432,9 @@ class Media {
   factory Media.fromCarouselData(CarouselData data, ItemType type) {
     return Media(
         id: data.id!.toString(),
-        romajiTitle: data.title ?? '?',
-        title: data.title ?? '?',
+        romajiTitle: data.romajiTitle ?? data.title ?? '?',
+        englishTitle: data.englishTitle ?? data.title ?? '?',
+        title: data.title ?? data.englishTitle ?? '?',
         poster: data.poster ?? '?',
         rating: data.extraData ?? '0.0',
         mediaType: type,
@@ -1291,12 +1452,30 @@ class Media {
           serviceType: ServicesType.anilist);
     }
     final title = rec['title'];
+    final String? recEnglish =
+        (title is Map) ? title['english']?.toString() : null;
+    final String? recRomaji =
+        (title is Map) ? title['romaji']?.toString() : null;
+    final String? recUserPref =
+        (title is Map) ? title['userPreferred']?.toString() : null;
+    final parsedTitle = (recEnglish != null && recEnglish.trim().isNotEmpty)
+        ? recEnglish
+        : (recUserPref != null && recUserPref.trim().isNotEmpty)
+            ? recUserPref
+            : (recRomaji != null && recRomaji.trim().isNotEmpty)
+                ? recRomaji
+                : '';
+    final parsedRomaji = (recRomaji != null && recRomaji.trim().isNotEmpty)
+        ? recRomaji
+        : (recUserPref != null && recUserPref.trim().isNotEmpty)
+            ? recUserPref
+            : (recEnglish != null && recEnglish.trim().isNotEmpty)
+                ? recEnglish
+                : '';
     return Media(
         id: rec['id'].toString(),
-        title: title?['userPreferred'] ??
-            title?['english'] ??
-            title?['romaji'] ??
-            '',
+        title: parsedTitle,
+        romajiTitle: parsedRomaji,
         poster: rec['coverImage']?['large'] ?? '',
         rating: ((rec['averageScore'] ?? 0) / 10).toString(),
         serviceType: ServicesType.anilist);
@@ -1306,8 +1485,10 @@ class Media {
     return Media(
       id: offline.mediaId.toString(),
       idMal: offline.idMal ?? '0',
-      title: offline.name ?? offline.english ?? offline.jname ?? '?',
-      romajiTitle: offline.jname ?? '?',
+      title: offline.displayTitle,
+      englishTitle: offline.english ?? offline.name,
+      romajiTitle: offline.jname ?? offline.japanese ?? offline.name ?? '?',
+      nativeTitle: offline.japanese,
       description: offline.description ?? '?',
       poster: offline.poster ?? '?',
       cover: offline.cover,

@@ -52,7 +52,7 @@ class CardData {
   factory CardData.fromTrackedMedia(TrackedMedia data) {
     return CardData(
       id: data.id ?? '',
-      title: data.title ?? '',
+      title: data.displayTitle,
       poster: data.poster ?? '',
       episodeCount: data.effectiveProgress.toString(),
       rating: data.rating,
@@ -146,6 +146,8 @@ class GridAnimeCard extends StatelessWidget {
     final carouselData = CarouselData(
       id: media.id,
       title: media.title,
+      romajiTitle: media.data.romajiTitle,
+      englishTitle: media.data.title,
       poster: media.poster,
       extraData: extraData,
       source: (media.data.sourceId != null && media.data.sourceId != 'N/A')

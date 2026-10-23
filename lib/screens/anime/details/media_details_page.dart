@@ -534,7 +534,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          media.title.isNotEmpty ? media.title : 'Comments',
+                          media.displayTitle.isNotEmpty ? media.displayTitle : 'Comments',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           size: 15,

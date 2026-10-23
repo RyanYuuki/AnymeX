@@ -24,6 +24,8 @@ extension DMediaMapper on DMedia {
     return CarouselData(
         id: url,
         title: title,
+        romajiTitle: title,
+        englishTitle: title,
         poster: cover,
         extraData: '??',
         source: sourceId ?? activeSource?.id,
@@ -39,7 +41,9 @@ extension OfflineMediaMapper on OfflineMedia {
   }) {
     return CarouselData(
         id: mediaId,
-        title: name,
+        title: displayTitle,
+        romajiTitle: jname ?? japanese,
+        englishTitle: english ?? name,
         poster: poster,
         source: currentChapter?.sourceName ?? currentEpisode?.source,
         servicesType: ServicesType.values[serviceIndex ?? 0],
@@ -55,6 +59,8 @@ extension RelationMapper on Relation {
     return CarouselData(
       id: id.toString(),
       title: title,
+      romajiTitle: title,
+      englishTitle: title,
       poster: poster,
       source: type,
       servicesType: ServicesType.anilist,
@@ -70,7 +76,9 @@ extension TrackedMediaMapper on TrackedMedia {
       {DataVariant variant = DataVariant.anilist, bool isManga = false}) {
     return CarouselData(
         id: id.toString(),
-        title: title,
+        title: displayTitle,
+        romajiTitle: romajiTitle,
+        englishTitle: title,
         poster: poster,
         servicesType: servicesType,
         extraData: formattedProgress,
@@ -83,7 +91,9 @@ extension MediaMapper on Media {
       {DataVariant variant = DataVariant.regular, bool isManga = false}) {
     return CarouselData(
         id: id.toString(),
-        title: title,
+        title: displayTitle,
+        romajiTitle: romajiTitle,
+        englishTitle: title,
         servicesType: serviceType,
         poster: poster,
         extraData: rating.toString(),
@@ -96,6 +106,8 @@ extension CommunityMediaMapper on CommunityMedia {
     return CarouselData(
         id: media.id.toString(),
         title: displayTitle,
+        romajiTitle: media.romajiTitle,
+        englishTitle: media.title,
         servicesType: ServicesType.anilist,
         poster: media.poster,
         extraData: media.rating.toString(),

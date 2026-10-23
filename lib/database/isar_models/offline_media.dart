@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/database/isar_models/track.dart';
 import 'package:anymex/database/isar_models/video.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -39,7 +40,19 @@ class OfflineMedia {
         return alt;
       }
     }
-    return name ?? '?';
+    if (Get.isRegistered<AnilistAuth>() &&
+        Get.find<AnilistAuth>().isLoggedIn.value) {
+      final lang =
+          Get.find<AnilistAuth>().cachedSettings?.titleLanguage?.toUpperCase();
+      if (lang == 'ROMAJI' && (jname?.isNotEmpty ?? false)) {
+        return jname!;
+      } else if (lang == 'NATIVE' && (japanese?.isNotEmpty ?? false)) {
+        return japanese!;
+      } else if (lang == 'ENGLISH' && (english?.isNotEmpty ?? false)) {
+        return english!;
+      }
+    }
+    return english ?? name ?? '?';
   }
 
   @ignore
@@ -216,8 +229,10 @@ class OfflineMedia {
     return Media(
       id: mediaId ?? '',
       idMal: idMal ?? '',
-      title: name ?? '',
-      romajiTitle: jname ?? japanese ?? '',
+      title: displayTitle,
+      englishTitle: english ?? name,
+      romajiTitle: jname ?? japanese ?? name ?? '',
+      nativeTitle: japanese,
       description: description ?? '',
       poster: poster ?? '',
       cover: cover,

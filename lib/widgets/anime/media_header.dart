@@ -101,7 +101,7 @@ class MediaHeader extends StatelessWidget {
                   onTap: () {
                     Get.to(
                       () => VisualsPopup(
-                        animeTitle: data?.title ?? 'Unknown',
+                        animeTitle: data?.displayTitle ?? data?.title ?? 'Unknown',
                         malId: data?.idMal.toString() ?? data?.id.toString(),
                         originalCover: posterUrl,
                         isAnime: data?.mediaType.name.toUpperCase() == 'ANIME',
@@ -150,11 +150,11 @@ class MediaHeader extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onLongPress: () {
-                          final title = data?.title ?? 'Loading...';
+                          final title = data?.displayTitle ?? data?.title ?? 'Loading...';
                           Clipboard.setData(ClipboardData(text: title));
                           snackBar('Title copied');
                         },
-                        child: AnymeXText(data?.title ?? 'Loading...',
+                        child: AnymeXText(data?.displayTitle ?? data?.title ?? 'Loading...',
                           variant: TextVariant.bold,
                           size: isDesktop ? 28 : 20,
                           maxLines: 3,
