@@ -45,6 +45,10 @@
 -keep interface androidx.preference.** { *; }
 -keep class androidx.fragment.** { *; }
 -keep class androidx.core.** { *; }
+-keep class androidx.savedstate.** { *; }
+-keep interface androidx.savedstate.** { *; }
+-keep class androidx.activity.** { *; }
+-keep interface androidx.activity.** { *; }
 
 # Kotlin Runtime & Serialization
 -keep class ** implements kotlin.Metadata
