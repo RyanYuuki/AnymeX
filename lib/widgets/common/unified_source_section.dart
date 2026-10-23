@@ -80,7 +80,9 @@ class UnifiedSourceSection extends StatelessWidget {
                 child: AnymeXText(searchedTitle,
                   variant: TextVariant.semiBold,
                   size: 13,
-                  color: searchedTitle.contains('No Match Found')
+                  color: searchedTitle.contains('No Match Found') ||
+                          searchedTitle.contains('Error') ||
+                          searchedTitle.contains('Failed')
                       ? colors.error
                       : colors.primary,
                   maxLines: 1,

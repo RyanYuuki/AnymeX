@@ -40,6 +40,7 @@ class CommentSectionController extends GetxController
   final Rx<String> tag = ''.obs;
   final Rx<String> commentContent = ''.obs;
   final FocusNode commentFocusNode = FocusNode();
+  bool _isDisposed = false;
 
   final RxList<Comment> comments = <Comment>[].obs;
   final RxBool isLoading = false.obs;
@@ -63,6 +64,10 @@ class CommentSectionController extends GetxController
   String? _preEditDraft;
 
   void setReplyTarget(Comment comment) {
+    if (!isLoggedIn) {
+      snackBar('You need to be logged in to reply');
+      return;
+    }
     if (activeEditComment.value != null) {
       cancelEdit();
     }
@@ -85,10 +90,18 @@ class CommentSectionController extends GetxController
     activeEditComment.value = null;
     commentController.text = _preEditDraft ?? '';
     _preEditDraft = null;
-    commentFocusNode.unfocus();
+    try {
+      if (!_isDisposed && !isClosed && commentFocusNode.hasFocus) {
+        commentFocusNode.unfocus();
+      }
+    } catch (_) {}
   }
 
   Future<void> submitEdit() async {
+    if (!isLoggedIn) {
+      snackBar('You need to be logged in to edit comments');
+      return;
+    }
     final comment = activeEditComment.value;
     if (comment == null) return;
     final newContent = commentController.text.trim();
@@ -106,28 +119,43 @@ class CommentSectionController extends GetxController
       activeEditComment.value = null;
       commentController.clear();
       _preEditDraft = null;
-      commentFocusNode.unfocus();
+      try {
+        if (!_isDisposed && !isClosed) {
+          commentFocusNode.unfocus();
+        }
+      } catch (_) {}
     } finally {
       isSubmitting.value = false;
     }
   }
 
   void focusCommentInput([FocusNode? targetNode]) {
+    if (_isDisposed || isClosed) return;
     final node = targetNode ?? commentFocusNode;
-    if (node.hasFocus) {
-      node.unfocus();
+    try {
+      if (node.hasFocus) {
+        node.unfocus();
+      }
+    } catch (_) {
+      return;
     }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (node.canRequestFocus) {
-        node.requestFocus();
-        SystemChannels.textInput.invokeMethod('TextInput.show');
-      }
+      if (_isDisposed || isClosed) return;
+      try {
+        if (node.canRequestFocus) {
+          node.requestFocus();
+          SystemChannels.textInput.invokeMethod('TextInput.show');
+        }
+      } catch (_) {}
     });
     Future.delayed(const Duration(milliseconds: 100), () {
-      if (node.canRequestFocus) {
-        node.requestFocus();
-        SystemChannels.textInput.invokeMethod('TextInput.show');
-      }
+      if (_isDisposed || isClosed) return;
+      try {
+        if (node.canRequestFocus) {
+          node.requestFocus();
+          SystemChannels.textInput.invokeMethod('TextInput.show');
+        }
+      } catch (_) {}
     });
   }
 
@@ -171,6 +199,10 @@ class CommentSectionController extends GetxController
 
   @override
   void onClose() {
+    _isDisposed = true;
+    try {
+      commentFocusNode.removeListener(_handleFocusChange);
+    } catch (_) {}
     expandController.dispose();
     fadeController.dispose();
     commentController.dispose();
@@ -194,11 +226,14 @@ class CommentSectionController extends GetxController
   }
 
   void _handleFocusChange() {
-    if (commentFocusNode.hasFocus && !isInputExpanded.value) {
-      isInputExpanded.value = true;
-      expandController.forward();
-      fadeController.forward();
-    }
+    if (_isDisposed || isClosed) return;
+    try {
+      if (commentFocusNode.hasFocus && !isInputExpanded.value) {
+        isInputExpanded.value = true;
+        expandController.forward();
+        fadeController.forward();
+      }
+    } catch (_) {}
   }
 
   Future<void> _checkUserRole() async {
@@ -475,6 +510,10 @@ class CommentSectionController extends GetxController
   }
 
   Future<void> addReply(Comment parentComment, String replyContent) async {
+    if (!isLoggedIn) {
+      snackBar('You need to be logged in to reply');
+      return;
+    }
     if (replyContent.trim().isEmpty || isSubmitting.value) return;
 
     isSubmitting.value = true;
@@ -510,6 +549,10 @@ class CommentSectionController extends GetxController
   }
 
   Future<void> addComment() async {
+    if (!isLoggedIn) {
+      snackBar('You need to be logged in to comment');
+      return;
+    }
     if (commentController.text.trim().isEmpty || isSubmitting.value) return;
 
     isSubmitting.value = true;
@@ -537,6 +580,10 @@ class CommentSectionController extends GetxController
   }
 
   Future<void> submitCurrentText() async {
+    if (!isLoggedIn) {
+      snackBar('You need to be logged in to comment');
+      return;
+    }
     final text = commentController.text.trim();
     if (text.isEmpty || isSubmitting.value) return;
 
@@ -560,7 +607,11 @@ class CommentSectionController extends GetxController
     _preEditDraft = null;
     expandController.reverse();
     fadeController.reverse();
-    commentFocusNode.unfocus();
+    try {
+      if (!_isDisposed && !isClosed && commentFocusNode.hasFocus) {
+        commentFocusNode.unfocus();
+      }
+    } catch (_) {}
   }
 
   void setSort(String sort) {

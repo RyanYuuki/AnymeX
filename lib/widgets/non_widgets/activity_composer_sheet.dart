@@ -81,11 +81,16 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(_onFocusChange);
+    try {
+      _focusNode.addListener(_onFocusChange);
+    } catch (_) {}
     if (widget.isModal) {
       _isExpanded = true;
       Future.delayed(const Duration(milliseconds: 250), () {
-        if (mounted) _focusNode.requestFocus();
+        if (!mounted) return;
+        try {
+          if (_focusNode.canRequestFocus) _focusNode.requestFocus();
+        } catch (_) {}
       });
     }
     if (widget.initialText != null && widget.textController == null) {
@@ -99,7 +104,9 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
 
   void cancelAction() {
     _textController.clear();
-    _focusNode.unfocus();
+    try {
+      if (_focusNode.hasFocus) _focusNode.unfocus();
+    } catch (_) {}
     setState(() {
       _isExpanded = false;
       _previewMode = false;
@@ -108,14 +115,19 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
   }
 
   void _onFocusChange() {
-    if (_focusNode.hasFocus) {
-      if (!_isExpanded && mounted) setState(() => _isExpanded = true);
-    }
+    if (!mounted) return;
+    try {
+      if (_focusNode.hasFocus) {
+        if (!_isExpanded && mounted) setState(() => _isExpanded = true);
+      }
+    } catch (_) {}
   }
 
   @override
   void dispose() {
-    _focusNode.removeListener(_onFocusChange);
+    try {
+      _focusNode.removeListener(_onFocusChange);
+    } catch (_) {}
     _internalTextController?.dispose();
     _internalFocusNode?.dispose();
     super.dispose();

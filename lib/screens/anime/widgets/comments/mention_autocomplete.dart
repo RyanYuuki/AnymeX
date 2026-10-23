@@ -174,7 +174,12 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
   }
 
   void _showOverlay() {
-    if (!mounted || !widget.focusNode.hasFocus) return;
+    if (!mounted) return;
+    try {
+      if (!widget.focusNode.hasFocus) return;
+    } catch (_) {
+      return;
+    }
 
     final colorScheme = Theme.of(context).colorScheme;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -425,19 +430,25 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
   }
 
   void _onFocusChange() {
-    if (!widget.focusNode.hasFocus) {
-      _hideOverlay();
-      _currentQuery = '';
-    }
+    try {
+      if (!widget.focusNode.hasFocus) {
+        _hideOverlay();
+        _currentQuery = '';
+      }
+    } catch (_) {}
   }
 
   @override
   void dispose() {
     widget.controller.removeListener(_onTextChanged);
-    widget.focusNode.removeListener(_onFocusChange);
-    if (widget.focusNode.onKeyEvent == _handleKeyEvent) {
-      widget.focusNode.onKeyEvent = null;
-    }
+    try {
+      widget.focusNode.removeListener(_onFocusChange);
+    } catch (_) {}
+    try {
+      if (widget.focusNode.onKeyEvent == _handleKeyEvent) {
+        widget.focusNode.onKeyEvent = null;
+      }
+    } catch (_) {}
     _debounce?.cancel();
     _hideOverlay();
     super.dispose();

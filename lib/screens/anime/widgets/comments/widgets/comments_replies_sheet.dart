@@ -14,6 +14,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/discord_badge_widget.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -624,6 +625,10 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                                 isNestedSubReply: false,
                                 rootComment: latestParent,
                                 onReplyTap: () {
+                                  if (!controller.isLoggedIn) {
+                                    snackBar('You need to be logged in to reply');
+                                    return;
+                                  }
                                   controller.setReplyTarget(latestParent);
                                   controller.focusCommentInput(_sheetFocusNode);
                                 },
@@ -661,6 +666,10 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                               parentComment: parentComment,
                               rootComment: latestParent,
                               onReplyTap: () {
+                                if (!controller.isLoggedIn) {
+                                  snackBar('You need to be logged in to reply');
+                                  return;
+                                }
                                 controller.setReplyTarget(reply);
                                 controller.focusCommentInput(_sheetFocusNode);
                               },
@@ -674,13 +683,39 @@ class _CommentsRepliesSheetState extends State<CommentsRepliesSheet> {
                 // Bottom Pinned Input Bar — floats above keyboard
                 Padding(
                   padding: EdgeInsets.only(bottom: keyboardInset),
-                  child: CommentInputBar(
-                    controller: controller,
-                    focusNode: _sheetFocusNode,
-                    onSubmitted: () {
-                      // Scroll to bottom or keep in view
-                    },
-                  ),
+                  child: Obx(() {
+                    if (!controller.isLoggedIn) {
+                      return Container(
+                        margin: const EdgeInsets.fromLTRB(14, 8, 14, 12),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest
+                              .opaque(0.2, iReallyMeanIt: true),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: colorScheme.onSurface
+                                .opaque(0.08, iReallyMeanIt: true),
+                            width: 1,
+                          ),
+                        ),
+                        child: AnymeXText(
+                          'You need to be logged in to reply.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: null,
+                        ),
+                      );
+                    }
+                    return CommentInputBar(
+                      controller: controller,
+                      focusNode: _sheetFocusNode,
+                      onSubmitted: () {},
+                    );
+                  }),
                 ),
         ],
       ),

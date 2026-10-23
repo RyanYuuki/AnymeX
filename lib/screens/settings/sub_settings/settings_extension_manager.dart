@@ -347,7 +347,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final bridge = AnymeXRuntimeBridge.controller;
-
+ 
     return AnymeXScaffold(
       showHeader: true,
       headerTitle: 'Extension Manager',

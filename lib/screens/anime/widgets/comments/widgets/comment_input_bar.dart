@@ -80,30 +80,46 @@ class _CommentInputBarState extends State<CommentInputBar> {
   @override
   void initState() {
     super.initState();
-    _effectiveFocusNode.addListener(_onFocusChange);
+    try {
+      _effectiveFocusNode.addListener(_onFocusChange);
+    } catch (_) {}
     if (widget.autofocus) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _effectiveFocusNode.requestFocus();
+        if (!mounted) return;
+        try {
+          if (_effectiveFocusNode.canRequestFocus) {
+            _effectiveFocusNode.requestFocus();
+          }
+        } catch (_) {}
       });
     }
   }
 
   void _onFocusChange() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    try {
+      setState(() {});
+    } catch (_) {}
   }
 
   @override
   void didUpdateWidget(covariant CommentInputBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.focusNode != widget.focusNode) {
-      oldWidget.focusNode?.removeListener(_onFocusChange);
-      _effectiveFocusNode.addListener(_onFocusChange);
+      try {
+        oldWidget.focusNode?.removeListener(_onFocusChange);
+      } catch (_) {}
+      try {
+        _effectiveFocusNode.addListener(_onFocusChange);
+      } catch (_) {}
     }
   }
 
   @override
   void dispose() {
-    _effectiveFocusNode.removeListener(_onFocusChange);
+    try {
+      _effectiveFocusNode.removeListener(_onFocusChange);
+    } catch (_) {}
     _internalFocusNode?.dispose();
     super.dispose();
   }

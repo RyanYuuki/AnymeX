@@ -269,10 +269,6 @@ class _CommentSectionState extends State<CommentSection> {
     }
     _replyControllers.clear();
     _replyFocusNodes.clear();
-    final isPreloaded = CommentPreloader.to.isPreloaded(widget.media.uniqueId);
-    if (!isPreloaded) {
-      Get.delete<CommentSectionController>(tag: widget.media.uniqueId);
-    }
     super.dispose();
   }
 
@@ -282,6 +278,10 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   void _handlePostComment() {
+    if (!controller.isLoggedIn) {
+      snackBar('You need to be logged in to comment');
+      return;
+    }
     final bool hasAccepted = General.hasAcceptedCommentRules.get<bool>(false);
 
     if (hasAccepted) {
@@ -1512,6 +1512,10 @@ class _CommentSectionState extends State<CommentSection> {
                         if (!isLocked) ...[
                           GestureDetector(
                             onTap: () {
+                              if (!controller.isLoggedIn) {
+                                snackBar('You need to be logged in to reply');
+                                return;
+                              }
                               if (!widget.showInlineInput) {
                                 HapticFeedback.lightImpact();
                                 controller.setReplyTarget(reply);
@@ -1861,6 +1865,10 @@ class _CommentSectionState extends State<CommentSection> {
                         if (!effectiveLocked) ...[
                           GestureDetector(
                             onTap: () {
+                              if (!controller.isLoggedIn) {
+                                snackBar('You need to be logged in to reply');
+                                return;
+                              }
                               if (!widget.showInlineInput) {
                                 HapticFeedback.lightImpact();
                                 controller.setReplyTarget(comment);
