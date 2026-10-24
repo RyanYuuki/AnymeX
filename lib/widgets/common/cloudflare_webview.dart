@@ -22,11 +22,59 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
   bool _isLoading = true;
   double _progress = 0.0;
   bool _synced = false;
+  bool _initialLoad = true;
+  String? _initialClearance;
 
   Uri get _parsedUri => Uri.parse(widget.url);
 
   String get _displayHost =>
       _parsedUri.host.isNotEmpty ? _parsedUri.host : widget.url;
+
+  @override
+  void initState() {
+    super.initState();
+    _initCookieBaseline();
+  }
+
+  Future<void> _initCookieBaseline() async {
+    try {
+      final uri = _parsedUri;
+      if (uri.hasScheme && uri.host.isNotEmpty) {
+        final origin = '${uri.scheme}://${uri.host}';
+        final cookieManager = CookieManager.instance();
+        final cookies = await cookieManager.getCookies(url: WebUri(origin));
+        for (final c in cookies) {
+          if (c.name == 'cf_clearance') {
+            _initialClearance = c.value.toString();
+            break;
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
+  Future<bool> _isChallengeActive() async {
+    if (_controller == null) return false;
+    try {
+      final result = await _controller!.evaluateJavascript(source: '''
+        (function() {
+          var title = (document.title || "").toLowerCase();
+          if (title.indexOf("just a moment") !== -1 ||
+              title.indexOf("attention required") !== -1 ||
+              title.indexOf("checking your browser") !== -1) {
+            return true;
+          }
+          if (document.querySelector("#challenge-stage, #cf-challenge-running, #challenge-form, .challenge-form, #challenge-platform, iframe[src*='cloudflare'], iframe[src*='turnstile']")) {
+            return true;
+          }
+          return false;
+        })()
+      ''');
+      return result == true || result == 'true';
+    } catch (_) {
+      return false;
+    }
+  }
 
   Future<bool> _syncCookiesAndUserAgent() async {
     if (_controller == null) return false;
@@ -41,7 +89,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
     final cookieManager = CookieManager.instance();
     final cookies = await cookieManager.getCookies(url: WebUri(origin));
 
-    bool hasClearance = false;
+    bool hasFreshClearance = false;
     if (cookies.isNotEmpty) {
       final cookieString =
           cookies.map((c) => '${c.name}=${c.value}').join('; ');
@@ -51,7 +99,15 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
             .cookieManager
             .readCookiesFromWebView(WebUri(origin), _controller);
       } catch (_) {}
-      hasClearance = cookies.any((c) => c.name == 'cf_clearance');
+      for (final c in cookies) {
+        if (c.name == 'cf_clearance') {
+          final val = c.value.toString();
+          if (_initialClearance == null || val != _initialClearance) {
+            hasFreshClearance = true;
+          }
+          break;
+        }
+      }
     }
 
     final uaResult =
@@ -63,7 +119,8 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
         await AnymeXRuntimeBridge.setUserAgent(origin, ua);
       }
     }
-    return hasClearance;
+    final isChallenging = await _isChallengeActive();
+    return hasFreshClearance && !isChallenging && !_initialLoad;
   }
 
   void _onSyncPressed() async {
@@ -244,6 +301,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                   }
 
                   final cleared = await _syncCookiesAndUserAgent();
+                  _initialLoad = false;
                   if (cleared && mounted) {
                     setState(() => _synced = true);
                     snackBar('Cloudflare challenge solved!');
