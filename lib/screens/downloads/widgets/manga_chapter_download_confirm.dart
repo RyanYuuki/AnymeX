@@ -3,6 +3,7 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/controller/download_search_controller.dart';
 import 'package:anymex/screens/downloads/widgets/download_permission_dialog.dart';
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
@@ -106,7 +107,9 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                   theme: theme,
                   icon: HugeIcons.strokeRoundedGlobe,
                   label: 'Source',
-                  value: source.name ?? 'Unknown',
+                  value: (source.lang ?? '').isNotEmpty
+                      ? '${source.name ?? 'Unknown'} (${completeLanguageName(source.lang!)})'
+                      : (source.name ?? 'Unknown'),
                 ),
                 const SizedBox(height: 12),
                 _buildInfoRow(

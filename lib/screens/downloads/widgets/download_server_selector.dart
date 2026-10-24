@@ -3,6 +3,7 @@ import 'package:anymex/screens/downloads/controller/download_controller.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/database/isar_models/video.dart' as hive;
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
@@ -239,7 +240,8 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
                 const AnymeXText('Choose Quality',
                     variant: TextVariant.bold,
                     size: 16),
-                AnymeXText('Fetching from first episode · auto-matched for batch',
+                AnymeXText(
+                  '${widget.source.name ?? 'Unknown'}${widget.source.lang != null && widget.source.lang!.isNotEmpty ? ' (${completeLanguageName(widget.source.lang!)})' : ''} · auto-matched for batch',
                   size: 12,
                   color: theme.onSurface.opaque(0.5),
                 ),

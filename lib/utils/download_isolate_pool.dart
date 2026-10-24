@@ -40,9 +40,10 @@ class DownloadProgress {
   final PageUrl? pageUrl;
   final TsInfo? segment;
   final bool isCompleted;
+  final int? bytes;
 
   DownloadProgress(this.completed, this.total, this.itemType,
-      {this.pageUrl, this.segment, this.isCompleted = false});
+      {this.pageUrl, this.segment, this.isCompleted = false, this.bytes});
 }
 
 class DownloadComplete {}
@@ -408,6 +409,7 @@ Future<void> _processFileDownload(
   http.Client client,
 ) async {
   int completed = 0;
+  int totalBytes = 0;
   final total = params.pageUrls.length;
   final queue = Queue<PageUrl>.from(params.pageUrls);
   final List<PageUrl> failedPages = [];
@@ -443,15 +445,17 @@ Future<void> _processFileDownload(
             params.itemType,
             replyPort,
             taskId: params.taskId,
-          ).then((_) {
+          ).then((bytes) {
             if (params.itemType != ItemType.anime) {
               completed++;
+              totalBytes += bytes;
               replyPort.send(
                 DownloadProgress(
                   completed,
                   total,
                   params.itemType,
                   pageUrl: pageUrl,
+                  bytes: totalBytes,
                 ),
               );
             }
@@ -487,7 +491,7 @@ Future<void> _processFileDownload(
   }
 }
 
-Future<void> _downloadFile(
+Future<int> _downloadFile(
   PageUrl pageUrl,
   http.Client client,
   ItemType itemType,
@@ -522,7 +526,9 @@ Future<void> _downloadFile(
       final file = File(pageUrl.fileName!);
       await file.parent.create(recursive: true);
       await file.writeAsBytes(response.bodyBytes);
+      return response.bodyBytes.length;
     } else {
+      int received = 0;
       await _withRetry((_) async {
         if (taskId != null && downloadTaskCancellation[taskId] == true) {
           throw DownloadPoolException('Cancelled');
@@ -536,7 +542,7 @@ Future<void> _downloadFile(
           );
         }
         int total = response.contentLength ?? 0;
-        int received = 0;
+        received = 0;
 
         final file = File(pageUrl.fileName!);
         await file.parent.create(recursive: true);
@@ -557,6 +563,7 @@ Future<void> _downloadFile(
                   total,
                   itemType,
                   pageUrl: pageUrl,
+                  bytes: received,
                 ),
               );
             } catch (_) {}
@@ -566,6 +573,7 @@ Future<void> _downloadFile(
           await sink.close();
         }
       }, 3);
+      return received;
     }
   } catch (e) {
     throw DownloadPoolException(
@@ -581,6 +589,7 @@ Future<void> _processM3u8Download(
   http.Client client,
 ) async {
   int completed = 0;
+  int totalBytes = 0;
   final total = params.segments.length;
   final Queue<TsInfo> queue = Queue<TsInfo>.from(params.segments);
   final List<TsInfo> failedSegments = [];
@@ -608,14 +617,16 @@ Future<void> _processM3u8Download(
         while (queue.isNotEmpty && activeTasks.length < params.concurrentDownloads) {
           if (downloadTaskCancellation[params.taskId] == true) break;
           final segment = queue.removeFirst();
-          final task = _downloadSegment(segment, params, client).then((_) {
+          final task = _downloadSegment(segment, params, client).then((bytes) {
             completed++;
+            totalBytes += bytes;
             replyPort.send(
               DownloadProgress(
                 completed,
                 total,
                 params.itemType,
                 segment: segment,
+                bytes: totalBytes,
               ),
             );
           }).catchError((error) {
@@ -650,7 +661,7 @@ Future<void> _processM3u8Download(
   }
 }
 
-Future<void> _downloadSegment(
+Future<int> _downloadSegment(
   TsInfo ts,
   M3u8DownloadParams params,
   http.Client client,
@@ -664,7 +675,7 @@ Future<void> _downloadSegment(
       if (kDebugMode) {
         print('[DownloadIsolate] Skipped ${ts.name} (already downloaded)');
       }
-      return;
+      return file.lengthSync();
     }
     await file.parent.create(recursive: true);
 
@@ -714,6 +725,7 @@ Future<void> _downloadSegment(
     if (kDebugMode) {
       print('[DownloadIsolate] Successfully downloaded ${ts.name}');
     }
+    return file.existsSync() ? file.lengthSync() : 0;
   } catch (e) {
     if (kDebugMode) {
       print('[DownloadIsolate] Error downloading segment ${ts.name}: $e');

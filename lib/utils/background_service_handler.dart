@@ -160,6 +160,7 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
           'taskId': taskId,
           'status': 'downloading',
           'progress': _hlsProgress,
+          if (prog.bytes != null) 'bytes': prog.bytes,
         }));
       });
 
@@ -292,6 +293,7 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
           'taskId': taskId,
           'status': 'downloading',
           'progress': _mangaProgress,
+          if (prog.bytes != null) 'bytes': prog.bytes,
         }));
       });
 

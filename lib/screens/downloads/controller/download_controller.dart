@@ -28,6 +28,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/background_service_handler.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
@@ -43,6 +44,69 @@ class DownloadController extends GetxController {
       <String, DownloadedMediaMeta>{}.obs;
   final RxMap<String, DownloadedMangaMeta> mangaMetaCache =
       <String, DownloadedMangaMeta>{}.obs;
+
+  final RxMap<String, double> taskSpeedBytesPerSec = <String, double>{}.obs;
+  final Map<String, DateTime> _lastSpeedTimestamp = {};
+  final Map<String, double> _lastSpeedProgress = {};
+  final Map<String, int> _lastSpeedBytes = {};
+
+  void _updateSpeed(String taskId, double progress, {int? bytes, required bool isManga}) {
+    final now = DateTime.now();
+    final lastTime = _lastSpeedTimestamp[taskId];
+    final lastProg = _lastSpeedProgress[taskId];
+    final lastBytes = _lastSpeedBytes[taskId];
+
+    _lastSpeedTimestamp[taskId] = now;
+    _lastSpeedProgress[taskId] = progress;
+    if (bytes != null) {
+      _lastSpeedBytes[taskId] = bytes;
+    }
+
+    if (lastTime == null) return;
+    final dtMs = now.difference(lastTime).inMilliseconds;
+    if (dtMs < 80) return;
+    final dtSec = dtMs / 1000.0;
+
+    double instantSpeed = 0.0;
+    if (bytes != null && lastBytes != null && bytes >= lastBytes) {
+      instantSpeed = (bytes - lastBytes) / dtSec;
+    } else if (lastProg != null && progress > lastProg) {
+      final estimatedTotal = isManga ? (30.0 * 1024 * 1024) : (180.0 * 1024 * 1024);
+      instantSpeed = ((progress - lastProg) * estimatedTotal) / dtSec;
+    }
+
+    final currentSpeed = taskSpeedBytesPerSec[taskId] ?? 0.0;
+    final smoothed = currentSpeed == 0.0
+        ? instantSpeed
+        : (0.65 * instantSpeed + 0.35 * currentSpeed);
+    taskSpeedBytesPerSec[taskId] = smoothed;
+  }
+
+  void _clearSpeed(String taskId) {
+    taskSpeedBytesPerSec[taskId] = 0.0;
+    _lastSpeedTimestamp.remove(taskId);
+    _lastSpeedProgress.remove(taskId);
+    _lastSpeedBytes.remove(taskId);
+  }
+
+  double getTaskSpeed(String taskId) {
+    final last = _lastSpeedTimestamp[taskId];
+    if (last == null || DateTime.now().difference(last).inSeconds > 3) {
+      return 0.0;
+    }
+    return taskSpeedBytesPerSec[taskId] ?? 0.0;
+  }
+
+  static String formatSpeed(double bytesPerSec) {
+    if (bytesPerSec <= 0) return '0 KB/s';
+    if (bytesPerSec < 1024) {
+      return '${bytesPerSec.toStringAsFixed(0)} B/s';
+    } else if (bytesPerSec < 1024 * 1024) {
+      return '${(bytesPerSec / 1024).toStringAsFixed(1)} KB/s';
+    } else {
+      return '${(bytesPerSec / (1024 * 1024)).toStringAsFixed(2)} MB/s';
+    }
+  }
 
   String _cacheKey(String ext, String title) =>
       '${MediaDownloader.sanitizePathSegment(ext).toLowerCase()}_${MediaDownloader.sanitizePathSegment(title).toLowerCase()}';
@@ -168,6 +232,38 @@ class DownloadController extends GetxController {
     return meta.chapters.any((c) => c.chapter.number == chapterNum);
   }
 
+  static Source? findMatchingSource(
+      List<Source> sources, String extensionName) {
+    for (final s in sources) {
+      final formatted = (s.lang ?? '').isNotEmpty
+          ? '${s.name ?? ''} (${completeLanguageName(s.lang!)})'
+          : (s.name ?? '');
+      if (MediaDownloader.sanitizePathSegment(formatted).toLowerCase() ==
+          extensionName.toLowerCase()) {
+        return s;
+      }
+    }
+    for (final s in sources) {
+      final codeFormat = (s.lang ?? '').isNotEmpty
+          ? '${s.name ?? ''} (${s.lang})'
+          : (s.name ?? '');
+      if (MediaDownloader.sanitizePathSegment(codeFormat).toLowerCase() ==
+          extensionName.toLowerCase()) {
+        return s;
+      }
+    }
+    for (final s in sources) {
+      if (MediaDownloader.sanitizePathSegment(s.name ?? '').toLowerCase() ==
+          extensionName.toLowerCase()) {
+        return s;
+      }
+    }
+    return sources.firstWhereOrNull((s) => extensionName
+        .toLowerCase()
+        .startsWith(
+            MediaDownloader.sanitizePathSegment(s.name ?? '').toLowerCase()));
+  }
+
   ActiveDownloadTask? getActiveEpisodeTask({
     required String ext,
     required String title,
@@ -277,8 +373,8 @@ class DownloadController extends GetxController {
         for (final task in activeMangaTasks) {
           if (task.status == MangaDownloadStatus.downloading ||
               task.status == MangaDownloadStatus.queued) {
-            final source = sourceController.installedMangaExtensions
-                .firstWhereOrNull((s) => s.name == task.extensionName);
+            final source = findMatchingSource(
+                sourceController.installedMangaExtensions, task.extensionName);
             if (source != null) {
               _runChapterDownload(task: task, source: source);
             }
@@ -364,16 +460,20 @@ class DownloadController extends GetxController {
 
             if (statusStr == 'downloading') {
               task.status = DownloadStatus.downloading;
+              _updateSpeed(taskId, prog, bytes: payload['bytes'] as int?, isManga: false);
             } else if (statusStr == 'completed') {
               task.status = DownloadStatus.completed;
               task.filePath = payload['filePath'] as String?;
+              _clearSpeed(taskId);
             } else if (statusStr == 'failed') {
               task.status = DownloadStatus.failed;
               task.errorMessage = payload['errorMessage'] as String?;
+              _clearSpeed(taskId);
             }
             task.progress = prog;
 
             if (isTerminal) {
+              _clearSpeed(taskId);
               _lastProgressUpdate.remove(taskId);
               activeTasks.refresh();
               _saveActiveTasks();
@@ -405,14 +505,18 @@ class DownloadController extends GetxController {
 
             if (statusStr == 'downloading') {
               task.status = MangaDownloadStatus.downloading;
+              _updateSpeed(taskId, prog, bytes: payload['bytes'] as int?, isManga: true);
             } else if (statusStr == 'completed') {
               task.status = MangaDownloadStatus.completed;
+              _clearSpeed(taskId);
             } else if (statusStr == 'failed') {
               task.status = MangaDownloadStatus.failed;
+              _clearSpeed(taskId);
             }
             task.progress = prog;
 
             if (isTerminal) {
+              _clearSpeed(taskId);
               _lastProgressUpdate.remove(taskId);
               activeMangaTasks.refresh();
               _saveMangaActiveTasks();
@@ -613,8 +717,10 @@ class DownloadController extends GetxController {
   }) async {
     final mediaTitle = media.name ?? 'Unknown';
     final sanitizedTitle = MediaDownloader.sanitizePathSegment(mediaTitle);
-    final sanitizedExt =
-        MediaDownloader.sanitizePathSegment(source.name ?? 'unknown');
+    final extName = (source.lang ?? '').isNotEmpty
+        ? '${source.name ?? 'unknown'} (${completeLanguageName(source.lang!)})'
+        : (source.name ?? 'unknown');
+    final sanitizedExt = MediaDownloader.sanitizePathSegment(extName);
 
     await setMediaMeta(sanitizedExt, sanitizedTitle, media, mediaType: 'Anime');
 
@@ -854,6 +960,7 @@ class DownloadController extends GetxController {
       await mDownloader.download((progress) {
         task.progress = progress.completed / progress.total;
         task.status = DownloadStatus.downloading;
+        _updateSpeed(task.taskId, task.progress, bytes: progress.bytes, isManga: false);
         final now = DateTime.now();
         final last = _lastProgressUpdate[task.taskId];
         if (last == null ||
@@ -864,6 +971,7 @@ class DownloadController extends GetxController {
         }
       });
 
+      _clearSpeed(task.taskId);
       _lastProgressUpdate.remove(task.taskId);
       task.status = DownloadStatus.completed;
       task.filePath = p.join(fullDirPath, fileName);
@@ -921,8 +1029,10 @@ class DownloadController extends GetxController {
   }) async {
     final mediaTitle = media.name ?? 'Unknown';
     final sanitizedTitle = MediaDownloader.sanitizePathSegment(mediaTitle);
-    final sanitizedExt =
-        MediaDownloader.sanitizePathSegment(source.name ?? 'unknown');
+    final extName = (source.lang ?? '').isNotEmpty
+        ? '${source.name ?? 'unknown'} (${completeLanguageName(source.lang!)})'
+        : (source.name ?? 'unknown');
+    final sanitizedExt = MediaDownloader.sanitizePathSegment(extName);
 
     await setMediaMeta(sanitizedExt, sanitizedTitle, media, mediaType: 'Manga');
 
@@ -1043,6 +1153,7 @@ class DownloadController extends GetxController {
 
       await mDownloader.download((progress) {
         task.progress = progress.completed / progress.total;
+        _updateSpeed(task.taskId, task.progress, bytes: progress.bytes, isManga: true);
         final now = DateTime.now();
         final last = _lastProgressUpdate[task.taskId];
         if (last == null ||
@@ -1052,6 +1163,7 @@ class DownloadController extends GetxController {
         }
       });
 
+      _clearSpeed(task.taskId);
       _lastProgressUpdate.remove(task.taskId);
       task.status = MangaDownloadStatus.completed;
       task.progress = 1.0;
@@ -1126,6 +1238,7 @@ class DownloadController extends GetxController {
   }
 
   Future<void> cancelMangaDownload(String taskId) async {
+    _clearSpeed(taskId);
     final task = activeMangaTasks.firstWhereOrNull((t) => t.taskId == taskId);
     if (task != null) {
       task.status = MangaDownloadStatus.cancelled;
@@ -1147,6 +1260,7 @@ class DownloadController extends GetxController {
   }
 
   Future<void> removeMangaTask(String taskId) async {
+    _clearSpeed(taskId);
     activeMangaTasks.removeWhere((t) => t.taskId == taskId);
     _saveMangaActiveTasks();
   }
@@ -1169,6 +1283,7 @@ class DownloadController extends GetxController {
   }
 
   Future<void> pauseDownload(String taskId) async {
+    _clearSpeed(taskId);
     final task = activeTasks.firstWhereOrNull((t) => t.taskId == taskId);
     final mangaTask =
         activeMangaTasks.firstWhereOrNull((t) => t.taskId == taskId);
@@ -1199,9 +1314,9 @@ class DownloadController extends GetxController {
     } else if (mangaTask != null) {
       mangaTask.status = MangaDownloadStatus.queued;
       activeMangaTasks.refresh();
-      final source = Get.find<SourceController>()
-          .installedMangaExtensions
-          .firstWhereOrNull((s) => s.name == mangaTask.extensionName);
+      final source = findMatchingSource(
+          Get.find<SourceController>().installedMangaExtensions,
+          mangaTask.extensionName);
       if (source != null) {
         _runChapterDownload(task: mangaTask, source: source);
       }
@@ -1212,6 +1327,7 @@ class DownloadController extends GetxController {
   }
 
   Future<void> cancelDownload(String taskId) async {
+    _clearSpeed(taskId);
     dl.DownloadIsolatePool.instance.cancelTask(taskId);
 
     bool isRunning = false;
@@ -1231,13 +1347,12 @@ class DownloadController extends GetxController {
       final taskInActive =
           activeTasks.firstWhereOrNull((t) => t.taskId == taskId);
       if (taskInActive != null) {
-        final source = Get.find<SourceController>()
-                .installedExtensions
-                .firstWhereOrNull(
-                    (s) => s.name == taskInActive.extensionName) ??
-            Get.find<SourceController>()
-                .installedMangaExtensions
-                .firstWhereOrNull((s) => s.name == taskInActive.extensionName);
+        final source = findMatchingSource(
+                Get.find<SourceController>().installedExtensions,
+                taskInActive.extensionName) ??
+            findMatchingSource(
+                Get.find<SourceController>().installedMangaExtensions,
+                taskInActive.extensionName);
         source?.cancelRequest(token);
       }
       _scrapeTokens.remove(taskId);
@@ -1250,7 +1365,56 @@ class DownloadController extends GetxController {
     }
   }
 
+  Future<void> cancelAndRemoveTasks(List<String> taskIds,
+      {required bool isManga}) async {
+    for (final id in taskIds) {
+      _clearSpeed(id);
+      dl.DownloadIsolatePool.instance.cancelTask(id);
+    }
+
+    bool isRunning = false;
+    if (Platform.isAndroid || Platform.isIOS) {
+      isRunning = await FlutterForegroundTask.isRunningService;
+    }
+
+    if (isRunning) {
+      for (final id in taskIds) {
+        _sendToBackground({
+          'type': 'CANCEL_TASK',
+          'taskId': id,
+        });
+      }
+    }
+
+    if (!isManga) {
+      for (final id in taskIds) {
+        final token = _scrapeTokens[id];
+        if (token != null) {
+          final taskInActive =
+              activeTasks.firstWhereOrNull((t) => t.taskId == id);
+          if (taskInActive != null) {
+            final source = findMatchingSource(
+                    Get.find<SourceController>().installedExtensions,
+                    taskInActive.extensionName) ??
+                findMatchingSource(
+                    Get.find<SourceController>().installedMangaExtensions,
+                    taskInActive.extensionName);
+            source?.cancelRequest(token);
+          }
+          _scrapeTokens.remove(id);
+        }
+      }
+      activeTasks.removeWhere((t) => taskIds.contains(t.taskId));
+      _saveActiveTasks();
+      _updateNotification();
+    } else {
+      activeMangaTasks.removeWhere((t) => taskIds.contains(t.taskId));
+      _saveMangaActiveTasks();
+    }
+  }
+
   Future<void> removeTask(String taskId) async {
+    _clearSpeed(taskId);
     activeTasks.removeWhere((t) => t.taskId == taskId);
     _saveActiveTasks();
   }

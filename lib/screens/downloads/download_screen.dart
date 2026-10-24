@@ -15,6 +15,7 @@ import 'package:anymex/screens/downloads/widgets/downloaded_media_view.dart';
 import 'package:anymex/screens/downloads/widgets/manga_chapter_download_confirm.dart';
 import 'package:anymex/screens/other_features.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
@@ -235,68 +236,67 @@ class _DownloadScreenState extends State<DownloadScreen> {
   Widget build(BuildContext context) {
     final theme = context.colors;
     return AnymeXScaffold(
-  body: Column(
-          children: [
-            NestedHeader(
-              title: 'Downloads',
-              action: Container(
-                decoration: BoxDecoration(
-                  color: theme.primaryContainer.opaque(0.3),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: IconButton(
-                  onPressed: () => navigate(() => const ActiveDownloads()),
-                  icon: Icon(
-                    HugeIcons.strokeRoundedDownload04,
-                    color: theme.primary,
-                  ),
-                ),
+        body: Column(
+      children: [
+        NestedHeader(
+          title: 'Downloads',
+          action: Container(
+            decoration: BoxDecoration(
+              color: theme.primaryContainer.opaque(0.3),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              onPressed: () => navigate(() => const ActiveDownloads()),
+              icon: Icon(
+                HugeIcons.strokeRoundedDownload04,
+                color: theme.primary,
               ),
             ),
-            if (_isCheckingPermissions)
-              const Expanded(
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (!_isPermissionsGranted)
-              Expanded(child: _buildPermissionRoadblock(theme))
-            else if (!_hasDownloadDir)
-              Expanded(child: _buildDirectoryPickerGate(theme))
-            else ...[
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildDynamicTabBar(
-                  colors: theme,
-                  tabs: const [
-                    (
-                      label: 'Downloaded Media',
-                      icon: HugeIcons.strokeRoundedFolderLibrary,
-                      type: 0
-                    ),
-                    (
-                      label: 'New Download',
-                      icon: HugeIcons.strokeRoundedAdd01,
-                      type: 1
-                    ),
-                  ],
-                  currentTab: _currentTab,
-                  onChanged: (v) => setState(() => _currentTab = v),
+          ),
+        ),
+        if (_isCheckingPermissions)
+          const Expanded(
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (!_isPermissionsGranted)
+          Expanded(child: _buildPermissionRoadblock(theme))
+        else if (!_hasDownloadDir)
+          Expanded(child: _buildDirectoryPickerGate(theme))
+        else ...[
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildDynamicTabBar(
+              colors: theme,
+              tabs: const [
+                (
+                  label: 'Downloaded Media',
+                  icon: HugeIcons.strokeRoundedFolderLibrary,
+                  type: 0
                 ),
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: IndexedStack(
-                  index: _currentTab,
-                  children: [
-                    _buildMyDownloadsTab(context),
-                    _buildNewDownloadTab(context),
-                  ],
+                (
+                  label: 'New Download',
+                  icon: HugeIcons.strokeRoundedAdd01,
+                  type: 1
                 ),
-              ),
-            ]
-          ],
-        )
-);
+              ],
+              currentTab: _currentTab,
+              onChanged: (v) => setState(() => _currentTab = v),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: IndexedStack(
+              index: _currentTab,
+              children: [
+                _buildMyDownloadsTab(context),
+                _buildNewDownloadTab(context),
+              ],
+            ),
+          ),
+        ]
+      ],
+    ));
   }
 
   Widget _buildDirectoryPickerGate(ColorScheme theme) {
@@ -309,12 +309,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
             Icon(HugeIcons.strokeRoundedFolder01,
                 size: 64, color: theme.primary),
             const SizedBox(height: 24),
-            const AnymeXText('Choose Download Folder',
+            const AnymeXText(
+              'Choose Download Folder',
               variant: TextVariant.bold,
               size: 20,
             ),
             const SizedBox(height: 12),
-            AnymeXText('Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.',
+            AnymeXText(
+              'Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.',
               textAlign: TextAlign.center,
               color: theme.onSurface.opaque(0.7),
             ),
@@ -332,7 +334,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ),
                 onPressed: _pickDownloadDirectory,
                 icon: const Icon(Icons.folder_open_rounded),
-                label: const AnymeXText('Select Folder',
+                label: const AnymeXText(
+                  'Select Folder',
                   variant: TextVariant.semiBold,
                 ),
               ),
@@ -353,12 +356,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
             Icon(HugeIcons.strokeRoundedSecurityLock,
                 size: 64, color: theme.primary),
             const SizedBox(height: 24),
-            const AnymeXText('Permissions Required',
+            const AnymeXText(
+              'Permissions Required',
               variant: TextVariant.bold,
               size: 20,
             ),
             const SizedBox(height: 12),
-            AnymeXText('Manage device storage and notifications to download and manage your media offline.',
+            AnymeXText(
+              'Manage device storage and notifications to download and manage your media offline.',
               textAlign: TextAlign.center,
               color: theme.onSurface.opaque(0.7),
             ),
@@ -374,7 +379,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: _checkPermissions,
-                child: const AnymeXText('Grant Permissions', variant: TextVariant.semiBold),
+                child: const AnymeXText('Grant Permissions',
+                    variant: TextVariant.semiBold),
               ),
             ),
           ],
@@ -509,9 +515,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(meta.title,
-                      variant: TextVariant.semiBold,
-                      size: 13,
-                      maxLines: 2),
+                      variant: TextVariant.semiBold, size: 13, maxLines: 2),
                   const SizedBox(height: 4),
                   Row(
                     children: [
@@ -520,9 +524,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       const SizedBox(width: 4),
                       Expanded(
                         child: AnymeXText(meta.extensionName,
-                            size: 11,
-                            color: theme.primary,
-                            maxLines: 1),
+                            size: 11, color: theme.primary, maxLines: 1),
                       ),
                     ],
                   ),
@@ -721,13 +723,15 @@ class _DownloadScreenState extends State<DownloadScreen> {
         children: [
           Icon(icon, size: 64, color: theme.onSurface.opaque(0.1)),
           const SizedBox(height: 16),
-          AnymeXText(message,
+          AnymeXText(
+            message,
             size: 16,
             variant: TextVariant.semiBold,
             color: theme.onSurface.opaque(0.5),
           ),
           const SizedBox(height: 4),
-          AnymeXText(subtitle,
+          AnymeXText(
+            subtitle,
             size: 13,
             color: theme.onSurface.opaque(0.3),
           ),
@@ -760,6 +764,12 @@ class _DownloadScreenState extends State<DownloadScreen> {
         final source = sources[index];
         final medias = controller.searchResults[source] ?? [];
         final isLoading = controller.loadingSources.contains(source);
+        final langStr = (source.lang ?? '').isNotEmpty
+            ? completeLanguageName(source.lang!)
+            : '';
+        final sourceDisplayName = langStr.isNotEmpty
+            ? "${source.name ?? 'Unknown'} ($langStr)"
+            : (source.name ?? 'Unknown');
 
         if (isLoading && medias.isEmpty) {
           return Padding(
@@ -768,9 +778,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
               children: [
                 Icon(Icons.extension_rounded, size: 16, color: theme.primary),
                 const SizedBox(width: 8),
-                AnymeXText(source.name ?? 'Unknown',
-                    variant: TextVariant.bold,
-                    size: 15),
+                AnymeXText(sourceDisplayName,
+                    variant: TextVariant.bold, size: 15),
                 const SizedBox(width: 12),
                 const SizedBox(
                     width: 14, height: 14, child: AnymeXProgressIndicator()),
@@ -793,10 +802,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   Icon(Icons.extension_rounded, size: 16, color: theme.primary),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: AnymeXText(source.name ?? 'Unknown',
-                        variant: TextVariant.bold,
-                        size: 15),
-                  ),
+                      child: AnymeXText(
+                    sourceDisplayName,
+                    variant: TextVariant.bold,
+                  )),
                   if (isLoading)
                     const SizedBox(
                         width: 14,
@@ -889,9 +898,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: AnymeXText(media?.title ?? 'Details',
-                    variant: TextVariant.semiBold,
-                    size: 15,
-                    maxLines: 1),
+                    variant: TextVariant.semiBold, size: 15, maxLines: 1),
               ),
             ],
           ),
@@ -975,7 +982,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const AnymeXText("Range", variant: TextVariant.bold, size: 14),
+                        const AnymeXText("Range",
+                            variant: TextVariant.bold, size: 14),
                         EpisodeChunkSelector(
                           chunks: chunkedEpisodes,
                           selectedChunkIndex: controller.selectedChunkIndex,
@@ -993,7 +1001,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       Icon(HugeIcons.strokeRoundedPlay,
                           size: 14, color: theme.primary),
                       const SizedBox(width: 6),
-                      AnymeXText('${filteredList.length} episodes available',
+                      AnymeXText(
+                        '${filteredList.length} episodes available',
                         size: 12,
                         color: theme.primary,
                       ),
@@ -1017,7 +1026,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                           decoration: BoxDecoration(
                               color: theme.primaryContainer.opaque(0.3),
                               borderRadius: BorderRadius.circular(10)),
-                          child: AnymeXText(currentBatch.isNotEmpty &&
+                          child: AnymeXText(
+                            currentBatch.isNotEmpty &&
                                     currentBatch.every((e) => controller
                                         .selectedEpisodes
                                         .contains(e.link ?? e.number))
@@ -1035,8 +1045,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ...currentBatch.map((ep) {
                   final key = ep.link ?? ep.number;
                   final isSelected = controller.selectedEpisodes.contains(key);
-                  final validEntries = ep.sortMap.entries
-                      .where((e) => e.key.trim().isNotEmpty && e.value.trim().isNotEmpty);
+                  final validEntries = ep.sortMap.entries.where((e) =>
+                      e.key.trim().isNotEmpty && e.value.trim().isNotEmpty);
                   final sortLabel = validEntries.isNotEmpty
                       ? validEntries
                           .map((e) => '${e.key}: ${e.value}')
@@ -1102,7 +1112,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AnymeXText(ep.title?.isNotEmpty == true
+                                  AnymeXText(
+                                    ep.title?.isNotEmpty == true
                                         ? ep.title!
                                         : 'Episode ${ep.number}',
                                     size: 13,
@@ -1188,7 +1199,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                           Icon(HugeIcons.strokeRoundedDownload04,
                               size: 20, color: theme.onPrimary),
                           const SizedBox(width: 8),
-                          AnymeXText('Download ${controller.selectedEpisodes.length} Episode${controller.selectedEpisodes.length > 1 ? 's' : ''}',
+                          AnymeXText(
+                            'Download ${controller.selectedEpisodes.length} Episode${controller.selectedEpisodes.length > 1 ? 's' : ''}',
                             size: 15,
                             variant: TextVariant.semiBold,
                             color: theme.onPrimary,
@@ -1226,9 +1238,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: AnymeXText(media?.title ?? 'Details',
-                    variant: TextVariant.semiBold,
-                    size: 15,
-                    maxLines: 1),
+                    variant: TextVariant.semiBold, size: 15, maxLines: 1),
               ),
             ],
           ),
@@ -1257,7 +1267,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       Icon(HugeIcons.strokeRoundedBookOpen01,
                           size: 14, color: theme.primary),
                       const SizedBox(width: 6),
-                      AnymeXText('${controller.filteredChapters.length} chapters available',
+                      AnymeXText(
+                        '${controller.filteredChapters.length} chapters available',
                         size: 12,
                         color: theme.primary,
                       ),
@@ -1277,7 +1288,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                           decoration: BoxDecoration(
                               color: theme.primaryContainer.opaque(0.3),
                               borderRadius: BorderRadius.circular(10)),
-                          child: AnymeXText(controller.selectedChapters.length ==
+                          child: AnymeXText(
+                            controller.selectedChapters.length ==
                                     controller.filteredChapters.length
                                 ? 'Deselect All'
                                 : 'Select All',
@@ -1369,7 +1381,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AnymeXText(numDisplay,
+                                  AnymeXText(
+                                    numDisplay,
                                     size: 13,
                                     maxLines: 1,
                                     variant: isSelected
@@ -1379,14 +1392,16 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                   if (chapter.title != null &&
                                       chapter.title!.isNotEmpty &&
                                       chapter.title != numDisplay)
-                                    AnymeXText(chapter.title!,
+                                    AnymeXText(
+                                      chapter.title!,
                                       size: 11,
                                       color: theme.onSurface.opaque(0.5),
                                       maxLines: 1,
                                     ),
                                   if (chapter.releaseDate != null &&
                                       chapter.releaseDate!.isNotEmpty)
-                                    AnymeXText(chapter.releaseDate!,
+                                    AnymeXText(
+                                      chapter.releaseDate!,
                                       size: 10,
                                       color: theme.primary.opaque(0.6),
                                     ),
@@ -1457,7 +1472,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                           Icon(HugeIcons.strokeRoundedDownload04,
                               size: 20, color: theme.onPrimary),
                           const SizedBox(width: 8),
-                          AnymeXText('Download ${controller.selectedChapters.length} Chapter${controller.selectedChapters.length > 1 ? 's' : ''}',
+                          AnymeXText(
+                            'Download ${controller.selectedChapters.length} Chapter${controller.selectedChapters.length > 1 ? 's' : ''}',
                             size: 15,
                             variant: TextVariant.semiBold,
                             color: theme.onPrimary,
@@ -1476,9 +1492,19 @@ class _DownloadScreenState extends State<DownloadScreen> {
       BuildContext context, DownloadSearchController controller) {
     final theme = context.colors;
     final sourceController = Get.find<SourceController>();
-    final allSources = controller.mediaType.value == 0
+    final rawSources = controller.mediaType.value == 0
         ? sourceController.installedExtensions
         : sourceController.installedMangaExtensions;
+    final allSources = rawSources.toList()
+      ..sort((a, b) {
+        final nameComp = (a.name ?? '')
+            .toLowerCase()
+            .compareTo((b.name ?? '').toLowerCase());
+        if (nameComp != 0) return nameComp;
+        return completeLanguageName(a.lang ?? '')
+            .toLowerCase()
+            .compareTo(completeLanguageName(b.lang ?? '').toLowerCase());
+      });
     AnymeXSheet.custom(
       Column(
         mainAxisSize: MainAxisSize.min,
@@ -1490,11 +1516,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AnymeXText('Search Extensions',
+                  const AnymeXText(
+                    'Search Extensions',
                     variant: TextVariant.bold,
                     size: 20,
                   ),
-                  AnymeXText('${allSources.length} available',
+                  AnymeXText(
+                    '${allSources.length} available',
                     size: 13,
                     color: theme.onSurface.opaque(0.6),
                   ),
@@ -1509,7 +1537,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     controller.disabledSourceIds.clear();
                   }
                 },
-                child: Obx(() => AnymeXText(controller.disabledSourceIds.isEmpty
+                child: Obx(() => AnymeXText(
+                      controller.disabledSourceIds.isEmpty
                           ? 'Disable All'
                           : 'Enable All',
                       color: theme.primary,
@@ -1529,6 +1558,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
               itemBuilder: (context, index) {
                 final source = allSources[index];
                 final sourceId = source.id ?? '';
+                final langName = (source.lang ?? '').isNotEmpty
+                    ? completeLanguageName(source.lang!)
+                    : '';
                 return Obx(() {
                   final isEnabled =
                       !controller.disabledSourceIds.contains(sourceId);
@@ -1553,11 +1585,39 @@ class _DownloadScreenState extends State<DownloadScreen> {
                             ? theme.primary
                             : theme.onSurface.opaque(0.4),
                       ),
-                      title: AnymeXText(source.name ?? 'Unknown',
-                        variant: TextVariant.semiBold,
-                        color: isEnabled
-                            ? theme.onSurface
-                            : theme.onSurface.opaque(0.5),
+                      title: Row(
+                        children: [
+                          Expanded(
+                            child: AnymeXText(
+                              source.name ?? 'Unknown',
+                              variant: TextVariant.semiBold,
+                              color: isEnabled
+                                  ? theme.onSurface
+                                  : theme.onSurface.opaque(0.5),
+                            ),
+                          ),
+                          if (langName.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2.5),
+                              decoration: BoxDecoration(
+                                color: isEnabled
+                                    ? theme.primary.opaque(0.15)
+                                    : theme.surfaceContainerHighest.opaque(0.3),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: AnymeXText(
+                                langName,
+                                size: 11,
+                                variant: TextVariant.semiBold,
+                                color: isEnabled
+                                    ? theme.primary
+                                    : theme.onSurface.opaque(0.5),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       trailing: Switch(
                         value: isEnabled,
@@ -1584,7 +1644,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ),
                 elevation: 0,
               ),
-              child: const AnymeXText('Done',
+              child: const AnymeXText(
+                'Done',
                 variant: TextVariant.bold,
               ),
             ),
@@ -1606,7 +1667,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
           color: theme.surfaceContainer,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: AnymeXText(label,
+        child: AnymeXText(
+          label,
           size: 12,
           color: theme.onSurface,
           variant: TextVariant.semiBold,
@@ -1688,7 +1750,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Center(
-          child: AnymeXText(label,
+          child: AnymeXText(
+            label,
             size: 12,
             color: isSelected ? theme.onPrimary : theme.onSurface,
             variant: isSelected ? TextVariant.semiBold : TextVariant.regular,
