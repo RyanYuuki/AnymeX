@@ -1239,6 +1239,7 @@ class DownloadController extends GetxController {
 
   Future<void> cancelMangaDownload(String taskId) async {
     _clearSpeed(taskId);
+    dl.DownloadIsolatePool.instance.cancelTask(taskId);
     final task = activeMangaTasks.firstWhereOrNull((t) => t.taskId == taskId);
     if (task != null) {
       task.status = MangaDownloadStatus.cancelled;
@@ -1261,6 +1262,7 @@ class DownloadController extends GetxController {
 
   Future<void> removeMangaTask(String taskId) async {
     _clearSpeed(taskId);
+    dl.DownloadIsolatePool.instance.cancelTask(taskId);
     activeMangaTasks.removeWhere((t) => t.taskId == taskId);
     _saveMangaActiveTasks();
   }
@@ -1411,10 +1413,31 @@ class DownloadController extends GetxController {
       activeMangaTasks.removeWhere((t) => taskIds.contains(t.taskId));
       _saveMangaActiveTasks();
     }
+
+    try {
+      final rootDir = await _getRootDir();
+      final animeDir = Directory(p.join(rootDir.path, 'Anime'));
+      if (await animeDir.exists()) {
+        await for (final entity in animeDir.list(recursive: true, followLinks: false)) {
+          if (entity is Directory) {
+            final name = p.basename(entity.path);
+            if (name.startsWith('temp_')) {
+              final tempTaskId = name.substring(5);
+              if (taskIds.contains(tempTaskId)) {
+                try {
+                  await entity.delete(recursive: true);
+                } catch (_) {}
+              }
+            }
+          }
+        }
+      }
+    } catch (_) {}
   }
 
   Future<void> removeTask(String taskId) async {
     _clearSpeed(taskId);
+    dl.DownloadIsolatePool.instance.cancelTask(taskId);
     activeTasks.removeWhere((t) => t.taskId == taskId);
     _saveActiveTasks();
   }

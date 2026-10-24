@@ -55,6 +55,8 @@ class DownloadIsolatePool {
   final List<_PoolWorker> _workers = [];
   final Queue<_DownloadTask> _taskQueue = Queue();
   final Set<int> _availableWorkers = {};
+  final Map<String, ReceivePort> _activeTaskReceivePorts = {};
+  final Map<String, void Function(Exception)> _activeTaskErrorCallbacks = {};
   final int poolSize;
   bool _initialized = false;
 
@@ -98,6 +100,9 @@ class DownloadIsolatePool {
     downloadTaskCancellation[taskId] = false;
 
     final receivePort = ReceivePort();
+    _activeTaskReceivePorts[taskId] = receivePort;
+    _activeTaskErrorCallbacks[taskId] = onError;
+
     final task = _DownloadTask(
       taskId: taskId,
       type: _TaskType.fileDownload,
@@ -112,6 +117,8 @@ class DownloadIsolatePool {
 
     receivePort.listen((message) {
       if (downloadTaskCancellation[taskId] == true) {
+        _activeTaskReceivePorts.remove(taskId);
+        _activeTaskErrorCallbacks.remove(taskId);
         receivePort.close();
         return;
       }
@@ -119,10 +126,14 @@ class DownloadIsolatePool {
       if (message is DownloadProgress) {
         onProgress(message);
       } else if (message is DownloadComplete) {
+        _activeTaskReceivePorts.remove(taskId);
+        _activeTaskErrorCallbacks.remove(taskId);
         downloadTaskCancellation.remove(taskId);
         receivePort.close();
         onComplete();
       } else if (message is Exception) {
+        _activeTaskReceivePorts.remove(taskId);
+        _activeTaskErrorCallbacks.remove(taskId);
         downloadTaskCancellation.remove(taskId);
         receivePort.close();
         onError(message);
@@ -151,6 +162,9 @@ class DownloadIsolatePool {
     downloadTaskCancellation[taskId] = false;
 
     final receivePort = ReceivePort();
+    _activeTaskReceivePorts[taskId] = receivePort;
+    _activeTaskErrorCallbacks[taskId] = onError;
+
     final task = _DownloadTask(
       taskId: taskId,
       type: _TaskType.m3u8Download,
@@ -170,6 +184,8 @@ class DownloadIsolatePool {
 
     receivePort.listen((message) {
       if (downloadTaskCancellation[taskId] == true) {
+        _activeTaskReceivePorts.remove(taskId);
+        _activeTaskErrorCallbacks.remove(taskId);
         receivePort.close();
         return;
       }
@@ -177,10 +193,14 @@ class DownloadIsolatePool {
       if (message is DownloadProgress) {
         onProgress(message);
       } else if (message is DownloadComplete) {
+        _activeTaskReceivePorts.remove(taskId);
+        _activeTaskErrorCallbacks.remove(taskId);
         downloadTaskCancellation.remove(taskId);
         receivePort.close();
         onComplete();
       } else if (message is Exception) {
+        _activeTaskReceivePorts.remove(taskId);
+        _activeTaskErrorCallbacks.remove(taskId);
         downloadTaskCancellation.remove(taskId);
         receivePort.close();
         onError(message);
@@ -192,6 +212,26 @@ class DownloadIsolatePool {
 
   void cancelTask(String taskId) {
     downloadTaskCancellation[taskId] = true;
+    _taskQueue.removeWhere((t) => t.taskId == taskId);
+
+    final errorCallback = _activeTaskErrorCallbacks.remove(taskId);
+    errorCallback?.call(DownloadPoolException('Task cancelled: $taskId'));
+
+    final receivePort = _activeTaskReceivePorts.remove(taskId);
+    try {
+      receivePort?.close();
+    } catch (_) {}
+
+    for (final worker in _workers) {
+      if (worker.currentTaskId == taskId) {
+        worker.cancelCurrentTask().then((_) {
+          if (!_availableWorkers.contains(worker.id)) {
+            _availableWorkers.add(worker.id);
+          }
+          _processQueue();
+        });
+      }
+    }
   }
 
   void _enqueueTask(_DownloadTask task) {
@@ -224,6 +264,8 @@ class DownloadIsolatePool {
     _workers.clear();
     _taskQueue.clear();
     _availableWorkers.clear();
+    _activeTaskReceivePorts.clear();
+    _activeTaskErrorCallbacks.clear();
     downloadTaskCancellation.clear();
     _initialized = false;
   }
@@ -288,7 +330,10 @@ class _PoolWorker {
   late Isolate _isolate;
   late SendPort _sendPort;
   late ReceivePort _receivePort;
-  final Completer<void> _ready = Completer();
+  bool _isReady = false;
+  String? currentTaskId;
+  Completer<void>? _taskCompleter;
+  ReceivePort? _currentTaskPort;
 
   _PoolWorker._(this.id);
 
@@ -299,6 +344,7 @@ class _PoolWorker {
   }
 
   Future<void> _spawn() async {
+    _isReady = false;
     _receivePort = ReceivePort();
 
     _isolate = await Isolate.spawn(
@@ -314,22 +360,30 @@ class _PoolWorker {
     });
 
     _sendPort = await completer.future;
-    _ready.complete();
+    _isReady = true;
   }
 
   Future<void> executeTask(_DownloadTask task) async {
-    await _ready.future;
+    while (!_isReady) {
+      await Future.delayed(const Duration(milliseconds: 10));
+    }
 
+    currentTaskId = task.taskId;
     final completer = Completer<void>();
+    _taskCompleter = completer;
 
     final taskPort = ReceivePort();
+    _currentTaskPort = taskPort;
 
     taskPort.listen((message) {
       task.sendPort.send(message);
 
       if (message is DownloadComplete || message is Exception) {
         taskPort.close();
-        completer.complete();
+        _currentTaskPort = null;
+        currentTaskId = null;
+        _taskCompleter = null;
+        if (!completer.isCompleted) completer.complete();
       }
     });
 
@@ -345,9 +399,43 @@ class _PoolWorker {
     return completer.future;
   }
 
+  Future<void> cancelCurrentTask() async {
+    if (currentTaskId == null) return;
+    currentTaskId = null;
+
+    try {
+      _currentTaskPort?.close();
+      _currentTaskPort = null;
+    } catch (_) {}
+
+    if (_taskCompleter != null && !_taskCompleter!.isCompleted) {
+      _taskCompleter!.complete();
+      _taskCompleter = null;
+    }
+
+    try {
+      _isolate.kill(priority: Isolate.immediate);
+    } catch (_) {}
+
+    try {
+      _receivePort.close();
+    } catch (_) {}
+
+    await _spawn();
+  }
+
   void dispose() {
-    _isolate.kill();
-    _receivePort.close();
+    currentTaskId = null;
+    try {
+      _currentTaskPort?.close();
+      _currentTaskPort = null;
+    } catch (_) {}
+    try {
+      _isolate.kill(priority: Isolate.immediate);
+    } catch (_) {}
+    try {
+      _receivePort.close();
+    } catch (_) {}
   }
 }
 

@@ -62,6 +62,14 @@ class MediaDownloader {
 
   void close() {
     DownloadIsolatePool.instance.cancelTask(taskId);
+    if (subDownloadDir != null) {
+      try {
+        final tempDir = Directory(path.join(subDownloadDir!, 'temp_$taskId'));
+        if (tempDir.existsSync()) {
+          tempDir.deleteSync(recursive: true);
+        }
+      } catch (_) {}
+    }
   }
 
   static Future<T> _withRetryStatic<T>(
@@ -238,6 +246,15 @@ class MediaDownloader {
         }
       },
       onError: (error) {
+        if (subDownloadDir != null) {
+          try {
+            final tempDir =
+                Directory(path.join(subDownloadDir!, 'temp_$taskId'));
+            if (tempDir.existsSync()) {
+              tempDir.deleteSync(recursive: true);
+            }
+          } catch (_) {}
+        }
         if (!completer.isCompleted) completer.completeError(error);
       },
     );
