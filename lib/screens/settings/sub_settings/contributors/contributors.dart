@@ -71,6 +71,19 @@ final Map<String, ContributorModel> _curatedContributors = {
     commitCount: 0,
     bannerUrl: 'https://i.ibb.co/zhy5G1Tv/Walpaper-1.png',
   ),
+  'okkevin': const ContributorModel(
+    githubLogin: 'OkKevin',
+    githubId: '5857202',
+    displayName: 'OkKevin',
+    avatarUrl:
+        'https://s4.anilist.co/file/anilistcdn/user/avatar/large/b5857202-m2zi6gV8Yk4l.jpg',
+    profileUrl: 'https://anilist.co/user/OkKevin/',
+    roleTitle: 'Tester',
+    prCount: 0,
+    commitCount: 0,
+    bannerUrl:
+        'https://s4.anilist.co/file/anilistcdn/user/banner/b5857202-2q5eucXRh9wB.jpg',
+  ),
 };
 
 Future<void> _openExternalLink(String url) async {
@@ -337,6 +350,16 @@ class _ContributorsPageState extends State<ContributorsPage> {
         final xerus = communityList.removeAt(xerusIndex);
         final insertAt = communityList.length < 3 ? communityList.length : 3;
         communityList.insert(insertAt, xerus);
+      }
+      final okKevinIndex = communityList.indexWhere(
+        (c) =>
+            c.githubLogin.toLowerCase() == 'okkevin' ||
+            c.displayName.toLowerCase() == 'okkevin',
+      );
+      if (okKevinIndex != -1) {
+        final okKevin = communityList.removeAt(okKevinIndex);
+        final insertAt = communityList.length < 4 ? communityList.length : 4;
+        communityList.insert(insertAt, okKevin);
       }
 
       coreTeam.assignAll(coreTeamList);
@@ -740,6 +763,25 @@ class _ContributorsPageState extends State<ContributorsPage> {
                         contributor.prCount == 1
                             ? '1 PR'
                             : '${contributor.prCount} PRs',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (contributor.roleTitle != 'Contributor') ...[
+                    const SizedBox(width: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: colors.primary.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: AnymeXText(
+                        contributor.roleTitle,
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
