@@ -348,6 +348,16 @@ class _MainAppState extends State<MainApp> {
 
     focusNode = FocusNode();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        precacheImage(const AssetImage('assets/images/bg_glass.webp'), context);
+        final customBg = Get.find<Settings>().liquidBackgroundPath;
+        if (customBg.isNotEmpty) {
+          precacheImage(FileImage(File(customBg)), context);
+        }
+      }
+    });
+
     if (!Platform.isLinux) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         safeCall(() => FcmService.init(),

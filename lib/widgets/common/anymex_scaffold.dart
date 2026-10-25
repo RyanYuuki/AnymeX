@@ -205,6 +205,7 @@ class AnymeXScaffold extends StatelessWidget {
 
     return Obx(() {
       settings.liquidBackgroundPath;
+      settings.retainOriginalColor;
       final liquidMode = settings.liquidMode;
 
       Widget content;
@@ -279,13 +280,13 @@ class AnymeXScaffold extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Obx(() => _buildCachedColorFilteredImage(
-                        context: context,
-                        imagePath: imagePath,
-                        color: settingsController.retainOriginalColor
-                            ? null
-                            : theme.primary.opaque(0.6),
-                      )),
+                  _buildCachedColorFilteredImage(
+                    context: context,
+                    imagePath: imagePath,
+                    color: settingsController.retainOriginalColor
+                        ? null
+                        : theme.primary.opaque(0.6),
+                  ),
                   if (isOled)
                     Container(color: Colors.black)
                   else
@@ -307,11 +308,9 @@ class AnymeXScaffold extends StatelessWidget {
     required GradientVariant gradientVariant,
     required ColorScheme theme,
   }) {
-    return RepaintBoundary(
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: _getGradient(gradientVariant, theme),
-        ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: _getGradient(gradientVariant, theme),
       ),
     );
   }
@@ -435,26 +434,23 @@ class AnymeXScaffold extends StatelessWidget {
     Color? color,
   }) {
     final isFile = imagePath.startsWith('file://');
-    final image = isFile
+    return isFile
         ? Image.file(
             File(imagePath.replaceFirst('file://', '')),
             fit: BoxFit.cover,
             filterQuality: FilterQuality.low,
-            cacheWidth: 720,
+            color: color,
+            colorBlendMode: color != null ? BlendMode.color : null,
+            gaplessPlayback: true,
           )
         : Image.asset(
             imagePath,
             fit: BoxFit.cover,
             filterQuality: FilterQuality.low,
-            cacheWidth: 720,
+            color: color,
+            colorBlendMode: color != null ? BlendMode.color : null,
+            gaplessPlayback: true,
           );
-
-    return color != null
-        ? ColorFiltered(
-            colorFilter: ColorFilter.mode(color, BlendMode.color),
-            child: image,
-          )
-        : image;
   }
 
   Widget _buildLightweightGlow({
