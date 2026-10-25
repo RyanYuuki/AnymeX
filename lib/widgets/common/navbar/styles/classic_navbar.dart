@@ -176,7 +176,7 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
               child: Container(
                 decoration: BoxDecoration(
                   color: isTranslucent
-                      ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)
+                      ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.3)
                       : theme.colorScheme.surfaceContainer
                           .withValues(alpha: 0.95),
                   borderRadius: borderRadius,

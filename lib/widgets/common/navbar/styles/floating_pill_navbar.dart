@@ -157,7 +157,7 @@ class _FloatingPillNavBarState extends State<_FloatingPillNavBar>
                   decoration: BoxDecoration(
                     color: isTranslucent
                         ? theme.colorScheme.surfaceContainer
-                            .withValues(alpha: 0.6)
+                            .withValues(alpha: 0.3)
                         : theme.colorScheme.surfaceContainer
                             .withValues(alpha: 0.95),
                     borderRadius: borderRadius,
