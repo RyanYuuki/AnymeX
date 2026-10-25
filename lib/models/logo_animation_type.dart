@@ -1,9 +1,7 @@
 /// Logo Animation Types
 enum LogoAnimationType {
-  smokeTrace('Smoke Trace', 'Luminous smoke streams trace and reveal the embossed logo'),
-
-  // Core Professional Animations
   bottomToTop('Bottom Fill', 'Fills the logo from bottom to top with gradient mask'),
+  smokeTrace('Smoke Trace', 'Luminous smoke streams trace and reveal the embossed logo'),
   fadeIn('Fade In', 'Smoothly fades in with subtle scale'),
   scale('Scale', 'Elastic scale up from center'),
   rotate('Rotate', '3D rotation with depth perspective'),
@@ -35,7 +33,7 @@ enum LogoAnimationType {
   
   static LogoAnimationType fromIndex(int index) {
     if (index < 0 || index >= LogoAnimationType.values.length) {
-      return LogoAnimationType.smokeTrace;
+      return LogoAnimationType.bottomToTop;
     }
     return LogoAnimationType.values[index];
   }

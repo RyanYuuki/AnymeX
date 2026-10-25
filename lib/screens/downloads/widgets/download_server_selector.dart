@@ -22,12 +22,14 @@ class DownloadServerSelector extends StatefulWidget {
   final List<Episode> episodes;
   final Source source;
   final OfflineMedia media;
+  final bool isFromMetadataPage;
 
   const DownloadServerSelector({
     super.key,
     required this.episodes,
     required this.source,
     required this.media,
+    this.isFromMetadataPage = true,
   });
 
   static Future<bool> show(
@@ -35,6 +37,7 @@ class DownloadServerSelector extends StatefulWidget {
     required List<Episode> episodes,
     required Source source,
     required OfflineMedia media,
+    bool isFromMetadataPage = true,
   }) async {
     if (!await DownloadPermissionDialog.checkAndPrompt(context)) {
       return false;
@@ -45,6 +48,7 @@ class DownloadServerSelector extends StatefulWidget {
         episodes: episodes,
         source: source,
         media: media,
+        isFromMetadataPage: isFromMetadataPage,
       ),
       context,
       showDragHandle: true,
@@ -192,6 +196,7 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
           widget.episodes.length == 1 ? selectedVideo?.headers : null,
       firstEpisodeSubtitles:
           widget.episodes.length == 1 ? selectedVideo?.subtitles : null,
+      isFromMetadataPage: widget.isFromMetadataPage,
     );
     snackBar(
       'Downloading ${widget.episodes.length} episode${widget.episodes.length != 1 ? 's' : ''}...',

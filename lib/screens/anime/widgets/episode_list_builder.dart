@@ -1191,7 +1191,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         );
     final summary = downloadController.downloadedMedia.firstWhereOrNull(
           (s) =>
-              s.extensionName.toLowerCase() == extName.toLowerCase() &&
+              (s.extensionName.toLowerCase() == extName.toLowerCase() ||
+                  s.extensionName.toLowerCase() == 'anymex') &&
               (s.folderName.toLowerCase() == mediaTitle.toLowerCase() ||
                   s.title.toLowerCase() == mediaTitle.toLowerCase()),
         ) ??
@@ -1202,7 +1203,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           poster: (widget.anilistData?.poster.isNotEmpty == true)
               ? widget.anilistData!.poster
               : widget.anilistData?.cover,
-          extensionName: extName,
+          extensionName: 'AnymeX',
           folderName: mediaTitle,
           mediaType: 'Anime',
         );

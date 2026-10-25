@@ -1179,7 +1179,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       final started = await DownloadServerSelector.show(context,
                           episodes: episodes,
                           source: source,
-                          media: offlineMedia);
+                          media: offlineMedia,
+                          isFromMetadataPage: false);
 
                       if (started) {
                         controller.selectedEpisodes.clear();
@@ -1457,6 +1458,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                           poster: media?.cover,
                           cover: media?.cover,
                         ),
+                        isFromMetadataPage: false,
                       );
                     },
                     child: Container(

@@ -38,8 +38,13 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   final downloadController = Get.find<DownloadController>();
 
   DownloadedMediaSummary get _currentSummary =>
-      downloadController.downloadedMedia
-          .firstWhereOrNull((s) => s.folderName == widget.summary.folderName) ??
+      downloadController.downloadedMedia.firstWhereOrNull((s) =>
+          s.folderName == widget.summary.folderName &&
+          s.extensionName == widget.summary.extensionName &&
+          s.mediaType == widget.summary.mediaType) ??
+      downloadController.downloadedMedia.firstWhereOrNull((s) =>
+          s.folderName == widget.summary.folderName &&
+          s.mediaType == widget.summary.mediaType) ??
       widget.summary;
 
   bool get _isManga => _currentSummary.mediaType == 'Manga';
@@ -119,7 +124,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         _showLoadingDialog(context, 'Deleting episode...');
         try {
           await downloadController.deleteEpisode(
-            widget.summary.extensionName,
+            _currentSummary.extensionName,
             _currentSummary.folderName,
             ep.number,
             ep.sortMap,
@@ -146,7 +151,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         _showLoadingDialog(context, 'Deleting chapter...');
         try {
           await downloadController.deleteChapter(
-            widget.summary.extensionName,
+            _currentSummary.extensionName,
             _currentSummary.folderName,
             ch.chapter.number,
           );
@@ -175,8 +180,8 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             context, 'Deleting ${_isManga ? "manga" : "anime"}...');
         try {
           await downloadController.deleteMedia(
-              widget.summary.extensionName, _currentSummary.folderName,
-              mediaType: widget.summary.mediaType);
+              _currentSummary.extensionName, _currentSummary.folderName,
+              mediaType: _currentSummary.mediaType);
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
             Navigator.of(this.context).pop();

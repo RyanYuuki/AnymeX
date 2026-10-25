@@ -18,12 +18,14 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
   final List<Chapter> chapters;
   final Source source;
   final OfflineMedia media;
+  final bool isFromMetadataPage;
 
   const MangaChapterDownloadConfirm({
     super.key,
     required this.chapters,
     required this.source,
     required this.media,
+    this.isFromMetadataPage = true,
   });
 
   static Future<void> show(
@@ -31,6 +33,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
     required List<Chapter> chapters,
     required Source source,
     required OfflineMedia media,
+    bool isFromMetadataPage = true,
   }) async {
     if (!await DownloadPermissionDialog.checkAndPrompt(context)) {
       return;
@@ -41,6 +44,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
         chapters: chapters,
         source: source,
         media: media,
+        isFromMetadataPage: isFromMetadataPage,
       ),
       context,
       showDragHandle: true,
@@ -174,16 +178,18 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
     final downloadController = Get.find<DownloadController>();
     Navigator.pop(context);
 
-    final ctrl = Get.find<DownloadSearchController>();
-    ctrl.resetDetail();
+    if (Get.isRegistered<DownloadSearchController>()) {
+      Get.find<DownloadSearchController>().resetDetail();
+    }
 
     downloadController.enqueueMangaDownloadBatch(
       chapters: chapters,
       source: source,
       media: media,
+      isFromMetadataPage: isFromMetadataPage,
     );
 
-    snackBar('Downloading ${ chapters.length} chapter${chapters.length != 1 ? 's' : ''}...');
+    snackBar('Downloading ${chapters.length} chapter${chapters.length != 1 ? 's' : ''}...');
   }
 
   Widget _buildInfoRow({

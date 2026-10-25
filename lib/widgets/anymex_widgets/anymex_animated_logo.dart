@@ -75,7 +75,7 @@ class _AnymeXAnimatedLogoState extends State<AnymeXAnimatedLogo>
       final index = ThemeKeys.logoAnimationType.get<int>(0);
       return LogoAnimationType.fromIndex(index);
     } catch (e) {
-      return LogoAnimationType.smokeTrace;
+      return LogoAnimationType.bottomToTop;
     }
   }
 
