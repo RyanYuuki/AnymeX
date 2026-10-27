@@ -117,12 +117,8 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     return [
       if (anilistAuth.isLoggedIn.value) ...[
         Obx(() {
-          trendingAnimes.length;
-          trendingMangas.length;
-          popularAnimes.length;
-          popularMangas.length;
-          anilistAuth.animeList.length;
-          anilistAuth.mangaList.length;
+          anilistAuth.animeList.value.length;
+          anilistAuth.mangaList.value.length;
           return LayoutBuilder(
             builder: (context, constraints) {
               final isDesktop = constraints.maxWidth > 600;

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:convert';
 import 'dart:math' show Random;
 import 'package:anymex/utils/oauth_helper.dart';
@@ -112,10 +113,11 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   Widget buildSectionIfNotEmpty(String title, RxList<Media> list,
       {bool isManga = false}) {
-    return list.isEmpty
-        ? const Center(child: AnymeXProgressIndicator())
-        : buildSection(title, list,
-            type: isManga ? ItemType.manga : ItemType.anime);
+    return Obx(() {
+      if (list.isEmpty) return const Center(child: AnymeXProgressIndicator());
+      return buildSection(title, list,
+          type: isManga ? ItemType.manga : ItemType.anime);
+    });
   }
 
   @override
@@ -226,49 +228,57 @@ class MalService extends GetxController implements BaseService, OnlineService {
       if (cached != null) {
         if (cached['trendingAnimes'] is List) {
           trendingAnimes.value = (cached['trendingAnimes'] as List)
-              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
+              .map((e) =>
+                  Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
               .toList()
               .removeDupes();
         }
         if (cached['popularAnimes'] is List) {
           popularAnimes.value = (cached['popularAnimes'] as List)
-              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
+              .map((e) =>
+                  Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
               .toList()
               .removeDupes();
         }
         if (cached['topAnimes'] is List) {
           topAnimes.value = (cached['topAnimes'] as List)
-              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
+              .map((e) =>
+                  Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
               .toList()
               .removeDupes();
         }
         if (cached['upcomingAnimes'] is List) {
           upcomingAnimes.value = (cached['upcomingAnimes'] as List)
-              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
+              .map((e) =>
+                  Media.fromMAL(Map<String, dynamic>.from(e), isManga: false))
               .toList()
               .removeDupes();
         }
         if (cached['trendingManga'] is List) {
           trendingManga.value = (cached['trendingManga'] as List)
-              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
+              .map((e) =>
+                  Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
               .toList()
               .removeDupes();
         }
         if (cached['topManga'] is List) {
           topManga.value = (cached['topManga'] as List)
-              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
+              .map((e) =>
+                  Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
               .toList()
               .removeDupes();
         }
         if (cached['topManhwa'] is List) {
           topManhwa.value = (cached['topManhwa'] as List)
-              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
+              .map((e) =>
+                  Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
               .toList()
               .removeDupes();
         }
         if (cached['topManhua'] is List) {
           topManhua.value = (cached['topManhua'] as List)
-              .map((e) => Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
+              .map((e) =>
+                  Media.fromMAL(Map<String, dynamic>.from(e), isManga: true))
               .toList()
               .removeDupes();
         }
@@ -282,14 +292,22 @@ class MalService extends GetxController implements BaseService, OnlineService {
   Future<void> fetchHomePage() async {
     try {
       final results = await Future.wait([
-        api.fetchRankingRaw('https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15'),
-        api.fetchRankingRaw('https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15'),
-        api.fetchRankingRaw('https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15'),
-        api.fetchRankingRaw('https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15'),
-        api.fetchRankingRaw('https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15'),
-        api.fetchRankingRaw('https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15'),
-        api.fetchRankingRaw('https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15'),
-        api.fetchRankingRaw('https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'),
+        api.fetchRankingRaw(
+            'https://api.myanimelist.net/v2/anime/ranking?ranking_type=airing&limit=15'),
+        api.fetchRankingRaw(
+            'https://api.myanimelist.net/v2/anime/ranking?ranking_type=bypopularity&limit=15'),
+        api.fetchRankingRaw(
+            'https://api.myanimelist.net/v2/anime/ranking?ranking_type=tv&limit=15'),
+        api.fetchRankingRaw(
+            'https://api.myanimelist.net/v2/anime/ranking?ranking_type=upcoming&limit=15'),
+        api.fetchRankingRaw(
+            'https://api.myanimelist.net/v2/manga/ranking?ranking_type=all&limit=15'),
+        api.fetchRankingRaw(
+            'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manga&limit=15'),
+        api.fetchRankingRaw(
+            'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhwa&limit=15'),
+        api.fetchRankingRaw(
+            'https://api.myanimelist.net/v2/manga/ranking?ranking_type=manhua&limit=15'),
       ]);
 
       ColdCache.write('mal_home', {
@@ -303,15 +321,39 @@ class MalService extends GetxController implements BaseService, OnlineService {
         'topManhua': results[7],
       });
 
-      trendingAnimes.value = results[0].map((e) => Media.fromMAL(e, isManga: false)).toList().removeDupes();
-      popularAnimes.value = results[1].map((e) => Media.fromMAL(e, isManga: false)).toList().removeDupes();
-      topAnimes.value = results[2].map((e) => Media.fromMAL(e, isManga: false)).toList().removeDupes();
-      upcomingAnimes.value = results[3].map((e) => Media.fromMAL(e, isManga: false)).toList().removeDupes();
+      trendingAnimes.value = results[0]
+          .map((e) => Media.fromMAL(e, isManga: false))
+          .toList()
+          .removeDupes();
+      popularAnimes.value = results[1]
+          .map((e) => Media.fromMAL(e, isManga: false))
+          .toList()
+          .removeDupes();
+      topAnimes.value = results[2]
+          .map((e) => Media.fromMAL(e, isManga: false))
+          .toList()
+          .removeDupes();
+      upcomingAnimes.value = results[3]
+          .map((e) => Media.fromMAL(e, isManga: false))
+          .toList()
+          .removeDupes();
 
-      trendingManga.value = results[4].map((e) => Media.fromMAL(e, isManga: true)).toList().removeDupes();
-      topManga.value = results[5].map((e) => Media.fromMAL(e, isManga: true)).toList().removeDupes();
-      topManhwa.value = results[6].map((e) => Media.fromMAL(e, isManga: true)).toList().removeDupes();
-      topManhua.value = results[7].map((e) => Media.fromMAL(e, isManga: true)).toList().removeDupes();
+      trendingManga.value = results[4]
+          .map((e) => Media.fromMAL(e, isManga: true))
+          .toList()
+          .removeDupes();
+      topManga.value = results[5]
+          .map((e) => Media.fromMAL(e, isManga: true))
+          .toList()
+          .removeDupes();
+      topManhwa.value = results[6]
+          .map((e) => Media.fromMAL(e, isManga: true))
+          .toList()
+          .removeDupes();
+      topManhua.value = results[7]
+          .map((e) => Media.fromMAL(e, isManga: true))
+          .toList()
+          .removeDupes();
 
       await communityService.fetchAll();
     } catch (e) {
@@ -396,14 +438,8 @@ class MalService extends GetxController implements BaseService, OnlineService {
     return [
       if (isLoggedIn.value) ...[
         Obx(() {
-          trendingAnimes.length;
-          trendingMangas.length;
-          popularAnimes.length;
-          popularMangas.length;
-          trendingManga.length;
-          topManga.length;
-          animeList.length;
-          mangaList.length;
+          animeList.value.length;
+          mangaList.value.length;
           return LayoutBuilder(builder: (context, constraints) {
             final width = isDesktop ? 300.0 : constraints.maxWidth / 2 - 40;
             final overflow = constraints.maxWidth < 900;
@@ -645,16 +681,24 @@ class MalService extends GetxController implements BaseService, OnlineService {
 
   @override
   Future<void> login(BuildContext context) async {
-    final selectedMethod = await AnymeXSheet.custom<String>(
-      loginSheetHelper(
-        context: context,
-        title: 'Login to MyAnimeList',
-        serviceName: 'MyAnimeList',
-        showTokenOption: false,
-      ),
-      context,
-      showDragHandle: true,
-    );
+    final isDesktop =
+        Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+
+    String? selectedMethod;
+    if (isDesktop) {
+      selectedMethod = 'browser_internal';
+    } else {
+      selectedMethod = await AnymeXSheet.custom<String>(
+        loginSheetHelper(
+          context: context,
+          title: 'Login to MyAnimeList',
+          serviceName: 'MyAnimeList',
+          showTokenOption: false,
+        ),
+        context,
+        showDragHandle: true,
+      );
+    }
 
     if (selectedMethod == null || !context.mounted) return;
 

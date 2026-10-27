@@ -1,7 +1,8 @@
 // ignore_for_file: invalid_use_of_protected_member
 
-import 'package:anymex/utils/oauth_helper.dart';
+import 'dart:io';
 import 'dart:convert';
+import 'package:anymex/utils/oauth_helper.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 
 import 'package:anymex/controllers/offline/offline_storage_controller.dart';
@@ -197,16 +198,24 @@ class AnilistAuth extends GetxController {
   }
 
   Future<void> login(BuildContext context) async {
-    final selectedMethod = await AnymeXSheet.custom<String>(
-      loginSheetHelper(
-        context: context,
-        title: 'Login to AniList',
-        serviceName: 'AniList',
-        showTokenOption: true,
-      ),
-      context,
-      showDragHandle: true,
-    );
+    final isDesktop =
+        Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+
+    String? selectedMethod;
+    if (isDesktop) {
+      selectedMethod = 'browser_internal';
+    } else {
+      selectedMethod = await AnymeXSheet.custom<String>(
+        loginSheetHelper(
+          context: context,
+          title: 'Login to AniList',
+          serviceName: 'AniList',
+          showTokenOption: true,
+        ),
+        context,
+        showDragHandle: true,
+      );
+    }
 
     if (selectedMethod == null || !context.mounted) return;
 

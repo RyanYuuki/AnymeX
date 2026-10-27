@@ -1,7 +1,9 @@
 // ignore_for_file: invalid_use_of_protected_member
 
+import 'dart:io';
 import 'dart:convert';
 import 'package:anymex/utils/oauth_helper.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'dart:math' as math;
 
 import 'package:anymex/controllers/cacher/cold_cache.dart';
@@ -925,6 +927,26 @@ class SimklService extends GetxController
 
   @override
   Future<void> login(BuildContext context) async {
+    final isDesktop =
+        Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+
+    bool forceWebAuth = false;
+    if (!isDesktop) {
+      final selectedMethod = await AnymeXSheet.custom<String>(
+        loginSheetHelper(
+          context: context,
+          title: 'Login to Simkl',
+          serviceName: 'Simkl',
+          showTokenOption: false,
+        ),
+        context,
+        showDragHandle: true,
+      );
+
+      if (selectedMethod == null || !context.mounted) return;
+      forceWebAuth = selectedMethod == 'browser_external';
+    }
+
     final clientId = dotenv.env['SIMKL_CLIENT_ID'];
 
     final url =
@@ -934,7 +956,31 @@ class SimklService extends GetxController
         context: context,
         url: url,
         callbackUrlScheme: 'anymex',
-        forceWebAuth: true,
+        forceWebAuth: forceWebAuth,
+      );
+
+      if (result != null) {
+        final code = Uri.parse(result).queryParameters['code'];
+        if (code != null) {
+          await _exchangeCodeForToken(code);
+        }
+      }
+    } catch (e) {
+      Logger.i(e.toString());
+    }
+  }
+
+  Future<void> loginWithWebView(BuildContext context) async {
+    final clientId = dotenv.env['SIMKL_CLIENT_ID'];
+
+    final url =
+        'https://simkl.com/oauth/authorize?response_type=code&client_id=$clientId&redirect_uri=anymex://callback';
+    try {
+      final result = await OauthHelper.authenticate(
+        context: context,
+        url: url,
+        callbackUrlScheme: 'anymex',
+        forceWebAuth: false,
       );
 
       if (result != null) {
