@@ -88,7 +88,8 @@ class MediaDownloader {
             e,
           );
         }
-        await Future.delayed(Duration(milliseconds: 500 * (1 << (attempts - 1))));
+        await Future.delayed(
+            Duration(milliseconds: 500 * (1 << (attempts - 1))));
       }
     }
   }
@@ -121,21 +122,24 @@ class MediaDownloader {
         final subFolder =
             path.join(subDownloadDir!, 'Episode_${episodeNumber}_subs');
         final ext = getSubtitleExtension(element.file!);
-        final subtitleFile = File(
-          path.join(subFolder, '${element.label}$ext'),
-        );
-        if (subtitleFile.existsSync()) {
+        final safeName = sanitizePathSegment('${element.label}$ext');
+        final subtitleFile = File(path.join(subFolder, safeName));
+        if (subtitleFile.existsSync() && subtitleFile.lengthSync() > 0) {
           continue;
         }
-        subtitleFile.createSync(recursive: true);
-        final response = await _withRetryStatic(
-          () => httpClient.get(Uri.parse(element.file!), headers: headers ?? {}),
-          3,
-        );
-        if (response.statusCode != 200) {
-          continue;
-        }
-        await subtitleFile.writeAsBytes(response.bodyBytes);
+        try {
+          final response = await _withRetryStatic(
+            () => httpClient.get(Uri.parse(element.file!),
+                headers: headers ?? {}),
+            3,
+          );
+          if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
+            if (!subtitleFile.parent.existsSync()) {
+              subtitleFile.parent.createSync(recursive: true);
+            }
+            await subtitleFile.writeAsBytes(response.bodyBytes);
+          }
+        } catch (_) {}
       }
     } catch (e) {
       throw MediaDownloaderException('Download failed', e);

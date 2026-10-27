@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:anymex/utils/media_downloader.dart';
 import 'package:anymex/utils/download_isolate_pool.dart' as dl;
+import 'package:anymex/database/isar_models/track.dart' as hive;
 import 'package:path/path.dart' as p;
 
 @pragma('vm:entry-point')
@@ -124,6 +125,11 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
     final headersraw = task['headers'] as Map<String, dynamic>?;
     final parallelSegments = task['parallelSegments'] as int? ?? 3;
     final docsPath = task['docsPath'] as String?;
+    final episodeNumber = task['episodeNumber'] as String?;
+    final subtitlesRaw = task['subtitles'] as List<dynamic>?;
+    final subtitles = subtitlesRaw
+        ?.map((e) => hive.Track.fromJson(e as Map<String, dynamic>))
+        .toList();
 
     final headers = headersraw?.map((k, v) => MapEntry(k, v.toString()));
 
@@ -144,6 +150,8 @@ class BackgroundDownloadTaskHandler extends TaskHandler {
       subDownloadDir: fullDirPath,
       headers: headers,
       concurrentDownloads: parallelSegments,
+      episodeNumber: episodeNumber,
+      subtitles: subtitles,
     );
 
     try {

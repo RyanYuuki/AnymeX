@@ -138,80 +138,94 @@ class _DownloadedWatchPageState extends State<DownloadedWatchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Obx(() => _controller.videoWidget),
-          PlayerOverlay(controller: _controller),
-          BufferingOverlay(controller: _controller),
-          if (!PlayerKeys.useLibass.get<bool>(false))
-            SubtitleText(controller: _controller),
-          DoubleTapSeekWidget(controller: _controller),
-          const Align(
-            alignment: Alignment.center,
-            child: ThemedCenterControls(),
+    return Theme(
+        data: Theme.of(context).copyWith(
+          focusColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: Scaffold(
+          body: Stack(
+            children: [
+              Obx(() => _controller.videoWidget),
+              PlayerOverlay(controller: _controller),
+              BufferingOverlay(controller: _controller),
+              if (!PlayerKeys.useLibass.get<bool>(false))
+                SubtitleText(controller: _controller),
+              DoubleTapSeekWidget(controller: _controller),
+              ExcludeFocus(
+                excluding: !_controller.showControls.value,
+                child: const Align(
+                  alignment: Alignment.center,
+                  child: ThemedCenterControls(),
+                ),
+              ),
+              ExcludeFocus(
+                excluding: !_controller.showControls.value,
+                child: const Align(
+                  alignment: Alignment.topCenter,
+                  child: ThemedTopControls(),
+                ),
+              ),
+              ExcludeFocus(
+                excluding: !_controller.showControls.value,
+                child: const Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ThemedBottomControls(),
+                ),
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: false,
+                controller: _controller,
+              ),
+              MediaIndicatorBuilder(
+                isVolumeIndicator: true,
+                controller: _controller,
+              ),
+              ShaderOsd(controller: _controller),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: SourcePopup(controller: _controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: TracksPopup(controller: _controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: AudioPopup(controller: _controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: SyncSubsPopup(controller: _controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: EpisodesPane(controller: _controller),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                child: SpeedPopup(controller: _controller),
+              ),
+            ],
           ),
-          const Align(
-            alignment: Alignment.topCenter,
-            child: ThemedTopControls(),
-          ),
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: ThemedBottomControls(),
-          ),
-          MediaIndicatorBuilder(
-            isVolumeIndicator: false,
-            controller: _controller,
-          ),
-          MediaIndicatorBuilder(
-            isVolumeIndicator: true,
-            controller: _controller,
-          ),
-          ShaderOsd(controller: _controller),
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            left: 0,
-            child: SourcePopup(controller: _controller),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            left: 0,
-            child: TracksPopup(controller: _controller),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            left: 0,
-            child: AudioPopup(controller: _controller),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            left: 0,
-            child: SyncSubsPopup(controller: _controller),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            left: 0,
-            child: EpisodesPane(controller: _controller),
-          ),
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            left: 0,
-            child: SpeedPopup(controller: _controller),
-          ),
-        ],
-      ),
-    );
+        ));
   }
 }
