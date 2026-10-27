@@ -94,6 +94,11 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
       parent: _glowAnimationController,
       curve: Curves.easeInOut,
     ));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _refocusPlayerForShortcuts();
+      }
+    });
   }
 
   @override
@@ -124,7 +129,9 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
   bool _isFollowMode() {
     try {
       final watchium = Get.find<WatchiumService>();
-      return watchium.inRoom.value && watchium.followHost.value && !watchium.isHost.value;
+      return watchium.inRoom.value &&
+          watchium.followHost.value &&
+          !watchium.isHost.value;
     } catch (_) {
       return false;
     }
@@ -302,7 +309,8 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
               if (mounted) {
                 double currentRate = widget.controller.playbackSpeed.value;
                 if ((currentRate - _pendingSpeed).abs() > 0.1) {
-                  widget.controller.setRate(_pendingSpeed, updateSession: false);
+                  widget.controller
+                      .setRate(_pendingSpeed, updateSession: false);
                 }
               }
             });
@@ -785,36 +793,47 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
     widget.controller.toggleControls();
   }
 
-  void _handleKeyboard(KeyEvent event) {
-    if (widget.controller.isLocked.value) return;
+  KeyEventResult _handleKeyboard(FocusNode node, KeyEvent event) {
+    if (widget.controller.isLocked.value) return KeyEventResult.ignored;
     if (event is KeyDownEvent) {
       final isControlPressed = HardwareKeyboard.instance.isControlPressed;
       if (isControlPressed) {
         if (event.logicalKey == LogicalKeyboardKey.digit1) {
           widget.controller.applyShaderByIndex(0);
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.digit2) {
           widget.controller.applyShaderByIndex(1);
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.digit3) {
           widget.controller.applyShaderByIndex(2);
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.digit4) {
           widget.controller.applyShaderByIndex(3);
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.digit5) {
           widget.controller.applyShaderByIndex(4);
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.digit6) {
           widget.controller.applyShaderByIndex(5);
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.digit0) {
           widget.controller.clearShaders();
+          return KeyEventResult.handled;
         }
       } else {
         if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
           _handleLeftSeek();
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
           _handleRightSeek();
+          return KeyEventResult.handled;
         } else if (event.logicalKey == LogicalKeyboardKey.space) {
           widget.controller.togglePlayPause();
+          return KeyEventResult.handled;
         }
       }
     }
+    return KeyEventResult.ignored;
   }
 
   @override
@@ -829,9 +848,9 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
             if (!Platform.isAndroid && !Platform.isIOS)
               {widget.controller.toggleControls(val: true)}
           },
-          child: KeyboardListener(
+          child: Focus(
             focusNode: _playerFocusNode,
-            autofocus: !Platform.isAndroid && !Platform.isIOS,
+            autofocus: true,
             onKeyEvent: _handleKeyboard,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -856,10 +875,12 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
               onVerticalDragUpdate: Get.find<Settings>().enableSwipeControls
                   ? (details) {
                       if (_isHolding) {
-                        double deltaY = details.globalPosition.dy - _initialSwipeY;
+                        double deltaY =
+                            details.globalPosition.dy - _initialSwipeY;
                         _updateSpeedFromSwipe(deltaY);
                       } else if (_isDragging) {
-                        widget.controller.onVerticalDragUpdate(context, details);
+                        widget.controller
+                            .onVerticalDragUpdate(context, details);
                       }
                     }
                   : null,
@@ -891,7 +912,8 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
               onLongPressMoveUpdate: Get.find<Settings>().enableHoldToSeek
                   ? (details) {
                       if (_isHolding) {
-                        double deltaY = details.globalPosition.dy - _initialSwipeY;
+                        double deltaY =
+                            details.globalPosition.dy - _initialSwipeY;
                         _updateSpeedFromSwipe(deltaY);
                       }
                     }

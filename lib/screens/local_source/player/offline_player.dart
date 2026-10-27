@@ -23,7 +23,6 @@ import 'package:get/get.dart';
 import 'package:anymex/screens/downloads/model/download_models.dart';
 import 'package:anymex/database/isar_models/track.dart' as hive;
 
-
 class LocalEpisode {
   final String folderName;
   final String name;
@@ -110,89 +109,103 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Obx(() {
-        final isPip = controller.isPipMode.value;
-        return Stack(
-          children: [
-            Obx(() => KeyedSubtree(
-                  key: ValueKey(controller.playerReloadVersion.value),
-                  child: controller.videoWidget,
-                )),
-            if (!PlayerKeys.useLibass.get<bool>(false))
-              SubtitleText(controller: controller),
-            if (!isPip) ...[
-              PlayerOverlay(controller: controller),
-              DoubleTapSeekWidget(
-                controller: controller,
-              ),
-              const Align(
-                alignment: Alignment.center,
-                child: ThemedCenterControls(),
-              ),
-              const Align(
-                alignment: Alignment.topCenter,
-                child: ThemedTopControls(),
-              ),
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: ThemedBottomControls(),
-              ),
-              MediaIndicatorBuilder(
-                isVolumeIndicator: false,
-                controller: controller,
-              ),
-              MediaIndicatorBuilder(
-                isVolumeIndicator: true,
-                controller: controller,
-              ),
-              ShaderOsd(controller: controller),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: SourcePopup(controller: controller),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: AudioPopup(controller: controller),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: TracksPopup(controller: controller),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: SyncSubsPopup(controller: controller),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: EpisodesPane(controller: controller),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                child: SpeedPopup(controller: controller),
-              ),
-            ],
-          ],
-        );
-      }),
-    );
+    return Theme(
+        data: Theme.of(context).copyWith(
+          focusColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: Scaffold(
+          body: Obx(() {
+            final isPip = controller.isPipMode.value;
+            return Stack(
+              children: [
+                Obx(() => KeyedSubtree(
+                      key: ValueKey(controller.playerReloadVersion.value),
+                      child: controller.videoWidget,
+                    )),
+                if (!PlayerKeys.useLibass.get<bool>(false))
+                  SubtitleText(controller: controller),
+                if (!isPip) ...[
+                  PlayerOverlay(controller: controller),
+                  DoubleTapSeekWidget(
+                    controller: controller,
+                  ),
+                  ExcludeFocus(
+                    excluding: !controller.showControls.value,
+                    child: const Align(
+                      alignment: Alignment.center,
+                      child: ThemedCenterControls(),
+                    ),
+                  ),
+                  ExcludeFocus(
+                    excluding: !controller.showControls.value,
+                    child: const Align(
+                      alignment: Alignment.topCenter,
+                      child: ThemedTopControls(),
+                    ),
+                  ),
+                  ExcludeFocus(
+                    excluding: !controller.showControls.value,
+                    child: const Align(
+                      alignment: Alignment.bottomCenter,
+                      child: ThemedBottomControls(),
+                    ),
+                  ),
+                  MediaIndicatorBuilder(
+                    isVolumeIndicator: false,
+                    controller: controller,
+                  ),
+                  MediaIndicatorBuilder(
+                    isVolumeIndicator: true,
+                    controller: controller,
+                  ),
+                  ShaderOsd(controller: controller),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: SourcePopup(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: AudioPopup(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: TracksPopup(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: SyncSubsPopup(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: EpisodesPane(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: SpeedPopup(controller: controller),
+                  ),
+                ],
+              ],
+            );
+          }),
+        ));
   }
 }
