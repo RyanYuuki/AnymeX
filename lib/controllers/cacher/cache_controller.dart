@@ -18,7 +18,7 @@ class CacheController extends GetxController {
 
   RxList<String> get currentPool => getCacheContainer();
 
-  void addCache(Map<String, dynamic> data) {
+  void addCache(Map<String, dynamic> data, [ServicesType? serviceType]) {
     if (!data.containsKey('id') ||
         data['id'] == null ||
         data['id'].toString().isEmpty) {
@@ -26,80 +26,120 @@ class CacheController extends GetxController {
       return;
     }
 
+    final targetService = serviceType ??
+        (data['title'] is Map
+            ? ServicesType.anilist
+            : Get.find<ServiceHandler>().serviceType.value);
+    final pool = getCacheContainer(targetService);
     final String id = data['id'].toString();
     final String encodedData = jsonEncode(data);
 
     detailsData.value = encodedData;
 
-    final storedData = getStoredAnime();
-
-    final index = storedData.indexWhere((e) => e.id == id);
+    final index = pool.indexWhere((item) {
+      try {
+        final map = jsonDecode(item);
+        return map is Map && map['id']?.toString() == id;
+      } catch (_) {
+        return false;
+      }
+    });
 
     if (index == -1) {
-      if (!currentPool.any((item) => jsonDecode(item)['id'] == id)) {
-        currentPool.add(encodedData);
-        Logger.i('Added new entry to cache: ID $id');
-      } else {
-        Logger.i('Duplicate entry in currentPool skipped: ID $id');
-      }
+      pool.add(encodedData);
+      Logger.i('Added new entry to cache: ID $id');
     } else {
-      if (index < currentPool.length) {
-        currentPool[index] = encodedData;
-        Logger.i('Updated existing entry in cache: ID $id');
-      } else {
-        Logger.i(
-            'Warning: currentPool index out of sync for ID $id, adding as new');
-        currentPool.add(encodedData);
-      }
+      pool[index] = encodedData;
+      Logger.i('Updated existing entry in cache: ID $id');
     }
   }
 
-  List<Media> getStoredAnime() {
-    return currentPool
-        .map((e) => cacheDataParser(e))
+  List<Media> getStoredAnime([ServicesType? serviceType]) {
+    final pool = getCacheContainer(serviceType);
+    return pool
+        .map((e) => cacheDataParser(e, serviceType))
+        .whereType<Media>()
         .toList()
         .reversed
         .toList();
   }
 
-  Media? getCacheById(String id) {
-    final pool = getCacheContainer();
-    final data = pool.map((e) => cacheDataParser(e)).toList();
-    return data.firstWhereOrNull((e) => e.id == id);
+  Media? getCacheById(String id, [ServicesType? serviceType]) {
+    if (serviceType != null) {
+      final match =
+          _findInPool(getCacheContainer(serviceType), id, serviceType);
+      if (match != null) return match;
+    }
+
+    final currentService = Get.find<ServiceHandler>().serviceType.value;
+    final currentMatch =
+        _findInPool(getCacheContainer(currentService), id, currentService);
+    if (currentMatch != null) return currentMatch;
+
+    for (final type in ServicesType.values) {
+      if (type == serviceType || type == currentService) continue;
+      final match = _findInPool(getCacheContainer(type), id, type);
+      if (match != null) return match;
+    }
+    return null;
   }
 
-  Media cacheDataParser(String data) {
-    final service = Get.find<ServiceHandler>().serviceType;
-    Map<String, dynamic> parsedMap = jsonDecode(data);
-    switch (service.value) {
-      case ServicesType.anilist:
+  Media? _findInPool(List<String> pool, String id, ServicesType serviceType) {
+    for (final item in pool) {
+      try {
+        final decoded = jsonDecode(item);
+        if (decoded is Map && decoded['id']?.toString() == id) {
+          return cacheDataParser(item, serviceType);
+        }
+      } catch (e) {
+        Logger.i('Error matching cache entry: $e');
+      }
+    }
+    return null;
+  }
+
+  Media? cacheDataParser(String data, [ServicesType? serviceType]) {
+    try {
+      final service =
+          serviceType ?? Get.find<ServiceHandler>().serviceType.value;
+      Map<String, dynamic> parsedMap = jsonDecode(data);
+      if (parsedMap['title'] is Map) {
         return Media.fromJson(parsedMap);
-      case ServicesType.mal:
-        return Media.fromFullMAL(parsedMap);
-      case ServicesType.simkl:
-        final dynamic marker = parsedMap['__isMovie'];
-        final bool isMovie = marker is bool ? marker : true;
-        return Media.fromSimkl(parsedMap, isMovie);
-      default:
-        parsedMap['status'] = parseStatusToInt(parsedMap['status']);
-        return Media.froDMedia(
-            DMedia.fromJson(parsedMap),
-            serviceHandler.extensionService.lastUpdatedSource.value == "ANIME"
-                ? ItemType.anime
-                : ItemType.manga);
+      }
+      switch (service) {
+        case ServicesType.anilist:
+          return Media.fromJson(parsedMap);
+        case ServicesType.mal:
+          return Media.fromFullMAL(parsedMap);
+        case ServicesType.simkl:
+          final dynamic marker = parsedMap['__isMovie'];
+          final bool isMovie = marker is bool ? marker : true;
+          return Media.fromSimkl(parsedMap, isMovie);
+        case ServicesType.extensions:
+          parsedMap['status'] =
+              parseStatusToInt(parsedMap['status']?.toString() ?? '');
+          return Media.froDMedia(
+              DMedia.fromJson(Map.from(parsedMap)),
+              serviceHandler.extensionService.lastUpdatedSource.value == "ANIME"
+                  ? ItemType.anime
+                  : ItemType.manga);
+      }
+    } catch (e) {
+      Logger.i('Cache parsing error: $e');
+      return null;
     }
   }
 
-  RxList<String> getCacheContainer() {
-    final service = Get.find<ServiceHandler>().serviceType;
-    switch (service.value) {
+  RxList<String> getCacheContainer([ServicesType? serviceType]) {
+    final service = serviceType ?? Get.find<ServiceHandler>().serviceType.value;
+    switch (service) {
       case ServicesType.anilist:
         return cachedAnilistData;
       case ServicesType.mal:
         return cachedMalData;
       case ServicesType.simkl:
         return cachedSimklData;
-      default:
+      case ServicesType.extensions:
         return cachedExtensionData;
     }
   }

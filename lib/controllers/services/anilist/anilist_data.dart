@@ -1187,7 +1187,7 @@ averageScore
 
   @override
   Future<Media> fetchDetails(FetchDetailsParams params) async {
-    Media? data = cacheController.getCacheById(params.id);
+    Media? data = cacheController.getCacheById(params.id, ServicesType.anilist);
 
     if (data != null) return data;
 
@@ -1218,7 +1218,7 @@ averageScore
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final media = data['data']['Media'];
-        cacheController.addCache(media);
+        cacheController.addCache(media, ServicesType.anilist);
         Logger.i('Primary Data Loaded for id: ${params.id}');
         print('Fetched details for id: ${params.id}, media: $media');
         return Media.fromJson(media);

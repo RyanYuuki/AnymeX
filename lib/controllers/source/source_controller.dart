@@ -558,9 +558,9 @@ class SourceController extends GetxController implements BaseService {
     final source = isAnime ? activeSource.value! : activeMangaSource.value!;
     final data = await source.methods.getDetail(DMedia.withUrl(params.id));
 
-    if (serviceHandler.serviceType.value != ServicesType.extensions) {
-      cacheController.addCache(data.toJson());
-    }
+    final map = data.toJson();
+    map['id'] = params.id;
+    cacheController.addCache(map, ServicesType.extensions);
     return Media.froDMedia(data, isAnime ? ItemType.anime : ItemType.manga)
       ..sourceId = source.id;
   }

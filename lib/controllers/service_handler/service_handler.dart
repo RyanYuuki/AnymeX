@@ -182,7 +182,7 @@ class ServiceHandler extends GetxController {
       if (serviceType.value == ServicesType.extensions) {
         return service.fetchDetails(params);
       }
-      Media? data = cacheController.getCacheById(params.id);
+      Media? data = cacheController.getCacheById(params.id, serviceType.value);
       return data ?? service.fetchDetails(params);
     } catch (e) {
       Logger.i("Cache Error => $e");

@@ -399,7 +399,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
         "fields=mean,status,media_type,synopsis,genres,type,num_episodes,num_chapters,studio,start_date,end_date,source,rating,rank,popularity,favorites,studios,statistics,recommendations";
 
     final data = await fetchMAL('$url?$newField') as Map<String, dynamic>;
-    cacheController.addCache(data);
+    cacheController.addCache(data, ServicesType.mal);
     final isManga = url.contains('/manga/');
     return Media.fromFullMAL(data, isManga: isManga);
   }

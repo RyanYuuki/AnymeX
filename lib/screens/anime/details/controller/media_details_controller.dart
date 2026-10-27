@@ -158,7 +158,8 @@ class MediaDetailsController extends GetxController {
     anilist = Get.find<AnilistAuth>();
 
     selectedPage = initialTabIndex.obs;
-    final cached = Get.find<CacheController>().getCacheById(initialMedia.id);
+    final cached = Get.find<CacheController>()
+        .getCacheById(initialMedia.id, initialMedia.serviceType);
     media = Rx<Media>(cached ?? initialMedia);
     if (Get.isRegistered<DiscordRPCController>()) {
       DiscordRPCController.instance.updateMediaPresence(media: media.value);
