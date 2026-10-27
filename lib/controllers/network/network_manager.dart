@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart'
-    hide CookieManager, ProxySettings;
+import 'package:webview_all/webview_all.dart'
+    hide CookieManager;
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:rhttp/rhttp.dart';
 import 'package:anymex_extension_runtime_bridge/AnymeXBridge.dart';
+import 'package:anymex_extension_runtime_bridge/ExtensionBridge.dart';
 
 import 'package:anymex/database/data_keys/keys.dart';
 
@@ -14,15 +16,34 @@ import 'cookie_manager.dart';
 import 'dns_manager.dart';
 import 'log_interceptor.dart';
 
+class DelegatingHttpClient extends http.BaseClient {
+  final NetworkManager _manager;
+  DelegatingHttpClient(this._manager);
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    try {
+      return await _manager._compatibleClient.send(request);
+    } on RhttpClientDisposedException {
+      return await _manager._compatibleClient.send(request);
+    }
+  }
+
+  @override
+  void close() {}
+}
+
 class NetworkManager extends GetxController {
   static NetworkManager get instance => Get.find<NetworkManager>();
 
   late RhttpClient _client;
   late RhttpCompatibleClient _compatibleClient;
+  late final http.Client _delegatingClient = DelegatingHttpClient(this);
 
   RhttpClient get client => _client;
 
-  RhttpCompatibleClient get compatibleClient => _compatibleClient;
+  http.Client get compatibleClient => _delegatingClient;
+  RhttpCompatibleClient get rawCompatibleClient => _compatibleClient;
 
   String get userAgent {
     final custom = NetworkKeys.customUserAgent.get<String>('');
@@ -56,15 +77,13 @@ class NetworkManager extends GetxController {
   Future<void> _captureWebViewUserAgent() async {
     if (NetworkKeys.fetchedUserAgent.get<String>('').isNotEmpty) return;
     try {
-      if (!Platform.isLinux) {
-        final ua = await InAppWebViewController.getDefaultUserAgent();
-        if (ua.isNotEmpty) {
-          NetworkKeys.fetchedUserAgent.set(ua);
-          reinitialize();
-          try {
-            await AnymeXRuntimeBridge.setUserAgent('', ua);
-          } catch (_) {}
-        }
+      final ua = await WebViewController().getUserAgent();
+      if (ua != null && ua.isNotEmpty) {
+        NetworkKeys.fetchedUserAgent.set(ua);
+        reinitialize();
+        try {
+          await AnymeXRuntimeBridge.setUserAgent('', ua);
+        } catch (_) {}
       }
     } catch (e) {
       debugPrint('Failed to extract default WebView user-agent: $e');
@@ -79,6 +98,9 @@ class NetworkManager extends GetxController {
       _client.dispose();
     } catch (_) {}
     _initClient();
+    try {
+      AnymeXExtensionBridge.updateHttpClient(_delegatingClient);
+    } catch (_) {}
   }
 
   RhttpClient _initClient() {
