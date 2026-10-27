@@ -111,7 +111,7 @@ class _SettingsUiState extends State<SettingsUi> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: colors.primary.opaque(0.12),
+                  color: colors.primary.opaque(0.12, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, size: 20, color: colors.primary),
@@ -130,7 +130,7 @@ class _SettingsUiState extends State<SettingsUi> {
                     AnymeXText(
                       description,
                       size: 11.5,
-                      color: colors.onSurface.opaque(0.6),
+                      color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
                       maxLines: 2,
                     ),
                   ],
@@ -141,10 +141,10 @@ class _SettingsUiState extends State<SettingsUi> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: colors.primary.opaque(0.12),
+                  color: colors.primary.opaque(0.12, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: colors.primary.opaque(0.25),
+                    color: colors.primary.opaque(0.25, iReallyMeanIt: true),
                     width: 0.8,
                   ),
                 ),
@@ -160,13 +160,15 @@ class _SettingsUiState extends State<SettingsUi> {
           const SizedBox(height: 16),
           Row(
             children: [
-              Icon(Iconsax.eye, size: 12, color: colors.onSurface.opaque(0.5)),
+              Icon(Iconsax.eye,
+                  size: 12,
+                  color: colors.onSurface.opaque(0.5, iReallyMeanIt: true)),
               const SizedBox(width: 6),
               AnymeXText(
                 'PREVIEW',
                 size: 10.5,
                 variant: TextVariant.bold,
-                color: colors.onSurface.opaque(0.5),
+                color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
               ),
             ],
           ),
@@ -176,13 +178,14 @@ class _SettingsUiState extends State<SettingsUi> {
           Row(
             children: [
               Icon(Iconsax.category,
-                  size: 12, color: colors.onSurface.opaque(0.5)),
+                  size: 12,
+                  color: colors.onSurface.opaque(0.5, iReallyMeanIt: true)),
               const SizedBox(width: 6),
               AnymeXText(
                 'STYLE',
                 size: 10.5,
                 variant: TextVariant.bold,
-                color: colors.onSurface.opaque(0.5),
+                color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
               ),
             ],
           ),

@@ -73,9 +73,9 @@ class DefaultCard extends CarouselCard {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
-        color: theme.surfaceContainer.opaque(0.3),
+        color: theme.surfaceContainer.opaque(0.3, iReallyMeanIt: true),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.outline.opaque(0.15)),
+        border: Border.all(color: theme.outline.opaque(0.15, iReallyMeanIt: true)),
       ),
       constraints: BoxConstraints(maxWidth: desktop ? 160 : 130),
       child: Column(
@@ -112,7 +112,7 @@ class DefaultCard extends CarouselCard {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: theme.primary.opaque(0.1),
+                    color: theme.primary.opaque(0.1, iReallyMeanIt: true),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(

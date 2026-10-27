@@ -126,7 +126,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: colorScheme.primary.opaque(0.2),
+              color: colorScheme.primary.opaque(0.2, iReallyMeanIt: true),
               width: 1,
             ),
             borderRadius: BorderRadius.circular(14.multiplyRadius()),
@@ -179,7 +179,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: colorScheme.surfaceContainerHighest.opaque(0.6),
+                                  color: colorScheme.surfaceContainerHighest.opaque(0.6, iReallyMeanIt: true),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: AnymeXText(
@@ -197,7 +197,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                               decoration: BoxDecoration(
-                                color: colorScheme.primary.opaque(0.15),
+                                color: colorScheme.primary.opaque(0.15, iReallyMeanIt: true),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Row(
@@ -222,7 +222,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                               decoration: BoxDecoration(
-                                color: colorScheme.error.opaque(0.12),
+                                color: colorScheme.error.opaque(0.12, iReallyMeanIt: true),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Row(

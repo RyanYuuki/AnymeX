@@ -191,7 +191,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                 decoration: BoxDecoration(
-                  color: colors.primary.opaque(0.12),
+                  color: colors.primary.opaque(0.12, iReallyMeanIt: true),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: AnymeXText(

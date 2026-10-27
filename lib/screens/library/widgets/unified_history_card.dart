@@ -20,15 +20,15 @@ class UnifiedHistoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
     final gradientColors = [
-      context.colors.surface.opaque(0.3),
-      context.colors.primaryContainer.opaque(0.3),
-      context.colors.primaryContainer.opaque(0.8),
+      context.colors.surface.opaque(0.3, iReallyMeanIt: true),
+      context.colors.primaryContainer.opaque(0.3, iReallyMeanIt: true),
+      context.colors.primaryContainer.opaque(0.8, iReallyMeanIt: true),
     ];
 
     return AnymeXCard(
       shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: colorScheme.primary.opaque(0.3),
+            color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
             width: 2,
           ),
           borderRadius: BorderRadius.circular(16)),
@@ -127,7 +127,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                               size: 14,
                               maxLines: 1,
                               variant: TextVariant.regular,
-                              color: colorScheme.onSurface.opaque(0.7),
+                              color: colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
                               overflow: TextOverflow.ellipsis,
                               isMarquee: true,
                             ),
@@ -144,7 +144,7 @@ class UnifiedHistoryCard extends StatelessWidget {
                                     AnymeXText(media.date!,
                                       size: 12,
                                       color:
-                                          colorScheme.onSurface.opaque(0.7),
+                                          colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
                                     ),
                                     AnymeXText(media.progressText ?? '??',
                                       size: 12,
@@ -191,7 +191,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
     return AnymeXCard(
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: colorScheme.primary.opaque(0.3),
+          color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(16.multiplyRadius()),
@@ -272,7 +272,7 @@ class UnifiedHistoryCardV3 extends StatelessWidget {
                       size: 13,
                       maxLines: 1,
                       variant: TextVariant.regular,
-                      color: colorScheme.onSurface.opaque(0.7),
+                      color: colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
                       overflow: TextOverflow.ellipsis,
                     ),
                   const SizedBox(height: 12),
@@ -324,7 +324,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
     return AnymeXCard(
       shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: colorScheme.primary.opaque(0.3),
+            color: colorScheme.primary.opaque(0.3, iReallyMeanIt: true),
             width: 2,
           ),
           borderRadius: BorderRadius.circular(16)),
@@ -397,7 +397,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                           size: 14,
                           maxLines: 1,
                           variant: TextVariant.regular,
-                          color: colorScheme.onSurface.opaque(0.7),
+                          color: colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
                           overflow: TextOverflow.ellipsis,
                           isMarquee: true,
                         ),
@@ -413,7 +413,7 @@ class UnifiedHistoryCardV2 extends StatelessWidget {
                               children: [
                                 AnymeXText(media.date!,
                                   size: 12,
-                                  color: colorScheme.onSurface.opaque(0.7),
+                                  color: colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
                                 ),
                                 AnymeXText(media.progressText!,
                                   size: 12,
