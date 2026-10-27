@@ -1372,13 +1372,15 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
           .toList();
 
       if (isOffline.value) {
-        if (embeddedSubs.value.isEmpty) {
-          final offlineTracks = externalSubs.value
-              .map((s) => SubtitleTrack.uri(s.file ?? '',
-                  title: s.label, language: s.label))
-              .toList();
-          subs.addAll(offlineTracks);
-          embeddedSubs.value = subs;
+        final existingIds = embeddedSubs.value.map((t) => t.id).toSet();
+        final newTracks = <SubtitleTrack>[];
+        for (final track in subs) {
+          if (!existingIds.contains(track.id)) {
+            newTracks.add(track);
+          }
+        }
+        if (newTracks.isNotEmpty) {
+          embeddedSubs.value = [...embeddedSubs.value, ...newTracks];
         }
       } else {
         embeddedSubs.value = subs;
@@ -1499,73 +1501,94 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     final videoPath = selectedVideo.value?.url ?? offlineVideoPath;
     if (videoPath == null) return;
 
+    List<model.Track> foundTracks = [];
+
     if (selectedVideo.value?.subtitles != null &&
         selectedVideo.value!.subtitles!.isNotEmpty) {
-      final validSubs = selectedVideo.value!.subtitles!
-          .where((s) => s.file != null && !s.file!.startsWith('http'))
-          .toList();
-
-      if (validSubs.isNotEmpty) {
-        for (var sub in validSubs) {
-          if (!sub.file!.startsWith('file://')) {
-            sub.file = Uri.file(sub.file!).toString();
+      for (final s in selectedVideo.value!.subtitles!) {
+        if (s.file == null || s.file!.isEmpty) continue;
+        final cleanPath = s.file!.startsWith('file://')
+            ? s.file!.replaceFirst('file://', '')
+            : s.file!;
+        if (File(cleanPath).existsSync()) {
+          foundTracks.add(model.Track(
+            file: Uri.file(cleanPath).toString(),
+            label: s.label,
+          ));
+        } else {
+          final parent = File(cleanPath).parent;
+          if (parent.existsSync()) {
+            final baseName = p.basenameWithoutExtension(cleanPath);
+            final matchFile = parent
+                .listSync()
+                .whereType<File>()
+                .toList()
+                .firstWhereOrNull(
+                    (f) => p.basenameWithoutExtension(f.path) == baseName);
+            if (matchFile != null) {
+              foundTracks.add(model.Track(
+                file: Uri.file(matchFile.path).toString(),
+                label: s.label,
+              ));
+            }
           }
         }
-        externalSubs.value = validSubs;
-
-        final subtitleTracks = validSubs
-            .map((s) => SubtitleTrack.uri(s.file ?? '',
-                title: s.label, language: s.label))
-            .toList();
-
-        embeddedSubs.update((val) {
-          val?.addAll(subtitleTracks);
-        });
-        return;
       }
     }
 
-    try {
-      final videoFile = File(videoPath);
-      final parentDir = videoFile.parent;
-      final dirs = await parentDir.list().whereType<Directory>().toList();
-      final expectedSubsDirName = 'Episode_${currentEpisode.value.number}_subs';
-      final subsDir = dirs
-          .firstWhereOrNull((d) => p.basename(d.path) == expectedSubsDirName);
+    if (foundTracks.isEmpty) {
+      try {
+        final videoFile = File(videoPath);
+        final parentDir = videoFile.parent;
+        final dirs = await parentDir.list().whereType<Directory>().toList();
+        final expectedSubsDirName =
+            'Episode_${currentEpisode.value.number}_subs';
+        final subsDir = dirs
+            .firstWhereOrNull((d) => p.basename(d.path) == expectedSubsDirName);
 
-      if (subsDir != null && await subsDir.exists()) {
-        final files = await subsDir.list().toList();
-        final subFiles = files.whereType<File>().where((f) {
-          final ext = p.extension(f.path).toLowerCase();
-          return ext == '.vtt' ||
-              ext == '.srt' ||
-              ext == '.ass' ||
-              ext == '.ssa';
-        }).toList();
+        if (subsDir != null && await subsDir.exists()) {
+          final files = await subsDir.list().toList();
+          final subFiles = files.whereType<File>().where((f) {
+            final ext = p.extension(f.path).toLowerCase();
+            return ext == '.vtt' ||
+                ext == '.srt' ||
+                ext == '.ass' ||
+                ext == '.ssa';
+          }).toList();
 
-        final tracks = subFiles.map((f) {
-          final label = p.basenameWithoutExtension(f.path);
-          return model.Track(
-            file: Uri.file(f.path).toString(),
-            label: label,
-          );
-        }).toList();
-
-        externalSubs.update((val) {
-          val?.addAll(tracks);
-        });
-
-        final subtitleTracks = tracks
-            .map((s) => SubtitleTrack.uri(s.file ?? '',
-                title: s.label, language: s.label))
-            .toList();
-
-        embeddedSubs.update((val) {
-          val?.addAll(subtitleTracks);
-        });
+          foundTracks = subFiles.map((f) {
+            final label = p.basenameWithoutExtension(f.path);
+            return model.Track(
+              file: Uri.file(f.path).toString(),
+              label: label,
+            );
+          }).toList();
+        }
+      } catch (e) {
+        debugPrint('Error loading local subtitles: $e');
       }
-    } catch (e) {
-      debugPrint('Error loading local subtitles: $e');
+    }
+
+    if (foundTracks.isNotEmpty) {
+      externalSubs.value = foundTracks;
+      final subtitleTracks = foundTracks
+          .map((s) => SubtitleTrack.uri(s.file ?? '',
+              title: s.label, language: s.label))
+          .toList();
+
+      embeddedSubs.value = subtitleTracks;
+
+      if (selectedSubsTrack.value == null) {
+        final preferredLang = playerSettings.preferredSubtitleLanguage;
+        final match = preferredLang != 'none'
+            ? subtitleTracks.firstWhereOrNull((t) => _matchesPreferredLanguage(
+                '${t.language ?? ''} ${t.title ?? ''}', preferredLang))
+            : null;
+        final chosenTrack = match ?? subtitleTracks.firstOrNull;
+        if (chosenTrack != null) {
+          setSubtitleTrack(chosenTrack);
+        }
+      }
     }
   }
 
@@ -2397,10 +2420,36 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
     selectedExternalSub.value = track;
     final subtitleUrl = _resolveSubtitleUrl(track.file!);
-    final subtitleTrack = SubtitleTrack.uri(
-      subtitleUrl,
-      title: track.label,
-    );
+    SubtitleTrack subtitleTrack;
+    final cleanPath = subtitleUrl.startsWith('file://')
+        ? subtitleUrl.replaceFirst('file://', '')
+        : subtitleUrl;
+    final localFile = File(cleanPath);
+    if (localFile.existsSync()) {
+      try {
+        final bytes = localFile.readAsBytesSync();
+        String content;
+        try {
+          content = utf8.decode(bytes);
+        } catch (_) {
+          content = latin1.decode(bytes);
+        }
+        subtitleTrack = SubtitleTrack.data(
+          content,
+          title: track.label,
+        );
+      } catch (_) {
+        subtitleTrack = SubtitleTrack.uri(
+          subtitleUrl,
+          title: track.label,
+        );
+      }
+    } else {
+      subtitleTrack = SubtitleTrack.uri(
+        subtitleUrl,
+        title: track.label,
+      );
+    }
 
     selectedSubsTrack.value = subtitleTrack;
     _applySubtitleTrack(subtitleTrack);

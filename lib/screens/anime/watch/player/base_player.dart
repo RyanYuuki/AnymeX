@@ -54,7 +54,7 @@ abstract class BasePlayer {
   Future<void> setAudioTrack(AudioTrack track);
 
   Future<void> setSubtitleTrack(SubtitleTrack track);
-  
+
   Future<void> setSubtitleDelay(Duration delay);
 
   Future<void> setAudioDelay(Duration delay);
@@ -171,6 +171,7 @@ class SubtitleTrack {
   final String? title;
   final String? language;
   final String? url;
+  final String? data;
   final Map<String, String>? headers;
 
   SubtitleTrack({
@@ -178,8 +179,22 @@ class SubtitleTrack {
     this.title,
     this.language,
     this.url,
+    this.data,
     this.headers,
   });
+
+  factory SubtitleTrack.data(
+    String data, {
+    String? title,
+    String? language,
+  }) {
+    return SubtitleTrack(
+      id: 'data:${title ?? "custom"}',
+      title: title,
+      language: language,
+      data: data,
+    );
+  }
 
   factory SubtitleTrack.uri(
     String uri, {
