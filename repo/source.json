@@ -22,7 +22,7 @@
       "iconURL": "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/icons/anymex.webp",
       "tintColor": "71717A",
       "category": "entertainment",
-      "size": 80589367,
+      "size": 80589346,
       "screenshotURLs": [
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_0.webp",
         "https://raw.githubusercontent.com/RyanYuuki/AnymeX/refs/heads/main/repo/images/screenshots/image_1.webp",
@@ -34,7 +34,7 @@
           "date": "2026-10-27T18:49:08Z",
           "localizedDescription": "\ud83c\udd95 Changelog\n\ud83c\udf1f Features\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/6beae5c1) url nav, deeplink support for fcm by @RyanYuuki\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/3bb0908d) torrent file selector in player by @RyanYuuki\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/b61e9b75) cf bypass and webview support for linux by @RyanYuuki\n\n\n\ud83d\udd27 Bug Fixes & Improvements\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/9975e4c0) fixed a grey screen when accessing released media on different services by @RyanYuuki\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/6db545c5) fixed visibility issues on light mode by @RyanYuuki\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/ac97c83d) fixed rhttp disposing causing network reqs to fail by @RyanYuuki\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/20fb3809) fixed torrent broken on mobile by @RyanYuuki\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/fc84a627) fixed login and webview on desktops by @RyanYuuki\n\n\n\ud83e\uddf9 Chores & Documentation\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/8f979177) bump version to v3.2.0 (minor release) by @RyanYuuki\n\u2022 [\u058d](https://github.com/RyanYuuki/AnymeX/commit/afbcc1b3) update sideloading source by @ghost\n\n\n![Total Downloads](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/total?style=for-the-badge&label=TOTAL%20DOWNLOADS&labelColor=black&color=white) ![Current Release](https://img.shields.io/github/downloads/RyanYuuki/AnymeX/v3.2.0/total?style=for-the-badge&label=CURRENT%20RELEASE&labelColor=black&color=white)\n",
           "downloadURL": "https://github.com/RyanYuuki/AnymeX/releases/download/v3.2.0/AnymeX-iOS-v3.2.0.ipa",
-          "size": 80589367
+          "size": 80589346
         },
         {
           "version": "3.1.9",
