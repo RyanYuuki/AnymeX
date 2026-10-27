@@ -30,6 +30,7 @@ import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/background_service_handler.dart';
+import 'package:anymex/controllers/services/torrent/torrent_service.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 
 class DownloadController extends GetxController {
@@ -884,6 +885,7 @@ class DownloadController extends GetxController {
     if (task.status == DownloadStatus.paused) return;
     if (task.status == DownloadStatus.awaitingServerSelection) return;
 
+    String? torrentHash;
     try {
       hive.Video? chosenVideo;
       if (task.videoUrl.isEmpty) {
@@ -956,8 +958,6 @@ class DownloadController extends GetxController {
         task.subtitles ??= chosenVideo.subtitles;
       }
 
-      final linkType = detectLinkType(task.videoUrl);
-
       if (task.videoUrl.isEmpty) {
         task.status = DownloadStatus.failed;
         task.errorMessage = 'Empty video URL';
@@ -965,6 +965,25 @@ class DownloadController extends GetxController {
         _activeTaskCount--;
         return;
       }
+
+      if (isTorrentUrl(task.videoUrl)) {
+        final torrAddon = await TorrentService.instance.acquireDownload();
+        final info = await torrAddon.addForDownload(
+          url: task.videoUrl,
+          title: task.mediaTitle,
+        );
+        torrentHash = info.hash;
+        final file = TorrentService.pickStreamableFile(
+          info,
+          episode: task.episode.number,
+        );
+        if (file == null) {
+          throw Exception('No streamable video file found in torrent');
+        }
+        task.videoUrl = torrAddon.fileUrl(info.hash, file.id).toString();
+      }
+
+      final linkType = detectLinkType(task.videoUrl);
 
       task.status = DownloadStatus.downloading;
       activeTasks.refresh();
@@ -1048,6 +1067,9 @@ class DownloadController extends GetxController {
       _activeTaskCount--;
       _processScrapeQueue();
     } finally {
+      if (torrentHash != null) {
+        await TorrentService.instance.releaseDownload(torrentHash);
+      }
       activeTasks.refresh();
       _saveActiveTasks();
     }

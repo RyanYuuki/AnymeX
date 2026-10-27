@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/controllers/watchium/watchium_sync_controller.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -21,8 +23,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
 import 'package:anymex/widgets/watchium/watchium_party_popup.dart';
-import 'package:anymex_extension_runtime_bridge/AddonManager.dart';
-import 'package:anymex_extension_runtime_bridge/Engines/TorrentEngine/TorrServerAddon.dart';
+import 'package:anymex/controllers/services/torrent/torrent_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -128,12 +129,7 @@ class _WatchScreenState extends State<WatchScreen> {
     _inRoomWorker?.dispose();
     _disposeSyncController();
     try {
-      if (Get.isRegistered<AddonManager>()) {
-        final torr = Get.find<AddonManager>().get<TorrServerAddon>();
-        if (torr.isRunning) {
-          torr.stop();
-        }
-      }
+      unawaited(TorrentService.instance.stopStream());
     } catch (_) {}
     Get.delete<PlayerController>();
     super.dispose();

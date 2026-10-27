@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/downloads/widgets/download_permission_dialog.dart';
 import 'package:anymex/screens/downloads/widgets/torrent_file_selector_sheet.dart';
+import 'package:anymex/controllers/services/torrent/torrent_service.dart';
+import 'package:anymex/widgets/non_widgets/torrent_server_overlay.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:hugeicons/hugeicons.dart';
 
@@ -159,27 +161,36 @@ class _DownloadServerSelectorState extends State<DownloadServerSelector> {
     final selectedVideo = _servers
         .firstWhereOrNull((v) => v.quality == _selectedQuality.value);
     final videoUrl = selectedVideo?.url ?? selectedVideo?.originalUrl ?? '';
-    final isTorrent = videoUrl.toLowerCase().startsWith('magnet:') ||
-        videoUrl.toLowerCase().contains('.torrent');
+    final isTorrent = isTorrentUrl(videoUrl);
     String? finalVideoUrl = widget.episodes.length == 1 ? videoUrl : null;
 
-    if (isTorrent && Get.isRegistered<AddonManager>()) {
-      final addon = Get.find<AddonManager>().get<TorrServerAddon>();
-      if (addon.installed.value) {
-        final chosenFile = await AnymeXSheet.custom<int>(
-          TorrentFileSelectorSheet(
-            addon: addon,
-            url: videoUrl,
-            title: widget.media.name ?? '',
-          ),
-          context,
-          showDragHandle: true,
+    if (isTorrent) {
+      try {
+        final addon = await TorrentService.instance.ensureTorrServerReady(
+          contextMessage: 'Preparing torrent for download...',
         );
-        if (chosenFile != null && chosenFile != torrentFileAuto) {
-          final info = await addon.addForDownload(
-              url: videoUrl, title: widget.media.name ?? '');
-          finalVideoUrl = addon.fileUrl(info.hash, chosenFile).toString();
+        TorrentServerOverlay.dismiss();
+
+        if (context.mounted) {
+          final chosenFile = await AnymeXSheet.custom<int>(
+            TorrentFileSelectorSheet(
+              addon: addon,
+              url: videoUrl,
+              title: widget.media.name ?? '',
+            ),
+            context,
+            showDragHandle: true,
+          );
+          if (chosenFile != null && chosenFile != torrentFileAuto) {
+            final info = await addon.addForDownload(
+                url: videoUrl, title: widget.media.name ?? '');
+            finalVideoUrl = addon.fileUrl(info.hash, chosenFile).toString();
+          }
         }
+      } catch (e) {
+        TorrentServerOverlay.dismiss();
+        snackBar('Failed to prepare torrent: $e');
+        return;
       }
     }
 
