@@ -7,6 +7,7 @@ import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/comments/media_comments_page.dart';
 import 'package:anymex/screens/notifications/announcement_sheet.dart';
 import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -288,7 +289,11 @@ class NotificationService extends GetxController {
   void _handleMessageOpenedApp(RemoteMessage message) {
     Logger.i('Notification tapped: ${message.data}');
     onNotificationTap?.call();
-    _navigateFromNotification(message.data);
+    final data = Map<String, dynamic>.from(message.data);
+    if (!data.containsKey('url') && message.notification?.android?.link != null) {
+      data['url'] = message.notification!.android!.link;
+    }
+    _navigateFromNotification(data);
   }
 
   ServicesType? _serviceTypeFromClientType(String clientType) {
@@ -307,6 +312,24 @@ class NotificationService extends GetxController {
 
   void _navigateFromNotification(Map<String, dynamic> data,
       {int attempts = 0}) {
+    final rawUrl = data['url']?.toString() ??
+        data['link']?.toString() ??
+        data['deeplink']?.toString() ??
+        data['uri']?.toString();
+    final clickAction = data['click_action']?.toString();
+    final effectiveUrl = (rawUrl != null && rawUrl.trim().isNotEmpty)
+        ? rawUrl.trim()
+        : (clickAction != null &&
+                clickAction.isNotEmpty &&
+                clickAction != 'FLUTTER_NOTIFICATION_CLICK')
+            ? clickAction.trim()
+            : null;
+
+    if (effectiveUrl != null && effectiveUrl.isNotEmpty) {
+      Deeplink.openUrlOrDeepLink(effectiveUrl);
+      return;
+    }
+
     // Announcements open their dedicated bottom sheet (full info + markdown),
     // NOT the comment/media navigation flow.
     final notificationType = data['type']?.toString();

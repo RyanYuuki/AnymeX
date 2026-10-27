@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:anymex/firebase_options.dart';
+import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/notification.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/non_widgets/in_app_notification_banner.dart';
@@ -84,6 +85,9 @@ class FcmService {
     final actorId = message.data['actor_id']?.toString();
     final type = message.data['type']?.toString();
     final data = Map<String, dynamic>.from(message.data);
+    if (!data.containsKey('url') && message.notification?.android?.link != null) {
+      data['url'] = message.notification!.android!.link;
+    }
 
     showInAppNotification(
       title: title,
@@ -101,10 +105,37 @@ class FcmService {
 
   static void handleOpenedMessage(RemoteMessage? message) {
     if (message == null) return;
-    _openFromData(Map<String, dynamic>.from(message.data));
+    final data = Map<String, dynamic>.from(message.data);
+    if (!data.containsKey('url') && message.notification?.android?.link != null) {
+      data['url'] = message.notification!.android!.link;
+    }
+    _openFromData(data);
+  }
+
+  static String? _extractUrl(Map<String, dynamic> data) {
+    final rawUrl = data['url']?.toString() ??
+        data['link']?.toString() ??
+        data['deeplink']?.toString() ??
+        data['uri']?.toString();
+    if (rawUrl != null && rawUrl.trim().isNotEmpty) {
+      return rawUrl.trim();
+    }
+    final clickAction = data['click_action']?.toString()?.trim();
+    if (clickAction != null &&
+        clickAction.isNotEmpty &&
+        clickAction != 'FLUTTER_NOTIFICATION_CLICK') {
+      return clickAction;
+    }
+    return null;
   }
 
   static void _openFromData(Map<String, dynamic> data) {
+    final url = _extractUrl(data);
+    if (url != null && url.isNotEmpty) {
+      Deeplink.openUrlOrDeepLink(url);
+      return;
+    }
+
     if (Get.isRegistered<NotificationService>()) {
       Get.find<NotificationService>().navigateFromPush(data);
       return;

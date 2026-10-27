@@ -17,6 +17,7 @@ import 'package:anymex_extension_runtime_bridge/ExtensionManager.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Deeplink {
   static Future<void> handleDeepLink(Uri uri) async {
@@ -28,15 +29,21 @@ class Deeplink {
       return;
     }
 
-    final extensionManager = Get.find<ExtensionManager>();
-    int attempts = 0;
-    while (extensionManager.managers.isEmpty && attempts < 25) {
-      await Future.delayed(const Duration(milliseconds: 200));
-      attempts++;
+    final extensionManager = Get.isRegistered<ExtensionManager>()
+        ? Get.find<ExtensionManager>()
+        : null;
+    if (extensionManager != null) {
+      int attempts = 0;
+      while (extensionManager.managers.isEmpty && attempts < 25) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        attempts++;
+      }
     }
 
-    final illegalSchemes =
-        extensionManager.managers.expand((e) => e.schemes.toList()).toList();
+    final illegalSchemes = extensionManager?.managers
+            .expand((e) => e.schemes.toList())
+            .toList() ??
+        [];
 
     if (_isThemeDeepLink(uri)) {
       _handleThemeDeepLink(uri);
@@ -59,13 +66,15 @@ class Deeplink {
       return;
     }
 
-    if (!illegalSchemes.contains(uri.scheme.toLowerCase())) {
+    if (extensionManager == null ||
+        !illegalSchemes.contains(uri.scheme.toLowerCase())) {
       return;
     }
 
     bool isRepoAdded = false;
     if (uri.scheme.toLowerCase() == 'kotatsu') {
-      snackBar("Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
+      snackBar(
+          "Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
     } else {
       snackBar("Adding repo... please wait.");
     }
@@ -83,6 +92,76 @@ class Deeplink {
           ? "Added Repo Links Successfully!"
           : "Missing or invalid parameters in the link.",
     );
+  }
+
+  static bool isDeepLink(Uri uri) {
+    final scheme = uri.scheme.toLowerCase();
+    if (scheme == 'anymex' || scheme == 'kotatsu') return true;
+    if (_isThemeDeepLink(uri)) return true;
+    if (_isWatchiumDeepLink(uri)) return true;
+    if (_isAnimatchDeepLink(uri)) return true;
+    if (_parseMediaTarget(uri) != null) return true;
+
+    if (Get.isRegistered<ExtensionManager>()) {
+      try {
+        final extensionManager = Get.find<ExtensionManager>();
+        final schemes =
+            extensionManager.managers.expand((e) => e.schemes.toList()).toSet();
+        if (schemes.contains(scheme)) return true;
+      } catch (_) {}
+    }
+
+    return scheme.isNotEmpty && scheme != 'http' && scheme != 'https';
+  }
+
+  static Uri? extractEmbeddedDeepLink(Uri uri) {
+    for (final param in ['deeplink', 'deep_link', 'url', 'link', 'target']) {
+      final value = uri.queryParameters[param]?.trim();
+      if (value != null && value.isNotEmpty) {
+        final parsed = Uri.tryParse(value);
+        if (parsed != null && isDeepLink(parsed)) {
+          return parsed;
+        }
+      }
+    }
+    return null;
+  }
+
+  static Future<void> openUrlOrDeepLink(String rawUrl) async {
+    final trimmed = rawUrl.trim();
+    if (trimmed.isEmpty) return;
+
+    var uri = Uri.tryParse(trimmed);
+    if (uri == null) return;
+
+    if (!uri.hasScheme && !trimmed.startsWith('//')) {
+      final withScheme = Uri.tryParse('https://$trimmed');
+      if (withScheme != null && withScheme.hasAuthority) {
+        uri = withScheme;
+      }
+    }
+
+    final embedded = extractEmbeddedDeepLink(uri);
+    if (embedded != null) {
+      await handleDeepLink(embedded);
+      return;
+    }
+
+    if (isDeepLink(uri)) {
+      int attempts = 0;
+      while (Get.context == null && attempts < 50) {
+        await Future.delayed(const Duration(milliseconds: 100));
+        attempts++;
+      }
+      await handleDeepLink(uri);
+      return;
+    }
+
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      Logger.e('Failed to launch URL: $e');
+    }
   }
 
   static bool _isThemeDeepLink(Uri uri) {
@@ -185,7 +264,26 @@ class Deeplink {
       }
     }
 
-    if (serviceType == null) return null;
+    if (serviceType == null) {
+      final host = uri.host.toLowerCase();
+      if (host == 'anime' || host == 'manga') {
+        if (segments.isNotEmpty) {
+          final id = _extractNumericId(segments.first);
+          if (id != null) {
+            final defaultService = Get.isRegistered<ServiceHandler>()
+                ? Get.find<ServiceHandler>().serviceType.value
+                : ServicesType.anilist;
+            return _MediaDeepLinkTarget(
+              serviceType: defaultService,
+              isManga: host == 'manga',
+              mediaId: id,
+              initialTabIndex: _parseInitialTabIndex(uri.fragment),
+            );
+          }
+        }
+      }
+      return null;
+    }
 
     final mediaSegments = segments.skip(offset).toList();
 
