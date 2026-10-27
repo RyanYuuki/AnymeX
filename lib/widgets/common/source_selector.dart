@@ -166,7 +166,7 @@ class SourceSelectorWidget extends StatelessWidget {
                 ),
               ),
               if (hasSource) ...[
-                if (onCloudflareBypass != null && !Platform.isLinux)
+                if (onCloudflareBypass != null)
                   _ActionIconButton(
                     icon: Icons.security_rounded,
                     onTap: onCloudflareBypass!,

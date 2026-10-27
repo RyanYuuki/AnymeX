@@ -14,7 +14,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:webview_all/webview_all.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -650,6 +650,56 @@ class _SmartImageWidget extends StatefulWidget {
 class _SmartImageWidgetState extends State<_SmartImageWidget> {
   bool _useFallback = false;
   double _webViewHeight = 0;
+  WebViewController? _controller;
+
+  void _initController() {
+    if (_controller != null) return;
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.transparent)
+      ..addJavaScriptChannel(
+        'onHeight',
+        onMessageReceived: (message) {
+          final h = double.tryParse(message.message) ?? 0;
+          if (h > 0 && mounted) {
+            setState(() => _webViewHeight = h);
+          }
+        },
+      )
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (_) async {
+            try {
+              final h = await _controller?.runJavaScriptReturningResult(
+                'document.body.scrollHeight',
+              );
+              final height = (h is num)
+                  ? h.toDouble()
+                  : (double.tryParse(h.toString()) ?? 0);
+              if (height > 0 && mounted && _webViewHeight == 0) {
+                setState(() => _webViewHeight = height);
+              }
+            } catch (_) {}
+          },
+        ),
+      )
+      ..loadHtmlString('''
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: transparent; overflow: hidden; }
+    img { max-width: 100%; height: auto; display: block; }
+  </style>
+</head>
+<body>
+  <img src="${widget.url}" onload="if (window.onHeight && window.onHeight.postMessage) { window.onHeight.postMessage(String(document.body.scrollHeight)); }" onerror="if (window.onHeight && window.onHeight.postMessage) { window.onHeight.postMessage('0'); }" />
+</body>
+</html>
+''');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -672,7 +722,6 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
   }
 
   Widget _buildFallback(BuildContext context) {
-    // Desktop
     if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
       return AnilistExternalTile(
         url: widget.url,
@@ -683,61 +732,14 @@ class _SmartImageWidgetState extends State<_SmartImageWidget> {
       );
     }
 
-    // Mobile
+    _initController();
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       height: _webViewHeight,
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-      child: InAppWebView(
-        initialData: InAppWebViewInitialData(
-          data: '''
-<!DOCTYPE html>
-<html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: transparent; overflow: hidden; }
-    img { max-width: 100%; height: auto; display: block; }
-  </style>
-</head>
-<body>
-  <img src="${widget.url}" onload="window.flutter_inappwebview.callHandler('onHeight', document.body.scrollHeight);" onerror="window.flutter_inappwebview.callHandler('onHeight', 0);" />
-</body>
-</html>
-''',
-        ),
-        initialSettings: InAppWebViewSettings(
-          useHybridComposition: false,
-          transparentBackground: true,
-          disableVerticalScroll: true,
-          disableHorizontalScroll: true,
-          supportZoom: false,
-          javaScriptEnabled: true,
-        ),
-        onWebViewCreated: (controller) {
-          controller.addJavaScriptHandler(
-            handlerName: 'onHeight',
-            callback: (args) {
-              final h = (args.firstOrNull as num?)?.toDouble() ?? 0;
-              if (h > 0 && mounted) {
-                setState(() => _webViewHeight = h);
-              }
-            },
-          );
-        },
-        onLoadStop: (controller, url) async {
-          // Fallback
-          final h = await controller.evaluateJavascript(
-            source: 'document.body.scrollHeight',
-          );
-          final height = (h as num?)?.toDouble() ?? 0;
-          if (height > 0 && mounted && _webViewHeight == 0) {
-            setState(() => _webViewHeight = height);
-          }
-        },
-      ),
+      child: WebViewWidget(controller: _controller!),
     );
   }
 }

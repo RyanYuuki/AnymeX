@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_inappwebview/flutter_inappwebview.dart' as webview;
+import 'package:webview_all/webview_all.dart' as webview;
 import 'package:rhttp/rhttp.dart';
 import 'package:anymex/database/kv_helper.dart';
 
@@ -195,11 +195,21 @@ class CookieManager extends Interceptor {
 
     _saveAll(persistent);
 
-    final manager = webview.CookieManager.instance();
+    final manager = webview.WebViewCookieManager();
 
-    await manager.deleteCookies(url: webview.WebUri("https://$domain"));
-
-    await manager.deleteCookies(url: webview.WebUri("http://$domain"));
+    try {
+      final cookies = await manager.getCookies(domain: Uri.parse("https://$domain"));
+      for (final c in cookies) {
+        await manager.setCookie(
+          webview.WebViewCookie(
+            name: c.name,
+            value: '',
+            domain: c.domain,
+            path: c.path,
+          ),
+        );
+      }
+    } catch (_) {}
   }
 
   @override
@@ -431,36 +441,58 @@ class CookieManager extends Interceptor {
   }
 
   Future<void> readCookiesFromWebView(
-    webview.WebUri url,
-    webview.InAppWebViewController? controller,
+    Uri url,
+    webview.WebViewController? controller,
   ) async {
-    final manager = webview.CookieManager.instance();
+    final manager = webview.WebViewCookieManager();
 
-    final cookies = await manager.getCookies(
-      url: url,
-      webViewController: controller,
-    );
+    List<webview.WebViewCookie> cookies = [];
+    try {
+      cookies = await manager.getCookies(domain: url);
+    } catch (_) {}
 
-    final uri = Uri.parse(url.toString());
+    if (cookies.isEmpty && controller != null) {
+      try {
+        final docCookie = await controller.runJavaScriptReturningResult('document.cookie');
+        final str = docCookie.toString();
+        if (str.isNotEmpty && str != 'null') {
+          final clean = str.startsWith('"') && str.endsWith('"') && str.length >= 2
+              ? str.substring(1, str.length - 1)
+              : str;
+          final parts = clean.split(';').map((e) => e.trim()).where((e) => e.isNotEmpty);
+          for (final part in parts) {
+            final idx = part.indexOf('=');
+            if (idx > 0) {
+              final name = part.substring(0, idx).trim();
+              final value = part.substring(idx + 1).trim();
+              cookies.add(webview.WebViewCookie(
+                name: name,
+                value: value,
+                domain: url.host,
+                path: defaultCookiePath(url),
+              ));
+            }
+          }
+        }
+      } catch (_) {}
+    }
 
     final converted = cookies.map((c) {
-      final domain = normalizeDomain(c.domain ?? uri.host);
+      final domain = normalizeDomain(c.domain.isNotEmpty ? c.domain : url.host);
 
       return StoredCookie(
         name: c.name,
         value: c.value,
         domain: domain,
-        hostOnly: c.domain == null,
-        path: c.path?.isNotEmpty == true ? c.path! : defaultCookiePath(uri),
-        expires: c.expiresDate == null
-            ? null
-            : DateTime.fromMillisecondsSinceEpoch(c.expiresDate!),
-        secure: c.isSecure ?? false,
-        httpOnly: c.isHttpOnly ?? false,
+        hostOnly: false,
+        path: c.path.isNotEmpty ? c.path : defaultCookiePath(url),
+        expires: null,
+        secure: false,
+        httpOnly: false,
         sameSite: null,
         priority: CookiePriority.medium,
         partitioned: false,
-        session: c.expiresDate == null,
+        session: true,
         created: DateTime.now(),
         lastAccessed: DateTime.now(),
       );
@@ -470,9 +502,9 @@ class CookieManager extends Interceptor {
   }
 
   Future<void> applyCookiesToWebView(
-    webview.InAppWebViewController? controller,
+    webview.WebViewController? controller,
   ) async {
-    final manager = webview.CookieManager.instance();
+    final manager = webview.WebViewCookieManager();
 
     final cookies = allCookies;
 
@@ -481,21 +513,16 @@ class CookieManager extends Interceptor {
         continue;
       }
 
-      final scheme = cookie.secure ? "https" : "http";
-
-      await manager.setCookie(
-        url: webview.WebUri("$scheme://${cookie.domain}"),
-        name: cookie.name,
-        value: cookie.value,
-        domain: ".${cookie.domain}",
-        path: cookie.path,
-        expiresDate: cookie.session
-            ? null
-            : cookie.expires?.millisecondsSinceEpoch,
-        isSecure: cookie.secure,
-        isHttpOnly: cookie.httpOnly,
-        webViewController: controller,
-      );
+      try {
+        await manager.setCookie(
+          webview.WebViewCookie(
+            name: cookie.name,
+            value: cookie.value,
+            domain: cookie.domain,
+            path: cookie.path,
+          ),
+        );
+      } catch (_) {}
     }
   }
 
@@ -572,7 +599,7 @@ class CookieManager extends Interceptor {
 
     KvHelper.set<String>(_storageKey, "{}");
 
-    await webview.CookieManager.instance().deleteAllCookies();
+    await webview.WebViewCookieManager().clearCookies();
   }
 }
 

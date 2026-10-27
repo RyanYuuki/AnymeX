@@ -2,7 +2,7 @@ import 'package:anymex/utils/function.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:webview_all/webview_all.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/network/network_manager.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -18,7 +18,7 @@ class CloudflareBypassWebView extends StatefulWidget {
 }
 
 class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
-  InAppWebViewController? _controller;
+  late final WebViewController _controller;
   bool _isLoading = true;
   double _progress = 0.0;
   bool _synced = false;
@@ -34,6 +34,52 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
   void initState() {
     super.initState();
     _initCookieBaseline();
+    _initController();
+  }
+
+  void _initController() {
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            if (mounted) setState(() => _isLoading = true);
+          },
+          onPageFinished: (url) async {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+                _progress = 1.0;
+              });
+            }
+
+            final cleared = await _syncCookiesAndUserAgent();
+            _initialLoad = false;
+            if (cleared && mounted) {
+              setState(() => _synced = true);
+              snackBar('Cloudflare challenge solved!');
+              await Future.delayed(const Duration(milliseconds: 600));
+              if (!context.mounted) return;
+              Navigator.of(context).pop(true);
+            }
+          },
+          onProgress: (progress) {
+            if (mounted) {
+              setState(() => _progress = progress / 100);
+            }
+          },
+          onNavigationRequest: (action) => NavigationDecision.navigate,
+        ),
+      );
+
+    final userAgent = AnymeXRuntimeBridge.userAgentMap[_parsedUri.host] ??
+        AnymeXRuntimeBridge.userAgentMap[
+            _parsedUri.host.replaceFirst('www.', '')];
+    if (userAgent != null && userAgent.isNotEmpty) {
+      _controller.setUserAgent(userAgent);
+    }
+
+    _controller.loadRequest(Uri.parse(widget.url));
   }
 
   Future<void> _initCookieBaseline() async {
@@ -41,8 +87,8 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
       final uri = _parsedUri;
       if (uri.hasScheme && uri.host.isNotEmpty) {
         final origin = '${uri.scheme}://${uri.host}';
-        final cookieManager = CookieManager.instance();
-        final cookies = await cookieManager.getCookies(url: WebUri(origin));
+        final cookieManager = WebViewCookieManager();
+        final cookies = await cookieManager.getCookies(domain: Uri.parse(origin));
         for (final c in cookies) {
           if (c.name == 'cf_clearance') {
             _initialClearance = c.value.toString();
@@ -54,9 +100,8 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
   }
 
   Future<bool> _isChallengeActive() async {
-    if (_controller == null) return false;
     try {
-      final result = await _controller!.evaluateJavascript(source: '''
+      final result = await _controller.runJavaScriptReturningResult('''
         (function() {
           var title = (document.title || "").toLowerCase();
           if (title.indexOf("just a moment") !== -1 ||
@@ -77,17 +122,18 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
   }
 
   Future<bool> _syncCookiesAndUserAgent() async {
-    if (_controller == null) return false;
-    final currentUrlObj = await _controller!.getUrl();
-    final currentUrl = currentUrlObj?.toString() ?? widget.url;
+    final currentUrl = await _controller.currentUrl() ?? widget.url;
 
     final uri = Uri.tryParse(currentUrl);
     final origin = (uri != null && uri.hasScheme && uri.host.isNotEmpty)
         ? '${uri.scheme}://${uri.host}'
         : currentUrl;
 
-    final cookieManager = CookieManager.instance();
-    final cookies = await cookieManager.getCookies(url: WebUri(origin));
+    final cookieManager = WebViewCookieManager();
+    List<WebViewCookie> cookies = [];
+    try {
+      cookies = await cookieManager.getCookies(domain: Uri.parse(origin));
+    } catch (_) {}
 
     bool hasFreshClearance = false;
     if (cookies.isNotEmpty) {
@@ -97,7 +143,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
       try {
         await Get.find<NetworkManager>()
             .cookieManager
-            .readCookiesFromWebView(WebUri(origin), _controller);
+            .readCookiesFromWebView(Uri.parse(origin), _controller);
       } catch (_) {}
       for (final c in cookies) {
         if (c.name == 'cf_clearance') {
@@ -111,13 +157,11 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
     }
 
     final uaResult =
-        await _controller!.evaluateJavascript(source: 'navigator.userAgent');
+        await _controller.runJavaScriptReturningResult('navigator.userAgent');
 
-    if (uaResult != null) {
-      final ua = uaResult.toString().replaceAll('"', '');
-      if (ua.isNotEmpty) {
-        await AnymeXRuntimeBridge.setUserAgent(origin, ua);
-      }
+    final ua = uaResult.toString().replaceAll('"', '');
+    if (ua.isNotEmpty && ua != 'null') {
+      await AnymeXRuntimeBridge.setUserAgent(origin, ua);
     }
     final isChallenging = await _isChallengeActive();
     return hasFreshClearance && !isChallenging && !_initialLoad;
@@ -268,56 +312,8 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
               ),
             ),
             Expanded(
-              child: InAppWebView(
-                initialUrlRequest: URLRequest(url: WebUri(widget.url)),
-                initialUserScripts: null,
-                initialSettings: InAppWebViewSettings(
-                  useHybridComposition: false,
-                  javaScriptEnabled: true,
-                  domStorageEnabled: true,
-                  databaseEnabled: true,
-                  useWideViewPort: true,
-                  loadWithOverviewMode: true,
-                  thirdPartyCookiesEnabled: true,
-                  limitsNavigationsToAppBoundDomains: false,
-                  userAgent:
-                      AnymeXRuntimeBridge.userAgentMap[_parsedUri.host] ??
-                          AnymeXRuntimeBridge.userAgentMap[
-                              _parsedUri.host.replaceFirst('www.', '')] ??
-                          "",
-                ),
-                onWebViewCreated: (controller) {
-                  _controller = controller;
-                },
-                onLoadStart: (controller, url) {
-                  if (mounted) setState(() => _isLoading = true);
-                },
-                onLoadStop: (controller, url) async {
-                  if (mounted) {
-                    setState(() {
-                      _isLoading = false;
-                      _progress = 1.0;
-                    });
-                  }
-
-                  final cleared = await _syncCookiesAndUserAgent();
-                  _initialLoad = false;
-                  if (cleared && mounted) {
-                    setState(() => _synced = true);
-                    snackBar('Cloudflare challenge solved!');
-                    await Future.delayed(const Duration(milliseconds: 600));
-                    if (!context.mounted) return;
-                    Navigator.of(context).pop(true);
-                  }
-                },
-                onProgressChanged: (controller, progress) {
-                  if (mounted) {
-                    setState(() => _progress = progress / 100);
-                  }
-                },
-                shouldOverrideUrlLoading:
-                    (controller, navigationAction) async =>
-                        NavigationActionPolicy.ALLOW,
+              child: WebViewWidget(
+                controller: _controller,
               ),
             ),
           ],

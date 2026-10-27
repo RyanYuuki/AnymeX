@@ -1,8 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:webview_all/webview_all.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -96,33 +97,14 @@ class AnilistYouTubePlayer extends StatefulWidget {
 
 class _AnilistYouTubePlayerState extends State<AnilistYouTubePlayer> {
   bool _isPlaying = false;
+  WebViewController? _controller;
 
-  @override
-  Widget build(BuildContext context) {
-    if (_isPlaying) {
-      return _buildInlinePlayer();
-    }
-    return _buildThumbnail();
-  }
-
-  Widget _buildInlinePlayer() {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 480),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.black,
-              ),
-              clipBehavior: Clip.hardEdge,
-              child: InAppWebView(
-                initialData: InAppWebViewInitialData(
-                  data: '''
+  void _initController() {
+    if (_controller != null) return;
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.black)
+      ..loadHtmlString('''
 <!DOCTYPE html>
 <html>
 <head>
@@ -139,15 +121,35 @@ class _AnilistYouTubePlayerState extends State<AnilistYouTubePlayer> {
     allowfullscreen></iframe>
 </body>
 </html>
-''',
-                ),
-                initialSettings: InAppWebViewSettings(
-                  useHybridComposition: false,
-                  mediaPlaybackRequiresUserGesture: false,
-                  allowsInlineMediaPlayback: true,
-                  iframeAllowFullscreen: true,
-                  transparentBackground: true,
-                ),
+''');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isPlaying) {
+      return _buildInlinePlayer();
+    }
+    return _buildThumbnail();
+  }
+
+  Widget _buildInlinePlayer() {
+    _initController();
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.black,
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: WebViewWidget(
+                controller: _controller!,
               ),
             ),
           ),
@@ -159,7 +161,6 @@ class _AnilistYouTubePlayerState extends State<AnilistYouTubePlayer> {
   Widget _buildThumbnail() {
     return GestureDetector(
       onTap: () {
-        // Inline playback on mobile, external on desktop
         if (Platform.isAndroid || Platform.isIOS) {
           setState(() => _isPlaying = true);
         } else {
@@ -291,6 +292,36 @@ class AnilistWebmPlayer extends StatefulWidget {
 
 class _AnilistWebmPlayerState extends State<AnilistWebmPlayer> {
   double _webViewHeight = 200;
+  late final WebViewController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.transparent)
+      ..addJavaScriptChannel(
+        'onVideoLoaded',
+        onMessageReceived: (message) {
+          try {
+            final args = jsonDecode(message.message) as List;
+            if (args.length >= 2) {
+              final videoWidth = (args[0] as num).toDouble();
+              final videoHeight = (args[1] as num).toDouble();
+              if (videoWidth > 0 && videoHeight > 0) {
+                const containerWidth = 480.0;
+                final newHeight =
+                    containerWidth * (videoHeight / videoWidth);
+                if (mounted) {
+                  setState(() => _webViewHeight = newHeight);
+                }
+              }
+            }
+          } catch (_) {}
+        },
+      )
+      ..loadHtmlString(_buildVideoHtml());
+  }
 
   String _buildVideoHtml() {
     return '''
@@ -322,7 +353,9 @@ class _AnilistWebmPlayerState extends State<AnilistWebmPlayer> {
   <script>
     const video = document.querySelector('video');
     video.addEventListener('loadedmetadata', function() {
-      window.flutter_inappwebview.callHandler('onVideoLoaded', video.videoWidth, video.videoHeight);
+      if (window.onVideoLoaded && window.onVideoLoaded.postMessage) {
+        window.onVideoLoaded.postMessage(JSON.stringify([video.videoWidth, video.videoHeight]));
+      }
     });
   </script>
 </body>
@@ -352,40 +385,8 @@ class _AnilistWebmPlayerState extends State<AnilistWebmPlayer> {
             borderRadius: BorderRadius.circular(12),
             child: SizedBox(
               height: _webViewHeight,
-              child: InAppWebView(
-                initialData: InAppWebViewInitialData(
-                  data: _buildVideoHtml(),
-                  mimeType: 'text/html',
-                  encoding: 'utf-8',
-                ),
-                initialSettings: InAppWebViewSettings(
-                  useHybridComposition: false,
-                  transparentBackground: true,
-                  mediaPlaybackRequiresUserGesture: false,
-                  allowsInlineMediaPlayback: true,
-                  disableHorizontalScroll: true,
-                  disableVerticalScroll: true,
-                  supportZoom: false,
-                ),
-                onWebViewCreated: (webController) {
-                  webController.addJavaScriptHandler(
-                    handlerName: 'onVideoLoaded',
-                    callback: (args) {
-                      if (args.length >= 2) {
-                        final videoWidth = (args[0] as num).toDouble();
-                        final videoHeight = (args[1] as num).toDouble();
-                        if (videoWidth > 0 && videoHeight > 0) {
-                          const containerWidth = 480.0;
-                          final newHeight =
-                              containerWidth * (videoHeight / videoWidth);
-                          if (mounted) {
-                            setState(() => _webViewHeight = newHeight);
-                          }
-                        }
-                      }
-                    },
-                  );
-                },
+              child: WebViewWidget(
+                controller: _controller,
               ),
             ),
           ),

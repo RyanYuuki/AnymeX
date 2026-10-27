@@ -11,7 +11,6 @@
 #include <desktop_webview_window/desktop_webview_window_plugin.h>
 #include <dynamic_color/dynamic_color_plugin_c_api.h>
 #include <firebase_core/firebase_core_plugin_c_api.h>
-#include <flutter_inappwebview_windows/flutter_inappwebview_windows_plugin_c_api.h>
 #include <flutter_media_session/flutter_media_session_plugin_c_api.h>
 #include <flutter_qjs/flutter_qjs_plugin.h>
 #include <flutter_tts/flutter_tts_plugin.h>
@@ -24,6 +23,7 @@
 #include <share_plus/share_plus_windows_plugin_c_api.h>
 #include <url_launcher_windows/url_launcher_windows.h>
 #include <volume_controller/volume_controller_plugin_c_api.h>
+#include <webview_all_windows/webview_all_windows_plugin.h>
 #include <window_manager/window_manager_plugin.h>
 #include <window_to_front/window_to_front_plugin.h>
 
@@ -38,8 +38,6 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("DynamicColorPluginCApi"));
   FirebaseCorePluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FirebaseCorePluginCApi"));
-  FlutterInappwebviewWindowsPluginCApiRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("FlutterInappwebviewWindowsPluginCApi"));
   FlutterMediaSessionPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FlutterMediaSessionPluginCApi"));
   FlutterQjsPluginRegisterWithRegistrar(
@@ -64,6 +62,8 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("UrlLauncherWindows"));
   VolumeControllerPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("VolumeControllerPluginCApi"));
+  WebviewAllWindowsPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("WebviewAllWindowsPlugin"));
   WindowManagerPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("WindowManagerPlugin"));
   WindowToFrontPluginRegisterWithRegistrar(

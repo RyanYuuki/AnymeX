@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:webview_all/webview_all.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class DiscordLoginPage extends StatefulWidget {
@@ -18,7 +18,7 @@ class DiscordLoginPage extends StatefulWidget {
 }
 
 class _DiscordLoginPageState extends State<DiscordLoginPage> {
-  InAppWebViewController? _controller;
+  late final WebViewController _controller;
   bool _tokenExtracted = false;
   bool _isLoading = true;
   double _progress = 0.0;
@@ -39,8 +39,8 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
         if (token.length < 25 || token === 'null' || token === 'undefined') return;
         window.__discordToken = token;
         try {
-          if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
-            window.flutter_inappwebview.callHandler('onTokenFound', token);
+          if (window.onTokenFound && window.onTokenFound.postMessage) {
+            window.onTokenFound.postMessage(token);
           }
         } catch(e) {}
       }
@@ -179,7 +179,47 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
   @override
   void initState() {
     super.initState();
+    _initController();
     _startPolling();
+  }
+
+  void _initController() {
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..addJavaScriptChannel(
+        'onTokenFound',
+        onMessageReceived: (message) {
+          if (message.message.isNotEmpty) {
+            _handleToken(message.message);
+          }
+        },
+      )
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            if (mounted) setState(() => _isLoading = true);
+          },
+          onPageFinished: (url) async {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+                _progress = 1.0;
+              });
+            }
+            await _controller.runJavaScript(_interceptScript);
+            await _checkAndExtractToken();
+          },
+          onProgress: (progress) {
+            if (mounted) setState(() => _progress = progress / 100);
+          },
+          onUrlChange: (change) async {
+            await _controller.runJavaScript(_interceptScript);
+            await _checkAndExtractToken();
+          },
+          onNavigationRequest: (request) => NavigationDecision.navigate,
+        ),
+      )
+      ..loadRequest(Uri.parse('https://discord.com/login'));
   }
 
   @override
@@ -200,9 +240,9 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
   }
 
   Future<void> _checkAndExtractToken() async {
-    if (_tokenExtracted || _controller == null) return;
+    if (_tokenExtracted) return;
     try {
-      final result = await _controller!.evaluateJavascript(source: r'''
+      final result = await _controller.runJavaScriptReturningResult(r'''
         (function() {
           if (window.__discordToken) return window.__discordToken;
           try {
@@ -242,7 +282,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
           return null;
         })();
       ''');
-      if (result != null && result.toString().isNotEmpty && result.toString() != 'null') {
+      if (result.toString().isNotEmpty && result.toString() != 'null') {
         _handleToken(result.toString());
       }
     } catch (_) {}
@@ -266,25 +306,22 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
     setState(() => _isResetting = true);
 
     try {
-      if (_controller != null) {
-        await _controller!.evaluateJavascript(source: r'''
-          try { localStorage.clear(); } catch(e) {}
-          try { sessionStorage.clear(); } catch(e) {}
-          try { window.__tokenListenerInstalled = false; } catch(e) {}
-          try { window.__discordToken = null; } catch(e) {}
-        ''');
+      await _controller.runJavaScript(r'''
+        try { localStorage.clear(); } catch(e) {}
+        try { sessionStorage.clear(); } catch(e) {}
+        try { window.__tokenListenerInstalled = false; } catch(e) {}
+        try { window.__discordToken = null; } catch(e) {}
+      ''');
 
-        await _controller!.clearCache();
+      await _controller.clearCache();
 
-        final cookieManager = CookieManager.instance();
-        await cookieManager.deleteAllCookies();
+      await WebViewCookieManager().clearCookies();
 
-        _tokenExtracted = false;
+      _tokenExtracted = false;
 
-        await _controller!.loadUrl(
-          urlRequest: URLRequest(url: WebUri('https://discord.com/login')),
-        );
-      }
+      await _controller.loadRequest(
+        Uri.parse('https://discord.com/login'),
+      );
     } catch (e) {
       debugPrint('Reset error: $e');
     } finally {
@@ -399,66 +436,8 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                     width: 1,
                   ),
                 ),
-                child: InAppWebView(
-                  initialUrlRequest: URLRequest(
-                    url: WebUri('https://discord.com/login'),
-                  ),
-                  initialUserScripts: UnmodifiableListView([
-                    UserScript(
-                      source: _interceptScript,
-                      injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
-                    ),
-                  ]),
-                  initialSettings: InAppWebViewSettings(
-                    useHybridComposition: false,
-                    javaScriptEnabled: true,
-                    domStorageEnabled: true,
-                    databaseEnabled: true,
-                    supportZoom: false,
-                    useWideViewPort: true,
-                    loadWithOverviewMode: true,
-                    allowUniversalAccessFromFileURLs: true,
-                    allowFileAccessFromFileURLs: true,
-                    limitsNavigationsToAppBoundDomains: false,
-                    sharedCookiesEnabled: true,
-                    allowsInlineMediaPlayback: true,
-                  ),
-                  onWebViewCreated: (controller) {
-                    _controller = controller;
-                    controller.addJavaScriptHandler(
-                      handlerName: 'onTokenFound',
-                      callback: (args) {
-                        if (args.isNotEmpty) {
-                          _handleToken(args[0].toString());
-                        }
-                      },
-                    );
-                  },
-                  onLoadStart: (controller, url) {
-                    if (mounted) setState(() => _isLoading = true);
-                  },
-                  onLoadStop: (controller, url) async {
-                    if (mounted) {
-                      setState(() {
-                        _isLoading = false;
-                        _progress = 1.0;
-                      });
-                    }
-                    await controller.evaluateJavascript(
-                        source: _interceptScript);
-                    await _checkAndExtractToken();
-                  },
-                  onProgressChanged: (controller, progress) {
-                    if (mounted) setState(() => _progress = progress / 100);
-                  },
-                  onUpdateVisitedHistory: (controller, url, isReload) async {
-                    await controller.evaluateJavascript(
-                        source: _interceptScript);
-                    await _checkAndExtractToken();
-                  },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async =>
-                          NavigationActionPolicy.ALLOW,
+                child: WebViewWidget(
+                  controller: _controller,
                 ),
               ),
             ),

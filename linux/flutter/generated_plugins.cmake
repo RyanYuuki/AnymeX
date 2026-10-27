@@ -14,6 +14,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   screen_retriever_linux
   url_launcher_linux
   volume_controller
+  webview_all_linux
   window_manager
   window_to_front
 )

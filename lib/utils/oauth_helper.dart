@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:webview_all/webview_all.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -12,11 +12,10 @@ class OauthHelper {
     required String callbackUrlScheme,
     bool forceWebAuth = false,
   }) async {
-    final supportsWebView = !forceWebAuth &&
-        (Platform.isAndroid ||
-            Platform.isIOS ||
-            Platform.isWindows ||
-            Platform.isMacOS);
+    final isDesktop =
+        Platform.isWindows || Platform.isLinux || Platform.isMacOS;
+    final supportsWebView = isDesktop ||
+        (!forceWebAuth && (Platform.isAndroid || Platform.isIOS));
 
     if (supportsWebView) {
       try {
@@ -73,7 +72,46 @@ class OauthWebViewPage extends StatefulWidget {
 }
 
 class _OauthWebViewPageState extends State<OauthWebViewPage> {
+  late final WebViewController _controller;
   bool _finished = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            _checkUrl(url);
+          },
+          onUrlChange: (change) {
+            if (change.url != null) {
+              _checkUrl(change.url!);
+            }
+          },
+          onNavigationRequest: (request) {
+            if (_checkUrl(request.url)) {
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  bool _checkUrl(String url) {
+    if (url.startsWith('${widget.callbackUrlScheme}://') ||
+        url.contains('code=')) {
+      if (!_finished) {
+        _finished = true;
+        Navigator.pop(context, url);
+        return true;
+      }
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,42 +130,8 @@ class _OauthWebViewPageState extends State<OauthWebViewPage> {
           ),
         ),
       ),
-      body: InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(widget.url)),
-        initialSettings: InAppWebViewSettings(
-          useHybridComposition: false,
-          javaScriptEnabled: true,
-          domStorageEnabled: true,
-          databaseEnabled: true,
-          useShouldOverrideUrlLoading: true,
-        ),
-        onLoadStart: (controller, url) {
-          if (url != null) {
-            final urlString = url.toString();
-            if (urlString.startsWith('${widget.callbackUrlScheme}://') ||
-                urlString.contains('code=')) {
-              if (!_finished) {
-                _finished = true;
-                Navigator.pop(context, urlString);
-              }
-            }
-          }
-        },
-        shouldOverrideUrlLoading: (controller, navigationAction) async {
-          final url = navigationAction.request.url;
-          if (url != null) {
-            final urlString = url.toString();
-            if (urlString.startsWith('${widget.callbackUrlScheme}://') ||
-                urlString.contains('code=')) {
-              if (!_finished) {
-                _finished = true;
-                Navigator.pop(context, urlString);
-              }
-              return NavigationActionPolicy.CANCEL;
-            }
-          }
-          return NavigationActionPolicy.ALLOW;
-        },
+      body: WebViewWidget(
+        controller: _controller,
       ),
     );
   }
