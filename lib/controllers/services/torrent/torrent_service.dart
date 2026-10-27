@@ -34,6 +34,38 @@ class TorrentService {
     return manager.get<TorrServerAddon>();
   }
 
+  TorrentInfo? get activeTorrent => addon.activeTorrent;
+  TorrentFileStat? get activeFile => addon.activeFile;
+  String? get activeHash => addon.activeHash;
+
+  String switchStreamFile(int fileIndex) {
+    final hash = addon.activeHash;
+    if (hash == null) {
+      throw StateError("No active torrent");
+    }
+    addon.switchStreamFile(fileIndex);
+    return addon.fileUrl(hash, fileIndex).toString();
+  }
+
+  Future<TorrentInfo?> refreshActiveTorrent() async {
+    return addon.refreshActiveTorrent();
+  }
+
+  List<TorrentFileStat> get activeTorrentFiles {
+    final torrent = activeTorrent;
+    if (torrent == null) return [];
+    final videos = torrent.fileStats.where((file) {
+      return _videoExtensions.contains(p.extension(file.path).toLowerCase());
+    }).toList();
+    if (videos.isNotEmpty) {
+      videos.sort((a, b) => a.path.compareTo(b.path));
+      return videos;
+    }
+    final all = List<TorrentFileStat>.from(torrent.fileStats)
+      ..sort((a, b) => a.path.compareTo(b.path));
+    return all;
+  }
+
   Future<TorrServerAddon> ensureTorrServerReady({
     String contextMessage = 'Preparing torrent playback...',
   }) async {

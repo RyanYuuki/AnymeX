@@ -1219,6 +1219,13 @@ class ThemeRenderer {
         controller.isSourcePaneOpened.value =
             !controller.isSourcePaneOpened.value;
         break;
+      case 'torrent':
+      case 'torrent_files':
+        if (controller.isTorrentStream.value) {
+          controller.isTorrentFilesPaneOpened.value =
+              !controller.isTorrentFilesPaneOpened.value;
+        }
+        break;
       case 'sync_subs':
         controller.isSyncSubsPaneOpened.value =
             !controller.isSyncSubsPaneOpened.value;

@@ -255,6 +255,18 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                                     controller.isEpisodePaneOpened.value =
                                         !controller.isEpisodePaneOpened.value,
                               ),
+                              Obx(() {
+                                if (!controller.isTorrentStream.value) {
+                                  return const SizedBox.shrink();
+                                }
+                                return NFLabeledButton(
+                                  icon: Icons.folder_zip_rounded,
+                                  label: 'Torrent Files',
+                                  onTap: () => controller
+                                          .isTorrentFilesPaneOpened.value =
+                                      !controller.isTorrentFilesPaneOpened.value,
+                                );
+                              }),
                               NFLabeledButton(
                                 icon: Icons.subtitles_rounded,
                                 label: 'Audio & Subtitles',

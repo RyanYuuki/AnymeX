@@ -427,6 +427,26 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                             !controller.isTracksPaneOpened.value;
                                       },
                                     ),
+                                    Obx(() {
+                                      if (!controller.isTorrentStream.value) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      return Padding(
+                                        padding: const EdgeInsets.only(left: 8),
+                                        child: _Ios26GlassPillButton(
+                                          label: 'Files',
+                                          onPressed: () {
+                                            controller.isEpisodePaneOpened.value = false;
+                                            controller.isSpeedPaneOpened.value = false;
+                                            controller.isSyncSubsPaneOpened.value = false;
+                                            controller.isSourcePaneOpened.value = false;
+                                            controller.isTracksPaneOpened.value = false;
+                                            controller.isTorrentFilesPaneOpened.value =
+                                                !controller.isTorrentFilesPaneOpened.value;
+                                          },
+                                        ),
+                                      );
+                                    }),
                                     const SizedBox(width: 8),
                                     Obx(() => _Ios26GlassPillButton(
                                           label: controller.skipButtonLabel,

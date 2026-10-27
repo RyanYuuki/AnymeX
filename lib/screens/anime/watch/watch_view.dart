@@ -20,6 +20,7 @@ import 'package:anymex/screens/anime/watch/controls/widgets/speed_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/watch_together_popup.dart';
 import 'package:anymex/widgets/watchium/watchium_live_overlays.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/torrent_files_popup.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
 import 'package:anymex/widgets/watchium/watchium_party_popup.dart';
@@ -232,6 +233,13 @@ class _WatchScreenState extends State<WatchScreen> {
                   bottom: 0,
                   left: 0,
                   child: WatchTogetherPopup(controller: controller),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: TorrentFilesPopup(controller: controller),
                 ),
                 const Positioned(
                   right: 0,

@@ -395,8 +395,10 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
     final Map<String, dynamic> buttonConfigs =
         Map<String, dynamic>.from(decodedConfig['buttonConfigs'] ?? {});
 
-    bool isVisible(String id) =>
-        (buttonConfigs[id]?['visible'] as bool?) ?? true;
+    bool isVisible(String id) => id == 'torrent'
+        ? (controller.isTorrentStream.value &&
+            ((buttonConfigs[id]?['visible'] as bool?) ?? true))
+        : ((buttonConfigs[id]?['visible'] as bool?) ?? true);
 
     final Map<String, Widget> buttonWidgets = {
       'playlist': ControlButton(
@@ -406,6 +408,13 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
               !controller.isEpisodePaneOpened.value;
         },
         tooltip: 'Playlist',
+        compact: true,
+      ),
+      'torrent': ControlButton(
+        icon: Icons.folder_zip_rounded,
+        onPressed: () => controller.isTorrentFilesPaneOpened.value =
+            !controller.isTorrentFilesPaneOpened.value,
+        tooltip: 'Torrent Files',
         compact: true,
       ),
       'shaders': ControlButton(
@@ -486,6 +495,19 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
         .map((id) => buttonWidgets[id])
         .whereType<Widget>()
         .toList();
+
+    if (controller.isTorrentStream.value &&
+        !leftButtonIds.contains('torrent') &&
+        !rightButtonIds.contains('torrent')) {
+      final torrentBtn = buttonWidgets['torrent'];
+      if (torrentBtn != null) {
+        if (leftWidgets.isNotEmpty) {
+          leftWidgets.insert(1.clamp(0, leftWidgets.length), torrentBtn);
+        } else {
+          leftWidgets.add(torrentBtn);
+        }
+      }
+    }
 
     final isDesktop = !_isMobilePlatform;
 

@@ -45,8 +45,6 @@ import 'package:anymex/services/fcm_service.dart'
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/utils/logger.dart';
-import 'package:anymex/screens/notifications/notification_screen.dart';
-import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/utils/notification.dart';
 import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/external_font_loader.dart';

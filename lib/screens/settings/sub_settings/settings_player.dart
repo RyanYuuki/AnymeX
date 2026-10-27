@@ -110,6 +110,11 @@ final List<_BottomControl> _bottomControls = [
       icon: Icons.playlist_play_rounded,
       defaultPosition: 'left'),
   const _BottomControl(
+      id: 'torrent',
+      name: 'Torrent Files',
+      icon: Icons.folder_zip_rounded,
+      defaultPosition: 'left'),
+  const _BottomControl(
       id: 'shaders', name: 'Shaders', icon: Icons.tune_rounded),
   const _BottomControl(
       id: 'source', name: 'Quality', icon: Icons.high_quality_rounded),

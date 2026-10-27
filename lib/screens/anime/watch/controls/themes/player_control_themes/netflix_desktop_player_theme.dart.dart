@@ -173,6 +173,21 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
                           onTap: () => controller.isEpisodePaneOpened.value =
                               !controller.isEpisodePaneOpened.value,
                         ),
+                        Obx(() {
+                          if (!controller.isTorrentStream.value) {
+                            return const SizedBox.shrink();
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 20),
+                            child: NFDesktopButton(
+                              icon: Icons.folder_zip_rounded,
+                              size: 32,
+                              onTap: () => controller
+                                      .isTorrentFilesPaneOpened.value =
+                                  !controller.isTorrentFilesPaneOpened.value,
+                            ),
+                          );
+                        }),
                         const SizedBox(width: 20),
                         NFDesktopButton(
                           icon: Icons.cast_rounded,

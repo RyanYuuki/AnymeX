@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:webview_all/webview_all.dart'
-    hide CookieManager;
+import 'package:webview_all/webview_all.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:rhttp/rhttp.dart';

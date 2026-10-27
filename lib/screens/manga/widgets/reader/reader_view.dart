@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/continuous_reader.dart';
 import 'package:anymex/screens/manga/widgets/reader/display_refresh_host.dart';

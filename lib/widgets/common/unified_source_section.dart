@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';

@@ -254,6 +254,15 @@ class BottomControls extends StatelessWidget {
         tooltip: 'Playlist',
         compact: true,
       ),
+      'torrent': ControlButton(
+        icon: Icons.folder_zip_rounded,
+        onPressed: () {
+          controller.isTorrentFilesPaneOpened.value =
+              !controller.isTorrentFilesPaneOpened.value;
+        },
+        tooltip: 'Torrent Files',
+        compact: true,
+      ),
       'shaders': ControlButton(
         icon: Icons.tune_rounded,
         onPressed: () => controller.openColorProfileBottomSheet(context),
@@ -395,6 +404,9 @@ class BottomControls extends StatelessWidget {
         if (id == 'watch_together' && controller.isOffline.value) {
           continue;
         }
+        if (id == 'torrent' && !controller.isTorrentStream.value) {
+          continue;
+        }
 
         final widget = buttonWidgets[id];
         if (widget != null) {
@@ -434,6 +446,19 @@ class BottomControls extends StatelessWidget {
 
     final leftButtons = buildButtonList(leftButtonIds);
     final rightButtons = buildButtonList(rightButtonIds);
+
+    if (controller.isTorrentStream.value &&
+        !leftButtonIds.contains('torrent') &&
+        !rightButtonIds.contains('torrent')) {
+      final torrentBtn = buttonWidgets['torrent'];
+      if (torrentBtn != null) {
+        if (leftButtons.isNotEmpty) {
+          leftButtons.insert(1.clamp(0, leftButtons.length), torrentBtn);
+        } else {
+          leftButtons.add(torrentBtn);
+        }
+      }
+    }
 
     final isPortrait =
         MediaQuery.orientationOf(context) == Orientation.portrait;

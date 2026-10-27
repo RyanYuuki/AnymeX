@@ -43,7 +43,7 @@ class OfflineMedia {
     if (Get.isRegistered<AnilistAuth>() &&
         Get.find<AnilistAuth>().isLoggedIn.value) {
       final lang =
-          Get.find<AnilistAuth>().cachedSettings?.titleLanguage?.toUpperCase();
+          Get.find<AnilistAuth>().cachedSettings?.titleLanguage.toUpperCase();
       if (lang == 'ROMAJI' && (jname?.isNotEmpty ?? false)) {
         return jname!;
       } else if (lang == 'NATIVE' && (japanese?.isNotEmpty ?? false)) {
