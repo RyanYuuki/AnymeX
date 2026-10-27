@@ -17,6 +17,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
+import 'package:anymex/controllers/services/simkl/simkl_service.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -26,9 +27,11 @@ import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/dialogs/donation_dialog.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
@@ -58,124 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
     if (!mounted) return;
     final dontShow = General.dontShowDonationDialog.get<bool>(false);
     if (dontShow) return;
-    _showDonationDialog();
-  }
-
-  void _showDonationDialog() {
-    AnymeXDialog(
-      title: 'Support AnymeX',
-      confirmText: 'Donate',
-      cancelText: 'Soon',
-      showCancelButton: true,
-      onConfirm: () {
-        navigate(SettingsDonation.new);
-      },
-      contentWidget: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 58,
-            height: 58,
-            decoration: BoxDecoration(
-              color: context.colors.primary.opaque(0.12, iReallyMeanIt: true),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: context.colors.primary.opaque(0.25, iReallyMeanIt: true),
-              ),
-            ),
-            child: Icon(
-              Icons.favorite_rounded,
-              color: context.colors.primary,
-              size: 30,
-            ),
-          ),
-          const SizedBox(height: 14),
-          AnymeXText(
-            'AnymeX is completely free, open-source, and ad-free. Your support directly helps in motivation and features being actively developed!',
-            size: 13.5,
-            color: context.colors.onSurfaceVariant,
-            textAlign: TextAlign.center,
-            maxLines: 10,
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _buildDonationPerk(
-                icon: Icons.block_rounded,
-                label: 'Ad-Free',
-              ),
-              _buildDonationPerk(
-                icon: Icons.code_rounded,
-                label: 'Open Source',
-              ),
-              _buildDonationPerk(
-                icon: Icons.volunteer_activism_rounded,
-                label: 'Community',
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          AnymexOnTap(
-            onTap: () {
-              General.dontShowDonationDialog.set(true);
-              Navigator.of(context).pop();
-            },
-            scale: 0.96,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.visibility_off_outlined,
-                    size: 15,
-                    color: context.colors.onSurface
-                        .opaque(0.45, iReallyMeanIt: true),
-                  ),
-                  const SizedBox(width: 6),
-                  AnymeXText(
-                    "Don't show again",
-                    size: 12.5,
-                    variant: TextVariant.regular,
-                    color: context.colors.onSurface
-                        .opaque(0.5, iReallyMeanIt: true),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    ).show(context);
-  }
-
-  Widget _buildDonationPerk({
-    required IconData icon,
-    required String label,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceContainerHighest
-            .opaque(0.5, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: context.colors.onSurface.opaque(0.06, iReallyMeanIt: true),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: context.colors.primary),
-          const SizedBox(width: 6),
-          AnymeXText(label, size: 11.5, variant: TextVariant.semiBold),
-        ],
-      ),
-    );
+    DonationDialog.show(context);
   }
 
   @override
@@ -229,12 +115,14 @@ class _SettingsPageState extends State<SettingsPage> {
               color: context.colors.onSurface.opaque(0.15, iReallyMeanIt: true),
             ),
             const SizedBox(height: 16),
-            AnymeXText('No search results',
+            AnymeXText(
+              'No search results',
               size: 16,
               color: context.colors.onSurface.opaque(0.4, iReallyMeanIt: true),
             ),
             const SizedBox(height: 6),
-            AnymeXText('Try a different keyword',
+            AnymeXText(
+              'Try a different keyword',
               size: 13,
               color: context.colors.onSurface.opaque(0.3, iReallyMeanIt: true),
             ),
@@ -418,24 +306,8 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildTile(
                 icon: HugeIcons.strokeRoundedBug01,
                 title: "Test",
-                description: "Debug extensions and update sheet",
-                customTap: () async {
-                  AnymeXDialog(
-                    title: "Debug",
-                    contentWidget: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnymeXTile(
-                          icon: HugeIcons.strokeRoundedBug01,
-                          title: "Debug Extensions",
-                          subtitle: "Debug extensions and view logs",
-                          onTap: () async {},
-                        ),
-                      ],
-                    ),
-                    onConfirm: () {},
-                  ).show(context);
-                },
+                description: "Debug stuffs",
+                customTap: () async {},
               ),
           ],
         ),

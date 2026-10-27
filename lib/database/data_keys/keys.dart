@@ -37,6 +37,8 @@ enum General {
   showHomeContinueWatching,
   incognitoMode,
   dontShowDonationDialog,
+  hasShownHomeDonationDialog,
+  watchedAdsCount,
 }
 
 enum ThemeKeys {

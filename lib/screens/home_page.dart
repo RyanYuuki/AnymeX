@@ -4,9 +4,11 @@ import 'package:anymex/controllers/offline/offline_storage_controller.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex/widgets/common/scroll_aware_app_bar.dart';
+import 'package:anymex/widgets/dialogs/donation_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/header/header.dart';
@@ -163,6 +165,29 @@ class _HomePageState extends State<HomePage> {
     _workers.add(ever(serviceHandler.isLoggedIn, (_) {
       if (mounted) setState(() {});
     }));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndShowDonationDialog();
+    });
+  }
+
+  void _checkAndShowDonationDialog() {
+    if (!mounted) return;
+    final hasShown = General.hasShownHomeDonationDialog.get<bool>(false);
+    if (hasShown) return;
+
+    if (General.isFirstTime.get<bool>(true)) {
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) _checkAndShowDonationDialog();
+      });
+      return;
+    }
+
+    General.hasShownHomeDonationDialog.set(true);
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) {
+        DonationDialog.show(context);
+      }
+    });
   }
 
   ScrollController get scrollController => _scrollController;

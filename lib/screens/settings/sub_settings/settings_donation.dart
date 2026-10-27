@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anymex/services/ad_support_service.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
@@ -7,6 +8,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -225,6 +227,148 @@ class _SettingsDonationState extends State<SettingsDonation> {
     );
   }
 
+  Widget _buildAdSupportSection(BuildContext context) {
+    final colors = context.colors;
+    return AnymeXSectionBuilder(
+      title: 'Free Support',
+      children: [
+        AnymeXContainer(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          color: colors.primary.opaque(0.08, iReallyMeanIt: true),
+          radius: 16,
+          border: Border.all(
+            color: colors.primary.opaque(0.28, iReallyMeanIt: true),
+            width: 1.2,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: colors.primary.opaque(0.15, iReallyMeanIt: true),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.play_circle_filled_rounded,
+                      color: colors.primary,
+                      size: 26,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const AnymeXText(
+                          'Watch an Ad to Support',
+                          variant: TextVariant.bold,
+                          size: 15,
+                        ),
+                        const SizedBox(height: 4),
+                        AnymeXText(
+                          "Can't donate money? Support AnymeX for free by watching a short ad! You will be rewarded points in the next update based on how many ads you've watched.",
+                          variant: TextVariant.regular,
+                          size: 12.5,
+                          color: colors.onSurfaceVariant,
+                          maxLines: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Obx(() {
+                    final count = AdSupportService.instance.watchedCount.value;
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceContainerHighest
+                            .opaque(0.6, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: colors.outlineVariant
+                              .opaque(0.25, iReallyMeanIt: true),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.stars_rounded,
+                            size: 16,
+                            color: colors.primary,
+                          ),
+                          const SizedBox(width: 6),
+                          AnymeXText(
+                            'Ads Watched: $count',
+                            variant: TextVariant.bold,
+                            size: 13,
+                            color: colors.onSurface,
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  AnymexOnTap(
+                    onTap: () => AdSupportService.instance.watchAd(),
+                    scale: 0.96,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colors.primary,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.primary
+                                .opaque(0.25, iReallyMeanIt: true),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.play_arrow_rounded,
+                            size: 18,
+                            color: colors.onPrimary,
+                          ),
+                          const SizedBox(width: 4),
+                          AnymeXText(
+                            'Watch Ad',
+                            variant: TextVariant.bold,
+                            size: 13,
+                            color: colors.onPrimary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
@@ -242,6 +386,8 @@ class _SettingsDonationState extends State<SettingsDonation> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeroCard(context),
+              const SizedBox(height: 20),
+              _buildAdSupportSection(context),
               const SizedBox(height: 20),
               AnymeXSectionBuilder(
                 title: 'India (UPI)',
