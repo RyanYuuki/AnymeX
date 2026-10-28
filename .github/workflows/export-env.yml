@@ -8,44 +8,82 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Write secrets to .envnew
+        env:
+          AL_CLIENT_ID: ${{ secrets.AL_CLIENT_ID }}
+          AL_CLIENT_SECRET: ${{ secrets.AL_CLIENT_SECRET }}
+          ANNOUNCEMENT_API_KEY: ${{ secrets.ANNOUNCEMENT_API_KEY }}
+          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          BOT_API_SECRET: ${{ secrets.BOT_API_SECRET }}
+          BOT_BASE_URL: ${{ secrets.BOT_BASE_URL }}
+          CALLBACK_SCHEME: ${{ secrets.CALLBACK_SCHEME }}
+          CHOCO_API_KEY: ${{ secrets.CHOCO_API_KEY }}
+          COMMENTS_BASE_URL: ${{ secrets.COMMENTS_BASE_URL }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK_ALPHA: ${{ secrets.DISCORD_WEBHOOK_ALPHA }}
+          DISCORD_WEBHOOK_BETA: ${{ secrets.DISCORD_WEBHOOK_BETA }}
+          GIT_CALLBACK_SCHEME: ${{ secrets.GIT_CALLBACK_SCHEME }}
+          GIT_CLIENT_ID: ${{ secrets.GIT_CLIENT_ID }}
+          GIT_CLIENT_SECRET: ${{ secrets.GIT_CLIENT_SECRET }}
+          GOOGLE_BOOKS_API_KEY: ${{ secrets.GOOGLE_BOOKS_API_KEY }}
+          GOOGLE_KEY: ${{ secrets.GOOGLE_KEY }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          MAL_CLIENT_ID: ${{ secrets.MAL_CLIENT_ID }}
+          MAL_CLIENT_SECRET: ${{ secrets.MAL_CLIENT_SECRET }}
+          P12_CERTIFICATE: ${{ secrets.P12_CERTIFICATE }}
+          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+          PROVISIONING_PROFILE: ${{ secrets.PROVISIONING_PROFILE }}
+          SIMKL_CLIENT_ID: ${{ secrets.SIMKL_CLIENT_ID }}
+          SIMKL_CLIENT_SECRET: ${{ secrets.SIMKL_CLIENT_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_CHAT_ID_BETA: ${{ secrets.TELEGRAM_CHAT_ID_BETA }}
+          TELEGRAM_THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          WATCHIUM_API_TOKEN: ${{ secrets.WATCHIUM_API_TOKEN }}
+          WATCHIUM_SERVER_URL: ${{ secrets.WATCHIUM_SERVER_URL }}
         run: |
-          cat <<EOF > .envnew
-          AL_CLIENT_ID=${{ secrets.AL_CLIENT_ID }}
-          AL_CLIENT_SECRET=${{ secrets.AL_CLIENT_SECRET }}
-          ANNOUNCEMENT_API_KEY=${{ secrets.ANNOUNCEMENT_API_KEY }}
-          AUR_SSH_PRIVATE_KEY=${{ secrets.AUR_SSH_PRIVATE_KEY }}
-          BOT_API_SECRET=${{ secrets.BOT_API_SECRET }}
-          BOT_BASE_URL=${{ secrets.BOT_BASE_URL }}
-          CALLBACK_SCHEME=${{ secrets.CALLBACK_SCHEME }}
-          CHOCO_API_KEY=${{ secrets.CHOCO_API_KEY }}
-          COMMENTS_BASE_URL=${{ secrets.COMMENTS_BASE_URL }}
-          DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }}
-          DISCORD_WEBHOOK_ALPHA=${{ secrets.DISCORD_WEBHOOK_ALPHA }}
-          DISCORD_WEBHOOK_BETA=${{ secrets.DISCORD_WEBHOOK_BETA }}
-          GIT_CALLBACK_SCHEME=${{ secrets.GIT_CALLBACK_SCHEME }}
-          GIT_CLIENT_ID=${{ secrets.GIT_CLIENT_ID }}
-          GIT_CLIENT_SECRET=${{ secrets.GIT_CLIENT_SECRET }}
-          GOOGLE_BOOKS_API_KEY=${{ secrets.GOOGLE_BOOKS_API_KEY }}
-          GOOGLE_KEY=${{ secrets.GOOGLE_KEY }}
-          KEYSTORE_BASE64=${{ secrets.KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS=${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
-          MAL_CLIENT_ID=${{ secrets.MAL_CLIENT_ID }}
-          MAL_CLIENT_SECRET=${{ secrets.MAL_CLIENT_SECRET }}
-          P12_CERTIFICATE=${{ secrets.P12_CERTIFICATE }}
-          P12_PASSWORD=${{ secrets.P12_PASSWORD }}
-          PROVISIONING_PROFILE=${{ secrets.PROVISIONING_PROFILE }}
-          SIMKL_CLIENT_ID=${{ secrets.SIMKL_CLIENT_ID }}
-          SIMKL_CLIENT_SECRET=${{ secrets.SIMKL_CLIENT_SECRET }}
-          TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_CHAT_ID_BETA=${{ secrets.TELEGRAM_CHAT_ID_BETA }}
-          TELEGRAM_THREAD_ID=${{ secrets.TELEGRAM_THREAD_ID }}
-          TMDB_API_KEY=${{ secrets.TMDB_API_KEY }}
-          WATCHIUM_API_TOKEN=${{ secrets.WATCHIUM_API_TOKEN }}
-          WATCHIUM_SERVER_URL=${{ secrets.WATCHIUM_SERVER_URL }}
-          EOF
+          {
+            echo "AL_CLIENT_ID=$AL_CLIENT_ID"
+            echo "AL_CLIENT_SECRET=$AL_CLIENT_SECRET"
+            echo "ANNOUNCEMENT_API_KEY=$ANNOUNCEMENT_API_KEY"
+            echo "AUR_SSH_PRIVATE_KEY=$AUR_SSH_PRIVATE_KEY"
+            echo "BOT_API_SECRET=$BOT_API_SECRET"
+            echo "BOT_BASE_URL=$BOT_BASE_URL"
+            echo "CALLBACK_SCHEME=$CALLBACK_SCHEME"
+            echo "CHOCO_API_KEY=$CHOCO_API_KEY"
+            echo "COMMENTS_BASE_URL=$COMMENTS_BASE_URL"
+            echo "DISCORD_WEBHOOK=$DISCORD_WEBHOOK"
+            echo "DISCORD_WEBHOOK_ALPHA=$DISCORD_WEBHOOK_ALPHA"
+            echo "DISCORD_WEBHOOK_BETA=$DISCORD_WEBHOOK_BETA"
+            echo "GIT_CALLBACK_SCHEME=$GIT_CALLBACK_SCHEME"
+            echo "GIT_CLIENT_ID=$GIT_CLIENT_ID"
+            echo "GIT_CLIENT_SECRET=$GIT_CLIENT_SECRET"
+            echo "GOOGLE_BOOKS_API_KEY=$GOOGLE_BOOKS_API_KEY"
+            echo "GOOGLE_KEY=$GOOGLE_KEY"
+            echo "KEYSTORE_BASE64=$KEYSTORE_BASE64"
+            echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
+            echo "KEY_ALIAS=$KEY_ALIAS"
+            echo "KEY_PASSWORD=$KEY_PASSWORD"
+            echo "MAL_CLIENT_ID=$MAL_CLIENT_ID"
+            echo "MAL_CLIENT_SECRET=$MAL_CLIENT_SECRET"
+            echo "P12_CERTIFICATE=$P12_CERTIFICATE"
+            echo "P12_PASSWORD=$P12_PASSWORD"
+            echo "PROVISIONING_PROFILE=$PROVISIONING_PROFILE"
+            echo "SIMKL_CLIENT_ID=$SIMKL_CLIENT_ID"
+            echo "SIMKL_CLIENT_SECRET=$SIMKL_CLIENT_SECRET"
+            echo "TELEGRAM_BOT_TOKEN=$TELEGRAM_BOT_TOKEN"
+            echo "TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID"
+            echo "TELEGRAM_CHAT_ID_BETA=$TELEGRAM_CHAT_ID_BETA"
+            echo "TELEGRAM_THREAD_ID=$TELEGRAM_THREAD_ID"
+            echo "TMDB_API_KEY=$TMDB_API_KEY"
+            echo "WATCHIUM_API_TOKEN=$WATCHIUM_API_TOKEN"
+            echo "WATCHIUM_SERVER_URL=$WATCHIUM_SERVER_URL"
+          } > .envnew
+          echo "File created:"
+          cat .envnew
 
       - name: Upload as artifact
         uses: actions/upload-artifact@v4
