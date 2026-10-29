@@ -117,9 +117,9 @@ dependencies:
     # better_player_plus: any
     marquee: ^2.3.0
     anymex_extension_runtime_bridge:
-        git:
-            url: https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git
-            ref: main    
+  git:
+    url: https://github.com/zoro344/AnymeXExtensionRuntimeBridge.git
+    ref: patch-3
         # path: ../AnymeXExtensionRuntimeBridge
     
     jxl_coder: ^0.1.0
