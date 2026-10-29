@@ -41,7 +41,8 @@ dependencies:
     rhttp:
       path: packages/rhttp
     hugeicons: ^0.0.7
-    flutter_iconly: any
+    flutter_iconly:
+      path: packages/flutter_iconly
     iconsax: ^0.0.8
     install_plugin: ^2.1.0
     intl: ^0.20.1
