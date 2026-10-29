@@ -43,6 +43,9 @@ jobs:
           else
             echo "No test/ directory found; skipping tests."
           fi
-
+          
+      - name: Create empty environment file for CI
+        run: touch .env:
+          
       - name: Build debug APK
         run: flutter build apk --debug
