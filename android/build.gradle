@@ -64,18 +64,11 @@ subprojects {
 }
 
 configurations.all {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == "io.flutter" &&
-                details.requested.name.contains("flutter_embedding")) {
-
-            details.useVersion "1.0.0-ef0cd000916d64fa0c5d09cc809fa7ad244a5767"
-        }
-    }
     resolutionStrategy {
         force "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0"
         force "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0"
         force "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0"
         force "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0"
-            force "com.google.code.gson:gson:2.11.0"
+        force "com.google.code.gson:gson:2.11.0"
     }
 }

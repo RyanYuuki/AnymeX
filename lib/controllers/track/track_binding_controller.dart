@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 
 import 'package:anymex/controllers/service_handler/params.dart';
@@ -21,54 +22,77 @@ class TrackBindingController extends GetxController {
     if (_cache.containsKey(mediaId)) {
       return List.unmodifiable(_cache[mediaId]!);
     }
+
     final raw = DynamicKeys.trackBindings.get<String>(mediaId, '[]');
     final list = <TrackBinding>[];
+
     try {
       final decoded = jsonDecode(raw) as List<dynamic>;
+
       for (final entry in decoded) {
         if (entry is Map) {
-          list.add(TrackBinding.fromJson(
-              Map<String, dynamic>.from(entry)));
+          list.add(
+            TrackBinding.fromJson(
+              Map<String, dynamic>.from(entry),
+            ),
+          );
         }
       }
     } catch (e) {
       Logger.e('TrackBinding decode failed for $mediaId: $e');
     }
+
     _cache[mediaId] = list;
     return List.unmodifiable(list);
   }
 
-  bool hasAnyBinding(String mediaId) => getBindingsFor(mediaId).isNotEmpty;
+  bool hasAnyBinding(String mediaId) =>
+      getBindingsFor(mediaId).isNotEmpty;
 
-  int bindingCount(String mediaId) => getBindingsFor(mediaId).length;
+  int bindingCount(String mediaId) =>
+      getBindingsFor(mediaId).length;
 
-  Future<void> bind(String mediaId, TrackBinding binding) async {
+  Future<void> bind(
+    String mediaId,
+    TrackBinding binding,
+  ) async {
     final list = getBindingsFor(mediaId)
         .where((b) => b.trackerId != binding.trackerId)
         .toList();
+
     list.add(binding);
     _cache[mediaId] = list;
+
     _persist(mediaId, list);
     bindingsVersion.value++;
   }
 
-  Future<void> unbind(String mediaId, int trackerId) async {
-    final list =
-        getBindingsFor(mediaId).where((b) => b.trackerId != trackerId).toList();
+  Future<void> unbind(
+    String mediaId,
+    int trackerId,
+  ) async {
+    final list = getBindingsFor(mediaId)
+        .where((b) => b.trackerId != trackerId)
+        .toList();
+
     _cache[mediaId] = list;
+
     _persist(mediaId, list);
     bindingsVersion.value++;
   }
 
-  void _persist(String mediaId, List<TrackBinding> list) {
+  void _persist(
+    String mediaId,
+    List<TrackBinding> list,
+  ) {
     DynamicKeys.trackBindings.set<String>(
       mediaId,
       jsonEncode(list.map((b) => b.toJson()).toList()),
     );
   }
 
-  OnlineService _online(Tracker t) {
-    switch (t) {
+  OnlineService _online(Tracker tracker) {
+    switch (tracker) {
       case Tracker.anilist:
         return Get.find<AnilistData>();
       case Tracker.mal:
@@ -78,12 +102,16 @@ class TrackBindingController extends GetxController {
     }
   }
 
-  bool isLoggedIn(Tracker t) => _online(t).isLoggedIn.value;
+  bool isLoggedIn(Tracker tracker) =>
+      _online(tracker).isLoggedIn.value;
 
   List<Tracker> loggedInTrackers() =>
       Tracker.values.where(isLoggedIn).toList();
 
-  Future<List<Media>> searchOn(Tracker t, SearchParams params) {
+  Future<List<Media>> searchOn(
+    Tracker tracker,
+    SearchParams params,
+  ) {
     if (params.args is! bool) {
       params = SearchParams(
         query: params.query,
@@ -93,7 +121,8 @@ class TrackBindingController extends GetxController {
         page: params.page,
       );
     }
-    switch (t) {
+
+    switch (tracker) {
       case Tracker.anilist:
         return Get.find<AnilistData>().search(params);
       case Tracker.mal:
@@ -103,12 +132,59 @@ class TrackBindingController extends GetxController {
     }
   }
 
+  /// Searches all registered tracking services concurrently.
+  ///
+  /// Results remain separated by tracker because IDs from
+  /// different services are not necessarily interchangeable.
+  ///
+  /// When one service fails, successful results from the
+  /// other services are still returned.
+  Future<Map<Tracker, List<Media>>> searchAll(
+    SearchParams params, {
+    bool loggedInOnly = false,
+  }) async {
+    final trackers = loggedInOnly
+        ? loggedInTrackers()
+        : Tracker.values.toList();
+
+    final entries = await Future.wait<
+        MapEntry<Tracker, List<Media>>>(
+      trackers.map((tracker) async {
+        try {
+          final results = await searchOn(tracker, params);
+
+          return MapEntry<Tracker, List<Media>>(
+            tracker,
+            results,
+          );
+        } catch (error) {
+          Logger.e(
+            'Unified search failed for '
+            '${tracker.label}: $error',
+          );
+
+          return MapEntry<Tracker, List<Media>>(
+            tracker,
+            <Media>[],
+          );
+        }
+      }),
+    );
+
+    return Map<Tracker, List<Media>>.fromEntries(entries);
+  }
+
   Future<List<Media>> searchOnSimkl(
     String query, {
-    SimklSearchCategory category = SimklSearchCategory.anime,
+    SimklSearchCategory category =
+        SimklSearchCategory.anime,
     int page = 1,
   }) {
-    return Get.find<SimklService>().searchByCategory(query, category, page: page);
+    return Get.find<SimklService>().searchByCategory(
+      query,
+      category,
+      page: page,
+    );
   }
 
   Future<void> pushProgress(
@@ -119,28 +195,42 @@ class TrackBindingController extends GetxController {
     int? season,
   }) async {
     final bindings = getBindingsFor(mediaId);
+
     if (bindings.isEmpty) return;
 
-    await Future.wait(bindings.map((b) async {
-      final tracker = b.tracker;
-      final service = _online(tracker);
-      if (!service.isLoggedIn.value) return;
-      try {
-        final targetStatus =
-            b.status == 'REPEATING' ? 'REPEATING' : (status ?? b.status);
-        await service.updateListEntry(UpdateListEntryParams(
-          listId: b.remoteId,
-          progress: progress,
-          status: targetStatus,
-          isAnime: isAnime,
-          season: season,
-        ));
-        b.progress = progress;
-        b.status = targetStatus;
-      } catch (e) {
-        Logger.e('Track sync failed for ${tracker.label} ($mediaId): $e');
-      }
-    }));
+    await Future.wait(
+      bindings.map((binding) async {
+        final tracker = binding.tracker;
+        final service = _online(tracker);
+
+        if (!service.isLoggedIn.value) return;
+
+        try {
+          final targetStatus =
+              binding.status == 'REPEATING'
+                  ? 'REPEATING'
+                  : (status ?? binding.status);
+
+          await service.updateListEntry(
+            UpdateListEntryParams(
+              listId: binding.remoteId,
+              progress: progress,
+              status: targetStatus,
+              isAnime: isAnime,
+              season: season,
+            ),
+          );
+
+          binding.progress = progress;
+          binding.status = targetStatus;
+        } catch (error) {
+          Logger.e(
+            'Track sync failed for '
+            '${tracker.label} ($mediaId): $error',
+          );
+        }
+      }),
+    );
 
     _persist(mediaId, bindings);
   }
@@ -151,17 +241,20 @@ class TrackBindingController extends GetxController {
     required bool isAnime,
   }) {
     final service = _online(tracker);
-    final list = isAnime ? service.animeList : service.mangaList;
+    final list = isAnime
+        ? service.animeList
+        : service.mangaList;
 
     TrackedMedia? existing;
+
     try {
       existing = list.firstWhere(
-        (t) =>
-            t.id == result.id ||
-            t.mediaListId == result.id ||
+        (item) =>
+            item.id == result.id ||
+            item.mediaListId == result.id ||
             (result.idMal.isNotEmpty &&
                 result.idMal != '0' &&
-                t.idMal == result.idMal),
+                item.idMal == result.idMal),
       );
     } catch (_) {
       existing = null;
@@ -174,10 +267,14 @@ class TrackBindingController extends GetxController {
       poster: result.poster,
       totalEpisodes: result.totalEpisodes,
       isAnime: isAnime,
-      progress: int.tryParse(existing?.episodeCount ?? '') ?? 0,
-      status: (existing?.watchingStatus?.isNotEmpty ?? false)
-          ? existing!.watchingStatus!
-          : 'CURRENT',
+      progress: int.tryParse(
+            existing?.episodeCount ?? '',
+          ) ??
+          0,
+      status:
+          (existing?.watchingStatus?.isNotEmpty ?? false)
+              ? existing!.watchingStatus!
+              : 'CURRENT',
       score: double.tryParse(existing?.score ?? ''),
       private: existing?.isPrivate ?? false,
     );
@@ -197,19 +294,25 @@ class TrackBindingController extends GetxController {
     final newPrivate = isPrivate ?? binding.private;
 
     final service = _online(binding.tracker);
+
     if (service.isLoggedIn.value) {
       try {
-        await service.updateListEntry(UpdateListEntryParams(
-          listId: binding.remoteId,
-          progress: newProgress,
-          status: newStatus,
-          score: newScore,
-          isAnime: binding.isAnime,
-          isPrivate: newPrivate,
-        ));
-      } catch (e) {
+        await service.updateListEntry(
+          UpdateListEntryParams(
+            listId: binding.remoteId,
+            progress: newProgress,
+            status: newStatus,
+            score: newScore,
+            isAnime: binding.isAnime,
+            isPrivate: newPrivate,
+          ),
+        );
+      } catch (error) {
         Logger.e(
-            'Track remote update failed for ${binding.tracker.label} ($mediaId): $e — keeping local update only');
+          'Track remote update failed for '
+          '${binding.tracker.label} ($mediaId): $error '
+          '— keeping local update only',
+        );
       }
     }
 
@@ -219,10 +322,14 @@ class TrackBindingController extends GetxController {
     binding.private = newPrivate;
 
     final list = getBindingsFor(mediaId)
-        .where((b) => b.trackerId != binding.trackerId)
+        .where(
+          (item) => item.trackerId != binding.trackerId,
+        )
         .toList();
+
     list.add(binding);
     _cache[mediaId] = list;
+
     _persist(mediaId, list);
     bindingsVersion.value++;
   }

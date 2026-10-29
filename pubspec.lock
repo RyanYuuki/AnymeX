@@ -723,10 +723,9 @@ packages:
   flutter_iconly:
     dependency: "direct main"
     description:
-      name: flutter_iconly
-      sha256: fabcbd59d93666aed6b0f7b4285776686cf60d07447d4afbffee92635d5ed785
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/flutter_iconly"
+      relative: true
+    source: path
     version: "1.0.2"
   flutter_launcher_icons:
     dependency: "direct dev"
