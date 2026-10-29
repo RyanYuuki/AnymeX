@@ -27,7 +27,7 @@ jobs:
       - name: Analyze application
         run: flutter analyze --no-pub --no-fatal-warnings --no-fatal-infos lib
 
-            - name: Run tests
+      - name: Run tests
         run: |
           if [ -d test ]; then
             flutter test
