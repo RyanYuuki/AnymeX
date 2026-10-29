@@ -1,40 +1,46 @@
-
 name: Flux Flutter Checks
 
 on:
-  push:
-  pull_request:
-  workflow_dispatch:
+push:
+pull_request:
+workflow_dispatch:
 
 permissions:
-  contents: read
+contents: read
 
 jobs:
-  flutter-checks:
-    runs-on: ubuntu-latest
+flutter-checks:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          cache: true
+  - name: Set up Flutter
+    uses: subosito/flutter-action@v2
+    with:
+      channel: stable
+      cache: true
 
-      - name: Show Flutter version
-        run: flutter --version
+  - name: Show Flutter version
+    run: flutter --version
 
-      - name: Install dependencies
-        run: flutter pub get
+  - name: Install root dependencies
+    run: flutter pub get
 
-      - name: Analyze Dart code
-        run: flutter analyze
+  - name: Install rhttp package dependencies
+    working-directory: packages/rhttp
+    run: flutter pub get
 
-      - name: Run tests
-        run: flutter test
+  - name: Analyze main application
+    run: flutter analyze lib
 
-      - name: Build debug APK
-        run: flutter build apk --debug
-        
+  - name: Analyze rhttp package
+    working-directory: packages/rhttp
+    run: flutter analyze lib
+
+  - name: Run main application tests
+    run: flutter test
+
+  - name: Build debug APK
+    run: flutter build apk --debug
