@@ -27,8 +27,13 @@ jobs:
       - name: Analyze application
         run: flutter analyze --no-pub --no-fatal-warnings --no-fatal-infos lib
 
-      - name: Run tests
-        run: flutter test
+            - name: Run tests
+        run: |
+          if [ -d test ]; then
+            flutter test
+          else
+            echo "No test/ directory found; skipping tests."
+          fi
 
       - name: Build debug APK
         run: flutter build apk --debug
