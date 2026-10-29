@@ -8,15 +8,24 @@ permissions:
 jobs:
   flutter-checks:
     runs-on: ubuntu-latest
-    steps:
+        steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
+
+      - name: Show Java version
+        run: java -version
 
       - name: Show Flutter version
         run: flutter --version
