@@ -3,12 +3,12 @@ name: Flux Flutter Checks
 on: [push, pull_request, workflow_dispatch]
 
 permissions:
-contents: read
+  contents: read
 
 jobs:
-flutter-checks:
-runs-on: ubuntu-latest
-steps:
+  flutter-checks:
+    runs-on: ubuntu-latest
+    steps:
 - name: Checkout repository
 uses: actions/checkout@v4
 
