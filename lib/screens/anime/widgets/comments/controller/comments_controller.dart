@@ -237,8 +237,15 @@ class CommentSectionController extends GetxController
   }
 
   Future<void> _checkUserRole() async {
+    if (commentumService.currentUserId == null) {
+      currentUserRole.value = 'user';
+      isModerator.value = false;
+      isAdmin.value = false;
+      isSuperAdmin.value = false;
+      return;
+    }
+
     try {
-      print('Checking user role for Commentum v2...');
       isModerator.value = await commentumService.isModerator();
       isAdmin.value = await commentumService.isAdmin();
       isSuperAdmin.value = await commentumService.isSuperAdmin();
@@ -253,10 +260,7 @@ class CommentSectionController extends GetxController
       } else {
         currentUserRole.value = 'user';
       }
-
-      print('User role checked: ${currentUserRole.value}');
-    } catch (e) {
-      print('Error checking user role: $e');
+    } catch (_) {
       currentUserRole.value = 'user';
     }
   }

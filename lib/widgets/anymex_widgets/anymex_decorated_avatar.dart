@@ -219,16 +219,17 @@ class _CommentumAvatarState extends State<CommentumAvatar> {
     if (_fetching) return;
     final id = widget.userId?.trim() ?? '';
     if (id.isEmpty || !Get.isRegistered<CommentumService>()) return;
+    final service = Get.find<CommentumService>();
+    if (service.currentUserId == null) return;
     _fetching = true;
     try {
-      final profile = await Get.find<CommentumService>().fetchUserProfile(id);
+      final profile = await service.fetchUserProfile(id);
       if (!mounted) return;
       setState(() {
         final raw = profile?['avatar_decoration']?.toString() ?? '';
         _decoration = (raw.isEmpty || raw == 'null') ? null : raw;
       });
     } catch (_) {
-      // Stay decoration-less rather than breaking the row.
     }
   }
 

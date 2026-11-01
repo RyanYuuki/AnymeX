@@ -62,18 +62,24 @@ class MediaHeader extends StatelessWidget {
               if (isFullScreen) {
                 return const SizedBox.shrink();
               }
-              final usePoster = UISettingsKeys.usePosterForBlur.get<bool>(false);
+              final usePoster =
+                  UISettingsKeys.usePosterForBlur.get<bool>(false);
               final blurSourceUrl = usePoster
                   ? posterUrl
-                  : (data?.cover?.isNotEmpty == true ? data!.cover! : posterUrl);
+                  : (data?.cover?.isNotEmpty == true
+                      ? data!.cover!
+                      : posterUrl);
               final blurFallbackUrl = usePoster
                   ? (data?.cover?.isNotEmpty == true ? data!.cover! : posterUrl)
                   : posterUrl;
               final tintBlur = UISettingsKeys.tintBlur.get<bool>(true);
               final blurColor = tintBlur ? colors.primary.opaque(0.4) : null;
-              final useComputedBlur = UISettingsKeys.useComputedBlur.get<bool>(false);
-              final blurAmount = UISettingsKeys.detailsBlurAmount.get<double>(20.0);
-              final brightness = UISettingsKeys.detailsBackdropBrightness.get<double>(1.0);
+              final useComputedBlur =
+                  UISettingsKeys.useComputedBlur.get<bool>(false);
+              final blurAmount =
+                  UISettingsKeys.detailsBlurAmount.get<double>(20.0);
+              final brightness =
+                  UISettingsKeys.detailsBackdropBrightness.get<double>(1.0);
 
               Widget content = useComputedBlur
                   ? BakedBlurImage(
@@ -90,10 +96,26 @@ class MediaHeader extends StatelessWidget {
                     )
                   : ColorFiltered(
                       colorFilter: ColorFilter.matrix([
-                        brightness, 0, 0, 0, 0,
-                        0, brightness, 0, 0, 0,
-                        0, 0, brightness, 0, 0,
-                        0, 0, 0, 1, 0,
+                        brightness,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        brightness,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        brightness,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
                       ]),
                       child: ImageFiltered(
                         imageFilter: ImageFilter.blur(
@@ -144,7 +166,8 @@ class MediaHeader extends StatelessWidget {
                   onTap: () {
                     Get.to(
                       () => VisualsPopup(
-                        animeTitle: data?.displayTitle ?? data?.title ?? 'Unknown',
+                        animeTitle:
+                            data?.displayTitle ?? data?.title ?? 'Unknown',
                         malId: data?.idMal.toString() ?? data?.id.toString(),
                         originalCover: posterUrl,
                         isAnime: data?.mediaType.name.toUpperCase() == 'ANIME',
@@ -193,11 +216,13 @@ class MediaHeader extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onLongPress: () {
-                          final title = data?.displayTitle ?? data?.title ?? 'Loading...';
+                          final title =
+                              data?.displayTitle ?? data?.title ?? 'Loading...';
                           Clipboard.setData(ClipboardData(text: title));
                           snackBar('Title copied');
                         },
-                        child: AnymeXText(data?.displayTitle ?? data?.title ?? 'Loading...',
+                        child: AnymeXText(
+                          data?.displayTitle ?? data?.title ?? 'Loading...',
                           variant: TextVariant.bold,
                           size: isDesktop ? 28 : 20,
                           maxLines: 3,
@@ -227,7 +252,9 @@ class MediaHeader extends StatelessWidget {
                           }
 
                           final studioName = creator;
-                          final canOpenStudio = isAnime && studioName != null && studioName != 'Unknown';
+                          final canOpenStudio = isAnime &&
+                              studioName != null &&
+                              studioName != 'Unknown';
 
                           return Row(
                             mainAxisSize: MainAxisSize.min,
@@ -244,9 +271,8 @@ class MediaHeader extends StatelessWidget {
                                       : Icons.brush_outlined,
                                   onTap: canOpenStudio
                                       ? () async {
-                                          final studioId =
-                                              await AnilistData.fetchStudioIdByName(
-                                                  studioName);
+                                          final studioId = await AnilistData
+                                              .fetchStudioIdByName(studioName);
                                           if (studioId != null &&
                                               context.mounted) {
                                             showStudioDetailsSheet(
@@ -279,35 +305,37 @@ class MediaHeader extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: topPad + 12,
-            left: 16,
-            child: AnymexOnTap(
-              onTap: () {
-                Navigator.of(context, rootNavigator: true)
-                    .popUntil((route) => route.isFirst);
-              },
-              margin: 0,
-              child: _HeaderButton(
-                colors: colors,
-                child: Icon(
-                  Icons.home_rounded,
-                  size: 20,
-                  color: colors.onSurface,
+              top: topPad + 12,
+              left: 16,
+              child: AnymexOnTap(
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true)
+                      .popUntil((route) => route.isFirst);
+                },
+                margin: 0,
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHigh
+                        .opaque(0.2, iReallyMeanIt: true),
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Icon(
+                    Icons.home_rounded,
+                    size: 20,
+                    color: colors.onSurface,
+                  ),
                 ),
-              ),
-            ),
-          ),
+              )),
           Positioned(
             top: topPad + 12,
             right: 16,
             child: Container(
               decoration: BoxDecoration(
-                color: colors.surfaceContainerHighest
-                    .opaque(0.6, iReallyMeanIt: true),
+                color: colors.surfaceContainerHigh
+                    .opaque(0.2, iReallyMeanIt: true),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: colors.onSurface.opaque(0.1, iReallyMeanIt: true),
-                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -354,8 +382,7 @@ class MediaHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildMetaData(
-      BuildContext context, String val, BorderRadius? radius,
+  Widget _buildMetaData(BuildContext context, String val, BorderRadius? radius,
       {VoidCallback? onTap, IconData? icon}) {
     final chip = AnymeXContainer(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -398,28 +425,5 @@ class MediaHeader extends StatelessWidget {
       );
     }
     return chip;
-  }
-}
-
-class _HeaderButton extends StatelessWidget {
-  const _HeaderButton({required this.colors, required this.child});
-
-  final ColorScheme colors;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.opaque(0.6, iReallyMeanIt: true),
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: colors.onSurface.opaque(0.1, iReallyMeanIt: true),
-        ),
-      ),
-      child: child,
-    );
   }
 }

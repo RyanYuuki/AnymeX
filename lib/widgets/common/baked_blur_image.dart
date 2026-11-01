@@ -236,25 +236,37 @@ class _BakedBlurImageState extends State<BakedBlurImage> {
     }
 
     if (image != null && widget.fadeBottom) {
-      final fadeDistance = (widget.blurAmount * 2.5).clamp(24.0, 120.0);
-      content = ShaderMask(
-        shaderCallback: (bounds) {
-          final fadeStart =
-              ((bounds.height - fadeDistance) / bounds.height).clamp(0.5, 0.95);
-          return LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0.0, fadeStart, 1.0],
-            colors: const [
-              Colors.black,
-              Colors.black,
-              Colors.transparent,
-            ],
-          ).createShader(bounds);
-        },
-        blendMode: BlendMode.dstIn,
-        child: content,
+      final fadeDistance = (widget.blurAmount * 2.5).clamp(32.0, 140.0);
+      content = ClipRect(
+        child: ShaderMask(
+          shaderCallback: (bounds) {
+            if (bounds.height <= 0) {
+              return const LinearGradient(
+                colors: [Colors.transparent, Colors.transparent],
+              ).createShader(bounds);
+            }
+            final fadeStart =
+                ((bounds.height - fadeDistance) / bounds.height).clamp(0.4, 0.85);
+            final fadeEnd =
+                ((bounds.height - 8.0) / bounds.height).clamp(fadeStart + 0.02, 0.98);
+            return LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.0, fadeStart, fadeEnd, 1.0],
+              colors: const [
+                Colors.black,
+                Colors.black,
+                Colors.transparent,
+                Colors.transparent,
+              ],
+            ).createShader(bounds);
+          },
+          blendMode: BlendMode.dstIn,
+          child: content,
+        ),
       );
+    } else {
+      content = ClipRect(child: content);
     }
 
     return AnimatedOpacity(

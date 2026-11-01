@@ -556,7 +556,6 @@ class CommentumService extends GetxController {
 
   Future<List<Map<String, dynamic>>> getReportsQueue() async {
     if (currentUserId == null) {
-      Logger.i('User not logged in');
       return [];
     }
 
@@ -652,7 +651,6 @@ class CommentumService extends GetxController {
     String? targetClientType,
   }) async {
     if (currentUserId == null) {
-      Logger.i('User not logged in');
       return null;
     }
 
@@ -700,7 +698,6 @@ class CommentumService extends GetxController {
     String? targetClientType,
   }) async {
     if (currentUserId == null) {
-      Logger.i('User not logged in');
       return null;
     }
 
@@ -911,7 +908,6 @@ class CommentumService extends GetxController {
     String? targetClientType,
   }) async {
     if (currentUserId == null) {
-      Logger.i('User not logged in');
       return null;
     }
 
@@ -1478,6 +1474,7 @@ class CommentumService extends GetxController {
     String clientType = 'anilist',
     bool forceRefresh = false,
   }) async {
+    if (currentUserId == null) return null;
     final cacheKey = '$clientType:$userId';
     if (!forceRefresh && _publicProfileCache.containsKey(cacheKey)) {
       return _publicProfileCache[cacheKey];
@@ -1677,7 +1674,6 @@ class CommentumService extends GetxController {
 
   Future<List<Map<String, dynamic>>> getModerationQueue() async {
     if (currentUserId == null) {
-      Logger.i('User not logged in');
       return [];
     }
 
