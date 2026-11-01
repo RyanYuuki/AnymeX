@@ -1,39 +1,18 @@
 import 'package:anymex/database/data_keys/keys.dart';
-import 'package:anymex/screens/settings/search/settings_registry.dart';
-import 'package:anymex/screens/settings/search/settings_search_icons.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_donation.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_comments.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_discord.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_backup.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_common.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_downloads.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_addons.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_network.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_theme.dart';
-import 'package:anymex/controllers/services/simkl/simkl_service.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_ui.dart';
+import 'package:anymex/screens/settings/registry/settings_model.dart';
+import 'package:anymex/screens/settings/registry/settings_registry.dart';
+import 'package:anymex/screens/settings/registry/settings_search_controller.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
-import 'package:anymex/widgets/common/custom_tiles.dart';
-import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/dialogs/donation_dialog.dart';
-import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -79,7 +58,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   bool get _isSearching => _search.isSearching;
 
-  Map<String, List<SettingsSearchEntry>> get _searchResults => _search.results;
+  Map<String, List<SettingItem>> get _searchResults => _search.results;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +80,24 @@ class _SettingsPageState extends State<SettingsPage> {
         },
       ),
     );
+  }
+
+  Widget _buildSearchLeading(BuildContext context, SettingItem item) {
+    if (item.assetIcon != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: Image.asset(
+          item.assetIcon!,
+          width: 22,
+          height: 22,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+    final icon = item.icon ??
+        SettingsRegistry.categoryIcon(item.category) ??
+        Icons.settings_rounded;
+    return Icon(icon, color: context.colors.primary);
   }
 
   Widget _buildSearchResults(double headerHeight) {
@@ -146,15 +143,15 @@ class _SettingsPageState extends State<SettingsPage> {
           title: category,
           children: items
               .map((item) => AnymeXTile(
-                    leading: buildSettingsSearchLeading(context, item),
+                    leading: _buildSearchLeading(context, item),
                     title: item.title,
-                    subtitle: item.expansionTitle ?? category,
+                    subtitle: item.section ?? category,
                     onTap: () async {
-                      final builder = categoryRoutes[category];
+                      final builder = SettingsRegistry.categoryRoutes[category];
                       if (builder != null) {
                         await navigate(() => SettingsHighlightProvider(
                               highlightTitle: item.targetTitle,
-                              expansionTitle: item.expansionTitle,
+                              expansionTitle: item.section,
                               child: builder(),
                             ));
                       }
@@ -167,162 +164,34 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildCategoryList(double headerHeight) {
+    final groups = SettingsRegistry.groupedCategories;
+
     return SuperListView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
       children: [
         SizedBox(height: headerHeight),
-        _buildCategorySection(
-          title: "Accounts & Sync",
-          tiles: [
-            _buildTile(
-              icon: IconlyLight.profile,
-              title: "Accounts",
-              description: "Manage your MyAnimeList, Anilist, Simkl Accounts!",
-              destination: SettingsAccounts.new,
-            ),
-            _buildTile(
-              icon: Icons.discord,
-              title: "Discord RPC",
-              description: "Configure Discord Rich Presence & activity status",
-              destination: SettingsDiscord.new,
-            ),
-          ],
-        ),
-        _buildCategorySection(
-          title: "Preferences & System",
-          tiles: [
-            _buildTile(
-              icon: HugeIcons.strokeRoundedBulb,
-              title: "Common",
-              description: "Tweak general app settings",
-              destination: SettingsCommon.new,
-            ),
-            _buildTile(
-              icon: HugeIcons.strokeRoundedLibraries,
-              title: "Backup & Restore",
-              description: "Backup and restore your library",
-              destination: BackupRestorePage.new,
-            ),
-            _buildTile(
-              icon: Icons.wifi_tethering_rounded,
-              title: "Network",
-              description: "Configure DNS-over-HTTPS, proxy & TLS settings",
-              destination: SettingsNetwork.new,
-            ),
-            _buildTile(
-              icon: Icons.storage_rounded,
-              title: "Storage Manager",
-              description:
-                  "Manage cached images, thresholds, and reset app data",
-              destination: SettingsStorageManager.new,
-            ),
-          ],
-        ),
-        _buildCategorySection(
-          title: "Appearance & Interface",
-          tiles: [
-            _buildTile(
-              icon: HugeIcons.strokeRoundedPaintBoard,
-              title: "UI",
-              description: "Customize the interface to your liking",
-              destination: SettingsUi.new,
-            ),
-            _buildTile(
-              icon: HugeIcons.strokeRoundedPaintBrush01,
-              title: "Theme",
-              description: "Personalize the look and make it yours",
-              destination: SettingsTheme.new,
-            ),
-          ],
-        ),
-        _buildCategorySection(
-          title: "Media & Playback",
-          tiles: [
-            _buildTile(
-              icon: HugeIcons.strokeRoundedPlay,
-              title: "Player",
-              description: "Play around with the video player",
-              destination: SettingsPlayer.new,
-            ),
-            _buildTile(
-              icon: Icons.menu_book_rounded,
-              title: "Reader",
-              description: "Configure manga and novel reader defaults",
-              destination: SettingsReader.new,
-            ),
-            _buildTile(
-              icon: Icons.settings_suggest_rounded,
-              title: "Download Settings",
-              description: "Configure parallel downloads and directory",
-              destination: SettingsDownloads.new,
-            ),
-          ],
-        ),
-        _buildCategorySection(
-          title: "Extensions & Diagnostics",
-          tiles: [
-            _buildTile(
-              icon: Icons.chat_bubble_outline_rounded,
-              title: "Comment System",
-              description: "Commentum v2 settings, moderation & preferences",
-              destination: SettingsComments.new,
-            ),
-            _buildTile(
-              icon: Icons.extension_rounded,
-              title: "Extensions",
-              description: "Extensions tailored to your needs",
-              destination: SettingsExtensions.new,
-            ),
-            _buildTile(
-              icon: HugeIcons.strokeRoundedPlug01,
-              title: "Add-ons",
-              description: "TorrServer & streaming add-ons",
-              destination: SettingsAddons.new,
-            ),
-            _buildTile(
-              icon: HugeIcons.strokeRoundedFile01,
-              title: "Logs",
-              description: "Manage log capture and share saved logs",
-              destination: SettingsLogs.new,
-            ),
-          ],
-        ),
-        _buildCategorySection(
-          title: "About",
-          tiles: [
-            _buildTile(
-              icon: Icons.favorite_rounded,
-              title: "Support AnymeX",
-              description: "Donate via UPI, PayPal & support development",
-              destination: SettingsDonation.new,
-            ),
-            _buildTile(
-              icon: HugeIcons.strokeRoundedInformationCircle,
-              title: "About",
-              description: "About the App",
-              destination: AboutPage.new,
-            ),
-            if (kDebugMode)
-              _buildTile(
-                icon: HugeIcons.strokeRoundedBug01,
-                title: "Test",
-                description: "Debug stuffs",
-                customTap: () async {},
-              ),
-          ],
-        ),
+        for (final entry in groups.entries)
+          AnymeXSectionBuilder(
+            title: entry.key,
+            children: [
+              for (final cat in entry.value)
+                _buildTile(
+                  icon: cat.icon,
+                  title: cat.title,
+                  description: cat.description,
+                  destination: cat.destination,
+                ),
+              if (entry.key == 'About' && kDebugMode)
+                _buildTile(
+                  icon: HugeIcons.strokeRoundedBug01,
+                  title: 'Test',
+                  description: 'Debug stuffs',
+                  customTap: () async {},
+                ),
+            ],
+          ),
         const SizedBox(height: 30),
       ],
-    );
-  }
-
-  Widget _buildCategorySection({
-    required String title,
-    required List<Widget> tiles,
-  }) {
-    return AnymeXSectionBuilder(
-      title: title,
-      children: tiles,
     );
   }
 
@@ -341,26 +210,6 @@ class _SettingsPageState extends State<SettingsPage> {
       title: title,
       subtitle: description,
       onTap: customTap ?? () => navigate(destination),
-    );
-  }
-}
-
-class CustomBackButton extends StatelessWidget {
-  const CustomBackButton({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor:
-            Theme.of(context).colorScheme.surfaceContainer.opaque(0.5),
-      ),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-      icon: const Icon(Icons.arrow_back_ios_new_rounded),
     );
   }
 }
