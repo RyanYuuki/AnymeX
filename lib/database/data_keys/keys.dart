@@ -308,6 +308,13 @@ enum UISettingsKeys {
   appFontFamily,
   bottomNavBarMargin,
   useLegacyNavbar,
+  useComputedBlur,
+  fullScreenBlur,
+  tintBlur,
+  usePosterForBlur,
+  detailsBlurAmount,
+  detailsBackdropBrightness,
+  detailsFadeAdjuster,
 }
 
 enum DownloadKeys {

@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/utils/media_share.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -30,6 +31,7 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/anime/media_header.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/common/baked_blur_image.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
@@ -139,55 +141,132 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
       extendBody: true,
       resizeToAvoidBottomInset: false,
       bottomNavigationBar: buildBottomNavBar(context),
-      body: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) => [
-              SliverToBoxAdapter(
-                child: Obx(() => MediaHeader(
-                      tag: widget.tag,
-                      data: controller.media.value,
-                      posterUrl: controller.media.value.poster,
-                      userStatus: controller.mediaStatus.value,
-                      userProgress: '${controller.mediaProgress.value}',
-                      onShare: () => MediaShare.showOptions(
-                        context: context,
-                        baseMedia: controller.media.value,
-                        hydratedMedia: controller.media.value,
-                        isManga: controller.isManga || controller.isNovel,
-                      ),
-                    )),
+      body: Obx(() {
+        final isFullScreen = settingsController.fullScreenBlur;
+        final useComputedBlur = settingsController.useComputedBlur;
+        final blurAmount = UISettingsKeys.detailsBlurAmount.get<double>(20.0);
+        final brightness =
+            UISettingsKeys.detailsBackdropBrightness.get<double>(1.0);
+        final media = controller.media.value;
+        final posterUrl = media.poster;
+        final coverUrl = (media.cover?.isNotEmpty == true ? media.cover! : posterUrl);
+        final usePoster = settingsController.usePosterForBlur;
+        final blurSourceUrl = usePoster ? posterUrl : coverUrl;
+        final blurFallbackUrl = usePoster ? coverUrl : posterUrl;
+        final tintBlur = settingsController.tintBlur;
+        final colors = context.colors;
+        final blurColor = tintBlur ? colors.primary.opaque(0.4) : null;
+
+        final scrollView = ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverToBoxAdapter(
+                  child: Obx(() => MediaHeader(
+                        tag: widget.tag,
+                        data: controller.media.value,
+                        posterUrl: controller.media.value.poster,
+                        userStatus: controller.mediaStatus.value,
+                        userProgress: '${controller.mediaProgress.value}',
+                        onShare: () => MediaShare.showOptions(
+                          context: context,
+                          baseMedia: controller.media.value,
+                          hydratedMedia: controller.media.value,
+                          isManga: controller.isManga || controller.isNovel,
+                        ),
+                      )),
+                ),
+                SliverToBoxAdapter(
+                  child: Center(
+                    child: Column(
+                      children: [
+                        buildMediaQuickActions(context, controller),
+                        const SizedBox(height: 12),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+              body: PageView(
+                controller: pageController,
+                physics: const BouncingScrollPhysics(),
+                onPageChanged: (index) {
+                  if (!_isAnimatingPage) {
+                    controller.selectedPage.value = index;
+                  }
+                },
+                children: [
+                  _buildOverviewTab(context),
+                  _buildContentTab(context),
+                  _buildCommentsTab(context),
+                ],
               ),
-              SliverToBoxAdapter(
-                child: Center(
-                  child: Column(
-                    children: [
-                      buildMediaQuickActions(context, controller),
-                      const SizedBox(height: 12),
+            ),
+          ),
+        );
+
+        if (!isFullScreen || coverUrl.isEmpty) {
+          return scrollView;
+        }
+
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              child: useComputedBlur
+                  ? BakedBlurImage(
+                      url: blurSourceUrl,
+                      fallback: blurFallbackUrl,
+                      saturation: 1.0,
+                      blurAmount: blurAmount,
+                      brightness: brightness,
+                      color: blurColor,
+                      fit: BoxFit.cover,
+                    )
+                  : ColorFiltered(
+                      colorFilter: ColorFilter.matrix([
+                        brightness, 0, 0, 0, 0,
+                        0, brightness, 0, 0, 0,
+                        0, 0, brightness, 0, 0,
+                        0, 0, 0, 1, 0,
+                      ]),
+                      child: ImageFiltered(
+                        imageFilter: ImageFilter.blur(
+                            sigmaX: blurAmount, sigmaY: blurAmount),
+                        child: AnymeXImage(
+                          imageUrl: blurSourceUrl,
+                          errorImage: blurFallbackUrl,
+                          radius: 0,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                          color: blurColor,
+                        ),
+                      ),
+                    ),
+            ),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      colors.surface.withValues(alpha: 0.40),
+                      colors.surface.withValues(alpha: 0.65),
+                      colors.surface.withValues(alpha: 0.90),
                     ],
+                    stops: const [0.0, 0.45, 1.0],
                   ),
                 ),
               ),
-            ],
-            body: PageView(
-              controller: pageController,
-              physics: const BouncingScrollPhysics(),
-              onPageChanged: (index) {
-                if (!_isAnimatingPage) {
-                  controller.selectedPage.value = index;
-                }
-              },
-              children: [
-                _buildOverviewTab(context),
-                _buildContentTab(context),
-                _buildCommentsTab(context),
-              ],
             ),
-          ),
-        ),
-      ),
+            scrollView,
+          ],
+        );
+      }),
     );
   }
 

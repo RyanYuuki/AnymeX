@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/studio_details_page.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -9,6 +10,7 @@ import 'package:anymex/widgets/anime/visuals/visuals_popup.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/common/baked_blur_image.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -39,7 +41,6 @@ class MediaHeader extends StatelessWidget {
     final isDesktop = MediaQuery.sizeOf(context).width > 700;
     final colors = context.colors;
     final headerHeight = isDesktop ? 440.0 : 360.0;
-    final coverUrl = data?.cover ?? posterUrl;
     final topPad = MediaQuery.paddingOf(context).top;
 
     final posterWidth = isDesktop ? 158.0 : 120.0;
@@ -55,42 +56,84 @@ class MediaHeader extends StatelessWidget {
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          // just so i remember this my cover
           Positioned.fill(
             child: Obx(() {
-              final liquidMode = settingsController.liquidMode;
-              return RepaintBoundary(
-                child: ImageFiltered(
-                  imageFilter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
-                  child: AnymeXImage(
-                    imageUrl: coverUrl,
-                    errorImage: data?.poster,
-                    radius: 0,
-                    height: headerHeight,
-                    width: double.infinity,
-                    color: liquidMode ? colors.primary.opaque(0.4) : null,
-                    fit: BoxFit.cover,
+              final isFullScreen = settingsController.fullScreenBlur;
+              if (isFullScreen) {
+                return const SizedBox.shrink();
+              }
+              final usePoster = UISettingsKeys.usePosterForBlur.get<bool>(false);
+              final blurSourceUrl = usePoster
+                  ? posterUrl
+                  : (data?.cover?.isNotEmpty == true ? data!.cover! : posterUrl);
+              final blurFallbackUrl = usePoster
+                  ? (data?.cover?.isNotEmpty == true ? data!.cover! : posterUrl)
+                  : posterUrl;
+              final tintBlur = UISettingsKeys.tintBlur.get<bool>(true);
+              final blurColor = tintBlur ? colors.primary.opaque(0.4) : null;
+              final useComputedBlur = UISettingsKeys.useComputedBlur.get<bool>(false);
+              final blurAmount = UISettingsKeys.detailsBlurAmount.get<double>(20.0);
+              final brightness = UISettingsKeys.detailsBackdropBrightness.get<double>(1.0);
+
+              Widget content = useComputedBlur
+                  ? BakedBlurImage(
+                      url: blurSourceUrl,
+                      fallback: blurFallbackUrl,
+                      saturation: 1.0,
+                      blurAmount: blurAmount,
+                      brightness: brightness,
+                      color: blurColor,
+                      fit: BoxFit.cover,
+                      height: headerHeight,
+                      width: double.infinity,
+                      fadeBottom: true,
+                    )
+                  : ColorFiltered(
+                      colorFilter: ColorFilter.matrix([
+                        brightness, 0, 0, 0, 0,
+                        0, brightness, 0, 0, 0,
+                        0, 0, brightness, 0, 0,
+                        0, 0, 0, 1, 0,
+                      ]),
+                      child: ImageFiltered(
+                        imageFilter: ImageFilter.blur(
+                            sigmaX: blurAmount, sigmaY: blurAmount),
+                        child: AnymeXImage(
+                          imageUrl: blurSourceUrl,
+                          errorImage: blurFallbackUrl,
+                          radius: 0,
+                          height: headerHeight,
+                          width: double.infinity,
+                          color: blurColor,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    );
+
+              return RepaintBoundary(child: content);
+            }),
+          ),
+          Positioned.fill(
+            child: Obx(() {
+              final isFullScreen = settingsController.fullScreenBlur;
+              if (isFullScreen) {
+                return const SizedBox.shrink();
+              }
+              return DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      colors.surface.withValues(alpha: 0.60),
+                      colors.surface.withValues(alpha: 0.25),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.50, 1.0],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
                 ),
               );
             }),
-          ),
-          // this my gradient
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    colors.surface.withValues(alpha: 0.60),
-                    colors.surface.withValues(alpha: 0.25),
-                    Colors.transparent,
-                  ],
-                  stops: const [0.0, 0.50, 1.0],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
