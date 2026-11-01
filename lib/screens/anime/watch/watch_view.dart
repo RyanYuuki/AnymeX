@@ -25,6 +25,9 @@ import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
 import 'package:anymex/widgets/watchium/watchium_party_popup.dart';
 import 'package:anymex/controllers/services/torrent/torrent_service.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/utils/color_extractor.dart';
+import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -88,6 +91,31 @@ class _WatchScreenState extends State<WatchScreen> {
         widget.episodeTracks,
         shouldTrack: widget.shouldTrack));
     _initWatchiumSync();
+    final settings = Get.find<Settings>();
+    if (settings.usePosterColor &&
+        widget.anilistData.color.isEmpty &&
+        widget.anilistData.poster.isNotEmpty &&
+        ImageColorExtractor.getCachedColor(widget.anilistData.poster) == null) {
+      ImageColorExtractor.extractColor(widget.anilistData.poster).then((c) {
+        if (c != null && mounted) {
+          setState(() {});
+        }
+      });
+    }
+  }
+
+  Color? _resolvePosterColor() {
+    final settings = Get.find<Settings>();
+    if (!settings.usePosterColor) return null;
+    final media = widget.anilistData;
+    if (media.color.isNotEmpty) {
+      final parsed = AnymeXScaffold.parseColor(media.color);
+      if (parsed != null) return parsed;
+    }
+    if (media.poster.isNotEmpty) {
+      return ImageColorExtractor.getCachedColor(media.poster);
+    }
+    return null;
   }
 
   void _initWatchiumSync() {
@@ -138,6 +166,14 @@ class _WatchScreenState extends State<WatchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final seedColor = _resolvePosterColor();
+    final posterScheme = seedColor != null
+        ? ColorScheme.fromSeed(
+            brightness: Theme.of(context).brightness,
+            seedColor: seedColor,
+          )
+        : null;
+
     return PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, _) async {
@@ -149,6 +185,7 @@ class _WatchScreenState extends State<WatchScreen> {
         },
         child: Theme(
           data: Theme.of(context).copyWith(
+            colorScheme: posterScheme ?? Theme.of(context).colorScheme,
             focusColor: Colors.transparent,
             highlightColor: Colors.transparent,
           ),

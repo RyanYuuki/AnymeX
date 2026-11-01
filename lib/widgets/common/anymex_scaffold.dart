@@ -124,6 +124,8 @@ class AnymeXScaffold extends StatelessWidget {
     });
   }
 
+  static Color? parseColor(String hex) => _parseColor(hex);
+
   static Color? _parseColor(String hex) {
     try {
       final clean = hex.replaceAll('#', '').trim();
@@ -132,6 +134,10 @@ class AnymeXScaffold extends StatelessWidget {
       } else if (clean.length == 8) {
         return Color(int.parse('0x$clean'));
       }
+      final directInt = int.tryParse(clean);
+      if (directInt != null) {
+        return Color(directInt);
+      }
     } catch (_) {}
     return null;
   }
@@ -139,7 +145,6 @@ class AnymeXScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
-    final theme = _getTheme(context, settings);
     final isDesktop = Platform.isWindows;
     final isOled = Provider.of<ThemeProvider>(context).isOled;
 
@@ -191,20 +196,29 @@ class AnymeXScaffold extends StatelessWidget {
           )
         : scaffold;
 
-    if (disabled || (isOled && isDesktop)) {
-      return Container(
-        color: isOled
-            ? Colors.black
-            : isTabScreen
-                ? Colors.transparent
-                : theme.surface,
-        child: ch,
-      );
-    }
-
     return Obx(() {
       settings.liquidBackgroundPath;
       settings.retainOriginalColor;
+      settings.usePosterColor;
+      final theme = _getTheme(context, settings);
+      final themedCh = (color.isNotEmpty && settings.usePosterColor)
+          ? Theme(
+              data: Theme.of(context).copyWith(colorScheme: theme),
+              child: ch,
+            )
+          : ch;
+
+      if (disabled || (isOled && isDesktop)) {
+        return Container(
+          color: isOled
+              ? Colors.black
+              : isTabScreen
+                  ? Colors.transparent
+                  : theme.surface,
+          child: themedCh,
+        );
+      }
+
       final liquidMode = settings.liquidMode;
 
       Widget content;
@@ -213,7 +227,7 @@ class AnymeXScaffold extends StatelessWidget {
           context: context,
           theme: theme,
           isOled: isOled,
-          child: ch,
+          child: themedCh,
         );
       } else {
         content = Stack(
@@ -231,7 +245,7 @@ class AnymeXScaffold extends StatelessWidget {
                   end: end,
                 ),
               ),
-            ch,
+            themedCh,
           ],
         );
       }
