@@ -606,6 +606,8 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     _autoScrollResumeTimer?.cancel();
     _stopAutoScroll();
     _stopStatsTimer();
+    _positionDebounceTimer?.cancel();
+    _mouseResetTimer?.cancel();
     super.onClose();
 }
 

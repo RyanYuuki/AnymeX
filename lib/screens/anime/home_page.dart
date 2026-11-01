@@ -153,7 +153,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
               };
               return CustomScrollView(
                 controller: _extensionsScrollController,
-                cacheExtent: 600,
+                cacheExtent: 200.0,
                 slivers: [
                   SliverToBoxAdapter(
                     child: SizedBox(height: statusBarHeight + appBarHeight + 10),
@@ -268,7 +268,7 @@ class _AnimeHomePageState extends State<AnimeHomePage> {
     final widgets = widgetsBuilder();
     return CustomScrollView(
       controller: scrollController,
-      cacheExtent: 600,
+      cacheExtent: 200.0,
       slivers: [
         SliverToBoxAdapter(
           child: SizedBox(height: statusBarHeight + appBarHeight + 10),

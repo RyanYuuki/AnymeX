@@ -141,6 +141,7 @@ class AnymeXPills extends StatelessWidget {
                 item: items[i],
                 borderRadius: _borderFor(i),
                 selectedBorderRadius: _selectedBorderFor(i),
+                isExpanded: true,
               ),
             )
           else
@@ -148,6 +149,7 @@ class AnymeXPills extends StatelessWidget {
               item: items[i],
               borderRadius: _borderFor(i),
               selectedBorderRadius: _selectedBorderFor(i),
+              isExpanded: false,
             ),
         ],
       ],
@@ -168,11 +170,13 @@ class _PillCell extends StatelessWidget {
   final PillItem item;
   final BorderRadius borderRadius;
   final BorderRadius selectedBorderRadius;
+  final bool isExpanded;
 
   const _PillCell({
     required this.item,
     required this.borderRadius,
     required this.selectedBorderRadius,
+    this.isExpanded = false,
   });
 
   BorderRadius get _activeRadius =>
@@ -187,6 +191,7 @@ class _PillCell extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
+        alignment: isExpanded ? Alignment.center : null,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: item.isSelected

@@ -147,7 +147,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
         child: card,
       ),
     );
-    return RepaintBoundary(
+    return KeyedSubtree(
       key: ValueKey(tag),
       child: child,
     );

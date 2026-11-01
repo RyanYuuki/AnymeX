@@ -230,11 +230,9 @@ class _AnymeXImageState extends State<AnymeXImage> {
       }
     }
 
-    return RepaintBoundary(
-      child: ClipRRect(
-        borderRadius: widget.borderRadius ?? BorderRadius.circular(widget.radius),
-        child: imageContent,
-      ),
+    return ClipRRect(
+      borderRadius: widget.borderRadius ?? BorderRadius.circular(widget.radius),
+      child: imageContent,
     );
   }
 

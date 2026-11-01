@@ -526,8 +526,7 @@ class _ActivityCardState extends State<ActivityCard> {
         activity.type == 'ANIME_LIST' || activity.type == 'MANGA_LIST';
     final subtleText = context.theme.colorScheme.onSurface.withOpacity(0.7);
 
-    return RepaintBoundary(
-        child: InkWell(
+    return InkWell(
       onTap: widget.onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
@@ -881,7 +880,7 @@ class _ActivityCardState extends State<ActivityCard> {
           ],
         ),
       ),
-    ));
+    );
   }
 
   String _formatListStatus(AnilistActivity activity) {

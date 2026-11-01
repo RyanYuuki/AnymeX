@@ -79,8 +79,7 @@ class AnymeXDialog extends StatelessWidget {
 
     return PopScope(
       canPop: !forceAction,
-      child: RepaintBoundary(
-        child: Dialog(
+      child: Dialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
           insetAnimationDuration: Duration.zero,
@@ -127,8 +126,7 @@ class AnymeXDialog extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(radius),
-                    child: RepaintBoundary(
-                      child: BackdropFilter(
+                    child: BackdropFilter(
                         filter: ImageFilter.blur(
                           sigmaX: translucent ? 20 : 0,
                           sigmaY: translucent ? 20 : 0,
@@ -288,8 +286,6 @@ class AnymeXDialog extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      ),
-    );
+        );
   }
 }

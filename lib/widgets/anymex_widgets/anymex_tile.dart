@@ -1,7 +1,9 @@
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tabbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
+import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
 
@@ -449,6 +451,54 @@ class AnymeXTile extends StatelessWidget {
         enabled: enabled,
       );
 
+  static Widget pills<T>({
+    Key? key,
+    IconData? icon,
+    Widget? leading,
+    required String title,
+    String? subtitle,
+    required T value,
+    required List<T> options,
+    String Function(T)? optionLabelTransformer,
+    String Function(T)? optionDescriptionTransformer,
+    required ValueChanged<T>? onChanged,
+    Color? iconColor,
+    Color? iconBackgroundColor,
+    BorderRadius? borderRadius,
+    EdgeInsetsGeometry? padding,
+    bool enabled = true,
+    bool expand = true,
+    bool wrap = false,
+    PillStyle pillStyle = PillStyle.connective,
+  }) {
+    return Builder(
+      builder: (context) => AnymeXTile(
+        key: key,
+        icon: icon,
+        leading: leading,
+        title: title,
+        subtitle: subtitle,
+        iconColor: iconColor,
+        iconBackgroundColor: iconBackgroundColor,
+        borderRadius: borderRadius,
+        padding: padding,
+        enabled: enabled,
+        showChevron: false,
+        customContent: _buildPillsSelectorContent<T>(
+          context: context,
+          value: value,
+          options: options,
+          optionLabelTransformer: optionLabelTransformer,
+          optionDescriptionTransformer: optionDescriptionTransformer,
+          onChanged: enabled ? onChanged : null,
+          expand: expand,
+          wrap: wrap,
+          pillStyle: pillStyle,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -543,24 +593,27 @@ class AnymeXTile extends StatelessWidget {
       ),
     );
 
-    if ((onTap != null || onLongPress != null) && enabled) {
-      return Material(
-        color: Colors.transparent,
-        borderRadius: radius,
-        child: AnymexOnTap(
-          margin: 0,
-          scale: 0.98,
-          onTap: onTap,
-          onLongPress: onLongPress,
-          child: contentWidget,
-        ),
-      );
-    }
+    final tileWidget = ((onTap != null || onLongPress != null) && enabled)
+        ? Material(
+            color: Colors.transparent,
+            borderRadius: radius,
+            child: AnymexOnTap(
+              margin: 0,
+              scale: 0.98,
+              onTap: onTap,
+              onLongPress: onLongPress,
+              child: contentWidget,
+            ),
+          )
+        : Material(
+            color: Colors.transparent,
+            borderRadius: radius,
+            child: contentWidget,
+          );
 
-    return Material(
-      color: Colors.transparent,
-      borderRadius: radius,
-      child: contentWidget,
+    return HighlightDecorator(
+      title: title,
+      child: tileWidget,
     );
   }
 }
@@ -600,4 +653,58 @@ class _SegmentedContent<T> extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildPillsSelectorContent<T>({
+  required BuildContext context,
+  required T value,
+  required List<T> options,
+  String Function(T)? optionLabelTransformer,
+  String Function(T)? optionDescriptionTransformer,
+  ValueChanged<T>? onChanged,
+  bool expand = true,
+  bool wrap = false,
+  PillStyle pillStyle = PillStyle.connective,
+}) {
+  final colors = context.colors;
+  final currentDescription = optionDescriptionTransformer?.call(value);
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Padding(
+        padding: const EdgeInsets.only(top: 4, bottom: 2),
+        child: AnymeXPills(
+          style: pillStyle,
+          expandEqually: expand,
+          wrap: expand ? false : wrap,
+          scrollable: expand ? false : !wrap,
+          items: options.map((opt) {
+            final label = optionLabelTransformer != null
+                ? optionLabelTransformer(opt)
+                : opt.toString();
+            return PillItem(
+              label: label,
+              isSelected: opt == value,
+              onTap: () {
+                if (onChanged != null) {
+                  onChanged(opt);
+                }
+              },
+            );
+          }).toList(),
+        ),
+      ),
+      if (currentDescription != null && currentDescription.isNotEmpty) ...[
+        const SizedBox(height: 6),
+        AnymeXText(
+          currentDescription,
+          size: 11.5,
+          color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
+          maxLines: 4,
+        ),
+      ],
+    ],
+  );
 }
