@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/theme.dart';
@@ -364,19 +362,6 @@ class _SettingsThemeState extends State<SettingsTheme> {
           subtitle: "Customize your logo animation style",
           onTap: _showLogoAnimationDialog,
         ),
-        if (Platform.isAndroid) ...[
-          Obx(() {
-            final label = settings.getPreferredRefreshRateLabel();
-            return AnymeXTile(
-              icon: HugeIcons.strokeRoundedRefresh,
-              title: "Refresh Rate",
-              subtitle: "Current mode: $label",
-              onTap: () {
-                showRefreshRateDialog(context);
-              },
-            );
-          }),
-        ],
       ],
     );
   }
@@ -402,88 +387,6 @@ class _SettingsThemeState extends State<SettingsTheme> {
               handlePaletteChange(index);
             },
           );
-        },
-      ),
-    ).show(context);
-  }
-
-  void showRefreshRateDialog(BuildContext context) {
-    AnymeXDialog(
-      title: 'Select Refresh Rate',
-      showCancelButton: false,
-      confirmText: 'Close',
-      onConfirm: () {},
-      contentWidget: FutureBuilder<List<DisplayMode>>(
-        future: FlutterDisplayMode.supported,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: CircularProgressIndicator(),
-              ),
-            );
-          }
-          if (snapshot.hasError) {
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: AnymeXText('Error loading refresh rates: ${snapshot.error}'),
-            );
-          }
-
-          final modes = (snapshot.data ?? [])
-              .where((m) =>
-                  m != DisplayMode.auto &&
-                  m.id != 0 &&
-                  m.width != 0 &&
-                  m.height != 0)
-              .toList();
-          final List<DisplayMode> options = [
-            DisplayMode.auto,
-            ...modes,
-          ];
-
-          return Obx(() {
-            final preferredMode =
-                settings.preferredDisplayMode.value ?? DisplayMode.auto;
-            final activeMode = settings.activeDisplayMode.value;
-
-            final matchedSelected = options.firstWhere(
-              (m) =>
-                  m.id == preferredMode.id &&
-                  m.width == preferredMode.width &&
-                  m.height == preferredMode.height &&
-                  m.refreshRate == preferredMode.refreshRate,
-              orElse: () => DisplayMode.auto,
-            );
-
-            return AnymeXTileBuilder<DisplayMode>(
-              items: options,
-              selectedItem: matchedSelected,
-              getTitle: (mode) {
-                if (mode == DisplayMode.auto) return 'Auto';
-                return '${mode.width}x${mode.height}';
-              },
-              getSubtitle: (mode) {
-                final isActive = activeMode != null &&
-                    activeMode.id == mode.id &&
-                    activeMode.width == mode.width &&
-                    activeMode.height == mode.height &&
-                    activeMode.refreshRate == mode.refreshRate;
-                if (mode == DisplayMode.auto) {
-                  return isActive
-                      ? 'System Managed [Active]'
-                      : 'System Managed';
-                }
-                return isActive
-                    ? '${mode.refreshRate.toInt()}Hz [Active]'
-                    : '${mode.refreshRate.toInt()}Hz';
-              },
-              onItemPressed: (mode) async {
-                await settings.savePreferredDisplayMode(mode);
-              },
-            );
-          });
         },
       ),
     ).show(context);

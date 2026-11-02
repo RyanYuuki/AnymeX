@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:anymex/screens/settings/registry/settings_model.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_accounts.dart';
@@ -11,6 +12,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_downloads.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extensions.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_logs.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_network.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_performance.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_reader.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_storage_manager.dart';
@@ -272,6 +274,40 @@ abstract final class SettingsRegistry {
         ),
       ],
     ),
+    if (!Platform.isLinux && !Platform.isMacOS && !Platform.isWindows)
+      SettingsCategory(
+        id: 'performance',
+        groupTitle: 'Preferences & System',
+        title: 'Performance',
+        description: 'Display refresh rate, resolution and frame tuning',
+        icon: HugeIcons.strokeRoundedDashboardSpeed01,
+        destination: () => const SettingsPerformance(),
+        items: [
+          SettingItem(
+            title: 'Refresh Rate',
+            category: 'Performance',
+            section: 'Display',
+            icon: HugeIcons.strokeRoundedDashboardSpeed01,
+            searchTags: [
+              'fps',
+              'hz',
+              '60hz',
+              '90hz',
+              '120hz',
+              '144hz',
+              'refresh rate',
+              'smoothness'
+            ],
+          ),
+          SettingItem(
+            title: 'Resolution',
+            category: 'Performance',
+            section: 'Display',
+            icon: Icons.aspect_ratio_rounded,
+            searchTags: ['resolution', 'screen', 'display mode', 'pills'],
+          ),
+        ],
+      ),
     SettingsCategory(
       id: 'ui',
       groupTitle: 'Appearance & Interface',

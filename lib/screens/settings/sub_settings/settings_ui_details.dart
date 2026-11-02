@@ -5,12 +5,14 @@ import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anime/media_header.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/baked_blur_image.dart';
+import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -30,9 +32,14 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
       UISettingsKeys.detailsBackdropBrightness.get<double>(1.0).obs;
 
   Media get _sampleMedia {
-    return trendingAnimes.firstWhereOrNull(
+    final base = trendingAnimes.firstWhereOrNull(
             (m) => m.cover != null && m.cover!.isNotEmpty) ??
-        trendingAnimes.first;
+        popularAnimes.first;
+    base.studios = (base.studios != null && base.studios!.isNotEmpty)
+        ? base.studios
+        : ['Science SARU'];
+    base.status = (base.status.isNotEmpty) ? base.status : 'RELEASING';
+    return base;
   }
 
   @override
@@ -55,34 +62,80 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                 title: 'Backdrop & Scope',
                 children: [
                   Obx(
-                    () => AnymeXTile.pills<bool>(
+                    () => AnymeXTile.pills<int>(
                       icon: Icons.blur_on_rounded,
-                      title: 'Poster Blur Mode',
-                      value: settings.useComputedBlur,
-                      options: const [false, true],
+                      title: 'Blur Style',
+                      value: settings.detailsBlurStyle,
+                      options: const [0, 1],
                       optionLabelTransformer: (val) =>
-                          val ? 'Baked Blur' : 'Live Blur',
-                      optionDescriptionTransformer: (val) => val
-                          ? 'Smooth and lag-free with zero stutter while scrolling.'
-                          : 'Live real-time blur, but may lag on some phones.',
+                          val == 1 ? 'Fluid Mesh' : 'Gaussian',
+                      optionDescriptionTransformer: (val) => val == 1
+                          ? 'BitChord-style fluid ambient mesh with organic color blooming.'
+                          : 'Standard smooth frosted blur.',
                       onChanged: (val) {
-                        settings.useComputedBlur = val;
+                        settings.detailsBlurStyle = val;
                       },
                     ),
                   ),
-                  Obx(
-                    () => AnymeXTile.pills<bool>(
-                      icon: Icons.fullscreen_rounded,
-                      title: 'Poster Blur Scope',
-                      value: settings.fullScreenBlur,
+                  Obx(() {
+                    final isMesh = settings.detailsBlurStyle == 1;
+                    return AnymeXTile.pills<bool>(
+                      icon: Icons.blur_linear_rounded,
+                      title: 'Blur Mechanism',
+                      value: isMesh ? true : settings.useComputedBlur,
                       options: const [false, true],
                       optionLabelTransformer: (val) =>
-                          val ? 'Full Screen' : 'Header Only',
-                      optionDescriptionTransformer: (val) => val
-                          ? 'Blurs the entire page background behind details.'
-                          : 'Blurs only the top banner and fades smoothly into the page.',
+                          val ? 'Baked Blur' : 'Live Blur',
+                      optionDescriptionTransformer: (val) {
+                        if (isMesh) {
+                          return val
+                              ? 'Fluid Mesh is computed off-thread for smooth performance.'
+                              : 'Live blur is unavailable for Fluid Mesh.';
+                        }
+                        return val
+                            ? 'Smooth off-thread Gaussian blur with zero stutter.'
+                            : 'Live real-time blur, but may lag on some phones.';
+                      },
                       onChanged: (val) {
-                        settings.fullScreenBlur = val;
+                        if (isMesh) {
+                          if (!val) {
+                            snackBar(
+                                'Live blur is unavailable when using Fluid Mesh.');
+                          }
+                          return;
+                        }
+                        settings.useComputedBlur = val;
+                      },
+                    );
+                  }),
+                  Obx(
+                    () => AnymeXTile.pills<int>(
+                      icon: Icons.fullscreen_rounded,
+                      title: 'Poster Blur Scope',
+                      value: settings.detailsBlurScope,
+                      options: const [0, 1, 2],
+                      optionLabelTransformer: (val) {
+                        switch (val) {
+                          case 1:
+                            return 'Full Screen';
+                          case 2:
+                            return 'Gradient';
+                          default:
+                            return 'Header Only';
+                        }
+                      },
+                      optionDescriptionTransformer: (val) {
+                        switch (val) {
+                          case 1:
+                            return 'Blurs the entire page background behind details.';
+                          case 2:
+                            return 'Blurs top banner and seamlessly dissolves into the artwork color below.';
+                          default:
+                            return 'Blurs only the top banner and fades smoothly into the page.';
+                        }
+                      },
+                      onChanged: (val) {
+                        settings.detailsBlurScope = val;
                       },
                     ),
                   ),
@@ -137,6 +190,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       onChanged: (val) {
                         blurAmount.value = val;
                         UISettingsKeys.detailsBlurAmount.set(val);
+                        settings.uiSettings.refresh();
                       },
                     ),
                   ),
@@ -153,6 +207,7 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       onChanged: (val) {
                         backdropBrightness.value = val;
                         UISettingsKeys.detailsBackdropBrightness.set(val);
+                        settings.uiSettings.refresh();
                       },
                     ),
                   ),
@@ -185,26 +240,17 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
     );
   }
 
-  String _cleanDescription(String? raw) {
-    if (raw == null || raw.isEmpty) {
-      return 'This is a story about Momo, a high school girl from a family of spirit mediums, and her classmate Okarun, an occult fanatic.';
-    }
-    return raw
-        .replaceAll(RegExp(r'<[^>]*>'), ' ')
-        .replaceAll(RegExp(r'\s+'), ' ')
-        .trim();
-  }
-
   Widget _buildLivePreviewCard(BuildContext context) {
     final colors = context.colors;
     final media = _sampleMedia;
     final posterUrl = media.poster;
     final coverUrl =
         (media.cover?.isNotEmpty == true ? media.cover! : posterUrl);
-    final synopsis = _cleanDescription(media.description);
+    final previewHeight =
+        MediaQuery.sizeOf(context).width > 700 ? 440.0 : 360.0;
 
     return Container(
-      height: 365,
+      height: previewHeight,
       width: double.infinity,
       decoration: BoxDecoration(
         color: colors.surface,
@@ -219,8 +265,9 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
       ),
       clipBehavior: Clip.antiAlias,
       child: Obx(() {
-        final isFullScreen = settings.fullScreenBlur;
-        final useComputedBlur = settings.useComputedBlur;
+        final blurScope = settings.detailsBlurScope;
+        final isMesh = settings.detailsBlurStyle == 1;
+        final isBaked = isMesh || settings.useComputedBlur;
         final usePoster = settings.usePosterForBlur;
         final tintBlur = settings.tintBlur;
         final blurColor = tintBlur ? colors.primary.opaque(0.4) : null;
@@ -229,44 +276,81 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
 
         final blurUrl = usePoster ? posterUrl : coverUrl;
         final blurFallback = usePoster ? coverUrl : posterUrl;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final sampleColor =
+            AnymeXScaffold.parseColor(media.color) ?? colors.primary;
+        final baseArtworkColor = tintBlur ? colors.primary : sampleColor;
+        final gradientBgColor = Color.alphaBlend(
+          baseArtworkColor.withValues(alpha: isDark ? 0.22 : 0.12),
+          colors.surface,
+        );
+
+        Widget buildBlurredImage({double? height, bool fadeBottom = false}) {
+          return isBaked
+              ? BakedBlurImage(
+                  url: blurUrl,
+                  fallback: blurFallback,
+                  saturation: 1.0,
+                  blurAmount: currentBlur,
+                  brightness: currentBrightness,
+                  color: blurColor,
+                  fit: BoxFit.cover,
+                  height: height,
+                  width: double.infinity,
+                  fadeBottom: fadeBottom,
+                  isMesh: isMesh,
+                )
+              : ColorFiltered(
+                  colorFilter: ColorFilter.matrix([
+                    currentBrightness, 0, 0, 0, 0,
+                    0, currentBrightness, 0, 0, 0,
+                    0, 0, currentBrightness, 0, 0,
+                    0, 0, 0, 1, 0,
+                  ]),
+                  child: ImageFiltered(
+                    imageFilter: ImageFilter.blur(
+                        sigmaX: currentBlur, sigmaY: currentBlur),
+                    child: AnymeXImage(
+                      imageUrl: blurUrl,
+                      errorImage: blurFallback,
+                      radius: 0,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: height ?? double.infinity,
+                      color: blurColor,
+                    ),
+                  ),
+                );
+        }
+
+        final headerWidget = MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            padding: EdgeInsets.zero,
+            viewPadding: EdgeInsets.zero,
+          ),
+          child: IgnorePointer(
+            child: MediaHeader(
+              tag: 'settings_preview_header',
+              data: media,
+              posterUrl: posterUrl,
+              onShare: () {},
+            ),
+          ),
+        );
+
+        if (blurScope == 0) {
+          return headerWidget;
+        }
+
+        final washHeight = previewHeight * 0.72;
 
         return Stack(
           fit: StackFit.expand,
           children: [
-            if (isFullScreen) ...[
+            if (blurScope == 1) ...[
               Positioned.fill(
                 child: RepaintBoundary(
-                  child: useComputedBlur
-                      ? BakedBlurImage(
-                          url: blurUrl,
-                          fallback: blurFallback,
-                          saturation: 1.0,
-                          blurAmount: currentBlur,
-                          brightness: currentBrightness,
-                          color: blurColor,
-                          fit: BoxFit.cover,
-                        )
-                      : ColorFiltered(
-                          colorFilter: ColorFilter.matrix([
-                            currentBrightness, 0, 0, 0, 0,
-                            0, currentBrightness, 0, 0, 0,
-                            0, 0, currentBrightness, 0, 0,
-                            0, 0, 0, 1, 0,
-                          ]),
-                          child: ImageFiltered(
-                            imageFilter: ImageFilter.blur(
-                                sigmaX: currentBlur, sigmaY: currentBlur),
-                            child: AnymeXImage(
-                              imageUrl: blurUrl,
-                              errorImage: blurFallback,
-                              radius: 0,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                              color: blurColor,
-                            ),
-                          ),
-                        ),
+                  child: buildBlurredImage(),
                 ),
               ),
               Positioned.fill(
@@ -285,352 +369,63 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                   ),
                 ),
               ),
-            ] else ...[
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 235,
-                child: RepaintBoundary(
-                  child: useComputedBlur
-                      ? BakedBlurImage(
-                          url: blurUrl,
-                          fallback: blurFallback,
-                          saturation: 1.0,
-                          blurAmount: currentBlur,
-                          brightness: currentBrightness,
-                          color: blurColor,
-                          fit: BoxFit.cover,
-                          height: 235,
-                          width: double.infinity,
-                          fadeBottom: true,
-                        )
-                      : ColorFiltered(
-                          colorFilter: ColorFilter.matrix([
-                            currentBrightness, 0, 0, 0, 0,
-                            0, currentBrightness, 0, 0, 0,
-                            0, 0, currentBrightness, 0, 0,
-                            0, 0, 0, 1, 0,
-                          ]),
-                          child: ImageFiltered(
-                            imageFilter: ImageFilter.blur(
-                                sigmaX: currentBlur, sigmaY: currentBlur),
-                            child: AnymeXImage(
-                              imageUrl: blurUrl,
-                              errorImage: blurFallback,
-                              radius: 0,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: 235,
-                              color: blurColor,
-                            ),
-                          ),
-                        ),
+            ] else if (blurScope == 2) ...[
+              Positioned.fill(
+                child: Container(
+                  color: gradientBgColor,
                 ),
               ),
               Positioned(
                 top: 0,
                 left: 0,
                 right: 0,
-                height: 235,
+                height: washHeight,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                          color: Colors.transparent, width: 2.0),
+                    ),
+                  ),
+                  child: RepaintBoundary(
+                    child: buildBlurredImage(height: washHeight),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: washHeight + 1.0,
                 child: DecoratedBox(
                   decoration: BoxDecoration(
+                    border: const Border(
+                      bottom: BorderSide(
+                          color: Colors.transparent, width: 2.0),
+                    ),
                     gradient: LinearGradient(
-                      colors: [
-                        colors.surface.withValues(alpha: 0.60),
-                        colors.surface.withValues(alpha: 0.25),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.50, 1.0],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
+                      stops: const [0.0, 0.30, 0.60, 0.85, 1.0],
+                      colors: [
+                        gradientBgColor.withValues(
+                            alpha: isDark ? 0.30 : 0.10),
+                        gradientBgColor.withValues(
+                            alpha: isDark ? 0.55 : 0.25),
+                        gradientBgColor.withValues(
+                            alpha: isDark ? 0.85 : 0.65),
+                        gradientBgColor,
+                        gradientBgColor,
+                      ],
                     ),
                   ),
                 ),
               ),
             ],
-            Positioned(
-              top: 12,
-              left: 16,
-              right: 16,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildPreviewHomeButton(context),
-                  _buildPreviewRightCapsule(context),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 54,
-              left: 16,
-              right: 16,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    width: 72,
-                    height: 104,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.40),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    clipBehavior: Clip.antiAlias,
-                    child: AnymeXImage(
-                      imageUrl: posterUrl,
-                      radius: 12,
-                      width: 72,
-                      height: 104,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnymeXText(
-                          media.displayTitle,
-                          variant: TextVariant.bold,
-                          size: 14,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildPreviewBadge(
-                              context,
-                              'Mappa',
-                              icon: Icons.movie_creation_outlined,
-                            ),
-                            const SizedBox(width: 4),
-                            _buildPreviewBadge(
-                              context,
-                              'Releasing',
-                              icon: Icons.info_outline_rounded,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 170,
-              left: 16,
-              right: 16,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _buildQuickActionItem(
-                      context,
-                      icon: Icons.add_rounded,
-                      label: 'ADD TO LIST',
-                      isPrimary: true,
-                      radius: const BorderRadius.horizontal(
-                        left: Radius.circular(14),
-                        right: Radius.circular(5),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: _buildQuickActionItem(
-                      context,
-                      icon: Icons.bookmark_add_outlined,
-                      label: 'CUSTOM LIST',
-                      isPrimary: false,
-                      radius: const BorderRadius.horizontal(
-                        left: Radius.circular(5),
-                        right: Radius.circular(14),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 220,
-              left: 16,
-              right: 16,
-              bottom: 14,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AnymeXText(
-                    'Synopsis',
-                    variant: TextVariant.bold,
-                    size: 12,
-                    color: colors.onSurface.opaque(0.85, iReallyMeanIt: true),
-                  ),
-                  const SizedBox(height: 4),
-                  Expanded(
-                    child: AnymeXText(
-                      synopsis,
-                      size: 10.5,
-                      maxLines: 4,
-                      overflow: TextOverflow.ellipsis,
-                      color: colors.onSurface.opaque(0.60, iReallyMeanIt: true),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            headerWidget,
           ],
         );
       }),
-    );
-  }
-
-  Widget _buildPreviewHomeButton(BuildContext context) {
-    final colors = context.colors;
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.opaque(0.65, iReallyMeanIt: true),
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: colors.onSurface.opaque(0.12, iReallyMeanIt: true),
-        ),
-      ),
-      child: Icon(
-        Icons.home_rounded,
-        size: 16,
-        color: colors.onSurface,
-      ),
-    );
-  }
-
-  Widget _buildPreviewRightCapsule(BuildContext context) {
-    final colors = context.colors;
-    return Container(
-      height: 32,
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.opaque(0.65, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.onSurface.opaque(0.12, iReallyMeanIt: true),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Icon(
-              Icons.share_rounded,
-              size: 14,
-              color: colors.onSurface,
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 16,
-            color: colors.onSurface.opaque(0.15, iReallyMeanIt: true),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Icon(
-              Icons.close_rounded,
-              size: 14,
-              color: colors.onSurface,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickActionItem(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required bool isPrimary,
-    required BorderRadius radius,
-  }) {
-    final colors = context.colors;
-    final bgClr = isPrimary
-        ? colors.primary.opaque(0.14, iReallyMeanIt: true)
-        : colors.surfaceContainerHighest.opaque(0.45, iReallyMeanIt: true);
-    final borderClr = isPrimary
-        ? colors.primary.opaque(0.28, iReallyMeanIt: true)
-        : colors.onSurface.opaque(0.08, iReallyMeanIt: true);
-    final textClr = isPrimary ? colors.primary : colors.onSurface;
-
-    return Container(
-      height: 36,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: bgClr,
-        borderRadius: radius,
-        border: Border.all(color: borderClr, width: 1.0),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 14, color: textClr),
-          const SizedBox(width: 6),
-          Flexible(
-            child: AnymeXText(
-              label,
-              size: 10.5,
-              variant: TextVariant.bold,
-              color: textClr,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPreviewBadge(
-    BuildContext context,
-    String label, {
-    IconData? icon,
-  }) {
-    final colors = context.colors;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.opaque(0.50, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: colors.onSurface.opaque(0.10, iReallyMeanIt: true),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(
-              icon,
-              size: 10,
-              color: colors.primary,
-            ),
-            const SizedBox(width: 3),
-          ],
-          AnymeXText(
-            label,
-            variant: TextVariant.semiBold,
-            size: 9.5,
-          ),
-        ],
-      ),
     );
   }
 }
