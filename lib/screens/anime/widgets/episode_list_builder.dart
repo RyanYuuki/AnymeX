@@ -29,6 +29,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';
+import 'package:anymex/widgets/animation/widget_animations.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:anymex/database/isar_models/offline_media.dart';
@@ -105,10 +106,14 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   Worker? _currentMediaWorker;
   VoidCallback? _offlineStorageListener;
   bool _isUpdatingChunk = false;
+  List<EpisodeSortSection> _cachedSortSections = const [];
+  List<Episode> _cachedEpisodesToShow = const [];
+  List<List<Episode>> _cachedChunkedEpisodes = const [];
 
   @override
   void initState() {
     super.initState();
+    print("Episode pinged");
     downloadController = Get.isRegistered<DownloadController>()
         ? Get.find<DownloadController>()
         : Get.put(DownloadController());
@@ -118,10 +123,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     if (extName.isNotEmpty && mediaTitle.isNotEmpty) {
       downloadController.ensureMediaMetaLoaded(extName, mediaTitle);
     }
-    _initSortGrouping();
     _initUserProgress();
     _initEpisodes();
-    _updateChunkIndex();
+    _recomputeAllEpisodeData();
 
     _authLoginWorker = ever(auth.isLoggedIn, (_) => _initUserProgress());
     _userProgressWorker = ever(userProgress, (_) => _initEpisodes());
@@ -138,7 +142,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         offlineWatchedEpisodes = savedData.watchedEpisodes ?? [];
         _initUserProgress();
         _initEpisodes();
-        _updateChunkIndex();
+        _recomputeAllEpisodeData();
         if (mounted) setState(() {});
       }
     };
@@ -160,9 +164,8 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final newLast = newLen > 0 ? widget.episodeList.last.number : null;
 
     if (oldLen != newLen || oldFirst != newFirst || oldLast != newLast) {
-      _initSortGrouping();
       _initEpisodes();
-      _updateChunkIndex();
+      _recomputeAllEpisodeData();
     }
   }
 
@@ -177,14 +180,26 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     super.dispose();
   }
 
+  void _recomputeAllEpisodeData({bool preserveChunk = true}) {
+    _cachedSortSections = buildEpisodeSortSections(widget.episodeList);
+    _initSortGrouping();
+    _cachedEpisodesToShow = _episodesForSelectedSortKey();
+    _cachedChunkedEpisodes = chunkEpisodes(
+      _cachedEpisodesToShow,
+      calculateChunkSize(_cachedEpisodesToShow),
+    );
+    if (!preserveChunk && selectedChunkIndex.value != 1) {
+      selectedChunkIndex.value = 1;
+    }
+    _updateChunkIndex();
+  }
+
   void _updateChunkIndex() {
     try {
       if (!mounted || _isUpdatingChunk) return;
       _isUpdatingChunk = true;
       try {
-        final episodesToChunk = _episodesForSelectedSortKey();
-        final chunkedEpisodes =
-            chunkEpisodes(episodesToChunk, calculateChunkSize(episodesToChunk));
+        final chunkedEpisodes = _cachedChunkedEpisodes;
 
         if (chunkedEpisodes.length > 1) {
           final progress =
@@ -304,8 +319,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       return true;
     }
 
-    final hasSortSections =
-        buildEpisodeSortSections(widget.episodeList).isNotEmpty;
+    final hasSortSections = _cachedSortSections.isNotEmpty;
     if (!hasSortSections) {
       final epNum = episode.number.toInt();
       if (epNum > 0 && epNum <= userProgress.value) return true;
@@ -337,7 +351,9 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final savedData =
         offlineStorage.getAnimeById(widget.anilistData?.id ?? '');
     final savedSortMap = savedData?.currentEpisode?.sortMap ?? {};
-    final sections = buildEpisodeSortSections(widget.episodeList);
+    final sections = _cachedSortSections.isNotEmpty
+        ? _cachedSortSections
+        : buildEpisodeSortSections(widget.episodeList);
     final nextSelection = <String, String>{};
 
     for (final section in sections) {
@@ -404,7 +420,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     if (values.isNotEmpty) return values;
 
     final fallbackSection =
-        (sections ?? buildEpisodeSortSections(widget.episodeList))
+        (sections ?? (_cachedSortSections.isNotEmpty ? _cachedSortSections : buildEpisodeSortSections(widget.episodeList)))
             .firstWhereOrNull((section) => section.key == key);
     return fallbackSection?.values ?? const [];
   }
@@ -460,10 +476,11 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       );
     }
 
-    final sortSections = buildEpisodeSortSections(widget.episodeList);
-
     return Obx(() {
-      _initSortGrouping();
+      if (_cachedChunkedEpisodes.isEmpty && widget.episodeList.isNotEmpty) {
+        _recomputeAllEpisodeData();
+      }
+      final sortSections = _cachedSortSections;
       final currentStyle = EpisodeStyleRegistry.activeStyle;
       final mediaTitle = widget.anilistData?.title ??
           (widget.episodeList.isNotEmpty ? widget.episodeList.first.title ?? '' : '');
@@ -472,9 +489,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           downloadController.getDownloadedEpisodes(extName, mediaTitle);
       final isDownloadedTab = selectedViewTab.value == 1;
 
-      final episodesToShow = _episodesForSelectedSortKey();
-      final chunkedEpisodes =
-          chunkEpisodes(episodesToShow, calculateChunkSize(episodesToShow));
+      final chunkedEpisodes = _cachedChunkedEpisodes;
       final safeChunkIndex = chunkedEpisodes.isEmpty
           ? 0
           : selectedChunkIndex.value.clamp(0, chunkedEpisodes.length - 1);
@@ -545,7 +560,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         onPressed: () => _confirmDeleteEpisode(
                             context, item, extName, mediaTitle),
                       ),
-                    );
+                    ).animatePop(index: index);
                   },
                 )
               else
@@ -582,7 +597,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                               context, item, extName, mediaTitle),
                         ),
                       ),
-                    );
+                    ).animatePop(index: index);
                   },
                 )
             else if (currentStyle.isGrid)
@@ -626,7 +641,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       extName,
                       mediaTitle,
                     ),
-                  );
+                  ).animatePop(index: index);
                 },
               )
             else
@@ -660,7 +675,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                         mediaTitle,
                       ),
                     ),
-                  );
+                  ).animatePop(index: index);
                 },
               ),
           ],
@@ -719,7 +734,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                             context, item, extName, mediaTitle),
                       ),
                     ),
-                  );
+                  ).animatePop(index: index);
                 },
               )
           else
@@ -756,7 +771,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       mediaTitle,
                     ),
                   ),
-                );
+                ).animatePop(index: index);
               },
             ),
         ],
@@ -896,8 +911,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                       return;
                     }
                     selectedSortValues[section.key] = sortValue;
-                    _initSortGrouping();
-                    selectedChunkIndex.value = 1;
+                    _recomputeAllEpisodeData(preserveChunk: false);
                   },
                 ),
               );
@@ -1261,9 +1275,12 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       snackBar('No active source selected');
       return;
     }
-    final episodesToShow = _episodesForSelectedSortKey();
-    final chunkedEpisodes =
-        chunkEpisodes(episodesToShow, calculateChunkSize(episodesToShow));
+    final episodesToShow = _cachedEpisodesToShow.isNotEmpty
+        ? _cachedEpisodesToShow
+        : _episodesForSelectedSortKey();
+    final chunkedEpisodes = _cachedChunkedEpisodes.isNotEmpty
+        ? _cachedChunkedEpisodes
+        : chunkEpisodes(episodesToShow, calculateChunkSize(episodesToShow));
     final safeChunkIndex = chunkedEpisodes.isEmpty
         ? 0
         : selectedChunkIndex.value.clamp(0, chunkedEpisodes.length - 1);

@@ -1,4 +1,5 @@
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/animation/widget_animations.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
@@ -168,7 +169,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: formattedChildren,
                   ),
-          ),
+          ).animateSection(),
         ],
       ),
     );

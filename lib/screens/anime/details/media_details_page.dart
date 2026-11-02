@@ -33,6 +33,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/anime/media_header.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/baked_blur_image.dart';
+import 'package:anymex/widgets/helper/keep_alive_wrapper.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
@@ -45,6 +46,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
+import 'package:anymex/widgets/animation/widget_animations.dart';
 
 class MediaDetailsPage extends StatefulWidget {
   final Media media;
@@ -194,8 +196,9 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
           resizeToAvoidBottomInset: false,
           bottomNavigationBar: buildBottomNavBar(themedContext),
           body: Obx(() {
-            final isFullScreen = settingsController.fullScreenBlur;
-            final useComputedBlur = settingsController.useComputedBlur;
+            final blurScope = settingsController.detailsBlurScope;
+            final isMesh = settingsController.detailsBlurStyle == 1;
+            final isBaked = isMesh || settingsController.useComputedBlur;
             final blurAmount =
                 UISettingsKeys.detailsBlurAmount.get<double>(20.0);
             final brightness =
@@ -206,10 +209,23 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                 (media.cover?.isNotEmpty == true ? media.cover! : posterUrl);
             final usePoster = settingsController.usePosterForBlur;
             final blurSourceUrl = usePoster ? posterUrl : coverUrl;
-            final blurFallbackUrl = usePoster ? coverUrl : posterUrl;
+            final initialPoster = widget.media.poster;
+            final blurFallbackUrl = initialPoster.isNotEmpty
+                ? initialPoster
+                : (usePoster ? coverUrl : posterUrl);
             final tintBlur = settingsController.tintBlur;
             final colors = themedContext.colors;
             final blurColor = tintBlur ? colors.primary.opaque(0.4) : null;
+            final isDark =
+                Theme.of(themedContext).brightness == Brightness.dark;
+            final baseArtworkColor = tintBlur
+                ? colors.primary
+                : (AnymeXScaffold.parseColor(_posterColor.value) ??
+                    colors.primary);
+            final gradientBgColor = Color.alphaBlend(
+              baseArtworkColor.withValues(alpha: isDark ? 0.20 : 0.12),
+              colors.surface,
+            );
 
             final scrollView = ScrollConfiguration(
               behavior: ScrollConfiguration.of(themedContext)
@@ -237,7 +253,9 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                       child: Center(
                         child: Column(
                           children: [
-                            buildMediaQuickActions(themedContext, controller),
+                            buildMediaQuickActions(themedContext, controller)
+                                .animateSpring(
+                                    delay: const Duration(milliseconds: 100)),
                             const SizedBox(height: 12),
                           ],
                         ),
@@ -253,54 +271,125 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                       }
                     },
                     children: [
-                      _buildOverviewTab(themedContext),
-                      _buildContentTab(themedContext),
-                      _buildCommentsTab(themedContext),
+                      KeepAliveWrapper(child: _buildOverviewTab(themedContext)),
+                      KeepAliveWrapper(child: _buildContentTab(themedContext)),
+                      KeepAliveWrapper(child: _buildCommentsTab(themedContext)),
                     ],
                   ),
                 ),
               ),
             );
 
-            if (!isFullScreen || coverUrl.isEmpty) {
+            Widget buildBlurredImage({double? height}) {
+              return isBaked
+                  ? BakedBlurImage(
+                      url: blurSourceUrl,
+                      fallback: blurFallbackUrl,
+                      saturation: 1.0,
+                      blurAmount: blurAmount,
+                      brightness: brightness,
+                      color: blurColor,
+                      fit: BoxFit.cover,
+                      height: height,
+                      width: double.infinity,
+                      isMesh: isMesh,
+                    )
+                  : ColorFiltered(
+                      colorFilter: ColorFilter.matrix([
+                        brightness, 0, 0, 0, 0,
+                        0, brightness, 0, 0, 0,
+                        0, 0, brightness, 0, 0,
+                        0, 0, 0, 1, 0,
+                      ]),
+                      child: ImageFiltered(
+                        imageFilter: ImageFilter.blur(
+                            sigmaX: blurAmount, sigmaY: blurAmount),
+                        child: AnymeXImage(
+                          imageUrl: blurSourceUrl,
+                          errorImage: blurFallbackUrl,
+                          radius: 0,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: height ?? double.infinity,
+                          color: blurColor,
+                        ),
+                      ),
+                    );
+            }
+
+            if (blurScope == 0 || coverUrl.isEmpty) {
               return scrollView;
+            }
+
+            if (blurScope == 2) {
+              final washHeight = (MediaQuery.sizeOf(themedContext).height * 0.48)
+                  .clamp(320.0, 520.0);
+              return Stack(
+                fit: StackFit.expand,
+                children: [
+                  Positioned.fill(
+                    child: Container(
+                      color: gradientBgColor,
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: washHeight,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                              color: Colors.transparent, width: 2.0),
+                        ),
+                      ),
+                      child: RepaintBoundary(
+                        child: buildBlurredImage(height: washHeight),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: washHeight + 1.0,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        border: const Border(
+                          bottom: BorderSide(
+                              color: Colors.transparent, width: 2.0),
+                        ),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.0, 0.30, 0.60, 0.85, 1.0],
+                          colors: [
+                            gradientBgColor.withValues(
+                                alpha: isDark ? 0.30 : 0.10),
+                            gradientBgColor.withValues(
+                                alpha: isDark ? 0.55 : 0.25),
+                            gradientBgColor.withValues(
+                                alpha: isDark ? 0.85 : 0.65),
+                            gradientBgColor,
+                            gradientBgColor,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  scrollView,
+                ],
+              );
             }
 
             return Stack(
               fit: StackFit.expand,
               children: [
                 Positioned.fill(
-                  child: useComputedBlur
-                      ? BakedBlurImage(
-                          url: blurSourceUrl,
-                          fallback: blurFallbackUrl,
-                          saturation: 1.0,
-                          blurAmount: blurAmount,
-                          brightness: brightness,
-                          color: blurColor,
-                          fit: BoxFit.cover,
-                        )
-                      : ColorFiltered(
-                          colorFilter: ColorFilter.matrix([
-                            brightness, 0, 0, 0, 0,
-                            0, brightness, 0, 0, 0,
-                            0, 0, brightness, 0, 0,
-                            0, 0, 0, 1, 0,
-                          ]),
-                          child: ImageFiltered(
-                            imageFilter: ImageFilter.blur(
-                                sigmaX: blurAmount, sigmaY: blurAmount),
-                            child: AnymeXImage(
-                              imageUrl: blurSourceUrl,
-                              errorImage: blurFallbackUrl,
-                              radius: 0,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                              height: double.infinity,
-                              color: blurColor,
-                            ),
-                          ),
-                        ),
+                  child: RepaintBoundary(
+                    child: buildBlurredImage(),
+                  ),
                 ),
                 Positioned.fill(
                   child: DecoratedBox(
@@ -504,25 +593,35 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     if (controller.isAnilistLoading.value) {
                       return _buildStatsShimmer(context).bottomSpacing(16);
                     }
-                    return buildMediaStatsSection(context, controller)
-                        .bottomSpacing(16);
+                    return KeyedSubtree(
+                      key: ValueKey('media_stats_${controller.selectedPage.value}'),
+                      child: buildMediaStatsSection(context, controller)
+                          .bottomSpacing(16)
+                          .animateSection(onScroll: false),
+                    );
                   }),
                   Obx(() {
                     if (controller.isAnilistLoading.value) {
                       return _buildShimmerCarousel(context);
                     }
-                    return buildCharactersSection(context, mediaData);
+                    return KeyedSubtree(
+                      key: const ValueKey('media_characters'),
+                      child: buildCharactersSection(context, mediaData),
+                    );
                   }),
                   Obx(() {
                     if (controller.isAnilistLoading.value) {
                       return _buildShimmerCarousel(context);
                     }
                     if (rels.isEmpty) return const SizedBox.shrink();
-                    return ReusableCarousel(
-                      data: rels,
-                      title: 'Relations',
-                      variant: DataVariant.relation,
-                    ).bottomSpacing(16);
+                    return KeyedSubtree(
+                      key: const ValueKey('media_relations'),
+                      child: ReusableCarousel(
+                        data: rels,
+                        title: 'Relations',
+                        variant: DataVariant.relation,
+                      ).bottomSpacing(16),
+                    );
                   }),
                   Obx(() {
                     if (controller.isSecondaryLoading.value) {
@@ -531,8 +630,11 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     if (mediaData.staff == null || mediaData.staff!.isEmpty) {
                       return const SizedBox.shrink();
                     }
-                    return StaffCarousel(staff: mediaData.staff!)
-                        .bottomSpacing(16);
+                    return KeyedSubtree(
+                      key: const ValueKey('media_staff'),
+                      child: StaffCarousel(staff: mediaData.staff!)
+                          .bottomSpacing(16),
+                    );
                   }),
                   Obx(() {
                     if (controller.isAnilistLoading.value) {
@@ -540,19 +642,22 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     }
                     final recs = mediaData.recommendations;
                     if (recs.isEmpty) return const SizedBox.shrink();
-                    return ReusableCarousel(
-                      data: recs,
-                      title: controller.isNovel
-                          ? 'Recommended Novels'
-                          : (controller.isAnime
-                              ? 'Recommended Anime'
-                              : 'Recommended Manga'),
-                      variant: DataVariant.recommendation,
-                      type: controller.isNovel
-                          ? ItemType.novel
-                          : (controller.isAnime
-                              ? ItemType.anime
-                              : ItemType.manga),
+                    return KeyedSubtree(
+                      key: const ValueKey('media_recommendations'),
+                      child: ReusableCarousel(
+                        data: recs,
+                        title: controller.isNovel
+                            ? 'Recommended Novels'
+                            : (controller.isAnime
+                                ? 'Recommended Anime'
+                                : 'Recommended Manga'),
+                        variant: DataVariant.recommendation,
+                        type: controller.isNovel
+                            ? ItemType.novel
+                            : (controller.isAnime
+                                ? ItemType.anime
+                                : ItemType.manga),
+                      ),
                     );
                   }),
                 ],

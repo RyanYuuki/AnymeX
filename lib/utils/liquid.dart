@@ -5,6 +5,7 @@ import 'package:anymex/utils/logger.dart';
 import 'dart:isolate';
 import 'dart:io';
 import 'dart:ui' as ui;
+import 'dart:math' as math;
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
@@ -19,6 +20,7 @@ import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/utils/mesh_blur_helper.dart';
 
 class ProgressController extends GetxController {
   var currentStep = ''.obs;
@@ -45,64 +47,6 @@ enum BlurStrength {
   const BlurStrength(this.radius, this.label);
   final int radius;
   final String label;
-}
-
-class FastBlurProcessor {
-  static Uint8List _fastBoxBlur(
-      Uint8List pixels, int width, int height, int radius) {
-    if (radius <= 0) return pixels;
-    final Uint8List output = Uint8List(pixels.length);
-
-    for (int y = 0; y < height; y++) {
-      int sum = 0;
-      int count = 0;
-
-      for (int x = 0; x < radius && x < width; x++) {
-        final int idx = (y * width + x) * 4;
-        sum += pixels[idx];
-        count++;
-      }
-
-      for (int x = 0; x < width; x++) {
-        final int idx = (y * width + x) * 4;
-
-        if (x + radius < width) {
-          final int newIdx = (y * width + x + radius) * 4;
-          sum += pixels[newIdx];
-          count++;
-        }
-
-        if (x - radius - 1 >= 0) {
-          final int oldIdx = (y * width + x - radius - 1) * 4;
-          sum -= pixels[oldIdx];
-          count--;
-        }
-
-        output[idx] = (sum / count).round();
-        output[idx + 1] = pixels[idx + 1];
-        output[idx + 2] = pixels[idx + 2];
-        output[idx + 3] = pixels[idx + 3];
-      }
-    }
-
-    return output;
-  }
-
-  static Uint8List _ultraFastBlur(
-      Uint8List pixels, int width, int height, int radius) {
-    if (radius <= 0) return pixels;
-
-    const int passes = 3;
-    final int smallRadius = (radius / passes).round();
-
-    Uint8List current = pixels;
-
-    for (int pass = 0; pass < passes; pass++) {
-      current = _fastBoxBlur(current, width, height, smallRadius);
-    }
-
-    return current;
-  }
 }
 
 class Liquid {
@@ -136,7 +80,10 @@ class Liquid {
     required String imagePath,
     required double blur,
     required double brightness,
+    required double contrast,
+    bool isMesh = false,
   }) async {
+    final screenSize = MediaQuery.sizeOf(context);
     final ProgressController progressController = Get.put(ProgressController());
 
     try {
@@ -196,10 +143,13 @@ class Liquid {
       progressController.updateProgress('Preparing to process image...', 0.05);
 
       await _processAndSaveBlurredImageCustom(
-        imagePath,
-        progressController,
-        blur,
-        brightness,
+        imagePath: imagePath,
+        progressController: progressController,
+        blur: blur,
+        brightness: brightness,
+        contrast: contrast,
+        screenSize: screenSize,
+        isMesh: isMesh,
       );
       Navigator.of(context).pop();
     } catch (e) {
@@ -213,12 +163,15 @@ class Liquid {
     }
   }
 
-  static Future<void> _processAndSaveBlurredImageCustom(
-    String imagePath,
-    ProgressController progressController,
-    double blur,
-    double brightness,
-  ) async {
+  static Future<void> _processAndSaveBlurredImageCustom({
+    required String imagePath,
+    required ProgressController progressController,
+    required double blur,
+    required double brightness,
+    required double contrast,
+    required Size screenSize,
+    bool isMesh = false,
+  }) async {
     try {
       progressController.updateProgress('Clearing previous background...', 0.1);
       await _clearLiquidBackground();
@@ -236,10 +189,13 @@ class Liquid {
       String? result;
 
       final Uint8List? gpuResult = await _gpuBlurImageCustom(
-        imageBytes,
-        blur,
-        brightness,
-        (step, progress) => progressController.updateProgress(step, progress),
+        imageBytes: imageBytes,
+        blurRadius: blur,
+        brightness: brightness,
+        contrast: contrast,
+        screenSize: screenSize,
+        isMesh: isMesh,
+        onProgress: (step, progress) => progressController.updateProgress(step, progress),
       );
 
       if (gpuResult != null) {
@@ -265,8 +221,12 @@ class Liquid {
         result = await compute(_cpuOptimizedBlurCustom, {
           'imagePath': imagePath,
           'outputPath': savedPath,
-          'blurRadius': blur.toInt(),
+          'blurRadius': blur,
           'brightness': brightness,
+          'contrast': contrast,
+          'screenWidth': screenSize.width,
+          'screenHeight': screenSize.height,
+          'isMesh': isMesh,
           'progressPort': progressPort.sendPort,
         });
 
@@ -294,12 +254,15 @@ class Liquid {
     }
   }
 
-  static Future<Uint8List?> _gpuBlurImageCustom(
-    Uint8List imageBytes,
-    double blurRadius,
-    double brightness,
-    Function(String, double) onProgress,
-  ) async {
+  static Future<Uint8List?> _gpuBlurImageCustom({
+    required Uint8List imageBytes,
+    required double blurRadius,
+    required double brightness,
+    required double contrast,
+    required Size screenSize,
+    required Function(String, double) onProgress,
+    bool isMesh = false,
+  }) async {
     try {
       onProgress('Decoding image with GPU optimization...', 0.2);
 
@@ -307,70 +270,85 @@ class Liquid {
       final ui.FrameInfo frame = await codec.getNextFrame();
       final ui.Image originalImage = frame.image;
 
-      onProgress('Preparing GPU blur operation...', 0.3);
+      ui.Image sourceToDraw = originalImage;
+      ui.Image? meshImage;
 
-      final ui.PictureRecorder recorder = ui.PictureRecorder();
-      final Canvas canvas = Canvas(recorder);
-
-      final int width = originalImage.width;
-      final int height = originalImage.height;
-      const double maxDimension = 1920.0;
-
-      double scale = 1.0;
-      if (width > maxDimension || height > maxDimension) {
-        scale = maxDimension / (width > height ? width : height);
+      if (isMesh) {
+        onProgress('Generating fluid mesh gradient...', 0.3);
+        final meshRaster = await compute(
+          MeshBlurHelper.processMeshBackdrop,
+          (imageBytes, 1.0, 0.0, 42),
+        );
+        meshImage = await MeshBlurHelper.inflateNativeImage(meshRaster);
+        sourceToDraw = meshImage;
       }
 
-      final int scaledWidth = (width * scale).round();
-      final int scaledHeight = (height * scale).round();
+      onProgress('Preparing GPU blur operation...', 0.35);
+
+      final int width = sourceToDraw.width;
+      final int height = sourceToDraw.height;
+      const double maxDimension = 1920.0;
+
+      double resizeScale = 1.0;
+      if (width > maxDimension || height > maxDimension) {
+        resizeScale = maxDimension / (width > height ? width : height);
+      }
+
+      final int outputWidth = (width * resizeScale).round();
+      final int outputHeight = (height * resizeScale).round();
+
+      final double scaleX = screenSize.width / outputWidth;
+      final double scaleY = screenSize.height / outputHeight;
+      final double coverScale = math.max(scaleX, scaleY);
+      final double effectiveBlur =
+          isMesh ? math.max(blurRadius, 12.0) : blurRadius;
+      final double targetBlurSigma =
+          coverScale > 0 ? (effectiveBlur / coverScale) : effectiveBlur;
 
       onProgress('Applying GPU-accelerated blur...', 0.5);
 
-      canvas.scale(scale, scale);
-
-      canvas.saveLayer(
-        Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
-        Paint()
-          ..imageFilter = ui.ImageFilter.blur(
-            sigmaX: blurRadius,
-            sigmaY: blurRadius,
-          ),
+      final ui.PictureRecorder recorder = ui.PictureRecorder();
+      final Canvas canvas = Canvas(
+        recorder,
+        Rect.fromLTWH(0, 0, outputWidth.toDouble(), outputHeight.toDouble()),
       );
 
-      final paint = Paint();
-      if (brightness != 1.0) {
-        paint.colorFilter = ui.ColorFilter.matrix([
-          brightness,
-          0,
-          0,
-          0,
-          0,
-          0,
-          brightness,
-          0,
-          0,
-          0,
-          0,
-          0,
-          brightness,
-          0,
-          0,
-          0,
-          0,
-          0,
-          1,
-          0,
+      final double colorScale = brightness * contrast;
+      final double colorOffset = 128.0 * (1.0 - contrast);
+      final paint = Paint()
+        ..colorFilter = ui.ColorFilter.matrix([
+          colorScale, 0, 0, 0, colorOffset,
+          0, colorScale, 0, 0, colorOffset,
+          0, 0, colorScale, 0, colorOffset,
+          0, 0, 0, 1, 0,
         ]);
-      }
 
-      canvas.drawImage(originalImage, Offset.zero, paint);
-      canvas.restore();
+      final dstRect =
+          Rect.fromLTWH(0, 0, outputWidth.toDouble(), outputHeight.toDouble());
+      final srcRect =
+          Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble());
+
+      if (targetBlurSigma > 0.5) {
+        canvas.saveLayer(
+          dstRect,
+          Paint()
+            ..imageFilter = ui.ImageFilter.blur(
+              sigmaX: targetBlurSigma,
+              sigmaY: targetBlurSigma,
+              tileMode: TileMode.clamp,
+            ),
+        );
+        canvas.drawImageRect(sourceToDraw, srcRect, dstRect, paint);
+        canvas.restore();
+      } else {
+        canvas.drawImageRect(sourceToDraw, srcRect, dstRect, paint);
+      }
 
       onProgress('Finalizing GPU processing...', 0.8);
 
       final ui.Picture picture = recorder.endRecording();
       final ui.Image blurredImage =
-          await picture.toImage(scaledWidth, scaledHeight);
+          await picture.toImage(outputWidth, outputHeight);
 
       onProgress('Encoding final image...', 0.9);
 
@@ -378,6 +356,7 @@ class Liquid {
           await blurredImage.toByteData(format: ui.ImageByteFormat.png);
 
       originalImage.dispose();
+      meshImage?.dispose();
       blurredImage.dispose();
       picture.dispose();
 
@@ -393,12 +372,16 @@ class Liquid {
     try {
       final String imagePath = params['imagePath'];
       final String outputPath = params['outputPath'];
-      final int blurRadius = params['blurRadius'];
-      final double brightness = params['brightness'];
+      final double blurRadius = (params['blurRadius'] as num).toDouble();
+      final double brightness = (params['brightness'] as num).toDouble();
+      final double contrast = (params['contrast'] as num?)?.toDouble() ?? 1.0;
+      final double screenWidth = (params['screenWidth'] as num).toDouble();
+      final double screenHeight = (params['screenHeight'] as num).toDouble();
+      final bool isMesh = params['isMesh'] == true;
       final SendPort? progressPort = params['progressPort'];
 
       progressPort
-          ?.send({'step': 'Loading image (CPU optimized)...', 'progress': 0.1});
+          ?.send({'step': 'Loading image (CPU fallback)...', 'progress': 0.1});
 
       final File originalFile = File(imagePath);
       final Uint8List imageBytes = await originalFile.readAsBytes();
@@ -408,62 +391,69 @@ class Liquid {
       img.Image? originalImage = img.decodeImage(imageBytes);
       if (originalImage == null) return null;
 
-      const int maxDimension = 1280;
-      if (originalImage.width > maxDimension ||
-          originalImage.height > maxDimension) {
+      if (isMesh) {
+        progressPort?.send(
+            {'step': 'Generating fluid mesh gradient...', 'progress': 0.35});
+        originalImage = MeshBlurHelper.generateMeshImageFromDecoded(
+            originalImage,
+            seed: 42);
+        originalImage = img.copyResize(originalImage,
+            width: screenWidth.round(),
+            height: screenHeight.round(),
+            interpolation: img.Interpolation.linear);
+      } else {
+        const int maxDimension = 1280;
+        if (originalImage.width > maxDimension ||
+            originalImage.height > maxDimension) {
+          progressPort
+              ?.send({'step': 'Optimizing image size...', 'progress': 0.3});
+
+          final double scale = maxDimension /
+              (originalImage.width > originalImage.height
+                  ? originalImage.width
+                  : originalImage.height);
+
+          originalImage = img.copyResize(
+            originalImage,
+            width: (originalImage.width * scale).round(),
+            height: (originalImage.height * scale).round(),
+            interpolation: img.Interpolation.linear,
+          );
+        }
+      }
+
+      final double scaleX = screenWidth / originalImage.width;
+      final double scaleY = screenHeight / originalImage.height;
+      final double coverScale = math.max(scaleX, scaleY);
+      final double targetBlurSigma =
+          coverScale > 0 ? (blurRadius / coverScale) : blurRadius;
+
+      progressPort
+          ?.send({'step': 'Applying brightness & contrast...', 'progress': 0.4});
+
+      final double colorScale = brightness * contrast;
+      final double colorOffset = 128.0 * (1.0 - contrast);
+
+      for (final pixel in originalImage) {
+        pixel.r = (pixel.r * colorScale + colorOffset).clamp(0, 255);
+        pixel.g = (pixel.g * colorScale + colorOffset).clamp(0, 255);
+        pixel.b = (pixel.b * colorScale + colorOffset).clamp(0, 255);
+      }
+
+      if (targetBlurSigma > 0.5) {
         progressPort
-            ?.send({'step': 'Optimizing image size...', 'progress': 0.3});
-
-        final double scale = maxDimension /
-            (originalImage.width > originalImage.height
-                ? originalImage.width
-                : originalImage.height);
-
-        originalImage = img.copyResize(
+            ?.send({'step': 'Applying blur...', 'progress': 0.6});
+        originalImage = img.gaussianBlur(
           originalImage,
-          width: (originalImage.width * scale).round(),
-          height: (originalImage.height * scale).round(),
-          interpolation: img.Interpolation.linear,
+          radius: targetBlurSigma.round().clamp(1, 100),
         );
       }
 
       progressPort
-          ?.send({'step': 'Applying ultra-fast blur...', 'progress': 0.5});
-
-      final Uint8List pixels = originalImage.getBytes();
-      final int width = originalImage.width;
-      final int height = originalImage.height;
-
-      if (brightness != 1.0) {
-        for (int i = 0; i < pixels.length; i += 4) {
-          pixels[i] = (pixels[i] * brightness).clamp(0.0, 255.0).toInt();
-          pixels[i + 1] =
-              (pixels[i + 1] * brightness).clamp(0.0, 255.0).toInt();
-          pixels[i + 2] =
-              (pixels[i + 2] * brightness).clamp(0.0, 255.0).toInt();
-        }
-      }
-
-      final Uint8List blurredPixels = FastBlurProcessor._ultraFastBlur(
-        pixels,
-        width,
-        height,
-        blurRadius,
-      );
-
-      progressPort?.send({'step': 'Reconstructing image...', 'progress': 0.8});
-
-      final img.Image blurredImage = img.Image.fromBytes(
-        width: width,
-        height: height,
-        bytes: blurredPixels.buffer,
-      );
-
-      progressPort
-          ?.send({'step': 'Saving optimized image...', 'progress': 0.9});
+          ?.send({'step': 'Saving image...', 'progress': 0.9});
 
       final File savedFile = File(outputPath);
-      await savedFile.writeAsBytes(img.encodeJpg(blurredImage, quality: 85));
+      await savedFile.writeAsBytes(img.encodeJpg(originalImage, quality: 90));
 
       return outputPath;
     } catch (e) {
@@ -503,48 +493,89 @@ class LiquidPreviewPage extends StatefulWidget {
 class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
   double blur = 20.0;
   double brightness = 0.7;
+  double contrast = 1.0;
+  int blurStyle = 0;
+  ui.Image? _meshImage;
+  bool _loadingMesh = false;
+
+  void _loadMeshImage() async {
+    if (_meshImage != null || _loadingMesh) return;
+    setState(() => _loadingMesh = true);
+    try {
+      final bytes = await File(widget.imagePath).readAsBytes();
+      final raster = await compute(
+        MeshBlurHelper.processMeshBackdrop,
+        (bytes, 1.0, 0.0, widget.imagePath.hashCode),
+      );
+      final image = await MeshBlurHelper.inflateNativeImage(raster);
+      if (mounted) {
+        setState(() {
+          _meshImage = image;
+          _loadingMesh = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _loadingMesh = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _meshImage?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final settings = Get.find<Settings>();
+    final retainColor = settings.retainOriginalColor;
+    final double colorScale = brightness * contrast;
+    final double colorOffset = 128.0 * (1.0 - contrast);
+
+    Widget previewImage = ColorFiltered(
+      colorFilter: ColorFilter.matrix([
+        colorScale, 0, 0, 0, colorOffset,
+        0, colorScale, 0, 0, colorOffset,
+        0, 0, colorScale, 0, colorOffset,
+        0, 0, 0, 1, 0,
+      ]),
+      child: blurStyle == 1 && _meshImage != null
+          ? RawImage(
+              image: _meshImage,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              filterQuality: FilterQuality.medium,
+            )
+          : Image.file(
+              File(widget.imagePath),
+              fit: BoxFit.cover,
+            ),
+    );
+
+    if (!retainColor) {
+      previewImage = ColorFiltered(
+        colorFilter: ColorFilter.mode(
+          colorScheme.primary.opaque(0.6),
+          BlendMode.color,
+        ),
+        child: previewImage,
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
           Positioned.fill(
-            child: ImageFiltered(
-              imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-              child: ColorFiltered(
-                colorFilter: ColorFilter.matrix([
-                  brightness,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  brightness,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  brightness,
-                  0,
-                  0,
-                  0,
-                  0,
-                  0,
-                  1,
-                  0,
-                ]),
-                child: Image.file(
-                  File(widget.imagePath),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+            child: blur > 0.5
+                ? ImageFiltered(
+                    imageFilter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+                    child: previewImage,
+                  )
+                : previewImage,
           ),
           Positioned(
             top: MediaQuery.paddingOf(context).top + 10,
@@ -553,7 +584,7 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back, color: Colors.white),
               style: IconButton.styleFrom(
-                backgroundColor: Colors.black.withOpacity(0.5),
+                backgroundColor: Colors.black.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -567,116 +598,223 @@ class _LiquidPreviewPageState extends State<LiquidPreviewPage> {
                 filter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
                   padding: const EdgeInsets.all(20),
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.sizeOf(context).height * 0.55,
+                  ),
                   decoration: BoxDecoration(
-                    color: colorScheme.surface.withOpacity(0.85),
+                    color: colorScheme.surface.withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: colorScheme.outline.withOpacity(0.15),
+                      color: colorScheme.outline.withValues(alpha: 0.15),
                     ),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.blur_on,
-                              size: 20, color: colorScheme.primary),
-                          const SizedBox(width: 8),
-                          const AnymeXText(
-                            "Blur Radius",
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          const Spacer(),
-                          AnymeXText(
-                            "${blur.toInt()}px",
-                            style: TextStyle(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      4.height(),
-                      AnymeXSliderM3(
-                        value: blur,
-                        min: 0.0,
-                        max: 60.0,
-                        divisions: 60,
-                        onChanged: (val) {
-                          setState(() {
-                            blur = val;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                      Row(
-                        children: [
-                          Icon(Icons.brightness_medium,
-                              size: 20, color: colorScheme.primary),
-                          const SizedBox(width: 8),
-                          const AnymeXText(
-                            "Brightness",
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          const Spacer(),
-                          AnymeXText(
-                            "${(brightness * 100).toInt()}%",
-                            style: TextStyle(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      4.height(),
-                      AnymeXSliderM3(
-                        value: brightness,
-                        min: 0.1,
-                        max: 1.5,
-                        onChanged: (val) {
-                          setState(() {
-                            brightness = val;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => Navigator.pop(context),
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: colorScheme.outline),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    blurStyle = 0;
+                                  });
+                                },
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: blurStyle == 0
+                                        ? colorScheme.primary
+                                        : colorScheme.surfaceContainerHighest
+                                            .withValues(alpha: 0.5),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: AnymeXText(
+                                    "Gaussian Blur",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: blurStyle == 0
+                                          ? colorScheme.onPrimary
+                                          : colorScheme.onSurface,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              child: const AnymeXText("Cancel"),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: FilledButton(
-                              onPressed: () {
-                                Liquid.processAndSaveCustomWallpaper(
-                                  context: context,
-                                  imagePath: widget.imagePath,
-                                  blur: blur,
-                                  brightness: brightness,
-                                );
-                              },
-                              style: FilledButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    blurStyle = 1;
+                                    _loadMeshImage();
+                                  });
+                                },
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  decoration: BoxDecoration(
+                                    color: blurStyle == 1
+                                        ? colorScheme.primary
+                                        : colorScheme.surfaceContainerHighest
+                                            .withValues(alpha: 0.5),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: AnymeXText(
+                                    "Fluid Mesh",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: blurStyle == 1
+                                          ? colorScheme.onPrimary
+                                          : colorScheme.onSurface,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              child: const AnymeXText("Apply"),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Icon(Icons.blur_on,
+                                size: 20, color: colorScheme.primary),
+                            const SizedBox(width: 8),
+                            const AnymeXText(
+                              "Blur Radius",
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            const Spacer(),
+                            AnymeXText(
+                              "${blur.toInt()}px",
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        4.height(),
+                        AnymeXSliderM3(
+                          value: blur,
+                          min: 0.0,
+                          max: 60.0,
+                          divisions: 60,
+                          onChanged: (val) {
+                            setState(() {
+                              blur = val;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Icon(Icons.brightness_medium,
+                                size: 20, color: colorScheme.primary),
+                            const SizedBox(width: 8),
+                            const AnymeXText(
+                              "Brightness",
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            const Spacer(),
+                            AnymeXText(
+                              "${(brightness * 100).toInt()}%",
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        4.height(),
+                        AnymeXSliderM3(
+                          value: brightness,
+                          min: 0.1,
+                          max: 1.5,
+                          divisions: 28,
+                          onChanged: (val) {
+                            setState(() {
+                              brightness = val;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Icon(Icons.contrast,
+                                size: 20, color: colorScheme.primary),
+                            const SizedBox(width: 8),
+                            const AnymeXText(
+                              "Contrast",
+                              style: TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            const Spacer(),
+                            AnymeXText(
+                              "${(contrast * 100).toInt()}%",
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        4.height(),
+                        AnymeXSliderM3(
+                          value: contrast,
+                          min: 0.5,
+                          max: 2.0,
+                          divisions: 30,
+                          onChanged: (val) {
+                            setState(() {
+                              contrast = val;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton(
+                                onPressed: () => Navigator.pop(context),
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: colorScheme.outline),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const AnymeXText("Cancel"),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton(
+                                onPressed: () {
+                                  Liquid.processAndSaveCustomWallpaper(
+                                    context: context,
+                                    imagePath: widget.imagePath,
+                                    blur: blur,
+                                    brightness: brightness,
+                                    contrast: contrast,
+                                    isMesh: blurStyle == 1,
+                                  );
+                                },
+                                style: FilledButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const AnymeXText("Apply"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

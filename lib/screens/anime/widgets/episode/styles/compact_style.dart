@@ -1,9 +1,7 @@
-import 'dart:ui';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/animation/animations.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
@@ -117,33 +115,27 @@ class CompactEpisodeWidget extends StatelessWidget {
         Positioned(
           bottom: 8,
           left: 8,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.black.opaque(0.2),
-                  border: Border.all(
-                    width: 2,
-                    color: theme.colorScheme.primary,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.colorScheme.primary.opaque(0.3),
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                child: AnymeXText(
-                  "EP $episodeNumber",
-                  variant: TextVariant.bold,
-                  color: Colors.white,
-                ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.black.withValues(alpha: 0.75),
+              border: Border.all(
+                width: 1.5,
+                color: theme.colorScheme.primary,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  blurRadius: 6,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: AnymeXText(
+              "EP $episodeNumber",
+              variant: TextVariant.bold,
+              color: Colors.white,
             ),
           ),
         ),
@@ -156,56 +148,54 @@ class CompactEpisodeWidget extends StatelessWidget {
     final isFiller = episode.filler ?? false;
     final fallbackUrl = media != null ? ((media!.cover?.isNotEmpty ?? false) ? media!.cover! : media!.poster) : '';
 
-    return StaggeredAnimatedItemWrapper(
-      child: GestureDetector(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        child: Opacity(
-          opacity: isWatched ? 0.5 : 1.0,
-          child: Container(
-            clipBehavior: Clip.antiAlias,
-            height: 100,
-            decoration: BoxDecoration(
-              color: _getBackgroundColor(context, isFiller),
-              borderRadius: BorderRadius.circular(12),
-              border: isFiller ? Border.all(color: Colors.orange.withOpacity(0.3)) : null,
-            ),
-            child: Row(
-              children: [
-                _buildImageSection(context, episodeNumber, _imageUrl, fallbackUrl),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (isFiller)
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 2.0),
-                          child: AnymeXText(
-                            "[Filler]",
-                            size: 10,
-                            color: Colors.orange,
-                            variant: TextVariant.bold,
-                          ),
+    return GestureDetector(
+      onTap: onTap,
+      onLongPress: onLongPress,
+      child: Opacity(
+        opacity: isWatched ? 0.5 : 1.0,
+        child: Container(
+          clipBehavior: Clip.antiAlias,
+          height: 100,
+          decoration: BoxDecoration(
+            color: _getBackgroundColor(context, isFiller),
+            borderRadius: BorderRadius.circular(12),
+            border: isFiller ? Border.all(color: Colors.orange.withOpacity(0.3)) : null,
+          ),
+          child: Row(
+            children: [
+              _buildImageSection(context, episodeNumber, _imageUrl, fallbackUrl),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (isFiller)
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 2.0),
+                        child: AnymeXText(
+                          "[Filler]",
+                          size: 10,
+                          color: Colors.orange,
+                          variant: TextVariant.bold,
                         ),
-                      AnymeXText(
-                        episodeTitle,
-                        variant: TextVariant.bold,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        isMarquee: true,
                       ),
-                    ],
-                  ),
+                    AnymeXText(
+                      episodeTitle,
+                      variant: TextVariant.bold,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      isMarquee: true,
+                    ),
+                  ],
                 ),
-                if (downloadButton != null) ...[
-                  const SizedBox(width: 4),
-                  downloadButton!,
-                  const SizedBox(width: 4),
-                ],
+              ),
+              if (downloadButton != null) ...[
+                const SizedBox(width: 4),
+                downloadButton!,
+                const SizedBox(width: 4),
               ],
-            ),
+            ],
           ),
         ),
       ),

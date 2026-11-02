@@ -315,6 +315,8 @@ enum UISettingsKeys {
   detailsBlurAmount,
   detailsBackdropBrightness,
   detailsFadeAdjuster,
+  detailsBlurStyle,
+  detailsBlurScope,
 }
 
 enum DownloadKeys {

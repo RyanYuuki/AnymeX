@@ -463,6 +463,26 @@ class Settings extends GetxController {
     update();
   }
 
+  int get detailsBlurStyle => _getUISetting((s) => s.detailsBlurStyle);
+  set detailsBlurStyle(int value) {
+    uiSettings.update((s) => s?.detailsBlurStyle = value);
+    UISettingsKeys.detailsBlurStyle.set(value);
+    if (value == 1) {
+      useComputedBlur = true;
+    }
+    uiSettings.refresh();
+    update();
+  }
+
+  int get detailsBlurScope => _getUISetting((s) => s.detailsBlurScope);
+  set detailsBlurScope(int value) {
+    uiSettings.update((s) => s?.detailsBlurScope = value);
+    UISettingsKeys.detailsBlurScope.set(value);
+    fullScreenBlur = value == 1;
+    uiSettings.refresh();
+    update();
+  }
+
   bool get fullScreenBlur => _getUISetting((s) => s.fullScreenBlur);
   set fullScreenBlur(bool value) {
     uiSettings.update((s) => s?.fullScreenBlur = value);

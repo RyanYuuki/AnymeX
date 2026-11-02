@@ -29,6 +29,8 @@ Widget buildCharactersSection(BuildContext context, Media media) {
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           itemCount: characters.length,
+          cacheExtent: 1000,
+          physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) {
             return buildCharacterCard(context, characters[index]);
           },
@@ -63,15 +65,13 @@ Widget buildCharacterCard(BuildContext context, Character character) {
         children: [
           Stack(
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                  width: 55,
-                  height: 80,
-                  child: AnymeXImage(
-                    imageUrl: charImage,
-                  ),
-                ),
+              AnymeXImage(
+                imageUrl: charImage,
+                width: 55,
+                height: 80,
+                radius: 10,
+                fadeInDuration: Duration.zero,
+                fadeOutDuration: Duration.zero,
               ),
               if (character.favourites != null && character.favourites! > 0)
                 Positioned(
@@ -144,15 +144,13 @@ Widget buildCharacterCard(BuildContext context, Character character) {
           ),
           if (va != null && (va.image ?? '').isNotEmpty) ...[
             const SizedBox(width: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                width: 50,
-                height: 70,
-                child: AnymeXImage(
-                  imageUrl: va.image!,
-                ),
-              ),
+            AnymeXImage(
+              imageUrl: va.image!,
+              width: 50,
+              height: 70,
+              radius: 10,
+              fadeInDuration: Duration.zero,
+              fadeOutDuration: Duration.zero,
             ),
           ],
         ],

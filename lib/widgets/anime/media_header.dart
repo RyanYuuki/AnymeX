@@ -5,6 +5,8 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/studio_details_page.dart';
+import 'package:anymex/screens/settings/sub_settings/settings_ui_details.dart';
+import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anime/visuals/visuals_popup.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
@@ -58,12 +60,11 @@ class MediaHeader extends StatelessWidget {
         children: [
           Positioned.fill(
             child: Obx(() {
-              final isFullScreen = settingsController.fullScreenBlur;
-              if (isFullScreen) {
+              final blurScope = settingsController.detailsBlurScope;
+              if (blurScope != 0) {
                 return const SizedBox.shrink();
               }
-              final usePoster =
-                  UISettingsKeys.usePosterForBlur.get<bool>(false);
+              final usePoster = settingsController.usePosterForBlur;
               final blurSourceUrl = usePoster
                   ? posterUrl
                   : (data?.cover?.isNotEmpty == true
@@ -72,16 +73,16 @@ class MediaHeader extends StatelessWidget {
               final blurFallbackUrl = usePoster
                   ? (data?.cover?.isNotEmpty == true ? data!.cover! : posterUrl)
                   : posterUrl;
-              final tintBlur = UISettingsKeys.tintBlur.get<bool>(true);
+              final tintBlur = settingsController.tintBlur;
               final blurColor = tintBlur ? colors.primary.opaque(0.4) : null;
-              final useComputedBlur =
-                  UISettingsKeys.useComputedBlur.get<bool>(false);
+              final isMesh = settingsController.detailsBlurStyle == 1;
+              final isBaked = isMesh || settingsController.useComputedBlur;
               final blurAmount =
                   UISettingsKeys.detailsBlurAmount.get<double>(20.0);
               final brightness =
                   UISettingsKeys.detailsBackdropBrightness.get<double>(1.0);
 
-              Widget content = useComputedBlur
+              Widget content = isBaked
                   ? BakedBlurImage(
                       url: blurSourceUrl,
                       fallback: blurFallbackUrl,
@@ -93,6 +94,7 @@ class MediaHeader extends StatelessWidget {
                       height: headerHeight,
                       width: double.infinity,
                       fadeBottom: true,
+                      isMesh: isMesh,
                     )
                   : ColorFiltered(
                       colorFilter: ColorFilter.matrix([
@@ -132,17 +134,29 @@ class MediaHeader extends StatelessWidget {
                       ),
                     );
 
-              return RepaintBoundary(child: content);
+              return RepaintBoundary(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(color: Colors.transparent, width: 2.0),
+                    ),
+                  ),
+                  child: content,
+                ),
+              );
             }),
           ),
           Positioned.fill(
             child: Obx(() {
-              final isFullScreen = settingsController.fullScreenBlur;
-              if (isFullScreen) {
+              final blurScope = settingsController.detailsBlurScope;
+              if (blurScope != 0) {
                 return const SizedBox.shrink();
               }
-              return DecoratedBox(
+              return Container(
                 decoration: BoxDecoration(
+                  border: const Border(
+                    bottom: BorderSide(color: Colors.transparent, width: 2.0),
+                  ),
                   gradient: LinearGradient(
                     colors: [
                       colors.surface.withValues(alpha: 0.60),
@@ -360,6 +374,24 @@ class MediaHeader extends StatelessWidget {
                       color: colors.onSurface.opaque(0.12, iReallyMeanIt: true),
                     ),
                   ],
+                  AnymexOnTap(
+                    onTap: () => navigate(() => const SettingsUiDetails()),
+                    margin: 0,
+                    child: SizedBox(
+                      width: 44,
+                      height: 40,
+                      child: Icon(
+                        Icons.palette_rounded,
+                        size: 20,
+                        color: colors.onSurface,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 1,
+                    height: 22,
+                    color: colors.onSurface.opaque(0.12, iReallyMeanIt: true),
+                  ),
                   AnymexOnTap(
                     onTap: Get.back,
                     margin: 0,
