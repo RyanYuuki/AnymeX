@@ -51,11 +51,11 @@ class MangaHistoryCard extends StatelessWidget {
         onTap: () {
           if (data.currentChapter == null) {
             snackBar(
-                "Error: Missing required data. It seems you closed the app directly after reading the chapter!",
+                "Error: Missing required data. It seems you closed the app directly after reading the chapter!".tr,
                 maxLines: 3);
           } else {
             if (data.currentChapter?.sourceName == null) {
-              snackBar("Cant Play since user closed the app abruptly");
+              snackBar("Cant Play since user closed the app abruptly".tr);
             }
             final source = Get.find<SourceController>()
                 .getMangaExtensionByName(data.currentChapter!.sourceName!);
@@ -237,7 +237,7 @@ class MangaHistoryCard extends StatelessWidget {
 //                 maxLines: 3);
 //           } else {
 //             if (data.currentChapter?.sourceName == null) {
-//               snackBar("Cant Play since user closed the app abruptly");
+//               snackBar("Cant Play since user closed the app abruptly".tr);
 //             }
 //             final source = Get.find<SourceController>()
 //                 .getMangaExtensionByName(data.currentChapter!.sourceName!);

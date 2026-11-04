@@ -105,7 +105,7 @@ void showWelcomeDialogg(BuildContext context) {
         final status = await _requestStoragePermissions();
         storagePermissionGranted.value = status;
         if (!status) {
-          snackBar("Storage permission is required to download updates");
+          snackBar("Storage permission is required to download updates".tr);
         }
       }
 
@@ -113,7 +113,7 @@ void showWelcomeDialogg(BuildContext context) {
         final status = await Permission.requestInstallPackages.request();
         installPermissionGranted.value = status.isGranted;
         if (!status.isGranted) {
-          snackBar("Install permission is required to update the app");
+          snackBar("Install permission is required to update the app".tr);
         }
       }
 
@@ -175,7 +175,7 @@ void showWelcomeDialogg(BuildContext context) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AnymeXText(
-                                'Welcome to AnymeX',
+                                'Welcome to AnymeX'.tr,
                                 style: TextStyle(
                                   fontFamily: 'Linotte',
                                   fontSize: 18,
@@ -184,7 +184,7 @@ void showWelcomeDialogg(BuildContext context) {
                               ),
                               const SizedBox(height: 2),
                               AnymeXText(
-                                'Set up your preferences for the best experience',
+                                'Set up your preferences for the best experience'.tr,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: context.colors.onSurfaceVariant
@@ -205,9 +205,9 @@ void showWelcomeDialogg(BuildContext context) {
                         children: [
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedUserCheck01,
-                            title: 'Choose Service / Tracker',
+                            title: 'Choose Service / Tracker'.tr,
                             subtitle:
-                                'Select AniList, MyAnimeList, Simkl, or Extensions mode',
+                                'Select AniList, MyAnimeList, Simkl, or Extensions mode'.tr,
                             onTap: () {
                               SettingsSheet().showServiceSelector(context);
                             },
@@ -215,9 +215,9 @@ void showWelcomeDialogg(BuildContext context) {
                           const SizedBox(height: 6),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedPuzzle,
-                            title: 'Extensions & Repositories',
+                            title: 'Extensions & Repositories'.tr,
                             subtitle:
-                                'Manage sources and repositories to use the app to its full potential',
+                                'Manage sources and repositories to use the app to its full potential'.tr,
                             onTap: () {
                               navigate(() => const ExtensionScreen());
                             },
@@ -225,9 +225,9 @@ void showWelcomeDialogg(BuildContext context) {
                           const SizedBox(height: 6),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedDiscord,
-                            title: 'Join Discord Community',
+                            title: 'Join Discord Community'.tr,
                             subtitle:
-                                'Propose new features, report bugs, and chat with other members',
+                                'Propose new features, report bugs, and chat with other members'.tr,
                             onTap: () async {
                               General.hasJoinedNewDiscord.set(true);
                               final url = Get.find<Settings>().discordUrl.value;
@@ -238,9 +238,9 @@ void showWelcomeDialogg(BuildContext context) {
                           const SizedBox(height: 6),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedTelegram,
-                            title: 'Join Telegram Channel',
+                            title: 'Join Telegram Channel'.tr,
                             subtitle:
-                                'Stay updated with the latest releases, announcements, and discussions',
+                                'Stay updated with the latest releases, announcements, and discussions'.tr,
                             onTap: () async {
                               final url = Get.find<Settings>().telegramUrl.value;
                               await launchUrl(Uri.parse(url),
@@ -251,9 +251,9 @@ void showWelcomeDialogg(BuildContext context) {
                           if (Platform.isAndroid) ...[
                             AnymeXTile.toggle(
                               icon: HugeIcons.strokeRoundedFolderSecurity,
-                              title: "Storage Permission",
+                              title: "Storage Permission".tr,
                               subtitle:
-                                  "Allow storage access to download app & extension updates",
+                                  "Allow storage access to download app & extension updates".tr,
                               value: storagePermissionGranted.value,
                               onChanged: (val) {
                                 if (val) {
@@ -264,9 +264,9 @@ void showWelcomeDialogg(BuildContext context) {
                             const SizedBox(height: 6),
                             AnymeXTile.toggle(
                               icon: HugeIcons.strokeRoundedDownload01,
-                              title: "Install Permission",
+                              title: "Install Permission".tr,
                               subtitle:
-                                  "Allow installing updates for extensions and app",
+                                  "Allow installing updates for extensions and app".tr,
                               value: installPermissionGranted.value,
                               onChanged: (val) {
                                 if (val) {
@@ -277,9 +277,9 @@ void showWelcomeDialogg(BuildContext context) {
                             const SizedBox(height: 6),
                             AnymeXTile(
                               icon: Icons.link_rounded,
-                              title: 'Open Supported Links',
+                              title: 'Open Supported Links'.tr,
                               subtitle:
-                                  'Allow AnymeX to automatically open anime & manga web links',
+                                  'Allow AnymeX to automatically open anime & manga web links'.tr,
                               onTap: () async {
                                 bool opened = false;
                                 try {
@@ -298,7 +298,7 @@ void showWelcomeDialogg(BuildContext context) {
 
                                 if (!opened) {
                                   snackBar(
-                                      "Couldn't open app settings. Open it manually.");
+                                      "Couldn't open app settings. Open it manually.".tr);
                                 }
                               },
                             ),
@@ -325,8 +325,8 @@ void showWelcomeDialogg(BuildContext context) {
                           General.isFirstTime.set(false);
                           Navigator.of(context).pop();
                         },
-                        label: const AnymeXText(
-                          'Get Started',
+                        label: AnymeXText(
+                          'Get Started'.tr,
                           style: TextStyle(
                             fontFamily: 'Linotte',
                             fontSize: 15,
@@ -362,10 +362,10 @@ void showDiscordJoinDialog(BuildContext context) {
           return PopScope(
             canPop: false,
             child: AnymeXDialog(
-              title: 'Discord Taken Down',
+              title: 'Discord Taken Down'.tr,
               forceAction: true,
               showCancelButton: false,
-              confirmText: 'Okay',
+              confirmText: 'Okay'.tr,
               isConfirmEnabled: isUnlocked,
               onConfirm: () {},
               contentWidget: Column(
@@ -398,13 +398,13 @@ void showDiscordJoinDialog(BuildContext context) {
                         color: const Color(0xFF5865F2),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(HugeIcons.strokeRoundedDiscord, color: Colors.white, size: 20),
                           SizedBox(width: 8),
                           AnymeXText(
-                            'Join New Discord',
+                            'Join New Discord'.tr,
                             color: Colors.white,
                             variant: TextVariant.bold,
                             size: 13,
@@ -430,13 +430,13 @@ void showDiscordJoinDialog(BuildContext context) {
                         color: const Color(0xFF0088CC),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(HugeIcons.strokeRoundedTelegram, color: Colors.white, size: 20),
                           SizedBox(width: 8),
                           AnymeXText(
-                            'Join Telegram Channel',
+                            'Join Telegram Channel'.tr,
                             color: Colors.white,
                             variant: TextVariant.bold,
                             size: 13,

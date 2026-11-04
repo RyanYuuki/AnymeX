@@ -395,9 +395,9 @@ class _SettingsPlayerState extends State<SettingsPlayer>
       context: context,
       builder: (context) {
         return AnymeXDialog(
-          title: 'PlayBack Speeds',
+          title: 'PlayBack Speeds'.tr,
           showCancelButton: false,
-          confirmText: 'Close',
+          confirmText: 'Close'.tr,
           onConfirm: () {},
           contentWidget: Obx(() {
             return AnymeXTileBuilder<double>(
@@ -417,7 +417,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
 
   void showPlayerStyleDialog() {
     showSelectionDialog<int>(
-        title: "Player Theme",
+        title: "Player Theme".tr,
         items: [0, 1, 2],
         selectedItem: selectedStyleIndex,
         getTitle: (i) => numToPlayerStyle(i),
@@ -429,7 +429,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
 
   void _showPlayerControlThemeDialog() {
     showSelectionDialog<String>(
-      title: 'Control Theme',
+      title: 'Control Theme'.tr,
       items: PlayerControlThemeRegistry.themes.map((e) => e.id).toList(),
       selectedItem: settings.playerControlThemeRx,
       getTitle: (id) => PlayerControlThemeRegistry.resolve(id).name,
@@ -443,7 +443,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
 
   void _showMediaIndicatorThemeDialog() {
     showSelectionDialog<String>(
-      title: 'Swipe Indicator Theme',
+      title: 'Swipe Indicator Theme'.tr,
       items: MediaIndicatorThemeRegistry.themes.map((e) => e.id).toList(),
       selectedItem: settings.mediaIndicatorThemeRx,
       getTitle: (id) => MediaIndicatorThemeRegistry.resolve(id).name,
@@ -467,7 +467,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     final currentLabel = orientationMap[current] ?? 'Auto (Landscape)';
 
     showSelectionDialog<String>(
-      title: 'Default Orientation',
+      title: 'Default Orientation'.tr,
       items: orientationMap.values.toList(),
       selectedItem: currentLabel.obs,
       getTitle: (item) => item,
@@ -495,7 +495,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     );
 
     showSelectionDialog<String>(
-      title: 'Resize Modes',
+      title: 'Resize Modes'.tr,
       items: resizeModeList,
       selectedItem: selectedLabel.obs,
       getTitle: (item) => item,
@@ -698,7 +698,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
       title: title,
       onConfirm: () {},
       showCancelButton: false,
-      confirmText: 'Close',
+      confirmText: 'Close'.tr,
       contentWidget: AnymeXTileBuilder<String>(
         getTitle: (t) => t,
         onItemPressed: (s) {
@@ -716,7 +716,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
 
   void _showTranslationLanguageDialog() {
     showSelectionDialog<String>(
-      title: "Translation Language",
+      title: "Translation Language".tr,
       items: SubtitleTranslator.languages.keys.toList(),
       selectedItem: settings.playerSettings.value.translateTo.obs,
       getTitle: (code) => SubtitleTranslator.languages[code]!,
@@ -739,10 +739,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
 
   void _showFontSelectionDialog() {
     AnymeXDialog(
-      title: "Select Subtitle Font",
+      title: "Select Subtitle Font".tr,
       onConfirm: () {},
       showCancelButton: false,
-      confirmText: 'Close',
+      confirmText: 'Close'.tr,
       contentWidget: StatefulBuilder(
         builder: (dialogContext, setDialogState) {
           final currentFont = settings.playerSettings.value.subtitleFont;
@@ -750,12 +750,12 @@ class _SettingsPlayerState extends State<SettingsPlayer>
             mainAxisSize: MainAxisSize.min,
             children: [
               AnymeXSectionBuilder(
-                title: 'Custom',
+                title: 'Custom'.tr,
                 children: [
                   AnymeXTile(
                     icon: Icons.add_rounded,
-                    title: 'Import Custom Font',
-                    subtitle: 'Support .ttf and .otf files',
+                    title: 'Import Custom Font'.tr,
+                    subtitle: 'Support .ttf and .otf files'.tr,
                     onTap: () async {
                       final result = await FilePicker.platform.pickFiles(
                         type: FileType.custom,
@@ -781,7 +781,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                           setDialogState(() {});
                           snackBar('Imported font "$fontName"');
                         } else {
-                          snackBar('Failed to load font file');
+                          snackBar('Failed to load font file'.tr);
                         }
                       }
                     },
@@ -791,10 +791,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                       selected: currentFont == font,
                       title: font,
                       titleStyle: TextStyle(fontFamily: font),
-                      subtitle: 'Hold to delete',
+                      subtitle: 'Hold to delete'.tr,
                       onLongPress: () {
                         AnymeXDialog(
-                          title: 'Delete Font',
+                          title: 'Delete Font'.tr,
                           message: 'Are you sure you want to delete "$font"?',
                           onConfirm: () async {
                             await ExternalFontLoader.deleteCustomFont(font);
@@ -865,7 +865,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     }
 
     showSelectionDialog<String>(
-      title: "Outline Type",
+      title: "Outline Type".tr,
       items: subtitleOutlineTypes,
       selectedItem: currentType.obs,
       getTitle: (v) => v,
@@ -887,99 +887,99 @@ class _SettingsPlayerState extends State<SettingsPlayer>
 
   List<_DecoderOption> get _decoderOptions {
     if (Platform.isAndroid) {
-      return const [
+      return [
         _DecoderOption(
           value: 'hw+',
-          title: 'HW+',
+          title: 'HW+'.tr,
           description: 'mediacodec-copy',
         ),
         _DecoderOption(
           value: 'hw',
-          title: 'HW',
+          title: 'HW'.tr,
           description: 'mediacodec',
         ),
         _DecoderOption(
           value: 'sw',
-          title: 'SW',
+          title: 'SW'.tr,
           description: 'no',
         ),
       ];
     }
 
     if (Platform.isIOS || Platform.isMacOS) {
-      return const [
+      return [
         _DecoderOption(
           value: 'hw+',
-          title: 'HW+',
+          title: 'HW+'.tr,
           description: 'videotoolbox',
         ),
         _DecoderOption(
           value: 'hw',
-          title: 'HW',
+          title: 'HW'.tr,
           description: 'videotoolbox',
         ),
         _DecoderOption(
           value: 'sw',
-          title: 'SW',
+          title: 'SW'.tr,
           description: 'no',
         ),
       ];
     }
 
     if (Platform.isWindows) {
-      return const [
+      return [
         _DecoderOption(
           value: 'hw+',
-          title: 'HW+',
+          title: 'HW+'.tr,
           description: 'd3d11va-copy',
         ),
         _DecoderOption(
           value: 'hw',
-          title: 'HW',
+          title: 'HW'.tr,
           description: 'd3d11va',
         ),
         _DecoderOption(
           value: 'sw',
-          title: 'SW',
+          title: 'SW'.tr,
           description: 'no',
         ),
       ];
     }
 
     if (Platform.isLinux) {
-      return const [
+      return [
         _DecoderOption(
           value: 'hw+',
-          title: 'HW+',
+          title: 'HW+'.tr,
           description: 'vaapi-copy',
         ),
         _DecoderOption(
           value: 'hw',
-          title: 'HW',
+          title: 'HW'.tr,
           description: 'vaapi',
         ),
         _DecoderOption(
           value: 'sw',
-          title: 'SW',
+          title: 'SW'.tr,
           description: 'no',
         ),
       ];
     }
 
-    return const [
+    return [
       _DecoderOption(
         value: 'hw+',
-        title: 'HW+',
+        title: 'HW+'.tr,
         description: 'auto-copy',
       ),
       _DecoderOption(
         value: 'hw',
-        title: 'HW',
+        title: 'HW'.tr,
         description: 'auto',
       ),
       _DecoderOption(
         value: 'sw',
-        title: 'SW',
+        title: 'SW'.tr,
         description: 'no',
       ),
     ];
@@ -987,29 +987,29 @@ class _SettingsPlayerState extends State<SettingsPlayer>
 
   List<_RendererOption> get _rendererOptions {
     final list = [
-      const _RendererOption(
+      _RendererOption(
         value: 'auto',
-        title: 'Auto (GPU)',
-        description: 'Auto-select (default)',
+        title: 'Auto (GPU)'.tr,
+        description: 'Auto-select (default)'.tr,
       ),
-      const _RendererOption(
+      _RendererOption(
         value: 'gpu',
-        title: 'GPU',
-        description: 'Standard GPU rendering',
+        title: 'GPU'.tr,
+        description: 'Standard GPU rendering'.tr,
       ),
-      const _RendererOption(
+      _RendererOption(
         value: 'gpu-next',
-        title: 'GPU Next (Vulkan)',
-        description: 'Experimental high-performance renderer',
+        title: 'GPU Next (Vulkan)'.tr,
+        description: 'Experimental high-performance renderer'.tr,
       ),
     ];
 
     if (Platform.isAndroid) {
       list.add(
-        const _RendererOption(
+        _RendererOption(
           value: 'mediacodec_embed',
-          title: 'MediaCodec Embed',
-          description: 'Direct surface rendering (Android only)',
+          title: 'MediaCodec Embed'.tr,
+          description: 'Direct surface rendering (Android only)'.tr,
         ),
       );
     }
@@ -1037,7 +1037,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     if (options.isEmpty) return;
 
     showSelectionDialog<String>(
-      title: 'Video Renderer',
+      title: 'Video Renderer'.tr,
       items: options.map((option) => option.value).toList(),
       selectedItem: settings.videoOutput.obs,
       getTitle: _rendererTitle,
@@ -1053,82 +1053,82 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     final list = <_AudioOption>[];
     if (Platform.isAndroid) {
       list.addAll([
-        const _AudioOption(
+        _AudioOption(
           value: 'auto',
-          title: 'Auto (AudioTrack)',
-          description: 'Default Android AudioTrack API',
+          title: 'Auto (AudioTrack)'.tr,
+          description: 'Default Android AudioTrack API'.tr,
         ),
-        const _AudioOption(
+        _AudioOption(
           value: 'audiotrack',
-          title: 'AudioTrack',
-          description: 'Android AudioTrack API',
+          title: 'AudioTrack'.tr,
+          description: 'Android AudioTrack API'.tr,
         ),
-        const _AudioOption(
+        _AudioOption(
           value: 'opensles',
-          title: 'OpenSL ES',
-          description: 'OpenSL ES native audio engine',
+          title: 'OpenSL ES'.tr,
+          description: 'OpenSL ES native audio engine'.tr,
         ),
       ]);
     } else if (Platform.isWindows) {
       list.addAll([
-        const _AudioOption(
+        _AudioOption(
           value: 'auto',
-          title: 'Auto (WASAPI)',
-          description: 'Default Windows audio driver',
+          title: 'Auto (WASAPI)'.tr,
+          description: 'Default Windows audio driver'.tr,
         ),
-        const _AudioOption(
+        _AudioOption(
           value: 'wasapi',
-          title: 'WASAPI',
-          description: 'Windows Audio Session API',
+          title: 'WASAPI'.tr,
+          description: 'Windows Audio Session API'.tr,
         ),
-        const _AudioOption(
+        _AudioOption(
           value: 'sdl',
-          title: 'SDL',
-          description: 'Simple DirectMedia Layer audio output',
+          title: 'SDL'.tr,
+          description: 'Simple DirectMedia Layer audio output'.tr,
         ),
       ]);
     } else if (Platform.isIOS || Platform.isMacOS) {
       list.addAll([
-        const _AudioOption(
+        _AudioOption(
           value: 'auto',
-          title: 'Auto (CoreAudio)',
-          description: 'Default Apple CoreAudio API',
+          title: 'Auto (CoreAudio)'.tr,
+          description: 'Default Apple CoreAudio API'.tr,
         ),
-        const _AudioOption(
+        _AudioOption(
           value: 'coreaudio',
-          title: 'CoreAudio',
-          description: 'Apple CoreAudio API',
+          title: 'CoreAudio'.tr,
+          description: 'Apple CoreAudio API'.tr,
         ),
       ]);
     } else if (Platform.isLinux) {
       list.addAll([
-        const _AudioOption(
+        _AudioOption(
           value: 'auto',
-          title: 'Auto (PulseAudio)',
-          description: 'Default PulseAudio API',
+          title: 'Auto (PulseAudio)'.tr,
+          description: 'Default PulseAudio API'.tr,
         ),
-        const _AudioOption(
+        _AudioOption(
           value: 'pulse',
-          title: 'PulseAudio',
-          description: 'PulseAudio sound server',
+          title: 'PulseAudio'.tr,
+          description: 'PulseAudio sound server'.tr,
         ),
-        const _AudioOption(
+        _AudioOption(
           value: 'alsa',
-          title: 'ALSA',
-          description: 'Advanced Linux Sound Architecture',
+          title: 'ALSA'.tr,
+          description: 'Advanced Linux Sound Architecture'.tr,
         ),
-        const _AudioOption(
+        _AudioOption(
           value: 'sdl',
-          title: 'SDL',
-          description: 'Simple DirectMedia Layer audio output',
+          title: 'SDL'.tr,
+          description: 'Simple DirectMedia Layer audio output'.tr,
         ),
       ]);
     } else {
       list.add(
-        const _AudioOption(
+        _AudioOption(
           value: 'auto',
-          title: 'Auto',
-          description: 'Default system audio driver',
+          title: 'Auto'.tr,
+          description: 'Default system audio driver'.tr,
         ),
       );
     }
@@ -1156,7 +1156,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     if (options.isEmpty) return;
 
     showSelectionDialog<String>(
-      title: 'Audio Engine',
+      title: 'Audio Engine'.tr,
       items: options.map((option) => option.value).toList(),
       selectedItem: settings.audioOutput.obs,
       getTitle: _audioTitle,
@@ -1189,7 +1189,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     if (options.isEmpty) return;
 
     showSelectionDialog<String>(
-      title: 'Decoder',
+      title: 'Decoder'.tr,
       items: options.map((option) => option.value).toList(),
       selectedItem: settings.hardwareDecoder.obs,
       getTitle: _decoderTitle,
@@ -1282,7 +1282,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                             size: 18,
                           ),
                           AnymeXText(
-                            'Custom player flags & parameters',
+                            'Custom player flags & parameters'.tr,
                             variant: TextVariant.semiBold,
                             color: colors.onSurface.withValues(alpha: 0.6),
                             size: 12,
@@ -1300,7 +1300,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                         snackBar('mpv.conf saved successfully');
                       },
                       icon: const Icon(Icons.save_rounded, size: 18),
-                      label: const AnymeXText('Save', variant: TextVariant.bold),
+                      label: AnymeXText('Save'.tr, variant: TextVariant.bold),
                     ),
                   ],
                 ),
@@ -1331,10 +1331,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         icon: const Icon(Icons.copy_rounded, size: 16),
-                        tooltip: 'Copy path',
+                        tooltip: 'Copy path'.tr,
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: configPath));
-                          snackBar('Path copied to clipboard');
+                          snackBar('Path copied to clipboard'.tr);
                         },
                       ),
                     ],
@@ -1342,7 +1342,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                 ),
                 const SizedBox(height: 8),
                 AnymeXText(
-                  'One option per line, like hwdec=auto or scale=ewa_lanczossharp. Lines starting with # are comments. Profiles in [brackets] are ignored.',
+                  'One option per line, like hwdec=auto or scale=ewa_lanczossharp. Lines starting with # are comments. Profiles in [brackets] are ignored.'.tr,
                   variant: TextVariant.regular,
                   color: colors.onSurface.withValues(alpha: 0.6),
                   size: 11,
@@ -1390,7 +1390,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                         setSheetState(() {});
                       },
                       icon: const Icon(Icons.auto_fix_high_rounded, size: 16),
-                      label: const AnymeXText('Load Template', variant: TextVariant.semiBold, size: 12),
+                      label: AnymeXText('Load Template'.tr, variant: TextVariant.semiBold, size: 12),
                     ),
                     const SizedBox(width: 8),
                     OutlinedButton.icon(
@@ -1402,7 +1402,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                         setSheetState(() {});
                       },
                       icon: const Icon(Icons.clear_all_rounded, size: 16),
-                      label: const AnymeXText('Clear', variant: TextVariant.semiBold, size: 12),
+                      label: AnymeXText('Clear'.tr, variant: TextVariant.semiBold, size: 12),
                     ),
                   ],
                 ),
@@ -1422,7 +1422,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: !widget.isModal,
-      headerTitle: 'Player Settings',
+      headerTitle: 'Player Settings'.tr,
       body: Builder(
           builder: (ctx) => SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
@@ -1434,8 +1434,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (widget.isModal) ...[
-                      const Center(
-                        child: AnymeXText("Player Settings",
+                      Center(
+                        child: AnymeXText("Player Settings".tr,
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
@@ -1448,25 +1448,25 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                         children: [
                           if (_supportsDecoderSelection)
                             AnymeXSectionBuilder(
-                              title: 'Playback',
+                              title: 'Playback'.tr,
                               children: [
                                 AnymeXTile(
                                   icon: Icons.memory_rounded,
-                                  title: 'Decoder',
+                                  title: 'Decoder'.tr,
                                   subtitle: _decoderDescription(
                                       settings.hardwareDecoder),
                                   onTap: _showDecoderModeDialog,
                                 ),
                                 AnymeXTile(
                                   icon: Icons.settings_system_daydream_rounded,
-                                  title: 'Video Renderer',
+                                  title: 'Video Renderer'.tr,
                                   subtitle: _rendererDescription(
                                       settings.videoOutput),
                                   onTap: _showRendererSelectionDialog,
                                 ),
                                 AnymeXTile(
                                   icon: Icons.audiotrack_rounded,
-                                  title: 'Audio Engine',
+                                  title: 'Audio Engine'.tr,
                                   subtitle:
                                       _audioDescription(settings.audioOutput),
                                   onTap: _showAudioSelectionDialog,
@@ -1474,7 +1474,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                               ],
                             ),
                           AnymeXSectionBuilder(
-                            title: 'Anime 4K Enhancement',
+                            title: 'Anime 4K Enhancement'.tr,
                             children: [
                               Container(
                                 margin: const EdgeInsets.only(bottom: 16),
@@ -1522,7 +1522,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                 CrossAxisAlignment.start,
                                             children: [
                                               AnymeXText(
-                                                'Anime 4K Enhancement',
+                                                'Anime 4K Enhancement'.tr,
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   fontSize: 16,
@@ -1532,7 +1532,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                 ),
                                               ),
                                               AnymeXText(
-                                                'Real-time 4K upscaling for anime content',
+                                                'Real-time 4K upscaling for anime content'.tr,
                                                 style: TextStyle(
                                                   color: Theme.of(context)
                                                       .colorScheme
@@ -1687,7 +1687,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                     .start,
                                                             children: [
                                                               AnymeXText(
-                                                                'Enable Shaders',
+                                                                'Enable Shaders'.tr,
                                                                 style:
                                                                     TextStyle(
                                                                   fontWeight:
@@ -1783,7 +1783,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                         .start,
                                                                 children: [
                                                                   AnymeXText(
-                                                                    'Choose Shader Profile',
+                                                                    'Choose Shader Profile'.tr,
                                                                     style:
                                                                         TextStyle(
                                                                       fontWeight:
@@ -1839,7 +1839,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                     value: settingsController
                                                                         .selectedProfile),
                                                                 label:
-                                                                    "SELECT PROFILE",
+                                                                    "SELECT PROFILE".tr,
                                                                 icon: Iconsax
                                                                     .play,
                                                                 onChanged: (e) =>
@@ -1905,7 +1905,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                     .start,
                                                             children: [
                                                               AnymeXText(
-                                                                'Warning',
+                                                                'Warning'.tr,
                                                                 style:
                                                                     TextStyle(
                                                                   fontWeight:
@@ -2010,7 +2010,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                               .start,
                                                                       children: [
                                                                         AnymeXText(
-                                                                          'Shader Profiles Initialized',
+                                                                          'Shader Profiles Initialized'.tr,
                                                                           style:
                                                                               TextStyle(
                                                                             fontWeight:
@@ -2020,7 +2020,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                                           ),
                                                                         ),
                                                                         AnymeXText(
-                                                                          'Use keyboard shortcuts during playback to switch profiles',
+                                                                          'Use keyboard shortcuts during playback to switch profiles'.tr,
                                                                           style:
                                                                               TextStyle(
                                                                             color:
@@ -2037,7 +2037,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                               const SizedBox(
                                                                   height: 16),
                                                               AnymeXText(
-                                                                'Available Keybindings:',
+                                                                'Available Keybindings:'.tr,
                                                                 style:
                                                                     TextStyle(
                                                                   fontWeight:
@@ -2088,8 +2088,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                                   onPressed: _downloadShaders,
                                                   icon: const Icon(Iconsax
                                                       .document_download),
-                                                  label: const AnymeXText(
-                                                      'Download 4K Shaders'),
+                                                  label: AnymeXText(
+                                                      'Download 4K Shaders'.tr),
                                                   style: FilledButton.styleFrom(
                                                     backgroundColor:
                                                         Theme.of(context)
@@ -2109,7 +2109,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                               ),
                                               const SizedBox(height: 8),
                                               AnymeXText(
-                                                'Download size: ~4MB',
+                                                'Download size: ~4MB'.tr,
                                                 style: TextStyle(
                                                   color: Theme.of(context)
                                                       .colorScheme
@@ -2130,7 +2130,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                             ],
                           ),
                           AnymeXSectionBuilder(
-                            title: 'Experimental',
+                            title: 'Experimental'.tr,
                             children: [
                               Builder(builder: (context) {
                                 final experimentalEnabled = PlayerUiKeys
@@ -2145,9 +2145,9 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                   children: [
                                     AnymeXTile.toggle(
                                       icon: Icons.science_outlined,
-                                      title: 'Enable Experimental Settings',
+                                      title: 'Enable Experimental Settings'.tr,
                                       subtitle:
-                                          'Required for Core and Visual tuning. Keep off on low-end devices.',
+                                          'Required for Core and Visual tuning. Keep off on low-end devices.'.tr,
                                       value: experimentalEnabled,
                                       onChanged: (val) {
                                         PlayerUiKeys.playerExperimentalEnabled
@@ -2163,13 +2163,13 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                         children: [
                                           AnymeXTile(
                                             icon: Icons.sync_rounded,
-                                            title: 'Video Sync',
+                                            title: 'Video Sync'.tr,
                                             subtitle: (mpvCore['videoSync']
                                                     as String?) ??
                                                 'audio',
                                             onTap: () =>
                                                 _showMpvCoreSelectionDialog(
-                                              title: 'Video Sync',
+                                              title: 'Video Sync'.tr,
                                               items: const [
                                                 'audio',
                                                 'display-resample',
@@ -2185,9 +2185,9 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile.toggle(
                                             icon: Icons.movie_filter_rounded,
-                                            title: 'Frame Interpolation',
+                                            title: 'Frame Interpolation'.tr,
                                             subtitle:
-                                                'Smoother motion, can increase GPU usage',
+                                                'Smoother motion, can increase GPU usage'.tr,
                                             value: (mpvCore['interpolation']
                                                     as bool?) ??
                                                 false,
@@ -2200,9 +2200,9 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile.toggle(
                                             icon: Icons.graphic_eq_rounded,
-                                            title: 'Audio Pitch Correction',
+                                            title: 'Audio Pitch Correction'.tr,
                                             subtitle:
-                                                'Keep voice pitch stable at higher speeds',
+                                                'Keep voice pitch stable at higher speeds'.tr,
                                             value:
                                                 (mpvCore['audioPitchCorrection']
                                                         as bool?) ??
@@ -2217,9 +2217,9 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile.slider(
                                             icon: Icons.timer_outlined,
-                                            title: 'Cache Minutes',
+                                            title: 'Cache Minutes'.tr,
                                             subtitle:
-                                                'Read-ahead duration in Minutes',
+                                                'Read-ahead duration in Minutes'.tr,
                                             value: ((mpvCore['cacheMinutes']
                                                         as num?) ??
                                                     5)
@@ -2237,8 +2237,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile.slider(
                                             icon: Icons.downloading_rounded,
-                                            title: 'Demuxer Readahead',
-                                            subtitle: 'Readahead seconds',
+                                            title: 'Demuxer Readahead'.tr,
+                                            subtitle: 'Readahead seconds'.tr,
                                             value:
                                                 ((mpvCore['demuxerReadaheadSeconds']
                                                             as num?) ??
@@ -2257,9 +2257,9 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile.slider(
                                             icon: Icons.storage_rounded,
-                                            title: 'Demuxer Max Buffer',
+                                            title: 'Demuxer Max Buffer'.tr,
                                             subtitle:
-                                                'Maximum demuxer buffer (MB)',
+                                                'Maximum demuxer buffer (MB)'.tr,
                                             value:
                                                 ((mpvCore['demuxerMaxBytesMb']
                                                             as num?) ??
@@ -2278,7 +2278,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile.slider(
                                             icon: Icons.developer_board_rounded,
-                                            title: 'Decoder Threads',
+                                            title: 'Decoder Threads'.tr,
                                             subtitle:
                                                 '0 means automatic thread count',
                                             value: ((mpvCore['vdLavcThreads']
@@ -2298,10 +2298,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile(
                                             icon: Icons.aspect_ratio_rounded,
-                                            title: 'Scaling Algorithm',
+                                            title: 'Scaling Algorithm'.tr,
                                             subtitle: (mpvVisual['scale'] as String?) ?? 'spline36',
                                             onTap: () => _showMpvVisualSelectionDialog(
-                                              title: 'Scaling Algorithm',
+                                              title: 'Scaling Algorithm'.tr,
                                               items: const [
                                                 'spline36',
                                                 'ewa_lanczossharp',
@@ -2316,10 +2316,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile(
                                             icon: Icons.palette_outlined,
-                                            title: 'Chroma Scaler',
+                                            title: 'Chroma Scaler'.tr,
                                             subtitle: (mpvVisual['cscale'] as String?) ?? 'spline36',
                                             onTap: () => _showMpvVisualSelectionDialog(
-                                              title: 'Chroma Scaler',
+                                              title: 'Chroma Scaler'.tr,
                                               items: const [
                                                 'spline36',
                                                 'ewa_lanczossharp',
@@ -2333,10 +2333,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile(
                                             icon: Icons.photo_size_select_small_rounded,
-                                            title: 'Downscaling Algorithm',
+                                            title: 'Downscaling Algorithm'.tr,
                                             subtitle: (mpvVisual['dscale'] as String?) ?? 'mitchell',
                                             onTap: () => _showMpvVisualSelectionDialog(
-                                              title: 'Downscaling Algorithm',
+                                              title: 'Downscaling Algorithm'.tr,
                                               items: const [
                                                 'mitchell',
                                                 'bicubic',
@@ -2350,8 +2350,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile.toggle(
                                             icon: Icons.blur_linear_rounded,
-                                            title: 'Debanding',
-                                            subtitle: 'Reduce color banding artifacts',
+                                            title: 'Debanding'.tr,
+                                            subtitle: 'Reduce color banding artifacts'.tr,
                                             value: (mpvVisual['deband'] as bool?) ?? true,
                                             onChanged: (val) {
                                               PlayerCoreVisualSettings.setMpvVisualSetting('deband', val);
@@ -2360,10 +2360,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile(
                                             icon: Icons.hdr_auto_rounded,
-                                            title: 'Tone Mapping',
+                                            title: 'Tone Mapping'.tr,
                                             subtitle: (mpvVisual['toneMapping'] as String?) ?? 'auto',
                                             onTap: () => _showMpvVisualSelectionDialog(
-                                              title: 'Tone Mapping',
+                                              title: 'Tone Mapping'.tr,
                                               items: const [
                                                 'auto',
                                                 'clip',
@@ -2380,10 +2380,10 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                           ),
                                           AnymeXTile(
                                             icon: Icons.grain_rounded,
-                                            title: 'Dither Depth',
+                                            title: 'Dither Depth'.tr,
                                             subtitle: (mpvVisual['ditherDepth'] as String?) ?? 'auto',
                                             onTap: () => _showMpvVisualSelectionDialog(
-                                              title: 'Dither Depth',
+                                              title: 'Dither Depth'.tr,
                                               items: const ['auto', '8', '10', 'no'],
                                               selected: (mpvVisual['ditherDepth'] as String?) ?? 'auto',
                                               getTitle: (item) => item,
@@ -2398,13 +2398,13 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                             ],
                           ),
                           AnymeXSectionBuilder(
-                            title: 'MPV Configuration',
+                            title: 'MPV Configuration'.tr,
                             children: [
                               AnymeXTile.toggle(
                                 icon: Icons.description_rounded,
-                                title: 'Use mpv.conf',
+                                title: 'Use mpv.conf'.tr,
                                 subtitle:
-                                    'Apply options from your mpv.conf when playback starts',
+                                    'Apply options from your mpv.conf when playback starts'.tr,
                                 value: _useMpvConf,
                                 onChanged: (val) {
                                   _useMpvConf = val;
@@ -2416,19 +2416,19 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                 icon: Icons.edit_note_rounded,
                                 title: 'mpv.conf',
                                 subtitle:
-                                    'Edit custom mpv flags, properties, and configuration file',
+                                    'Edit custom mpv flags, properties, and configuration file'.tr,
                                 onTap: () => _showMpvConfEditorSheet(context),
                               ),
                             ],
                           ),
                           AnymeXSectionBuilder(
-                            title: 'Common',
+                            title: 'Common'.tr,
                             children: [
                               AnymeXTile.toggle(
                                   icon: Icons.subtitles,
-                                  title: "Use Libass for Subtitles",
+                                  title: "Use Libass for Subtitles".tr,
                                   subtitle:
-                                      "Better subtitle rendering using libass library",
+                                      "Better subtitle rendering using libass library".tr,
                                   value: _useLibass,
                                   onChanged: (val) async {
                                     setState(() {
@@ -2446,9 +2446,9 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                   }),
                               AnymeXTile.toggle(
                                   icon: Icons.launch_rounded,
-                                  title: "Use External Player",
+                                  title: "Use External Player".tr,
                                   subtitle:
-                                      "Open video stream in external player by default",
+                                      "Open video stream in external player by default".tr,
                                   value: _useExternalPlayer,
                                   onChanged: (val) {
                                     setState(() {
@@ -2459,7 +2459,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                               AnymeXTile(
                                 icon: HugeIcons.strokeRoundedPlaySquare,
                                 onTap: _showPlayerControlThemeDialog,
-                                title: 'Player Theme',
+                                title: 'Player Theme'.tr,
                                 subtitle: PlayerControlThemeRegistry.resolve(
                                   settings.playerControlTheme,
                                 ).name,
@@ -2468,14 +2468,14 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                 icon: Icons.data_object_rounded,
                                 onTap: () => showJsonPlayerThemesSheet(
                                     context, setState, settings),
-                                title: 'JSON Theme Manager',
+                                title: 'JSON Theme Manager'.tr,
                                 subtitle:
                                     '${PlayerControlThemeRegistry.jsonThemes.length} imported theme(s)',
                               ),
                               AnymeXTile(
                                 icon: Icons.tune_rounded,
                                 onTap: _showMediaIndicatorThemeDialog,
-                                title: 'Swipe Indicator Theme',
+                                title: 'Swipe Indicator Theme'.tr,
                                 subtitle: MediaIndicatorThemeRegistry.resolve(
                                   settings.mediaIndicatorTheme,
                                 ).name,
@@ -2483,7 +2483,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                               AnymeXTile(
                                 icon: Icons.screen_rotation_rounded,
                                 onTap: _showDefaultOrientationDialog,
-                                title: "Default Orientation",
+                                title: "Default Orientation".tr,
                                 subtitle: const {
                                       'landscape': 'Auto (Landscape)',
                                       'auto_full': 'Auto (Full)',
@@ -2496,13 +2496,13 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                               AnymeXTile(
                                 icon: Icons.speed,
                                 onTap: _showPlaybackSpeedDialog,
-                                title: "Playback Speed",
+                                title: "Playback Speed".tr,
                                 subtitle:
                                     '${settings.speed.toStringAsFixed(1)}x',
                               ),
                               AnymeXTile(
                                 icon: Icons.aspect_ratio,
-                                title: 'Resize Mode',
+                                title: 'Resize Mode'.tr,
                                 subtitle: settings.resizeMode.capitalizeFirst!,
                                 onTap: () {
                                   _showResizeModeDialog();
@@ -2510,85 +2510,85 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                               ),
                               AnymeXTile.toggle(
                                   icon: Icons.fast_forward,
-                                  title: "Auto Skip OP",
-                                  subtitle: "Auto skip the opening song",
+                                  title: "Auto Skip OP".tr,
+                                  subtitle: "Auto skip the opening song".tr,
                                   value: settings.autoSkipOP,
                                   onChanged: (val) =>
                                       settings.autoSkipOP = val),
                               AnymeXTile.toggle(
                                   icon: Icons.fast_forward_outlined,
-                                  title: "Auto Skip ED",
-                                  subtitle: "Auto skip the ending song",
+                                  title: "Auto Skip ED".tr,
+                                  subtitle: "Auto skip the ending song".tr,
                                   value: settings.autoSkipED,
                                   onChanged: (val) =>
                                       settings.autoSkipED = val),
                               AnymeXTile.toggle(
                                   icon: Icons.fast_forward_outlined,
-                                  title: "Auto Skip Recap",
-                                  subtitle: "Auto skip the recap section",
+                                  title: "Auto Skip Recap".tr,
+                                  subtitle: "Auto skip the recap section".tr,
                                   value: settings.autoSkipRecap,
                                   onChanged: (val) =>
                                       settings.autoSkipRecap = val),
                               AnymeXTile.toggle(
                                   icon: Icons.all_inclusive,
-                                  title: "Auto Skip Once Only",
-                                  subtitle: "Auto skip only once per watch",
+                                  title: "Auto Skip Once Only".tr,
+                                  subtitle: "Auto skip only once per watch".tr,
                                   value: settings.autoSkipOnce,
                                   onChanged: (val) =>
                                       settings.autoSkipOnce = val),
                               AnymeXTile.toggle(
                                   icon: Icons.skip_next_rounded,
-                                  title: "Auto Skip Filler",
+                                  title: "Auto Skip Filler".tr,
                                   subtitle:
-                                      "Automatically skip filler episodes when going to next episode",
+                                      "Automatically skip filler episodes when going to next episode".tr,
                                   value: settings.autoSkipFiller,
                                   onChanged: (val) =>
                                       settings.autoSkipFiller = val),
                               AnymeXTile.toggle(
                                   icon: Icons.play_disabled_rounded,
-                                  title: "Gesture for Brightness & Volume",
+                                  title: "Gesture for Brightness & Volume".tr,
                                   subtitle:
-                                      "Enable vertical swiping on the left/right sides of the player screen to adjust brightness and volume",
+                                      "Enable vertical swiping on the left/right sides of the player screen to adjust brightness and volume".tr,
                                   value: settings.enableSwipeControls,
                                   onChanged: (val) =>
                                       settings.enableSwipeControls = val),
                               AnymeXTile.toggle(
                                   icon: Icons.gesture_rounded,
-                                  title: "Hold to Speed Up",
+                                  title: "Hold to Speed Up".tr,
                                   subtitle:
-                                      "Enable holding on player screen to temporarily speed up video playback",
+                                      "Enable holding on player screen to temporarily speed up video playback".tr,
                                   value: settings.enableHoldToSeek,
                                   onChanged: (val) =>
                                       settings.enableHoldToSeek = val),
                               AnymeXTile.toggle(
                                   icon: Icons.swap_horiz_rounded,
-                                  title: "Swipe to Seek",
+                                  title: "Swipe to Seek".tr,
                                   subtitle:
-                                      "Enable horizontal swiping on player screen to seek through video",
+                                      "Enable horizontal swiping on player screen to seek through video".tr,
                                   value: settings.enableSlideToSeek,
                                   onChanged: (val) =>
                                       settings.enableSlideToSeek = val),
                               AnymeXTile.toggle(
                                   icon: Icons.screenshot_rounded,
-                                  title: "Save Last Frame",
+                                  title: "Save Last Frame".tr,
                                   subtitle:
-                                      "Saves a screenshot of the last frame you watched. Disabling this significantly reduces storage usage",
+                                      "Saves a screenshot of the last frame you watched. Disabling this significantly reduces storage usage".tr,
                                   value: settings.enableScreenshot,
                                   onChanged: (val) =>
                                       settings.enableScreenshot = val),
                               AnymeXTile.toggle(
                                   icon: Icons.bluetooth_audio_rounded,
-                                  title: "Media Session (Bluetooth Support)",
+                                  title: "Media Session (Bluetooth Support)".tr,
                                   subtitle:
-                                      "Enable background media controls for Bluetooth headsets and system media notifications. Note: Enabling this will increase battery usage.",
+                                      "Enable background media controls for Bluetooth headsets and system media notifications. Note: Enabling this will increase battery usage.".tr,
                                   value: settings.useMediaSession,
                                   onChanged: (val) =>
                                       settings.useMediaSession = val),
                               AnymeXTile.toggle(
                                   icon: Icons.animation_rounded,
-                                  title: "Animate Control Overlay",
+                                  title: "Animate Control Overlay".tr,
                                   subtitle:
-                                      "Disable to show and hide player controls instantly",
+                                      "Disable to show and hide player controls instantly".tr,
                                   value: settings.playerMenuAnimation,
                                   onChanged: (val) =>
                                       settings.playerMenuAnimation = val),
@@ -2602,8 +2602,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                     settings.seekDuration = value.toInt();
                                   });
                                 },
-                                title: 'DoubleTap to Seek',
-                                subtitle: 'Adjust Double Tap To Seek Duration',
+                                title: 'DoubleTap to Seek'.tr,
+                                subtitle: 'Adjust Double Tap To Seek Duration'.tr,
                                 icon: Iconsax.forward5,
                               ),
                               AnymeXTile.slider(
@@ -2616,8 +2616,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                     settings.skipDuration = value.toInt();
                                   });
                                 },
-                                title: 'MegaSkip Duration',
-                                subtitle: 'Adjust MegaSkip Duration',
+                                title: 'MegaSkip Duration'.tr,
+                                subtitle: 'Adjust MegaSkip Duration'.tr,
                                 icon: Iconsax.forward5,
                               ),
                               AnymeXTile.slider(
@@ -2630,24 +2630,24 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                     settings.markAsCompleted = value.toInt();
                                   });
                                 },
-                                title: 'Mark As Watched',
+                                title: 'Mark As Watched'.tr,
                                 subtitle:
-                                    'How much in percentage to mark episode as watched',
+                                    'How much in percentage to mark episode as watched'.tr,
                                 icon: Iconsax.tick_circle,
                               ),
                             ],
                           ),
                           AnymeXSectionBuilder(
-                            title: 'Subtitles',
+                            title: 'Subtitles'.tr,
                             children: [
                               AnymeXTile(
                                 icon: Icons.closed_caption_rounded,
-                                title: 'Preferred Subtitle Language',
+                                title: 'Preferred Subtitle Language'.tr,
                                 subtitle: SubtitleTranslator.languages[
                                         settings.preferredSubtitleLanguage] ??
                                     'None (Disabled)',
                                 onTap: () => showSelectionDialog<String>(
-                                  title: "Preferred Subtitle Language",
+                                  title: "Preferred Subtitle Language".tr,
                                   items: [
                                     'none',
                                     ...SubtitleTranslator.languages.keys
@@ -2665,18 +2665,18 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                               ),
                               AnymeXTile.toggle(
                                   icon: Icons.lightbulb,
-                                  title: 'Transition Subtitle',
+                                  title: 'Transition Subtitle'.tr,
                                   subtitle:
-                                      'By disabling this you can avoid the transition between subtitles.',
+                                      'By disabling this you can avoid the transition between subtitles.'.tr,
                                   value: settings.transitionSubtitle,
                                   onChanged: (e) {
                                     settings.transitionSubtitle = e;
                                   }),
                               AnymeXTile.toggle(
                                 icon: HugeIcons.strokeRoundedTranslate,
-                                title: 'Auto Translate Subtitles',
+                                title: 'Auto Translate Subtitles'.tr,
                                 subtitle:
-                                    'Use AI to translate soft-subtitles live',
+                                    'Use AI to translate soft-subtitles live'.tr,
                                 value:
                                     settings.playerSettings.value.autoTranslate,
                                 onChanged: (val) {
@@ -2690,7 +2690,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                   settings.playerSettings.value.autoTranslate)
                                 AnymeXTile(
                                   icon: Icons.language,
-                                  title: 'Translate To',
+                                  title: 'Translate To'.tr,
                                   subtitle: SubtitleTranslator.languages[
                                           settings.playerSettings.value
                                               .translateTo] ??
@@ -2701,14 +2701,14 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                 ),
                               AnymeXTile(
                                 icon: Icons.font_download_rounded,
-                                title: 'Subtitle Font',
+                                title: 'Subtitle Font'.tr,
                                 subtitle:
                                     settings.playerSettings.value.subtitleFont,
                                 onTap: _showFontSelectionDialog,
                               ),
                               AnymeXTile(
                                 icon: Icons.format_paint_rounded,
-                                title: 'Outline Type',
+                                title: 'Outline Type'.tr,
                                 subtitle: normalizeSubtitleOutlineType(settings
                                     .playerSettings.value.subtitleOutlineType),
                                 onTap: _showOutlineTypeDialog,
@@ -2725,8 +2725,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                   PlayerSettingsKeys.subtitleOpacity.set(val);
                                   settings.playerSettings.refresh();
                                 },
-                                title: 'Subtitle Transparency',
-                                subtitle: 'Adjust text visibility',
+                                title: 'Subtitle Transparency'.tr,
+                                subtitle: 'Adjust text visibility'.tr,
                                 icon: Icons.opacity,
                               ),
                               AnymeXTile.slider(
@@ -2742,14 +2742,14 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                       .set(val);
                                   settings.playerSettings.refresh();
                                 },
-                                title: 'Bottom Margin',
-                                subtitle: 'Distance from bottom of screen',
+                                title: 'Bottom Margin'.tr,
+                                subtitle: 'Distance from bottom of screen'.tr,
                                 icon: Icons.vertical_align_bottom,
                               ),
                               AnymeXTile(
-                                subtitle: 'Change subtitle colors',
+                                subtitle: 'Change subtitle colors'.tr,
                                 icon: Icons.palette,
-                                title: 'Subtitle Color',
+                                title: 'Subtitle Color'.tr,
                                 onTap: () {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Color',
@@ -2763,8 +2763,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                               ),
                               AnymeXTile(
                                 icon: Icons.palette,
-                                title: 'Subtitle Outline Color',
-                                subtitle: 'Change subtitle outline color',
+                                title: 'Subtitle Outline Color'.tr,
+                                subtitle: 'Change subtitle outline color'.tr,
                                 onTap: () {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Outline Color',
@@ -2776,9 +2776,9 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                 },
                               ),
                               AnymeXTile(
-                                subtitle: 'Change subtitle background color',
+                                subtitle: 'Change subtitle background color'.tr,
                                 icon: Icons.palette,
-                                title: 'Subtitle Background Color',
+                                title: 'Subtitle Background Color'.tr,
                                 onTap: () {
                                   _showColorSelectionDialog(
                                       'Select Subtitle Background Color',
@@ -2796,8 +2796,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                 onChanged: (double value) {
                                   settings.subtitleSize = value.toInt();
                                 },
-                                title: 'Subtitle Size',
-                                subtitle: 'Adjust Sub Size',
+                                title: 'Subtitle Size'.tr,
+                                subtitle: 'Adjust Sub Size'.tr,
                                 icon: Iconsax.subtitle5,
                               ),
                               AnymeXTile.slider(
@@ -2808,8 +2808,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                 onChanged: (double value) {
                                   settings.subtitleOutlineWidth = value.toInt();
                                 },
-                                title: 'Subtitle Outline Width',
-                                subtitle: 'Adjust Subtitle Outline Width',
+                                title: 'Subtitle Outline Width'.tr,
+                                subtitle: 'Adjust Subtitle Outline Width'.tr,
                                 icon: Iconsax.subtitle5,
                               ),
                               const SizedBox(height: 20),
@@ -2819,8 +2819,8 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const AnymeXText(
-                                      'Subtitle Preview',
+                                    AnymeXText(
+                                      'Subtitle Preview'.tr,
                                       style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600),
@@ -2835,7 +2835,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                       ),
                                       padding: const EdgeInsets.all(10),
                                       child: buildStyledSubtitleText(
-                                        text: 'Subtitle Preview Text',
+                                        text: 'Subtitle Preview Text'.tr,
                                         textColor: fontColorOptions[
                                                 settings.subtitleColor] ??
                                             fontColorOptions['Default']!,
@@ -2861,7 +2861,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                             ],
                           ),
                           AnymeXSectionBuilder(
-                            title: 'Bottom Controls',
+                            title: 'Bottom Controls'.tr,
                             disableSeperator: true,
                             children: [
                               _buildJsonThemeInfoCard(),
@@ -3024,7 +3024,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
           const SizedBox(width: 10),
           Expanded(
             child: AnymeXText(
-              'If you are using a JSON theme, changes here will not affect player controls. Switch to a built-in theme to apply these settings.',
+              'If you are using a JSON theme, changes here will not affect player controls. Switch to a built-in theme to apply these settings.'.tr,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurface,
                     height: 1.35,
@@ -3074,12 +3074,12 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     if (position == 'hidden') {
       return [
         IconButton(
-          tooltip: 'Show on left',
+          tooltip: 'Show on left'.tr,
           icon: const Icon(Icons.visibility_outlined, size: 20),
           onPressed: () => _showButton(control.id, 'left'),
         ),
         IconButton(
-          tooltip: 'Show on right',
+          tooltip: 'Show on right'.tr,
           icon: const Icon(
             Icons.keyboard_arrow_right_rounded,
           ),
@@ -3089,7 +3089,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
     } else {
       return [
         IconButton(
-          tooltip: 'Hide button',
+          tooltip: 'Hide button'.tr,
           icon: const Icon(
             Icons.visibility_off_outlined,
             size: 20,
@@ -3098,7 +3098,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
         ),
         if (position == 'left')
           IconButton(
-            tooltip: 'Move to right',
+            tooltip: 'Move to right'.tr,
             icon: const Icon(
               Icons.keyboard_arrow_right_rounded,
             ),
@@ -3106,7 +3106,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
           )
         else
           IconButton(
-            tooltip: 'Move to left',
+            tooltip: 'Move to left'.tr,
             icon: const Icon(Icons.keyboard_arrow_left_rounded,
                 color: Colors.white),
             onPressed: () => _moveButton(control.id, 'left'),

@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/search/widgets/search_filter_selector.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -782,7 +783,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
               ),
               const SizedBox(width: 8),
               AnymeXText(
-                'FILTERS',
+                'FILTERS'.tr,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.w800,
@@ -884,7 +885,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         _buildSectionHeader('FILTERS', Icons.filter_list_rounded),
         if (cfg.supportsSeason) ...[
           _buildNeonSelector(
-            hint: 'Season',
+            hint: 'Season'.tr,
             value: selectedSeason,
             options: seasons,
             optionLabels: {
@@ -909,7 +910,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         if (cfg.supportsCountry) ...[
           const SizedBox(height: 12),
           _buildNeonSelector(
-            hint: 'Country of Origin',
+            hint: 'Country of Origin'.tr,
             value: selectedCountry,
             options: countries,
             optionLabels: _countryLabels,
@@ -919,7 +920,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         ],
         const SizedBox(height: 12),
         _buildNeonSelector(
-          hint: 'Format',
+          hint: 'Format'.tr,
           value: selectedFormat,
           options: formats,
           optionLabels: formatLabels,
@@ -929,7 +930,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         if (cfg.supportsSource) ...[
           const SizedBox(height: 12),
           _buildNeonSelector(
-            hint: 'Source',
+            hint: 'Source'.tr,
             value: selectedSource,
             options: isManga ? mangaSources : animeSources,
             optionLabels: isManga ? mangaSourceLabels : animeSourceLabels,
@@ -950,7 +951,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             AnymeXText(
-              'Use Year Range',
+              'Use Year Range'.tr,
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
@@ -969,7 +970,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         const SizedBox(height: 8),
         if (!useYearRange)
           _buildNeonSelector(
-            hint: 'Year',
+            hint: 'Year'.tr,
             value: selectedYear?.toString(),
             options: List.generate(DateTime.now().year + 1 - _minYear + 1,
                 (i) => (_minYear + i).toString()).reversed.toList(),
@@ -999,7 +1000,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         _buildSectionHeader(
             'EPISODES & DURATION', Icons.play_circle_outline_rounded),
         _buildSwitchRow(
-          label: 'Filter by Episode Count',
+          label: 'Filter by Episode Count'.tr,
           value: useEpisodeRange,
           onChanged: (v) => setState(() => useEpisodeRange = v),
         ),
@@ -1017,7 +1018,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         ],
         const SizedBox(height: 12),
         _buildSwitchRow(
-          label: 'Filter by Duration (min)',
+          label: 'Filter by Duration (min)'.tr,
           value: useDurationRange,
           onChanged: (v) => setState(() => useDurationRange = v),
         ),
@@ -1043,7 +1044,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
       children: [
         _buildSectionHeader('CHAPTERS & VOLUMES', Icons.menu_book_rounded),
         _buildSwitchRow(
-          label: 'Filter by Chapter Count',
+          label: 'Filter by Chapter Count'.tr,
           value: useChaptersRange,
           onChanged: (v) => setState(() => useChaptersRange = v),
         ),
@@ -1061,7 +1062,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         ],
         const SizedBox(height: 12),
         _buildSwitchRow(
-          label: 'Filter by Volume Count',
+          label: 'Filter by Volume Count'.tr,
           value: useVolumesRange,
           onChanged: (v) => setState(() => useVolumesRange = v),
         ),
@@ -1117,7 +1118,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
               color: colorScheme.surface.opaque(0.5, iReallyMeanIt: true),
             ),
             child: AnymeXText(
-              'No genres available. AniList API may be temporarily down.',
+              'No genres available. AniList API may be temporarily down.'.tr,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
               ),
@@ -1637,7 +1638,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        'SORT BY',
+                        'SORT BY'.tr,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface.opaque(0.7),
                           fontWeight: FontWeight.w600,
@@ -1702,7 +1703,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
             child: Column(
               children: [
                 AnymeXText(
-                  'ORDER',
+                  'ORDER'.tr,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color:
                         colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
@@ -1765,7 +1766,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
       children: [
         Expanded(
           child: _buildNeonButton(
-            text: 'RESET',
+            text: 'RESET'.tr,
             icon: Icons.refresh_rounded,
             isPrimary: false,
             onTap: _resetFilters,
@@ -1844,7 +1845,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
 
   void _showSortBottomSheet() {
     _showNeonBottomSheet(
-      title: 'Sort By',
+      title: 'Sort By'.tr,
       options: sortOptions.keys.toList(),
       optionLabels: {},
       selectedValue: selectedSortBy,
@@ -1908,7 +1909,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                             Icon(Icons.label_rounded,
                                 color: colorScheme.primary, size: 24),
                             const SizedBox(width: 8),
-                            AnymeXText('SELECT TAGS',
+                            AnymeXText('SELECT TAGS'.tr,
                                 style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 1.5,
@@ -1925,7 +1926,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                                 .toList();
                           }),
                           decoration: InputDecoration(
-                            hintText: 'Search tags...',
+                            hintText: 'Search tags...'.tr,
                             prefixIcon: const Icon(Icons.search),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12)),
@@ -2102,7 +2103,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                 Expanded(
                   child: !hasServices
                       ? _buildEmptyOptionsState(context,
-                          title: 'No Services Available',
+                          title: 'No Services Available'.tr,
                           message:
                               'Could not load streaming services from AniList API.\nThe service may be temporarily unavailable or rate-limited.')
                       : ListView(
@@ -2120,7 +2121,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: _buildNeonButton(
-                    text: 'DONE',
+                    text: 'DONE'.tr,
                     icon: Icons.check_rounded,
                     isPrimary: true,
                     onTap: () => Navigator.pop(ctx),

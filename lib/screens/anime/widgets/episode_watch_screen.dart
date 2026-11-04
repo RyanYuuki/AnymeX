@@ -144,9 +144,9 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        AnymeXText("Episodes",
+                        AnymeXText("Episodes".tr,
                             size: 20,
                             variant: TextVariant.semiBold)
                       ],
@@ -254,16 +254,16 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       padding: EdgeInsets.all(20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
           AnymeXText(
-            'Scanning for video streams...',
+            'Scanning for video streams...'.tr,
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 8),
           AnymeXText(
-            'This may take up to 30 seconds',
+            'This may take up to 30 seconds'.tr,
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
@@ -276,12 +276,12 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       mainAxisSize: MainAxisSize.min,
       children: [
         10.height(),
-        AnymeXText("Error Occured",
+        AnymeXText("Error Occured".tr,
           variant: TextVariant.bold,
           size: 18,
         ),
         20.height(),
-        AnymeXText("Server-chan is taking a nap!",
+        AnymeXText("Server-chan is taking a nap!".tr,
           variant: TextVariant.semiBold,
           size: 18,
         ),
@@ -304,10 +304,10 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
   }
 
   Widget _buildEmptyState() {
-    return const SizedBox(
+    return SizedBox(
       height: 200,
       child: Center(
-        child: AnymeXText("No servers available",
+        child: AnymeXText("No servers available".tr,
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -326,7 +326,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             alignment: Alignment.center,
-            child: const AnymeXText("Choose Server",
+            child: AnymeXText("Choose Server".tr,
               size: 18,
               variant: TextVariant.bold,
             ),

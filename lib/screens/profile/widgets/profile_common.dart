@@ -29,11 +29,11 @@ Future<bool> confirmDiscardComposer(
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const AnymeXText('Keep editing'),
+              child: AnymeXText('Keep editing'.tr),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const AnymeXText('Discard'),
+              child: AnymeXText('Discard'.tr),
             ),
           ],
         ),
@@ -207,7 +207,7 @@ void showActivityFilterSheet(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    "Filter Activity",
+                    "Filter Activity".tr,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -216,7 +216,7 @@ void showActivityFilterSheet(
                   ),
                   const SizedBox(height: 10),
                   CheckboxListTile(
-                    title: const AnymeXText('All'),
+                    title: AnymeXText('All'.tr),
                     value: activityFilters.length == 4,
                     activeColor: context.theme.colorScheme.primary,
                     checkboxShape: RoundedRectangleBorder(
@@ -270,8 +270,8 @@ void showActivityFilterSheet(
                         Navigator.pop(context);
                         onApply();
                       },
-                      child: const AnymeXText(
-                        "Apply Filters",
+                      child: AnymeXText(
+                        "Apply Filters".tr,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

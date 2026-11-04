@@ -147,20 +147,20 @@ class _AIRecommendationState extends State<AIRecommendation> {
 
   void _showSettings() {
     AnymeXSheet(
-      title: 'Preferences',
+      title: 'Preferences'.tr,
       showDragHandle: true,
       contentWidget: Obx(() {
         final options = [
           _PrefOption(
-            title: "Grid View",
-            subtitle: "Toggle between grid and detailed list",
+            title: "Grid View".tr,
+            subtitle: "Toggle between grid and detailed list".tr,
             icon: Iconsax.grid_1,
             value: isGrid.value,
             onChanged: (v) => isGrid.value = v,
           ),
           _PrefOption(
             title: "18+ Content",
-            subtitle: "Include adult & NSFW suggestions",
+            subtitle: "Include adult & NSFW suggestions".tr,
             icon: Icons.eighteen_up_rating_rounded,
             value: isAdult.value,
             onChanged: (v) {
@@ -253,7 +253,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                     }
                   },
                   disableIcons: true,
-                  hintText: "Enter Username",
+                  hintText: "Enter Username".tr,
                 ),
               ),
               const SizedBox(height: 16),
@@ -273,7 +273,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                     borderRadius: BorderRadius.circular(12.multiplyRadius()),
                   ),
                   child: AnymeXText(
-                    "Search",
+                    "Search".tr,
                     variant: TextVariant.semiBold,
                     color: context.colors.onPrimary,
                   ),
@@ -311,7 +311,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Center(
                     child: AnymeXText(
-                      'No more recommendations',
+                      'No more recommendations'.tr,
                       style: TextStyle(
                         color: Theme.of(context)
                             .colorScheme

@@ -12,6 +12,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:anymex/l10n/locale_controller.dart';
+import 'package:anymex/l10n/locale_keys.dart';
 
 class SettingsCommon extends StatefulWidget {
   const SettingsCommon({super.key});
@@ -41,7 +43,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Common Settings',
+      headerTitle: 'Common Settings'.tr,
       body: Builder(
           builder: (ctx) => SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
@@ -50,13 +52,23 @@ class _SettingsCommonState extends State<SettingsCommon> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnymeXSectionBuilder(
-                      title: 'Universal',
+                      title: 'Universal'.tr,
                       children: [
+                        Obx(() {
+                          final localeController = Get.find<LocaleController>();
+                          return AnymeXTile(
+                            icon: Icons.language_rounded,
+                            title: LocaleKeys.labelLanguage.tr,
+                            subtitle:
+                                '${localeController.currentLanguageNativeName} (${localeController.currentLanguageName})',
+                            onTap: () => _showLanguageDialog(context),
+                          );
+                        }),
                         AnymeXTile.toggle(
                           icon: Icons.touch_app_rounded,
-                          title: 'Ask for tracking permission',
+                          title: 'Ask for tracking permission'.tr,
                           subtitle:
-                              'If enabled, Anymex will ask for tracking permission if not then it will track by default.',
+                              'If enabled, Anymex will ask for tracking permission if not then it will track by default.'.tr,
                           value: shouldAskForPermission,
                           onChanged: (e) {
                             setState(() {
@@ -67,9 +79,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                         ),
                         AnymeXTile.toggle(
                           icon: Icons.collections_bookmark_rounded,
-                          title: 'Unified Library',
+                          title: 'Unified Library'.tr,
                           subtitle:
-                              'If enabled, all library items will be shared across all tracking services.',
+                              'If enabled, all library items will be shared across all tracking services.'.tr,
                           value: unifiedLibrary,
                           onChanged: (e) {
                             setState(() {
@@ -80,9 +92,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                         ),
                         AnymeXTile.toggle(
                           icon: Icons.play_disabled_rounded,
-                          title: 'Hide Adult Content',
+                          title: 'Hide Adult Content'.tr,
                           subtitle:
-                              'If enabled, you will not get a prompt for enabling adult content on Anilist/MyAnimeList.',
+                              'If enabled, you will not get a prompt for enabling adult content on Anilist/MyAnimeList.'.tr,
                           value: hideAdultContent,
                           onChanged: (e) {
                             setState(() {
@@ -93,9 +105,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                         ),
                         Obx(() => AnymeXTile.toggle(
                               icon: Icons.play_circle_outline_rounded,
-                              title: 'Show Continue Watching on Home',
+                              title: 'Show Continue Watching on Home'.tr,
                               subtitle:
-                                  'If enabled, a continue watching bar will be shown above the bottom navigation bar on the home page.',
+                                  'If enabled, a continue watching bar will be shown above the bottom navigation bar on the home page.'.tr,
                               value: settings.showHomeContinueWatching.value,
                               onChanged: (e) {
                                 settings.saveShowHomeContinueWatching(e);
@@ -104,13 +116,13 @@ class _SettingsCommonState extends State<SettingsCommon> {
                       ],
                     ),
                     AnymeXSectionBuilder(
-                      title: 'Community Recommendations',
+                      title: 'Community Recommendations'.tr,
                       children: [
                         AnymeXTile.toggle(
                           icon: Icons.people_rounded,
-                          title: 'Show Community Recommendations',
+                          title: 'Show Community Recommendations'.tr,
                           subtitle:
-                              'Display anime, manga, movies and shows recommended by the community on the home page.',
+                              'Display anime, manga, movies and shows recommended by the community on the home page.'.tr,
                           value: showCommunityRecs,
                           onChanged: (e) {
                             setState(() {
@@ -126,9 +138,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           final svc = Get.find<CommunityService>();
                           return AnymeXTile.toggle(
                             icon: Icons.no_adult_content_rounded,
-                            title: 'Hide NSFW Recommendations',
+                            title: 'Hide NSFW Recommendations'.tr,
                             subtitle:
-                                'Filter out adult/NSFW entries from community recommendations.',
+                                'Filter out adult/NSFW entries from community recommendations.'.tr,
                             value: svc.hideNsfw.value,
                             onChanged: (v) {
                               svc.hideNsfw.value = v;
@@ -140,9 +152,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                           final svc = Get.find<CommunityService>();
                           return AnymeXTile.toggle(
                             icon: Icons.filter_list_rounded,
-                            title: 'Hide by List Status',
+                            title: 'Hide by List Status'.tr,
                             subtitle:
-                                'Filter out entries already in your list based on watching/reading status.',
+                                'Filter out entries already in your list based on watching/reading status.'.tr,
                             value: svc.filterByListEnabled.value,
                             onChanged: (v) {
                               svc.filterByListEnabled.value = v;
@@ -160,9 +172,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                             children: [
                               AnymeXTile.toggle(
                                 icon: Icons.check_circle_outline_rounded,
-                                title: 'Hide Completed',
+                                title: 'Hide Completed'.tr,
                                 subtitle:
-                                    'Hide entries that are marked as completed in your list.',
+                                    'Hide entries that are marked as completed in your list.'.tr,
                                 value: svc.filterCompleted.value,
                                 onChanged: (v) {
                                   svc.filterCompleted.value = v;
@@ -171,9 +183,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               ),
                               AnymeXTile.toggle(
                                 icon: Icons.remove_red_eye_outlined,
-                                title: 'Hide Watching / Reading',
+                                title: 'Hide Watching / Reading'.tr,
                                 subtitle:
-                                    'Hide entries that you are currently watching or reading.',
+                                    'Hide entries that you are currently watching or reading.'.tr,
                                 value: svc.filterWatching.value,
                                 onChanged: (v) {
                                   svc.filterWatching.value = v;
@@ -182,8 +194,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               ),
                               AnymeXTile.toggle(
                                 icon: Icons.cancel_outlined,
-                                title: 'Hide Dropped',
-                                subtitle: 'Hide entries that you have dropped.',
+                                title: 'Hide Dropped'.tr,
+                                subtitle: 'Hide entries that you have dropped.'.tr,
                                 value: svc.filterDropped.value,
                                 onChanged: (v) {
                                   svc.filterDropped.value = v;
@@ -192,9 +204,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               ),
                               AnymeXTile.toggle(
                                 icon: Icons.event_note_outlined,
-                                title: 'Hide Planning',
+                                title: 'Hide Planning'.tr,
                                 subtitle:
-                                    'Hide entries that are in your plan list.',
+                                    'Hide entries that are in your plan list.'.tr,
                                 value: svc.filterPlanning.value,
                                 onChanged: (v) {
                                   svc.filterPlanning.value = v;
@@ -203,9 +215,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               ),
                               AnymeXTile.toggle(
                                 icon: Icons.pause_circle_outline_rounded,
-                                title: 'Hide On Hold / Paused',
+                                title: 'Hide On Hold / Paused'.tr,
                                 subtitle:
-                                    'Hide entries that you have put on hold.',
+                                    'Hide entries that you have put on hold.'.tr,
                                 value: svc.filterPaused.value,
                                 onChanged: (v) {
                                   svc.filterPaused.value = v;
@@ -214,9 +226,9 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               ),
                               AnymeXTile.toggle(
                                 icon: Icons.replay_rounded,
-                                title: 'Hide Rewatching',
+                                title: 'Hide Rewatching'.tr,
                                 subtitle:
-                                    'Hide entries that you are rewatching.',
+                                    'Hide entries that you are rewatching.'.tr,
                                 value: svc.filterRepeating.value,
                                 onChanged: (v) {
                                   svc.filterRepeating.value = v;
@@ -229,36 +241,36 @@ class _SettingsCommonState extends State<SettingsCommon> {
                       ],
                     ),
                     AnymeXSectionBuilder(
-                      title: 'Anilist',
+                      title: 'Anilist'.tr,
                       children: [
                         AnymeXTile(
                           icon: Icons.format_list_bulleted_sharp,
-                          title: 'Manage Anilist Lists',
-                          subtitle: "Choose which list to show on home page",
+                          title: 'Manage Anilist Lists'.tr,
+                          subtitle: "Choose which list to show on home page".tr,
                           onTap: () =>
                               _showHomePageCardsDialog(ServicesType.anilist),
                         ),
                       ],
                     ),
                     AnymeXSectionBuilder(
-                      title: 'MyAnimeList',
+                      title: 'MyAnimeList'.tr,
                       children: [
                         AnymeXTile(
                           icon: Icons.format_list_bulleted_sharp,
-                          title: 'Manage MyAnimeList Lists',
-                          subtitle: "Choose which list to show on home page",
+                          title: 'Manage MyAnimeList Lists'.tr,
+                          subtitle: "Choose which list to show on home page".tr,
                           onTap: () =>
                               _showHomePageCardsDialog(ServicesType.mal),
                         ),
                       ],
                     ),
                     AnymeXSectionBuilder(
-                      title: 'Simkl',
+                      title: 'Simkl'.tr,
                       children: [
                         AnymeXTile(
                           icon: Icons.format_list_bulleted_sharp,
-                          title: 'Manage Simkl Lists',
-                          subtitle: "Choose which list to show on home page",
+                          title: 'Manage Simkl Lists'.tr,
+                          subtitle: "Choose which list to show on home page".tr,
                           onTap: () =>
                               _showHomePageCardsDialog(ServicesType.simkl),
                         ),
@@ -405,6 +417,37 @@ class _SettingsCommonState extends State<SettingsCommon> {
                 UISettingsKeys.homePageCardsSimkl.set(jsonEncode(localState));
               }
             },
+          );
+        },
+      ),
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    final localeController = Get.find<LocaleController>();
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AnymeXDialog(
+            title: LocaleKeys.labelLanguage.tr,
+            showCancelButton: false,
+            confirmText: LocaleKeys.actionClose.tr,
+            onConfirm: () {},
+            contentWidget: AnymeXTileBuilder<LanguageOption>(
+              items: LocaleController.supportedLanguages,
+              isSelected: (opt) =>
+                  opt.locale.languageCode ==
+                  localeController.currentLocale.value.languageCode,
+              isRadio: true,
+              getTitle: (opt) => opt.nativeName,
+              getSubtitle: (opt) => opt.name,
+              onItemPressed: (opt) {
+                localeController.changeLocale(opt.locale);
+                setDialogState(() {});
+                Navigator.pop(context);
+              },
+            ),
           );
         },
       ),

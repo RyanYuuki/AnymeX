@@ -27,7 +27,7 @@ class NotificationScreen extends GetView<NotificationController> {
     return AnymeXScaffold(
       body: Column(children: [
         NestedHeader(
-          title: 'Notifications',
+          title: 'Notifications'.tr,
           action: Obx(() {
             final hasUnread = controller.unreadCount.value > 0;
             if (!hasUnread) return const SizedBox.shrink();
@@ -39,7 +39,7 @@ class NotificationScreen extends GetView<NotificationController> {
                 color: colorScheme.primary,
               ),
               label: AnymeXText(
-                'Mark all read',
+                'Mark all read'.tr,
                 variant: TextVariant.semiBold,
                 size: 12,
                 color: colorScheme.primary,
@@ -261,7 +261,7 @@ class NotificationScreen extends GetView<NotificationController> {
                     ),
                     const SizedBox(width: 6),
                     AnymeXText(
-                      'Unread only',
+                      'Unread only'.tr,
                       variant: TextVariant.regular,
                       size: 12,
                       color: controller.showUnreadOnly.value
@@ -372,7 +372,7 @@ class NotificationScreen extends GetView<NotificationController> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'No notifications yet',
+              'No notifications yet'.tr,
               variant: TextVariant.semiBold,
               size: 16,
               color: colorScheme.onSurface,
@@ -409,7 +409,7 @@ class NotificationScreen extends GetView<NotificationController> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Something went wrong',
+              'Something went wrong'.tr,
               variant: TextVariant.semiBold,
               size: 16,
               color: colorScheme.onSurface,
@@ -426,7 +426,7 @@ class NotificationScreen extends GetView<NotificationController> {
                   color: colorScheme.primary,
                   radius: 12,
                   child: AnymeXText(
-                    'Retry',
+                    'Retry'.tr,
                     variant: TextVariant.semiBold,
                     size: 13,
                     color: colorScheme.onPrimary,

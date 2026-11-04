@@ -50,8 +50,8 @@ Widget buildMediaStatsSection(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AnymeXText(
-              'Synopsis',
+            AnymeXText(
+              'Synopsis'.tr,
               size: 15,
               variant: TextVariant.bold,
               isMarquee: true,
@@ -277,16 +277,16 @@ Widget buildExtrasSection(BuildContext context, Media mediaData) {
             if (isAnime) ...[
               AnymeXTile(
                 icon: Icons.music_note_rounded,
-                title: "Openings & Endings",
-                subtitle: "View opening and ending themes",
+                title: "Openings & Endings".tr,
+                subtitle: "View opening and ending themes".tr,
                 onTap: () {
                   navigate(() => AnimeThemePlayerPage(animeDetails: mediaData));
                 },
               ),
               AnymeXTile(
                 icon: Icons.playlist_play_rounded,
-                title: "Watch Order",
-                subtitle: "View the chronological watch order of this anime",
+                title: "Watch Order".tr,
+                subtitle: "View the chronological watch order of this anime".tr,
                 onTap: () {
                   navigate(() => WatchOrderPage(title: mediaData.title));
                 },
@@ -299,8 +299,8 @@ Widget buildExtrasSection(BuildContext context, Media mediaData) {
                   }
                   return AnymeXTile(
                     icon: Icons.newspaper_rounded,
-                    title: "Recent News",
-                    subtitle: "Read latest updates about this anime",
+                    title: "Recent News".tr,
+                    subtitle: "Read latest updates about this anime".tr,
                     onTap: () {
                       navigate(() =>
                           NewsPage(media: mediaData, news: snapshot.data!));
@@ -317,8 +317,8 @@ Widget buildExtrasSection(BuildContext context, Media mediaData) {
                   }
                   return AnymeXTile(
                     icon: Icons.newspaper_rounded,
-                    title: "Recent News",
-                    subtitle: "Read latest updates about this manga",
+                    title: "Recent News".tr,
+                    subtitle: "Read latest updates about this manga".tr,
                     onTap: () {
                       navigate(() =>
                           NewsPage(media: mediaData, news: snapshot.data!));
@@ -338,7 +338,7 @@ Widget buildExtrasSection(BuildContext context, Media mediaData) {
                   final end = snapshot.data!.animeEnd ?? 'Unknown';
                   return AnymeXTile(
                     icon: Icons.tv_rounded,
-                    title: "Anime Adaptation",
+                    title: "Anime Adaptation".tr,
                     subtitle: "Adapted from Chapter $start to $end",
                     onTap: () {},
                     showChevron: false,
@@ -362,7 +362,7 @@ Widget buildExtrasSection(BuildContext context, Media mediaData) {
                       : 'Unknown';
                   return AnymeXTile(
                     icon: Icons.calendar_month_rounded,
-                    title: "Next Release Prediction",
+                    title: "Next Release Prediction".tr,
                     subtitle: "$nextCh predicted on $releaseDate",
                     onTap: () {},
                     showChevron: false,

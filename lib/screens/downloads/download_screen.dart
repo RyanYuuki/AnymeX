@@ -239,7 +239,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
         body: Column(
       children: [
         NestedHeader(
-          title: 'Downloads',
+          title: 'Downloads'.tr,
           action: Container(
             decoration: BoxDecoration(
               color: theme.primaryContainer.opaque(0.3),
@@ -268,14 +268,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _buildDynamicTabBar(
               colors: theme,
-              tabs: const [
+              tabs: [
                 (
-                  label: 'Downloaded Media',
+                  label: 'Downloaded Media'.tr,
                   icon: HugeIcons.strokeRoundedFolderLibrary,
                   type: 0
                 ),
                 (
-                  label: 'New Download',
+                  label: 'New Download'.tr,
                   icon: HugeIcons.strokeRoundedAdd01,
                   type: 1
                 ),
@@ -309,14 +309,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
             Icon(HugeIcons.strokeRoundedFolder01,
                 size: 64, color: theme.primary),
             const SizedBox(height: 24),
-            const AnymeXText(
-              'Choose Download Folder',
+            AnymeXText(
+              'Choose Download Folder'.tr,
               variant: TextVariant.bold,
               size: 20,
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.',
+              'Select a folder where AnymeX will save your downloaded anime episodes and manga chapters.'.tr,
               textAlign: TextAlign.center,
               color: theme.onSurface.opaque(0.7),
             ),
@@ -334,8 +334,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ),
                 onPressed: _pickDownloadDirectory,
                 icon: const Icon(Icons.folder_open_rounded),
-                label: const AnymeXText(
-                  'Select Folder',
+                label: AnymeXText(
+                  'Select Folder'.tr,
                   variant: TextVariant.semiBold,
                 ),
               ),
@@ -356,14 +356,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
             Icon(HugeIcons.strokeRoundedSecurityLock,
                 size: 64, color: theme.primary),
             const SizedBox(height: 24),
-            const AnymeXText(
-              'Permissions Required',
+            AnymeXText(
+              'Permissions Required'.tr,
               variant: TextVariant.bold,
               size: 20,
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'Manage device storage and notifications to download and manage your media offline.',
+              'Manage device storage and notifications to download and manage your media offline.'.tr,
               textAlign: TextAlign.center,
               color: theme.onSurface.opaque(0.7),
             ),
@@ -379,7 +379,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: _checkPermissions,
-                child: const AnymeXText('Grant Permissions',
+                child: AnymeXText('Grant Permissions'.tr,
                     variant: TextVariant.semiBold),
               ),
             ),
@@ -405,9 +405,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
             child: _buildDynamicTabBar(
               colors: theme,
               height: 46,
-              tabs: const [
-                (label: 'Anime', icon: Icons.movie_creation_outlined, type: 0),
-                (label: 'Manga', icon: Icons.menu_book_outlined, type: 1),
+              tabs: [
+                (label: 'Anime'.tr, icon: Icons.movie_creation_outlined, type: 0),
+                (label: 'Manga'.tr, icon: Icons.menu_book_outlined, type: 1),
               ],
               currentTab: _mediaTypeFilter,
               onChanged: (v) => setState(() => _mediaTypeFilter = v),
@@ -619,9 +619,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
             child: _buildDynamicTabBar(
               colors: theme,
               height: 46,
-              tabs: const [
-                (label: 'Anime', icon: Icons.movie_creation_outlined, type: 0),
-                (label: 'Manga', icon: Icons.menu_book_outlined, type: 1),
+              tabs: [
+                (label: 'Anime'.tr, icon: Icons.movie_creation_outlined, type: 0),
+                (label: 'Manga'.tr, icon: Icons.menu_book_outlined, type: 1),
               ],
               currentTab: controller.mediaType.value,
               onChanged: (v) {
@@ -641,7 +641,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     onSubmitted: controller.search,
                     style: TextStyle(fontSize: 15, color: theme.onSurface),
                     decoration: InputDecoration(
-                      hintText: 'Search across extensions...',
+                      hintText: 'Search across extensions...'.tr,
                       hintStyle: TextStyle(
                           color: theme.onSurface.opaque(0.4), fontSize: 14),
                       filled: true,
@@ -752,8 +752,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
       return _buildEmptyState(
         theme: theme,
         icon: Icons.search_off_rounded,
-        message: 'Search for anime',
-        subtitle: 'Results will appear grouped by extension',
+        message: 'Search for anime'.tr,
+        subtitle: 'Results will appear grouped by extension'.tr,
       );
     }
 
@@ -912,8 +912,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
               return _buildEmptyState(
                 theme: theme,
                 icon: HugeIcons.strokeRoundedPlay,
-                message: 'No episodes found',
-                subtitle: 'Could not fetch episodes for this title',
+                message: 'No episodes found'.tr,
+                subtitle: 'Could not fetch episodes for this title'.tr,
               );
             }
 
@@ -982,7 +982,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const AnymeXText("Range",
+                        AnymeXText("Range".tr,
                             variant: TextVariant.bold, size: 14),
                         EpisodeChunkSelector(
                           chunks: chunkedEpisodes,
@@ -1253,8 +1253,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
               return _buildEmptyState(
                 theme: theme,
                 icon: HugeIcons.strokeRoundedBookOpen01,
-                message: 'No chapters found',
-                subtitle: 'Could not fetch chapters for this title',
+                message: 'No chapters found'.tr,
+                subtitle: 'Could not fetch chapters for this title'.tr,
               );
             }
 
@@ -1518,8 +1518,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const AnymeXText(
-                    'Search Extensions',
+                  AnymeXText(
+                    'Search Extensions'.tr,
                     variant: TextVariant.bold,
                     size: 20,
                   ),
@@ -1646,8 +1646,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                 ),
                 elevation: 0,
               ),
-              child: const AnymeXText(
-                'Done',
+              child: AnymeXText(
+                'Done'.tr,
                 variant: TextVariant.bold,
               ),
             ),
@@ -1684,14 +1684,14 @@ class _DownloadScreenState extends State<DownloadScreen> {
     double end = 10;
 
     AnymeXDialog(
-      title: 'Select Range',
+      title: 'Select Range'.tr,
       contentWidget: Obx(() => Column(
             children: [
               Row(
                 children: [
                   Expanded(
                     child: _buildSelectionTypeBtn(
-                      label: 'Chapter Number',
+                      label: 'Chapter Number'.tr,
                       isSelected: !controller.selectByIndex.value,
                       onTap: () => controller.selectByIndex.value = false,
                     ),
@@ -1699,7 +1699,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _buildSelectionTypeBtn(
-                      label: 'By Index',
+                      label: 'By Index'.tr,
                       isSelected: controller.selectByIndex.value,
                       onTap: () => controller.selectByIndex.value = true,
                     ),

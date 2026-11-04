@@ -73,8 +73,8 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
   Future<bool> _postReply(String text) async {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: AnymeXText('Please login first'),
+        SnackBar(
+          content: AnymeXText('Please login first'.tr),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -112,8 +112,8 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
   void _toggleReplyLike(ActivityReply reply) async {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: AnymeXText('Please login first'),
+        SnackBar(
+          content: AnymeXText('Please login first'.tr),
           duration: Duration(milliseconds: 1500),
         ),
       );
@@ -141,18 +141,18 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: context.theme.colorScheme.surfaceContainerHigh,
-        title: const AnymeXText('Delete Reply'),
+        title: AnymeXText('Delete Reply'.tr),
         content:
-            const AnymeXText('Are you sure you want to delete this reply?'),
+            AnymeXText('Are you sure you want to delete this reply?'.tr),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: AnymeXText('Cancel',
+            child: AnymeXText('Cancel'.tr,
                 style: TextStyle(color: context.theme.colorScheme.primary)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: AnymeXText('Delete',
+            child: AnymeXText('Delete'.tr,
                 style: TextStyle(color: context.theme.colorScheme.error)),
           ),
         ],
@@ -211,9 +211,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       onWillPop: () => confirmDiscardComposer(
         context,
         composerKey: _composerKey,
-        discardTitle: 'Discard reply?',
+        discardTitle: 'Discard reply?'.tr,
         discardMessage:
-            'You have unsent text. Closing now will lose your reply.',
+            'You have unsent text. Closing now will lose your reply.'.tr,
       ),
       child: Padding(
         padding:
@@ -253,9 +253,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                             final discard = await confirmDiscardComposer(
                               context,
                               composerKey: _composerKey,
-                              discardTitle: 'Discard reply?',
+                              discardTitle: 'Discard reply?'.tr,
                               discardMessage:
-                                  'You have unsent text. Closing now will lose your reply.',
+                                  'You have unsent text. Closing now will lose your reply.'.tr,
                             );
                             if (discard && context.mounted) {
                               Navigator.pop(context);
@@ -285,11 +285,11 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               child: Center(child: CircularProgressIndicator()),
                             )
                           else if (replies!.isEmpty)
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.all(32.0),
                               child: Center(
                                 child:
-                                    AnymeXText("No replies yet. Be the first!"),
+                                    AnymeXText("No replies yet. Be the first!".tr),
                               ),
                             )
                           else
@@ -560,7 +560,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                         const Icon(Icons.favorite, color: Colors.red, size: 20),
                         const SizedBox(width: 8),
                         AnymeXText(
-                          'Liked by',
+                          'Liked by'.tr,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

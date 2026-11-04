@@ -100,8 +100,8 @@ class _CustomListDialogState extends State<CustomListDialog> {
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setDialogState) {
           return AnymeXDialog(
-            title: 'New Collection',
-            confirmText: 'Create',
+            title: 'New Collection'.tr,
+            confirmText: 'Create'.tr,
             onConfirm: () {},
             confirmResultGetter: () => textController.text.trim(),
             showCancelButton: true,
@@ -109,7 +109,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
               controller: textController,
               autofocus: true,
               decoration: InputDecoration(
-                labelText: 'Collection name',
+                labelText: 'Collection name'.tr,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -166,8 +166,8 @@ class _CustomListDialogState extends State<CustomListDialog> {
     final textTheme = Theme.of(context).textTheme;
 
     return AnymeXDialog(
-      title: 'Collections',
-      confirmText: 'Save',
+      title: 'Collections'.tr,
+      confirmText: 'Save'.tr,
       onConfirm: _handleOkPress,
       showCancelButton: true,
       contentWidget: Column(
@@ -240,7 +240,7 @@ class _CustomListDialogState extends State<CustomListDialog> {
           OutlinedButton.icon(
             onPressed: _showCreateListDialog,
             icon: const Icon(Icons.add, size: 18),
-            label: const AnymeXText('New Collection'),
+            label: AnymeXText('New Collection'.tr),
             style: OutlinedButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(

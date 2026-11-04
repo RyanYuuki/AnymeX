@@ -41,10 +41,10 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   bool _didApplyHighlightTab = false;
   final Map<String, bool> _deleting = {};
 
-  static const _typeTabs = [
-    (label: 'Anime', icon: Icons.movie_creation_outlined, type: ItemType.anime),
-    (label: 'Manga', icon: Icons.menu_book_outlined, type: ItemType.manga),
-    (label: 'Novel', icon: Icons.auto_stories_outlined, type: ItemType.novel),
+  static List<({String label, IconData icon, ItemType type})> get _typeTabs => [
+    (label: 'Anime'.tr, icon: Icons.movie_creation_outlined, type: ItemType.anime),
+    (label: 'Manga'.tr, icon: Icons.menu_book_outlined, type: ItemType.manga),
+    (label: 'Novel'.tr, icon: Icons.auto_stories_outlined, type: ItemType.novel),
   ];
 
   List<Map<String, dynamic>> get _displayManagers {
@@ -121,7 +121,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       await em.removeRepo(repo, type);
       widget.onSave?.call();
     } catch (_) {
-      snackBar('Failed to remove repo');
+      snackBar('Failed to remove repo'.tr);
     } finally {
       if (mounted) setState(() => _deleting.remove(key));
     }
@@ -169,11 +169,11 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Extensions',
+      headerTitle: 'Extensions'.tr,
       headerAction: IconButton(
         onPressed: () => navigate(() => const SettingsExtensionManager()),
         icon: const Icon(Icons.settings_rounded),
-        tooltip: 'Extension Manager',
+        tooltip: 'Extension Manager'.tr,
       ),
       floatingActionButton: _buildFab(),
       body: Builder(
@@ -181,7 +181,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                   final displayList = _displayManagers;
                   if (displayList.isEmpty) {
                     return Center(
-                      child: AnymeXText('No extension managers found.',
+                      child: AnymeXText('No extension managers found.'.tr,
                           style: TextStyle(color: context.colors.onSurfaceVariant)),
                     );
                   }
@@ -317,7 +317,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
 
   Widget _buildTypeBar() {
     final colors = context.colors;
-    const tabs = _typeTabs;
+    final tabs = _typeTabs;
     final total = tabs.length;
     final currentIndex = tabs.indexWhere((t) => t.type == _tab);
     final alignX = -1.0 + (2.0 * currentIndex / (total - 1));
@@ -451,7 +451,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                   ),
                   const SizedBox(height: 16),
                   AnymeXText(
-                    'Failed to Start Extension Runtime',
+                    'Failed to Start Extension Runtime'.tr,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -471,7 +471,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                   FilledButton.icon(
                     onPressed: () => AnymeXRuntimeBridge.checkAndInitialize(),
                     icon: const Icon(Icons.refresh_rounded),
-                    label: const AnymeXText('Retry'),
+                    label: AnymeXText('Retry'.tr),
                     style: FilledButton.styleFrom(
                       backgroundColor: context.colors.primary,
                       foregroundColor: context.colors.onPrimary,
@@ -493,7 +493,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
               AnymeXText(
-                'Starting extension runtime...',
+                'Starting extension runtime...'.tr,
                 style: TextStyle(
                   fontSize: 15,
                   color: context.colors.onSurfaceVariant,
@@ -549,7 +549,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Plugin Not Installed',
+              'Plugin Not Installed'.tr,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -569,7 +569,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             FilledButton.icon(
               onPressed: () => navigate(() => const SettingsExtensionManager()),
               icon: const Icon(Icons.download_rounded),
-              label: const AnymeXText('Go to Plugin Downloader'),
+              label: AnymeXText('Go to Plugin Downloader'.tr),
               style: FilledButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: colors.onPrimary,
@@ -598,7 +598,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
               size: 28, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 14),
-        AnymeXText('Not supported',
+        AnymeXText('Not supported'.tr,
             style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -626,13 +626,13 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
           child: Icon(icon, size: 30, color: colors.onSurfaceVariant),
         ),
         const SizedBox(height: 16),
-        AnymeXText('No repositories yet',
+        AnymeXText('No repositories yet'.tr,
             style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
                 color: colors.onSurface)),
         const SizedBox(height: 5),
-        AnymeXText('Tap + to add a repository URL',
+        AnymeXText('Tap + to add a repository URL'.tr,
             style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant)),
       ]),
     );
@@ -702,7 +702,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             ),
             _iconBtn(Icons.copy_outlined, colors.onSurfaceVariant, 'Copy', () {
               Clipboard.setData(ClipboardData(text: repo.url));
-              snackBar('URL copied to clipboard');
+              snackBar('URL copied to clipboard'.tr);
             }),
             const SizedBox(width: 2),
             if (isDeleting)
@@ -769,7 +769,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     return FloatingActionButton.extended(
       onPressed: _openAddDialog,
       icon: const Icon(Icons.add, size: 20),
-      label: const AnymeXText('Add Repo',
+      label: AnymeXText('Add Repo'.tr,
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
       backgroundColor: colors.primary,
       foregroundColor: colors.onPrimary,
@@ -842,7 +842,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
     final label = widget.type.name.capitalizeFirst!;
 
     return AnymeXDialog(
-      title: 'Add Repository',
+      title: 'Add Repository'.tr,
       confirmText: _loading ? 'Adding...' : 'Add Repository',
       onConfirm: _loading ? () {} : _submit,
       isConfirmEnabled: !_loading,
@@ -879,7 +879,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
           ),
           const SizedBox(height: 18),
           AnymeXText(
-            'REPOSITORY URL',
+            'REPOSITORY URL'.tr,
             style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
@@ -933,7 +933,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                 ),
                 const SizedBox(width: 12),
                 AnymeXText(
-                  'Adding repository & fetching extensions...',
+                  'Adding repository & fetching extensions...'.tr,
                   style: TextStyle(fontSize: 12, color: c.onSurfaceVariant),
                 ),
               ],

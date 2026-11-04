@@ -294,7 +294,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
 
   Future<void> _exportList() async {
     if (!serviceHandler.isLoggedIn.value) {
-      errorSnackBar('Please login first to export your list.');
+      errorSnackBar('Please login first to export your list.'.tr);
       return;
     }
 
@@ -305,7 +305,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
           ? await _exportMalList()
           : await _exportAnilistList();
       if (savedPath == null || savedPath.isEmpty) {
-        infoSnackBar('Export cancelled.');
+        infoSnackBar('Export cancelled.'.tr);
         return;
       }
 
@@ -459,16 +459,16 @@ class _ListExporterPageState extends State<ListExporterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      AnymeXText("Export Settings",
+                      AnymeXText("Export Settings".tr,
                         variant: TextVariant.bold,
                         size: 16,
                         color: colorScheme.primary,
                       ),
                       const SizedBox(height: 16),
                       _buildSettingsTile(
-                        title: "Update on Import",
+                        title: "Update on Import".tr,
                         subtitle:
-                            "Automatically update entries when importing the XML",
+                            "Automatically update entries when importing the XML".tr,
                         value: _updateOnImport,
                         onChanged: (val) =>
                             setState(() => _updateOnImport = val),
@@ -480,7 +480,7 @@ class _ListExporterPageState extends State<ListExporterPage> {
                         ),
                         const SizedBox(height: 12),
                         _buildSettingsTile(
-                          title: "Round Up Scores",
+                          title: "Round Up Scores".tr,
                           subtitle: _roundUp
                               ? "Scores will be rounded up (e.g. 7.5 → 8)"
                               : "Scores will be rounded down (e.g. 7.5 → 7)",

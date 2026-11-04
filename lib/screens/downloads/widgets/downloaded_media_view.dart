@@ -117,7 +117,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   void _showDeleteEpisodeDialog(
       BuildContext context, DownloadedEpisodeMeta ep) {
     AnymeXDialog(
-      title: 'Delete episode?',
+      title: 'Delete episode?'.tr,
       message:
           'Episode ${ep.number} will be permanently removed from your downloads.',
       onConfirm: () async {
@@ -131,7 +131,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           );
           await _refresh();
         } catch (e) {
-          snackBar('Failed to delete episode');
+          snackBar('Failed to delete episode'.tr);
         } finally {
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
@@ -145,7 +145,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       BuildContext context, DownloadedChapterMeta ch) {
     final display = ch.displayTitle;
     AnymeXDialog(
-      title: 'Delete chapter?',
+      title: 'Delete chapter?'.tr,
       message: '$display will be permanently removed from your downloads.',
       onConfirm: () async {
         _showLoadingDialog(context, 'Deleting chapter...');
@@ -157,7 +157,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           );
           await _refresh();
         } catch (e) {
-          snackBar('Failed to delete chapter');
+          snackBar('Failed to delete chapter'.tr);
         } finally {
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
@@ -189,7 +189,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         } catch (e) {
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
-            snackBar('Failed to delete media');
+            snackBar('Failed to delete media'.tr);
           }
         }
       },
@@ -292,7 +292,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       target ??= chapters.first;
 
       return continueFab(
-        label: 'Continue Reading',
+        label: 'Continue Reading'.tr,
         subtitle: target.displayTitle,
         icon: HugeIcons.strokeRoundedBookOpen01,
         onTap: () => _playChapter(target!),
@@ -336,7 +336,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     }
 
     return continueFab(
-      label: 'Continue Watching',
+      label: 'Continue Watching'.tr,
       subtitle: subtitle,
       icon: Icons.play_arrow_rounded,
       onTap: () => _playEpisode(target!),
@@ -637,7 +637,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                             ),
                           ),
                           child: AnymeXText(
-                            'DOWNLOADED',
+                            'DOWNLOADED'.tr,
                             style: TextStyle(
                               fontFamily: 'Linotte',
                               fontSize: 10.0,
@@ -763,7 +763,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             Icon(Icons.track_changes_rounded, size: 15, color: theme.primary),
             const SizedBox(width: 6),
             AnymeXText(
-              'Track',
+              'Track'.tr,
               style: TextStyle(
                 color: theme.primary,
                 fontSize: 12,
@@ -1296,7 +1296,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             ),
             const SizedBox(height: 14),
             AnymeXText(
-              'Nothing downloaded yet',
+              'Nothing downloaded yet'.tr,
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.5),
                 fontSize: 15,
@@ -1306,7 +1306,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
             ),
             const SizedBox(height: 4),
             AnymeXText(
-              'Media you download will appear here.',
+              'Media you download will appear here.'.tr,
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.28),
                 fontSize: 13,

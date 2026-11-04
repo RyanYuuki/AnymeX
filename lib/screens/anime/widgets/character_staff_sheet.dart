@@ -159,7 +159,7 @@ class _CharacterStaffSheetContentState
               final dynamic fullItem = snapshot.data;
               if (snapshot.connectionState == ConnectionState.done &&
                   fullItem == null) {
-                return const Center(child: AnymeXText("Failed to load details"));
+                return Center(child: AnymeXText("Failed to load details".tr));
               }
 
               final isLoading =
@@ -305,7 +305,7 @@ class _CharacterStaffSheetContentState
                                         if (GetPlatform.isDesktop) {
                                           await Clipboard.setData(
                                               ClipboardData(text: url));
-                                          snackBar("Link copied to clipboard!",
+                                          snackBar("Link copied to clipboard!".tr,
                                               duration: 2000);
                                         } else {
                                           Share.share(url);
@@ -345,7 +345,7 @@ class _CharacterStaffSheetContentState
                                 Obx(() => GestureDetector(
                                       onTap: () async {
                                         if (!anilistAuth.isLoggedIn.value) {
-                                          snackBar("Please login to favorite!");
+                                          snackBar("Please login to favorite!".tr);
                                           return;
                                         }
 
@@ -363,7 +363,7 @@ class _CharacterStaffSheetContentState
 
                                         if (!success) {
                                           isFav.value = previousState;
-                                          snackBar("Failed to update AniList");
+                                          snackBar("Failed to update AniList".tr);
                                         } else {
                                           snackBar(isFav.value
                                               ? "Added to Favorites"
@@ -679,9 +679,9 @@ class _CharacterStaffSheetContentState
                             const SizedBox(height: 30),
                             if (widget.isCharacter &&
                                 voiceActors.isNotEmpty) ...[
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: AnymeXText("Voice Actors",
+                                child: AnymeXText("Voice Actors".tr,
                                   variant: TextVariant.bold,
                                   size: 16,
                                 ),
@@ -776,9 +776,9 @@ class _CharacterStaffSheetContentState
                               const SizedBox(height: 30),
                             ],
                             if (voicedCharacters.isNotEmpty) ...[
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
-                                child: AnymeXText("Voiced Characters",
+                                child: AnymeXText("Voiced Characters".tr,
                                   variant: TextVariant.bold,
                                   size: 16,
                                 ),
@@ -810,7 +810,7 @@ class _CharacterStaffSheetContentState
                                     GestureDetector(
                                       onTap: () {
                                         if (!anilistAuth.isLoggedIn.value) {
-                                          snackBar("Please login to use this filter!");
+                                          snackBar("Please login to use this filter!".tr);
                                           return;
                                         }
                                         showOnlyOnList.value =
@@ -844,7 +844,7 @@ class _CharacterStaffSheetContentState
                                                     : null,
                                               )),
                                           const SizedBox(width: 10),
-                                          AnymeXText("On My List",
+                                          AnymeXText("On My List".tr,
                                             size: 14,
                                             color: theme.onSurface
                                                 .withOpacity(0.7),
@@ -1403,7 +1403,7 @@ class _SpoilerWidgetState extends State<SpoilerWidget> {
                       size: 16, color: theme.colorScheme.primary),
                   const SizedBox(width: 8),
                   AnymeXText(
-                    "Spoiler",
+                    "Spoiler".tr,
                     style: TextStyle(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,

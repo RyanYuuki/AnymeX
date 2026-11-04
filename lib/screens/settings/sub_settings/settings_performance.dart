@@ -98,12 +98,12 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
   @override
   Widget build(BuildContext context) {
     if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
-      return const AnymeXScaffold(
+      return AnymeXScaffold(
         showHeader: true,
-        headerTitle: 'Performance',
+        headerTitle: 'Performance'.tr,
         body: Center(
           child: AnymeXText(
-              'Display mode tuning is not applicable on desktop platforms.'),
+              'Display mode tuning is not applicable on desktop platforms.'.tr),
         ),
       );
     }
@@ -128,7 +128,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Performance',
+      headerTitle: 'Performance'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -182,20 +182,20 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                     ),
                   ),
                 ] else if (validModes.isEmpty) ...[
-                  const AnymeXTile(
+                  AnymeXTile(
                     icon: Icons.info_outline_rounded,
-                    title: 'Display Mode',
+                    title: 'Display Mode'.tr,
                     subtitle:
-                        'Hardware display mode switching is not supported by your device.',
+                        'Hardware display mode switching is not supported by your device.'.tr,
                   ),
                 ] else ...[
                   AnymeXSectionBuilder(
-                    title: 'Display',
+                    title: 'Display'.tr,
                     children: [
                       if (resolutions.length > 1)
                         AnymeXTile.pills<String>(
                           icon: Icons.aspect_ratio_rounded,
-                          title: 'Resolution',
+                          title: 'Resolution'.tr,
                           value: currentRes,
                           options: resolutions,
                           optionLabelTransformer: (res) => res,
@@ -205,12 +205,12 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                       else if (resolutions.isNotEmpty)
                         AnymeXTile(
                           icon: Icons.aspect_ratio_rounded,
-                          title: 'Resolution',
+                          title: 'Resolution'.tr,
                           subtitle: resolutions.first,
                         ),
                       AnymeXTile.pills<int>(
                         icon: HugeIcons.strokeRoundedDashboardSpeed01,
-                        title: 'Refresh Rate',
+                        title: 'Refresh Rate'.tr,
                         value: currentHz,
                         options: hzOptions,
                         optionLabelTransformer: (hz) =>
@@ -222,18 +222,18 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                   ),
                   const SizedBox(height: 20),
                   AnymeXSectionBuilder(
-                    title: 'Info',
+                    title: 'Info'.tr,
                     children: [
                       AnymeXTile(
                         icon: Icons.monitor_rounded,
-                        title: 'Display Mode',
+                        title: 'Display Mode'.tr,
                         subtitle: active != null
                             ? '${active.width}x${active.height} @ ${active.refreshRate.round()}Hz'
                             : 'Unknown',
                       ),
                       AnymeXTile(
                         icon: Icons.layers_outlined,
-                        title: 'Supported Modes',
+                        title: 'Supported Modes'.tr,
                         subtitle: '${validModes.length} modes',
                       ),
                     ],

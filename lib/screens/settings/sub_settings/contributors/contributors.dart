@@ -904,8 +904,8 @@ class _ContributorsPageState extends State<ContributorsPage> {
   body: Obx(
           () => CustomScrollView(
             slivers: [
-              const SliverToBoxAdapter(
-                  child: NestedHeader(title: 'Contributors')),
+              SliverToBoxAdapter(
+                  child: NestedHeader(title: 'Contributors'.tr)),
               if (isLoading.value)
                 const SliverFillRemaining(
                   child: Center(child: CircularProgressIndicator()),
@@ -920,13 +920,13 @@ class _ContributorsPageState extends State<ContributorsPage> {
                   ),
                 )
               else if (coreTeam.isEmpty && communityContributors.isEmpty)
-                const SliverFillRemaining(
-                  child: Center(child: AnymeXText('No contributors found.')),
+                SliverFillRemaining(
+                  child: Center(child: AnymeXText('No contributors found.'.tr)),
                 )
               else ...[
                 _buildFeaturedSection(
                   context,
-                  title: 'Core Team',
+                  title: 'Core Team'.tr,
                   contributors: coreTeam,
                 ),
                 _buildSectionHeader(context, 'Community Contributors'),

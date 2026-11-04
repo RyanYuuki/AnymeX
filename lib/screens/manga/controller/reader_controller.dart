@@ -1094,7 +1094,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           if (curIdx == -1 || getNextChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
-              title: "Last Chapter",
+              title: "Last Chapter".tr,
               "There are no more chapters.",
             );
             Future.delayed(
@@ -1114,7 +1114,7 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
           if (curIdx == -1 || getPrevChapterIndex(curIdx) == -1) {
             _isNavigating = true;
             snackBar(
-              title: "First Chapter",
+              title: "First Chapter".tr,
               "This is the first chapter.",
             );
             Future.delayed(
@@ -1866,12 +1866,12 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
     } else {
       if (next) {
         snackBar(
-          title: "Last Chapter",
+          title: "Last Chapter".tr,
           "There are no more chapters.",
         );
       } else {
         snackBar(
-          title: "First Chapter",
+          title: "First Chapter".tr,
           "This is the first chapter.",
         );
       }

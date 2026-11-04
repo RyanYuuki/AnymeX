@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -124,8 +125,8 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymeXText(
-                      'Select Video File',
+                    AnymeXText(
+                      'Select Video File'.tr,
                       size: 18,
                       variant: TextVariant.bold,
                     ),
@@ -174,8 +175,8 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
               Icon(Icons.error_outline_rounded,
                   size: 48, color: colors.error),
               const SizedBox(height: 12),
-              const AnymeXText(
-                'Failed to load torrent metadata',
+              AnymeXText(
+                'Failed to load torrent metadata'.tr,
                 size: 15,
                 variant: TextVariant.semiBold,
               ),
@@ -192,7 +193,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                 width: 120,
                 height: 38,
                 borderRadius: BorderRadius.circular(12),
-                child: const AnymeXText('Retry', variant: TextVariant.semiBold),
+                child: AnymeXText('Retry'.tr, variant: TextVariant.semiBold),
               ),
             ],
           ),
@@ -211,7 +212,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
               AnymeXText(
-                'Fetching torrent file list...',
+                'Fetching torrent file list...'.tr,
                 size: 13,
                 color: colors.onSurfaceVariant,
               ),

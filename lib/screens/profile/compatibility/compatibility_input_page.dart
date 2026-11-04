@@ -208,7 +208,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
     final name2 = _username2Controller.text.trim();
 
     if (name2.isEmpty) {
-      snackBar('Please enter a username to compare with.');
+      snackBar('Please enter a username to compare with.'.tr);
       return;
     }
 
@@ -220,13 +220,13 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
           loggedInName.isNotEmpty &&
           name2.toLowerCase() == loggedInName) {
         snackBar(
-            'Cannot compare your profile with yourself! Please enter a different username.');
+            'Cannot compare your profile with yourself! Please enter a different username.'.tr);
         return;
       }
     } else {
       if (name1.toLowerCase() == name2.toLowerCase()) {
         snackBar(
-            'Cannot compare a user with themselves! Please enter two different usernames.');
+            'Cannot compare a user with themselves! Please enter two different usernames.'.tr);
         return;
       }
     }
@@ -260,7 +260,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
       navigate(() => CompatibilityResultPage(controller: _controller));
       setState(() => _submitted = false);
     } else {
-      snackBar('Could not calculate compatibility.');
+      snackBar('Could not calculate compatibility.'.tr);
       setState(() => _submitted = false);
     }
   }
@@ -432,7 +432,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
                     ),
                   ),
                   child: AnymeXText(
-                    'VS',
+                    'VS'.tr,
                     size: 10,
                     variant: TextVariant.bold,
                     color: colorScheme.primary,
@@ -525,9 +525,9 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
   Widget _buildFirstUserInput(BuildContext context) {
     return _buildUserInputSection(
       context,
-      title: 'First User',
+      title: 'First User'.tr,
       controller: _username1Controller,
-      hintText: 'Enter first AniList username',
+      hintText: 'Enter first AniList username'.tr,
       prefixIcon: Iconsax.user,
       isUser1: true,
       onChanged: _onUser1Changed,
@@ -544,7 +544,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
           ? 'Second User'
           : 'Compare With',
       controller: _username2Controller,
-      hintText: 'Enter AniList username',
+      hintText: 'Enter AniList username'.tr,
       prefixIcon: Iconsax.user_search,
       isUser1: false,
       onChanged: _onUser2Changed,
@@ -593,13 +593,13 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
                   child: AnymeXProgressIndicator(strokeWidth: 2.5),
                 ),
               )
-            : const Row(
+            : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Iconsax.heart5, size: 20),
                   SizedBox(width: 8),
                   AnymeXText(
-                    'Calculate Compatibility',
+                    'Calculate Compatibility'.tr,
                     variant: TextVariant.bold,
                     size: 15,
                   ),
@@ -705,7 +705,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
 
   Widget _buildDesktopFollowingGrid(BuildContext context) {
     return AnymeXSectionBuilder(
-      title: 'Quick Select (Following)',
+      title: 'Quick Select (Following)'.tr,
       children: [
         Padding(
           padding: const EdgeInsets.all(12),
@@ -813,7 +813,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
 
   Widget _buildMobileFollowingCarousel(BuildContext context) {
     return AnymeXSectionBuilder(
-      title: 'Quick Select (Following)',
+      title: 'Quick Select (Following)'.tr,
       children: [
         SizedBox(
           height: 110,
@@ -841,7 +841,7 @@ class _CompatibilityInputPageState extends State<CompatibilityInputPage> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'AniMatch Compatibility',
+      headerTitle: 'AniMatch Compatibility'.tr,
       body: Obx(() {
         final isLoggedIn = Get.find<AnilistAuth>().isLoggedIn.value;
         final loggedInProfile = Get.find<AnilistAuth>().profileData.value;

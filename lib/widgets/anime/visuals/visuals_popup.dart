@@ -161,13 +161,13 @@ class _VisualsPopupState extends State<VisualsPopup> {
 
   Future<void> _saveImage(String url) async {
     try {
-      snackBar("Downloading image...");
+      snackBar("Downloading image...".tr);
       final response = await http.get(Uri.parse(url));
 
       if (!mounted) return;
 
       if (response.statusCode != 200) {
-        snackBar("Failed to download image");
+        snackBar("Failed to download image".tr);
         return;
       }
 
@@ -231,14 +231,14 @@ class _VisualsPopupState extends State<VisualsPopup> {
             final file = File('${tempDir.path}/$fileName');
             await file.writeAsBytes(bytes);
             await Share.shareXFiles([XFile(file.path)],
-                text: "Visual from AnymeX");
+                text: "Visual from AnymeX".tr);
           }
         }
       } else if (Platform.isIOS) {
         final tempDir = await getTemporaryDirectory();
         final file = File('${tempDir.path}/$fileName');
         await file.writeAsBytes(bytes);
-        await Share.shareXFiles([XFile(file.path)], text: "Visual from AnymeX");
+        await Share.shareXFiles([XFile(file.path)], text: "Visual from AnymeX".tr);
       } else {
         // pc
         String? downloadPath = (await getDownloadsDirectory())?.path;
@@ -274,7 +274,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
       }
     } catch (e) {
       if (mounted) {
-        snackBar("Error saving image");
+        snackBar("Error saving image".tr);
       }
     }
   }
@@ -373,8 +373,8 @@ class _VisualsPopupState extends State<VisualsPopup> {
                       },
                     ),
                   )
-                : const Center(
-                    child: AnymeXText("No Visuals found for this Anime (╥﹏╥)",
+                : Center(
+                    child: AnymeXText("No Visuals found for this Anime (╥﹏╥)".tr,
                       color: Colors.white,
                     ),
                   ),

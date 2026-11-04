@@ -319,7 +319,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                   children: [
                     Icon(Icons.sort_rounded, color: colors.primary, size: 20),
                     const SizedBox(width: 10),
-                    AnymeXText('Sort By',
+                    AnymeXText('Sort By'.tr,
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Linotte',
@@ -350,7 +350,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                 final label = {
                   _SortMode.lastUpdated: 'Last Updated',
                   _SortMode.score: 'Score',
-                  _SortMode.title: 'Title',
+                  _SortMode.title: 'Title'.tr,
                   _SortMode.releaseDate: 'Release Date',
                 }[mode]!;
                 final icon = {
@@ -424,7 +424,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                     children: [
                       Icon(Iconsax.filter, color: colors.primary, size: 20),
                       const SizedBox(width: 10),
-                      AnymeXText('Filter by Genre',
+                      AnymeXText('Filter by Genre'.tr,
                           style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'Linotte',
@@ -436,7 +436,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                         TextButton(
                           onPressed: () =>
                               setSheetState(() => tempSelected.clear()),
-                          child: const AnymeXText('Clear',
+                          child: AnymeXText('Clear'.tr,
                               style: TextStyle(fontSize: 12)),
                         ),
                     ],
@@ -552,7 +552,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               style: TextStyle(fontSize: 16, color: colors.primary),
             ),
           ),
-  body: const Center(child: AnymeXText('No entries found'))
+  body: Center(child: AnymeXText('No entries found'.tr))
 );
     }
 
@@ -594,7 +594,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                         IconButton(
               onPressed: _openRandom,
               icon: const Icon(Iconsax.shuffle, size: 20),
-              tooltip: 'Random',
+              tooltip: 'Random'.tr,
             ),
                         IconButton(
               onPressed: () => _showGenreFilter(context),
@@ -604,7 +604,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                     style: const TextStyle(fontSize: 9)),
                 child: const Icon(Iconsax.filter, size: 20),
               ),
-              tooltip: 'Filter genres',
+              tooltip: 'Filter genres'.tr,
             ),
                         PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert_rounded, size: 22),
@@ -631,7 +631,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                       Icon(Icons.sort_rounded,
                           size: 20, color: colors.onSurfaceVariant),
                       const SizedBox(width: 12),
-                      const AnymeXText('Sort'),
+                      AnymeXText('Sort'.tr),
                     ],
                   ),
                 ),

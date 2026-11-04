@@ -57,7 +57,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
             _initialLoad = false;
             if (cleared && mounted) {
               setState(() => _synced = true);
-              snackBar('Cloudflare challenge solved!');
+              snackBar('Cloudflare challenge solved!'.tr);
               await Future.delayed(const Duration(milliseconds: 600));
               if (!context.mounted) return;
               Navigator.of(context).pop(true);
@@ -171,7 +171,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
     await _syncCookiesAndUserAgent();
     if (mounted) {
       setState(() => _synced = true);
-      snackBar('Cookies & User-Agent synced!');
+      snackBar('Cookies & User-Agent synced!'.tr);
       Navigator.of(context).pop(true);
     }
   }
@@ -203,7 +203,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                   IconButton(
                     icon: Icon(Icons.close_rounded, color: colors.onSurface),
                     onPressed: () => Navigator.of(context).pop(),
-                    tooltip: 'Close',
+                    tooltip: 'Close'.tr,
                   ),
                   const SizedBox(width: 4),
                   Container(
@@ -224,7 +224,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'Bypass Cloudflare',
+                          'Bypass Cloudflare'.tr,
                           style: TextStyle(
                             color: colors.onSurface,
                             fontSize: 15,
@@ -301,7 +301,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: AnymeXText(
-                      'Complete any Cloudflare challenge, then tap "Sync Cookies" to pass the session to extensions.',
+                      'Complete any Cloudflare challenge, then tap "Sync Cookies" to pass the session to extensions.'.tr,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.onPrimaryContainer.withValues(alpha: 0.8),

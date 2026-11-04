@@ -78,7 +78,7 @@ class _AnymeXHistoryPageState extends State<AnymeXHistoryPage> {
 
   void _deleteItem(OfflineMedia item, ItemType type) {
     AnymeXDialog(
-      title: 'Remove from History',
+      title: 'Remove from History'.tr,
       contentWidget: AnymeXText(
         'Are you sure you want to remove "${item.name}" from your history?',
         size: 14,
@@ -199,14 +199,14 @@ class _AnymeXHistoryPageState extends State<AnymeXHistoryPage> {
             scrollController: _scrollController,
             headerContent: Obx(
               () => Header(
-                title: 'History',
-                subtitle: 'Your watch & read history',
+                title: 'History'.tr,
+                subtitle: 'Your watch & read history'.tr,
                 isSearchActive: _searchController.isSearchActive.value,
                 searchBar: HeaderSearchBar(
                   controller: _searchController.searchController,
                   onChanged: _searchController.search,
                   onClose: _searchController.toggleSearch,
-                  hintText: 'Search in History...',
+                  hintText: 'Search in History...'.tr,
                 ),
                 actions: [
                   HeaderActionButton(

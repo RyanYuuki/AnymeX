@@ -153,7 +153,7 @@ class SourceSelectorWidget extends StatelessWidget {
                       )
                     else
                       AnymeXText(
-                        'Tap to choose a source',
+                        'Tap to choose a source'.tr,
                         style: TextStyle(
                           fontSize: 11,
                           fontFamily: 'Linotte',
@@ -273,7 +273,7 @@ class _NsfwBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _Badge(
-      label: 'NSFW',
+      label: 'NSFW'.tr,
       bgColor: Colors.red.withOpacity(0.14),
       textColor: Colors.red,
     );
@@ -379,7 +379,7 @@ class _EmptySourceState extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 AnymeXText(
-                  'Go to Extensions to get started',
+                  'Go to Extensions to get started'.tr,
                   style: TextStyle(
                     fontSize: 11,
                     fontFamily: 'Linotte',
@@ -507,7 +507,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
             fontFamily: 'Linotte',
           ),
           decoration: InputDecoration(
-            hintText: 'Search sources...',
+            hintText: 'Search sources...'.tr,
             hintStyle: TextStyle(
               fontSize: 14,
               fontFamily: 'Linotte',
@@ -587,7 +587,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
                       ),
                       const SizedBox(height: 8),
                       AnymeXText(
-                        'No sources found',
+                        'No sources found'.tr,
                         style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Linotte',
@@ -787,7 +787,7 @@ class _LangSubPicker extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               AnymeXText(
-                'Language Variant',
+                'Language Variant'.tr,
                 style: TextStyle(
                   fontSize: 12,
                   fontFamily: 'Linotte',

@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
@@ -121,7 +122,7 @@ class UnifiedSourceSection extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       AnymeXText(
-                        "Wrong Title?",
+                        "Wrong Title?".tr,
                         size: 11,
                         color: colors.primary,
                         variant: TextVariant.bold,

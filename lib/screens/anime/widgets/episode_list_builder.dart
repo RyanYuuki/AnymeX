@@ -261,7 +261,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
   void _initEpisodes() {
     if (widget.episodeList.isEmpty) {
-      final fallback = Episode(number: "1", title: "Episode 1");
+      final fallback = Episode(number: "1", title: "Episode 1".tr);
       savedEpisode.value = fallback;
       selectedEpisode.value = fallback;
       continueEpisode.value = fallback;
@@ -809,13 +809,13 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                   scrollPadding: EdgeInsets.zero,
                   items: [
                     PillItem(
-                      label: 'Online',
+                      label: 'Online'.tr,
                       count: widget.episodeList.length,
                       isSelected: selectedViewTab.value == 0,
                       onTap: () => selectedViewTab.value = 0,
                     ),
                     PillItem(
-                      label: 'Downloaded',
+                      label: 'Downloaded'.tr,
                       count: downloadedCount,
                       isSelected: selectedViewTab.value == 1,
                       onTap: () => selectedViewTab.value = 1,
@@ -879,7 +879,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                           ),
                           const SizedBox(width: 8),
                           AnymeXText(
-                            'Settings',
+                            'Settings'.tr,
                             size: 12,
                             color: context.colors.primary,
                             variant: TextVariant.bold,
@@ -949,7 +949,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
             ),
             const SizedBox(height: 12),
             AnymeXText(
-              'No downloaded episodes found for this anime',
+              'No downloaded episodes found for this anime'.tr,
               size: 14,
               variant: TextVariant.semiBold,
               color: context.colors.onSurface.opaque(0.7),
@@ -963,7 +963,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: AnymeXText(
-                  'Switch to Online',
+                  'Switch to Online'.tr,
                   color: context.colors.onPrimary,
                   variant: TextVariant.bold,
                 ),
@@ -1001,7 +1001,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       switch (state.status) {
         case DownloadItemStatus.downloaded:
           return Tooltip(
-            message: 'Downloaded',
+            message: 'Downloaded'.tr,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1077,7 +1077,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           );
         case DownloadItemStatus.queued:
           return Tooltip(
-            message: 'Queued for download',
+            message: 'Queued for download'.tr,
             child: Container(
               width: 32,
               height: 32,
@@ -1112,7 +1112,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           );
         case DownloadItemStatus.failed:
           return Tooltip(
-            message: 'Download failed. Tap to retry.',
+            message: 'Download failed. Tap to retry.'.tr,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1150,7 +1150,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           );
         case DownloadItemStatus.notDownloaded:
           return Tooltip(
-            message: 'Download Episode',
+            message: 'Download Episode'.tr,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1240,17 +1240,17 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const AnymeXText('Delete Episode', variant: TextVariant.bold),
+        title: AnymeXText('Delete Episode'.tr, variant: TextVariant.bold),
         content: AnymeXText(
             'Are you sure you want to delete Episode ${epMeta.episode.number}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const AnymeXText('Cancel'),
+            child: AnymeXText('Cancel'.tr),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: AnymeXText('Delete', color: ctx.colors.error),
+            child: AnymeXText('Delete'.tr, color: ctx.colors.error),
           ),
         ],
       ),
@@ -1272,7 +1272,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
   ) {
     final activeSrc = sourceController.activeSource.value;
     if (activeSrc == null) {
-      snackBar('No active source selected');
+      snackBar('No active source selected'.tr);
       return;
     }
     final episodesToShow = _cachedEpisodesToShow.isNotEmpty
@@ -1307,7 +1307,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
 
     final options = <_BatchOption>[
       (
-        title: 'Download Unwatched Episodes',
+        title: 'Download Unwatched Episodes'.tr,
         subtitle: '${unwatched.length} episodes',
         icon: Icons.playlist_play_rounded,
         enabled: unwatched.isNotEmpty,
@@ -1321,7 +1321,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         },
       ),
       (
-        title: 'Download Current Section',
+        title: 'Download Current Section'.tr,
         subtitle: '${chunkNotDownloaded.length} episodes',
         icon: Icons.view_carousel_outlined,
         enabled: chunkNotDownloaded.isNotEmpty,
@@ -1335,7 +1335,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
         },
       ),
       (
-        title: 'Download All Episodes',
+        title: 'Download All Episodes'.tr,
         subtitle: '${allNotDownloaded.length} episodes',
         icon: Icons.file_download_outlined,
         enabled: allNotDownloaded.isNotEmpty,
@@ -1351,7 +1351,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     ];
 
     AnymeXSheet(
-      title: 'Batch Download',
+      title: 'Batch Download'.tr,
       message: mediaTitle,
       showDragHandle: true,
       contentWidget: AnymeXTileBuilder<_BatchOption>(
@@ -1622,7 +1622,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
 
     final activeSource = sourceController.activeSource.value;
     if (activeSource == null) {
-      errorSnackBar('No active source selected');
+      errorSnackBar('No active source selected'.tr);
       return;
     }
 
@@ -1798,19 +1798,19 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
   Widget _buildScrapingLoadingState() {
     return Container(
       padding: const EdgeInsets.all(20),
-      child: const Column(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
           AnymeXText(
-            'Scanning for video streams...',
+            'Scanning for video streams...'.tr,
             size: 16,
             variant: TextVariant.semiBold,
           ),
           SizedBox(height: 8),
           AnymeXText(
-            'This may take a few seconds',
+            'This may take a few seconds'.tr,
             size: 12,
           ),
         ],
@@ -1823,8 +1823,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 10),
-        const AnymeXText(
-          "Error Occurred",
+        AnymeXText(
+          "Error Occurred".tr,
           variant: TextVariant.bold,
           size: 18,
         ),
@@ -1848,11 +1848,11 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
   }
 
   Widget _buildEmptyState() {
-    return const SizedBox(
+    return SizedBox(
       height: 200,
       child: Center(
         child: AnymeXText(
-          "No servers available",
+          "No servers available".tr,
           variant: TextVariant.bold,
           size: 16,
         ),
@@ -1936,8 +1936,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                       color: theme.primary.opaque(0.15, iReallyMeanIt: true),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const AnymeXText(
-                      'Default',
+                    child: AnymeXText(
+                      'Default'.tr,
                       size: 11,
                       variant: TextVariant.bold,
                     ),
@@ -1959,8 +1959,8 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
             Obx(
               () => AnymeXTile.checkbox(
                 icon: Icons.bookmark_outline_rounded,
-                title: 'Remember Server',
-                subtitle: 'Auto-select this server quality for this anime',
+                title: 'Remember Server'.tr,
+                subtitle: 'Auto-select this server quality for this anime'.tr,
                 value: rememberServer.value,
                 onChanged: (val) {
                   rememberServer.value = val;
@@ -1986,7 +1986,7 @@ class _ServerSheetContentState extends State<ServerSheetContent> {
                     ),
                     const SizedBox(width: 8),
                     AnymeXText(
-                      'Scanning for more servers...',
+                      'Scanning for more servers...'.tr,
                       size: 12,
                       color: theme.onSurface.opaque(0.5, iReallyMeanIt: true),
                     ),

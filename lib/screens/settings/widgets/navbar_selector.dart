@@ -17,7 +17,7 @@ void showNavBarStyleSwitcher(BuildContext context) {
     builder: (dialogContext) {
       return Obx(() {
         return AnymeXDialog(
-          title: 'Nav Bar Style',
+          title: 'Nav Bar Style'.tr,
           onConfirm: () {
             settingsController.navBarStyle = selectedStyle.value.index;
           },
@@ -47,19 +47,19 @@ class NavBarStyleSelector extends StatelessWidget {
     NavItem(
       selectedIcon: Icons.home_rounded,
       unselectedIcon: Icons.home_outlined,
-      label: 'Home',
+      label: 'Home'.tr,
       onTap: (_) {},
     ),
     NavItem(
       selectedIcon: Icons.explore_rounded,
       unselectedIcon: Icons.explore_outlined,
-      label: 'Explore',
+      label: 'Explore'.tr,
       onTap: (_) {},
     ),
     NavItem(
       selectedIcon: Icons.library_books_rounded,
       unselectedIcon: Icons.library_books_outlined,
-      label: 'Library',
+      label: 'Library'.tr,
       onTap: (_) {},
     ),
   ];

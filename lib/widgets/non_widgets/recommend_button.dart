@@ -65,7 +65,7 @@ class RecommendIconButton extends StatelessWidget {
     return IconButton(
       onPressed: () => _openSheet(context),
       icon: icon,
-      tooltip: 'Recommend',
+      tooltip: 'Recommend'.tr,
     );
   }
 }

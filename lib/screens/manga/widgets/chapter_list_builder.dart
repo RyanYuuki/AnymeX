@@ -313,11 +313,11 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
   @override
   Widget build(BuildContext context) {
     if (widget.chapterList.isEmpty) {
-      return const SliverToBoxAdapter(
+      return SliverToBoxAdapter(
         child: Center(
           child: Padding(
             padding: EdgeInsets.all(24),
-            child: AnymeXText('No chapters found'),
+            child: AnymeXText('No chapters found'.tr),
           ),
         ),
       );
@@ -372,13 +372,13 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                           scrollPadding: EdgeInsets.zero,
                           items: [
                             PillItem(
-                              label: 'Online',
+                              label: 'Online'.tr,
                               count: widget.chapterList.length,
                               isSelected: selectedViewTab.value == 0,
                               onTap: () => selectedViewTab.value = 0,
                             ),
                             PillItem(
-                              label: 'Downloaded',
+                              label: 'Downloaded'.tr,
                               count: downloadedChapters.length,
                               isSelected: selectedViewTab.value == 1,
                               onTap: () => selectedViewTab.value = 1,
@@ -447,7 +447,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                                   ),
                                   const SizedBox(width: 8),
                                   AnymeXText(
-                                    'Settings',
+                                    'Settings'.tr,
                                     size: 12,
                                     color: context.colors.primary,
                                     variant: TextVariant.bold,
@@ -504,7 +504,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                         ),
                         const SizedBox(height: 12),
                         AnymeXText(
-                          'No downloaded chapters found for this manga',
+                          'No downloaded chapters found for this manga'.tr,
                           size: 14,
                           variant: TextVariant.semiBold,
                           color: context.colors.onSurface.opaque(0.7),
@@ -518,7 +518,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 8),
                             child: AnymeXText(
-                              'Switch to Online',
+                              'Switch to Online'.tr,
                               color: context.colors.onPrimary,
                               variant: TextVariant.bold,
                             ),
@@ -956,7 +956,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
                   height: 38,
                   color: colors.primary,
                   child: AnymeXText(
-                    'Read',
+                    'Read'.tr,
                     variant: TextVariant.semiBold,
                     color: colors.onPrimary,
                   ),
@@ -1132,7 +1132,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
       switch (state.status) {
         case DownloadItemStatus.downloaded:
           return Tooltip(
-            message: 'Downloaded',
+            message: 'Downloaded'.tr,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1208,7 +1208,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
           );
         case DownloadItemStatus.queued:
           return Tooltip(
-            message: 'Queued for download',
+            message: 'Queued for download'.tr,
             child: Container(
               width: 32,
               height: 32,
@@ -1280,7 +1280,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
           );
         case DownloadItemStatus.notDownloaded:
           return Tooltip(
-            message: 'Download Chapter',
+            message: 'Download Chapter'.tr,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1319,7 +1319,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         ? _sourceController.activeNovelSource.value
         : _sourceController.activeMangaSource.value;
     if (activeSrc == null || widget.anilistData == null) {
-      snackBar('No active source or media found');
+      snackBar('No active source or media found'.tr);
       return;
     }
     MangaChapterDownloadConfirm.show(
@@ -1368,17 +1368,17 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const AnymeXText('Delete Chapter', variant: TextVariant.bold),
+        title: AnymeXText('Delete Chapter'.tr, variant: TextVariant.bold),
         content: AnymeXText(
             'Are you sure you want to delete Chapter ${chMeta.chapter.formattedNumber}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const AnymeXText('Cancel'),
+            child: AnymeXText('Cancel'.tr),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: AnymeXText('Delete', color: ctx.colors.error),
+            child: AnymeXText('Delete'.tr, color: ctx.colors.error),
           ),
         ],
       ),
@@ -1404,7 +1404,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
         ? _sourceController.activeNovelSource.value
         : _sourceController.activeMangaSource.value;
     if (activeSrc == null || widget.anilistData == null) {
-      snackBar('No active source selected');
+      snackBar('No active source selected'.tr);
       return;
     }
 
@@ -1433,21 +1433,21 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
 
     final options = <_BatchOption>[
       (
-        title: 'Download Unread Chapters',
+        title: 'Download Unread Chapters'.tr,
         subtitle: '${unread.length} chapters',
         icon: Icons.playlist_play_rounded,
         enabled: unread.isNotEmpty,
         onTap: () => _startMangaDownload(context, unread),
       ),
       (
-        title: 'Download Current Section',
+        title: 'Download Current Section'.tr,
         subtitle: '${chunkNotDownloaded.length} chapters',
         icon: Icons.view_carousel_outlined,
         enabled: chunkNotDownloaded.isNotEmpty,
         onTap: () => _startMangaDownload(context, chunkNotDownloaded),
       ),
       (
-        title: 'Download All Chapters',
+        title: 'Download All Chapters'.tr,
         subtitle: '${allNotDownloaded.length} chapters',
         icon: Icons.file_download_outlined,
         enabled: allNotDownloaded.isNotEmpty,
@@ -1456,7 +1456,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     ];
 
     AnymeXSheet(
-      title: 'Batch Download',
+      title: 'Batch Download'.tr,
       message: mediaTitle,
       showDragHandle: true,
       contentWidget: AnymeXTileBuilder<_BatchOption>(

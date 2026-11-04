@@ -118,7 +118,7 @@ class NewsPage extends StatelessWidget {
                                       const SizedBox(height: 8),
                                       Row(
                                         children: [
-                                          AnymeXText("Read Article",
+                                          AnymeXText("Read Article".tr,
                                             variant: TextVariant.bold,
                                             size: 12,
                                             color: colorScheme.primary,

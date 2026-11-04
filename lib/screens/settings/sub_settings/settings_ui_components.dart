@@ -130,7 +130,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
                   color: colors.onSurface.opaque(0.5, iReallyMeanIt: true)),
               const SizedBox(width: 6),
               AnymeXText(
-                'PREVIEW',
+                'PREVIEW'.tr,
                 size: 10.5,
                 variant: TextVariant.bold,
                 color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -147,7 +147,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
                   color: colors.onSurface.opaque(0.5, iReallyMeanIt: true)),
               const SizedBox(width: 6),
               AnymeXText(
-                'STYLE',
+                'STYLE'.tr,
                 size: 10.5,
                 variant: TextVariant.bold,
                 color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -171,7 +171,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     return _buildCustomizerSection(
       context: context,
       icon: Iconsax.card5,
-      title: 'Card Style',
+      title: 'Card Style'.tr,
       currentStyleName: currentStyle.displayName,
       description: currentStyle.description,
       previewWidget: Container(
@@ -214,7 +214,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     return _buildCustomizerSection(
       context: context,
       icon: Iconsax.clock,
-      title: 'History Card Style',
+      title: 'History Card Style'.tr,
       currentStyleName: currentStyle.displayName,
       description: currentStyle.description,
       previewWidget: Container(
@@ -257,7 +257,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     return _buildCustomizerSection(
       context: context,
       icon: Icons.view_carousel_rounded,
-      title: 'Carousel Style',
+      title: 'Carousel Style'.tr,
       currentStyleName: currentStyle.name,
       description: currentStyle.description,
       previewWidget: ClipRRect(
@@ -290,7 +290,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     return _buildCustomizerSection(
       context: context,
       icon: Icons.navigation_rounded,
-      title: 'Nav Bar Style',
+      title: 'Nav Bar Style'.tr,
       currentStyleName: currentStyle.displayName,
       description: currentStyle.description,
       previewWidget: Padding(
@@ -324,7 +324,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'UI Components',
+      headerTitle: 'UI Components'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding:

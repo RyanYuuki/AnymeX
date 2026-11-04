@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/tv_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -172,8 +173,8 @@ Widget loginSheetHelper({
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymeXText(
-                      'Internal Browser',
+                    AnymeXText(
+                      'Internal Browser'.tr,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -181,7 +182,7 @@ Widget loginSheetHelper({
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
-                      'Login inside the app (Recommended)',
+                      'Login inside the app (Recommended)'.tr,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.onSurface.withOpacity(0.55),
@@ -222,8 +223,8 @@ Widget loginSheetHelper({
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymeXText(
-                      'External Browser',
+                    AnymeXText(
+                      'External Browser'.tr,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -231,7 +232,7 @@ Widget loginSheetHelper({
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
-                      'Login using your default browser',
+                      'Login using your default browser'.tr,
                       style: TextStyle(
                         fontSize: 11,
                         color: colors.onSurface.withOpacity(0.55),
@@ -273,8 +274,8 @@ Widget loginSheetHelper({
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AnymeXText(
-                        'Login with Token',
+                      AnymeXText(
+                        'Login with Token'.tr,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -282,7 +283,7 @@ Widget loginSheetHelper({
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Manually paste OAuth access token',
+                        'Manually paste OAuth access token'.tr,
                         style: TextStyle(
                           fontSize: 11,
                           color: colors.onSurface.withOpacity(0.55),

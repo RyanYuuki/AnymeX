@@ -21,7 +21,7 @@ void showCardStyleSwitcher(BuildContext context) {
       return Obx(
         () {
           return AnymeXDialog(
-            title: 'Card Style',
+            title: 'Card Style'.tr,
             onConfirm: () {
               settingsController.cardStyle = selectedIndex.value;
             },

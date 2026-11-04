@@ -32,8 +32,8 @@ class AboutSection extends StatelessWidget {
               : EdgeInsets.zero,
           child: Row(
             children: [
-              const Expanded(
-                child: SectionHeader(title: 'About', icon: IconlyLight.profile),
+              Expanded(
+                child: SectionHeader(title: 'About'.tr, icon: IconlyLight.profile),
               ),
               if (!isDesktop && onToggle != null)
                 InkWell(

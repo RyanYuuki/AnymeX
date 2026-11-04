@@ -233,7 +233,7 @@ class MediaHeader extends StatelessWidget {
                           final title =
                               data?.displayTitle ?? data?.title ?? 'Loading...';
                           Clipboard.setData(ClipboardData(text: title));
-                          snackBar('Title copied');
+                          snackBar('Title copied'.tr);
                         },
                         child: AnymeXText(
                           data?.displayTitle ?? data?.title ?? 'Loading...',

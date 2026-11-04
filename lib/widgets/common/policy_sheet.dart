@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -70,7 +71,7 @@ Future<void> showPolicySheet(BuildContext context, PolicyType type) async {
         _showBottomSheetUI(context, title, content);
       }
     } else {
-      snackBar("Failed to fetch policy.", duration: 2000);
+      snackBar("Failed to fetch policy.".tr, duration: 2000);
     }
   } catch (e) {
     snackBar("Error fetching policy: $e", duration: 2000);

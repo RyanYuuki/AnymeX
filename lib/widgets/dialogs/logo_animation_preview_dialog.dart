@@ -1,5 +1,7 @@
 library;
 
+import 'package:get/get.dart';
+
 import 'dart:io';
 
 import 'package:anymex/controllers/custom_logo/custom_logo_service.dart';
@@ -116,8 +118,8 @@ class _LogoAnimationPreviewDialogState
                 : (isEmpty ? 'Name cannot be empty' : null);
 
             return AnymeXDialog(
-              title: 'Add Custom Logo',
-              confirmText: 'Save Logo',
+              title: 'Add Custom Logo'.tr,
+              confirmText: 'Save Logo'.tr,
               isConfirmEnabled: selectedFile != null && !isDuplicate && !isEmpty,
               contentWidget: SingleChildScrollView(
                 child: Column(
@@ -173,7 +175,7 @@ class _LogoAnimationPreviewDialogState
                                 ),
                                 const SizedBox(height: 4),
                                 AnymeXText(
-                                  'PNG, JPG, WEBP, GIF (Max 20MB)',
+                                  'PNG, JPG, WEBP, GIF (Max 20MB)'.tr,
                                   style: TextStyle(
                                     fontSize: 11,
                                     color:
@@ -244,7 +246,7 @@ class _LogoAnimationPreviewDialogState
                               ),
                             ),
                             IconButton(
-                              tooltip: 'Change File',
+                              tooltip: 'Change File'.tr,
                               icon: Icon(
                                 Icons.sync_rounded,
                                 size: 20,
@@ -275,8 +277,8 @@ class _LogoAnimationPreviewDialogState
                         ),
                       ),
                     const SizedBox(height: 12),
-                    const AnymeXText(
-                      'Logo Name:',
+                    AnymeXText(
+                      'Logo Name:'.tr,
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
@@ -320,8 +322,8 @@ class _LogoAnimationPreviewDialogState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const AnymeXText(
-                            'Size Mode:',
+                          AnymeXText(
+                            'Size Mode:'.tr,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -342,8 +344,8 @@ class _LogoAnimationPreviewDialogState
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const AnymeXText(
-                                  'Scale Factor',
+                                AnymeXText(
+                                  'Scale Factor'.tr,
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 AnymeXText(
@@ -376,7 +378,7 @@ class _LogoAnimationPreviewDialogState
               ),
               onConfirm: () async {
                 if (selectedFile == null) {
-                  snackBar('Please choose a logo file.');
+                  snackBar('Please choose a logo file.'.tr);
                   return;
                 }
                 final currentName = nameController.text.trim();
@@ -384,7 +386,7 @@ class _LogoAnimationPreviewDialogState
                     _customLogos.any((l) =>
                         l.name.trim().toLowerCase() ==
                         currentName.toLowerCase())) {
-                  snackBar('A logo with this name already exists.');
+                  snackBar('A logo with this name already exists.'.tr);
                   return;
                 }
                 try {
@@ -435,8 +437,8 @@ class _LogoAnimationPreviewDialogState
                 : (isEmpty ? 'Name cannot be empty' : null);
 
             return AnymeXDialog(
-              title: 'Edit Logo Settings',
-              confirmText: 'Save Changes',
+              title: 'Edit Logo Settings'.tr,
+              confirmText: 'Save Changes'.tr,
               isConfirmEnabled: !isDuplicate && !isEmpty,
               contentWidget: SingleChildScrollView(
                 child: Column(
@@ -504,8 +506,8 @@ class _LogoAnimationPreviewDialogState
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const AnymeXText(
-                      'Logo Name:',
+                    AnymeXText(
+                      'Logo Name:'.tr,
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 8),
@@ -549,8 +551,8 @@ class _LogoAnimationPreviewDialogState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const AnymeXText(
-                            'Size Mode:',
+                          AnymeXText(
+                            'Size Mode:'.tr,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -571,8 +573,8 @@ class _LogoAnimationPreviewDialogState
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const AnymeXText(
-                                  'Scale Factor',
+                                AnymeXText(
+                                  'Scale Factor'.tr,
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 AnymeXText(
@@ -610,7 +612,7 @@ class _LogoAnimationPreviewDialogState
                         l.id != logo.id &&
                         l.name.trim().toLowerCase() ==
                             currentName.toLowerCase())) {
-                  snackBar('A logo with this name already exists.');
+                  snackBar('A logo with this name already exists.'.tr);
                   return;
                 }
                 try {
@@ -640,9 +642,9 @@ class _LogoAnimationPreviewDialogState
 
   void _confirmDeleteCustomLogo(CustomLogo logo) {
     AnymeXDialog(
-      title: 'Delete Custom Logo',
+      title: 'Delete Custom Logo'.tr,
       message: 'Are you sure you want to delete "${logo.name}"?',
-      confirmText: 'Delete',
+      confirmText: 'Delete'.tr,
       onConfirm: () async {
         await CustomLogoService.deleteCustomLogo(logo.id);
         if (mounted) {
@@ -716,7 +718,7 @@ class _LogoAnimationPreviewDialogState
             child: _buildIconSegmentItem(
               context: context,
               icon: Icons.crop_square_rounded,
-              tooltip: 'Default Size (200px)',
+              tooltip: 'Default Size (200px)'.tr,
               isSelected: currentMode == CustomLogoSizeMode.defaultSize,
               onTap: () => onModeChanged(CustomLogoSizeMode.defaultSize),
             ),
@@ -726,7 +728,7 @@ class _LogoAnimationPreviewDialogState
             child: _buildIconSegmentItem(
               context: context,
               icon: Icons.aspect_ratio_rounded,
-              tooltip: 'Original Size',
+              tooltip: 'Original Size'.tr,
               isSelected: currentMode == CustomLogoSizeMode.originalSize,
               onTap: () => onModeChanged(CustomLogoSizeMode.originalSize),
             ),
@@ -736,7 +738,7 @@ class _LogoAnimationPreviewDialogState
             child: _buildIconSegmentItem(
               context: context,
               icon: Icons.zoom_in_rounded,
-              tooltip: 'Custom Scale',
+              tooltip: 'Custom Scale'.tr,
               isSelected: currentMode == CustomLogoSizeMode.customScale,
               onTap: () => onModeChanged(CustomLogoSizeMode.customScale),
             ),
@@ -819,7 +821,7 @@ class _LogoAnimationPreviewDialogState
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             icon: const Icon(Icons.replay_rounded, size: 16),
-            label: const AnymeXText('Replay',
+            label: AnymeXText('Replay'.tr,
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
             onPressed: _replayAnimation,
           ),
@@ -858,7 +860,7 @@ class _LogoAnimationPreviewDialogState
                         color: context.colors.primary, size: 20),
                     const SizedBox(width: 8),
                     AnymeXText(
-                      'Add Custom Logo (.gif, .webp)',
+                      'Add Custom Logo (.gif, .webp)'.tr,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: context.colors.primary,
@@ -872,8 +874,8 @@ class _LogoAnimationPreviewDialogState
           ),
           if (_customLogos.isNotEmpty) ...[
             const SizedBox(height: 16),
-            const AnymeXText(
-              'Custom Logos',
+            AnymeXText(
+              'Custom Logos'.tr,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),
@@ -988,13 +990,13 @@ class _LogoAnimationPreviewDialogState
                       IconButton(
                         icon: Icon(Icons.tune_rounded,
                             size: 20, color: context.colors.primary),
-                        tooltip: 'Edit Logo Settings',
+                        tooltip: 'Edit Logo Settings'.tr,
                         onPressed: () => _showEditCustomLogoDialog(logo),
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete_outline_rounded,
                             size: 20, color: Colors.redAccent),
-                        tooltip: 'Delete Logo',
+                        tooltip: 'Delete Logo'.tr,
                         onPressed: () => _confirmDeleteCustomLogo(logo),
                       ),
                     ],
@@ -1012,8 +1014,8 @@ class _LogoAnimationPreviewDialogState
             const SizedBox(height: 12),
             const Divider(),
             const SizedBox(height: 8),
-            const AnymeXText(
-              'Built-in Styles',
+            AnymeXText(
+              'Built-in Styles'.tr,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),

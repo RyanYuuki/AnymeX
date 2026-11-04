@@ -944,7 +944,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             )
           : Row(
               children: [
-                AnymeXText('Was this helpful?',
+                AnymeXText('Was this helpful?'.tr,
                   size: 13,
                   color: colors.onSurfaceVariant,
                   variant: TextVariant.semiBold,
@@ -1005,7 +1005,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AnymeXText('Recommended by',
+                    AnymeXText('Recommended by'.tr,
                       size: 11,
                       color: colors.onSurfaceVariant,
                     ),

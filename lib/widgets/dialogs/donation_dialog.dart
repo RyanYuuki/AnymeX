@@ -32,10 +32,10 @@ class DonationDialog extends StatelessWidget {
         final launched =
             await launchUrl(uri, mode: LaunchMode.externalApplication);
         if (!launched) {
-          snackBar('Could not open donation link');
+          snackBar('Could not open donation link'.tr);
         }
       } catch (_) {
-        snackBar('Could not open donation link');
+        snackBar('Could not open donation link'.tr);
       }
     } else {
       navigate(SettingsDonation.new);
@@ -49,9 +49,9 @@ class DonationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnymeXDialog(
-      title: 'Support AnymeX',
-      confirmText: 'Donate',
-      cancelText: 'Maybe Later',
+      title: 'Support AnymeX'.tr,
+      confirmText: 'Donate'.tr,
+      cancelText: 'Maybe Later'.tr,
       showCancelButton: true,
       onConfirm: () => _handleDonate(context),
       contentWidget: Column(
@@ -60,7 +60,7 @@ class DonationDialog extends StatelessWidget {
           _buildHeaderIcon(context),
           const SizedBox(height: 14),
           AnymeXText(
-            'AnymeX is 100% free, open-source, and ad-free. Your support directly helps in server costs and active feature development!',
+            'AnymeX is 100% free, open-source, and ad-free. Your support directly helps in server costs and active feature development!'.tr,
             size: 13.5,
             color: context.colors.onSurfaceVariant,
             textAlign: TextAlign.center,
@@ -75,17 +75,17 @@ class DonationDialog extends StatelessWidget {
               _buildPerk(
                 context,
                 icon: Icons.block_rounded,
-                label: 'Ad-Free App',
+                label: 'Ad-Free App'.tr,
               ),
               _buildPerk(
                 context,
                 icon: Icons.code_rounded,
-                label: 'Open Source',
+                label: 'Open Source'.tr,
               ),
               _buildPerk(
                 context,
                 icon: Icons.volunteer_activism_rounded,
-                label: 'Community Driven',
+                label: 'Community Driven'.tr,
               ),
             ],
           ),
@@ -186,7 +186,7 @@ class DonationDialog extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AnymeXText(
-                    "If you can't donate, watch this ad to support",
+                    "If you can't donate, watch this ad to support".tr,
                     size: 12.5,
                     variant: TextVariant.bold,
                     color: context.colors.onSurface,
@@ -240,7 +240,7 @@ class DonationDialog extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             AnymeXText(
-              "Don't show again",
+              "Don't show again".tr,
               size: 12.5,
               variant: TextVariant.regular,
               color: context.colors.onSurface.opaque(0.5, iReallyMeanIt: true),

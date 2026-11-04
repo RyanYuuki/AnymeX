@@ -104,14 +104,14 @@ class ListStatusCard extends StatelessWidget {
                       if (isAnime) {
                         navigate(() => AnimeList(
                               data: data,
-                              title: "Anime",
+                              title: "Anime".tr,
                               initialTab: mappedTabForNav,
                               userName: userName,
                             ));
                       } else {
                         navigate(() => AnilistMangaList(
                               data: data,
-                              title: "Manga",
+                              title: "Manga".tr,
                               initialTab: mappedTabForNav,
                               userName: userName,
                             ));

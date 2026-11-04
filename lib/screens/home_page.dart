@@ -227,7 +227,7 @@ class _HomePageState extends State<HomePage> {
       onRefresh: () {
         if (!serviceHandler.isLoggedIn.value) {
           snackBar(
-              "W-what are you doing step-bro, login before you do that (●´⌓`●)",
+              "W-what are you doing step-bro, login before you do that (●´⌓`●)".tr,
               duration: 1200);
         }
         return serviceHandler.refresh();
@@ -252,18 +252,18 @@ class _HomePageState extends State<HomePage> {
                       child: AnymeXTextSpans(
                         fontSize: 27,
                         spans: [
-                          const AnymeXTextSpan(
-                              text: 'Hey ',
+                          AnymeXTextSpan(
+                              text: 'Hey '.tr,
                               size: 30,
                               variant: TextVariant.bold),
                           AnymeXTextSpan(
                               text:
-                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
+                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'.tr}',
                               size: 30,
                               color: context.colors.primary,
                               variant: TextVariant.bold),
-                          const AnymeXTextSpan(
-                              text: ', what are we doing today?',
+                          AnymeXTextSpan(
+                              text: ', what are we doing today?'.tr,
                               size: 30,
                               variant: TextVariant.bold),
                         ],
@@ -282,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: AnymeXText(
-                          'Find your favourite anime or manga, manhwa or whatever you like!',
+                          'Find your favourite anime or manga, manhwa or whatever you like!'.tr,
                           style: TextStyle(
                             color: Theme.of(context)
                                 .colorScheme
@@ -313,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                 if (novelData.isNotEmpty)
                   SliverToBoxAdapter(
                     child: ReusableCarousel(
-                      title: "Recommended Novels",
+                      title: "Recommended Novels".tr,
                       data: novelData,
                       type: ItemType.novel,
                       source: sourceController.activeNovelSource.value,
@@ -330,7 +330,7 @@ class _HomePageState extends State<HomePage> {
                 scrollController: _scrollController,
                 headerContent: Header(
                   leading: const HeaderLogoButton(),
-                  title: 'AnymeX',
+                  title: 'AnymeX'.tr,
                   titleColor: Theme.of(context).colorScheme.primary,
                   subtitleWidget: const HeaderGreetingSubtitle(),
                   actions: const [HeaderProfileAvatar()],

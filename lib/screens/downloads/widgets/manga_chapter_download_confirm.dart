@@ -76,7 +76,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymeXText('Start Manga Download',
+                    AnymeXText('Start Manga Download'.tr,
                       variant: TextVariant.bold,
                       size: 16,
                     ),
@@ -103,14 +103,14 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                 _buildInfoRow(
                   theme: theme,
                   icon: HugeIcons.strokeRoundedBook02,
-                  label: 'Chapters',
+                  label: 'Chapters'.tr,
                   value: count.toString(),
                 ),
                 const SizedBox(height: 12),
                 _buildInfoRow(
                   theme: theme,
                   icon: HugeIcons.strokeRoundedGlobe,
-                  label: 'Source',
+                  label: 'Source'.tr,
                   value: (source.lang ?? '').isNotEmpty
                       ? '${source.name ?? 'Unknown'} (${completeLanguageName(source.lang!)})'
                       : (source.name ?? 'Unknown'),
@@ -119,7 +119,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                 _buildInfoRow(
                   theme: theme,
                   icon: HugeIcons.strokeRoundedFolder01,
-                  label: 'Location',
+                  label: 'Location'.tr,
                   value: 'AnymeX/Downloads/Manga',
                 ),
               ],
@@ -139,7 +139,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                     size: 16, color: theme.primary),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: AnymeXText('Images will be downloaded in full quality. Each chapter is stored in its own folder.',
+                  child: AnymeXText('Images will be downloaded in full quality. Each chapter is stored in its own folder.'.tr,
                     size: 12,
                     color: theme.primary.opaque(0.8),
                   ),

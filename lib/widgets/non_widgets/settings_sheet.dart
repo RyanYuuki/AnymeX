@@ -95,14 +95,14 @@ class SettingsSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const AnymeXText(
-                  "Choose Provider",
+                AnymeXText(
+                  "Choose Provider".tr,
                   size: 20,
                   variant: TextVariant.bold,
                 ),
                 const SizedBox(height: 5),
                 AnymeXText(
-                  "Select your preferred content source",
+                  "Select your preferred content source".tr,
                   size: 14,
                   color: theme.colorScheme.onSurface
                       .opaque(0.5, iReallyMeanIt: true),
@@ -319,8 +319,8 @@ class SettingsSheet extends StatelessWidget {
                       children: [
                         AnymeXText(
                           serviceHandler.isLoggedIn.value
-                              ? 'Tap to logout'
-                              : 'Tap to login',
+                              ? 'Tap to logout'.tr
+                              : 'Tap to login'.tr,
                           size: 12,
                           color: theme.primary,
                         ),
@@ -408,7 +408,7 @@ class SettingsSheet extends StatelessWidget {
           serviceHandler.serviceType.value == ServicesType.anilist)
         _SheetMenuItem(
           icon: IconlyLight.profile,
-          label: 'View Profile',
+          label: 'View Profile'.tr,
           onTap: () {
             Get.back();
             navigate(() => const ProfilePage());
@@ -416,7 +416,7 @@ class SettingsSheet extends StatelessWidget {
         ),
       _SheetMenuItem(
         icon: HugeIcons.strokeRoundedAiSetting,
-        label: 'Change Service',
+        label: 'Change Service'.tr,
         onTap: () {
           Get.back();
           showServiceSelector(context);
@@ -427,7 +427,7 @@ class SettingsSheet extends StatelessWidget {
               (Platform.isWindows || Platform.isMacOS || Platform.isLinux)))
         _SheetMenuItem(
           icon: Icons.extension_rounded,
-          label: 'Extensions',
+          label: 'Extensions'.tr,
           onTap: () {
             Get.back();
             navigate(() => const ExtensionScreen());
@@ -435,7 +435,7 @@ class SettingsSheet extends StatelessWidget {
         ),
       _SheetMenuItem(
         icon: HugeIcons.strokeRoundedDownload04,
-        label: 'Downloads',
+        label: 'Downloads'.tr,
         onTap: () {
           Get.back();
           navigate(() => const DownloadScreen());
@@ -443,7 +443,7 @@ class SettingsSheet extends StatelessWidget {
       ),
       _SheetMenuItem(
         icon: Iconsax.document_download,
-        label: 'Local Media',
+        label: 'Local Media'.tr,
         onTap: () {
           Get.back();
           navigate(() => const WatchOffline());
@@ -451,7 +451,7 @@ class SettingsSheet extends StatelessWidget {
       ),
       _SheetMenuItem(
         icon: Icons.people_rounded,
-        label: 'Watch Together',
+        label: 'Watch Together'.tr,
         onTap: () {
           Get.back();
           navigate(() => const WatchiumPage());
@@ -462,8 +462,8 @@ class SettingsSheet extends StatelessWidget {
             ? Iconsax.eye_slash
             : Iconsax.eye,
         label: settingsController.isIncognito.value
-            ? 'Incognito (Active)'
-            : 'Incognito Mode',
+            ? 'Incognito (Active)'.tr
+            : 'Incognito Mode'.tr,
         onTap: () {
           settingsController.toggleIncognito();
           snackBar(
@@ -475,7 +475,7 @@ class SettingsSheet extends StatelessWidget {
       ),
       _SheetMenuItem(
         icon: Iconsax.setting,
-        label: 'Settings',
+        label: 'Settings'.tr,
         onTap: () {
           Get.back();
           navigate(() => const SettingsPage());
@@ -529,7 +529,7 @@ class SettingsSheet extends StatelessWidget {
       ),
     );
 
-    final finalIcon = item.label == 'Extensions'
+    final finalIcon = item.label == 'Extensions'.tr
         ? Obx(() {
             final count =
                 Get.find<SourceController>().extensionUpdatesCount.value;

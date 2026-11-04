@@ -73,7 +73,7 @@ class _NovelHomePageState extends State<NovelHomePage> {
             isVisible: _isAppBarVisibleExternally,
             scrollController: _scrollController,
             headerContent: Header(
-              title: 'Novels',
+              title: 'Novels'.tr,
               subtitleWidget: const HeaderGreetingSubtitle(),
               actions: [
                 HeaderActionButton(

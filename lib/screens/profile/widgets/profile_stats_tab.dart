@@ -140,7 +140,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
             Padding(
               padding: const EdgeInsets.all(40),
               child: Center(
-                child: AnymeXText('No stats available',
+                child: AnymeXText('No stats available'.tr,
                   color: colorScheme.onSurface.opaque(0.5),
                 ),
               ),
@@ -185,14 +185,14 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
       // Summary card
       _sectionContainer(
         icon: IconlyLight.chart,
-        title: 'Summary',
+        title: 'Summary'.tr,
         child: _overviewSummaryGrid(anime, manga),
       ),
       if (scores.isNotEmpty) ...[
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.bar_chart_rounded,
-          title: 'Score Distribution',
+          title: 'Score Distribution'.tr,
           child: _verticalStatsBar(scores),
         ),
       ],
@@ -208,7 +208,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.radio_button_checked,
-          title: 'Status Distribution',
+          title: 'Status Distribution'.tr,
           child: _horizontalStatsBar(statuses),
         ),
       ],
@@ -216,7 +216,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.style_outlined,
-          title: 'Format Distribution',
+          title: 'Format Distribution'.tr,
           child: _horizontalStatsBar(formats),
         ),
       ],
@@ -224,7 +224,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.public,
-          title: 'Country Distribution',
+          title: 'Country Distribution'.tr,
           child: _horizontalStatsBar(countries),
         ),
       ],
@@ -232,7 +232,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
         const SizedBox(height: 16),
         _sectionContainer(
           icon: Icons.event,
-          title: 'Release Year',
+          title: 'Release Year'.tr,
           child: _verticalStatsBar(releaseYears),
         ),
       ],
@@ -256,7 +256,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: Icons.category_rounded,
-        title: 'Genres',
+        title: 'Genres'.tr,
         child: _rankedList(items,
             onTap: (label, {id, image}) => _searchFor(label, isGenre: true)),
       ),
@@ -273,7 +273,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: Icons.tag,
-        title: 'Tags',
+        title: 'Tags'.tr,
         child: _rankedList(items,
             onTap: (label, {id, image}) => _searchFor(label, isTag: true)),
       ),
@@ -290,7 +290,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: IconlyLight.user2,
-        title: 'Staff',
+        title: 'Staff'.tr,
         child:
             _rankedList(items, showAvatar: true, onTap: (label, {id, image}) {
           if (id != null) _openSheet(id: id, name: label, image: image);
@@ -309,7 +309,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: Icons.record_voice_over,
-        title: 'Voice Actors',
+        title: 'Voice Actors'.tr,
         child:
             _rankedList(items, showAvatar: true, onTap: (label, {id, image}) {
           if (id != null) _openSheet(id: id, name: label, image: image);
@@ -328,7 +328,7 @@ class _ProfileStatsTabState extends State<ProfileStatsTab> {
     return [
       _sectionContainer(
         icon: Icons.business_outlined,
-        title: 'Studios',
+        title: 'Studios'.tr,
         child: _rankedList(items, onTap: (label, {id, image}) {
           final studioId = int.tryParse(id ?? '') ?? 0;
           if (studioId > 0) {

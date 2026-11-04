@@ -447,7 +447,7 @@ class SocialTabState extends State<SocialTab> {
             padding: const EdgeInsets.symmetric(vertical: 14),
             child: Center(
               child: AnymeXText(
-                'No more users',
+                'No more users'.tr,
                 style: TextStyle(
                   fontSize: 12,
                   color: context.theme.colorScheme.onSurfaceVariant

@@ -176,7 +176,7 @@ class _CommunityRecommendationsPageState
   void _showSettingsSheet(BuildContext context) {
     final svc = Get.find<CommunityService>();
     AnymeXSheet(
-      title: 'Filter Settings',
+      title: 'Filter Settings'.tr,
       contentWidget: Obx(() {
         return AnymeXTileBuilder<String>(
           items: const [],
@@ -185,8 +185,8 @@ class _CommunityRecommendationsPageState
           isSelection: false,
           children: [
             AnymeXTile.toggle(
-              title: 'Hide by List Status',
-              subtitle: 'Filter out entries already in your list',
+              title: 'Hide by List Status'.tr,
+              subtitle: 'Filter out entries already in your list'.tr,
               value: svc.filterByListEnabled.value,
               onChanged: (v) {
                 svc.filterByListEnabled.value = v;
@@ -199,7 +199,7 @@ class _CommunityRecommendationsPageState
                 isSelection: false,
                 children: [
                   AnymeXTile.toggle(
-                    title: 'Hide Completed',
+                    title: 'Hide Completed'.tr,
                     value: svc.filterCompleted.value,
                     onChanged: (v) {
                       svc.filterCompleted.value = v;
@@ -207,7 +207,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide Watching / Reading',
+                    title: 'Hide Watching / Reading'.tr,
                     value: svc.filterWatching.value,
                     onChanged: (v) {
                       svc.filterWatching.value = v;
@@ -215,7 +215,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide Dropped',
+                    title: 'Hide Dropped'.tr,
                     value: svc.filterDropped.value,
                     onChanged: (v) {
                       svc.filterDropped.value = v;
@@ -223,7 +223,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide Planning',
+                    title: 'Hide Planning'.tr,
                     value: svc.filterPlanning.value,
                     onChanged: (v) {
                       svc.filterPlanning.value = v;
@@ -231,7 +231,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide On Hold / Paused',
+                    title: 'Hide On Hold / Paused'.tr,
                     value: svc.filterPaused.value,
                     onChanged: (v) {
                       svc.filterPaused.value = v;
@@ -239,7 +239,7 @@ class _CommunityRecommendationsPageState
                     },
                   ),
                   AnymeXTile.toggle(
-                    title: 'Hide Rewatching',
+                    title: 'Hide Rewatching'.tr,
                     value: svc.filterRepeating.value,
                     onChanged: (v) {
                       svc.filterRepeating.value = v;
@@ -250,7 +250,7 @@ class _CommunityRecommendationsPageState
               ),
             ),
             AnymeXTile.toggle(
-              title: 'Hide NSFW',
+              title: 'Hide NSFW'.tr,
               value: svc.hideNsfw.value,
               onChanged: (v) {
                 svc.hideNsfw.value = v;
@@ -271,7 +271,7 @@ class _CommunityRecommendationsPageState
         body: Column(
       children: [
         NestedHeader(
-          title: 'Community Recommendations',
+          title: 'Community Recommendations'.tr,
           action: Row(children: [
             IconButton(
               onPressed: () {
@@ -312,7 +312,7 @@ class _CommunityRecommendationsPageState
                         color:
                             context.colors.onSurfaceVariant.withOpacity(0.5)),
                     const SizedBox(height: 12),
-                    AnymeXText('No recommendations found',
+                    AnymeXText('No recommendations found'.tr,
                       color: context.colors.onSurfaceVariant.withOpacity(0.7),
                       variant: TextVariant.semiBold,
                     ),

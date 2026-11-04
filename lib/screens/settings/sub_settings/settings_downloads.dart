@@ -22,7 +22,7 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Download Settings',
+      headerTitle: 'Download Settings'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
@@ -31,11 +31,11 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXSectionBuilder(
-                          title: 'Storage & Path',
+                          title: 'Storage & Path'.tr,
                           children: [
                             AnymeXTile(
                               icon: Iconsax.folder_open,
-                              title: 'Download Path',
+                              title: 'Download Path'.tr,
                               subtitle: settings.downloadPath.value.isEmpty
                                   ? 'Default (Internal Storage)'
                                   : settings.downloadPath.value,
@@ -50,20 +50,20 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
                             if (settings.downloadPath.value.isNotEmpty)
                               AnymeXTile(
                                 icon: Icons.refresh_rounded,
-                                title: 'Reset Download Path',
-                                subtitle: 'Restore to default internal storage',
+                                title: 'Reset Download Path'.tr,
+                                subtitle: 'Restore to default internal storage'.tr,
                                 showChevron: false,
                                 onTap: () => settings.saveDownloadPath(''),
                               ),
                           ],
                         ),
                         AnymeXSectionBuilder(
-                          title: 'Concurrency & Limits',
+                          title: 'Concurrency & Limits'.tr,
                           children: [
                             AnymeXTile.slider(
                               icon: Iconsax.arrow_right_1,
-                              title: 'Global Concurrency Limit',
-                              subtitle: 'Number of active download tasks',
+                              title: 'Global Concurrency Limit'.tr,
+                              subtitle: 'Number of active download tasks'.tr,
                               value: settings.concurrentDownloads.value.toDouble(),
                               min: 1,
                               max: 10,
@@ -74,9 +74,9 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
                             ),
                             AnymeXTile.slider(
                               icon: Iconsax.video,
-                              title: 'HLS Parallel Segments',
+                              title: 'HLS Parallel Segments'.tr,
                               subtitle:
-                                  'Parallel segments for video downloader',
+                                  'Parallel segments for video downloader'.tr,
                               value: settings.hlsParallelSegments.value
                                   .toDouble(),
                               min: 1,
@@ -88,8 +88,8 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
                             ),
                             AnymeXTile.slider(
                               icon: Iconsax.document_download,
-                              title: 'Download Chunks',
-                              subtitle: 'Number of parallel chunks per download',
+                              title: 'Download Chunks'.tr,
+                              subtitle: 'Number of parallel chunks per download'.tr,
                               value: settings.downloadChunks.value
                                   .toDouble(),
                               min: 1,

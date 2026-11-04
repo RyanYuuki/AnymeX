@@ -309,7 +309,7 @@ class _TorrentServerOverlayWidgetState
                                           CrossAxisAlignment.start,
                                       children: [
                                         AnymeXText(
-                                          'Torrent Server',
+                                          'Torrent Server'.tr,
                                           variant: TextVariant.bold,
                                           size: 13.5,
                                           color: theme.onSurface,

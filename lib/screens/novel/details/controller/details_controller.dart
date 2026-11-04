@@ -116,7 +116,7 @@ class NovelDetailsController extends GetxController {
       media.value = fetched;
       CommentPreloader.to.preloadComments(media.value);
     } catch (e) {
-      errorSnackBar('Failed to fetch chapters');
+      errorSnackBar('Failed to fetch chapters'.tr);
     } finally {
       isLoading.value = false;
       isChaptersLoading.value = false;
@@ -178,7 +178,7 @@ class NovelDetailsController extends GetxController {
       fetched.season = source.name ?? '';
       _cachedSourceMedia = fetched;
     } catch (e) {
-      errorSnackBar('Failed to fetch chapters');
+      errorSnackBar('Failed to fetch chapters'.tr);
     } finally {
       isChaptersLoading.value = false;
     }
@@ -201,7 +201,7 @@ class NovelDetailsController extends GetxController {
         CommentPreloader.to.preloadComments(media.value);
       }
     } catch (e) {
-      errorSnackBar('Sync failed');
+      errorSnackBar('Sync failed'.tr);
     } finally {
       isSyncing.value = false;
     }
@@ -213,7 +213,7 @@ class NovelDetailsController extends GetxController {
   }) {
     final source = activeSource.value;
     if (source == null) {
-      errorSnackBar('No source selected');
+      errorSnackBar('No source selected'.tr);
       return;
     }
     final chaps = filteredChapters ?? chapters;

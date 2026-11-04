@@ -812,7 +812,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 child: AnymeXPills(
                   items: [
                     PillItem(
-                      label: 'All Sources',
+                      label: 'All Sources'.tr,
                       isSelected: _selectedSource == null,
                       onTap: () {
                         setState(() => _selectedSource = null);
@@ -861,7 +861,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 serviceHandler.serviceType.value == ServicesType.mal) ...[
               if (!General.hideAdultContent.get(true)) ...[
                 _buildToggleButton(
-                  label: 'Adult',
+                  label: 'Adult'.tr,
                   isActive: isAdult,
                   onTap: () {
                     setState(() {
@@ -877,7 +877,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   serviceHandler.serviceType.value == ServicesType.anilist) ...[
                 _buildActionButton(
                   icon: Iconsax.eye,
-                  label: 'Image',
+                  label: 'Image'.tr,
                   isActive: false,
                   onTap: () => navigate(() => const SauceFinderView()),
                 ),
@@ -917,7 +917,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ),
       if (hasPopular)
         PillItem(
-          label: 'Popular',
+          label: 'Popular'.tr,
           isSelected: _extensionBrowseMode == _ExtensionBrowseMode.popular,
           onTap: () {
             _searchController.clear();
@@ -930,7 +930,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ),
       if (hasLatest)
         PillItem(
-          label: 'Latest',
+          label: 'Latest'.tr,
           isSelected: _extensionBrowseMode == _ExtensionBrowseMode.latest,
           onTap: () {
             _searchController.clear();
@@ -943,7 +943,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ),
       if (hasFilters)
         PillItem(
-          label: 'Filter',
+          label: 'Filter'.tr,
           icon: Icons.tune_rounded,
           isSelected: hasActiveFilters,
           onTap: _showExtensionFilterSheet,
@@ -960,7 +960,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 if (src.baseUrl != null && src.baseUrl!.isNotEmpty) {
                   navigate(() => CloudflareBypassWebView(url: src.baseUrl!));
                 } else {
-                  snackBar('Base URL not available for this source');
+                  snackBar('Base URL not available for this source'.tr);
                 }
               }
             }),
@@ -1341,7 +1341,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           ),
           const SizedBox(height: 24),
           AnymeXText(
-            'Searching...',
+            'Searching...'.tr,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context)
                       .colorScheme
@@ -1755,7 +1755,7 @@ class _MoreOptionsPillContent extends StatelessWidget {
                       size: 18, color: colors.primary),
                   const SizedBox(width: 12),
                   AnymeXText(
-                    'Extension Settings',
+                    'Extension Settings'.tr,
                     style: TextStyle(
                       fontSize: 13,
                       fontFamily: 'Linotte',
@@ -1774,7 +1774,7 @@ class _MoreOptionsPillContent extends StatelessWidget {
                   Icon(Icons.public_rounded, size: 18, color: colors.primary),
                   const SizedBox(width: 12),
                   AnymeXText(
-                    'Open Webview',
+                    'Open Webview'.tr,
                     style: TextStyle(
                       fontSize: 13,
                       fontFamily: 'Linotte',

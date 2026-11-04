@@ -482,7 +482,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                           ),
                                           const SizedBox(height: 16),
                                           AnymeXText(
-                                            'More Options',
+                                            'More Options'.tr,
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontFamily: 'Linotte',
@@ -495,7 +495,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                           _buildBottomSheetOption(
                                             ctx,
                                             icon: Icons.north_east_rounded,
-                                            label: 'View on AniList',
+                                            label: 'View on AniList'.tr,
                                             onTap: () {
                                               Navigator.pop(ctx);
                                               launchUrlString(
@@ -506,7 +506,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                           _buildBottomSheetOption(
                                             ctx,
                                             icon: Iconsax.export,
-                                            label: 'Share Profile',
+                                            label: 'Share Profile'.tr,
                                             onTap: () {
                                               Navigator.pop(ctx);
                                               Share.share(
@@ -517,7 +517,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                           _buildBottomSheetOption(
                                             ctx,
                                             icon: Iconsax.copy,
-                                            label: 'Copy User ID',
+                                            label: 'Copy User ID'.tr,
                                             onTap: () async {
                                               Navigator.pop(ctx);
                                               await Clipboard.setData(
@@ -530,8 +530,8 @@ class DesktopProfileHeader extends StatelessWidget {
                                                   context,
                                                 ).showSnackBar(
                                                   SnackBar(
-                                                    content: const AnymeXText(
-                                                      'User ID copied to clipboard',
+                                                    content: AnymeXText(
+                                                      'User ID copied to clipboard'.tr,
                                                     ),
                                                     backgroundColor: context
                                                         .theme
@@ -547,7 +547,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                           _buildBottomSheetOption(
                                             ctx,
                                             icon: Iconsax.setting_2,
-                                            label: 'AniList Settings',
+                                            label: 'AniList Settings'.tr,
                                             onTap: () {
                                               Navigator.pop(ctx);
                                               navigate(() =>
@@ -557,7 +557,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                           _buildBottomSheetOption(
                                             ctx,
                                             icon: Iconsax.heart4,
-                                            label: 'Check Compatibility',
+                                            label: 'Check Compatibility'.tr,
                                             onTap: () {
                                               Navigator.pop(ctx);
                                               navigate(() =>
@@ -567,7 +567,7 @@ class DesktopProfileHeader extends StatelessWidget {
                                           _buildBottomSheetOption(
                                             ctx,
                                             icon: Icons.emoji_events_outlined,
-                                            label: 'Community Leaderboard',
+                                            label: 'Community Leaderboard'.tr,
                                             onTap: () {
                                               Navigator.pop(ctx);
                                               LeaderboardSheet.show(context);
@@ -686,7 +686,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
             ),
             child: IconButton(
               icon: const Icon(Icons.palette_outlined),
-              tooltip: 'Decoration Closet',
+              tooltip: 'Decoration Closet'.tr,
               onPressed: () => DecorationClosetSheet.show(context),
             ),
           ),
@@ -698,7 +698,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
           ),
           child: IconButton(
             icon: const Icon(Icons.emoji_events_outlined),
-            tooltip: 'Leaderboard',
+            tooltip: 'Leaderboard'.tr,
             onPressed: () => LeaderboardSheet.show(context),
           ),
         ),
@@ -737,7 +737,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         AnymeXText(
-                          'More Options',
+                          'More Options'.tr,
                           style: TextStyle(
                             fontSize: 18,
                             fontFamily: 'Linotte',
@@ -750,7 +750,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                           _buildBottomSheetOption(
                             ctx,
                             icon: Icons.checkroom_rounded,
-                            label: 'Decoration Closet',
+                            label: 'Decoration Closet'.tr,
                             onTap: () {
                               Navigator.pop(ctx);
                               DecorationClosetSheet.show(context);
@@ -759,7 +759,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         _buildBottomSheetOption(
                           ctx,
                           icon: Icons.north_east_rounded,
-                          label: 'View on AniList',
+                          label: 'View on AniList'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             launchUrlString('https://anilist.co/user/$name');
@@ -768,7 +768,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         _buildBottomSheetOption(
                           ctx,
                           icon: Iconsax.export,
-                          label: 'Share Profile',
+                          label: 'Share Profile'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             Share.share('https://anilist.co/user/$name');
@@ -777,7 +777,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         _buildBottomSheetOption(
                           ctx,
                           icon: Iconsax.copy,
-                          label: 'Copy User ID',
+                          label: 'Copy User ID'.tr,
                           onTap: () async {
                             Navigator.pop(ctx);
                             await Clipboard.setData(
@@ -786,8 +786,8 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const AnymeXText(
-                                    'User ID copied to clipboard',
+                                  content: AnymeXText(
+                                    'User ID copied to clipboard'.tr,
                                   ),
                                   backgroundColor: context.theme.colorScheme
                                       .surfaceContainerHighest,
@@ -800,7 +800,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         _buildBottomSheetOption(
                           ctx,
                           icon: Iconsax.setting_2,
-                          label: 'AniList Settings',
+                          label: 'AniList Settings'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             navigate(() => const SettingsAnilistApi());
@@ -809,7 +809,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         _buildBottomSheetOption(
                           ctx,
                           icon: Iconsax.heart4,
-                          label: 'Check Compatibility',
+                          label: 'Check Compatibility'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             navigate(() => const CompatibilityInputPage());
@@ -818,7 +818,7 @@ class MobileProfileHeaderSliver extends StatelessWidget {
                         _buildBottomSheetOption(
                           ctx,
                           icon: Icons.emoji_events_outlined,
-                          label: 'Community Leaderboard',
+                          label: 'Community Leaderboard'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             LeaderboardSheet.show(context);

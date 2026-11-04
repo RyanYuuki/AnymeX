@@ -95,7 +95,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaLayoutDialog() {
     showSelectionDialog<int>(
-      title: 'Reading Layout',
+      title: 'Reading Layout'.tr,
       items: const [0, 1],
       selectedItem: _mangaLayout.obs,
       getTitle: (value) => value == 0 ? 'Continuous' : 'Paged',
@@ -111,7 +111,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaDirectionDialog() {
     showSelectionDialog<int>(
-      title: 'Reading Direction',
+      title: 'Reading Direction'.tr,
       items: const [0, 1, 2, 3],
       selectedItem: _mangaDirection.obs,
       getTitle: (value) {
@@ -138,7 +138,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaDualPageDialog() {
     showSelectionDialog<int>(
-      title: 'Dual Page Mode',
+      title: 'Dual Page Mode'.tr,
       items: const [0, 1, 2],
       selectedItem: _mangaDualPageMode.obs,
       getTitle: (value) {
@@ -163,7 +163,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaFilterQualityDialog() {
     showSelectionDialog<int>(
-      title: 'Image Filter Quality',
+      title: 'Image Filter Quality'.tr,
       items: const [0, 1, 2, 3, 4],
       selectedItem: _mangaFilterQuality.obs,
       getTitle: (value) {
@@ -192,7 +192,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showChapterStyleDialog() {
     showSelectionDialog<String>(
-      title: 'Chapter Tile Style',
+      title: 'Chapter Tile Style'.tr,
       items: const ['compact', 'detailed'],
       selectedItem: settings.chapterStyleRx,
       getTitle: (value) => value == 'compact' ? 'Compact' : 'Detailed (Classic)',
@@ -207,7 +207,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showNovelThemeDialog() {
     showSelectionDialog<int>(
-      title: 'Novel Theme',
+      title: 'Novel Theme'.tr,
       items: const [0, 1, 2, 3],
       selectedItem: _novelThemeMode.obs,
       getTitle: (value) {
@@ -234,7 +234,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showNovelFontDialog() {
     showSelectionDialog<String>(
-      title: 'Novel Font Family',
+      title: 'Novel Font Family'.tr,
       items: _novelFonts,
       selectedItem: _novelFontFamily.obs,
       getTitle: (value) => value,
@@ -250,7 +250,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showReaderControlThemeDialog() {
     showSelectionDialog<String>(
-      title: 'Reader Control Theme',
+      title: 'Reader Control Theme'.tr,
       items: ReaderControlThemeRegistry.themes.map((e) => e.id).toList(),
       selectedItem: settings.readerControlThemeRx,
       getTitle: (id) => ReaderControlThemeRegistry.resolve(id).name,
@@ -314,18 +314,18 @@ class _SettingsReaderState extends State<SettingsReader> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Reader Settings',
+      headerTitle: 'Reader Settings'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
                   child: Column(
                     children: [
                       AnymeXSectionBuilder(
-                        title: 'Manga',
+                        title: 'Manga'.tr,
                         children: [
                           AnymeXTile(
                             icon: Icons.style_rounded,
-                            title: 'Control Theme',
+                            title: 'Control Theme'.tr,
                             subtitle: ReaderControlThemeRegistry.resolve(
                                     settings.readerControlTheme)
                                 .name,
@@ -333,14 +333,14 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile(
                             icon: Iconsax.card,
-                            title: 'Layout',
+                            title: 'Layout'.tr,
                             subtitle:
                                 _mangaLayout == 0 ? 'Continuous' : 'Paged',
                             onTap: _showMangaLayoutDialog,
                           ),
                           AnymeXTile(
                             icon: Iconsax.direct_right,
-                            title: 'Direction',
+                            title: 'Direction'.tr,
                             subtitle: switch (_mangaDirection) {
                               0 => 'Bottom-Up',
                               1 => 'Top-Down',
@@ -351,7 +351,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile(
                             icon: Iconsax.book_1,
-                            title: 'Dual Page Mode',
+                            title: 'Dual Page Mode'.tr,
                             subtitle: switch (_mangaDualPageMode) {
                               1 => 'Auto (Laptop/Tab)',
                               2 => 'Force (Dual)',
@@ -361,7 +361,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile(
                             icon: Icons.image_search_rounded,
-                            title: 'Image Filter Quality',
+                            title: 'Image Filter Quality'.tr,
                             subtitle: switch (_mangaFilterQuality) {
                               0 => 'None (Nearest)',
                               1 => 'Low (Bilinear)',
@@ -373,14 +373,14 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           Obx(() => AnymeXTile(
                             icon: Icons.list_alt_rounded,
-                            title: 'Chapter Tile Style',
+                            title: 'Chapter Tile Style'.tr,
                             subtitle: settings.chapterStyle == 'compact' ? 'Compact' : 'Detailed (Classic)',
                             onTap: _showChapterStyleDialog,
                           )),
                           AnymeXTile.toggle(
                             icon: Iconsax.pharagraphspacing,
-                            title: 'Spaced Pages',
-                            subtitle: 'Continuous mode only',
+                            title: 'Spaced Pages'.tr,
+                            subtitle: 'Continuous mode only'.tr,
                             value: _mangaSpacedPages,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.spacedPages,
@@ -390,8 +390,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Iconsax.arrow,
-                            title: 'Overscroll',
-                            subtitle: 'Overscroll to prev/next chapter',
+                            title: 'Overscroll'.tr,
+                            subtitle: 'Overscroll to prev/next chapter'.tr,
                             value: _mangaOverscroll,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.overscrollToChapter,
@@ -401,8 +401,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Iconsax.eye,
-                            title: 'Persistent Page Indicator',
-                            subtitle: 'Always show page indicator',
+                            title: 'Persistent Page Indicator'.tr,
+                            subtitle: 'Always show page indicator'.tr,
                             value: _mangaPageIndicator,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.showPageIndicator,
@@ -412,8 +412,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.crop_rounded,
-                            title: 'Crop Borders',
-                            subtitle: 'Remove white/black borders',
+                            title: 'Crop Borders'.tr,
+                            subtitle: 'Remove white/black borders'.tr,
                             value: _mangaCropBorders,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.cropImages,
@@ -423,8 +423,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.fullscreen_rounded,
-                            title: 'Fit to Screen Width',
-                            subtitle: 'Stretch images to fit screen width',
+                            title: 'Fit to Screen Width'.tr,
+                            subtitle: 'Stretch images to fit screen width'.tr,
                             value: _mangaFitToScreen,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.fitToScreen,
@@ -434,8 +434,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.play_arrow_rounded,
-                            title: 'Auto Scroll',
-                            subtitle: 'Automatically scroll pages',
+                            title: 'Auto Scroll'.tr,
+                            subtitle: 'Automatically scroll pages'.tr,
                             value: _mangaAutoScroll,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.autoScrollEnabled,
@@ -446,9 +446,9 @@ class _SettingsReaderState extends State<SettingsReader> {
                           if (_mangaAutoScroll)
                             AnymeXTile.slider(
                               icon: Icons.speed_rounded,
-                              title: 'Auto Scroll Speed',
+                              title: 'Auto Scroll Speed'.tr,
                               subtitle:
-                                  'Seconds per screen/page (lower is faster)',
+                                  'Seconds per screen/page (lower is faster)'.tr,
                               value: _mangaAutoScrollSpeed,
                               min: 1.0,
                               max: 10.0,
@@ -461,8 +461,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           if (Platform.isAndroid)
                             AnymeXTile.toggle(
                               icon: Iconsax.volume_high,
-                              title: 'Volume Keys Navigation',
-                              subtitle: 'Use volume keys to change pages',
+                              title: 'Volume Keys Navigation'.tr,
+                              subtitle: 'Use volume keys to change pages'.tr,
                               value: _mangaVolumeKeys,
                               onChanged: (value) => _setReaderBool(
                                 ReaderKeys.volumeKeysEnabled,
@@ -473,8 +473,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           if (Platform.isAndroid)
                             AnymeXTile.toggle(
                               icon: Iconsax.arrow_swap_horizontal,
-                              title: 'Invert Volume Keys',
-                              subtitle: 'Swap up/down actions',
+                              title: 'Invert Volume Keys'.tr,
+                              subtitle: 'Swap up/down actions'.tr,
                               value: _mangaInvertVolumeKeys,
                               onChanged: (value) => _setReaderBool(
                                 ReaderKeys.invertVolumeKeys,
@@ -484,8 +484,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                             ),
                           AnymeXTile.toggle(
                             icon: Icons.lock_clock_rounded,
-                            title: 'Keep Screen On',
-                            subtitle: 'Prevent screen from sleeping',
+                            title: 'Keep Screen On'.tr,
+                            subtitle: 'Prevent screen from sleeping'.tr,
                             value: _mangaKeepScreenOn,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.keepScreenOn,
@@ -495,8 +495,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.swap_vert_rounded,
-                            title: 'Auto Webtoon Mode',
-                            subtitle: 'Auto switch to vertical mode',
+                            title: 'Auto Webtoon Mode'.tr,
+                            subtitle: 'Auto switch to vertical mode'.tr,
                             value: _mangaAutoWebtoon,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.autoWebtoonMode,
@@ -506,9 +506,9 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.swap_horiz_rounded,
-                            title: 'Always Show Chapter Transition',
+                            title: 'Always Show Chapter Transition'.tr,
                             subtitle:
-                                'Show chapter transition even without gaps',
+                                'Show chapter transition even without gaps'.tr,
                             value: _mangaChapterTransition,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.alwaysShowChapterTransition,
@@ -518,8 +518,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.touch_app_rounded,
-                            title: 'Long Press Page Actions',
-                            subtitle: 'Enable long press quick actions',
+                            title: 'Long Press Page Actions'.tr,
+                            subtitle: 'Enable long press quick actions'.tr,
                             value: _mangaLongPressActions,
                             onChanged: (value) => _setReaderBool(
                               ReaderKeys.longPressPageActionsEnabled,
@@ -530,11 +530,11 @@ class _SettingsReaderState extends State<SettingsReader> {
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Novel',
+                        title: 'Novel'.tr,
                         children: [
                           AnymeXTile(
                             icon: Icons.palette_rounded,
-                            title: 'Theme',
+                            title: 'Theme'.tr,
                             subtitle: switch (_novelThemeMode) {
                               0 => 'Light',
                               1 => 'Dark',
@@ -545,14 +545,14 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedTextFont,
-                            title: 'Font Family',
+                            title: 'Font Family'.tr,
                             subtitle: _novelFontFamily,
                             onTap: _showNovelFontDialog,
                           ),
                           AnymeXTile.slider(
                             icon: Icons.format_size_rounded,
-                            title: 'Font Size',
-                            subtitle: 'Text size',
+                            title: 'Font Size'.tr,
+                            subtitle: 'Text size'.tr,
                             value: _novelFontSize,
                             min: 12,
                             max: 24,
@@ -565,8 +565,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.slider(
                             icon: Icons.height_rounded,
-                            title: 'Line Height',
-                            subtitle: 'Distance between lines',
+                            title: 'Line Height'.tr,
+                            subtitle: 'Distance between lines'.tr,
                             value: _novelLineHeight,
                             min: 1.0,
                             max: 3.0,
@@ -579,8 +579,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.slider(
                             icon: Icons.opacity_rounded,
-                            title: 'Background Opacity',
-                            subtitle: 'Reader background opacity',
+                            title: 'Background Opacity'.tr,
+                            subtitle: 'Reader background opacity'.tr,
                             value: _novelBackgroundOpacity,
                             min: 0.3,
                             max: 1.0,
@@ -594,8 +594,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.slider(
                             icon: Icons.text_fields_rounded,
-                            title: 'Letter Spacing',
-                            subtitle: 'Space between letters',
+                            title: 'Letter Spacing'.tr,
+                            subtitle: 'Space between letters'.tr,
                             value: _novelLetterSpacing,
                             min: -1.0,
                             max: 2.0,
@@ -609,8 +609,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.slider(
                             icon: Icons.text_rotation_none_rounded,
-                            title: 'Word Spacing',
-                            subtitle: 'Space between words',
+                            title: 'Word Spacing'.tr,
+                            subtitle: 'Space between words'.tr,
                             value: _novelWordSpacing,
                             min: 0.0,
                             max: 5.0,
@@ -624,8 +624,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.slider(
                             icon: Icons.format_line_spacing_rounded,
-                            title: 'Paragraph Spacing',
-                            subtitle: 'Space between paragraphs',
+                            title: 'Paragraph Spacing'.tr,
+                            subtitle: 'Space between paragraphs'.tr,
                             value: _novelParagraphSpacing,
                             min: 8.0,
                             max: 32.0,
@@ -639,8 +639,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.chrome_reader_mode_rounded,
-                            title: 'Page Reader Mode',
-                            subtitle: 'Read one page at a time',
+                            title: 'Page Reader Mode'.tr,
+                            subtitle: 'Read one page at a time'.tr,
                             value: _novelPageReaderMode,
                             onChanged: (value) => _setNovelBool(
                               NovelReaderKeys.pageReader,
@@ -650,8 +650,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.play_arrow_rounded,
-                            title: 'Auto Scroll',
-                            subtitle: 'Automatically scroll content',
+                            title: 'Auto Scroll'.tr,
+                            subtitle: 'Automatically scroll content'.tr,
                             value: _novelAutoScroll,
                             onChanged: (value) => _setNovelBool(
                               NovelReaderKeys.autoScroll,
@@ -662,9 +662,9 @@ class _SettingsReaderState extends State<SettingsReader> {
                           if (_novelAutoScroll)
                             AnymeXTile.slider(
                               icon: Icons.speed_rounded,
-                              title: 'Auto Scroll Speed',
+                              title: 'Auto Scroll Speed'.tr,
                               subtitle:
-                                  'Seconds per screen (lower is faster)',
+                                  'Seconds per screen (lower is faster)'.tr,
                               value: _novelAutoScrollSpeed,
                               min: 1.0,
                               max: 10.0,
@@ -679,9 +679,9 @@ class _SettingsReaderState extends State<SettingsReader> {
                           if (_novelTtsEnabled)
                             AnymeXTile.toggle(
                               icon: Icons.skip_next_rounded,
-                              title: 'TTS Auto Advance',
+                              title: 'TTS Auto Advance'.tr,
                               subtitle:
-                                  'Automatically move to next text segment',
+                                  'Automatically move to next text segment'.tr,
                               value: _novelTtsAutoAdvance,
                               onChanged: (value) => _setNovelBool(
                                 NovelReaderKeys.ttsAutoAdvance,
@@ -691,8 +691,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                             ),
                           AnymeXTile(
                             icon: Icons.restart_alt_rounded,
-                            title: 'Reset Novel Reader Settings',
-                            subtitle: 'Restore all novel reader defaults',
+                            title: 'Reset Novel Reader Settings'.tr,
+                            subtitle: 'Restore all novel reader defaults'.tr,
                             onTap: _resetNovelDefaults,
                           ),
                         ],
