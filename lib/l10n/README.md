@@ -16,7 +16,10 @@ lib/l10n/
     ├── en.dart             # English (US) — Base translation map
     ├── es.dart             # Spanish (ES)
     ├── de.dart             # German (DE)
-    └── zh_tw.dart          # Traditional Chinese (TW/HK)
+    ├── zh_tw.dart          # Traditional Chinese (TW/HK)
+    ├── pt_br.dart          # Brazilian Portuguese (BR)
+    ├── id.dart             # Indonesian (ID)
+    └── ui_strings.dart     # English-as-key UI strings for every language
 ```
 
 ---
@@ -29,6 +32,8 @@ lib/l10n/
 | Spanish (ES) | `es_ES` | Español | `es.dart` |
 | German (DE) | `de_DE` | Deutsch | `de.dart` |
 | Traditional Chinese | `zh_TW` | 繁體中文 | `zh_tw.dart` |
+| Brazilian Portuguese | `pt_BR` | Português (Brasil) | `pt_br.dart` |
+| Indonesian | `id_ID` | Bahasa Indonesia | `id.dart` |
 
 ---
 
@@ -59,7 +64,7 @@ Text(LocaleKeys.episodeCount.trParams({'count': '12'}))
 ### 3. English-as-key (most UI strings)
 Most screens use the English text itself as the key: `Text('Clear Cache'.tr)`.
 English needs no entry (GetX returns the key when missing). Translations live in
-`translations/ui_strings.dart` (`esUi`, `deUi`, `zhTWUi`), merged in `app_translations.dart`.
+`translations/ui_strings.dart` (`esUi`, `deUi`, `zhTWUi`, `ptBRUi`, `idUi`), merged in `app_translations.dart`.
 Don't put `.tr` on strings used for logic (map keys, `==` checks); translate at display instead.
 
 ---
@@ -77,6 +82,9 @@ const Map<String, String> ja = {
 };
 ```
 
+Then add a `jaUi` map to `translations/ui_strings.dart`, keyed by the English
+text of every UI string (copy the keys from `esUi`). Missing keys fall back to English.
+
 ### Step 2: Register in `app_translations.dart`
 Add the import and the locale entry in `AppTranslations`:
 ```dart
@@ -86,10 +94,12 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
     'en_US': en,
-    'es_ES': es,
-    'de_DE': de,
-    'zh_TW': zhTW,
-    'ja_JP': ja, // <-- Add here
+    'es_ES': {...es, ...esUi},
+    'de_DE': {...de, ...deUi},
+    'zh_TW': {...zhTW, ...zhTWUi},
+    'pt_BR': {...ptBR, ...ptBRUi},
+    'id_ID': {...idID, ...idUi},
+    'ja_JP': {...ja, ...jaUi}, // <-- Add here
   };
 }
 ```
