@@ -11,12 +11,14 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_error_handler.dart';
 import 'package:anymex/database/comments/comments_db.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/models/Anilist/anilist_notification.dart';
 import 'package:anymex/models/Anilist/anilist_media_user.dart';
 import 'package:anymex/models/Anilist/anilist_activity.dart';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/models/Anilist/anilist_user_settings.dart';
 import 'package:anymex/models/Anilist/social_user.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/string_extensions.dart';
@@ -33,6 +35,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 class AnilistAuth extends GetxController {
   http.Client get _client => NetworkManager.instance.compatibleClient;
   RxBool isLoggedIn = false.obs;
+  final RxInt unreadAnilistCount = 0.obs;
   Rx<Profile> profileData = Profile().obs;
   final offlineStorage = Get.find<OfflineStorageController>();
 
@@ -174,6 +177,10 @@ class AnilistAuth extends GetxController {
         await commentumService.getUserRole();
       } catch (e) {
         Logger.i('Error checking Commentum role during auto login: $e');
+      }
+
+      if (Get.isRegistered<NotificationController>()) {
+        Get.find<NotificationController>().loadAnilistNotifications();
       }
     }
   }
@@ -339,6 +346,9 @@ class AnilistAuth extends GetxController {
                   } catch (e) {
                     Logger.i('Error checking Commentum role: $e');
                   }
+                  if (Get.isRegistered<NotificationController>()) {
+                    Get.find<NotificationController>().loadAnilistNotifications();
+                  }
                 } catch (e) {
                   Logger.i('Error saving token: $e');
                 }
@@ -392,6 +402,9 @@ class AnilistAuth extends GetxController {
       } catch (e) {
         Logger.i('Error checking Commentum role: $e');
       }
+      if (Get.isRegistered<NotificationController>()) {
+        Get.find<NotificationController>().loadAnilistNotifications();
+      }
     } else {
       throw Exception('Failed to exchange code for token: ${response.body}');
     }
@@ -409,6 +422,7 @@ class AnilistAuth extends GetxController {
   query {
     Viewer {
       id
+      unreadNotificationCount
       name
       about(asHtml: true)
       aboutMarkdown: about
@@ -532,6 +546,8 @@ class AnilistAuth extends GetxController {
         final userProfile = Profile.fromJson(viewerData);
         userProfile.tokenExpiry = getExpiryFromToken(token);
         profileData.value = userProfile;
+        unreadAnilistCount.value =
+            viewerData['unreadNotificationCount'] as int? ?? 0;
         isLoggedIn.value = true;
 
         Logger.i(
@@ -539,6 +555,9 @@ class AnilistAuth extends GetxController {
 
         // fetchFollowersAndFollowing(userProfile.id ?? '');
         CommentsDatabase().login();
+        if (Get.isRegistered<NotificationController>()) {
+          Get.find<NotificationController>().loadAnilistNotifications();
+        }
       } else if (response.statusCode == 403) {
         _handle403(response);
       } else {
@@ -2636,7 +2655,394 @@ class AnilistAuth extends GetxController {
   Future<void> logout() async {
     AuthKeys.authToken.delete();
     profileData.value = Profile();
+    unreadAnilistCount.value = 0;
     isLoggedIn.value = false;
+    if (Get.isRegistered<NotificationController>()) {
+      Get.find<NotificationController>().anilistNotifications.clear();
+    }
+  }
+
+  Future<List<AnilistNotificationItem>> getNotifications({
+    int page = 1,
+    int perPage = 30,
+    bool resetCount = false,
+    List<String>? typeIn,
+  }) async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null || token.isEmpty) {
+      return [];
+    }
+
+    const query = r'''
+    query ($page: Int, $perPage: Int, $resetCount: Boolean, $typeIn: [NotificationType]) {
+      Page(page: $page, perPage: $perPage) {
+        pageInfo {
+          total
+          perPage
+          currentPage
+          lastPage
+          hasNextPage
+        }
+        notifications(resetNotificationCount: $resetCount, type_in: $typeIn) {
+          ... on AiringNotification {
+            id
+            type
+            animeId
+            episode
+            contexts
+            createdAt
+            media {
+              id
+              type
+              title {
+                userPreferred
+                english
+                romaji
+              }
+              coverImage {
+                extraLarge
+                large
+                medium
+              }
+            }
+          }
+          ... on FollowingNotification {
+            id
+            type
+            userId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityLikeNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityReplyNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityMentionNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityMessageNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityReplySubscribedNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ActivityReplyLikeNotification {
+            id
+            type
+            userId
+            activityId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadCommentMentionNotification {
+            id
+            type
+            userId
+            commentId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadCommentReplyNotification {
+            id
+            type
+            userId
+            commentId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadCommentSubscribedNotification {
+            id
+            type
+            userId
+            commentId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadCommentLikeNotification {
+            id
+            type
+            userId
+            commentId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on ThreadLikeNotification {
+            id
+            type
+            userId
+            context
+            createdAt
+            user {
+              id
+              name
+              avatar {
+                large
+                medium
+              }
+            }
+          }
+          ... on RelatedMediaAdditionNotification {
+            id
+            type
+            mediaId
+            context
+            createdAt
+            media {
+              id
+              type
+              title {
+                userPreferred
+                english
+                romaji
+              }
+              coverImage {
+                extraLarge
+                large
+                medium
+              }
+            }
+          }
+          ... on MediaDataChangeNotification {
+            id
+            type
+            mediaId
+            context
+            reason
+            createdAt
+            media {
+              id
+              type
+              title {
+                userPreferred
+                english
+                romaji
+              }
+              coverImage {
+                extraLarge
+                large
+                medium
+              }
+            }
+          }
+          ... on MediaMergeNotification {
+            id
+            type
+            mediaId
+            deletedMediaTitles
+            context
+            reason
+            createdAt
+            media {
+              id
+              type
+              title {
+                userPreferred
+                english
+                romaji
+              }
+              coverImage {
+                extraLarge
+                large
+                medium
+              }
+            }
+          }
+          ... on MediaDeletionNotification {
+            id
+            type
+            deletedMediaTitle
+            context
+            reason
+            createdAt
+          }
+        }
+      }
+    }
+    ''';
+
+    try {
+      final response = await _client.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'query': query,
+          'variables': {
+            'page': page,
+            'perPage': perPage,
+            'resetCount': resetCount,
+            if (typeIn != null && typeIn.isNotEmpty) 'typeIn': typeIn,
+          },
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        if (resetCount) {
+          unreadAnilistCount.value = 0;
+        }
+        final data = json.decode(response.body);
+        final list = data['data']?['Page']?['notifications'] as List<dynamic>?;
+        if (list == null) return [];
+        return list
+            .whereType<Map<String, dynamic>>()
+            .map((item) => AnilistNotificationItem.fromJson(item))
+            .toList();
+      }
+    } catch (e) {
+      Logger.i('Error fetching AniList notifications: $e');
+    }
+    return [];
+  }
+
+  Future<int> getUnreadNotificationCount() async {
+    final token = AuthKeys.authToken.get<String?>();
+    if (token == null || token.isEmpty) return 0;
+    const query = r'''
+    query {
+      Viewer {
+        unreadNotificationCount
+      }
+    }
+    ''';
+    try {
+      final response = await _client.post(
+        Uri.parse('https://graphql.anilist.co'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({'query': query}),
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final count =
+            data['data']?['Viewer']?['unreadNotificationCount'] as int? ?? 0;
+        unreadAnilistCount.value = count;
+        return count;
+      }
+    } catch (e) {
+      Logger.i('Error getting unread notification count: $e');
+    }
+    return unreadAnilistCount.value;
   }
 }
 

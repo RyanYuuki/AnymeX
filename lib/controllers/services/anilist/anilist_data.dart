@@ -566,7 +566,9 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
     );
 
     if (response.statusCode == 200) {
-      final responseData = json.decode(response.body)['data'];
+      final Map<String, dynamic> responseJson =
+          await compute(_parseJson, response.body);
+      final responseData = responseJson['data'];
       ColdCache.write('anilist_anime_home', responseData);
       upcomingAnimes.value =
           parseMediaList(responseData['upcomingAnimes']['media']);
@@ -764,7 +766,8 @@ averageScore
     );
 
     if (response.statusCode == 200) {
-      final dynamic responsee = json.decode(response.body);
+      final Map<String, dynamic> responsee =
+          await compute(_parseJson, response.body);
       final responseData = responsee['data'];
       ColdCache.write('anilist_manga_home', responseData);
       popularMangas.value =
@@ -854,7 +857,8 @@ averageScore
         break;
       }
 
-      final data = json.decode(response.body);
+      final Map<String, dynamic> data =
+          await compute(_parseJson, response.body);
       final studio = data['data']?['Studio'];
       if (studio == null) break;
 
@@ -944,7 +948,8 @@ averageScore
       return null;
     }
 
-    final data = json.decode(response.body);
+    final Map<String, dynamic> data =
+        await compute(_parseJson, response.body);
     final studios = data['data']?['Page']?['studios'] as List?;
     if (studios == null || studios.isEmpty) return null;
     final studioId = studios.first['id'] as int?;
@@ -1171,7 +1176,8 @@ averageScore
           Uri.parse(url), headers: headers, body: jsonEncode(body));
 
       if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
+        final Map<String, dynamic> jsonData =
+            await compute(_parseJson, response.body);
         final mediaList = jsonData['data']['Page']['media'];
 
         final mappedData = mediaList.map<Media>((media) {
@@ -1222,7 +1228,8 @@ averageScore
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final Map<String, dynamic> data =
+          await compute(_parseJson, response.body);
         final media = data['data']['Media'];
         cacheController.addCache(media, ServicesType.anilist);
         Logger.i('Primary Data Loaded for id: ${params.id}');
@@ -1266,7 +1273,8 @@ averageScore
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final Map<String, dynamic> data =
+          await compute(_parseJson, response.body);
         final mediaJson = data['data']['Media'];
         final page = data['data']['Page'];
         media.mergeSecondaryData(mediaJson, pageJson: page);
@@ -1374,7 +1382,8 @@ averageScore
       }
 
       if (response.statusCode == 200) {
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final Map<String, dynamic> body =
+            await compute(_parseJson, response.body);
 
         final errors = body['errors'] as List?;
         if (errors != null && errors.isNotEmpty) {
@@ -1579,7 +1588,8 @@ averageScore
       );
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+        final Map<String, dynamic> data =
+            await compute(_parseJson, response.body);
         final list = data['data'] as List?;
         if (list != null) {
           genres = list.map<String>((g) => g['name'] as String).toList()

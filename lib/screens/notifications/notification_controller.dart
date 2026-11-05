@@ -1,10 +1,28 @@
 import 'package:get/get.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/notification/notification_item.dart';
 import 'package:anymex/services/commentum_service.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/models/Anilist/anilist_notification.dart';
+import 'package:anymex/services/anilist_notification_service.dart';
 
 class NotificationController extends GetxController {
   final CommentumService _commentumService =
       Get.find<CommentumService>();
+
+  final RxInt selectedTab = 0.obs;
+
+  final RxList<AnilistNotificationItem> anilistNotifications =
+      <AnilistNotificationItem>[].obs;
+  final RxBool isAnilistLoading = false.obs;
+  final RxBool isAnilistLoadingMore = false.obs;
+  final RxString anilistError = ''.obs;
+  final RxString selectedAnilistFilter = 'all'.obs;
+  final RxBool hasFetchedAnilist = false.obs;
+  Worker? _authWorker;
+  int _anilistPage = 1;
+  final int _anilistPageSize = 15;
+  bool _anilistHasMore = true;
 
   final RxList<NotificationItem> notifications = <NotificationItem>[].obs;
   final RxInt unreadCount = 0.obs;
@@ -13,7 +31,7 @@ class NotificationController extends GetxController {
   final RxString error = ''.obs;
 
   int _currentPage = 1;
-  final int _pageSize = 30;
+  final int _pageSize = 15;
   bool _hasMore = true;
 
   final RxString selectedFilter = 'all'.obs;
@@ -43,11 +61,213 @@ class NotificationController extends GetxController {
     }).length;
   }
 
+  List<AnilistNotificationItem> get filteredAnilistNotifications {
+    if (selectedAnilistFilter.value == 'all') {
+      return anilistNotifications;
+    }
+    return anilistNotifications.where((n) {
+      if (selectedAnilistFilter.value == 'airing') {
+        return n.kind == AnilistNotificationKind.airing;
+      }
+      if (selectedAnilistFilter.value == 'activity') {
+        return n.kind == AnilistNotificationKind.activity;
+      }
+      if (selectedAnilistFilter.value == 'social') {
+        return n.kind == AnilistNotificationKind.social;
+      }
+      return true;
+    }).toList();
+  }
+
+  int countForAnilistCategory(String category) {
+    if (category == 'all') return anilistNotifications.length;
+    return anilistNotifications.where((n) {
+      if (category == 'airing') {
+        return n.kind == AnilistNotificationKind.airing;
+      }
+      if (category == 'activity') {
+        return n.kind == AnilistNotificationKind.activity;
+      }
+      if (category == 'social') {
+        return n.kind == AnilistNotificationKind.social;
+      }
+      return false;
+    }).length;
+  }
+
+  void setAnilistFilter(String filter) {
+    if (selectedAnilistFilter.value != filter) {
+      selectedAnilistFilter.value = filter;
+      _anilistPage = 1;
+      _anilistHasMore = true;
+    }
+  }
+
+  List<String>? _getTypesForCategory(String category) {
+    switch (category) {
+      case 'airing':
+        return ['AIRING'];
+      case 'activity':
+        return [
+          'ACTIVITY_LIKE',
+          'ACTIVITY_REPLY',
+          'ACTIVITY_MENTION',
+          'ACTIVITY_REPLY_LIKE',
+          'ACTIVITY_REPLY_SUBSCRIBED',
+          'ACTIVITY_MESSAGE',
+        ];
+      case 'social':
+        return [
+          'FOLLOWING',
+          'THREAD_COMMENT_MENTION',
+          'THREAD_COMMENT_REPLY',
+          'THREAD_COMMENT_SUBSCRIBED',
+          'THREAD_COMMENT_LIKE',
+          'THREAD_LIKE',
+        ];
+      default:
+        return null;
+    }
+  }
+
+  Future<void> loadAnilistNotifications() async {
+    final auth = Get.find<AnilistAuth>();
+    final token = AuthKeys.authToken.get<String?>();
+    if (!auth.isLoggedIn.value && (token == null || token.isEmpty)) {
+      anilistNotifications.clear();
+      return;
+    }
+
+    isAnilistLoading.value = true;
+    anilistError.value = '';
+    _anilistPage = 1;
+    _anilistHasMore = true;
+
+    try {
+      final results = await Future.wait([
+        auth.getNotifications(
+          page: 1,
+          perPage: _anilistPageSize,
+          resetCount: false,
+          typeIn: _getTypesForCategory('airing'),
+        ).catchError((_) => <AnilistNotificationItem>[]),
+        auth.getNotifications(
+          page: 1,
+          perPage: _anilistPageSize,
+          resetCount: false,
+          typeIn: _getTypesForCategory('activity'),
+        ).catchError((_) => <AnilistNotificationItem>[]),
+        auth.getNotifications(
+          page: 1,
+          perPage: _anilistPageSize,
+          resetCount: false,
+          typeIn: _getTypesForCategory('social'),
+        ).catchError((_) => <AnilistNotificationItem>[]),
+      ]);
+
+      final combined = <AnilistNotificationItem>[];
+      final seenIds = <int>{};
+      for (final list in results) {
+        for (final item in list) {
+          if (seenIds.add(item.id)) {
+            combined.add(item);
+          }
+        }
+      }
+
+      if (combined.isEmpty) {
+        final fallback = await auth.getNotifications(
+          page: 1,
+          perPage: _anilistPageSize,
+          resetCount: false,
+        );
+        combined.addAll(fallback);
+      }
+
+      combined.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      anilistNotifications.value = combined;
+
+      if (combined.isNotEmpty) {
+        AnilistNotificationService.instance
+            .updateLastSeenTimestamp(combined.first.createdAt);
+      }
+      _anilistHasMore = true;
+      hasFetchedAnilist.value = true;
+      await auth.getUnreadNotificationCount();
+    } catch (e) {
+      anilistError.value = 'Failed to load AniList notifications';
+    } finally {
+      isAnilistLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreAnilistNotifications() async {
+    if (isAnilistLoadingMore.value || !_anilistHasMore) return;
+    final auth = Get.find<AnilistAuth>();
+    final token = AuthKeys.authToken.get<String?>();
+    if (!auth.isLoggedIn.value && (token == null || token.isEmpty)) return;
+
+    isAnilistLoadingMore.value = true;
+    _anilistPage++;
+
+    try {
+      final currentFilter = selectedAnilistFilter.value;
+      final typeIn = _getTypesForCategory(currentFilter);
+      final items = await auth.getNotifications(
+        page: _anilistPage,
+        perPage: _anilistPageSize,
+        resetCount: false,
+        typeIn: typeIn,
+      );
+
+      if (items.isEmpty) {
+        _anilistHasMore = false;
+      } else {
+        final existingIds = anilistNotifications.map((e) => e.id).toSet();
+        for (final item in items) {
+          if (!existingIds.contains(item.id)) {
+            anilistNotifications.add(item);
+            existingIds.add(item.id);
+          }
+        }
+        anilistNotifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        _anilistHasMore = items.length >= _anilistPageSize;
+      }
+    } catch (e) {
+      _anilistPage--;
+    } finally {
+      isAnilistLoadingMore.value = false;
+    }
+  }
+
+  Future<void> markAnilistAllRead() async {
+    await AnilistNotificationService.instance.markAllRead();
+    await loadAnilistNotifications();
+  }
+
   @override
   void onInit() {
     super.onInit();
+    final auth = Get.find<AnilistAuth>();
+    _authWorker = ever(auth.isLoggedIn, (bool loggedIn) {
+      if (loggedIn) {
+        loadAnilistNotifications();
+        loadNotifications();
+        loadUnreadCount();
+      } else {
+        anilistNotifications.clear();
+        hasFetchedAnilist.value = false;
+      }
+    });
     loadNotifications();
     loadUnreadCount();
+    loadAnilistNotifications();
+  }
+
+  @override
+  void onClose() {
+    _authWorker?.dispose();
+    super.onClose();
   }
 
   Future<void> loadNotifications() async {
@@ -201,7 +421,11 @@ class NotificationController extends GetxController {
 
   @override
   Future<void> refresh() async {
-    await loadNotifications();
-    await loadUnreadCount();
+    if (selectedTab.value == 0) {
+      await loadAnilistNotifications();
+    } else {
+      await loadNotifications();
+      await loadUnreadCount();
+    }
   }
 }

@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "258de6c1bb235251a14ece3898f10437cb9806c5"
+      resolved-ref: c02fbe04a1c11fe88fd817cdf60c3e8c0b42f629
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
@@ -443,12 +443,11 @@ packages:
     source: hosted
     version: "0.3.0"
   device_apps:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: device_apps
-      sha256: e84dc74d55749993fd671148cc0bd53096e1be0c268fc364285511b1d8a4c19b
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/device_apps"
+      relative: true
+    source: path
     version: "2.2.0"
   device_info_plus:
     dependency: "direct main"
@@ -680,6 +679,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_animate:
+    dependency: "direct main"
+    description:
+      name: flutter_animate
+      sha256: "7befe2d3252728afb77aecaaea1dec88a89d35b9b1d2eea6d04479e8af9117b5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.2"
   flutter_cache_manager:
     dependency: "direct main"
     description:
@@ -723,10 +730,9 @@ packages:
   flutter_iconly:
     dependency: "direct main"
     description:
-      name: flutter_iconly
-      sha256: fabcbd59d93666aed6b0f7b4285776686cf60d07447d4afbffee92635d5ed785
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/flutter_iconly"
+      relative: true
+    source: path
     version: "1.0.2"
   flutter_launcher_icons:
     dependency: "direct dev"
@@ -817,6 +823,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.12.0"
+  flutter_shaders:
+    dependency: transitive
+    description:
+      name: flutter_shaders
+      sha256: "16cd456daf2fd6ed7ac0c5168716c5e2fe18f91d82631b775f1af9100fb3f586"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   flutter_staggered_animations:
     dependency: "direct main"
     description:
@@ -1259,14 +1273,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  liquid_glass_widgets:
-    dependency: "direct main"
-    description:
-      name: liquid_glass_widgets
-      sha256: "959da0600b5f9e582f45f975858dea0f060d66d2752243227b3320195b40b179"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.16.1"
   list_counter:
     dependency: transitive
     description:
@@ -1303,10 +1309,10 @@ packages:
     dependency: transitive
     description:
       name: matcher
-      sha256: dc0b7dc7651697ea4ff3e69ef44b0407ea32c487a39fff6a4004fa585e901861
+      sha256: "31bd099b47c10cd1aeb55146a2d46ce0277630ecef3f7dae54ad7873f36696cd"
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.19"
+    version: "0.12.20"
   material3_expressive_loading_indicator:
     dependency: "direct main"
     description:
@@ -1416,10 +1422,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      sha256: "307249ce4ff29d58a18e97f6345f539382eb9c9c29ecda628900f31de0443dd9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.19.0"
   mime:
     dependency: transitive
     description:
@@ -2124,10 +2130,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
+      sha256: "2a122cbe059f8b610d3a5415f42e255b6c17b1f21eee1d960f31080237fb4f11"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.10"
+    version: "0.7.12"
   thanos_snap_effect:
     dependency: "direct main"
     description:
@@ -2300,10 +2306,10 @@ packages:
     dependency: transitive
     description:
       name: vector_math
-      sha256: d530bd74fea330e6e364cda7a85019c434070188383e1cd8d9777ee586914c5b
+      sha256: fa49e1674cb84acb900141714e6c6e1f9ae099827c24d141430ff6819db4e1bc
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.4.4"
   vibration:
     dependency: "direct main"
     description:
@@ -2609,5 +2615,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.10.4 <4.0.0"
+  dart: ">=3.11.0 <4.0.0"
   flutter: ">=3.41.0"

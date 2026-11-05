@@ -14,6 +14,10 @@ import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
+import 'package:anymex/models/Anilist/anilist_notification.dart';
+import 'package:anymex/screens/anime/details/media_details_page.dart';
+import 'package:anymex/screens/profile/user_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,16 +27,26 @@ class NotificationScreen extends GetView<NotificationController> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colors;
+    final anilistAuth = Get.find<AnilistAuth>();
 
     return AnymeXScaffold(
       body: Column(children: [
         NestedHeader(
           title: 'Notifications',
           action: Obx(() {
-            final hasUnread = controller.unreadCount.value > 0;
+            final isAnilist = controller.selectedTab.value == 0;
+            final hasUnread = isAnilist
+                ? anilistAuth.unreadAnilistCount.value > 0
+                : controller.unreadCount.value > 0;
             if (!hasUnread) return const SizedBox.shrink();
             return TextButton.icon(
-              onPressed: () => controller.markAllAsRead(),
+              onPressed: () {
+                if (isAnilist) {
+                  controller.markAnilistAllRead();
+                } else {
+                  controller.markAllAsRead();
+                }
+              },
               icon: Icon(
                 Icons.done_all_rounded,
                 size: 18,
@@ -50,6 +64,427 @@ class NotificationScreen extends GetView<NotificationController> {
             );
           }),
         ),
+        _buildTabs(context, colorScheme),
+        Expanded(
+          child: Obx(() {
+            if (controller.selectedTab.value == 0) {
+              return _buildAnilistTab(context, colorScheme);
+            }
+            return _buildCommunityTab(context, colorScheme);
+          }),
+        ),
+      ]),
+    );
+  }
+
+  Widget _buildTabs(BuildContext context, ColorScheme colorScheme) {
+    final anilistAuth = Get.find<AnilistAuth>();
+    return Obx(() {
+      final selected = controller.selectedTab.value;
+      final anilistUnread = anilistAuth.unreadAnilistCount.value;
+      final communityUnread = controller.unreadCount.value;
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Container(
+          height: 44,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.opaque(0.35),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: colorScheme.outlineVariant.opaque(0.15),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildTabItem(
+                  context,
+                  colorScheme: colorScheme,
+                  label: 'AniList',
+                  icon: Icons.notifications_active_outlined,
+                  isSelected: selected == 0,
+                  badgeCount: anilistUnread,
+                  onTap: () => controller.selectedTab.value = 0,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: _buildTabItem(
+                  context,
+                  colorScheme: colorScheme,
+                  label: 'Community',
+                  icon: Icons.forum_outlined,
+                  isSelected: selected == 1,
+                  badgeCount: communityUnread,
+                  onTap: () => controller.selectedTab.value = 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildTabItem(
+    BuildContext context, {
+    required ColorScheme colorScheme,
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required int badgeCount,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        decoration: BoxDecoration(
+          color: isSelected ? colorScheme.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: isSelected
+                  ? colorScheme.onPrimary
+                  : colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 8),
+            AnymeXText(
+              label,
+              variant: TextVariant.semiBold,
+              size: 13,
+              color: isSelected
+                  ? colorScheme.onPrimary
+                  : colorScheme.onSurfaceVariant,
+            ),
+            if (badgeCount > 0) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? colorScheme.onPrimary.withOpacity(0.25)
+                      : colorScheme.primary,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: AnymeXText(
+                  badgeCount > 99 ? '99+' : badgeCount.toString(),
+                  size: 10,
+                  variant: TextVariant.bold,
+                  color: colorScheme.onPrimary,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnilistTab(BuildContext context, ColorScheme colorScheme) {
+    final anilistAuth = Get.find<AnilistAuth>();
+
+    return Obx(() {
+      if (!anilistAuth.isLoggedIn.value) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.lock_outline_rounded,
+                  size: 56,
+                  color: colorScheme.primary.withOpacity(0.6),
+                ),
+                const SizedBox(height: 16),
+                const AnymeXText(
+                  'AniList Account Required',
+                  variant: TextVariant.bold,
+                  size: 16,
+                ),
+                const SizedBox(height: 8),
+                AnymeXText(
+                  'Log in to AniList to sync episode airing alerts, activity notifications, and social updates.',
+                  variant: TextVariant.regular,
+                  size: 13,
+                  textAlign: TextAlign.center,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  onPressed: () => anilistAuth.login(context),
+                  icon: const Icon(Icons.login_rounded),
+                  label: const Text('Log In with AniList'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      if (controller.anilistNotifications.isEmpty &&
+          !controller.isAnilistLoading.value &&
+          !controller.hasFetchedAnilist.value) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.loadAnilistNotifications();
+        });
+      }
+
+      if (controller.isAnilistLoading.value &&
+          controller.anilistNotifications.isEmpty) {
+        return _buildLoadingSkeleton(colorScheme);
+      }
+
+      if (controller.anilistError.value.isNotEmpty) {
+        return RefreshIndicator(
+          onRefresh: controller.refresh,
+          color: colorScheme.primary,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 80),
+                child: Column(
+                  children: [
+                    Icon(Icons.error_outline_rounded,
+                        size: 48, color: colorScheme.error),
+                    const SizedBox(height: 12),
+                    AnymeXText(controller.anilistError.value,
+                        variant: TextVariant.semiBold, size: 14),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => controller.loadAnilistNotifications(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      final items = controller.filteredAnilistNotifications;
+
+      return Column(
+        children: [
+          _buildAnilistFilterChips(context, colorScheme),
+          Expanded(
+            child: items.isEmpty
+                ? RefreshIndicator(
+                    onRefresh: controller.refresh,
+                    color: colorScheme.primary,
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 80),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.notifications_off_outlined,
+                                size: 56,
+                                color: colorScheme.onSurfaceVariant
+                                    .withOpacity(0.4),
+                              ),
+                              const SizedBox(height: 16),
+                              AnymeXText(
+                                'No notifications found',
+                                variant: TextVariant.semiBold,
+                                size: 15,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 6),
+                              AnymeXText(
+                                'You are all caught up!',
+                                variant: TextVariant.regular,
+                                size: 13,
+                                color: colorScheme.outline,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: controller.refresh,
+                    color: colorScheme.primary,
+                    child: NotificationListener<ScrollNotification>(
+                      onNotification: (notification) {
+                        if ((notification is ScrollUpdateNotification ||
+                                notification is ScrollEndNotification) &&
+                            notification.metrics.pixels >=
+                                notification.metrics.maxScrollExtent - 200 &&
+                            !controller.isAnilistLoadingMore.value) {
+                          controller.loadMoreAnilistNotifications();
+                        }
+                        return false;
+                      },
+                      child: ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        itemCount: items.length + 1,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 8),
+                        itemBuilder: (context, index) {
+                          if (index == items.length) {
+                            return Obx(() {
+                              if (controller.isAnilistLoadingMore.value) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 24),
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: colorScheme.primary,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+                              return const SizedBox(height: 20);
+                            });
+                          }
+                          final item = items[index];
+                          return _AnilistNotificationCard(
+                            notification: item,
+                            onTap: () => _handleAnilistTap(item),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      );
+    });
+  }
+
+  void _handleAnilistTap(AnilistNotificationItem item) {
+    if (item.mediaId != null) {
+      navigate(() => MediaDetailsPage(
+            media: Media(
+              id: item.mediaId.toString(),
+              title: item.mediaTitle ?? 'Anime',
+              poster: item.mediaCover ?? '',
+              mediaType: item.mediaType == 'MANGA'
+                  ? ItemType.manga
+                  : ItemType.anime,
+              serviceType: ServicesType.anilist,
+            ),
+            tag: 'anilist_${item.id}_${item.mediaId}',
+          ));
+    } else if (item.userId != null) {
+      navigate(() => UserProfilePage(userId: item.userId!));
+    }
+  }
+
+  Widget _buildAnilistFilterChips(
+      BuildContext context, ColorScheme colorScheme) {
+    final filters = [
+      ('all', 'All', Icons.all_inclusive_rounded),
+      ('airing', 'Airing', Icons.play_circle_outline_rounded),
+      ('activity', 'Activity', Icons.favorite_border_rounded),
+      ('social', 'Social', Icons.people_outline_rounded),
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: SizedBox(
+        height: 36,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: filters.length,
+          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          itemBuilder: (context, index) {
+            final (value, label, icon) = filters[index];
+            return Obx(() {
+              final isSelected =
+                  controller.selectedAnilistFilter.value == value;
+              final count = controller.countForAnilistCategory(value);
+              final displayCount = count > 99 ? '99+' : '$count';
+
+              return Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () => controller.setAnilistFilter(value),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutCubic,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.surfaceContainerHighest.opaque(0.3),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.outlineVariant.opaque(0.2),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          icon,
+                          size: 14,
+                          color: isSelected
+                              ? colorScheme.onPrimary
+                              : colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 6),
+                        AnymeXText(
+                          '$label ($displayCount)',
+                          variant: TextVariant.semiBold,
+                          size: 12,
+                          color: isSelected
+                              ? colorScheme.onPrimary
+                              : colorScheme.onSurfaceVariant,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCommunityTab(BuildContext context, ColorScheme colorScheme) {
+    return Column(
+      children: [
         _buildFilterChips(context, colorScheme),
         _buildUnreadToggle(context, colorScheme),
         Expanded(
@@ -88,9 +523,10 @@ class NotificationScreen extends GetView<NotificationController> {
               color: colorScheme.primary,
               child: NotificationListener<ScrollNotification>(
                 onNotification: (notification) {
-                  if (notification is ScrollEndNotification &&
+                  if ((notification is ScrollUpdateNotification ||
+                          notification is ScrollEndNotification) &&
                       notification.metrics.pixels >=
-                          notification.metrics.maxScrollExtent - 150 &&
+                          notification.metrics.maxScrollExtent - 200 &&
                       !controller.isLoadingMore.value) {
                     controller.loadMoreNotifications();
                   }
@@ -103,22 +539,25 @@ class NotificationScreen extends GetView<NotificationController> {
                   itemCount: controller.notifications.length + 1,
                   itemBuilder: (context, index) {
                     if (index == controller.notifications.length) {
-                      if (controller.isLoadingMore.value) {
-                        return Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Center(
-                            child: SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: colorScheme.primary,
+                      return Obx(() {
+                        if (controller.isLoadingMore.value) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 24),
+                            child: Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: colorScheme.primary,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
+                          );
+                        }
+                        return const SizedBox(height: 20);
+                      });
                     }
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 10),
@@ -134,7 +573,7 @@ class NotificationScreen extends GetView<NotificationController> {
             );
           }),
         ),
-      ]),
+      ],
     );
   }
 
@@ -162,6 +601,9 @@ class NotificationScreen extends GetView<NotificationController> {
             return Obx(() {
               final isSelected = controller.selectedFilter.value == value;
               final unreadCount = controller.unreadCountForCategory(value);
+              final count = controller.countForCategory(value);
+              final displayCount = count > 99 ? '99+' : '$count';
+              final displayUnread = unreadCount > 99 ? '99+' : '$unreadCount';
 
               return Material(
                 color: Colors.transparent,
@@ -197,7 +639,7 @@ class NotificationScreen extends GetView<NotificationController> {
                         ),
                         const SizedBox(width: 6),
                         AnymeXText(
-                          label,
+                          '$label ($displayCount)',
                           variant: TextVariant.semiBold,
                           size: 12,
                           color: isSelected
@@ -214,7 +656,7 @@ class NotificationScreen extends GetView<NotificationController> {
                                 : colorScheme.primary,
                             radius: 10,
                             child: AnymeXText(
-                              '$unreadCount',
+                              displayUnread,
                               variant: TextVariant.bold,
                               size: 10,
                               color: isSelected
@@ -882,5 +1324,174 @@ class _AvatarWithBadge extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _AnilistNotificationCard extends StatelessWidget {
+  final AnilistNotificationItem notification;
+  final VoidCallback onTap;
+
+  const _AnilistNotificationCard({
+    required this.notification,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colors;
+    final (icon, badgeColor) =
+        _getBadgeIconAndColor(notification, colorScheme);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest.opaque(0.2),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: colorScheme.outlineVariant.opaque(0.12),
+            ),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SizedBox(
+                      width: 48,
+                      height: 58,
+                      child: notification.thumbnail != null
+                          ? AnymeXImage(
+                              imageUrl: notification.thumbnail!,
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              color: colorScheme.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.image_outlined,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                    ),
+                  ),
+                  Positioned(
+                    right: -4,
+                    bottom: -4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: badgeColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          width: 2,
+                        ),
+                      ),
+                      child: Icon(
+                        icon,
+                        size: 10,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: AnymeXText(
+                            notification.displayTitle,
+                            variant: TextVariant.semiBold,
+                            size: 13,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        AnymeXText(
+                          notification.timeAgo,
+                          variant: TextVariant.regular,
+                          size: 11,
+                          color: colorScheme.outline,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    AnymeXText(
+                      notification.displayBody,
+                      variant: TextVariant.regular,
+                      size: 12,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: badgeColor.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: AnymeXText(
+                        _getKindLabel(notification.kind),
+                        size: 10,
+                        variant: TextVariant.semiBold,
+                        color: badgeColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  (IconData, Color) _getBadgeIconAndColor(
+      AnilistNotificationItem item, ColorScheme colorScheme) {
+    switch (item.kind) {
+      case AnilistNotificationKind.airing:
+        return (Icons.play_arrow_rounded, colorScheme.primary);
+      case AnilistNotificationKind.social:
+        return (Icons.person_add_rounded, Colors.teal);
+      case AnilistNotificationKind.activity:
+        if (item.type.contains('LIKE')) {
+          return (Icons.favorite_rounded, Colors.redAccent);
+        }
+        if (item.type.contains('REPLY') || item.type.contains('COMMENT')) {
+          return (Icons.chat_bubble_rounded, Colors.blueAccent);
+        }
+        return (Icons.notifications_rounded, colorScheme.primary);
+      case AnilistNotificationKind.system:
+        return (Icons.info_outline_rounded, Colors.amber);
+    }
+  }
+
+  String _getKindLabel(AnilistNotificationKind kind) {
+    switch (kind) {
+      case AnilistNotificationKind.airing:
+        return 'Airing';
+      case AnilistNotificationKind.social:
+        return 'Social';
+      case AnilistNotificationKind.activity:
+        return 'Activity';
+      case AnilistNotificationKind.system:
+        return 'System';
+    }
   }
 }
