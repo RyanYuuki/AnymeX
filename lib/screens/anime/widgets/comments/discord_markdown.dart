@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'package:get/get.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
@@ -857,7 +858,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             _ToolbarButton(
-              label: 'Bold',
+              label: 'Bold'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('**', '**'),
               child: Text(
@@ -871,7 +872,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Italic',
+              label: 'Italic'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('*', '*'),
               child: Text(
@@ -885,7 +886,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Strikethrough',
+              label: 'Strikethrough'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('~~', '~~'),
               child: Text(
@@ -915,7 +916,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Spoiler',
+              label: 'Spoiler'.tr,
               colorScheme: colorScheme,
               onTap: onSpoilerTap ?? () => _wrapSelection('||', '||'),
               child: Text(

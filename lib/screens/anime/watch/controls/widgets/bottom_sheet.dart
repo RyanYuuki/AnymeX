@@ -482,16 +482,16 @@ class PlayerBottomSheets {
 
     return show<int>(
       context: context,
-      title: 'Audio Tracks',
+      title: 'Audio Tracks'.tr,
       showSearch: filteredTracks.length > 5,
       searchHint: 'Search audio tracks...',
       items: [
         const BottomSheetItem(
-            title: 'Auto', subtitle: 'Audio Track', icon: Icons.audiotrack),
+            title: 'Auto'.tr, subtitle: 'Audio Track'.tr, icon: Icons.audiotrack),
         ...tracks.where((e) => e.title != null).map((entry) {
           return BottomSheetItem(
             title: completeLanguageName(entry.language ?? '').toUpperCase(),
-            subtitle: 'Audio Track',
+            subtitle: 'Audio Track'.tr,
             icon: Icons.audiotrack,
           );
         })
@@ -542,11 +542,11 @@ class PlayerBottomSheets {
     final selectedQuality = controller.selectedVideo.value;
     return show<String>(
       context: context,
-      title: 'Video Servers',
+      title: 'Video Servers'.tr,
       items: qualities.map((quality) {
         return BottomSheetItem(
-          title: quality.quality ?? 'Auto',
-          subtitle: 'Server',
+          title: quality.quality ?? 'Auto'.tr.tr,
+          subtitle: 'Server'.tr,
           icon: Icons.high_quality,
         );
       }).toList(),
@@ -567,13 +567,13 @@ class PlayerBottomSheets {
     final selectedQuality = controller.selectedQualityTrack.value;
     return show<String>(
       context: context,
-      title: 'Video Quality',
+      title: 'Video Quality'.tr,
       items: qualities.map((quality) {
         return BottomSheetItem(
           title: quality.height == 0
-              ? 'Auto'
+              ? 'Auto'.tr
               : '${quality.width}x${quality.height}',
-          subtitle: 'Quality Setting',
+          subtitle: 'Quality Setting'.tr,
           icon: Icons.high_quality,
         );
       }).toList(),
@@ -596,7 +596,7 @@ class PlayerBottomSheets {
 
     return showCustom<double>(
       context: context,
-      title: 'Episodes',
+      title: 'Episodes'.tr,
       isExpanded: true,
       content: ScrollablePositionedList.separated(
         initialScrollIndex: selectedEpisode.value.number.toInt() - 1,

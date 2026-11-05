@@ -603,7 +603,7 @@ class _GistSyncCard extends StatelessWidget {
                     children: [
                       AnymeXTile(
                         icon: IconlyLight.logout,
-                        title: 'Log Out',
+                        title: 'Log Out'.tr,
                         subtitle: 'Disconnect this GitHub account from AnymeX',
                         onTap: () {
                           ctrl.logout();

@@ -116,7 +116,7 @@ class TopControls extends StatelessWidget {
           ControlButton(
             icon: Icons.arrow_back_ios_rounded,
             onPressed: () => _handleBack(),
-            tooltip: 'Back',
+            tooltip: 'Back'.tr,
             isPrimary: true,
           ),
           const SizedBox(width: 20),
@@ -218,7 +218,7 @@ class TopControls extends StatelessWidget {
           ControlButton(
             icon: Icons.lock_rounded,
             onPressed: () => controller.isLocked.value = true,
-            tooltip: 'Lock Controls',
+            tooltip: 'Lock Controls'.tr,
             compact: true,
           ),
           const SizedBox(width: 8),
@@ -226,7 +226,7 @@ class TopControls extends StatelessWidget {
             ControlButton(
               icon: Icons.picture_in_picture_rounded,
               onPressed: () => controller.enterPip(),
-              tooltip: 'Picture in Picture',
+              tooltip: 'Picture in Picture'.tr,
               compact: true,
             ),
           const SizedBox(width: 8),
@@ -252,7 +252,7 @@ class TopControls extends StatelessWidget {
                         )),
               );
             },
-            tooltip: 'Settings',
+            tooltip: 'Settings'.tr,
             compact: true,
           ),
         ],
@@ -274,7 +274,7 @@ class TopControls extends StatelessWidget {
                 ControlButton(
                   icon: Icons.arrow_back_ios_rounded,
                   onPressed: () => _handleBack(),
-                  tooltip: 'Back',
+                  tooltip: 'Back'.tr,
                   isPrimary: true,
                 ),
                 const SizedBox(width: 24),
@@ -423,7 +423,7 @@ class TopControls extends StatelessWidget {
                             )),
                   );
                 },
-                tooltip: 'Settings',
+                tooltip: 'Settings'.tr,
                 compact: true,
               ),
             ],
@@ -456,7 +456,7 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.arrow_back_ios_rounded,
                 onPressed: () => _handleBack(),
-                tooltip: 'Back',
+                tooltip: 'Back'.tr,
                 isPrimary: true,
               ),
               const Spacer(),
@@ -468,7 +468,7 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.lock_rounded,
                 onPressed: () => controller.isLocked.value = true,
-                tooltip: 'Lock Controls',
+                tooltip: 'Lock Controls'.tr,
                 compact: true,
               ),
               const SizedBox(width: 8),
@@ -476,7 +476,7 @@ class TopControls extends StatelessWidget {
                 ControlButton(
                   icon: Icons.picture_in_picture_rounded,
                   onPressed: () => controller.enterPip(),
-                  tooltip: 'Picture in Picture',
+                  tooltip: 'Picture in Picture'.tr,
                   compact: true,
                 ),
               const SizedBox(width: 8),
@@ -501,7 +501,7 @@ class TopControls extends StatelessWidget {
                     ),
                   );
                 },
-                tooltip: 'Settings',
+                tooltip: 'Settings'.tr,
                 compact: true,
               ),
             ],
@@ -687,7 +687,7 @@ class _UnlockButtonState extends State<_UnlockButton> {
               if (_confirm) ...[
                 const SizedBox(width: 8),
                 AnymeXText(
-                  "Are you sure?",
+                  "Are you sure?".tr,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.w600,
