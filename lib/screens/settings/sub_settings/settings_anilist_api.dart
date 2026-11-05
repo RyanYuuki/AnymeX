@@ -11,6 +11,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/helper/scroll_wrapper.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/database/kv_helper.dart';
+import 'package:anymex/services/anilist_notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -582,6 +584,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
                             children: [
                               if (_error != null) _buildInlineError(),
                               _buildGeneralSection(),
+                              _buildNotificationSection(),
                               _buildListSection(),
                               _buildOtherSection(),
                             ],
@@ -649,6 +652,93 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             subtitle: 'Enable NSFW/adult entries in AniList content.',
             value: s.displayAdultContent,
             onChanged: (v) => _update((s) => s.displayAdultContent = v)),
+      ],
+    );
+  }
+
+  Widget _buildNotificationSection() {
+    final enabled =
+        KvHelper.get<bool>('anilist_notifications_enabled', defaultVal: true);
+    final airing =
+        KvHelper.get<bool>('anilist_notif_airing', defaultVal: true);
+    final social =
+        KvHelper.get<bool>('anilist_notif_social', defaultVal: true);
+    final activity =
+        KvHelper.get<bool>('anilist_notif_activity', defaultVal: true);
+    final interval =
+        KvHelper.get<int>('anilist_polling_interval_minutes', defaultVal: 30);
+
+    final intervalLabels = {
+      15: '15 Minutes',
+      30: '30 Minutes',
+      60: '1 Hour',
+      180: '3 Hours',
+    };
+
+    return AnymeXSectionBuilder(
+      title: 'Notifications & Sync',
+      children: [
+        AnymeXTile.toggle(
+          icon: Icons.notifications_active_rounded,
+          title: 'Enable Notifications',
+          subtitle: 'Sync AniList notifications with device notifications',
+          value: enabled,
+          onChanged: (v) {
+            KvHelper.set('anilist_notifications_enabled', v);
+            AnilistNotificationService.instance.restartPolling();
+            setState(() {});
+          },
+        ),
+        if (enabled) ...[
+          AnymeXTile.toggle(
+            icon: Icons.play_circle_outline_rounded,
+            title: 'Airing Alerts',
+            subtitle:
+                'Notify when anime on your watch list airs new episodes',
+            value: airing,
+            onChanged: (v) {
+              KvHelper.set('anilist_notif_airing', v);
+              setState(() {});
+            },
+          ),
+          AnymeXTile.toggle(
+            icon: Icons.people_outline_rounded,
+            title: 'Social Alerts',
+            subtitle: 'Notify on new followers',
+            value: social,
+            onChanged: (v) {
+              KvHelper.set('anilist_notif_social', v);
+              setState(() {});
+            },
+          ),
+          AnymeXTile.toggle(
+            icon: Icons.favorite_border_rounded,
+            title: 'Activity Alerts',
+            subtitle:
+                'Notify when someone likes or replies to your activity',
+            value: activity,
+            onChanged: (v) {
+              KvHelper.set('anilist_notif_activity', v);
+              setState(() {});
+            },
+          ),
+          AnymeXTile(
+            icon: Icons.timer_outlined,
+            title: 'Sync Interval',
+            subtitle: intervalLabels[interval] ?? '$interval Minutes',
+            onTap: () => _showOptionPicker<int>(
+              title: 'Sync Interval',
+              items: intervalLabels.keys.toList(),
+              value: interval,
+              itemLabel: (v) => intervalLabels[v] ?? '$v Minutes',
+              onChanged: (v) {
+                KvHelper.set('anilist_polling_interval_minutes', v);
+                AnilistNotificationService.instance.restartPolling();
+                setState(() {});
+              },
+            ),
+          ),
+        ],
       ],
     );
   }
