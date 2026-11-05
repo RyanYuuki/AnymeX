@@ -399,9 +399,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
       context: context,
       builder: (dialogCtx) => StatefulBuilder(
         builder: (context, setDialogState) => AnymeXDialog(
-          title: 'Select Status',
+          title: 'Select Status'.tr,
           showCancelButton: true,
-          confirmText: 'Done',
+          confirmText: 'Done'.tr,
           onConfirm: () {},
           contentWidget: AnymeXTileBuilder<(String, String)>(
             items: _statuses.map((s) {
@@ -452,7 +452,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             children: [
               AnymeXTile(
                 icon: Icons.info_outline_rounded,
-                title: 'Status',
+                title: 'Status'.tr,
                 subtitle: displayStatus,
                 onTap: () => _showStatusSelectionDialog(context),
               ),
@@ -469,7 +469,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
               _buildProgressRow(context),
               AnymeXTile.slider(
                 icon: Icons.star_rounded,
-                title: 'Score',
+                title: 'Score'.tr,
                 subtitle: _getScoreDisplayLabel(_localScore),
                 value: _localScore,
                 min: _minScore,
@@ -479,7 +479,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
               ),
               AnymeXTile(
                 icon: Icons.calendar_today_rounded,
-                title: 'Start Date',
+                title: 'Start Date'.tr,
                 subtitle: _startedAt != null ? _formatDate(_startedAt!) : 'Not set',
                 onTap: () => _pickDate(context, isStart: true),
                 trailing: _startedAt != null
@@ -492,7 +492,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
               ),
               AnymeXTile(
                 icon: Icons.event_available_rounded,
-                title: 'Finish Date',
+                title: 'Finish Date'.tr,
                 subtitle: _completedAt != null ? _formatDate(_completedAt!) : 'Not set',
                 onTap: () => _pickDate(context, isStart: false),
                 trailing: _completedAt != null
@@ -506,8 +506,8 @@ class _ListEditorModalState extends State<ListEditorModal> {
               if (widget.media.serviceType.isAL)
                 AnymeXTile.toggle(
                   icon: Icons.lock_rounded,
-                  title: 'Private Entry',
-                  subtitle: 'Hidden from your public profile',
+                  title: 'Private Entry'.tr,
+                  subtitle: 'Hidden from your public profile'.tr,
                   value: _isPrivate,
                   onChanged: (val) => setState(() => _isPrivate = val),
                 ),
@@ -531,7 +531,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AnymeXText(
-                'Edit Media Entry',
+                'Edit Media Entry'.tr,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: colors.onSurface,
@@ -585,7 +585,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Season',
+                'Season'.tr,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
@@ -658,7 +658,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          hintText: 'Season',
+          hintText: 'Season'.tr,
           hintStyle: TextStyle(color: colors.onSurfaceVariant),
         ),
         onChanged: (v) {
@@ -684,7 +684,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Progress',
+                'Progress'.tr,
                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
@@ -838,7 +838,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
               border: BorderSide.none,
               borderRadius: BorderRadius.circular(14),
               child: AnymeXText(
-                'Delete',
+                'Delete'.tr,
                 style: TextStyle(
                   color: colors.error,
                   fontWeight: FontWeight.w600,
@@ -886,7 +886,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                     Opacity(
                       opacity: _isSaving ? 0 : 1,
                       child: AnymeXText(
-                        'Save changes',
+                        'Save changes'.tr,
                         style: TextStyle(
                           color: colors.onPrimary,
                           fontWeight: FontWeight.w600,

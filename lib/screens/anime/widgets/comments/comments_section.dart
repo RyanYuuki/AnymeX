@@ -503,7 +503,7 @@ class _CommentSectionState extends State<CommentSection> {
                       color: colorScheme.primary,
                       size: 18,
                     ),
-                    tooltip: 'Leaderboard',
+                    tooltip: 'Leaderboard'.tr,
                   ),
                 ),
                 SizedBox(
@@ -518,7 +518,7 @@ class _CommentSectionState extends State<CommentSection> {
                       color: colorScheme.primary,
                       size: 18,
                     ),
-                    tooltip: 'Comment Rules',
+                    tooltip: 'Comment Rules'.tr,
                   ),
                 ),
                 Obx(() => SizedBox(
@@ -545,7 +545,7 @@ class _CommentSectionState extends State<CommentSection> {
                                 size: 18,
                                 color: colorScheme.onSurfaceVariant,
                               ),
-                        tooltip: 'Refresh comments',
+                        tooltip: 'Refresh comments'.tr,
                       ),
                     )),
               ],
@@ -2122,7 +2122,7 @@ class _CommentSectionState extends State<CommentSection> {
                     ),
                     _buildTextMenuOption(
                       context: context,
-                      label: 'Copy',
+                      label: 'Copy'.tr,
                       onTap: () {
                         Navigator.pop(ctx);
                         Clipboard.setData(
@@ -2133,7 +2133,7 @@ class _CommentSectionState extends State<CommentSection> {
                     if (isOwnComment) ...[
                       _buildTextMenuOption(
                         context: context,
-                        label: 'Delete',
+                        label: 'Delete'.tr,
                         isDestructive: true,
                         onTap: () {
                           Navigator.pop(ctx);
@@ -2156,13 +2156,13 @@ class _CommentSectionState extends State<CommentSection> {
                       if (!isOwnComment) ...[
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Delete',
+                          label: 'Delete'.tr,
                           isDestructive: true,
                           onTap: () {
                             Navigator.pop(ctx);
                             _showReasonDialog(
                               context: context,
-                              title: 'Delete Comment',
+                              title: 'Delete Comment'.tr,
                               isDestructive: true,
                               onConfirm: (reason) {
                                 controller.deleteComment(comment);
@@ -2239,7 +2239,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Warn User',
+                          label: 'Warn User'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2248,7 +2248,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Mute User',
+                          label: 'Mute User'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2257,7 +2257,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Ban User',
+                          label: 'Ban User'.tr,
                           isDestructive: true,
                           onTap: () {
                             Navigator.pop(ctx);
@@ -2267,7 +2267,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Shadow Ban User',
+                          label: 'Shadow Ban User'.tr,
                           isDestructive: true,
                           onTap: () {
                             Navigator.pop(ctx);
@@ -2277,7 +2277,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Unmute User',
+                          label: 'Unmute User'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2286,7 +2286,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Unban User',
+                          label: 'Unban User'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2776,7 +2776,7 @@ class _CommentSectionState extends State<CommentSection> {
                     Navigator.pop(context);
                     _showReasonDialog(
                       context: context,
-                      title: 'Delete Comment',
+                      title: 'Delete Comment'.tr,
                       isDestructive: true,
                       onConfirm: (reason) {
                         controller.deleteComment(comment);
@@ -2985,7 +2985,7 @@ class _CommentSectionState extends State<CommentSection> {
               _buildModAction(
                 context: context,
                 icon: Icons.warning_rounded,
-                label: 'Warn User',
+                label: 'Warn User'.tr,
                 color: Colors.orange,
                 onTap: () {
                   Navigator.pop(context);
@@ -2995,7 +2995,7 @@ class _CommentSectionState extends State<CommentSection> {
               _buildModAction(
                 context: context,
                 icon: Icons.volume_off_rounded,
-                label: 'Mute User',
+                label: 'Mute User'.tr,
                 color: Colors.amber,
                 onTap: () {
                   Navigator.pop(context);
@@ -3005,7 +3005,7 @@ class _CommentSectionState extends State<CommentSection> {
               _buildModAction(
                 context: context,
                 icon: Icons.block_rounded,
-                label: 'Ban User',
+                label: 'Ban User'.tr,
                 color: colorScheme.error,
                 onTap: () {
                   Navigator.pop(context);
@@ -3015,7 +3015,7 @@ class _CommentSectionState extends State<CommentSection> {
               _buildModAction(
                 context: context,
                 icon: Icons.visibility_off_rounded,
-                label: 'Shadow Ban User',
+                label: 'Shadow Ban User'.tr,
                 color: Colors.purple,
                 onTap: () {
                   Navigator.pop(context);
@@ -3038,7 +3038,7 @@ class _CommentSectionState extends State<CommentSection> {
               _buildModAction(
                 context: context,
                 icon: Icons.check_circle_rounded,
-                label: 'Unban User',
+                label: 'Unban User'.tr,
                 color: Colors.teal,
                 onTap: () {
                   Navigator.pop(context);
@@ -3048,7 +3048,7 @@ class _CommentSectionState extends State<CommentSection> {
               _buildModAction(
                 context: context,
                 icon: Icons.notifications_active_rounded,
-                label: 'Unmute User',
+                label: 'Unmute User'.tr,
                 color: Colors.teal,
                 onTap: () {
                   Navigator.pop(context);

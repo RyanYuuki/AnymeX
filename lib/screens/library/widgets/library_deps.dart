@@ -277,7 +277,7 @@ class ChipTabs extends StatelessWidget {
           pillItems.add(
             PillItem(
               icon: Iconsax.clock,
-              label: 'History',
+              label: 'History'.tr,
               isSelected: selectedIndex == -1,
               onTap: () => controller.selectList(-1),
             ),

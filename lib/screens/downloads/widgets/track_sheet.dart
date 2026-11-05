@@ -214,7 +214,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                         _searchResults = [];
                         _searchCtrl.clear();
                       }),
-                      child: const AnymeXText('Back'),
+                      child: AnymeXText('Back'.tr),
                     ),
                 ],
               ),
@@ -245,7 +245,7 @@ class _TrackSheetState extends State<_TrackSheet> {
           shrinkWrap: true,
           children: [
             AnymeXText(
-              'Logged-in tracking services',
+              'Logged-in tracking services'.tr,
               style: TextStyle(
                 color: theme.onSurface.withOpacity(0.5),
                 fontSize: 11,
@@ -370,7 +370,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Not tracked',
+                        'Not tracked'.tr,
                         style: TextStyle(
                           color: theme.onSurface.withOpacity(0.4),
                           fontSize: 11,
@@ -384,13 +384,13 @@ class _TrackSheetState extends State<_TrackSheet> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  tooltip: 'Edit',
+                  tooltip: 'Edit'.tr,
                   icon: Icon(Icons.edit_rounded,
                       size: 18, color: theme.primary.withOpacity(0.8)),
                   onPressed: () => _showEditDialog(context, theme, tracker, b),
                 ),
                 IconButton(
-                  tooltip: 'Unbind',
+                  tooltip: 'Unbind'.tr,
                   icon: Icon(Icons.link_off_rounded,
                       size: 18, color: theme.error.withOpacity(0.7)),
                   onPressed: () => _unbind(b),
@@ -409,7 +409,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               },
               icon: Icon(Icons.add_link_rounded,
                   size: 16, color: theme.primary),
-              label: AnymeXText('Track',
+              label: AnymeXText('Track'.tr,
                   style: TextStyle(color: theme.primary)),
             ),
         ],
@@ -674,7 +674,7 @@ class _TrackSheetState extends State<_TrackSheet> {
                         child: Padding(
                           padding: const EdgeInsets.all(24),
                           child: AnymeXText(
-                            'No results. Try searching by title.',
+                            'No results. Try searching by title.'.tr,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: theme.onSurface.withOpacity(0.4),
@@ -795,7 +795,7 @@ class _TrackSheetState extends State<_TrackSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             minimumSize: const Size(0, 34),
           ),
-          child: const AnymeXText('Track', style: TextStyle(fontSize: 12)),
+          child: AnymeXText('Track'.tr, style: TextStyle(fontSize: 12)),
         ),
       ),
     );
@@ -811,7 +811,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               size: 36, color: theme.onSurface.withOpacity(0.3)),
           const SizedBox(height: 14),
           AnymeXText(
-            'No tracking service connected',
+            'No tracking service connected'.tr,
             style: TextStyle(
               color: theme.onSurface,
               fontSize: 15,
@@ -836,7 +836,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               navigate(() => const SettingsAccounts());
             },
             icon: const Icon(Icons.settings_rounded, size: 16),
-            label: const AnymeXText('Open Settings'),
+            label: AnymeXText('Open Settings'.tr),
           ),
         ],
       ),

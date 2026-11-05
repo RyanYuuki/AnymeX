@@ -238,7 +238,7 @@ class LibraryController extends GetxController {
     savePreferences();
 
     if (index == -1) {
-      snackBar('Hold to access history editor');
+      snackBar('Hold to access history editor'.tr);
     }
   }
 

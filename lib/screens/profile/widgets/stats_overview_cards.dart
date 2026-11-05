@@ -39,7 +39,7 @@ class DesktopStatsGrid extends StatelessWidget {
 
     final items = [
       _StatCard(
-        label: 'ANIME',
+        label: 'ANIME'.tr,
         value: anime?.animeCount ?? '0',
         sub: 'entries',
         color: context.theme.colorScheme.primary,
@@ -55,19 +55,19 @@ class DesktopStatsGrid extends StatelessWidget {
         ),
       ),
       _StatCard(
-        label: 'DAYS',
+        label: 'DAYS'.tr,
         value: days.toString(),
         sub: 'watched',
         color: context.theme.colorScheme.onSurface,
       ),
       _StatCard(
-        label: 'MEAN',
+        label: 'MEAN'.tr,
         value: meanScore,
         sub: 'score',
         color: context.theme.colorScheme.primary,
       ),
       _StatCard(
-        label: 'CHAPTERS',
+        label: 'CHAPTERS'.tr,
         value: manga?.chaptersRead ?? '0',
         sub: 'read',
         color: context.theme.colorScheme.primary,
@@ -83,13 +83,13 @@ class DesktopStatsGrid extends StatelessWidget {
         ),
       ),
       _StatCard(
-        label: 'VOLUMES',
+        label: 'VOLUMES'.tr,
         value: manga?.volumesRead ?? '0',
         sub: 'read',
         color: context.theme.colorScheme.onSurface,
       ),
       _StatCard(
-        label: 'MEAN',
+        label: 'MEAN'.tr,
         value: manga?.meanScore ?? '0',
         sub: 'score',
         color: context.theme.colorScheme.primary,

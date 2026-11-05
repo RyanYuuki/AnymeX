@@ -352,12 +352,12 @@ class _ExtensionListState extends State<ExtensionList>
                       if (!widget.installed && notInstalled.isNotEmpty)
                         _buildGroupedSection(notInstalled),
                       if (isEmpty)
-                        const SliverToBoxAdapter(
+                        SliverToBoxAdapter(
                           child: Center(
                             child: Padding(
                               padding: EdgeInsets.all(20.0),
                               child: AnymeXText(
-                                'No extensions found',
+                                'No extensions found'.tr,
                                 style:
                                     TextStyle(fontSize: 16, color: Colors.grey),
                               ),
@@ -384,11 +384,11 @@ class _ExtensionListState extends State<ExtensionList>
     final hasInstalled = installed.isNotEmpty;
 
     if (!hasUpdates && !hasInstalled) {
-      return const Center(
+      return Center(
         child: Padding(
           padding: EdgeInsets.all(20.0),
           child: AnymeXText(
-            'No extensions found',
+            'No extensions found'.tr,
             style: TextStyle(fontSize: 16, color: Colors.grey),
           ),
         ),
@@ -426,7 +426,7 @@ class _ExtensionListState extends State<ExtensionList>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       child: AnymeXText(
-        'Hold and drag any item to reorder',
+        'Hold and drag any item to reorder'.tr,
         style: TextStyle(
           fontSize: 11,
           color: Colors.grey.withValues(alpha: 0.55),
@@ -511,7 +511,7 @@ class _ExtensionListState extends State<ExtensionList>
                       color: context.colors.tertiary,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: AnymeXText('Update All',
+                    child: AnymeXText('Update All'.tr,
                       size: 12,
                       variant: TextVariant.semiBold,
                       color: context.colors.onTertiary,

@@ -167,7 +167,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
     final sliderVal = _currentSpeed.clamp(_min, _max);
 
     return WatchSettingsPane(
-      title: 'Playback Speed',
+      title: 'Playback Speed'.tr,
       onClose: widget.onClose,
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),

@@ -240,7 +240,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
                 size: 48,
                 color: context.colors.onSurfaceVariant.withOpacity(0.5)),
             const SizedBox(height: 12),
-            AnymeXText('No recommendations found',
+            AnymeXText('No recommendations found'.tr,
               color: context.colors.onSurfaceVariant.withOpacity(0.7),
               variant: TextVariant.semiBold,
             ),

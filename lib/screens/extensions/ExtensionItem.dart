@@ -329,7 +329,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
       return _actionButton(
         icon: Icons.download_rounded,
         color: theme.primary,
-        tooltip: "Download",
+        tooltip: "Download".tr,
         onTap: _handleInstall,
         borderRadius: BorderRadius.circular(30),
       );
@@ -342,7 +342,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
           _actionButton(
             icon: Icons.refresh_rounded,
             color: theme.tertiary,
-            tooltip: "Update",
+            tooltip: "Update".tr,
             onTap: _handleUpdate,
             borderRadius: const BorderRadius.horizontal(
               left: Radius.circular(20),
@@ -353,7 +353,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
           _actionButton(
             icon: Iconsax.trash,
             color: theme.error,
-            tooltip: "Delete",
+            tooltip: "Delete".tr,
             iconSize: 17,
             onTap: () => _onActionTap(false),
             borderRadius: BorderRadius.circular(5),
@@ -362,7 +362,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
           _actionButton(
             icon: Iconsax.setting,
             color: theme.secondary,
-            tooltip: "Settings",
+            tooltip: "Settings".tr,
             iconSize: 17,
             onTap: _handleOpenSettings,
             borderRadius: const BorderRadius.horizontal(
@@ -384,7 +384,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
         _actionButton(
           icon: Iconsax.trash,
           color: theme.error,
-          tooltip: "Delete",
+          tooltip: "Delete".tr,
           iconSize: 17,
           onTap: () => _onActionTap(false),
           borderRadius: BorderRadius.horizontal(
@@ -397,7 +397,7 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
           _actionButton(
             icon: Iconsax.setting,
             color: theme.secondary,
-            tooltip: "Settings",
+            tooltip: "Settings".tr,
             iconSize: 17,
             onTap: _handleOpenSettings,
             borderRadius: const BorderRadius.horizontal(
@@ -417,11 +417,11 @@ class _ExtensionListTileWidgetState extends State<ExtensionListTileWidget> {
       _handleUpdate();
     } else {
       AnymeXDialog(
-        title: "Delete Extension",
-        message: "Are you sure you want to delete this extension?",
+        title: "Delete Extension".tr,
+        message: "Are you sure you want to delete this extension?".tr,
         onConfirm: _handleUninstall,
-        confirmText: "Delete",
-        cancelText: "Cancel",
+        confirmText: "Delete".tr,
+        cancelText: "Cancel".tr,
       ).show(context);
     }
   }

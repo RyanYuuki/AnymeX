@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
@@ -95,8 +96,8 @@ class MinimalEpisodeWidget extends StatelessWidget {
                     ),
                     if (isFiller) ...[
                       const SizedBox(height: 2),
-                      const AnymeXText(
-                        'FILLER',
+                      AnymeXText(
+                        'FILLER'.tr,
                         size: 10,
                         variant: TextVariant.bold,
                         color: Colors.orange,

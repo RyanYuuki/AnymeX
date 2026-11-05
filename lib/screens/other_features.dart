@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/screens/anime/misc/calendar.dart';
 import 'package:anymex/screens/anime/misc/list_exporter.dart';
 import 'package:anymex/screens/anime/misc/recommendation.dart';
@@ -17,7 +18,7 @@ class OtherFeaturesPage extends StatelessWidget {
 
     return AnymeXScaffold(
   body: Column(children: [
-          const NestedHeader(title: 'Other Features'),
+          NestedHeader(title: 'Other Features'.tr),
           const SizedBox(height: 32),
           Expanded(
             child: ListView(
@@ -32,7 +33,7 @@ class OtherFeaturesPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     AnymeXText(
-                      'Anime',
+                      'Anime'.tr,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
@@ -49,8 +50,8 @@ class OtherFeaturesPage extends StatelessWidget {
                       Expanded(
                         child: _FeatureCard(
                           icon: Icons.calendar_month_rounded,
-                          title: 'Calendar',
-                          description: 'Track airing schedules',
+                          title: 'Calendar'.tr,
+                          description: 'Track airing schedules'.tr,
                           accentColor: colorScheme.primary,
                           onTap: () => navigate(() => const Calendar()),
                         ),
@@ -59,8 +60,8 @@ class OtherFeaturesPage extends StatelessWidget {
                       Expanded(
                         child: _FeatureCard(
                           icon: Icons.auto_awesome,
-                          title: 'AI Picks',
-                          description: 'Personalized recommendations',
+                          title: 'AI Picks'.tr,
+                          description: 'Personalized recommendations'.tr,
                           accentColor: colorScheme.primary,
                           onTap: () => navigate(() => const AIRecommendation(
                                 isManga: false,
@@ -73,8 +74,8 @@ class OtherFeaturesPage extends StatelessWidget {
                 const SizedBox(height: 12),
                 _FeatureCard(
                   icon: Icons.file_upload_rounded,
-                  title: 'List Exporter',
-                  description: 'Export your Anime list',
+                  title: 'List Exporter'.tr,
+                  description: 'Export your Anime list'.tr,
                   accentColor: colorScheme.primary,
                   isFullWidth: true,
                   onTap: () =>
@@ -90,7 +91,7 @@ class OtherFeaturesPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 12),
                     AnymeXText(
-                      'Manga',
+                      'Manga'.tr,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
@@ -101,8 +102,8 @@ class OtherFeaturesPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 _FeatureCard(
                   icon: Icons.auto_awesome,
-                  title: 'AI Picks',
-                  description: 'Smart manga suggestions',
+                  title: 'AI Picks'.tr,
+                  description: 'Smart manga suggestions'.tr,
                   accentColor: colorScheme.tertiary,
                   isFullWidth: true,
                   onTap: () => navigate(() => const AIRecommendation(
@@ -112,8 +113,8 @@ class OtherFeaturesPage extends StatelessWidget {
                 const SizedBox(height: 12),
                 _FeatureCard(
                   icon: Icons.file_upload_rounded,
-                  title: 'List Exporter',
-                  description: 'Export your Manga list',
+                  title: 'List Exporter'.tr,
+                  description: 'Export your Manga list'.tr,
                   accentColor: colorScheme.tertiary,
                   isFullWidth: true,
                   onTap: () =>

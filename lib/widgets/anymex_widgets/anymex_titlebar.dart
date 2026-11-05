@@ -175,7 +175,7 @@ class _TitleBarWidget extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               AnymeXText(
-                'AnymeX',
+                'AnymeX'.tr,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

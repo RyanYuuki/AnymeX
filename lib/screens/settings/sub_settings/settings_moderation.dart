@@ -57,7 +57,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Moderation Panel',
+      headerTitle: 'Moderation Panel'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -79,7 +79,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                       final badge = DiscordBadge.getRoleBadge(role);
                       return CustomTile(
                         icon: Icons.admin_panel_settings,
-                        title: "Your Role",
+                        title: "Your Role".tr,
                         description: CommentumRoleConfig.getRoleLabel(role),
                         postFix: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -116,7 +116,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                   children: [
                     Obx(() => CustomTile(
                           icon: Icons.report_outlined,
-                          title: "Reports Queue",
+                          title: "Reports Queue".tr,
                           description: "${reportsQueue.length} pending reports",
                           postFix: isLoadingQueue.value
                               ? const SizedBox(
@@ -130,14 +130,14 @@ class _SettingsModerationState extends State<SettingsModeration> {
                         )),
                     CustomTile(
                       icon: Icons.search_outlined,
-                      title: "Search User",
-                      description: "Find and manage specific users",
+                      title: "Search User".tr,
+                      description: "Find and manage specific users".tr,
                       onTap: () => _showUserSearch(context),
                     ),
                     CustomTile(
                       icon: Icons.people_outlined,
-                      title: "User List",
-                      description: "View and filter all users",
+                      title: "User List".tr,
+                      description: "View and filter all users".tr,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -163,7 +163,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
 
   Future<void> _navigateToReportsQueue(BuildContext context) async {
     if (!await commentumService.isModerator()) {
-      snackBar('You need moderator permissions to access this panel');
+      snackBar('You need moderator permissions to access this panel'.tr);
       return;
     }
 
@@ -254,7 +254,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
   Future<void> _performSearch() async {
     final query = widget.searchController.text.trim();
     if (query.isEmpty) {
-      snackBar('Please enter a search term');
+      snackBar('Please enter a search term'.tr);
       return;
     }
 
@@ -271,7 +271,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
       );
     } else {
       if (query.length < 2) {
-        snackBar('Enter at least 2 characters');
+        snackBar('Enter at least 2 characters'.tr);
         return;
       }
 
@@ -322,8 +322,8 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
             radius: 2,
           ),
-          const AnymeXText(
-            'Search User',
+          AnymeXText(
+            'Search User'.tr,
             variant: TextVariant.bold,
             size: 16,
           ),
@@ -359,7 +359,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                       ),
                       child: Center(
                         child: Text(
-                          'By User ID',
+                          'By User ID'.tr,
                           style: TextStyle(
                             fontFamily: 'Poppins-Bold',
                             fontSize: 14,
@@ -403,7 +403,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                       ),
                       child: Center(
                         child: Text(
-                          'By Username',
+                          'By Username'.tr,
                           style: TextStyle(
                             fontFamily: 'Poppins-Bold',
                             fontSize: 14,
@@ -421,7 +421,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
           ),
           const SizedBox(height: 16),
           AnymeXExpansionTile(
-            title: 'Platform',
+            title: 'Platform'.tr,
             initialExpanded: false,
             leading: Icon(Icons.language_rounded,
                 size: 18, color: colorScheme.onSurfaceVariant),
@@ -581,7 +581,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('View User'),
+                    : Text('View User'.tr),
               ),
             ),
           ],
@@ -592,7 +592,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: Text(
-                'Type at least 2 characters to search',
+                'Type at least 2 characters to search'.tr,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontStyle: FontStyle.italic,
@@ -612,7 +612,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
                       size: 16, color: colorScheme.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Text(
-                    'No users found',
+                    'No users found'.tr,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       fontStyle: FontStyle.italic,
@@ -801,7 +801,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
       body: Column(
         children: [
           NestedHeader(
-            title: 'Reports Queue',
+            title: 'Reports Queue'.tr,
             action: IconButton(
               onPressed: _loadReports,
               icon: const Icon(Icons.refresh),
@@ -822,14 +822,14 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                           size: 64, color: colorScheme.primary),
                       const SizedBox(height: 16),
                       Text(
-                        'No pending reports',
+                        'No pending reports'.tr,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'All clear! No reports to review.',
+                        'All clear! No reports to review.'.tr,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -1073,7 +1073,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                               );
                             },
                             icon: const Icon(Icons.shield_outlined, size: 15),
-                            label: const Text('User'),
+                            label: Text('User'.tr),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: colorScheme.primary,
                               side: BorderSide(
@@ -1098,7 +1098,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                           ),
                           icon: const Icon(Icons.delete_outline_rounded,
                               size: 15),
-                          label: const Text('Delete'),
+                          label: Text('Delete'.tr),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: colorScheme.error,
                             side: BorderSide(
@@ -1130,7 +1130,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text('Dismiss'),
+                          child: Text('Dismiss'.tr),
                         ),
                         const SizedBox(width: 8),
                         FilledButton(
@@ -1152,7 +1152,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: const Text('Resolve'),
+                          child: Text('Resolve'.tr),
                         ),
                       ],
                     ),
@@ -1193,7 +1193,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: AnymeXText(
-                        'Delete Reported Comment',
+                        'Delete Reported Comment'.tr,
                         variant: TextVariant.bold,
                         size: 16,
                         color: colorScheme.error,
@@ -1203,7 +1203,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                 ),
                 const SizedBox(height: 14),
                 AnymeXText(
-                  'Are you sure you want to delete this comment? It will be removed permanently and the report will be resolved.',
+                  'Are you sure you want to delete this comment? It will be removed permanently and the report will be resolved.'.tr,
                   variant: TextVariant.regular,
                   size: 13,
                   color: colorScheme.onSurfaceVariant,
@@ -1215,7 +1215,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: AnymeXText('Cancel',
+                      child: AnymeXText('Cancel'.tr,
                           color: colorScheme.onSurfaceVariant),
                     ),
                     const SizedBox(width: 8),
@@ -1237,7 +1237,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                           deleteComment: true,
                         );
                       },
-                      child: const Text('Delete Comment'),
+                      child: Text('Delete Comment'.tr),
                     ),
                   ],
                 ),
@@ -1427,7 +1427,7 @@ class _UserListPageState extends State<UserListPage> {
       body: Column(
         children: [
           NestedHeader(
-            title: 'User List',
+            title: 'User List'.tr,
             action: IconButton(
               onPressed: _loadUsers,
               icon: const Icon(Icons.refresh),
@@ -1464,14 +1464,14 @@ class _UserListPageState extends State<UserListPage> {
                           size: 64, color: colorScheme.onSurfaceVariant),
                       const SizedBox(height: 16),
                       Text(
-                        'No users found',
+                        'No users found'.tr,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Try adjusting your filters',
+                        'Try adjusting your filters'.tr,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -1542,17 +1542,17 @@ class _UserListPageState extends State<UserListPage> {
                   value: selectedRoleFilter.value.isEmpty
                       ? null
                       : selectedRoleFilter.value,
-                  hint: 'Role: All',
+                  hint: 'Role: All'.tr,
                   items: [
-                    const DropdownMenuItem<String?>(
-                        value: null, child: Text('All')),
-                    const DropdownMenuItem(value: 'user', child: Text('User')),
-                    const DropdownMenuItem(
-                        value: 'moderator', child: Text('Moderator')),
-                    const DropdownMenuItem(
-                        value: 'admin', child: Text('Admin')),
-                    const DropdownMenuItem(
-                        value: 'super_admin', child: Text('Super Admin')),
+                    DropdownMenuItem<String?>(
+                        value: null, child: Text('All'.tr)),
+                    DropdownMenuItem(value: 'user', child: Text('User'.tr)),
+                    DropdownMenuItem(
+                        value: 'moderator', child: Text('Moderator'.tr)),
+                    DropdownMenuItem(
+                        value: 'admin', child: Text('Admin'.tr)),
+                    DropdownMenuItem(
+                        value: 'super_admin', child: Text('Super Admin'.tr)),
                   ],
                   onChanged: (value) {
                     selectedRoleFilter.value = value ?? '';
@@ -1566,15 +1566,15 @@ class _UserListPageState extends State<UserListPage> {
                   value: selectedClientTypeFilter.value.isEmpty
                       ? null
                       : selectedClientTypeFilter.value,
-                  hint: 'Client: All',
+                  hint: 'Client: All'.tr,
                   items: [
-                    const DropdownMenuItem<String?>(
-                        value: null, child: Text('All')),
-                    const DropdownMenuItem(
-                        value: 'anilist', child: Text('AniList')),
-                    const DropdownMenuItem(value: 'mal', child: Text('MAL')),
-                    const DropdownMenuItem(
-                        value: 'simkl', child: Text('Simkl')),
+                    DropdownMenuItem<String?>(
+                        value: null, child: Text('All'.tr)),
+                    DropdownMenuItem(
+                        value: 'anilist', child: Text('AniList'.tr)),
+                    DropdownMenuItem(value: 'mal', child: Text('MAL'.tr)),
+                    DropdownMenuItem(
+                        value: 'simkl', child: Text('Simkl'.tr)),
                   ],
                   onChanged: (value) {
                     selectedClientTypeFilter.value = value ?? '';
@@ -1839,7 +1839,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
     return AnymeXScaffold(
       body: Column(
         children: [
-          const NestedHeader(title: 'User Management'),
+          NestedHeader(title: 'User Management'.tr),
           Expanded(
             child: isLoading
                 ? const Center(child: ExpressiveLoadingIndicator())
@@ -1968,7 +1968,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
                             // Role Change Section
                             Text(
-                              'Change Role',
+                              'Change Role'.tr,
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: colorScheme.onSurfaceVariant,
@@ -1994,7 +1994,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                               size: 20,
                                               color: colorScheme.primary),
                                           const SizedBox(width: 12),
-                                          const Text('User'),
+                                          Text('User'.tr),
                                         ],
                                       ),
                                     ),
@@ -2006,7 +2006,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                               size: 20,
                                               color: Colors.blue.shade400),
                                           const SizedBox(width: 12),
-                                          const Text('Moderator'),
+                                          Text('Moderator'.tr),
                                         ],
                                       ),
                                     ),
@@ -2018,7 +2018,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                               size: 20,
                                               color: Colors.amber.shade400),
                                           const SizedBox(width: 12),
-                                          const Text('Admin'),
+                                          Text('Admin'.tr),
                                         ],
                                       ),
                                     ),
@@ -2035,7 +2035,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
                             // Moderation Actions Section
                             Text(
-                              'Moderation Actions',
+                              'Moderation Actions'.tr,
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: colorScheme.onSurfaceVariant,
@@ -2051,7 +2051,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                   _buildActionButton(
                                     context: context,
                                     icon: Icons.warning_amber_rounded,
-                                    label: 'Warn User',
+                                    label: 'Warn User'.tr,
                                     color: Colors.amber,
                                     onTap: () => _openModerationSheet(
                                         ModerationActionType.warn),
@@ -2060,7 +2060,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                   _buildActionButton(
                                     context: context,
                                     icon: Icons.volume_off_rounded,
-                                    label: 'Mute User',
+                                    label: 'Mute User'.tr,
                                     color: Colors.orange,
                                     onTap: () => _openModerationSheet(
                                         ModerationActionType.mute),
@@ -2069,7 +2069,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                   _buildActionButton(
                                     context: context,
                                     icon: Icons.block_rounded,
-                                    label: 'Ban User',
+                                    label: 'Ban User'.tr,
                                     color: colorScheme.error,
                                     onTap: () => _openModerationSheet(
                                         ModerationActionType.ban),
@@ -2078,7 +2078,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                   _buildActionButton(
                                     context: context,
                                     icon: Icons.visibility_off_rounded,
-                                    label: 'Shadow Ban User',
+                                    label: 'Shadow Ban User'.tr,
                                     color: Colors.deepPurple,
                                     onTap: () => _openModerationSheet(
                                         ModerationActionType.shadowBan),
@@ -2087,7 +2087,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                   _buildActionButton(
                                     context: context,
                                     icon: Icons.check_circle_rounded,
-                                    label: 'Unban User',
+                                    label: 'Unban User'.tr,
                                     color: Colors.green,
                                     onTap: () => _openModerationSheet(
                                         ModerationActionType.unban),
@@ -2096,7 +2096,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                                   _buildActionButton(
                                     context: context,
                                     icon: Icons.volume_up_rounded,
-                                    label: 'Unmute User',
+                                    label: 'Unmute User'.tr,
                                     color: Colors.teal,
                                     onTap: () => _openModerationSheet(
                                         ModerationActionType.unmute),
@@ -2164,13 +2164,13 @@ class _UserManagementPageState extends State<UserManagementPage> {
       role: newRole,
     );
     if (success) {
-      snackBar('Role updated successfully');
+      snackBar('Role updated successfully'.tr);
       setState(() {
         selectedRole = newRole;
       });
       _loadUserInfo();
     } else {
-      snackBar('Failed to update role');
+      snackBar('Failed to update role'.tr);
     }
   }
 
@@ -2283,10 +2283,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
           targetClientType: widget.targetClientType,
         );
         if (success) {
-          snackBar('Action applied successfully');
+          snackBar('Action applied successfully'.tr);
           _loadUserInfo();
         } else {
-          snackBar('Failed to perform action');
+          snackBar('Failed to perform action'.tr);
         }
         return success;
       },

@@ -250,7 +250,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                             children: [
                               NFLabeledButton(
                                 icon: Icons.playlist_play_rounded,
-                                label: 'Episodes',
+                                label: 'Episodes'.tr,
                                 onTap: () =>
                                     controller.isEpisodePaneOpened.value =
                                         !controller.isEpisodePaneOpened.value,
@@ -261,7 +261,7 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                                 }
                                 return NFLabeledButton(
                                   icon: Icons.folder_zip_rounded,
-                                  label: 'Torrent Files',
+                                  label: 'Torrent Files'.tr,
                                   onTap: () => controller
                                           .isTorrentFilesPaneOpened.value =
                                       !controller.isTorrentFilesPaneOpened.value,
@@ -269,14 +269,14 @@ class NetflixMobilePlayerControlTheme extends PlayerControlTheme {
                               }),
                               NFLabeledButton(
                                 icon: Icons.subtitles_rounded,
-                                label: 'Audio & Subtitles',
+                                label: 'Audio & Subtitles'.tr,
                                 onTap: () =>
                                     controller.isTracksPaneOpened.value =
                                         !controller.isTracksPaneOpened.value,
                               ),
                               Obx(() => NFLabeledButton(
                                     icon: Icons.skip_next_rounded,
-                                    label: 'Next Ep.',
+                                    label: 'Next Ep.'.tr,
                                     enabled: controller.canGoForward.value,
                                     onTap: () => controller.navigator(true),
                                   )),

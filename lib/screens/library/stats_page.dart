@@ -16,7 +16,7 @@ class StatisticsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const AnymeXText('Library Statistics'),
+        title: AnymeXText('Library Statistics'.tr),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
@@ -25,8 +25,8 @@ class StatisticsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Anime Library Section
-            const AnymeXText(
-              'Anime Library',
+            AnymeXText(
+              'Anime Library'.tr,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -44,8 +44,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Manga Library Section
-            const AnymeXText(
-              'Manga Library',
+            AnymeXText(
+              'Manga Library'.tr,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -63,8 +63,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Novel Library Section
-            const AnymeXText(
-              'Novel Library',
+            AnymeXText(
+              'Novel Library'.tr,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -82,8 +82,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Anime Custom Lists Section
-            const AnymeXText(
-              'Anime Custom Lists',
+            AnymeXText(
+              'Anime Custom Lists'.tr,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -100,8 +100,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Manga Custom Lists Section
-            const AnymeXText(
-              'Manga Custom Lists',
+            AnymeXText(
+              'Manga Custom Lists'.tr,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -118,8 +118,8 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Novel Custom Lists Section
-            const AnymeXText(
-              'Novel Custom Lists',
+            AnymeXText(
+              'Novel Custom Lists'.tr,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -150,8 +150,8 @@ class StatisticsPage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         library.isEmpty
-            ? const AnymeXText(
-                'No items in this library.',
+            ? AnymeXText(
+                'No items in this library.'.tr,
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
             : ListView.builder(
@@ -197,8 +197,8 @@ class StatisticsPage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         customLists.isEmpty
-            ? const AnymeXText(
-                'No custom lists available.',
+            ? AnymeXText(
+                'No custom lists available.'.tr,
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
             : ListView.builder(
@@ -222,9 +222,9 @@ class StatisticsPage extends StatelessWidget {
                           subtitle: AnymeXText('Items: ${listData.length}'),
                           children: listData.isEmpty
                               ? [
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(16.0),
-                                    child: AnymeXText('No media in this list.'),
+                                    child: AnymeXText('No media in this list.'.tr),
                                   )
                                 ]
                               : listData.map((media) {

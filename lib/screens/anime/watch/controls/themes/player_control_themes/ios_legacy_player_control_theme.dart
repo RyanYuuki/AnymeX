@@ -83,7 +83,7 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
         children: [
           _IosLegacyGlassIconButton(
             icon: CupertinoIcons.back,
-            tooltip: 'Back',
+            tooltip: 'Back'.tr,
             onPressed: () => Get.back(),
           ),
           const SizedBox(width: 12),
@@ -139,19 +139,19 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
           const SizedBox(width: 10),
           _IosLegacyGlassIconButton(
             icon: CupertinoIcons.lock_fill,
-            tooltip: 'Lock Controls',
+            tooltip: 'Lock Controls'.tr,
             onPressed: () => controller.isLocked.value = true,
           ),
           const SizedBox(width: 8),
           _IosLegacyGlassIconButton(
             icon: CupertinoIcons.fullscreen,
-            tooltip: 'Fullscreen',
+            tooltip: 'Fullscreen'.tr,
             onPressed: controller.toggleFullScreen,
           ),
           const SizedBox(width: 8),
           _IosLegacyGlassIconButton(
             icon: CupertinoIcons.settings_solid,
-            tooltip: 'Settings',
+            tooltip: 'Settings'.tr,
             onPressed: () {
               controller.showSheetWithPause(
                 () => showModalBottomSheet(
@@ -201,7 +201,7 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
                 children: [
                   _IosLegacyGlassIconButton(
                     icon: CupertinoIcons.backward_end_fill,
-                    tooltip: 'Previous Episode',
+                    tooltip: 'Previous Episode'.tr,
                     enabled: controller.canGoBackward.value,
                     onPressed: () => controller.navigator(false),
                   ),
@@ -210,7 +210,7 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
                     icon: isDesktop
                         ? CupertinoIcons.gobackward_30
                         : CupertinoIcons.gobackward_15,
-                    tooltip: isDesktop ? 'Replay 30s' : 'Replay',
+                    tooltip: isDesktop ? 'Replay 30s'.tr : 'Replay'.tr,
                     onPressed: () {
                       final currentPos = controller.currentPosition.value;
                       final seekBy = Duration(
@@ -234,7 +234,7 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
                     icon: isDesktop
                         ? CupertinoIcons.goforward_30
                         : CupertinoIcons.goforward_15,
-                    tooltip: isDesktop ? 'Forward 30s' : 'Forward',
+                    tooltip: isDesktop ? 'Forward 30s'.tr : 'Forward'.tr,
                     onPressed: () {
                       final currentPos = controller.currentPosition.value;
                       final duration = controller.episodeDuration.value;
@@ -249,7 +249,7 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
                   const SizedBox(width: 12),
                   _IosLegacyGlassIconButton(
                     icon: CupertinoIcons.forward_end_fill,
-                    tooltip: 'Next Episode',
+                    tooltip: 'Next Episode'.tr,
                     enabled: controller.canGoForward.value,
                     onPressed: () => controller.navigator(true),
                   ),
@@ -407,62 +407,62 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
           controller.isEpisodePaneOpened.value =
               !controller.isEpisodePaneOpened.value;
         },
-        tooltip: 'Playlist',
+        tooltip: 'Playlist'.tr,
         compact: true,
       ),
       'torrent': ControlButton(
         icon: Icons.folder_zip_rounded,
         onPressed: () => controller.isTorrentFilesPaneOpened.value =
             !controller.isTorrentFilesPaneOpened.value,
-        tooltip: 'Torrent Files',
+        tooltip: 'Torrent Files'.tr,
         compact: true,
       ),
       'shaders': ControlButton(
         icon: Icons.tune_rounded,
         onPressed: () => controller.openColorProfileBottomSheet(context),
-        tooltip: 'Shaders & Color Profiles',
+        tooltip: 'Shaders & Color Profiles'.tr,
         compact: true,
       ),
       'source': ControlButton(
         icon: Icons.high_quality_rounded,
         onPressed: () => controller.isSourcePaneOpened.value =
             !controller.isSourcePaneOpened.value,
-        tooltip: 'Quality',
+        tooltip: 'Quality'.tr,
         compact: true,
       ),
       'tracks': ControlButton(
         icon: Icons.subtitles_rounded,
         onPressed: () => controller.isTracksPaneOpened.value =
             !controller.isTracksPaneOpened.value,
-        tooltip: 'Subtitles',
+        tooltip: 'Subtitles'.tr,
         compact: true,
       ),
       'sync_subs': ControlButton(
         icon: Icons.sync_rounded,
         onPressed: () => controller.isSyncSubsPaneOpened.value =
             !controller.isSyncSubsPaneOpened.value,
-        tooltip: 'Sync Subs',
+        tooltip: 'Sync Subs'.tr,
         compact: true,
       ),
       'server': ControlButton(
         icon: Icons.cloud_rounded,
         onPressed: () =>
             PlayerBottomSheets.showVideoServers(context, controller),
-        tooltip: 'Server',
+        tooltip: 'Server'.tr,
         compact: true,
       ),
       'quality': ControlButton(
         icon: Icons.high_quality_rounded,
         onPressed: () =>
             PlayerBottomSheets.showVideoQuality(context, controller),
-        tooltip: 'Quality',
+        tooltip: 'Quality'.tr,
         compact: true,
       ),
       'audio': ControlButton(
         icon: Icons.volume_up_rounded,
         onPressed: () => controller.isAudioPaneOpened.value =
             !controller.isAudioPaneOpened.value,
-        tooltip: 'Audio',
+        tooltip: 'Audio'.tr,
         compact: true,
       ),
       'orientation': Obx(() {
@@ -472,14 +472,14 @@ class IosLegacyPlayerControlTheme extends PlayerControlTheme {
               ? Icons.screen_lock_rotation_rounded
               : Icons.screen_rotation_rounded,
           onPressed: controller.toggleOrientation,
-          tooltip: isLocked ? 'Unlock Orientation' : 'Lock Orientation',
+          tooltip: isLocked ? 'Unlock Orientation'.tr : 'Lock Orientation'.tr,
           compact: true,
         );
       }),
       'cast': ControlButton(
         icon: Icons.cast_rounded,
         onPressed: () => CastDeviceDialog.show(context, controller),
-        tooltip: 'Cast to Device',
+        tooltip: 'Cast to Device'.tr,
         compact: true,
       ),
     };

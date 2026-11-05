@@ -50,7 +50,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Network',
+      headerTitle: 'Network'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -63,19 +63,19 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AnymeXSectionBuilder(
-                title: 'Requests',
+                title: 'Requests'.tr,
                 children: [
                   AnymeXTile(
                     icon: HugeIcons.strokeRoundedGlobe,
-                    title: 'User-Agent',
+                    title: 'User-Agent'.tr,
                     subtitle: _currentUserAgentLabel,
                     onTap: () => _openUserAgentDialog(context),
                   ),
                   AnymeXTile.toggle(
                     icon: Icons.shield_outlined,
-                    title: 'Verify TLS certificates',
+                    title: 'Verify TLS certificates'.tr,
                     subtitle:
-                        'Disabling may bypass captive portals or SSL inspect, but decreases security.',
+                        'Disabling may bypass captive portals or SSL inspect, but decreases security.'.tr,
                     value: _network.verifyTls,
                     onChanged: (val) {
                       NetworkKeys.verifyTls.set(val);
@@ -87,17 +87,17 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
               ),
               const SizedBox(height: 16),
               AnymeXSectionBuilder(
-                title: 'DNS & Proxy',
+                title: 'DNS & Proxy'.tr,
                 children: [
                   AnymeXTile(
                     icon: Icons.dns_rounded,
-                    title: 'DNS-over-HTTPS',
+                    title: 'DNS-over-HTTPS'.tr,
                     subtitle: _currentDnsLabel,
                     onTap: () => _openDnsSheet(context),
                   ),
                   AnymeXTile(
                     icon: HugeIcons.strokeRoundedShield01,
-                    title: 'Proxy',
+                    title: 'Proxy'.tr,
                     subtitle: _currentProxyLabel,
                     onTap: () => _openProxySheet(context),
                   ),
@@ -105,13 +105,13 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
               ),
               const SizedBox(height: 16),
               AnymeXSectionBuilder(
-                title: 'Cache & Storage',
+                title: 'Cache & Storage'.tr,
                 children: [
                   AnymeXTile(
                     icon: Icons.cookie_outlined,
-                    title: 'Clear cookies',
+                    title: 'Clear cookies'.tr,
                     subtitle:
-                        'Delete all stored HTTP cookies across all domains.',
+                        'Delete all stored HTTP cookies across all domains.'.tr,
                     onTap: () => _confirmClearCookies(context),
                   ),
                 ],
@@ -125,9 +125,9 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
 
   void _confirmClearCookies(BuildContext context) {
     AnymeXDialog(
-      title: 'Clear Cookies',
-      message: 'Are you sure you want to delete all saved cookies?',
-      confirmText: 'Clear',
+      title: 'Clear Cookies'.tr,
+      message: 'Are you sure you want to delete all saved cookies?'.tr,
+      confirmText: 'Clear'.tr,
       onConfirm: () {
         _network.cookieManager.clear();
         snackString('Cookies cleared successfully');
@@ -260,7 +260,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
     );
 
     AnymeXDialog(
-      title: 'Custom User-Agent',
+      title: 'Custom User-Agent'.tr,
       contentWidget: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -284,7 +284,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: AnymeXText(
-                    'Reset to Default',
+                    'Reset to Default'.tr,
                     size: 13,
                     color: Theme.of(context).colorScheme.primary,
                     variant: TextVariant.semiBold,
@@ -295,7 +295,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
           ),
         ],
       ),
-      confirmText: 'Save',
+      confirmText: 'Save'.tr,
       onConfirm: () {
         final val = controller.text.trim();
         NetworkKeys.customUserAgent.set(val);
@@ -338,9 +338,9 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                             color: colors.primary, size: 20),
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: AnymeXText(
-                          'DNS-over-HTTPS',
+                          'DNS-over-HTTPS'.tr,
                           size: 17,
                           variant: TextVariant.bold,
                         ),
@@ -355,7 +355,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: AnymeXText(
-                      'CUSTOM DOH URL',
+                      'CUSTOM DOH URL'.tr,
                       size: 11,
                       variant: TextVariant.bold,
                       color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -395,7 +395,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                         ),
                         const SizedBox(width: 6),
                         AnymeXText(
-                          'PRESET PROVIDERS',
+                          'PRESET PROVIDERS'.tr,
                           size: 11,
                           variant: TextVariant.bold,
                           color:
@@ -481,7 +481,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                                       size: 16, color: colors.primary),
                                 const SizedBox(width: 6),
                                 AnymeXText(
-                                  'Test',
+                                  'Test'.tr,
                                   size: 12,
                                   variant: TextVariant.semiBold,
                                   color: colors.primary,
@@ -512,7 +512,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                     children: [
                       _buildSheetButton(
                         ctx,
-                        label: 'Reset',
+                        label: 'Reset'.tr,
                         onTap: () {
                           controller.clear();
                           NetworkKeys.customDnsUrl.set('');
@@ -524,13 +524,13 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                       const Spacer(),
                       _buildSheetButton(
                         ctx,
-                        label: 'Cancel',
+                        label: 'Cancel'.tr,
                         onTap: () => Navigator.pop(ctx),
                       ),
                       const SizedBox(width: 8),
                       _buildSheetButton(
                         ctx,
-                        label: 'Save',
+                        label: 'Save'.tr,
                         isPrimary: true,
                         onTap: () {
                           final text = controller.text.trim();
@@ -593,9 +593,9 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                             color: colors.primary, size: 20),
                       ),
                       const SizedBox(width: 10),
-                      const Expanded(
+                      Expanded(
                         child: AnymeXText(
-                          'Proxy Configuration',
+                          'Proxy Configuration'.tr,
                           size: 17,
                           variant: TextVariant.bold,
                         ),
@@ -610,7 +610,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: AnymeXText(
-                      'PROTOCOL',
+                      'PROTOCOL'.tr,
                       size: 11,
                       variant: TextVariant.bold,
                       color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -622,7 +622,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                     expandEqually: true,
                     items: [
                       PillItem(
-                        label: 'HTTP',
+                        label: 'HTTP'.tr,
                         isSelected: protocol == 'http',
                         onTap: () {
                           setSheetState(() {
@@ -632,7 +632,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                         },
                       ),
                       PillItem(
-                        label: 'SOCKS5',
+                        label: 'SOCKS5'.tr,
                         isSelected: protocol == 'socks5',
                         onTap: () {
                           setSheetState(() {
@@ -647,7 +647,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: AnymeXText(
-                      'SERVER DETAILS',
+                      'SERVER DETAILS'.tr,
                       size: 11,
                       variant: TextVariant.bold,
                       color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -660,7 +660,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                         child: _buildSearchStyleInputBar(
                           ctx,
                           controller: hostCtrl,
-                          hintText: 'Host (e.g. 127.0.0.1)',
+                          hintText: 'Host (e.g. 127.0.0.1)'.tr,
                           prefixIcon: Icons.router_rounded,
                           onChanged: (_) =>
                               setSheetState(() => testStatus = ''),
@@ -685,7 +685,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 8),
                     child: AnymeXText(
-                      'AUTHENTICATION (OPTIONAL)',
+                      'AUTHENTICATION (OPTIONAL)'.tr,
                       size: 11,
                       variant: TextVariant.bold,
                       color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
@@ -697,7 +697,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                         child: _buildSearchStyleInputBar(
                           ctx,
                           controller: userCtrl,
-                          hintText: 'Username',
+                          hintText: 'Username'.tr,
                           prefixIcon: Icons.person_outline_rounded,
                           onChanged: (_) =>
                               setSheetState(() => testStatus = ''),
@@ -708,7 +708,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                         child: _buildSearchStyleInputBar(
                           ctx,
                           controller: passCtrl,
-                          hintText: 'Password',
+                          hintText: 'Password'.tr,
                           prefixIcon: Icons.lock_outline_rounded,
                           obscureText: isObscured,
                           suffixIcon: IconButton(
@@ -803,7 +803,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                                       size: 16, color: colors.primary),
                                 const SizedBox(width: 6),
                                 AnymeXText(
-                                  'Test',
+                                  'Test'.tr,
                                   size: 12,
                                   variant: TextVariant.semiBold,
                                   color: colors.primary,
@@ -834,7 +834,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                     children: [
                       _buildSheetButton(
                         ctx,
-                        label: 'Clear Proxy',
+                        label: 'Clear Proxy'.tr,
                         isDestructive: true,
                         onTap: () {
                           NetworkKeys.proxyUrl.set('');
@@ -846,13 +846,13 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
                       const Spacer(),
                       _buildSheetButton(
                         ctx,
-                        label: 'Cancel',
+                        label: 'Cancel'.tr,
                         onTap: () => Navigator.pop(ctx),
                       ),
                       const SizedBox(width: 8),
                       _buildSheetButton(
                         ctx,
-                        label: 'Save',
+                        label: 'Save'.tr,
                         isPrimary: true,
                         onTap: () {
                           final pString = _buildProxyString(

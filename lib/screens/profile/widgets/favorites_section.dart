@@ -43,8 +43,8 @@ class FavoritesSection extends StatelessWidget {
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
-            child: const SectionHeader(
-              title: 'Favourite Anime',
+            child: SectionHeader(
+              title: 'Favourite Anime'.tr,
               icon: IconlyBold.video,
             ),
           ),
@@ -57,8 +57,8 @@ class FavoritesSection extends StatelessWidget {
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
-            child: const SectionHeader(
-              title: 'Favourite Manga',
+            child: SectionHeader(
+              title: 'Favourite Manga'.tr,
               icon: IconlyBold.document,
             ),
           ),
@@ -71,8 +71,8 @@ class FavoritesSection extends StatelessWidget {
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
-            child: const SectionHeader(
-              title: 'Favourite Characters',
+            child: SectionHeader(
+              title: 'Favourite Characters'.tr,
               icon: IconlyBold.profile,
             ),
           ),
@@ -91,8 +91,8 @@ class FavoritesSection extends StatelessWidget {
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
-            child: const SectionHeader(
-              title: 'Favourite Staff',
+            child: SectionHeader(
+              title: 'Favourite Staff'.tr,
               icon: Icons.people_rounded,
             ),
           ),
@@ -111,8 +111,8 @@ class FavoritesSection extends StatelessWidget {
             padding: needsPadding
                 ? const EdgeInsets.symmetric(horizontal: 20.0)
                 : EdgeInsets.zero,
-            child: const SectionHeader(
-              title: 'Favourite Studios',
+            child: SectionHeader(
+              title: 'Favourite Studios'.tr,
               icon: Icons.business_rounded,
             ),
           ),

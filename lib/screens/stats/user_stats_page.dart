@@ -221,8 +221,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
               isVisible: _isAppBarVisibleExternally,
               scrollController: _scrollController,
               headerContent: Header(
-                title: 'Stats',
-                subtitle: 'Your watch & read statistics',
+                title: 'Stats'.tr,
+                subtitle: 'Your watch & read statistics'.tr,
                 bottom: isLegacy ? _buildStatsModeChips(context) : null,
               ),
               visibleStatusBarStyle: SystemUiOverlayStyle(
@@ -301,7 +301,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
     );
 
     final daysCard = _buildSmallInfoCard(
-      title: 'DAYS ACTIVE',
+      title: 'DAYS ACTIVE'.tr,
       value: "${controller.totalDaysActive}",
       icon: IconlyLight.calendar,
     );
@@ -352,7 +352,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        'Otaku Rank Level',
+                        'Otaku Rank Level'.tr,
                         size: 10,
                         color: context.colors.onSurfaceVariant.withOpacity(0.5),
                       ),
@@ -381,7 +381,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Level Progress',
+                'Level Progress'.tr,
                 size: 11,
                 variant: TextVariant.semiBold,
                 color: context.colors.onSurfaceVariant.withOpacity(0.8),
@@ -417,7 +417,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       children: [
         Expanded(
           child: _buildSmallInfoCard(
-            title: 'Avg Episodes',
+            title: 'Avg Episodes'.tr,
             value: '${controller.averageEpisodesPerDay.toStringAsFixed(1)}/day',
             icon: Icons.play_circle_outline_rounded,
           ),
@@ -425,7 +425,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         const SizedBox(width: 8),
         Expanded(
           child: _buildSmallInfoCard(
-            title: 'Avg Chapters',
+            title: 'Avg Chapters'.tr,
             value: '${controller.averageChaptersPerDay.toStringAsFixed(1)}/day',
             icon: Icons.chrome_reader_mode_outlined,
           ),
@@ -433,7 +433,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         const SizedBox(width: 8),
         Expanded(
           child: _buildSmallInfoCard(
-            title: 'Streak (Cur/Long)',
+            title: 'Streak (Cur/Long)'.tr,
             value: '${currentStreak}d / ${longestStreak}d',
             icon: Icons.local_fire_department_rounded,
           ),
@@ -471,10 +471,10 @@ class _UserStatsPageState extends State<UserStatsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
-            'Favorite Title',
+            'Favorite Title'.tr,
             size: 16,
             variant: TextVariant.bold,
           ),
@@ -648,8 +648,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AnymeXText(
-            'Activity Heatmap',
+          AnymeXText(
+            'Activity Heatmap'.tr,
             size: 14,
             variant: TextVariant.bold,
           ),
@@ -847,7 +847,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
               ),
               if (watchMins + readMins == 0)
                 AnymeXText(
-                  'No activity',
+                  'No activity'.tr,
                   size: 11,
                   color: context.colors.onSurfaceVariant.withOpacity(0.5),
                 )
@@ -897,10 +897,10 @@ class _UserStatsPageState extends State<UserStatsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
-            'Frequently Revisited',
+            'Frequently Revisited'.tr,
             size: 16,
             variant: TextVariant.bold,
           ),
@@ -919,7 +919,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   ),
                   const SizedBox(height: 8),
                   AnymeXText(
-                    'No logged stats yet. Start watching/reading!',
+                    'No logged stats yet. Start watching/reading!'.tr,
                     size: 12,
                     color: context.colors.onSurfaceVariant.withOpacity(0.4),
                   ),
@@ -1044,10 +1044,10 @@ class _UserStatsPageState extends State<UserStatsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
-            'Detailed Insights',
+            'Detailed Insights'.tr,
             size: 16,
             variant: TextVariant.bold,
           ),
@@ -1060,7 +1060,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
             padding: const EdgeInsets.all(24),
             child: Center(
               child: AnymeXText(
-                'No insights available yet. Add items to your library!',
+                'No insights available yet. Add items to your library!'.tr,
                 size: 12,
                 color: context.colors.onSurfaceVariant.withOpacity(0.4),
               ),
@@ -1070,7 +1070,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           if (genres.isNotEmpty) ...[
             _buildInsightCard(
               context: context,
-              title: 'Top Genres',
+              title: 'Top Genres'.tr,
               icon: Icons.category_outlined,
               data: genres.entries.take(5).toList(),
             ),
@@ -1079,7 +1079,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           if (showStudios && studios.isNotEmpty) ...[
             _buildInsightCard(
               context: context,
-              title: 'Top Studios',
+              title: 'Top Studios'.tr,
               icon: Icons.movie_creation_outlined,
               data: studios.entries.take(5).toList(),
             ),
@@ -1088,7 +1088,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           if (formats.isNotEmpty) ...[
             _buildInsightCard(
               context: context,
-              title: 'Media Type Breakdown',
+              title: 'Media Type Breakdown'.tr,
               icon: Icons.grid_view_rounded,
               data: formats.entries.toList(),
             ),

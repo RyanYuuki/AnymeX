@@ -99,7 +99,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Tap Zones',
+      headerTitle: 'Tap Zones'.tr,
       body: Builder(
         builder: (ctx) => Column(
                   children: [
@@ -108,8 +108,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       child: _ElegantSegmentedControl(
                         options: [
-                          (title: "Paged", icon: Transform.rotate(angle: 1.5708, child: const Icon(Icons.view_day_rounded, size: 18))),
-                          (title: "Webtoon", icon: const Icon(Icons.view_day_rounded, size: 18)),
+                          (title: "Paged".tr, icon: Transform.rotate(angle: 1.5708, child: const Icon(Icons.view_day_rounded, size: 18))),
+                          (title: "Webtoon".tr, icon: const Icon(Icons.view_day_rounded, size: 18)),
                         ],
                         selectedIndex: _isWebtoon ? 1 : 0,
                         onChanged: (index) {
@@ -123,9 +123,9 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                       child: _ElegantSegmentedControl(
-                        options: const [
-                          (title: "Horizontal", icon: Icon(Icons.swap_horiz_rounded, size: 18)),
-                          (title: "Vertical", icon: Icon(Icons.swap_vert_rounded, size: 18)),
+                        options: [
+                          (title: "Horizontal".tr, icon: Icon(Icons.swap_horiz_rounded, size: 18)),
+                          (title: "Vertical".tr, icon: Icon(Icons.swap_vert_rounded, size: 18)),
                         ],
                         selectedIndex: _isVertical ? 1 : 0,
                         onChanged: (index) {
@@ -141,8 +141,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Obx(() => AnymeXTile.toggle(
                         icon: Icons.touch_app_rounded,
-                        title: "Enable Tap Zones",
-                        subtitle: "Use custom gestures for reader navigation",
+                        title: "Enable Tap Zones".tr,
+                        subtitle: "Use custom gestures for reader navigation".tr,
                         value: _readerController.tapZonesEnabled.value,
                         onChanged: (val) => _readerController.toggleTapZones(val),
                       )),
@@ -170,7 +170,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: AnymeXText(
-            "Tap a zone to change its action",
+            "Tap a zone to change its action".tr,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.grey,
                 ),
@@ -253,7 +253,7 @@ class VisualZoneEditor extends StatelessWidget {
                     Icon(Icons.touch_app_rounded, color: theme.colorScheme.primary, size: 22),
                     const SizedBox(width: 12),
                     AnymeXText(
-                      "Tap Action",
+                      "Tap Action".tr,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onSurface,

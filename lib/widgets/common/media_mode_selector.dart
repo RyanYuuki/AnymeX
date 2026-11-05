@@ -100,7 +100,7 @@ class MediaModeSelector extends StatelessWidget {
                 source: activeSource,
               ));
         } else {
-          snackBar('No novel extensions installed to read this novel.');
+          snackBar('No novel extensions installed to read this novel.'.tr);
         }
       }
     }

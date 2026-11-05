@@ -26,8 +26,8 @@ class PasswordInputDialogState extends State<PasswordInputDialog> {
     final theme = Theme.of(context);
 
     return AnymeXDialog(
-      title: "Password Required",
-      confirmText: "Unlock",
+      title: "Password Required".tr,
+      confirmText: "Unlock".tr,
       onConfirm: () {},
       confirmResultGetter: () =>
           widget.controller.text.isNotEmpty ? widget.controller.text : null,
@@ -41,7 +41,7 @@ class PasswordInputDialogState extends State<PasswordInputDialog> {
           ),
           const SizedBox(height: 8),
           AnymeXText(
-            "This backup is encrypted. Please enter the password to continue.",
+            "This backup is encrypted. Please enter the password to continue.".tr,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: theme.colorScheme.onSurfaceVariant,
@@ -79,7 +79,7 @@ class PasswordInputDialogState extends State<PasswordInputDialog> {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.transparent,
-                      hintText: "Enter password",
+                      hintText: "Enter password".tr,
                       hintStyle: TextStyle(
                         color: theme.colorScheme.onSurface.opaque(0.45),
                         fontSize: 13.5,
@@ -322,7 +322,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AnymeXText(
-                    "Backup Owner",
+                    "Backup Owner".tr,
                     style: TextStyle(
                       color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 12,
@@ -458,7 +458,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 ),
                 const SizedBox(width: 8),
                 AnymeXText(
-                  "Library Statistics",
+                  "Library Statistics".tr,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -488,7 +488,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                         ),
                       ),
                       AnymeXText(
-                        "Total Items",
+                        "Total Items".tr,
                         style: TextStyle(
                           fontSize: 12,
                           color: theme.colorScheme.onSurfaceVariant,
@@ -512,7 +512,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                         ),
                       ),
                       AnymeXText(
-                        "Custom Lists",
+                        "Custom Lists".tr,
                         style: TextStyle(
                           fontSize: 12,
                           color: theme.colorScheme.onSurfaceVariant,
@@ -527,7 +527,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
             _buildCategoryRow(
               context,
               icon: Icons.movie_filter,
-              label: "Anime",
+              label: "Anime".tr,
               itemCount: animeCount,
               listCount: animeCustomListsCount,
               color: theme.colorScheme.primary,
@@ -536,7 +536,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
             _buildCategoryRow(
               context,
               icon: Icons.menu_book,
-              label: "Manga",
+              label: "Manga".tr,
               itemCount: mangaCount,
               listCount: mangaCustomListsCount,
               color: theme.colorScheme.secondary,
@@ -545,7 +545,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
             _buildCategoryRow(
               context,
               icon: Icons.auto_stories,
-              label: "Novel",
+              label: "Novel".tr,
               itemCount: novelCount,
               listCount: novelCustomListsCount,
               color: theme.colorScheme.tertiary,
@@ -576,7 +576,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
           const SizedBox(width: 12),
           Expanded(
             child: AnymeXText(
-              "Restoring will overwrite your selected local library items and settings with the contents of this backup.",
+              "Restoring will overwrite your selected local library items and settings with the contents of this backup.".tr,
               style: TextStyle(
                 color: theme.colorScheme.error,
                 fontSize: 13,
@@ -631,7 +631,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
       children: [
         if (hasAnyMedia)
           AnymeXExpansionTile(
-            title: "Media Library",
+            title: "Media Library".tr,
             initialExpanded: true,
             icon: Icons.video_library_rounded,
             content: Column(
@@ -639,7 +639,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasAnime)
                   AnymeXTile.checkbox(
                     icon: Icons.movie_filter_rounded,
-                    title: "Anime Library",
+                    title: "Anime Library".tr,
                     subtitle: "${widget.info['animeCount'] ?? 0} titles",
                     value: _options.anime,
                     onChanged: (v) => setState(() => _options.anime = v),
@@ -647,7 +647,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasManga)
                   AnymeXTile.checkbox(
                     icon: Icons.menu_book_rounded,
-                    title: "Manga Library",
+                    title: "Manga Library".tr,
                     subtitle: "${widget.info['mangaCount'] ?? 0} titles",
                     value: _options.manga,
                     onChanged: (v) => setState(() => _options.manga = v),
@@ -655,7 +655,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasNovel)
                   AnymeXTile.checkbox(
                     icon: Icons.auto_stories_rounded,
-                    title: "Novel Library",
+                    title: "Novel Library".tr,
                     subtitle: "${widget.info['novelCount'] ?? 0} titles",
                     value: _options.novel,
                     onChanged: (v) => setState(() => _options.novel = v),
@@ -663,7 +663,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasCustomLists)
                   AnymeXTile.checkbox(
                     icon: Icons.playlist_play_rounded,
-                    title: "Custom Lists",
+                    title: "Custom Lists".tr,
                     subtitle:
                         "${(widget.info['animeCustomListsCount'] ?? 0) + (widget.info['mangaCustomListsCount'] ?? 0) + (widget.info['novelCustomListsCount'] ?? 0)} custom lists",
                     value: _options.customLists,
@@ -673,8 +673,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasStats)
                   AnymeXTile.checkbox(
                     icon: Icons.insights_rounded,
-                    title: "History & Statistics",
-                    subtitle: "Daily activity and watch/read progress tracking",
+                    title: "History & Statistics".tr,
+                    subtitle: "Daily activity and watch/read progress tracking".tr,
                     value: _options.stats,
                     onChanged: (v) => setState(() => _options.stats = v),
                   ),
@@ -684,7 +684,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
         const SizedBox(height: 12),
         if (hasAnySettings)
           AnymeXExpansionTile(
-            title: "Settings & Account",
+            title: "Settings & Account".tr,
             initialExpanded: false,
             icon: Icons.tune_rounded,
             content: Column(
@@ -692,8 +692,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasAppearance)
                   AnymeXTile.checkbox(
                     icon: Icons.palette_rounded,
-                    title: "Appearance & Theme",
-                    subtitle: "UI layout, colors, and themes",
+                    title: "Appearance & Theme".tr,
+                    subtitle: "UI layout, colors, and themes".tr,
                     value: _options.settings.appearance,
                     onChanged: (v) =>
                         setState(() => _options.settings.appearance = v),
@@ -701,8 +701,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasPlayer)
                   AnymeXTile.checkbox(
                     icon: Icons.play_circle_outline_rounded,
-                    title: "Video Player",
-                    subtitle: "Controls, subtitles, and playback preferences",
+                    title: "Video Player".tr,
+                    subtitle: "Controls, subtitles, and playback preferences".tr,
                     value: _options.settings.player,
                     onChanged: (v) =>
                         setState(() => _options.settings.player = v),
@@ -710,8 +710,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasReader)
                   AnymeXTile.checkbox(
                     icon: Icons.chrome_reader_mode_rounded,
-                    title: "Reader Preferences",
-                    subtitle: "Manga & novel reader settings, tap zones",
+                    title: "Reader Preferences".tr,
+                    subtitle: "Manga & novel reader settings, tap zones".tr,
                     value: _options.settings.reader,
                     onChanged: (v) =>
                         setState(() => _options.settings.reader = v),
@@ -719,8 +719,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasExtSettings)
                   AnymeXTile.checkbox(
                     icon: Icons.extension_outlined,
-                    title: "Extension Preferences",
-                    subtitle: "Source and plugin configurations",
+                    title: "Extension Preferences".tr,
+                    subtitle: "Source and plugin configurations".tr,
                     value: _options.settings.extensions,
                     onChanged: (v) =>
                         setState(() => _options.settings.extensions = v),
@@ -728,8 +728,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasDownloadSettings)
                   AnymeXTile.checkbox(
                     icon: Icons.download_done_rounded,
-                    title: "Downloads & Storage",
-                    subtitle: "Download paths and quality settings",
+                    title: "Downloads & Storage".tr,
+                    subtitle: "Download paths and quality settings".tr,
                     value: _options.settings.downloads,
                     onChanged: (v) =>
                         setState(() => _options.settings.downloads = v),
@@ -737,8 +737,8 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasGeneralSettings)
                   AnymeXTile.checkbox(
                     icon: Icons.settings_outlined,
-                    title: "General & Sync",
-                    subtitle: "General app settings and sync services",
+                    title: "General & Sync".tr,
+                    subtitle: "General app settings and sync services".tr,
                     value: _options.settings.general,
                     onChanged: (v) =>
                         setState(() => _options.settings.general = v),
@@ -746,9 +746,9 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasAuthTokens)
                   AnymeXTile.checkbox(
                     icon: Icons.vpn_key_rounded,
-                    title: "Login Sessions",
+                    title: "Login Sessions".tr,
                     subtitle:
-                        "Sensitive login tokens for MAL, Simkl, and AniList",
+                        "Sensitive login tokens for MAL, Simkl, and AniList".tr,
                     value: _options.settings.authTokens,
                     onChanged: (v) =>
                         setState(() => _options.settings.authTokens = v),
@@ -759,7 +759,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
         const SizedBox(height: 12),
         if (hasAnyExtensions)
           AnymeXExpansionTile(
-            title: "Extensions",
+            title: "Extensions".tr,
             initialExpanded: false,
             icon: Icons.extension_rounded,
             content: Column(
@@ -767,7 +767,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasExtData)
                   AnymeXTile.checkbox(
                     icon: Icons.settings_input_component_rounded,
-                    title: "Extension Configurations",
+                    title: "Extension Configurations".tr,
                     subtitle:
                         "${widget.info['extensionsDataCount'] ?? 0} repositories and source settings",
                     value: _options.extensionsData,
@@ -777,7 +777,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 if (hasExtFiles)
                   AnymeXTile.checkbox(
                     icon: Icons.folder_zip_rounded,
-                    title: "Extension Packages",
+                    title: "Extension Packages".tr,
                     subtitle:
                         "${widget.info['extensionFilesCount'] ?? 0} installed files${widget.info['extensionFilesSize'] != null && (widget.info['extensionFilesSize'] as int) > 0 ? ' • ${((widget.info['extensionFilesSize'] as int) / (1024 * 1024)).toStringAsFixed(1)} MB' : ''}",
                     value: _options.extensionFiles,
@@ -790,7 +790,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
         const SizedBox(height: 12),
         if (hasRuntimeHost)
           AnymeXExpansionTile(
-            title: "Runtime Host",
+            title: "Runtime Host".tr,
             initialExpanded: false,
             icon: Icons.memory_rounded,
             content: Column(
@@ -848,7 +848,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                 padding: const EdgeInsets.all(24),
                 children: [
                   AnymeXText(
-                    "Restore Preview",
+                    "Restore Preview".tr,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -864,7 +864,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                         ),
                         const SizedBox(width: 4),
                         AnymeXText(
-                          "Encrypted • ",
+                          "Encrypted • ".tr,
                           style: TextStyle(
                             color: theme.colorScheme.primary,
                             fontSize: 13,
@@ -895,7 +895,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                   _buildWarningBanner(context),
                   const SizedBox(height: 24),
                   AnymeXText(
-                    "DATA TO RESTORE",
+                    "DATA TO RESTORE".tr,
                     style: TextStyle(
                       color: theme.colorScheme.primary,
                       fontSize: 11,
@@ -910,7 +910,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                     onPressed: () {
                       if (!_options.hasAnySelected) {
                         snackBar(
-                            "Please select at least one item to restore.");
+                            "Please select at least one item to restore.".tr);
                         return;
                       }
                       widget.onConfirm(_options);
@@ -924,7 +924,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                       ),
                     ),
                     child: AnymeXText(
-                      "CONFIRM & RESTORE",
+                      "CONFIRM & RESTORE".tr,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.1,
@@ -1024,18 +1024,18 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
 
   void _handleExport() {
     if (!_options.hasAnySelected) {
-      snackBar("Please select at least one item to back up.");
+      snackBar("Please select at least one item to back up.".tr);
       return;
     }
 
     String? password;
     if (_usePassword) {
       if (_passwordController.text.isEmpty) {
-        snackBar("Please enter a password or disable password protection.");
+        snackBar("Please enter a password or disable password protection.".tr);
         return;
       }
       if (_passwordController.text != _confirmPasswordController.text) {
-        snackBar("Passwords don't match!");
+        snackBar("Passwords don't match!".tr);
         return;
       }
       password = _passwordController.text;
@@ -1081,14 +1081,14 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXText(
-                        "Export Backup",
+                        "Export Backup".tr,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        "Select data to include in this backup",
+                        "Select data to include in this backup".tr,
                         style: TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
@@ -1128,44 +1128,44 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
               padding: const EdgeInsets.fromLTRB(4, 12, 4, 16),
               children: [
                 AnymeXExpansionTile(
-                  title: "Media Library",
+                  title: "Media Library".tr,
                   icon: Icons.video_library_rounded,
                   initialExpanded: true,
                   content: Column(
                     children: [
                       AnymeXTile.checkbox(
                         icon: Icons.movie_filter_rounded,
-                        title: "Anime Library",
-                        subtitle: "Saved anime entries and progress",
+                        title: "Anime Library".tr,
+                        subtitle: "Saved anime entries and progress".tr,
                         value: _options.anime,
                         onChanged: (v) => setState(() => _options.anime = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.menu_book_rounded,
-                        title: "Manga Library",
-                        subtitle: "Saved manga entries and chapters",
+                        title: "Manga Library".tr,
+                        subtitle: "Saved manga entries and chapters".tr,
                         value: _options.manga,
                         onChanged: (v) => setState(() => _options.manga = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.auto_stories_rounded,
-                        title: "Novel Library",
-                        subtitle: "Saved light novels and reading state",
+                        title: "Novel Library".tr,
+                        subtitle: "Saved light novels and reading state".tr,
                         value: _options.novel,
                         onChanged: (v) => setState(() => _options.novel = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.playlist_play_rounded,
-                        title: "Custom Lists",
-                        subtitle: "User-created custom media collections",
+                        title: "Custom Lists".tr,
+                        subtitle: "User-created custom media collections".tr,
                         value: _options.customLists,
                         onChanged: (v) =>
                             setState(() => _options.customLists = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.insights_rounded,
-                        title: "History & Statistics",
-                        subtitle: "Daily activities, watch and read metrics",
+                        title: "History & Statistics".tr,
+                        subtitle: "Daily activities, watch and read metrics".tr,
                         value: _options.stats,
                         onChanged: (v) => setState(() => _options.stats = v),
                       ),
@@ -1174,66 +1174,66 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                 ),
                 const SizedBox(height: 10),
                 AnymeXExpansionTile(
-                  title: "Settings & Authentication",
+                  title: "Settings & Authentication".tr,
                   icon: Icons.tune_rounded,
                   initialExpanded: true,
                   content: Column(
                     children: [
                       AnymeXTile.checkbox(
                         icon: Icons.palette_rounded,
-                        title: "Appearance & Theme",
-                        subtitle: "Theme, layout, and colors",
+                        title: "Appearance & Theme".tr,
+                        subtitle: "Theme, layout, and colors".tr,
                         value: _options.settings.appearance,
                         onChanged: (v) => setState(
                             () => _options.settings.appearance = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.play_circle_outline_rounded,
-                        title: "Video Player",
+                        title: "Video Player".tr,
                         subtitle:
-                            "Controls, subtitles, and playback preferences",
+                            "Controls, subtitles, and playback preferences".tr,
                         value: _options.settings.player,
                         onChanged: (v) => setState(
                             () => _options.settings.player = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.chrome_reader_mode_rounded,
-                        title: "Reader Preferences",
+                        title: "Reader Preferences".tr,
                         subtitle:
-                            "Manga and novel reader styles and tap zones",
+                            "Manga and novel reader styles and tap zones".tr,
                         value: _options.settings.reader,
                         onChanged: (v) => setState(
                             () => _options.settings.reader = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.extension_outlined,
-                        title: "Extension Preferences",
-                        subtitle: "Source and plugin configurations",
+                        title: "Extension Preferences".tr,
+                        subtitle: "Source and plugin configurations".tr,
                         value: _options.settings.extensions,
                         onChanged: (v) => setState(
                             () => _options.settings.extensions = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.download_done_rounded,
-                        title: "Downloads & Storage",
-                        subtitle: "Download paths and storage settings",
+                        title: "Downloads & Storage".tr,
+                        subtitle: "Download paths and storage settings".tr,
                         value: _options.settings.downloads,
                         onChanged: (v) => setState(
                             () => _options.settings.downloads = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.settings_outlined,
-                        title: "General & Sync",
-                        subtitle: "General app preferences and sync services",
+                        title: "General & Sync".tr,
+                        subtitle: "General app preferences and sync services".tr,
                         value: _options.settings.general,
                         onChanged: (v) => setState(
                             () => _options.settings.general = v),
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.vpn_key_rounded,
-                        title: "Login & Auth Tokens",
+                        title: "Login & Auth Tokens".tr,
                         subtitle:
-                            "Sensitive session tokens for MAL, Simkl, and AniList",
+                            "Sensitive session tokens for MAL, Simkl, and AniList".tr,
                         value: _options.settings.authTokens,
                         onChanged: (v) => setState(
                             () => _options.settings.authTokens = v),
@@ -1243,14 +1243,14 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                 ),
                 const SizedBox(height: 10),
                 AnymeXExpansionTile(
-                  title: "Extensions",
+                  title: "Extensions".tr,
                   icon: Icons.extension_rounded,
                   initialExpanded: true,
                   content: Column(
                     children: [
                       AnymeXTile.checkbox(
                         icon: Icons.settings_input_component_rounded,
-                        title: "Extension Configurations & Repos",
+                        title: "Extension Configurations & Repos".tr,
                         subtitle:
                             "$_extensionsDataCount registered repositories and source settings",
                         value: _options.extensionsData,
@@ -1259,7 +1259,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                       ),
                       AnymeXTile.checkbox(
                         icon: Icons.folder_zip_rounded,
-                        title: "Extension Packages",
+                        title: "Extension Packages".tr,
                         subtitle: extCount > 0
                             ? "$extCount installed files ($extSizeStr)"
                             : "No downloaded extension packages found",
@@ -1272,7 +1272,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                 ),
                 const SizedBox(height: 10),
                 AnymeXExpansionTile(
-                  title: "Runtime Host",
+                  title: "Runtime Host".tr,
                   icon: Icons.memory_rounded,
                   initialExpanded: true,
                   content: Column(
@@ -1297,7 +1297,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                 ),
                 const SizedBox(height: 10),
                 AnymeXExpansionTile(
-                  title: "Security & Encryption",
+                  title: "Security & Encryption".tr,
                   icon: Icons.lock_outline_rounded,
                   initialExpanded: true,
                   content: Padding(
@@ -1307,9 +1307,9 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                       children: [
                         AnymeXTile.checkbox(
                           icon: Icons.security_rounded,
-                          title: "Password Protect Backup",
+                          title: "Password Protect Backup".tr,
                           subtitle:
-                              "Encrypt with AES-256 (recommended for auth tokens)",
+                              "Encrypt with AES-256 (recommended for auth tokens)".tr,
                           value: _usePassword,
                           onChanged: (v) => setState(() => _usePassword = v),
                         ),
@@ -1346,7 +1346,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                                     decoration: InputDecoration(
                                       filled: true,
                                       fillColor: Colors.transparent,
-                                      hintText: "Enter backup password",
+                                      hintText: "Enter backup password".tr,
                                       hintStyle: TextStyle(
                                         color: theme.colorScheme.onSurface
                                             .opaque(0.45),
@@ -1409,7 +1409,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                                     decoration: InputDecoration(
                                       filled: true,
                                       fillColor: Colors.transparent,
-                                      hintText: "Confirm backup password",
+                                      hintText: "Confirm backup password".tr,
                                       hintStyle: TextStyle(
                                         color: theme.colorScheme.onSurface
                                             .opaque(0.45),
@@ -1455,7 +1455,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                       color: theme.colorScheme.onPrimary, size: 20),
                   const SizedBox(width: 8),
                   AnymeXText(
-                    "Export Backup",
+                    "Export Backup".tr,
                     variant: TextVariant.bold,
                     color: theme.colorScheme.onPrimary,
                     size: 15,

@@ -56,52 +56,52 @@ class Header extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (type == PageType.library) ...[
-                      const AnymeXText(
-                        "Library",
+                      AnymeXText(
+                        "Library".tr,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "All your local shi",
+                        "All your local shi".tr,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.history) ...[
-                      const AnymeXText(
-                        "History",
+                      AnymeXText(
+                        "History".tr,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "Your watch & read history",
+                        "Your watch & read history".tr,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.stats) ...[
-                      const AnymeXText(
-                        "Stats",
+                      AnymeXText(
+                        "Stats".tr,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "Your watch & read statistics",
+                        "Your watch & read statistics".tr,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.extensions) ...[
-                      const AnymeXText(
-                        "Extensions",
+                      AnymeXText(
+                        "Extensions".tr,
                         autoResize: true,
                         maxLines: 1,
                       ),
                       AnymeXText(
-                        "Manage plugins & sources",
+                        "Manage plugins & sources".tr,
                         autoResize: true,
                         maxLines: 1,
                         color: context.colors.primary,
@@ -109,7 +109,7 @@ class Header extends StatelessWidget {
                       ),
                     ] else ...[
                       Obx(() => AnymeXText(
-                            "${greetingController.currentGreeting.value},",
+                            "${greetingController.currentGreeting.value.tr},",
                             autoResize: true,
                             maxLines: 1,
                           )),
@@ -334,21 +334,21 @@ class Header extends StatelessWidget {
                       AnymeXTextSpans(
                         fontSize: 18,
                         spans: [
-                          const AnymeXTextSpan(
-                              text: 'Hey ', variant: TextVariant.bold),
+                          AnymeXTextSpan(
+                              text: 'Hey '.tr, variant: TextVariant.bold),
                           AnymeXTextSpan(
                               text:
-                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
+                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'.tr}',
                               color: context.colors.primary,
                               variant: TextVariant.bold),
-                          const AnymeXTextSpan(
-                              text: ', what are we doing today?',
+                          AnymeXTextSpan(
+                              text: ', what are we doing today?'.tr,
                               variant: TextVariant.bold)
                         ],
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
-                        "Find your favourite Anime, Manga, Manhwa or whatever you like!",
+                        "Find your favourite Anime, Manga, Manhwa or whatever you like!".tr,
                         style: TextStyle(
                           fontSize: 12,
                           color: context.colors.onSurface.withOpacity(0.7),

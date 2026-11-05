@@ -87,7 +87,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     if (!deleted) return;
 
     HapticFeedback.lightImpact();
-    snackBar('History item deleted');
+    snackBar('History item deleted'.tr);
   }
 
   Future<void> _deleteAllHistory(List<OfflineMedia> items) async {
@@ -208,29 +208,29 @@ class _HistoryEditorState extends State<HistoryEditor> {
                 : item.name ?? 'Item'));
 
     AnymeXDialog(
-      title: 'Delete History Item',
+      title: 'Delete History Item'.tr,
       message: 'Remove "$itemName" from your $_historyLabel?',
-      confirmText: 'Delete',
+      confirmText: 'Delete'.tr,
       onConfirm: () => _deleteHistory(item),
     ).show(context);
   }
 
   void _showClearAllDialog(List<OfflineMedia> items) {
     AnymeXDialog(
-      title: 'Clear All History',
+      title: 'Clear All History'.tr,
       message:
           'Are you sure you want to clear all $_historyLabel? This action cannot be undone.',
-      confirmText: 'Clear All',
+      confirmText: 'Clear All'.tr,
       onConfirm: () => _deleteAllHistory(items),
     ).show(context);
   }
 
   void _showDeleteSelectedDialog() {
     AnymeXDialog(
-      title: 'Delete Selected',
+      title: 'Delete Selected'.tr,
       message:
           'Are you sure you want to delete ${_selectedMediaIds.length} ${_selectedMediaIds.length == 1 ? "item" : "items"} from your $_historyLabel?',
-      confirmText: 'Delete',
+      confirmText: 'Delete'.tr,
       onConfirm: _deleteSelectedHistory,
     ).show(context);
   }
@@ -780,7 +780,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                     ),
                     const SizedBox(width: 10),
                     AnymeXText(
-                      'Clear History',
+                      'Clear History'.tr,
                       size: 14,
                       variant: TextVariant.bold,
                       color: context.colors.error,

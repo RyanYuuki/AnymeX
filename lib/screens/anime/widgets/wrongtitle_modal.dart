@@ -188,8 +188,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                     final results = snapshot.data ?? [];
 
                     if (results.isEmpty) {
-                      return const Center(
-                        child: AnymeXText('No results found.'),
+                      return Center(
+                        child: AnymeXText('No results found.'.tr),
                       );
                     }
 
@@ -309,8 +309,8 @@ class _WrongTitleModalState extends State<WrongTitleModal> {
                       },
                     );
                   } else {
-                    return const Center(
-                      child: AnymeXText('No data available.'),
+                    return Center(
+                      child: AnymeXText('No data available.'.tr),
                     );
                   }
                 },

@@ -23,7 +23,7 @@ class _SettingsLogsState extends State<SettingsLogs> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Logs',
+      headerTitle: 'Logs'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(16.0, AnymeXHeaderScope.of(ctx), 16.0, 30.0),
@@ -31,14 +31,14 @@ class _SettingsLogsState extends State<SettingsLogs> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXSectionBuilder(
-                        title: 'Log Capture',
+                        title: 'Log Capture'.tr,
                         children: [
                           Obx(
                             () => AnymeXTile.toggle(
                               icon: HugeIcons.strokeRoundedFile02,
-                              title: 'Write log to a file',
+                              title: 'Write log to a file'.tr,
                               subtitle:
-                                  'When enabled, AnymeX saves logs locally until disabled.',
+                                  'When enabled, AnymeX saves logs locally until disabled.'.tr,
                               value: settings.writeLogToFile.value,
                               onChanged: (value) =>
                                   settings.saveWriteLogToFile(value),
@@ -46,15 +46,15 @@ class _SettingsLogsState extends State<SettingsLogs> {
                           ),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedShare08,
-                            title: 'Share logs',
+                            title: 'Share logs'.tr,
                             subtitle:
-                                'Share the saved log file or copy its contents.',
+                                'Share the saved log file or copy its contents.'.tr,
                             onTap: () async => Logger.share(),
                           ),
                           Obx(
                             () => AnymeXTile(
                               icon: HugeIcons.strokeRoundedFolder01,
-                              title: 'Log directory',
+                              title: 'Log directory'.tr,
                               subtitle: settings
                                       .customLogDirectory.value.isEmpty
                                   ? 'Default (App Documents)'

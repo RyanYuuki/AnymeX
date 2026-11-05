@@ -55,10 +55,10 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
   late final TabController _tabController;
   int _selectedIndex = 0;
 
-  static const _tabs = [
-    Tab(text: 'Reading Mode'),
-    Tab(text: 'General'),
-    Tab(text: 'Color Filter'),
+  static List<Widget> get _tabs => [
+    Tab(text: 'Reading Mode'.tr),
+    Tab(text: 'General'.tr),
+    Tab(text: 'Color Filter'.tr),
   ];
 
   void _onTabChanged() {
@@ -111,7 +111,7 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
             padding:
                 const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
             child: AnymeXTabBar(
-              selectTabs: const ['Reading Mode', 'General', 'Color Filter'],
+              selectTabs: ['Reading Mode'.tr, 'General'.tr, 'Color Filter'.tr],
               selectedIndex: _selectedIndex,
               onTabSelected: (index) {
                 setState(() {
@@ -171,7 +171,7 @@ class _ReadingModePage extends StatelessWidget {
         child: Column(
           children: [
             AnymeXTile(
-              title: 'Layout',
+              title: 'Layout'.tr,
               subtitle: switch (currentLayout) {
                 MangaPageViewMode.continuous => 'Continuous',
                 MangaPageViewMode.paged => 'Paged',
@@ -221,7 +221,7 @@ class _ReadingModePage extends StatelessWidget {
               ),
             ),
             AnymeXTile(
-              title: 'Direction',
+              title: 'Direction'.tr,
               subtitle: switch (currentDirection) {
                 MangaPageViewDirection.down => 'Top-Down',
                 MangaPageViewDirection.right => 'LTR',
@@ -275,7 +275,7 @@ class _ReadingModePage extends StatelessWidget {
               ),
             ),
             AnymeXTile(
-              title: 'Dual Page Mode',
+              title: 'Dual Page Mode'.tr,
               subtitle: switch (currentDual) {
                 DualPageMode.off => 'Standard (Single)',
                 DualPageMode.auto => 'Auto (Landscape)',
@@ -327,7 +327,7 @@ class _ReadingModePage extends StatelessWidget {
             ),
             if (Platform.isAndroid || Platform.isIOS)
               AnymeXTile(
-                title: 'Tap Zones',
+                title: 'Tap Zones'.tr,
                 subtitle: 'Customize gestures',
                 icon: Icons.touch_app_rounded,
                 onTap: () {
@@ -337,21 +337,21 @@ class _ReadingModePage extends StatelessWidget {
               ),
             AnymeXTile.toggle(
               icon: Iconsax.pharagraphspacing,
-              title: 'Spaced Pages',
+              title: 'Spaced Pages'.tr,
               subtitle: 'Continuous Mode only',
               value: controller.spacedPages.value,
               onChanged: (_) => controller.toggleSpacedPages(),
             ),
             AnymeXTile.toggle(
               icon: Iconsax.arrow,
-              title: 'Overscroll',
+              title: 'Overscroll'.tr,
               subtitle: 'To Prev/Next Chapter',
               value: controller.overscrollToChapter.value,
               onChanged: (_) => controller.toggleOverscrollToChapter(),
             ),
             AnymeXTile.toggle(
               icon: Icons.smartphone_rounded,
-              title: 'Auto Webtoon Mode',
+              title: 'Auto Webtoon Mode'.tr,
               subtitle:
                   'Automatically switch to continuous mode for long-strip manga',
               value: controller.autoWebtoonMode.value,
@@ -366,7 +366,7 @@ class _ReadingModePage extends StatelessWidget {
             ),
             AnymeXTile.toggle(
               icon: Icons.fullscreen_rounded,
-              title: 'Fit to Screen Width',
+              title: 'Fit to Screen Width'.tr,
               subtitle: 'Stretch images to fit screen width',
               value: controller.fitToScreen.value,
               onChanged: (_) => controller.toggleFitToScreen(),
@@ -392,7 +392,7 @@ class _GeneralPage extends StatelessWidget {
         child: Column(
           children: [
             AnymeXTile(
-              title: 'Control Theme',
+              title: 'Control Theme'.tr,
               subtitle: ReaderControlThemeRegistry.resolve(
                       settings.readerControlThemeRx.value)
                   .name,
@@ -411,7 +411,7 @@ class _GeneralPage extends StatelessWidget {
               onTap: () => _showThemePicker(context),
             ),
             AnymeXTile(
-              title: 'Image Filter Quality',
+              title: 'Image Filter Quality'.tr,
               subtitle: switch (controller.imageFilterQuality.value) {
                 0 => 'None (Nearest)',
                 1 => 'Low (Bilinear)',
@@ -424,28 +424,28 @@ class _GeneralPage extends StatelessWidget {
             ),
             AnymeXTile.toggle(
               icon: Iconsax.eye,
-              title: 'Persistent Page Indicator',
+              title: 'Persistent Page Indicator'.tr,
               subtitle: 'Always show page indicator',
               value: controller.showPageIndicator.value,
               onChanged: (_) => controller.togglePageIndicator(),
             ),
             AnymeXTile.toggle(
               icon: Icons.crop_rounded,
-              title: 'Crop Borders',
+              title: 'Crop Borders'.tr,
               subtitle: 'Remove white/black borders',
               value: controller.cropImages.value,
               onChanged: (_) => controller.toggleCropImages(),
             ),
             AnymeXTile.toggle(
               icon: Icons.screen_lock_rotation_rounded,
-              title: 'Keep Screen On',
+              title: 'Keep Screen On'.tr,
               subtitle: 'Prevent screen from sleeping while reading',
               value: controller.keepScreenOn.value,
               onChanged: (_) => controller.toggleKeepScreenOn(),
             ),
             AnymeXTile.toggle(
               icon: Icons.compare_arrows_rounded,
-              title: 'Always Show Chapter Transition',
+              title: 'Always Show Chapter Transition'.tr,
               subtitle:
                   'Show transition page even when chapters are adjacent',
               value: controller.alwaysShowChapterTransition.value,
@@ -529,14 +529,14 @@ class _GeneralPage extends StatelessWidget {
             if (Platform.isAndroid) ...[
               AnymeXTile.toggle(
                 icon: Iconsax.volume_high,
-                title: 'Volume Keys Navigation',
+                title: 'Volume Keys Navigation'.tr,
                 subtitle: 'Use volume keys to change pages',
                 value: controller.volumeKeysEnabled.value,
                 onChanged: (_) => controller.toggleVolumeKeys(),
               ),
               AnymeXTile.toggle(
                 icon: Iconsax.arrow_swap_horizontal,
-                title: 'Invert Volume Keys',
+                title: 'Invert Volume Keys'.tr,
                 subtitle: 'Swap Up/Down actions',
                 value: controller.invertVolumeKeys.value,
                 onChanged: (val) {
@@ -548,7 +548,7 @@ class _GeneralPage extends StatelessWidget {
             if (controller.readingLayout.value == MangaPageViewMode.continuous) ...[
               AnymeXTile.toggle(
                 icon: Icons.play_arrow_rounded,
-                title: 'Auto Scroll',
+                title: 'Auto Scroll'.tr,
                 subtitle: 'Automatically scroll/advance pages',
                 value: controller.autoScrollEnabled.value,
                 onChanged: (_) => controller.toggleAutoScroll(),
@@ -557,7 +557,7 @@ class _GeneralPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: AnymeXTile.slider(
-                    title: 'Auto Scroll Speed',
+                    title: 'Auto Scroll Speed'.tr,
                     icon: Icons.speed,
                     subtitle: 'Seconds per page / screen',
                     value: controller.autoScrollSpeed.value,
@@ -620,7 +620,7 @@ class _GeneralPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const AnymeXText('Control Theme'),
+        title: AnymeXText('Control Theme'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ReaderControlThemeRegistry.themes

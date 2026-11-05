@@ -56,7 +56,7 @@ class _SettingsUiState extends State<SettingsUi> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'UI Settings',
+      headerTitle: 'UI Settings'.tr,
       body: Builder(
           builder: (ctx) => SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
@@ -66,32 +66,32 @@ class _SettingsUiState extends State<SettingsUi> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       AnymeXSectionBuilder(
-                        title: 'Interface Styling',
+                        title: 'Interface Styling'.tr,
                         children: [
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedShapes,
-                            title: 'UI Components',
+                            title: 'UI Components'.tr,
                             subtitle:
-                                'Customize card, history card, carousel & nav bar styles',
+                                'Customize card, history card, carousel & nav bar styles'.tr,
                             onTap: () =>
                                 navigate(() => const SettingsUiComponents()),
                           ),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedPlaySquare,
-                            title: 'Details Page',
+                            title: 'Details Page'.tr,
                             subtitle:
-                                'Configure poster blur, scope, tint & backdrop source',
+                                'Configure poster blur, scope, tint & backdrop source'.tr,
                             onTap: () =>
                                 navigate(() => const SettingsUiDetails()),
                           ),
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Navigation Layout',
+                        title: 'Navigation Layout'.tr,
                         children: [
                           AnymeXTile.pills<bool>(
                             icon: Icons.view_sidebar_rounded,
-                            title: 'Nav Bar Layout',
+                            title: 'Nav Bar Layout'.tr,
                             value: settings.useLegacyNavbar,
                             options: const [false, true],
                             optionLabelTransformer: (isLegacy) =>
@@ -106,13 +106,13 @@ class _SettingsUiState extends State<SettingsUi> {
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Common',
+                        title: 'Common'.tr,
                         children: [
                           AnymeXTile.toggle(
                             icon: HugeIcons.strokeRoundedBounceRight,
-                            title: "Enable Animation",
+                            title: "Enable Animation".tr,
                             subtitle:
-                                "Enable animation on carousels for smooth motion",
+                                "Enable animation on carousels for smooth motion".tr,
                             value: settings.enableAnimation,
                             onChanged: (val) {
                               settings.enableAnimation = val;
@@ -120,8 +120,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.colorize,
-                            title: "Translucent Nav",
-                            subtitle: "Enable translucent navigation bar",
+                            title: "Translucent Nav".tr,
+                            subtitle: "Enable translucent navigation bar".tr,
                             value: settings.transculentBar,
                             onChanged: (val) {
                               settings.transculentBar = val;
@@ -129,9 +129,9 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.toggle(
                             icon: Icons.view_headline_rounded,
-                            title: "Use Legacy Header",
+                            title: "Use Legacy Header".tr,
                             subtitle:
-                                "Enable classic simple header style on home screens",
+                                "Enable classic simple header style on home screens".tr,
                             value: settings.useLegacyHeader,
                             onChanged: (val) {
                               settings.useLegacyHeader = val;
@@ -140,9 +140,9 @@ class _SettingsUiState extends State<SettingsUi> {
                           if (Platform.isAndroid || Platform.isIOS)
                             AnymeXTile.toggle(
                               icon: Icons.fullscreen_rounded,
-                              title: "Immersive Mode",
+                              title: "Immersive Mode".tr,
                               subtitle:
-                                  "Hide system status and navigation bars",
+                                  "Hide system status and navigation bars".tr,
                               value: settings.enableImmersiveMode,
                               onChanged: (val) {
                                 settings.enableImmersiveMode = val;
@@ -150,7 +150,7 @@ class _SettingsUiState extends State<SettingsUi> {
                             ),
                           AnymeXTile(
                             icon: Icons.font_download_rounded,
-                            title: 'Font Family',
+                            title: 'Font Family'.tr,
                             subtitle: settings.appFontFamily.isEmpty
                                 ? 'Default (Linotte)'
                                 : settings.appFontFamily,
@@ -158,16 +158,16 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile(
                             icon: Icons.reorder_rounded,
-                            title: 'Reorder Navigation Tabs',
+                            title: 'Reorder Navigation Tabs'.tr,
                             subtitle:
-                                'Drag and drop to reorder navigation bar tabs',
+                                'Drag and drop to reorder navigation bar tabs'.tr,
                             onTap: () => _showReorderTabsDialog(context),
                           ),
                           PlatformBuilder(
                             androidBuilder: AnymeXTile.slider(
                               icon: Icons.margin_rounded,
-                              title: 'Bottom Nav Bar Margin',
-                              subtitle: 'Adjust horizontal margin of bottom navigation bar',
+                              title: 'Bottom Nav Bar Margin'.tr,
+                              subtitle: 'Adjust horizontal margin of bottom navigation bar'.tr,
                               value: settings.bottomNavBarMargin,
                               min: 0,
                               max: 100,
@@ -176,8 +176,8 @@ class _SettingsUiState extends State<SettingsUi> {
                             ),
                             desktopBuilder: AnymeXTile.slider(
                               icon: Icons.margin_rounded,
-                              title: 'Bottom Nav Bar Margin',
-                              subtitle: 'Adjust bottom bar margin (media details page only)',
+                              title: 'Bottom Nav Bar Margin'.tr,
+                              subtitle: 'Adjust bottom bar margin (media details page only)'.tr,
                               value: settings.bottomNavBarMargin,
                               min: 0,
                               max: 100,
@@ -188,12 +188,12 @@ class _SettingsUiState extends State<SettingsUi> {
                         ],
                       ),
                       AnymeXSectionBuilder(
-                        title: 'Extras',
+                        title: 'Extras'.tr,
                         children: [
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedLighthouse,
-                            title: "Glow Multiplier",
-                            subtitle: "Adjust element glow intensity",
+                            title: "Glow Multiplier".tr,
+                            subtitle: "Adjust element glow intensity".tr,
                             value: settings.glowMultiplier,
                             min: 0,
                             max: 5.0,
@@ -202,8 +202,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedRadius,
-                            title: "Radius Multiplier",
-                            subtitle: "Adjust corner radius of elements",
+                            title: "Radius Multiplier".tr,
+                            subtitle: "Adjust corner radius of elements".tr,
                             value: settings.radiusMultiplier,
                             min: 0,
                             max: 3.0,
@@ -212,8 +212,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedRadius,
-                            title: "Blur Multiplier",
-                            subtitle: "Adjust glow blur intensity",
+                            title: "Blur Multiplier".tr,
+                            subtitle: "Adjust glow blur intensity".tr,
                             value: settings.blurMultiplier,
                             min: 0,
                             max: 5.0,
@@ -222,8 +222,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedRadius,
-                            title: "Card Roundness",
-                            subtitle: "Adjust roundness of all media cards",
+                            title: "Card Roundness".tr,
+                            subtitle: "Adjust roundness of all media cards".tr,
                             value: settings.cardRoundness,
                             min: 0,
                             max: 5.0,
@@ -232,8 +232,8 @@ class _SettingsUiState extends State<SettingsUi> {
                           ),
                           AnymeXTile.slider(
                             icon: HugeIcons.strokeRoundedRadius,
-                            title: "Card Animation Duration",
-                            subtitle: "Adjust card animation speed",
+                            title: "Card Animation Duration".tr,
+                            subtitle: "Adjust card animation speed".tr,
                             value: settings.animationDuration.toDouble(),
                             min: 0,
                             max: 1000,
@@ -300,7 +300,7 @@ class _SettingsUiState extends State<SettingsUi> {
             final theme = Theme.of(context);
 
             return AnymeXDialog(
-              title: 'Reorder Navigation Tabs',
+              title: 'Reorder Navigation Tabs'.tr,
               contentWidget: SizedBox(
                 width: double.maxFinite,
                 child: SingleChildScrollView(
@@ -311,7 +311,7 @@ class _SettingsUiState extends State<SettingsUi> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: AnymeXText(
-                          'Visible Tabs',
+                          'Visible Tabs'.tr,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.bold,
@@ -319,9 +319,9 @@ class _SettingsUiState extends State<SettingsUi> {
                         ),
                       ),
                       if (visibleTabs.isEmpty)
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: AnymeXText('No visible tabs'),
+                          child: AnymeXText('No visible tabs'.tr),
                         )
                       else
                         ReorderableListView.builder(
@@ -422,7 +422,7 @@ class _SettingsUiState extends State<SettingsUi> {
                                       onPressed: () {
                                         if (visibleTabs.length <= 2) {
                                           snackBar(
-                                              'At least 2 tabs must remain visible!');
+                                              'At least 2 tabs must remain visible!'.tr);
                                           return;
                                         }
                                         setDialogState(() {
@@ -450,7 +450,7 @@ class _SettingsUiState extends State<SettingsUi> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: AnymeXText(
-                          'Hidden Tabs',
+                          'Hidden Tabs'.tr,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.bold,
@@ -461,7 +461,7 @@ class _SettingsUiState extends State<SettingsUi> {
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: AnymeXText(
-                            'No hidden tabs',
+                            'No hidden tabs'.tr,
                             style: TextStyle(
                               color: theme.colorScheme.onSurfaceVariant
                                   .withOpacity(0.6),
@@ -531,7 +531,7 @@ class _SettingsUiState extends State<SettingsUi> {
                   ),
                 ),
               ),
-              confirmText: 'Save',
+              confirmText: 'Save'.tr,
               onConfirm: () {
                 settings.navigationTabOrder = visibleTabs;
                 setState(() {});
@@ -545,9 +545,9 @@ class _SettingsUiState extends State<SettingsUi> {
 
   void _showFontFamilyPicker(BuildContext context) {
     AnymeXDialog(
-      title: 'Font Family',
+      title: 'Font Family'.tr,
       showCancelButton: false,
-      confirmText: 'Close',
+      confirmText: 'Close'.tr,
       onConfirm: () {},
       contentWidget: _buildFontFamilyPickerContent(context),
     ).show(context);
@@ -586,11 +586,11 @@ class _SettingsUiState extends State<SettingsUi> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 AnymeXSectionBuilder(
-                  title: 'Default',
+                  title: 'Default'.tr,
                   children: [
                     AnymeXTile(
-                      title: 'Linotte (Default)',
-                      subtitle: 'The quick brown fox jumps over the lazy dog',
+                      title: 'Linotte (Default)'.tr,
+                      subtitle: 'The quick brown fox jumps over the lazy dog'.tr,
                       titleStyle: const TextStyle(
                         fontFamily: 'Linotte',
                         fontWeight: FontWeight.w600,
@@ -622,7 +622,7 @@ class _SettingsUiState extends State<SettingsUi> {
                 ),
                 const SizedBox(height: 10),
                 AnymeXSectionBuilder(
-                  title: 'App Fonts',
+                  title: 'App Fonts'.tr,
                   children: ExternalFontLoader.appFonts.map((font) {
                     final isDownloaded = downloadedStatus[font.name] ?? false;
                     final isDownloading = downloadingFonts.contains(font.name);
@@ -677,7 +677,7 @@ class _SettingsUiState extends State<SettingsUi> {
 
                     return AnymeXTile(
                       title: font.label,
-                      subtitle: 'The quick brown fox jumps over the lazy dog',
+                      subtitle: 'The quick brown fox jumps over the lazy dog'.tr,
                       titleStyle: TextStyle(
                         fontFamily: isDownloaded ? font.name : 'Linotte',
                         fontWeight: FontWeight.w600,
@@ -723,12 +723,12 @@ class _SettingsUiState extends State<SettingsUi> {
                 if (customFonts.isNotEmpty) ...[
                   const SizedBox(height: 10),
                   AnymeXSectionBuilder(
-                    title: 'Custom Fonts',
+                    title: 'Custom Fonts'.tr,
                     children: customFonts.map((customName) {
                       final isSelected = currentFont == customName;
                       return AnymeXTile(
                         title: customName,
-                        subtitle: 'The quick brown fox jumps over the lazy dog',
+                        subtitle: 'The quick brown fox jumps over the lazy dog'.tr,
                         titleStyle: TextStyle(
                           fontFamily: customName,
                           fontWeight: FontWeight.w600,
@@ -782,8 +782,8 @@ class _SettingsUiState extends State<SettingsUi> {
                 const SizedBox(height: 10),
                 AnymeXTile(
                   icon: Icons.upload_file_rounded,
-                  title: 'Import Custom Font',
-                  subtitle: 'Support .ttf and .otf files',
+                  title: 'Import Custom Font'.tr,
+                  subtitle: 'Support .ttf and .otf files'.tr,
                   showChevron: false,
                   onTap: () async {
                     final result = await FilePicker.platform.pickFiles(
@@ -801,7 +801,7 @@ class _SettingsUiState extends State<SettingsUi> {
                         setDialogState(() {});
                         snackBar('Imported font "$fontName"');
                       } else {
-                        snackBar('Failed to load font file');
+                        snackBar('Failed to load font file'.tr);
                       }
                     }
                   },

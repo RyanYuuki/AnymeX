@@ -80,7 +80,7 @@ class AnimeStats extends StatelessWidget {
           _buildCollapsibleSectionContainer(
             context,
             icon: Icons.analytics_outlined,
-            title: "Statistics",
+            title: "Statistics".tr,
             child: _buildStatsGrid(context),
             isInitiallyExpanded: true,
           ),
@@ -92,7 +92,7 @@ class AnimeStats extends StatelessWidget {
                 child: _buildInfoCard(
                   context,
                   icon: Icons.language_rounded,
-                  title: "Romaji Title",
+                  title: "Romaji Title".tr,
                   content: AnymeXText(data.romajiTitle,
                     variant: TextVariant.semiBold,
                     size: 15,
@@ -107,7 +107,7 @@ class AnimeStats extends StatelessWidget {
           _buildCollapsibleInfoCard(
             context,
             icon: Icons.description_outlined,
-            title: "Synopsis",
+            title: "Synopsis".tr,
             content: AnymeXText(data.description,
               size: 15,
               color: colorScheme.onSurface.opaque(0.9),
@@ -120,7 +120,7 @@ class AnimeStats extends StatelessWidget {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'Synonyms',
+              title: 'Synonyms'.tr,
               icon: Icons.translate_rounded,
               chips: data.synonyms.map((s) => _ChipData(label: s)).toList(),
             ),
@@ -129,7 +129,7 @@ class AnimeStats extends StatelessWidget {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'Tags',
+              title: 'Tags'.tr,
               icon: Icons.label_rounded,
               chips: data.tags
                   .map((t) => _ChipData(
@@ -149,7 +149,7 @@ class AnimeStats extends StatelessWidget {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'External & Streaming Links',
+              title: 'External & Streaming Links'.tr,
               icon: Icons.open_in_new_rounded,
               chips: data.externalLinks!
                   .map((link) => _ChipData(
@@ -163,7 +163,7 @@ class AnimeStats extends StatelessWidget {
           _buildSectionContainer(
             context,
             icon: Icons.category_rounded,
-            title: "Genres",
+            title: "Genres".tr,
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.only(top: 15),
@@ -273,7 +273,7 @@ class AnimeStats extends StatelessWidget {
     return _buildCollapsibleSectionContainer(
         context,
         icon: Icons.more,
-        title: "Others",
+        title: "Others".tr,
         child: Column(
           children: [
             GestureDetector(
@@ -311,12 +311,12 @@ class AnimeStats extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText("Openings & Endings",
+                          AnymeXText("Openings & Endings".tr,
                             variant: TextVariant.bold,
                             size: 14,
                           ),
                           const SizedBox(height: 4),
-                          AnymeXText("View opening and ending themes",
+                          AnymeXText("View opening and ending themes".tr,
                             variant: TextVariant.regular,
                             size: 13,
                             color: colorScheme.onSurface.opaque(0.6),
@@ -374,12 +374,12 @@ class AnimeStats extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AnymeXText("Recent News",
+                                  AnymeXText("Recent News".tr,
                                     variant: TextVariant.bold,
                                     size: 14,
                                   ),
                                   const SizedBox(height: 4),
-                                  AnymeXText("Read latest updates about this anime",
+                                  AnymeXText("Read latest updates about this anime".tr,
                                     variant: TextVariant.regular,
                                     size: 13,
                                     color: colorScheme.onSurface.opaque(0.6),
@@ -437,12 +437,12 @@ class AnimeStats extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AnymeXText("Watch Order",
+                          AnymeXText("Watch Order".tr,
                             variant: TextVariant.bold,
                             size: 14,
                           ),
                           const SizedBox(height: 4),
-                          AnymeXText("View the chronological watch order of this anime",
+                          AnymeXText("View the chronological watch order of this anime".tr,
                             variant: TextVariant.regular,
                             size: 13,
                             color: colorScheme.onSurface.opaque(0.6),
@@ -476,7 +476,7 @@ class AnimeStats extends StatelessWidget {
         ? const SizedBox.shrink()
         : _buildSectionContainer(context,
             icon: Icons.tv_rounded,
-            title: "Seasons",
+            title: "Seasons".tr,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

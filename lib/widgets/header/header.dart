@@ -248,7 +248,7 @@ class Header extends StatelessWidget {
             Icon(Iconsax.eye_slash, size: 12, color: theme.error),
             const SizedBox(width: 4),
             AnymeXText(
-              'Incognito',
+              'Incognito'.tr,
               size: 11,
               variant: TextVariant.bold,
               color: theme.error,
@@ -275,7 +275,7 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderLogoButton(),
-        title: 'AnymeX',
+        title: 'AnymeX'.tr,
         titleColor: Get.theme.colorScheme.primary,
         subtitleWidget: const HeaderGreetingSubtitle(),
         actions: const [HeaderProfileAvatar()],
@@ -315,7 +315,7 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'Novels',
+        title: 'Novels'.tr,
         subtitleWidget: const HeaderGreetingSubtitle(),
         actions: [
           if (onSearchPressed != null)
@@ -330,8 +330,8 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'Library',
-        subtitle: 'All your local shi',
+        title: 'Library'.tr,
+        subtitle: 'All your local shi'.tr,
         actions: [
           if (onSearchPressed != null)
             HeaderActionButton(
@@ -350,8 +350,8 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'History',
-        subtitle: 'Your watch & read history',
+        title: 'History'.tr,
+        subtitle: 'Your watch & read history'.tr,
         actions: [
           if (onSearchPressed != null)
             HeaderActionButton(
@@ -365,16 +365,16 @@ Header _buildHeaderFromType({
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'Stats',
-        subtitle: 'Your watch & read statistics',
+        title: 'Stats'.tr,
+        subtitle: 'Your watch & read statistics'.tr,
         bottom: bottom,
       );
     case PageType.extensions:
       return Header(
         key: key,
         leading: const HeaderProfileAvatar(),
-        title: 'Extensions',
-        subtitle: 'Manage plugins & sources',
+        title: 'Extensions'.tr,
+        subtitle: 'Manage plugins & sources'.tr,
         bottom: bottom,
       );
   }
@@ -643,7 +643,7 @@ class HeaderGreetingSubtitle extends StatelessWidget {
     final greetingController = Get.find<GreetingController>();
     return Obx(
       () => AnymeXText(
-        greetingController.currentGreeting.value,
+        greetingController.currentGreeting.value.tr,
         autoResize: true,
         maxLines: 1,
         size: 11,
@@ -717,8 +717,8 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const AnymeXText(
-            'Library Settings',
+          AnymeXText(
+            'Library Settings'.tr,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -777,7 +777,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.lastRead),
               ),
               SortTile(
-                title: 'Title',
+                title: 'Title'.tr,
                 sortType: SortType.title,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -794,7 +794,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.progress),
               ),
               SortTile(
-                title: 'Rating',
+                title: 'Rating'.tr,
                 sortType: SortType.rating,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -805,7 +805,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
             ]
           : [
               SortTile(
-                title: 'Last Added',
+                title: 'Last Added'.tr,
                 sortType: SortType.lastAdded,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -814,7 +814,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.lastAdded),
               ),
               SortTile(
-                title: 'Title',
+                title: 'Title'.tr,
                 sortType: SortType.title,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -831,7 +831,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.lastRead),
               ),
               SortTile(
-                title: 'Rating',
+                title: 'Rating'.tr,
                 sortType: SortType.rating,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -849,7 +849,7 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
                     widget.controller.handleSortChange(SortType.progress),
               ),
               SortTile(
-                title: 'Release Date',
+                title: 'Release Date'.tr,
                 sortType: SortType.aired,
                 currentSort: widget.controller.currentSort.value,
                 isAscending: widget.controller.isAscending.value,
@@ -873,8 +873,8 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
         Obx(() {
           return AnymeXTile.slider(
             icon: Icons.grid_view_rounded,
-            title: 'Grid Size',
-            subtitle: 'Adjust Items per row',
+            title: 'Grid Size'.tr,
+            subtitle: 'Adjust Items per row'.tr,
             value: widget.controller.gridCount.value.toDouble(),
             min: 0.0,
             max: 10.0,
@@ -888,9 +888,9 @@ class _LibrarySettingsSheetState extends State<LibrarySettingsSheet>
         Obx(() {
           return AnymeXTile.toggle(
             icon: Icons.translate_rounded,
-            title: 'Use Alternate Title',
+            title: 'Use Alternate Title'.tr,
             subtitle:
-                'Switch between default title and romaji/alternate title across library & cards',
+                'Switch between default title and romaji/alternate title across library & cards'.tr,
             value: settings.useAlternateTitle.value,
             onChanged: (e) {
               settings.useAlternateTitle.value = e;

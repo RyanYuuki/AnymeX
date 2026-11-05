@@ -251,7 +251,7 @@ class BottomControls extends StatelessWidget {
           controller.isEpisodePaneOpened.value =
               !controller.isEpisodePaneOpened.value;
         },
-        tooltip: 'Playlist',
+        tooltip: 'Playlist'.tr,
         compact: true,
       ),
       'torrent': ControlButton(
@@ -260,13 +260,13 @@ class BottomControls extends StatelessWidget {
           controller.isTorrentFilesPaneOpened.value =
               !controller.isTorrentFilesPaneOpened.value;
         },
-        tooltip: 'Torrent Files',
+        tooltip: 'Torrent Files'.tr,
         compact: true,
       ),
       'shaders': ControlButton(
         icon: Icons.tune_rounded,
         onPressed: () => controller.openColorProfileBottomSheet(context),
-        tooltip: 'Shaders & Color Profiles',
+        tooltip: 'Shaders & Color Profiles'.tr,
         compact: true,
       ),
       'source': ControlButton(
@@ -275,7 +275,7 @@ class BottomControls extends StatelessWidget {
           controller.isSourcePaneOpened.value =
               !controller.isSourcePaneOpened.value;
         },
-        tooltip: 'Quality',
+        tooltip: 'Quality'.tr,
         compact: true,
       ),
       'tracks': ControlButton(
@@ -284,7 +284,7 @@ class BottomControls extends StatelessWidget {
           controller.isTracksPaneOpened.value =
               !controller.isTracksPaneOpened.value;
         },
-        tooltip: 'Subtitles',
+        tooltip: 'Subtitles'.tr,
         compact: true,
       ),
       'audio': ControlButton(
@@ -293,7 +293,7 @@ class BottomControls extends StatelessWidget {
           controller.isAudioPaneOpened.value =
               !controller.isAudioPaneOpened.value;
         },
-        tooltip: 'Audio',
+        tooltip: 'Audio'.tr,
         compact: true,
       ),
       'sync_subs': ControlButton(
@@ -302,7 +302,7 @@ class BottomControls extends StatelessWidget {
           controller.isSyncSubsPaneOpened.value =
               !controller.isSyncSubsPaneOpened.value;
         },
-        tooltip: 'Sync Subtitles',
+        tooltip: 'Sync Subtitles'.tr,
         compact: true,
       ),
       'speed': ControlButton(
@@ -311,7 +311,7 @@ class BottomControls extends StatelessWidget {
           controller.isSpeedPaneOpened.value =
               !controller.isSpeedPaneOpened.value;
         },
-        tooltip: 'Speed',
+        tooltip: 'Speed'.tr,
         compact: true,
       ),
       'orientation': Obx(() {
@@ -321,7 +321,7 @@ class BottomControls extends StatelessWidget {
               ? Icons.screen_lock_rotation_rounded
               : Icons.screen_rotation_rounded,
           onPressed: () => controller.toggleOrientation(),
-          tooltip: isLocked ? 'Unlock Orientation' : 'Lock Orientation',
+          tooltip: isLocked ? 'Unlock Orientation'.tr : 'Lock Orientation'.tr,
           compact: true,
         );
       }),
@@ -329,13 +329,13 @@ class BottomControls extends StatelessWidget {
         icon: Icons.fit_screen,
         onPressed: () => controller.toggleVideoFit(),
         onLongPress: controller.resetVideoFit,
-        tooltip: 'Aspect Ratio',
+        tooltip: 'Aspect Ratio'.tr,
         compact: true,
       ),
       'external_player': ControlButton(
         icon: Icons.launch_rounded,
         onPressed: () => controller.launchExternalPlayer(),
-        tooltip: 'External Player',
+        tooltip: 'External Player'.tr,
         compact: true,
       ),
       'watch_together': Obx(() {
@@ -358,8 +358,8 @@ class BottomControls extends StatelessWidget {
                 }
               },
               tooltip: inRoom
-                  ? 'Watch Together (In Room)'
-                  : 'Watch Together',
+                  ? 'Watch Together (In Room)'.tr
+                  : 'Watch Together'.tr,
               compact: true,
             ),
             if (inRoom)
@@ -387,7 +387,7 @@ class BottomControls extends StatelessWidget {
       'cast': ControlButton(
         icon: Icons.cast_rounded,
         onPressed: () => CastDeviceDialog.show(context, controller),
-        tooltip: 'Cast to Device',
+        tooltip: 'Cast to Device'.tr,
         compact: true,
       ),
     };

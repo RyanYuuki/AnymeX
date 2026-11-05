@@ -113,14 +113,14 @@ class _MyLibraryState extends State<MyLibrary>
               scrollController: _scrollController,
               headerContent: Obx(
                 () => Header(
-                  title: 'Library',
-                  subtitle: 'All your local shi',
+                  title: 'Library'.tr,
+                  subtitle: 'All your local shi'.tr,
                   isSearchActive: controller.isSearchActive.value,
                   searchBar: HeaderSearchBar(
                     controller: controller.searchController,
                     onChanged: controller.search,
                     onClose: controller.toggleSearch,
-                    hintText: 'Search in Library...',
+                    hintText: 'Search in Library...'.tr,
                   ),
                   actions: [
                     HeaderActionButton(

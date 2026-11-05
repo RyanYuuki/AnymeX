@@ -70,19 +70,19 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                         children: [
                           _Ios26CapsuleIconButton(
                             icon: CupertinoIcons.back,
-                            tooltip: 'Back',
+                            tooltip: 'Back'.tr,
                             onPressed: () => Get.back(),
                           ),
                           const SizedBox(width: 4),
                           _Ios26CapsuleIconButton(
                             icon: CupertinoIcons.lock_fill,
-                            tooltip: 'Lock Controls',
+                            tooltip: 'Lock Controls'.tr,
                             onPressed: () => controller.isLocked.value = true,
                           ),
                           const SizedBox(width: 4),
                           _Ios26CapsuleIconButton(
                             icon: CupertinoIcons.gear_alt_fill,
-                            tooltip: 'Player Settings',
+                            tooltip: 'Player Settings'.tr,
                             onPressed: () {
                               controller.showSheetWithPause(
                                 () => showModalBottomSheet(
@@ -108,14 +108,14 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                             const SizedBox(width: 4),
                             _Ios26CapsuleIconButton(
                               icon: CupertinoIcons.square_on_square,
-                              tooltip: 'Picture in Picture',
+                              tooltip: 'Picture in Picture'.tr,
                               onPressed: () => controller.enterPip(),
                             ),
                           ],
                           const SizedBox(width: 4),
                           _Ios26CapsuleIconButton(
                             icon: CupertinoIcons.arrow_up_right_square,
-                            tooltip: 'External Player',
+                            tooltip: 'External Player'.tr,
                             onPressed: () => controller.launchExternalPlayer(),
                           ),
                         ],
@@ -139,22 +139,22 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                         ? Icons.screen_lock_rotation_rounded
                                         : CupertinoIcons.device_phone_portrait,
                                     tooltip: controller.isOrientationLocked.value
-                                        ? 'Unlock Orientation'
-                                        : 'Lock Orientation',
+                                        ? 'Unlock Orientation'.tr
+                                        : 'Lock Orientation'.tr,
                                     onPressed: () =>
                                         controller.toggleOrientation(),
                                   )),
                               const SizedBox(width: 4),
                               _Ios26CapsuleIconButton(
                                 icon: Icons.fit_screen,
-                                tooltip: 'Aspect Ratio',
+                                tooltip: 'Aspect Ratio'.tr,
                                 onPressed: () => controller.toggleVideoFit(),
                               ),
                               if (!_isMobilePlatform) ...[
                                 const SizedBox(width: 4),
                                 _Ios26CapsuleIconButton(
                                   icon: CupertinoIcons.fullscreen,
-                                  tooltip: 'Fullscreen',
+                                  tooltip: 'Fullscreen'.tr,
                                   onPressed: controller.toggleFullScreen,
                                 ),
                               ],
@@ -196,7 +196,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                 children: [
                   _Ios26GlassCircleButton(
                     icon: Icons.skip_previous_rounded,
-                    tooltip: 'Previous Episode',
+                    tooltip: 'Previous Episode'.tr,
                     size: 52,
                     onPressed: controller.canGoBackward.value
                         ? () => controller.navigator(false)
@@ -211,7 +211,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                   const SizedBox(width: 20),
                   _Ios26GlassCircleButton(
                     icon: Icons.skip_next_rounded,
-                    tooltip: 'Next Episode',
+                    tooltip: 'Next Episode'.tr,
                     size: 52,
                     onPressed: controller.canGoForward.value
                         ? () => controller.navigator(true)
@@ -405,7 +405,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     _Ios26GlassPillButton(
-                                      label: 'Episodes',
+                                      label: 'Episodes'.tr,
                                       onPressed: () {
                                         controller.isTracksPaneOpened.value = false;
                                         controller.isSpeedPaneOpened.value = false;
@@ -417,7 +417,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                     ),
                                     const SizedBox(width: 8),
                                     _Ios26GlassPillButton(
-                                      label: 'Tracks',
+                                      label: 'Tracks'.tr,
                                       onPressed: () {
                                         controller.isEpisodePaneOpened.value = false;
                                         controller.isSpeedPaneOpened.value = false;
@@ -434,7 +434,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                       return Padding(
                                         padding: const EdgeInsets.only(left: 8),
                                         child: _Ios26GlassPillButton(
-                                          label: 'Files',
+                                          label: 'Files'.tr,
                                           onPressed: () {
                                             controller.isEpisodePaneOpened.value = false;
                                             controller.isSpeedPaneOpened.value = false;
@@ -455,7 +455,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                     if (!controller.isOffline.value) ...[
                                       const SizedBox(width: 8),
                                       _Ios26GlassPillButton(
-                                        label: 'Servers',
+                                        label: 'Servers'.tr,
                                         onPressed: () {
                                           PlayerBottomSheets.showVideoServers(
                                               context, controller);
@@ -463,7 +463,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                       ),
                                       const SizedBox(width: 8),
                                       _Ios26GlassPillButton(
-                                        label: 'Quality',
+                                        label: 'Quality'.tr,
                                         onPressed: () {
                                           PlayerBottomSheets.showVideoQuality(
                                               context, controller);
@@ -482,7 +482,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                     children: [
                                       _Ios26CapsuleIconButton(
                                         icon: CupertinoIcons.timer,
-                                        tooltip: 'Sync Subtitles',
+                                        tooltip: 'Sync Subtitles'.tr,
                                         onPressed: () {
                                           controller.isEpisodePaneOpened.value = false;
                                           controller.isTracksPaneOpened.value = false;
@@ -495,7 +495,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                       const SizedBox(width: 4),
                                       _Ios26CapsuleIconButton(
                                         icon: CupertinoIcons.speaker_2_fill,
-                                        tooltip: 'Audio Tracks',
+                                        tooltip: 'Audio Tracks'.tr,
                                         onPressed: () =>
                                             PlayerBottomSheets.showAudioTracks(
                                                 context, controller),
@@ -503,7 +503,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                       const SizedBox(width: 4),
                                       _Ios26CapsuleIconButton(
                                         icon: CupertinoIcons.speedometer,
-                                        tooltip: 'Playback Speed',
+                                        tooltip: 'Playback Speed'.tr,
                                         onPressed: () {
                                           controller.isEpisodePaneOpened.value = false;
                                           controller.isTracksPaneOpened.value = false;
@@ -516,7 +516,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                       const SizedBox(width: 4),
                                       _Ios26CapsuleIconButton(
                                         icon: CupertinoIcons.tv,
-                                        tooltip: 'Cast to Device',
+                                        tooltip: 'Cast to Device'.tr,
                                         onPressed: () =>
                                             CastDeviceDialog.show(context, controller),
                                       ),
@@ -524,7 +524,7 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                                       _Ios26CapsuleIconButton(
                                         icon:
                                             CupertinoIcons.slider_horizontal_3,
-                                        tooltip: 'Shaders & Colors',
+                                        tooltip: 'Shaders & Colors'.tr,
                                         onPressed: () => controller
                                             .openColorProfileBottomSheet(
                                                 context),

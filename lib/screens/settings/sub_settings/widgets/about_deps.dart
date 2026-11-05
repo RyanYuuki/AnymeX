@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -35,7 +36,7 @@ class ProfileInfo extends StatelessWidget {
         GestureDetector(
           onLongPress: () {
             Clipboard.setData(ClipboardData(text: version));
-            snackBar('Version copied');
+            snackBar('Version copied'.tr);
           },
           child: AnymeXText(
             version,
@@ -120,7 +121,7 @@ class ProfileSection extends StatelessWidget {
           GestureDetector(
             onLongPress: () {
               Clipboard.setData(ClipboardData(text: version));
-              snackBar('Version copied');
+              snackBar('Version copied'.tr);
             },
             child: AnymeXText(
               version,
@@ -145,8 +146,8 @@ class ProfileSection extends StatelessWidget {
                 autoPlay: true,
               ),
             ),
-            title: "Developer",
-            subtitle: "RyanYuuki",
+            title: "Developer".tr,
+            subtitle: "RyanYuuki".tr,
             trailing: IconButton(
                 onPressed: () async {
                   await launchUrlHelper('https://github.com/');

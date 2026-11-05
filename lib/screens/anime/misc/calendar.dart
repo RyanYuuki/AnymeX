@@ -446,7 +446,7 @@ class _CalendarState extends State<Calendar>
 
       return AnymeXScaffold(
         showHeader: true,
-        headerTitle: 'Calendar',
+        headerTitle: 'Calendar'.tr,
         headerSubtitle: subtitleText,
         headerAction: _buildHeaderActions(context),
         headerBottom: _buildTabsRow(context),
@@ -490,7 +490,7 @@ class _CalendarState extends State<Calendar>
                   } else if (filteredList.isEmpty) {
                     return Padding(
                       padding: EdgeInsets.only(top: headerHeight),
-                      child: const Center(child: AnymeXText("No Anime found")),
+                      child: Center(child: AnymeXText("No Anime found".tr)),
                     );
                   }
 

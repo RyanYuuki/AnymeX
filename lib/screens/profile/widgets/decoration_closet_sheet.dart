@@ -183,9 +183,9 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
     final colorScheme = context.colors;
 
     AnymeXDialog(
-      title: 'Unlock Customizations',
+      title: 'Unlock Customizations'.tr,
       showCancelButton: true,
-      cancelText: 'Cancel',
+      cancelText: 'Cancel'.tr,
       confirmText: canAfford ? 'Unlock & Equip' : 'Not Enough Points',
       isConfirmEnabled: canAfford,
       contentWidget: Column(
@@ -245,7 +245,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Total Cost:',
+                'Total Cost:'.tr,
                 variant: TextVariant.semiBold,
                 size: 13,
                 color: colorScheme.onSurfaceVariant,
@@ -263,7 +263,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Your Balance:',
+                'Your Balance:'.tr,
                 variant: TextVariant.semiBold,
                 size: 13,
                 color: colorScheme.onSurfaceVariant,
@@ -554,7 +554,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     color: colorScheme.outline.withOpacity(0.2), width: 0.8),
               ),
               child: AnymeXText(
-                'Live Preview',
+                'Live Preview'.tr,
                 size: 10,
                 variant: TextVariant.semiBold,
                 color: colorScheme.onSurface,
@@ -634,7 +634,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 GestureDetector(
                   onTap: () => setState(() => _previewDecorationUrl = null),
                   child: AnymeXText(
-                    'Remove Decoration',
+                    'Remove Decoration'.tr,
                     size: 12,
                     variant: TextVariant.bold,
                     color: colorScheme.error,
@@ -757,7 +757,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 GestureDetector(
                   onTap: () => setState(() => _previewNameplateUrl = null),
                   child: AnymeXText(
-                    'Remove Nameplate',
+                    'Remove Nameplate'.tr,
                     size: 12,
                     variant: TextVariant.bold,
                     color: colorScheme.error,
@@ -887,7 +887,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 child: TextField(
                   controller: _customBannerController,
                   decoration: InputDecoration(
-                    hintText: 'Paste custom image URL...',
+                    hintText: 'Paste custom image URL...'.tr,
                     hintStyle: TextStyle(
                       color: colorScheme.onSurfaceVariant.withOpacity(0.6),
                       fontSize: 12,
@@ -925,7 +925,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text('Apply', style: TextStyle(fontSize: 12)),
+                child: Text('Apply'.tr, style: TextStyle(fontSize: 12)),
               ),
               if (_previewBannerUrl != null) ...[
                 const SizedBox(width: 4),
@@ -937,7 +937,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     });
                   },
                   icon: Icon(Icons.clear, color: colorScheme.error, size: 20),
-                  tooltip: 'Remove Banner',
+                  tooltip: 'Remove Banner'.tr,
                 ),
               ],
             ],
@@ -1097,7 +1097,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 GestureDetector(
                   onTap: () => setState(() => _previewEffectUrl = null),
                   child: AnymeXText(
-                    'Remove Effect',
+                    'Remove Effect'.tr,
                     size: 12,
                     variant: TextVariant.bold,
                     color: colorScheme.error,
@@ -1230,7 +1230,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                         ),
                       )
                     : AnymeXText(
-                        'Save & Equip',
+                        'Save & Equip'.tr,
                         color: colorScheme.onPrimary,
                         variant: TextVariant.bold,
                         size: 14,

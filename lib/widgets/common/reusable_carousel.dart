@@ -74,7 +74,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
   Widget _buildHeaderTitle() {
     return Padding(
       padding: const EdgeInsets.only(left: 20.0),
-      child: AnymeXText(widget.title,
+      child: AnymeXText(widget.title.tr,
         variant: TextVariant.semiBold,
         size: 17,
         color: context.colors.primary,

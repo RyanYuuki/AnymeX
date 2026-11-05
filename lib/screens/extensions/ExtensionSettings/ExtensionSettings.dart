@@ -188,10 +188,10 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
   void _confirmClearCacheAndCookies(BuildContext context) {
     AnymeXDialog(
-      title: 'Clear Cache & Cookies',
+      title: 'Clear Cache & Cookies'.tr,
       message:
           'Are you sure you want to delete cache and cookies for ${widget.source.name}?',
-      confirmText: 'Clear',
+      confirmText: 'Clear'.tr,
       onConfirm: () async {
         await _clearCookiesForSource();
         await _clearCacheForSource();
@@ -202,10 +202,10 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
   void _confirmClearCookies(BuildContext context) {
     AnymeXDialog(
-      title: 'Clear Cookies',
+      title: 'Clear Cookies'.tr,
       message:
           'Are you sure you want to delete saved cookies and Cloudflare tokens for ${widget.source.name}?',
-      confirmText: 'Clear',
+      confirmText: 'Clear'.tr,
       onConfirm: () async {
         await _clearCookiesForSource();
         snackBar('Cookies cleared for ${widget.source.name}');
@@ -215,10 +215,10 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
   void _confirmClearCache(BuildContext context) {
     AnymeXDialog(
-      title: 'Clear Cache',
+      title: 'Clear Cache'.tr,
       message:
           'Are you sure you want to delete temporary cache for ${widget.source.name}?',
-      confirmText: 'Clear',
+      confirmText: 'Clear'.tr,
       onConfirm: () async {
         await _clearCacheForSource();
         snackBar('Cache cleared for ${widget.source.name}');
@@ -228,25 +228,25 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
 
   Widget _buildDataAndCacheSection(BuildContext context) {
     return AnymeXSectionBuilder(
-      title: 'Data & Cache',
+      title: 'Data & Cache'.tr,
       margin: EdgeInsets.zero,
       children: [
         AnymeXTile(
           leading: const Icon(Icons.cleaning_services_rounded),
-          title: 'Clear Cache & Cookies',
-          subtitle: 'Delete saved cookies, Cloudflare tokens, and temporary cache',
+          title: 'Clear Cache & Cookies'.tr,
+          subtitle: 'Delete saved cookies, Cloudflare tokens, and temporary cache'.tr,
           onTap: () => _confirmClearCacheAndCookies(context),
         ),
         AnymeXTile(
           leading: const Icon(Icons.cookie_outlined),
-          title: 'Clear Cookies',
-          subtitle: 'Delete saved cookies and Cloudflare tokens',
+          title: 'Clear Cookies'.tr,
+          subtitle: 'Delete saved cookies and Cloudflare tokens'.tr,
           onTap: () => _confirmClearCookies(context),
         ),
         AnymeXTile(
           leading: const Icon(Icons.cached_rounded),
-          title: 'Clear Cache',
-          subtitle: 'Delete temporary network and image cache',
+          title: 'Clear Cache'.tr,
+          subtitle: 'Delete temporary network and image cache'.tr,
           onTap: () => _confirmClearCache(context),
         ),
       ],
@@ -460,7 +460,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
                     children: [
                       if (preference.value!.isNotEmpty) ...[
                         AnymeXSectionBuilder(
-                          title: 'Source Preferences',
+                          title: 'Source Preferences'.tr,
                           margin: EdgeInsets.zero,
                           children: preference.value!
                               .map((pref) => _buildPreferenceTile(

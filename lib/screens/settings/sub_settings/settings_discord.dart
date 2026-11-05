@@ -59,7 +59,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Discord RPC',
+      headerTitle: 'Discord RPC'.tr,
       body: Builder(
         builder: (ctx) => ScrollWrapper(
           comfortPadding: false,
@@ -69,22 +69,22 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
             _buildAccountCard(context, rpc, colors),
             const SizedBox(height: 16),
             AnymeXSectionBuilder(
-              title: 'General & Privacy',
+              title: 'General & Privacy'.tr,
               children: [
                 Obx(
                   () => AnymeXTile.toggle(
                     icon: Icons.discord,
-                    title: 'Enable Discord RPC',
-                    subtitle: 'Broadcast your activity to Discord',
+                    title: 'Enable Discord RPC'.tr,
+                    subtitle: 'Broadcast your activity to Discord'.tr,
                     value: rpc.isEnabled,
                     onChanged: (val) => rpc.setEnabled(val),
                   ),
                 ),
                 AnymeXTile.toggle(
                   icon: Icons.explicit_rounded,
-                  title: 'Hide NSFW Content',
+                  title: 'Hide NSFW Content'.tr,
                   subtitle:
-                      'Suppress activity when watching or reading NSFW content',
+                      'Suppress activity when watching or reading NSFW content'.tr,
                   value: hideNsfw,
                   onChanged: (val) {
                     setState(() {
@@ -95,8 +95,8 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile.toggle(
                   icon: Icons.timer_outlined,
-                  title: 'Show Timestamps',
-                  subtitle: 'Display playback or reading progress timestamps',
+                  title: 'Show Timestamps'.tr,
+                  subtitle: 'Display playback or reading progress timestamps'.tr,
                   value: showTimestamps,
                   onChanged: (val) {
                     setState(() {
@@ -109,14 +109,14 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
             ),
             const SizedBox(height: 16),
             AnymeXSectionBuilder(
-              title: 'Activity Phrasing',
+              title: 'Activity Phrasing'.tr,
               children: [
                 AnymeXTile(
                   icon: Icons.movie_creation_outlined,
-                  title: 'Watching Anime',
+                  title: 'Watching Anime'.tr,
                   subtitle: animeWatching,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Watching Anime Phrasing',
+                    title: 'Watching Anime Phrasing'.tr,
                     currentVal: animeWatching,
                     defaultVal: 'Watching \$anime',
                     hintText: 'Watching \$anime',
@@ -131,10 +131,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.info_outline_rounded,
-                  title: 'Viewing Anime Details',
+                  title: 'Viewing Anime Details'.tr,
                   subtitle: animeDetails,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Anime Details Phrasing',
+                    title: 'Anime Details Phrasing'.tr,
                     currentVal: animeDetails,
                     defaultVal: 'Viewing \$anime',
                     hintText: 'Viewing \$anime',
@@ -149,10 +149,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.menu_book_outlined,
-                  title: 'Reading Manga',
+                  title: 'Reading Manga'.tr,
                   subtitle: mangaReading,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Reading Manga Phrasing',
+                    title: 'Reading Manga Phrasing'.tr,
                     currentVal: mangaReading,
                     defaultVal: 'Reading \$manga',
                     hintText: 'Reading \$manga',
@@ -168,10 +168,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.info_outline_rounded,
-                  title: 'Viewing Manga Details',
+                  title: 'Viewing Manga Details'.tr,
                   subtitle: mangaDetails,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Manga Details Phrasing',
+                    title: 'Manga Details Phrasing'.tr,
                     currentVal: mangaDetails,
                     defaultVal: 'Viewing \$manga',
                     hintText: 'Viewing \$manga',
@@ -186,10 +186,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.auto_stories_outlined,
-                  title: 'Reading Novel',
+                  title: 'Reading Novel'.tr,
                   subtitle: novelReading,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Reading Novel Phrasing',
+                    title: 'Reading Novel Phrasing'.tr,
                     currentVal: novelReading,
                     defaultVal: 'Reading \$novel',
                     hintText: 'Reading \$novel',
@@ -204,10 +204,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.info_outline_rounded,
-                  title: 'Viewing Novel Details',
+                  title: 'Viewing Novel Details'.tr,
                   subtitle: novelDetails,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Novel Details Phrasing',
+                    title: 'Novel Details Phrasing'.tr,
                     currentVal: novelDetails,
                     defaultVal: 'Viewing \$novel',
                     hintText: 'Viewing \$novel',
@@ -222,10 +222,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                 ),
                 AnymeXTile(
                   icon: Icons.explore_outlined,
-                  title: 'Browsing / Idle',
+                  title: 'Browsing / Idle'.tr,
                   subtitle: idleFormat,
                   onTap: () => _showPhrasingDialog(
-                    title: 'Browsing Phrasing',
+                    title: 'Browsing Phrasing'.tr,
                     currentVal: idleFormat,
                     defaultVal: 'Browsing \$status',
                     hintText: 'Browsing \$status',
@@ -354,8 +354,8 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                     color: const Color(0xFF5865F2).opaque(0.6),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const AnymeXText(
-                    'Login',
+                  child: AnymeXText(
+                    'Login'.tr,
                     variant: TextVariant.bold,
                     size: 13,
                     color: Colors.white,
@@ -405,10 +405,10 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
 
   void _showLogoutDialog(BuildContext context, DiscordRPCController rpc) {
     AnymeXDialog(
-      title: 'Disconnect Discord?',
-      message: 'Your rich presence activity will stop updating.',
-      confirmText: 'Disconnect',
-      cancelText: 'Cancel',
+      title: 'Disconnect Discord?'.tr,
+      message: 'Your rich presence activity will stop updating.'.tr,
+      confirmText: 'Disconnect'.tr,
+      cancelText: 'Cancel'.tr,
       onConfirm: () => rpc.logout(),
     ).show(context);
   }
@@ -426,8 +426,8 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
 
     AnymeXDialog(
       title: title,
-      confirmText: 'Save',
-      cancelText: 'Cancel',
+      confirmText: 'Save'.tr,
+      cancelText: 'Cancel'.tr,
       onConfirm: () {
         final val = controller.text.trim();
         onSave(val.isEmpty ? defaultVal : val);
@@ -438,7 +438,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AnymeXText(
-              'Dynamic variables will be replaced automatically. You can also use a static phrase.',
+              'Dynamic variables will be replaced automatically. You can also use a static phrase.'.tr,
               size: 12,
               color: colors.onSurfaceVariant,
               textAlign: TextAlign.center,
@@ -466,7 +466,7 @@ class _SettingsDiscordState extends State<SettingsDiscord> {
                   });
                 },
                 icon: const Icon(Icons.refresh_rounded, size: 16),
-                label: const AnymeXText('Reset to default', size: 12),
+                label: AnymeXText('Reset to default'.tr, size: 12),
               ),
             ),
           ],

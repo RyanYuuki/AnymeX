@@ -70,7 +70,7 @@ class EpisodeSection extends StatelessWidget {
       builder: (dialogContext) {
         return Obx(
           () => AnymeXDialog(
-            title: 'Episode List Settings',
+            title: 'Episode List Settings'.tr,
             onConfirm: () {},
             contentWidget: Column(
               mainAxisSize: MainAxisSize.min,
@@ -78,8 +78,8 @@ class EpisodeSection extends StatelessWidget {
               children: [
                 if (showAnify.value && !disableAnifyForCurrentSource.value) ...[
                   _ProviderOptionTile(
-                    title: 'Anify / Kitsu Artwork',
-                    subtitle: 'Use enhanced episode metadata and covers',
+                    title: 'Anify / Kitsu Artwork'.tr,
+                    subtitle: 'Use enhanced episode metadata and covers'.tr,
                     isSelected: isAnify.value,
                     onTap: () {
                       isAnify.value = !isAnify.value;
@@ -87,8 +87,8 @@ class EpisodeSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                 ],
-                const AnymeXText(
-                  'Layout Style',
+                AnymeXText(
+                  'Layout Style'.tr,
                   variant: TextVariant.bold,
                   size: 14,
                 ),

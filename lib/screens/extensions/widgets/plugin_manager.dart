@@ -26,7 +26,7 @@ class PluginManager {
 
     final release = await fetchLatestRelease();
     if (release == null) {
-      errorSnackBar('Failed to fetch plugin release details.');
+      errorSnackBar('Failed to fetch plugin release details.'.tr);
       return;
     }
 
@@ -40,7 +40,7 @@ class PluginManager {
   }) async {
     final release = await fetchLatestRelease();
     if (release == null) {
-      errorSnackBar('Failed to check plugin updates.');
+      errorSnackBar('Failed to check plugin updates.'.tr);
       return;
     }
 
@@ -58,7 +58,7 @@ class PluginManager {
         release: release,
         installedVersion: currentVersion,
       );
-      successSnackBar("Restart the App to apply the update.");
+      successSnackBar("Restart the App to apply the update.".tr);
       return;
     }
 
@@ -235,11 +235,11 @@ class PluginManager {
     final isApk = apkPath.toLowerCase().endsWith('.apk');
 
     if (Platform.isAndroid && !isApk) {
-      errorSnackBar('Please select a valid APK file.');
+      errorSnackBar('Please select a valid APK file.'.tr);
       return false;
     }
     if (!Platform.isAndroid && !isJar) {
-      errorSnackBar('Please select a valid JAR file.');
+      errorSnackBar('Please select a valid JAR file.'.tr);
       return false;
     }
 
@@ -273,14 +273,14 @@ class PluginManager {
       if (Platform.isAndroid && bridge.isReady.value) {
         await Get.find<ExtensionManager>()
             .onRuntimeBridgeInitialization(force: true);
-        successSnackBar('Plugin synced from local APK.');
+        successSnackBar('Plugin synced from local APK.'.tr);
         return true;
       } else if (!Platform.isAndroid) {
-        successSnackBar('Plugin jar copied. Please restart the app.');
+        successSnackBar('Plugin jar copied. Please restart the app.'.tr);
         return true;
       }
 
-      errorSnackBar('Sync completed, but the plugin is not ready yet.');
+      errorSnackBar('Sync completed, but the plugin is not ready yet.'.tr);
       return false;
     } catch (e) {
       errorSnackBar('Sync failed: $e');
@@ -378,7 +378,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         if (fetched != null) {
           _checkBridgeReady();
         } else {
-          errorSnackBar('Failed to fetch release details.');
+          errorSnackBar('Failed to fetch release details.'.tr);
           Navigator.of(context).pop();
         }
       }
@@ -457,7 +457,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Fetching latest release details...',
+              'Fetching latest release details...'.tr,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colors.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
@@ -489,7 +489,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
             _buildVersionCard(colors, bridge, isBusy, isComplete),
             const SizedBox(height: 14),
             AnymeXText(
-              'CHANGELOG',
+              'CHANGELOG'.tr,
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
@@ -553,7 +553,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
                 ? IconButton(
                     onPressed: widget.manager.forceSyncLocalApk,
                     icon: Icon(Icons.sync_rounded, color: colors.primary),
-                    tooltip: 'Force Sync from SD Card',
+                    tooltip: 'Force Sync from SD Card'.tr,
                   )
                 : Icon(
                     widget.mode == _PluginSheetMode.install

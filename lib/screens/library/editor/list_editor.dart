@@ -59,7 +59,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     return AnymeXScaffold(
       resizeToAvoidBottomInset: false,
       showHeader: true,
-      headerTitle: 'Custom Lists',
+      headerTitle: 'Custom Lists'.tr,
       headerSubtitle: '${_lists.length} lists total',
       headerAction: IconButton(
         onPressed: () {
@@ -120,10 +120,10 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     final label = isAnime ? 'watch history' : 'read history';
 
     AnymeXDialog(
-      title: 'Clear History',
+      title: 'Clear History'.tr,
       message:
           'Are you sure you want to clear all $label? This action cannot be undone.',
-      confirmText: 'Clear All',
+      confirmText: 'Clear All'.tr,
       onConfirm: () async {
         final ids = items
             .map((e) => e.mediaId)
@@ -394,7 +394,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AnymeXText(
-                'Custom Lists',
+                'Custom Lists'.tr,
                 style: TextStyle(
                   color: theme.colorScheme.onSurface,
                   fontWeight: FontWeight.w600,
@@ -549,7 +549,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           ),
           const SizedBox(height: 24),
           AnymeXText(
-            'No custom lists yet',
+            'No custom lists yet'.tr,
             style: TextStyle(
               color: theme.colorScheme.onSurface,
               fontSize: 20,
@@ -582,7 +582,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       ),
       icon: const Icon(Icons.add_rounded),
       label: AnymeXText(
-        'New List',
+        'New List'.tr,
         style: TextStyle(
             fontWeight: FontWeight.w600, color: theme.colorScheme.onPrimary),
       ),
@@ -622,12 +622,12 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     final theme = Theme.of(context);
 
     AnymeXDialog(
-      title: 'Rename List',
+      title: 'Rename List'.tr,
       contentWidget: TextField(
         controller: controller,
         style: TextStyle(color: theme.colorScheme.onSurface),
         decoration: InputDecoration(
-          hintText: 'Enter list name',
+          hintText: 'Enter list name'.tr,
           hintStyle: TextStyle(
             color: theme.colorScheme.onSurface.opaque(0.5),
           ),
@@ -645,12 +645,12 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           fillColor: theme.colorScheme.surfaceContainer.withOpacity(0.3),
         ),
       ),
-      confirmText: 'Rename',
+      confirmText: 'Rename'.tr,
       onConfirm: () {
         if (controller.text.isNotEmpty &&
             controller.text != _lists[index].listName) {
           if (_lists.any((list) => list.listName == controller.text)) {
-            snackBar('List name already exists');
+            snackBar('List name already exists'.tr);
             return;
           }
 
@@ -666,10 +666,10 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
 
   void _showDeleteDialog(int index) {
     AnymeXDialog(
-      title: 'Delete List',
+      title: 'Delete List'.tr,
       message:
           'Are you sure you want to delete "${_lists[index].listName}"? This action cannot be undone.',
-      confirmText: 'Delete',
+      confirmText: 'Delete'.tr,
       onConfirm: () {
         setState(() {
           _lists.removeAt(index);
@@ -685,12 +685,12 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     final theme = Theme.of(context);
 
     AnymeXDialog(
-      title: 'Create New List',
+      title: 'Create New List'.tr,
       contentWidget: TextField(
         controller: controller,
         style: TextStyle(color: theme.colorScheme.onSurface),
         decoration: InputDecoration(
-          hintText: 'Enter list name',
+          hintText: 'Enter list name'.tr,
           hintStyle: TextStyle(
             color: theme.colorScheme.onSurface.opaque(0.5),
           ),
@@ -708,11 +708,11 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
           fillColor: theme.colorScheme.surfaceContainer.withOpacity(0.3),
         ),
       ),
-      confirmText: 'Create',
+      confirmText: 'Create'.tr,
       onConfirm: () {
         if (controller.text.isNotEmpty) {
           if (_lists.any((list) => list.listName == controller.text)) {
-            snackBar('List name already exists');
+            snackBar('List name already exists'.tr);
             return;
           }
 
@@ -781,10 +781,10 @@ class __ListMediaEditorBottomSheetState
 
   void _deleteSelectedItems() {
     AnymeXDialog(
-      title: 'Remove Items',
+      title: 'Remove Items'.tr,
       message:
           'Are you sure you want to remove the ${_selectedItemIndices.length} selected items from "${widget.listData.listName}"?',
-      confirmText: 'Remove',
+      confirmText: 'Remove'.tr,
       onConfirm: () {
         final sortedIndices = _selectedItemIndices.toList()
           ..sort((a, b) => b.compareTo(a));
@@ -798,7 +798,7 @@ class __ListMediaEditorBottomSheetState
         });
         widget.onListChanged();
         HapticFeedback.mediumImpact();
-        snackBar('Selected items removed');
+        snackBar('Selected items removed'.tr);
       },
     ).show(context);
   }
@@ -917,7 +917,7 @@ class __ListMediaEditorBottomSheetState
                                 fontSize: 14,
                               ),
                               decoration: InputDecoration(
-                                hintText: 'Search items in list...',
+                                hintText: 'Search items in list...'.tr,
                                 hintStyle: TextStyle(
                                   color: colors.onSurface.withOpacity(0.4),
                                   fontSize: 14,
@@ -1177,7 +1177,7 @@ class __ListMediaEditorBottomSheetState
                           icon: Icon(Iconsax.trash,
                               color: colors.onError, size: 16),
                           label: AnymeXText(
-                            'Remove',
+                            'Remove'.tr,
                             style: TextStyle(
                               color: colors.onError,
                               fontWeight: FontWeight.w600,

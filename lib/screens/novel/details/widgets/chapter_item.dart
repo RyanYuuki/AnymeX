@@ -218,7 +218,7 @@ class ChapterListItem extends StatelessWidget {
         width: 100,
         height: 40,
         color: context.colors.primary,
-        child: AnymeXText("Read",
+        child: AnymeXText("Read".tr,
           variant: TextVariant.semiBold,
           color: context.colors.onPrimary,
         ),

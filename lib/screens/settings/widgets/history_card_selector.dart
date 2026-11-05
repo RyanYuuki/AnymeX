@@ -47,7 +47,7 @@ void showHistoryCardStyleSelector(BuildContext context) {
         () {
           return AnymeXDialog(
             padding: const EdgeInsets.all(10),
-            title: 'Card Style',
+            title: 'Card Style'.tr,
             onConfirm: () {
               settingsController.historyCardStyle = selectedStyle.value.index;
             },
@@ -75,7 +75,7 @@ class HistoryCardSelector extends StatelessWidget {
   });
 
   static final dummyData = HistoryModel(
-    title: 'Demon Slayer: Kimetsu no Yaiba',
+    title: 'Demon Slayer: Kimetsu no Yaiba'.tr,
     cover: 'https://image.tmdb.org/t/p/w500/m9sWQLtoU1G5jdHOYUnykin0xxw.jpg',
     poster:
         'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101922-WBsBl0ClmgYL.jpg',
@@ -83,7 +83,7 @@ class HistoryCardSelector extends StatelessWidget {
     formattedEpisodeTitle: 'Episode 3',
     progress: 243034,
     totalProgress: 1420061,
-    progressTitle: 'Sabito and Makomo',
+    progressTitle: 'Sabito and Makomo'.tr,
     isManga: false,
     calculatedProgress: 0.1711433522926128,
     progressText: '19:37 left',
@@ -94,7 +94,7 @@ class HistoryCardSelector extends StatelessWidget {
   static final sampleDataList = [
     dummyData,
     HistoryModel(
-      title: 'Jujutsu Kaisen',
+      title: 'Jujutsu Kaisen'.tr,
       cover: 'https://image.tmdb.org/t/p/w500/gmU3rV6x0K5B63yv7N7N90m9p3k.jpg',
       poster:
           'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx113415-bbBWj4pEFseh.jpg',
@@ -102,7 +102,7 @@ class HistoryCardSelector extends StatelessWidget {
       formattedEpisodeTitle: 'Episode 12',
       progress: 1100000,
       totalProgress: 1420000,
-      progressTitle: 'To You, Someday',
+      progressTitle: 'To You, Someday'.tr,
       isManga: false,
       calculatedProgress: 0.77,
       progressText: '05:20 left',
@@ -110,7 +110,7 @@ class HistoryCardSelector extends StatelessWidget {
       onTap: () {},
     ),
     HistoryModel(
-      title: 'Attack on Titan',
+      title: 'Attack on Titan'.tr,
       cover: 'https://image.tmdb.org/t/p/w500/27UrwQ4VlK2hM4b6lA5mRz2X6Y7.jpg',
       poster:
           'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx16498-73IhOXpJZiDY.png',
@@ -118,7 +118,7 @@ class HistoryCardSelector extends StatelessWidget {
       formattedEpisodeTitle: 'Episode 75',
       progress: 640000,
       totalProgress: 1420000,
-      progressTitle: 'Judgment',
+      progressTitle: 'Judgment'.tr,
       isManga: false,
       calculatedProgress: 0.45,
       progressText: '12:45 left',
@@ -126,7 +126,7 @@ class HistoryCardSelector extends StatelessWidget {
       onTap: () {},
     ),
     HistoryModel(
-      title: 'Solo Leveling',
+      title: 'Solo Leveling'.tr,
       cover: 'https://image.tmdb.org/t/p/w500/geCRueV3ElhRTr03BPJuVq0fk35.jpg',
       poster:
           'https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx151807-m1gmSHZvlUR4.jpg',
@@ -134,7 +134,7 @@ class HistoryCardSelector extends StatelessWidget {
       formattedEpisodeTitle: 'Episode 8',
       progress: 1280000,
       totalProgress: 1420000,
-      progressTitle: 'This Is Frustrating',
+      progressTitle: 'This Is Frustrating'.tr,
       isManga: false,
       calculatedProgress: 0.90,
       progressText: '02:10 left',
@@ -150,7 +150,7 @@ class HistoryCardSelector extends StatelessWidget {
       formattedEpisodeTitle: 'Episode 20',
       progress: 70000,
       totalProgress: 1420000,
-      progressTitle: 'Necessary Murder',
+      progressTitle: 'Necessary Murder'.tr,
       isManga: false,
       calculatedProgress: 0.05,
       progressText: '22:15 left',

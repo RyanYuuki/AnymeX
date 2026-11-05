@@ -48,10 +48,10 @@ class _ForkInfo {
   });
 }
 
-const List<_ForkInfo> _forks = [
+List<_ForkInfo> _forks = [
   _ForkInfo(
     name: 'NyanTV',
-    description: 'AnymeX fork optimised for TV',
+    description: 'AnymeX fork optimised for TV'.tr,
     repoUrl: 'https://github.com/NyanTV/NyanTV',
     devName: 'hoemotion',
     devAvatarUrl: 'https://avatars.githubusercontent.com/u/86238378?v=4',
@@ -74,7 +74,7 @@ class _AboutPageState extends State<AboutPage> {
     final theme = Theme.of(context);
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'About',
+      headerTitle: 'About'.tr,
       body: Builder(
         builder: (ctx) => SuperListView(
                   padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
@@ -128,8 +128,8 @@ class _AboutPageState extends State<AboutPage> {
                                       backgroundImage: NetworkImage(
                                           'https://avatars.githubusercontent.com/u/108048963?s=400&u=7f67531c27c5ebbbcde943f9576a0bfdb98909c8&v=4'),
                                     ),
-                                    title: "Developer",
-                                    subtitle: "RyanYuuki",
+                                    title: "Developer".tr,
+                                    subtitle: "RyanYuuki".tr,
                                     trailing: IconButton(
                                       onPressed: () async {
                                         await launchUrlHelper(
@@ -183,9 +183,9 @@ class _AboutPageState extends State<AboutPage> {
                           borderRadius: BorderRadius.circular(12)),
                       child: CustomSection(
                         icon: Iconsax.link_circle,
-                        title: "Social",
+                        title: "Social".tr,
                         subtitle:
-                            "Join us for dropping feedback or feature requests",
+                            "Join us for dropping feedback or feature requests".tr,
                         items: [
                           CustomListTile(
                             onTap: () async {
@@ -194,7 +194,7 @@ class _AboutPageState extends State<AboutPage> {
                             },
                             leading:
                                 const Icon(HugeIcons.strokeRoundedTelegram),
-                            title: "Telegram",
+                            title: "Telegram".tr,
                           ),
                           CustomListTile(
                             onTap: () async {
@@ -202,7 +202,7 @@ class _AboutPageState extends State<AboutPage> {
                                   Get.find<Settings>().discordUrl.value);
                             },
                             leading: const Icon(HugeIcons.strokeRoundedDiscord),
-                            title: "Discord",
+                            title: "Discord".tr,
                           ),
                           CustomListTile(
                             onTap: () async {
@@ -210,7 +210,7 @@ class _AboutPageState extends State<AboutPage> {
                                   'https://www.reddit.com/r/AnymeX_/');
                             },
                             leading: const Icon(HugeIcons.strokeRoundedReddit),
-                            title: "Reddit",
+                            title: "Reddit".tr,
                           ),
                         ],
                       ),
@@ -224,8 +224,8 @@ class _AboutPageState extends State<AboutPage> {
                       ),
                       child: CustomSection(
                         icon: Iconsax.code_circle,
-                        title: "Development",
-                        subtitle: "Explore the project and contribute",
+                        title: "Development".tr,
+                        subtitle: "Explore the project and contribute".tr,
                         items: [
                           CustomListTile(
                             onTap: () async {
@@ -233,16 +233,16 @@ class _AboutPageState extends State<AboutPage> {
                                   'https://github.com/RyanYuuki/AnymeX');
                             },
                             leading: const Icon(HugeIcons.strokeRoundedGithub),
-                            title: "GitHub",
-                            subtitle: 'View Source code on github.',
+                            title: "GitHub".tr,
+                            subtitle: 'View Source code on github.'.tr,
                           ),
                           CustomListTile(
                             onTap: () {
                               navigate(() => const ContributorsPage());
                             },
                             leading: const Icon(Icons.group_rounded),
-                            title: "Contributors",
-                            subtitle: "See people who contributed to AnymeX",
+                            title: "Contributors".tr,
+                            subtitle: "See people who contributed to AnymeX".tr,
                           ),
                           CustomListTile(
                             onTap: () {
@@ -250,9 +250,9 @@ class _AboutPageState extends State<AboutPage> {
                             },
                             leading: const Icon(Icons.favorite_rounded,
                                 color: Colors.pinkAccent),
-                            title: "Support AnymeX",
+                            title: "Support AnymeX".tr,
                             subtitle:
-                                "Donate via UPI or PayPal to support development",
+                                "Donate via UPI or PayPal to support development".tr,
                           ),
                           CustomListTile(
                             onTap: () async {
@@ -260,7 +260,7 @@ class _AboutPageState extends State<AboutPage> {
                                   'https://github.com/RyanYuuki/AnymeX/issues');
                             },
                             leading: const Icon(Icons.bug_report),
-                            title: "Features/Issues",
+                            title: "Features/Issues".tr,
                             subtitle:
                                 'if you have an issue or any suggestion please make an issue at github.',
                           ),
@@ -269,8 +269,8 @@ class _AboutPageState extends State<AboutPage> {
                               navigate(() => const _ForksPage());
                             },
                             leading: const Icon(Icons.call_split_rounded),
-                            title: "Forks",
-                            subtitle: "Community forks of AnymeX",
+                            title: "Forks".tr,
+                            subtitle: "Community forks of AnymeX".tr,
                           ),
                         ],
                       ),
@@ -284,15 +284,15 @@ class _AboutPageState extends State<AboutPage> {
                       ),
                       child: CustomSection(
                         icon: Iconsax.info_circle,
-                        title: "Others",
-                        subtitle: "Other Stuffs",
+                        title: "Others".tr,
+                        subtitle: "Other Stuffs".tr,
                         items: [
                           CustomListTile(
                             onTap: () async {
                               await showPolicySheet(context, PolicyType.tos);
                             },
                             leading: const Icon(HugeIcons.strokeRoundedPolicy),
-                            title: "Terms of Service/Privacy Policy",
+                            title: "Terms of Service/Privacy Policy".tr,
                           ),
                           CustomListTile(
                             onTap: () async {
@@ -301,7 +301,7 @@ class _AboutPageState extends State<AboutPage> {
                             },
                             leading:
                                 const Icon(HugeIcons.strokeRoundedAlertSquare),
-                            title: "Comment Policy",
+                            title: "Comment Policy".tr,
                           ),
                           // CustomListTile(
                           //   onTap: () async {
@@ -309,20 +309,20 @@ class _AboutPageState extends State<AboutPage> {
                           //         context, PolicyType.watchTogetherPolicy);
                           //   },
                           //   leading: const Icon(Icons.people_rounded),
-                          //   title: "Watch Together Policy",
+                          //   title: "Watch Together Policy".tr,
                           // ),
                           CustomListTile(
                             onTap: () async {
-                              snackBar('Checking for updates!');
+                              snackBar('Checking for updates!'.tr);
                               Get.find<Settings>().checkForUpdates(context, manualCheck: true);
                             },
                             leading: const Icon(Icons.system_update),
-                            title: "Check for Updates",
+                            title: "Check for Updates".tr,
                           ),
                           CustomListTile(
                             leading: const Icon(Iconsax.toggle_on),
-                            title: "Enable Beta Updates",
-                            subtitle: "Check updates from beta channel",
+                            title: "Enable Beta Updates".tr,
+                            subtitle: "Check updates from beta channel".tr,
                             trailing: Obx(
                               () => Switch(
                                 value: Get.find<Settings>()
@@ -356,7 +356,7 @@ class _ForksPage extends StatelessWidget {
     return AnymeXScaffold(
       body: Column(
         children: [
-          const NestedHeader(title: 'Forks'),
+          NestedHeader(title: 'Forks'.tr),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),

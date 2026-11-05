@@ -77,11 +77,11 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       final user2 = widget.controller.user2.value;
 
       if (result == null || user1 == null || user2 == null) {
-        return const AnymeXScaffold(
+        return AnymeXScaffold(
           showHeader: true,
-          headerTitle: 'Compatibility',
+          headerTitle: 'Compatibility'.tr,
           body: Center(
-            child: AnymeXText('No result', size: 16),
+            child: AnymeXText('No result'.tr, size: 16),
           ),
         );
       }
@@ -93,7 +93,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
 
       return AnymeXScaffold(
         showHeader: true,
-        headerTitle: 'AniMatch',
+        headerTitle: 'AniMatch'.tr,
         headerAction: IconButton(
           icon: _isSharing
               ? const SizedBox(
@@ -105,7 +105,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           onPressed: _isSharing
               ? null
               : () => _shareCard(user1.name ?? '', user2.name ?? '', result),
-          tooltip: 'Share Match Card',
+          tooltip: 'Share Match Card'.tr,
         ),
         body: Builder(
           builder: (ctx) => ScrollWrapper(
@@ -168,7 +168,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                           vertical: 48),
                                       child: Center(
                                         child: AnymeXText(
-                                          'No data available for this section',
+                                          'No data available for this section'.tr,
                                           size: 14,
                                           color: context.colors.onSurfaceVariant
                                               .opaque(0.7),
@@ -209,8 +209,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           children: [
             Icon(Iconsax.heart5, color: c.primary, size: 20),
             const SizedBox(width: 8),
-            const AnymeXText(
-              'AniMatch',
+            AnymeXText(
+              'AniMatch'.tr,
               size: 18,
               variant: TextVariant.bold,
             ),
@@ -227,7 +227,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               Icon(Icons.share_rounded, size: 15, color: c.onPrimary),
               const SizedBox(width: 6),
               AnymeXText(
-                'Share Match Card',
+                'Share Match Card'.tr,
                 size: 12,
                 variant: TextVariant.bold,
                 color: c.onPrimary,
@@ -292,7 +292,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
               Icon(Iconsax.heart5, color: c.primary, size: 16),
               const SizedBox(width: 8),
               AnymeXText(
-                'AniMatch Compatibility',
+                'AniMatch Compatibility'.tr,
                 size: 13,
                 variant: TextVariant.bold,
                 color: c.onSurfaceVariant.opaque(0.9),
@@ -516,7 +516,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
         _buildSectionTabItem(
           context,
           tabIndex: 0,
-          title: 'Anime',
+          title: 'Anime'.tr,
           percentage: result.animeSection.percentage,
           rank: animeRank,
           icon: Iconsax.video_play,
@@ -525,7 +525,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
         _buildSectionTabItem(
           context,
           tabIndex: 1,
-          title: 'Manga',
+          title: 'Manga'.tr,
           percentage: result.mangaSection.percentage,
           rank: mangaRank,
           icon: Iconsax.book,
@@ -778,7 +778,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     if (rows.isEmpty) {
       body = Center(
         child: AnymeXText(
-          'No stats available',
+          'No stats available'.tr,
           size: 12,
           color: c.onSurfaceVariant.opaque(0.6),
         ),
@@ -928,7 +928,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     if (decadeCards.isEmpty) {
       body = Center(
         child: AnymeXText(
-          'No decade breakdown available',
+          'No decade breakdown available'.tr,
           size: 12,
           color: c.onSurfaceVariant.opaque(0.6),
         ),
@@ -963,9 +963,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           _buildCardHeader(
             context,
             icon: Iconsax.calendar,
-            title: 'Release Year Stats',
+            title: 'Release Year Stats'.tr,
             subtitle:
-                'Calculated based on which release decades you watched the most and scored the highest.',
+                'Calculated based on which release decades you watched the most and scored the highest.'.tr,
             percentage: detail.percentage,
             weight: detail.weight,
           ),
@@ -1031,14 +1031,14 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Iconsax.category,
-      title: 'Common Genres',
-      subtitle: 'Based on your top 5 genres.',
+      title: 'Common Genres'.tr,
+      subtitle: 'Based on your top 5 genres.'.tr,
       detail: detail,
       padding: const EdgeInsets.all(18),
       child: _buildExpandableCardListBody(
         context,
         detail,
-        emptyText: 'No common genres',
+        emptyText: 'No common genres'.tr,
         itemTypeLabel: 'Genres',
         isTag: false,
         isManga: isManga,
@@ -1051,14 +1051,14 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Icons.tag,
-      title: 'Common Tags',
-      subtitle: 'Based on your top 10 tags.',
+      title: 'Common Tags'.tr,
+      subtitle: 'Based on your top 10 tags.'.tr,
       detail: detail,
       padding: const EdgeInsets.all(18),
       child: _buildExpandableCardListBody(
         context,
         detail,
-        emptyText: 'No common tags',
+        emptyText: 'No common tags'.tr,
         itemTypeLabel: 'Tags',
         isTag: true,
         isManga: isManga,
@@ -1192,7 +1192,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 variant: TextVariant.bold,
                                 color: c.primary,
                               ),
-                              AnymeXText('Mean Score',
+                              AnymeXText('Mean Score'.tr,
                                   size: 10,
                                   color: c.onSurfaceVariant.opaque(0.75)),
                               AnymeXText(
@@ -1214,7 +1214,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 variant: TextVariant.bold,
                                 color: c.primary.opaque(0.9),
                               ),
-                              AnymeXText('Count',
+                              AnymeXText('Count'.tr,
                                   size: 10,
                                   color: c.onSurfaceVariant.opaque(0.75)),
                               AnymeXText(
@@ -1731,8 +1731,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Iconsax.profile_2user,
-      title: 'Common Characters',
-      subtitle: 'Based on your favourite characters.',
+      title: 'Common Characters'.tr,
+      subtitle: 'Based on your favourite characters.'.tr,
       percentage: detail?.percentage ?? 0.0,
       weight: detail?.weight ?? 0.8,
       detail: detail,
@@ -1890,8 +1890,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Icons.mic_rounded,
-      title: 'Common Voice Actors',
-      subtitle: 'Based on your top 6 voice actors.',
+      title: 'Common Voice Actors'.tr,
+      subtitle: 'Based on your top 6 voice actors.'.tr,
       percentage: detail?.percentage ?? 0.0,
       weight: detail?.weight ?? 0.5,
       detail: detail,
@@ -2013,8 +2013,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Icons.business_outlined,
-      title: 'Common Studios',
-      subtitle: 'Based on your top 3 studios.',
+      title: 'Common Studios'.tr,
+      subtitle: 'Based on your top 3 studios.'.tr,
       percentage: detail?.percentage ?? 0.0,
       weight: detail?.weight ?? 0.9,
       detail: detail,
@@ -2028,8 +2028,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Iconsax.user_tag,
-      title: 'Common Favourite Staff',
-      subtitle: 'Based on your favourite staff.',
+      title: 'Common Favourite Staff'.tr,
+      subtitle: 'Based on your favourite staff.'.tr,
       percentage: detail?.percentage ?? 0.0,
       weight: detail?.weight ?? 0.5,
       detail: detail,
@@ -2358,9 +2358,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                 child: Icon(Iconsax.profile_2user, size: 18, color: c.primary),
               ),
               const SizedBox(width: 10),
-              const Expanded(
+              Expanded(
                 child: AnymeXText(
-                  'Mutual Connections',
+                  'Mutual Connections'.tr,
                   variant: TextVariant.bold,
                   size: 15,
                 ),
@@ -2374,7 +2374,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: AnymeXText(
-                    'Mutual Friends',
+                    'Mutual Friends'.tr,
                     size: 11,
                     variant: TextVariant.bold,
                     color: c.primary,
@@ -2535,7 +2535,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         AnymeXText(
-                          'How it works & Compatibility Ranks',
+                          'How it works & Compatibility Ranks'.tr,
                           variant: TextVariant.bold,
                           size: 14,
                           color: c.onSurface,
@@ -2583,20 +2583,20 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   ),
                   const SizedBox(height: 6),
                   AnymeXText(
-                    'Powered by AniMatch 16-point compatibility analysis in AnymeX',
+                    'Powered by AniMatch 16-point compatibility analysis in AnymeX'.tr,
                     size: 11,
                     color: c.onSurfaceVariant.opaque(0.6),
                   ),
                   const SizedBox(height: 18),
                   AnymeXText(
-                    'Compatibility Ranks',
+                    'Compatibility Ranks'.tr,
                     variant: TextVariant.bold,
                     size: 14,
                     color: c.onSurface,
                   ),
                   const SizedBox(height: 2),
                   AnymeXText(
-                    'Every score is mapped to a rank. The table below shows each bracket, its badge, and what the range represents.',
+                    'Every score is mapped to a rank. The table below shows each bracket, its badge, and what the range represents.'.tr,
                     size: 11,
                     color: c.onSurfaceVariant.opaque(0.75),
                   ),
@@ -2609,7 +2609,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         SizedBox(
                           width: 52,
                           child: AnymeXText(
-                            'Badge',
+                            'Badge'.tr,
                             size: 11,
                             variant: TextVariant.semiBold,
                             color: c.onSurfaceVariant.opaque(0.7),
@@ -2618,7 +2618,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         SizedBox(
                           width: 44,
                           child: AnymeXText(
-                            'Rank',
+                            'Rank'.tr,
                             size: 11,
                             variant: TextVariant.semiBold,
                             color: c.onSurfaceVariant.opaque(0.7),
@@ -2627,7 +2627,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         SizedBox(
                           width: 68,
                           child: AnymeXText(
-                            'Range',
+                            'Range'.tr,
                             size: 11,
                             variant: TextVariant.semiBold,
                             color: c.onSurfaceVariant.opaque(0.7),
@@ -2635,7 +2635,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         ),
                         Expanded(
                           child: AnymeXText(
-                            'Description',
+                            'Description'.tr,
                             size: 11,
                             variant: TextVariant.semiBold,
                             color: c.onSurfaceVariant.opaque(0.7),
@@ -2759,7 +2759,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       await Clipboard.setData(ClipboardData(text: shareUrl));
-      snackBar('AniMatch link copied to clipboard!');
+      snackBar('AniMatch link copied to clipboard!'.tr);
       return;
     }
 
@@ -2813,7 +2813,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       Clipboard.setData(ClipboardData(text: shareUrl));
-      snackBar('AniMatch link copied to clipboard!');
+      snackBar('AniMatch link copied to clipboard!'.tr);
       return;
     }
 
