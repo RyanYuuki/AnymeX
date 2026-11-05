@@ -67,12 +67,11 @@ class MediaHeader extends StatelessWidget {
               final usePoster = settingsController.usePosterForBlur;
               final blurSourceUrl = usePoster
                   ? posterUrl
-                  : (data?.cover?.isNotEmpty == true
-                      ? data!.cover!
-                      : posterUrl);
-              final blurFallbackUrl = usePoster
-                  ? (data?.cover?.isNotEmpty == true ? data!.cover! : posterUrl)
-                  : posterUrl;
+                  : (data?.cover?.isNotEmpty == true ? data!.cover! : '');
+              final blurFallbackUrl = usePoster ? posterUrl : '';
+              if (blurSourceUrl.isEmpty) {
+                return const SizedBox.shrink();
+              }
               final tintBlur = settingsController.tintBlur;
               final blurColor = tintBlur ? colors.primary.opaque(0.4) : null;
               final isMesh = settingsController.detailsBlurStyle == 1;

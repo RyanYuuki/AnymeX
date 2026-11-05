@@ -458,6 +458,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         averageScore
         coverImage {
           large
+          color
         }
       }
     }
@@ -475,6 +476,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         averageScore
         coverImage {
           large
+          color
         }
       }
     }
@@ -495,6 +497,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         coverImage {
           large
           extraLarge
+          color
         }
       }
     }
@@ -517,6 +520,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         averageScore
         coverImage {
           large
+          color
         }
       }
     }
@@ -539,6 +543,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
         averageScore
         coverImage {
           large
+          color
         }
         updatedAt
       }
@@ -732,6 +737,7 @@ averageScore
         coverImage {
           large
           extraLarge
+          color
         }
         type
 averageScore

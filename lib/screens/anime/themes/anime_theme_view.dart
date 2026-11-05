@@ -5,6 +5,7 @@ import 'package:anymex/utils/anime_themes_api.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -13,10 +14,14 @@ import '../../../models/Media/media.dart' as m;
 
 class AnimeThemePlayerPage extends StatefulWidget {
   final m.Media animeDetails;
+  final int? initialIndex;
+  final List<AnimeTheme>? preloadedThemes;
 
   const AnimeThemePlayerPage({
     super.key,
     required this.animeDetails,
+    this.initialIndex,
+    this.preloadedThemes,
   });
 
   @override
@@ -44,10 +49,28 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     player = Player();
     controller = VideoController(player);
     _initializePlayer();
-    _loadAnimeData();
+    if (widget.preloadedThemes != null &&
+        widget.preloadedThemes!.isNotEmpty) {
+      themes = widget.preloadedThemes!;
+      isLoading = false;
+      animeTitle = widget.animeDetails.title;
+      if (widget.initialIndex != null &&
+          widget.initialIndex! >= 0 &&
+          widget.initialIndex! < themes.length) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _playTheme(widget.initialIndex!);
+        });
+      }
+    } else {
+      _loadAnimeData();
+    }
   }
 
   void _initializePlayer() {
@@ -99,7 +122,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
     if (index < 0 || index >= themes.length) return;
 
     final theme = themes[index];
-    final url = theme.audioUrl ?? theme.videoUrl;
+    final url = theme.videoUrl ?? theme.audioUrl;
 
     if (url == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -122,6 +145,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
 
   @override
   void dispose() {
+    SystemChrome.setPreferredOrientations([]);
     player.dispose();
     super.dispose();
   }
@@ -188,13 +212,14 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           child: Column(
                             children: [
-                              Hero(
-                                tag: 'anime_poster_${widget.animeDetails.id}',
-                                child: Container(
-                                  height: 220,
-                                  width: 150,
+                              if (currentThemeIndex != -1 &&
+                                  themes[currentThemeIndex].videoUrl != null)
+                                Container(
+                                  height: 210,
+                                  width: MediaQuery.sizeOf(context).width - 32,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
+                                    color: Colors.black,
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.opaque(0.4),
@@ -203,16 +228,39 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                                       ),
                                     ],
                                   ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: AnymeXImage(
-                                      imageUrl: widget.animeDetails.poster,
-                                      fit: BoxFit.cover,
-                                      radius: 0,
+                                  clipBehavior: Clip.antiAlias,
+                                  child: Video(
+                                    controller: controller,
+                                    fit: BoxFit.contain,
+                                    controls: null,
+                                  ),
+                                )
+                              else
+                                Hero(
+                                  tag: 'anime_poster_${widget.animeDetails.id}',
+                                  child: Container(
+                                    height: 220,
+                                    width: 150,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.opaque(0.4),
+                                          blurRadius: 20,
+                                          offset: const Offset(0, 10),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: AnymeXImage(
+                                        imageUrl: widget.animeDetails.poster,
+                                        fit: BoxFit.cover,
+                                        radius: 0,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
                               const SizedBox(height: 20),
                               Padding(
                                 padding:

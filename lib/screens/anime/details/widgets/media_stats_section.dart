@@ -1,12 +1,14 @@
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/models/Media/media.dart';
+import 'package:anymex/models/animethemes/anime_theme.dart';
 import 'package:anymex/models/mangaupdates/anime_adaptation.dart';
 import 'package:anymex/models/mangaupdates/next_release.dart';
 import 'package:anymex/models/mangaupdates/news_item.dart';
 import 'package:anymex/screens/anime/details/controller/media_details_controller.dart';
 import 'package:anymex/screens/anime/details/media_details_page.dart';
 import 'package:anymex/screens/anime/studio_details_page.dart';
+import 'package:anymex/screens/anime/themes/anime_theme_dialog.dart';
 import 'package:anymex/screens/anime/themes/anime_theme_view.dart';
 import 'package:anymex/screens/anime/widgets/watch_order_page.dart';
 import 'package:anymex/screens/anime/widgets/social_section.dart';
@@ -96,6 +98,7 @@ Widget buildMediaStatsSection(
             ),
           ],
           colors),
+    if (controller.isAnime) buildThemesSection(context, controller),
     if (media.friendsWatching != null && media.friendsWatching!.isNotEmpty)
       SocialSection(
         friends: media.friendsWatching!,
@@ -104,7 +107,7 @@ Widget buildMediaStatsSection(
             : media.totalChapters,
       ),
     buildSeasonsSection(context, media),
-    if (controller.isAnime) buildExtrasSection(context, media),
+    if (controller.isAnime) buildExtrasSection(context, media, controller),
   ];
 
   final List<Widget> visibleSections = [];
@@ -204,6 +207,173 @@ Widget _buildSection(String title, List<Widget> children, ColorScheme colors) {
   );
 }
 
+Widget buildThemesSection(
+    BuildContext context, MediaDetailsController controller) {
+  final colors = context.colors;
+  final media = controller.media.value;
+
+  return Obx(() {
+    if (controller.isThemesLoading.value) {
+      return _buildSection(
+        'Openings & Endings',
+        [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: colors.primary,
+                ),
+              ),
+            ),
+          ),
+        ],
+        colors,
+      );
+    }
+
+    final themes = controller.animeThemes;
+    if (themes.isEmpty) return const SizedBox.shrink();
+
+    final ops =
+        themes.where((t) => t.type.toUpperCase().startsWith('OP')).toList();
+    final eds =
+        themes.where((t) => t.type.toUpperCase().startsWith('ED')).toList();
+    final other =
+        themes.where((t) => !ops.contains(t) && !eds.contains(t)).toList();
+
+    Widget buildThemeTile(AnimeTheme theme, int globalIndex) {
+      final isOP = theme.type.toUpperCase().startsWith('OP');
+      final badgeText =
+          '${theme.type}${theme.sequence != null ? ' ${theme.sequence}' : ''}';
+
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () {
+            AnimeThemePlayerDialog.show(
+              context,
+              themes: themes.toList(),
+              initialIndex: globalIndex,
+              animeDetails: media,
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: Row(
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: (isOP ? colors.primary : colors.secondary)
+                        .withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: (isOP ? colors.primary : colors.secondary)
+                          .withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: AnymeXText(
+                    badgeText,
+                    size: 11,
+                    variant: TextVariant.bold,
+                    color: isOP ? colors.primary : colors.secondary,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText(
+                        theme.title,
+                        size: 13,
+                        variant: TextVariant.semiBold,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (theme.artist.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        AnymeXText(
+                          theme.artist,
+                          size: 11,
+                          color: colors.onSurfaceVariant,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.play_circle_filled_rounded,
+                  color: colors.primary,
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final List<Widget> items = [];
+
+    if (ops.isNotEmpty) {
+      items.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4, top: 2),
+          child: AnymeXText(
+            'Openings',
+            size: 12.5,
+            variant: TextVariant.bold,
+            color: colors.primary,
+          ),
+        ),
+      );
+      for (final op in ops) {
+        final globalIndex = themes.indexOf(op);
+        items.add(buildThemeTile(op, globalIndex));
+      }
+    }
+
+    if (eds.isNotEmpty) {
+      if (ops.isNotEmpty) items.add(const SizedBox(height: 8));
+      items.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 4, top: 4),
+          child: AnymeXText(
+            'Endings',
+            size: 12.5,
+            variant: TextVariant.bold,
+            color: colors.secondary,
+          ),
+        ),
+      );
+      for (final ed in eds) {
+        final globalIndex = themes.indexOf(ed);
+        items.add(buildThemeTile(ed, globalIndex));
+      }
+    }
+
+    if (other.isNotEmpty) {
+      if (ops.isNotEmpty || eds.isNotEmpty)
+        items.add(const SizedBox(height: 8));
+      for (final oth in other) {
+        final globalIndex = themes.indexOf(oth);
+        items.add(buildThemeTile(oth, globalIndex));
+      }
+    }
+
+    return _buildSection('Openings & Endings', items, colors);
+  });
+}
+
 Widget buildSeasonsSection(BuildContext context, Media mediaData) {
   final prequels = mediaData.relations
           ?.where((element) => element.relationType == 'PREQUEL')
@@ -265,7 +435,8 @@ Widget buildSeasonsSection(BuildContext context, Media mediaData) {
       colors);
 }
 
-Widget buildExtrasSection(BuildContext context, Media mediaData) {
+Widget buildExtrasSection(
+    BuildContext context, Media mediaData, MediaDetailsController controller) {
   final isAnime = mediaData.mediaType == ItemType.anime;
 
   return _buildSection(
@@ -280,7 +451,17 @@ Widget buildExtrasSection(BuildContext context, Media mediaData) {
                 title: "Openings & Endings",
                 subtitle: "View opening and ending themes",
                 onTap: () {
-                  navigate(() => AnimeThemePlayerPage(animeDetails: mediaData));
+                  if (controller.animeThemes.isNotEmpty) {
+                    AnimeThemePlayerDialog.show(
+                      context,
+                      themes: controller.animeThemes.toList(),
+                      initialIndex: 0,
+                      animeDetails: mediaData,
+                    );
+                  } else {
+                    navigate(
+                        () => AnimeThemePlayerPage(animeDetails: mediaData));
+                  }
                 },
               ),
               AnymeXTile(
@@ -440,7 +621,9 @@ Widget buildProgressContainer(
         0;
     final totalCount = totalFromMedia > 0
         ? totalFromMedia
-        : (controller.chapterList.isNotEmpty ? controller.chapterList.length : 0);
+        : (controller.chapterList.isNotEmpty
+            ? controller.chapterList.length
+            : 0);
     final currentProgress = controller.mediaProgress.value;
     final pct =
         totalCount > 0 ? (currentProgress / totalCount).clamp(0.0, 1.0) : 0.0;
@@ -619,7 +802,8 @@ Widget buildStatsGrid(BuildContext context, Media media,
         width: double.infinity,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
+          color:
+              colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
@@ -633,7 +817,8 @@ Widget buildStatsGrid(BuildContext context, Media media,
             if (entry.key == 'Studio' && (media.studios ?? []).isNotEmpty) {
               final studioName = media.studios!.first;
               onTap = () async {
-                final studioId = await AnilistData.fetchStudioIdByName(studioName);
+                final studioId =
+                    await AnilistData.fetchStudioIdByName(studioName);
                 if (studioId != null && context.mounted) {
                   showStudioDetailsSheet(
                     context,
@@ -645,7 +830,8 @@ Widget buildStatsGrid(BuildContext context, Media media,
             }
             return ConstrainedBox(
               constraints: BoxConstraints(maxWidth: constraints.maxWidth - 28),
-              child: buildStatCard(context, entry.key, entry.value, onTap: onTap),
+              child:
+                  buildStatCard(context, entry.key, entry.value, onTap: onTap),
             );
           }).toList(),
         ),

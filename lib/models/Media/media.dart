@@ -1410,6 +1410,7 @@ class Media {
       totalEpisodes: (json['episodes'] as int?)?.toString() ?? '?',
       poster: json['coverImage']?['large'] ?? '?',
       largePoster: json['coverImage']?['extraLarge'] ?? '?',
+      color: json['coverImage']?['color'] ?? '',
       cover: json['bannerImage'],
       rating: ((json['averageScore'] ?? 0) / 10).toStringAsFixed(1),
       type: json['type'] ?? (isManga ? 'MANGA' : 'ANIME'),
@@ -1477,6 +1478,7 @@ class Media {
         title: parsedTitle,
         romajiTitle: parsedRomaji,
         poster: rec['coverImage']?['large'] ?? '',
+        color: rec['coverImage']?['color'] ?? '',
         rating: ((rec['averageScore'] ?? 0) / 10).toString(),
         serviceType: ServicesType.anilist);
   }

@@ -11,7 +11,8 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:win32/win32.dart';
 import 'dart:ffi';
-import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart' hide isar;
+import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart'
+    hide isar;
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
@@ -20,7 +21,7 @@ class AnymeXTitleBar {
   static final ValueNotifier<bool> isMaximized = ValueNotifier(false);
 
   static Future<void> initialize() async {
-    if (kDebugMode) return;
+    if (kDebugMode && !Platform.isWindows) return;
     if (!Platform.isWindows) {
       await windowManager.waitUntilReadyToShow(
         const WindowOptions(
@@ -143,83 +144,80 @@ class _TitleBarWidget extends StatelessWidget {
     final isOled = Provider.of<ThemeProvider>(context).isOled;
     final defaultColor = context.colors.onSurface;
 
-    return RepaintBoundary(
-        child: Material(
+    return Material(
       color: Colors.transparent,
-      child: ClipRect(
-        child: Container(
-          height: 40,
-          decoration: BoxDecoration(
-            color: isOled ? Colors.black : Colors.black.opaque(0.2),
-            border: Border(
-              bottom: BorderSide(
-                color: isOled ? Colors.transparent : defaultColor.opaque(0.1),
-                width: 0.5,
-              ),
+      child: Container(
+        height: 40,
+        decoration: BoxDecoration(
+          color: isOled ? Colors.black : Colors.black.opaque(0.1),
+          border: Border(
+            bottom: BorderSide(
+              color: isOled ? Colors.transparent : defaultColor.opaque(0.1),
+              width: 0.5,
             ),
           ),
-          child: Row(
-            children: [
-              const SizedBox(width: 16),
-              Container(
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  color: defaultColor.opaque(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: AnymeXAnimatedLogo(
-                  size: 18,
-                  autoPlay: true,
-                  color: defaultColor,
-                ),
+        ),
+        child: Row(
+          children: [
+            const SizedBox(width: 16),
+            Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: defaultColor.opaque(0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(width: 10),
-              AnymeXText(
-                'AnymeX',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: defaultColor,
-                  letterSpacing: 0.5,
-                ),
+              child: AnymeXAnimatedLogo(
+                size: 18,
+                autoPlay: true,
+                color: defaultColor,
               ),
-              Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onPanStart: (_) {
-                    windowManager.startDragging();
-                  },
-                  onDoubleTap: _toggleMaximize,
-                ),
+            ),
+            const SizedBox(width: 10),
+            AnymeXText(
+              'AnymeX',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: defaultColor,
+                letterSpacing: 0.5,
               ),
-              _WindowButton(
-                icon: Icons.remove,
-                onPressed: () => windowManager.minimize(),
-                buttonColor: defaultColor,
-              ),
-              ValueListenableBuilder<bool>(
-                valueListenable: AnymeXTitleBar.isMaximized,
-                builder: (_, isMaximized, __) {
-                  return _WindowButton(
-                    icon: isMaximized
-                        ? Icons.filter_none_rounded
-                        : Icons.crop_square_rounded,
-                    onPressed: _toggleMaximize,
-                    buttonColor: defaultColor,
-                  );
+            ),
+            Expanded(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onPanStart: (_) {
+                  windowManager.startDragging();
                 },
+                onDoubleTap: _toggleMaximize,
               ),
-              _WindowButton(
-                icon: Icons.close_rounded,
-                onPressed: () => windowManager.close(),
-                isClose: true,
-                buttonColor: defaultColor,
-              ),
-            ],
-          ),
+            ),
+            _WindowButton(
+              icon: Icons.remove,
+              onPressed: () => windowManager.minimize(),
+              buttonColor: defaultColor,
+            ),
+            ValueListenableBuilder<bool>(
+              valueListenable: AnymeXTitleBar.isMaximized,
+              builder: (_, isMaximized, __) {
+                return _WindowButton(
+                  icon: isMaximized
+                      ? Icons.filter_none_rounded
+                      : Icons.crop_square_rounded,
+                  onPressed: _toggleMaximize,
+                  buttonColor: defaultColor,
+                );
+              },
+            ),
+            _WindowButton(
+              icon: Icons.close_rounded,
+              onPressed: () => windowManager.close(),
+              isClose: true,
+              buttonColor: defaultColor,
+            ),
+          ],
         ),
       ),
-    ));
+    );
   }
 }
 

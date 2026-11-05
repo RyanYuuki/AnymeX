@@ -9,8 +9,10 @@ import 'package:get/get.dart';
 
 void showNavBarStyleSwitcher(BuildContext context) {
   registerBuiltInNavBarStyles();
-  final selectedStyle =
-      NavStyleVariant.values[settingsController.navBarStyle].obs;
+  final selectedStyle = NavStyleVariant.values[settingsController
+          .navBarStyle
+          .clamp(0, NavStyleVariant.values.length - 1)]
+      .obs;
 
   showDialog(
     context: context,

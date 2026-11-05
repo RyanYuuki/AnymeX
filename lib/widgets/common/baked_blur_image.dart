@@ -11,7 +11,56 @@ import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 
 typedef _BakedRaster = ({int width, int height, Uint8List pixels});
 
-_BakedRaster _processFrostedBackdrop((Uint8List, double, double) task) {
+Future<_BakedRaster> _prepareNativeRaster(Uint8List sourceBytes,
+    {int targetDimension = 200}) async {
+  final buffer = await ui.ImmutableBuffer.fromUint8List(sourceBytes);
+  final descriptor = await ui.ImageDescriptor.encoded(buffer);
+  final isVertical = descriptor.height > descriptor.width;
+  final codec = await descriptor.instantiateCodec(
+    targetWidth: isVertical ? targetDimension : null,
+    targetHeight: isVertical ? null : targetDimension,
+  );
+  final frame = await codec.getNextFrame();
+  final image = frame.image;
+  final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+  final raster = (
+    width: image.width,
+    height: image.height,
+    pixels: byteData!.buffer.asUint8List(),
+  );
+  image.dispose();
+  codec.dispose();
+  descriptor.dispose();
+  buffer.dispose();
+  return raster;
+}
+
+_BakedRaster _processFastFrostedRaster((_BakedRaster, double, double) task) {
+  final (raster, vibrancy, blurAmount) = task;
+  var image = img.Image.fromBytes(
+    width: raster.width,
+    height: raster.height,
+    bytes: raster.pixels.buffer,
+    numChannels: 4,
+    order: img.ChannelOrder.rgba,
+  );
+
+  final blurRadius =
+      (blurAmount * (raster.width / 400.0)).round().clamp(1, 35);
+  var blurred = img.gaussianBlur(image, radius: blurRadius);
+
+  if (vibrancy != 1.0) {
+    blurred = img.adjustColor(blurred, saturation: vibrancy);
+  }
+
+  return (
+    width: blurred.width,
+    height: blurred.height,
+    pixels: blurred.getBytes(order: img.ChannelOrder.rgba),
+  );
+}
+
+_BakedRaster _processLegacyFrostedBackdrop((Uint8List, double, double) task) {
   final (sourceBytes, vibrancy, blurAmount) = task;
   final decoded = img.decodeImage(sourceBytes);
   if (decoded == null) {
@@ -19,7 +68,7 @@ _BakedRaster _processFrostedBackdrop((Uint8List, double, double) task) {
   }
 
   final isTall = decoded.height > decoded.width;
-  const targetShortSide = 240;
+  const targetShortSide = 200;
   var scaled = img.copyResize(
     decoded,
     width: isTall ? targetShortSide : null,
@@ -41,6 +90,22 @@ _BakedRaster _processFrostedBackdrop((Uint8List, double, double) task) {
     height: rgbaImage.height,
     pixels: rgbaImage.getBytes(order: img.ChannelOrder.rgba),
   );
+}
+
+Future<_BakedRaster> _generateFrostedRaster(
+    Uint8List rawBytes, double saturation, double blurAmount) async {
+  try {
+    final downscaled = await _prepareNativeRaster(rawBytes);
+    return await compute(
+      _processFastFrostedRaster,
+      (downscaled, saturation, blurAmount),
+    );
+  } catch (_) {
+    return await compute(
+      _processLegacyFrostedBackdrop,
+      (rawBytes, saturation, blurAmount),
+    );
+  }
 }
 
 Future<ui.Image> _inflateNativeImage(_BakedRaster raster) {
@@ -171,10 +236,7 @@ class BakedBlurImage extends StatefulWidget {
               MeshBlurHelper.processMeshBackdrop,
               (rawBytes, saturation, blurAmount, url.hashCode),
             )
-          : await compute(
-              _processFrostedBackdrop,
-              (rawBytes, saturation, blurAmount),
-            );
+          : await _generateFrostedRaster(rawBytes, saturation, blurAmount);
       final nativeImage = await _inflateNativeImage(raster);
       _storeInCache(cacheKey, nativeImage);
       return nativeImage;
@@ -210,10 +272,7 @@ class BakedBlurImage extends StatefulWidget {
                 MeshBlurHelper.processMeshBackdrop,
                 (rawBytes, saturation, blurAmount, url.hashCode),
               )
-            : await compute(
-                _processFrostedBackdrop,
-                (rawBytes, saturation, blurAmount),
-              );
+            : await _generateFrostedRaster(rawBytes, saturation, blurAmount);
         final nativeImage = await _inflateNativeImage(raster);
         _storeInCache(cacheKey, nativeImage);
         return nativeImage;

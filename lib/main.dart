@@ -397,10 +397,7 @@ class _MainAppState extends State<MainApp> {
                   top: 0,
                   left: 0,
                   right: 0,
-                  child: Container(
-                    color: Colors.transparent,
-                    child: AnymeXTitleBar.titleBar(),
-                  ),
+                  child: AnymeXTitleBar.titleBar(),
                 ),
                 // const FpsMeter(),
               ],
@@ -639,10 +636,10 @@ class _FilterScreenState extends State<FilterScreen> {
     return AnymeXScaffold(
         resizeToAvoidBottomInset: false,
         body: PlatformBuilder(
-      strictMode: false,
-      desktopBuilder: _buildDesktopLayout(context, authService),
-      androidBuilder: _buildAndroidLayout(authService),
-    ));
+          strictMode: false,
+          desktopBuilder: _buildDesktopLayout(context, authService),
+          androidBuilder: _buildAndroidLayout(authService),
+        ));
   }
 
   Widget _buildDesktopLayout(BuildContext context, ServiceHandler authService) {

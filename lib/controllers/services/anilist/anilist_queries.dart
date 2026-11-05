@@ -90,6 +90,7 @@ const detailsPrimaryQuery = '''
               }
               coverImage {
                 large
+                color
               }
               bannerImage
               type
@@ -110,6 +111,7 @@ const detailsPrimaryQuery = '''
                 }
                 coverImage {
                   large
+                  color
                 }
                 type
                 averageScore
@@ -209,6 +211,7 @@ const characterDetailsQuery = '''
             }
             coverImage {
               large
+              color
             }
             type
             format
@@ -310,6 +313,7 @@ const staffDetailsQuery = '''
             }
             coverImage {
               large
+              color
             }
             type
             format

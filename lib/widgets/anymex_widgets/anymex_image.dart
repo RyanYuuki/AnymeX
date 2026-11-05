@@ -247,7 +247,7 @@ class _AnymeXImageState extends State<AnymeXImage> {
         : PlatformDispatcher.instance.views.first.devicePixelRatio.clamp(1.0, 3.0);
     final decodeWidth = widget.width != null && widget.width!.isFinite && widget.width! > 0
         ? (widget.width! * dpr).round()
-        : null;
+        : (widget.height != null && widget.height!.isFinite && widget.height! > 0 ? null : 1440);
     final decodeHeight = widget.height != null && widget.height!.isFinite && widget.height! > 0
         ? (widget.height! * dpr).round()
         : null;
@@ -266,9 +266,9 @@ class _AnymeXImageState extends State<AnymeXImage> {
       colorBlendMode: widget.color != null ? BlendMode.color : null,
       placeholder: (_, __) => _placeholder(context),
       fadeInDuration:
-          widget.fadeInDuration ?? const Duration(milliseconds: 500),
+          widget.fadeInDuration ?? Duration.zero,
       fadeOutDuration:
-          widget.fadeOutDuration ?? const Duration(milliseconds: 300),
+          widget.fadeOutDuration ?? Duration.zero,
       errorWidget: (_, __, ___) {
         if (widget.errorImage != null && widget.errorImage!.isNotEmpty) {
           return _errorImage(widget.errorImage!);
@@ -391,9 +391,7 @@ class _AnymeXImageState extends State<AnymeXImage> {
     return Container(
       width: widget.width,
       height: widget.height,
-      alignment: Alignment.center,
       color: Theme.of(context).colorScheme.surfaceContainerHighest.opaque(0.2),
-      child: const CircularProgressIndicator(strokeWidth: 2),
     );
   }
 
