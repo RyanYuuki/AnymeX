@@ -81,8 +81,8 @@ class UISettings {
     this.fullScreenBlur = false,
     this.tintBlur = true,
     this.usePosterForBlur = true,
-    this.detailsBlurStyle = 1,
-    this.detailsBlurScope = 2,
+    this.detailsBlurStyle = 0,
+    this.detailsBlurScope = 1,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -144,7 +144,8 @@ class UISettings {
     }
 
     homePageCardsSimkl = Map<String, bool>.from(homePageCardsSimkl);
-    if (homePageCardsSimkl.isNotEmpty && !homePageCardsSimkl.values.any((v) => v)) {
+    if (homePageCardsSimkl.isNotEmpty &&
+        !homePageCardsSimkl.values.any((v) => v)) {
       homePageCardsSimkl[homePageCardsSimkl.keys.first] = true;
     }
   }
@@ -220,20 +221,19 @@ class UISettings {
           UISettingsKeys.appFontFamily.get<String>(uiDefaults.appFontFamily),
       bottomNavBarMargin: UISettingsKeys.bottomNavBarMargin
           .get<double>(uiDefaults.bottomNavBarMargin),
-      useLegacyNavbar: UISettingsKeys.useLegacyNavbar
-          .get<bool>(uiDefaults.useLegacyNavbar),
-      useComputedBlur: UISettingsKeys.useComputedBlur
-          .get<bool>(uiDefaults.useComputedBlur),
-      fullScreenBlur: UISettingsKeys.fullScreenBlur
-          .get<bool>(uiDefaults.fullScreenBlur),
-      tintBlur:
-          UISettingsKeys.tintBlur.get<bool>(uiDefaults.tintBlur),
+      useLegacyNavbar:
+          UISettingsKeys.useLegacyNavbar.get<bool>(uiDefaults.useLegacyNavbar),
+      useComputedBlur:
+          UISettingsKeys.useComputedBlur.get<bool>(uiDefaults.useComputedBlur),
+      fullScreenBlur:
+          UISettingsKeys.fullScreenBlur.get<bool>(uiDefaults.fullScreenBlur),
+      tintBlur: UISettingsKeys.tintBlur.get<bool>(uiDefaults.tintBlur),
       usePosterForBlur: UISettingsKeys.usePosterForBlur
           .get<bool>(uiDefaults.usePosterForBlur),
-      detailsBlurStyle: UISettingsKeys.detailsBlurStyle
-          .get<int>(uiDefaults.detailsBlurStyle),
-      detailsBlurScope: UISettingsKeys.detailsBlurScope
-          .get<int>(uiDefaults.detailsBlurScope),
+      detailsBlurStyle:
+          UISettingsKeys.detailsBlurStyle.get<int>(uiDefaults.detailsBlurStyle),
+      detailsBlurScope:
+          UISettingsKeys.detailsBlurScope.get<int>(uiDefaults.detailsBlurScope),
     );
   }
 }

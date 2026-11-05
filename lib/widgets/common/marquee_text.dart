@@ -69,7 +69,7 @@ class MarqueeText extends StatelessWidget {
 
         if (shouldScroll) {
           return SizedBox(
-            height: intrinsicPainter.height,
+            height: intrinsicPainter.height + 8.0,
             width: availableWidth,
             child: Marquee(
               text: displayText,
@@ -89,7 +89,6 @@ class MarqueeText extends StatelessWidget {
         }
 
         return SizedBox(
-          height: intrinsicPainter.height,
           width: availableWidth,
           child: Align(
             alignment: _alignmentForTextAlign(textAlign),

@@ -1295,6 +1295,9 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed: () async {
+                        if (!await file.parent.exists()) {
+                          await file.parent.create(recursive: true);
+                        }
                         await file.writeAsString(controller.text);
                         if (ctx.mounted) Navigator.pop(ctx);
                         snackBar('mpv.conf saved successfully');

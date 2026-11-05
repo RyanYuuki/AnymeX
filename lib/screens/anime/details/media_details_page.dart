@@ -33,7 +33,6 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/widgets/anime/media_header.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/baked_blur_image.dart';
-import 'package:anymex/widgets/helper/keep_alive_wrapper.dart';
 import 'package:anymex/widgets/common/reusable_carousel.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
@@ -655,7 +654,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                       return _buildStatsShimmer(context).bottomSpacing(16);
                     }
                     return KeyedSubtree(
-                      key: ValueKey('media_stats_${controller.selectedPage.value}'),
+                      key: const ValueKey('media_stats'),
                       child: buildMediaStatsSection(context, controller)
                           .bottomSpacing(16)
                           .animateSection(onScroll: false),

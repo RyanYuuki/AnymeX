@@ -10,6 +10,7 @@ import 'package:anymex/screens/notifications/notification_screen.dart';
 import 'package:anymex/screens/notifications/notification_controller.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/settings/settings.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -343,12 +344,23 @@ class SettingsSheet extends StatelessWidget {
               Navigator.pop(context);
               if (!Get.isRegistered<NotificationController>()) {
                 Get.put(NotificationController());
+              } else {
+                final controller = Get.find<NotificationController>();
+                if (controller.anilistNotifications.isEmpty) {
+                  controller.loadAnilistNotifications();
+                }
               }
               Get.to(() => const NotificationScreen());
             },
             child: Obx(() {
-              final commentumService = Get.find<CommentumService>();
-              final unread = commentumService.unreadNotificationCount.value;
+              int unread = 0;
+              if (Get.isRegistered<AnilistAuth>()) {
+                unread += Get.find<AnilistAuth>().unreadAnilistCount.value;
+              }
+              if (Get.isRegistered<CommentumService>()) {
+                unread +=
+                    Get.find<CommentumService>().unreadNotificationCount.value;
+              }
               return Stack(
                 clipBehavior: Clip.none,
                 children: [

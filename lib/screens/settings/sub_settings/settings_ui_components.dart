@@ -5,20 +5,15 @@ import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/screens/settings/widgets/navbar_selector.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
-import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
-import 'package:anymex/widgets/common/cards/card_gate.dart';
-import 'package:anymex/widgets/common/cards/media_card_registry.dart';
-import 'package:anymex/widgets/common/cards/media_cards.dart';
 import 'package:anymex/widgets/common/carousel/carousel_style_registry.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/common/navbar/navbar_registry.dart';
 import 'package:anymex/widgets/common/navbar/navbar_styles.dart';
-import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
@@ -34,7 +29,6 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
   final settings = Get.find<Settings>();
 
   List<Media> get _sampleHeroMedia => trendingAnimes.take(5).toList();
-  late final _sampleMediaCards = convertData(trendingAnimes).take(5).toList();
   List<HistoryModel> get _sampleHistoryCards =>
       HistoryCardSelector.sampleDataList;
   List<NavItem> get _navPreviewItems => NavBarStyleSelector.previewItems;
@@ -42,7 +36,6 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
   @override
   void initState() {
     super.initState();
-    registerBuiltInMediaCardStyles();
     registerBuiltInNavBarStyles();
   }
 
@@ -163,49 +156,6 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildCardStyleSection(BuildContext context, bool desktop) {
-    final currentStyle = MediaCardRegistry.getByIndex(settings.cardStyle);
-    return _buildCustomizerSection(
-      context: context,
-      icon: Iconsax.card5,
-      title: 'Card Style',
-      currentStyleName: currentStyle.displayName,
-      description: currentStyle.description,
-      previewWidget: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: SizedBox(
-          height: getCardHeight(settings.cardStyle, desktop),
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            itemCount: _sampleMediaCards.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 14),
-            itemBuilder: (context, index) {
-              return MediaCardGate(
-                cardStyleIndex: settings.cardStyle,
-                itemData: _sampleMediaCards[index],
-                tag: 'preview-card-$index',
-                variant: DataVariant.regular,
-                type: ItemType.anime,
-              );
-            },
-          ),
-        ),
-      ),
-      pills: List.generate(MediaCardRegistry.styles.length, (index) {
-        final style = MediaCardRegistry.styles[index];
-        return PillItem(
-          label: style.displayName,
-          isSelected: settings.cardStyle == index,
-          onTap: () {
-            settings.cardStyle = index;
-          },
-        );
-      }),
     );
   }
 
@@ -333,7 +283,6 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
             () => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildCardStyleSection(context, desktop),
                 _buildHistoryCardStyleSection(context, desktop),
                 _buildCarouselStyleSection(context),
                 _buildNavBarStyleSection(context),

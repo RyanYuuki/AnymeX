@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -73,7 +74,7 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
 
   Widget _buildHeaderTitle() {
     return Padding(
-      padding: const EdgeInsets.only(left: 20.0),
+      padding: const EdgeInsets.only(left: 20.0, bottom: 2.0),
       child: AnymeXText(widget.title,
         variant: TextVariant.semiBold,
         size: 17,
@@ -118,9 +119,10 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
           convertData(widget.data, variant: widget.variant);
       final enableAnimation = settingsController.enableAnimation;
       final cardStyleIndex = settingsController.cardStyle;
+      final _ = settingsController.customCardStyle;
 
       return SizedBox(
-        height: getCardHeight(cardStyleIndex, getPlatform(context)),
+        height: getCardHeight(cardStyleIndex, getPlatform(context)) + 15,
         child: ListView.builder(
           key: PageStorageKey<String>('carousel-${widget.title}'),
           itemCount: processedData.length,
@@ -137,7 +139,13 @@ class _ReusableCarouselState extends State<ReusableCarousel> {
     final tag = '${widget.title}-${itemData.id}-$index';
 
     final card = enableAnimation
-        ? SlideAndScaleAnimation(child: _buildCard(itemData, tag))
+        ? SlideAndScaleAnimation(
+            initialScale: 0.0,
+            finalScale: 1.0,
+            initialOffset: const Offset(1.0, 0.0),
+            duration: Duration(milliseconds: getAnimationDuration()),
+            child: _buildCard(itemData, tag),
+          )
         : _buildCard(itemData, tag);
 
     final child = AnymexOnTap(

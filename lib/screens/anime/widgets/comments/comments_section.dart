@@ -51,7 +51,10 @@ class CommentSection extends StatefulWidget {
   State<CommentSection> createState() => _CommentSectionState();
 }
 
-class _CommentSectionState extends State<CommentSection> {
+class _CommentSectionState extends State<CommentSection>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   late CommentSectionController controller;
   String? lastMediaId;
 
@@ -324,6 +327,7 @@ class _CommentSectionState extends State<CommentSection> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 

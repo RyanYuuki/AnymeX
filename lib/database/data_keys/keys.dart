@@ -317,6 +317,7 @@ enum UISettingsKeys {
   detailsFadeAdjuster,
   detailsBlurStyle,
   detailsBlurScope,
+  customCardStyleJson,
 }
 
 enum DownloadKeys {

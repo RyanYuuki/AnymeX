@@ -113,18 +113,58 @@ class PlayerShaders {
   }
 
   static Future<Directory> _getAppDirectory() async {
+    if (Platform.isAndroid) {
+      final primary = Directory('/storage/emulated/0/AnymeX');
+      try {
+        if (!await primary.exists()) {
+          await primary.create(recursive: true);
+        }
+        return primary;
+      } catch (_) {
+        try {
+          final ext = await getExternalStorageDirectory();
+          if (ext != null) {
+            final rootMatch =
+                RegExp(r'^/storage/[^/]+/[^/]+').firstMatch(ext.path);
+            if (rootMatch != null) {
+              final rootDir = Directory('${rootMatch.group(0)}/AnymeX');
+              if (!await rootDir.exists()) {
+                await rootDir.create(recursive: true);
+              }
+              return rootDir;
+            }
+          }
+        } catch (_) {}
+      }
+    }
     final documentsDir = await getApplicationDocumentsDirectory();
-    return Directory('${documentsDir.path}/AnymeX');
+    final dir = Directory('${documentsDir.path}/AnymeX');
+    if (!await dir.exists()) {
+      await dir.create(recursive: true);
+    }
+    return dir;
   }
 
   static Future<String> getMpvPath() async {
     final dir = await _getAppDirectory();
-    return '${dir.path}/mpv/';
+    final subDir = Directory('${dir.path}/mpv');
+    if (await subDir.exists()) {
+      return '${dir.path}/mpv/';
+    }
+    return '${dir.path}/';
   }
 
   static Future<String> getShaderBasePath() async {
-    final path = await getMpvPath();
-    return '${path}Shaders/';
+    final dir = await _getAppDirectory();
+    final subDir = Directory('${dir.path}/mpv/Shaders');
+    if (await subDir.exists()) {
+      return '${dir.path}/mpv/Shaders/';
+    }
+    final mainShaders = Directory('${dir.path}/Shaders');
+    if (!await mainShaders.exists()) {
+      await mainShaders.create(recursive: true);
+    }
+    return '${dir.path}/Shaders/';
   }
 
   static Future<List<String>> getShaderPathsForProfile(
@@ -161,19 +201,25 @@ class PlayerShaders {
 
   static Future<bool> createMpvConfigFolder() async {
     try {
-      final mpvPath = await getMpvPath();
-      final configDir = Directory(mpvPath);
+      final configPath = await getMpvConfigPath();
+      final configFile = File(configPath);
+      final configDir = configFile.parent;
 
       if (!await configDir.exists()) {
         await configDir.create(recursive: true);
-        debugPrint('Created MPV directory: ${configDir.path}');
       }
 
-      final configFile = File('${configDir.path}mpv.conf');
-
       if (!await configFile.exists()) {
+        try {
+          final oldDocsDir = await getApplicationDocumentsDirectory();
+          final oldFile = File('${oldDocsDir.path}/AnymeX/mpv/mpv.conf');
+          if (await oldFile.exists()) {
+            final content = await oldFile.readAsString();
+            await configFile.writeAsString(content);
+            return true;
+          }
+        } catch (_) {}
         await configFile.writeAsString('');
-        debugPrint('Created empty MPV config file: ${configFile.path}');
       }
 
       return true;
@@ -184,8 +230,13 @@ class PlayerShaders {
   }
 
   static Future<String> getMpvConfigPath() async {
-    final mpvPath = await getMpvPath();
-    return '${mpvPath}mpv.conf';
+    final dir = await _getAppDirectory();
+    final directFile = File('${dir.path}/mpv.conf');
+    final subFile = File('${dir.path}/mpv/mpv.conf');
+    if (await subFile.exists() && !await directFile.exists()) {
+      return subFile.path;
+    }
+    return directFile.path;
   }
 
   static Future<bool> doesMpvConfigExist() async {

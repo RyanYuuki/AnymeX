@@ -6,6 +6,7 @@ import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/screens/profile/profile_page.dart';
 import 'package:anymex/screens/library/controller/library_controller.dart';
@@ -399,10 +400,17 @@ class HeaderProfileAvatar extends StatelessWidget {
         child: Obx(() {
           final count =
               Get.find<SourceController>().extensionUpdatesCount.value;
-          int? unread;
+          int unread = 0;
           try {
-            final commentumService = Get.find<CommentumService>();
-            unread = commentumService.unreadNotificationCount.value;
+            if (Get.isRegistered<AnilistAuth>()) {
+              unread += Get.find<AnilistAuth>().unreadAnilistCount.value;
+            }
+          } catch (_) {}
+          try {
+            if (Get.isRegistered<CommentumService>()) {
+              unread +=
+                  Get.find<CommentumService>().unreadNotificationCount.value;
+            }
           } catch (_) {}
           final avatar = CircleAvatar(
             radius: radius,
@@ -425,7 +433,7 @@ class HeaderProfileAvatar extends StatelessWidget {
                     size: 18,
                   ),
           );
-          if (unread != null && unread > 0) {
+          if (unread > 0) {
             return AnymeXBadge(
               label: unread > 99 ? '99+' : '$unread',
               backgroundColor: Theme.of(context).colorScheme.error,

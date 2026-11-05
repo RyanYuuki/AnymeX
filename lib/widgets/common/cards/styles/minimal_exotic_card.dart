@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/settings/methods.dart';
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/extension_utils.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -18,13 +19,16 @@ class MinimalExoticCardStyle implements MediaCardStyle {
   String get description => 'Bordered card with bottom gradient title and action banner.';
 
   @override
-  double getHeight(bool isDesktop) => isDesktop ? 270 : 210;
+  double getHeight(bool isDesktop) =>
+      settingsController.customCardStyle.getCardHeight(3, isDesktop);
 
   @override
-  double getExtraHeight(bool isDesktop) => isDesktop ? 40 : 35;
+  double getExtraHeight(bool isDesktop) =>
+      settingsController.customCardStyle.getExtraHeight(3, isDesktop);
 
   @override
-  double getAspectRatio(bool isDesktop) => isDesktop ? (160 / 270) : (118 / 210);
+  double getAspectRatio(bool isDesktop) =>
+      settingsController.customCardStyle.getCardAspectRatio(3, isDesktop);
 
   @override
   Widget buildCard(BuildContext context, MediaCardProps props) {
@@ -53,10 +57,13 @@ class MinimalExoticCard extends CarouselCard {
   Widget build(BuildContext context) {
     final primaryColor = context.colors.primary;
     final desktop = isDesktop(context);
+    final config = settingsController.customCardStyle;
+    final cardW = config.cardWidth(desktop, 3);
+    final titleLines = config.titleLines;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
-      constraints: BoxConstraints(maxWidth: desktop ? 160 : 118),
+      constraints: BoxConstraints(maxWidth: cardW),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12.toDouble().multiplyRoundness()),
         boxShadow: [
@@ -101,6 +108,7 @@ class MinimalExoticCard extends CarouselCard {
                           title: itemData.title ?? '?',
                           isDesktop: desktop,
                           overlay: true,
+                          maxLines: titleLines,
                         ),
                       ),
                   ],

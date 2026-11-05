@@ -32,6 +32,7 @@ import 'package:anymex/utils/language.dart';
 import 'package:anymex/utils/background_service_handler.dart';
 import 'package:anymex/controllers/services/torrent/torrent_service.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
+import 'package:anymex/utils/notification.dart';
 
 class DownloadController extends GetxController {
   final RxList<ActiveDownloadTask> activeTasks = <ActiveDownloadTask>[].obs;
@@ -608,6 +609,14 @@ class DownloadController extends GetxController {
     );
     await _writeEpisodeMeta(task, fileName);
     await _loadIndex();
+    _notifyDownloadComplete(
+      title: task.mediaTitle,
+      subtitle: 'Episode ${task.episode.number}',
+      posterUrl: task.media?.poster ?? task.media?.cover,
+      isManga: false,
+      mediaId: task.media?.id.toString(),
+      episodeOrChapter: task.episode.number,
+    );
   }
 
   Future<void> _onForegroundMangaTaskFinished(
@@ -618,6 +627,41 @@ class DownloadController extends GetxController {
         mediaDir, MediaDownloader.sanitizePathSegment(task.chapterDisplay)));
     await _writeChapterMeta(task, chapterDir.path, pageCount);
     await _loadIndex();
+    _notifyDownloadComplete(
+      title: task.mediaTitle,
+      subtitle: task.chapterDisplay,
+      posterUrl: task.media?.poster ?? task.media?.cover,
+      isManga: true,
+      mediaId: task.media?.id.toString(),
+      episodeOrChapter: task.chapter.number?.toString(),
+    );
+  }
+
+  void _notifyDownloadComplete({
+    required String title,
+    required String subtitle,
+    String? posterUrl,
+    required bool isManga,
+    String? mediaId,
+    String? episodeOrChapter,
+  }) {
+    final enabled = KvHelper.get<bool>('download_notifications_enabled',
+        defaultVal: true);
+    if (!enabled) return;
+    NotificationService.instance.showRichNotification(
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: 'Download Completed',
+      body: '$title - $subtitle',
+      imageUrl: posterUrl,
+      channelId: 'downloads',
+      payload: jsonEncode({
+        'type': 'download_complete',
+        'is_manga': isManga,
+        'media_id': mediaId,
+        'title': title,
+        'number': episodeOrChapter,
+      }),
+    );
   }
 
   final List<String> _pendingPayloads = [];
@@ -643,6 +687,14 @@ class DownloadController extends GetxController {
     await _writeEpisodeMeta(task, fileName);
     await _loadIndex();
     _saveActiveTasks();
+    _notifyDownloadComplete(
+      title: task.mediaTitle,
+      subtitle: 'Episode ${task.episode.number}',
+      posterUrl: task.media?.poster ?? task.media?.cover,
+      isManga: false,
+      mediaId: task.media?.id.toString(),
+      episodeOrChapter: task.episode.number,
+    );
   }
 
   Future<void> _saveActiveTasks() async {

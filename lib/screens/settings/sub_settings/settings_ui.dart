@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/screens/settings/sub_settings/card_customizer_page.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui_components.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_ui_details.dart';
 import 'package:anymex/utils/external_font_loader.dart';
@@ -72,9 +73,17 @@ class _SettingsUiState extends State<SettingsUi> {
                             icon: HugeIcons.strokeRoundedShapes,
                             title: 'UI Components',
                             subtitle:
-                                'Customize card, history card, carousel & nav bar styles',
+                                'Customize history card, carousel & nav bar styles',
                             onTap: () =>
                                 navigate(() => const SettingsUiComponents()),
+                          ),
+                          AnymeXTile(
+                            icon: Icons.tune_rounded,
+                            title: 'Card Customizer',
+                            subtitle:
+                                'Customize carousel card styles, geometry, and layout',
+                            onTap: () =>
+                                navigate(() => const CardCustomizerPage()),
                           ),
                           AnymeXTile(
                             icon: HugeIcons.strokeRoundedPlaySquare,

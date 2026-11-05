@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:anymex/database/kv_helper.dart';
 
 class SettingsDownloads extends StatefulWidget {
   const SettingsDownloads({super.key});
@@ -98,6 +99,25 @@ class _SettingsDownloadsState extends State<SettingsDownloads> {
                               valueTransformer: (v) => v.toInt().toString(),
                               onChanged: (v) =>
                                   settings.saveDownloadChunks(v.toInt()),
+                            ),
+                          ],
+                        ),
+                        AnymeXSectionBuilder(
+                          title: 'Notifications',
+                          children: [
+                            AnymeXTile.toggle(
+                              icon: Icons.notifications_active_outlined,
+                              title: 'Download Notifications',
+                              subtitle:
+                                  'Show rich notification with poster art when download completes',
+                              value: KvHelper.get<bool>(
+                                  'download_notifications_enabled',
+                                  defaultVal: true),
+                              onChanged: (v) {
+                                KvHelper.set(
+                                    'download_notifications_enabled', v);
+                                setState(() {});
+                              },
                             ),
                           ],
                         ),

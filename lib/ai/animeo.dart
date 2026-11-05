@@ -289,8 +289,7 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
       if (!isAdult) {
         final nsfw = data['nsfw'] == true ||
             (data['genres'] as List?)?.any((g) =>
-                    ['HENTAI', 'EROTICA']
-                        .contains(g['name']?.toUpperCase())) ==
+                    ['HENTAI', 'EROTICA'].contains(g['name']?.toUpperCase())) ==
                 true;
         if (nsfw) continue;
       }
@@ -315,8 +314,7 @@ Future<List<Media>> _fetchAnimeSproutRecommendations({
       results.add(Media(
         id: resolvedId ?? '',
         idMal: malId,
-        title:
-            (title?.isNotEmpty == true ? title : titleFallback) ?? 'Unknown',
+        title: (title?.isNotEmpty == true ? title : titleFallback) ?? 'Unknown',
         romajiTitle: titleFallback ?? 'Unknown',
         poster: picture ?? '',
         description: synopsis ?? '',
@@ -353,17 +351,19 @@ Future<String?> _getAnilistIdFromMal(String malId) async {
     }
     ''';
 
-    final response = await http.post(
-      Uri.parse('https://graphql.anilist.co'),
-      headers: {
-        if (token != null) 'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'query': query,
-        'variables': {'idMal': int.tryParse(malId)},
-      }),
-    ).timeout(const Duration(seconds: 5));
+    final response = await http
+        .post(
+          Uri.parse('https://graphql.anilist.co'),
+          headers: {
+            if (token != null) 'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'query': query,
+            'variables': {'idMal': int.tryParse(malId)},
+          }),
+        )
+        .timeout(const Duration(seconds: 5));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -443,29 +443,28 @@ Future<List<Media>> _fetchAnilistRecommendations({
 
     Logger.i('Fetching AniList recommendations for page $page');
 
-    final response = await http.post(
-      Uri.parse('https://graphql.anilist.co'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: jsonEncode({
-        'query': query,
-        'variables': {
-          'page': page,
-        },
-      }),
-    ).timeout(const Duration(seconds: 15));
+    final response = await http
+        .post(
+          Uri.parse('https://graphql.anilist.co'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: jsonEncode({
+            'query': query,
+            'variables': {
+              'page': page,
+            },
+          }),
+        )
+        .timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 429) {
       Logger.i('Rate limited, waiting 3 seconds...');
       await Future.delayed(const Duration(seconds: 3));
-      return _fetchAnilistRecommendations(
-        isManga: isManga, 
-        page: page, 
-        isAdult: isAdult
-      );
+      return await _fetchAnilistRecommendations(
+          isManga: isManga, page: page, isAdult: isAdult);
     }
 
     if (response.statusCode != 200) {
@@ -508,13 +507,14 @@ Future<List<Media>> _fetchAnilistRecommendations({
       }
 
       final genres = (media['genres'] as List?)
-          ?.map((g) => g.toString().toUpperCase())
-          .where((g) => g.isNotEmpty)
-          .toList() ?? [];
+              ?.map((g) => g.toString().toUpperCase())
+              .where((g) => g.isNotEmpty)
+              .toList() ??
+          [];
 
       if (!isAdult) {
-        final hasAdultGenres = genres.any((g) =>
-            ['HENTAI', 'EROTICA', 'ADULT', '18+', 'ECCHI'].contains(g));
+        final hasAdultGenres = genres.any(
+            (g) => ['HENTAI', 'EROTICA', 'ADULT', '18+', 'ECCHI'].contains(g));
         if (hasAdultGenres) continue;
       }
 
@@ -525,9 +525,7 @@ Future<List<Media>> _fetchAnilistRecommendations({
       final isNovel = mediaType == 'MANGA' && format.toUpperCase() == 'NOVEL';
       final determinedType = isNovel
           ? ItemType.novel
-          : (mediaType == 'MANGA' || isManga
-              ? ItemType.manga
-              : ItemType.anime);
+          : (mediaType == 'MANGA' || isManga ? ItemType.manga : ItemType.anime);
 
       results.add(Media(
         id: id,
@@ -570,9 +568,11 @@ Future<List<Media>> _fetchMalRecommendations({
     final isLoggedIn = token != null && token.isNotEmpty;
     final String url;
     if (isLoggedIn && !isManga) {
-      url = 'https://api.myanimelist.net/v2/anime/suggestions?limit=25&offset=$offset&fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,media_type,start_season,average_episode_duration,studios';
+      url =
+          'https://api.myanimelist.net/v2/anime/suggestions?limit=25&offset=$offset&fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,media_type,start_season,average_episode_duration,studios';
     } else {
-      url = 'https://api.myanimelist.net/v2/$type/ranking?ranking_type=bypopularity&limit=25&offset=$offset&fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
+      url =
+          'https://api.myanimelist.net/v2/$type/ranking?ranking_type=bypopularity&limit=25&offset=$offset&fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_episodes,status,genres,num_chapters,num_volumes,media_type,start_season,average_episode_duration,studios';
     }
 
     final data = await malService.fetchMAL(url, useAuthHeader: isLoggedIn);

@@ -16,13 +16,13 @@ class SlideAndScaleAnimation extends StatelessWidget {
   const SlideAndScaleAnimation({
     super.key,
     required this.child,
-    this.duration = const Duration(milliseconds: 220),
+    this.duration = const Duration(milliseconds: 200),
     this.delay,
     this.initialScale = 0.0,
     this.finalScale = 1.0,
     this.initialOffset = const Offset(1.0, 0.0),
     this.finalOffset = const Offset(0.0, 0.0),
-    this.curve = Curves.easeOutCubic,
+    this.curve = Curves.easeInOut,
   });
 
   @override
@@ -36,22 +36,18 @@ class SlideAndScaleAnimation extends StatelessWidget {
 
     return child
         .animate(delay: delay)
-        .fadeIn(
+        .scale(
+          begin: Offset(initialScale, initialScale),
+          end: Offset(finalScale, finalScale),
+          alignment: Alignment.center,
           duration: duration,
-          curve: Curves.easeOut,
+          curve: curve,
         )
         .slide(
           begin: initialOffset,
           end: finalOffset,
           duration: duration,
           curve: curve,
-        )
-        .scale(
-          begin: Offset(initialScale, initialScale),
-          end: Offset(finalScale, finalScale),
-          duration: duration,
-          curve: curve,
         );
   }
 }
-

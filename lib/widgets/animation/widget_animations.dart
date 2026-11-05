@@ -38,7 +38,8 @@ extension AnymeXWidgetAnimations on Widget {
     bool enabled = true,
   }) {
     if (!enabled || _animationsDisabled) return this;
-    final staggeredDelay = delay ?? Duration(milliseconds: (index.clamp(0, 8)) * 30);
+    final staggeredDelay =
+        delay ?? Duration(milliseconds: (index.clamp(0, 8)) * 30);
     return animate(target: target ? 1 : 0)
         .fadeIn(
           delay: staggeredDelay,
@@ -64,8 +65,9 @@ extension AnymeXWidgetAnimations on Widget {
   Widget animatePop({
     int index = 0,
     Duration? delay,
-    double beginScale = 0.94,
-    double slideY = 0.12,
+    double beginScale = 0.0,
+    double slideX = 1.0,
+    double slideY = 0.0,
     double stiffness = 320.0,
     double damping = 0.6,
     bool enabled = true,
@@ -73,9 +75,11 @@ extension AnymeXWidgetAnimations on Widget {
   }) {
     if (!enabled || _animationsDisabled) return this;
     final staggeredDelay = delay ??
-        (index < 8 ? Duration(milliseconds: (index % (isGrid ? 3 : 5)) * 20) : null);
+        (index < 10
+            ? Duration(milliseconds: (index % (isGrid ? 3 : 5)) * 25)
+            : null);
     return SlideAndScaleAnimation(
-      initialOffset: Offset(0.0, slideY),
+      initialOffset: Offset(slideX, slideY),
       initialScale: beginScale,
       finalScale: 1.0,
       duration: _scaleDuration(200),
@@ -87,14 +91,16 @@ extension AnymeXWidgetAnimations on Widget {
   Widget animateTileEntrance({
     required int index,
     bool isGrid = false,
-    double slideY = 0.12,
-    double beginScale = 0.90,
+    double slideX = 1.0,
+    double slideY = 0.0,
+    double beginScale = 0.0,
     double stiffness = 320.0,
     double damping = 0.6,
   }) {
     return animatePop(
       index: index,
       isGrid: isGrid,
+      slideX: slideX,
       slideY: slideY,
       beginScale: beginScale,
     );
@@ -112,7 +118,8 @@ extension AnymeXWidgetAnimations on Widget {
     bool enabled = true,
   }) {
     if (!enabled || _animationsDisabled) return this;
-    final staggeredDelay = delay ?? Duration(milliseconds: index.clamp(0, 6) * 35);
+    final staggeredDelay =
+        delay ?? Duration(milliseconds: index.clamp(0, 6) * 35);
     var a = animate().slide(
       begin: Offset(slideX, slideY),
       end: Offset.zero,
@@ -148,7 +155,8 @@ extension AnymeXWidgetAnimations on Widget {
     bool enabled = true,
   }) {
     if (!enabled || _animationsDisabled) return this;
-    final staggeredDelay = delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
+    final staggeredDelay =
+        delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
     return animate()
         .fadeIn(
           delay: staggeredDelay,
@@ -173,7 +181,8 @@ extension AnymeXWidgetAnimations on Widget {
     bool enabled = true,
   }) {
     if (!enabled || _animationsDisabled) return this;
-    final staggeredDelay = delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
+    final staggeredDelay =
+        delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
     return animate()
         .fadeIn(
           delay: staggeredDelay,
@@ -198,7 +207,8 @@ extension AnymeXWidgetAnimations on Widget {
     bool enabled = true,
   }) {
     if (!enabled || _animationsDisabled) return this;
-    final staggeredDelay = delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
+    final staggeredDelay =
+        delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
     return animate()
         .fadeIn(
           delay: staggeredDelay,
@@ -223,7 +233,8 @@ extension AnymeXWidgetAnimations on Widget {
     bool enabled = true,
   }) {
     if (!enabled || _animationsDisabled) return this;
-    final staggeredDelay = delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
+    final staggeredDelay =
+        delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
     return animate()
         .fadeIn(
           delay: staggeredDelay,
@@ -248,7 +259,8 @@ extension AnymeXWidgetAnimations on Widget {
     bool enabled = true,
   }) {
     if (!enabled || _animationsDisabled) return this;
-    final staggeredDelay = delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
+    final staggeredDelay =
+        delay ?? Duration(milliseconds: index.clamp(0, 6) * 30);
     return animate()
         .fadeIn(
           delay: staggeredDelay,
