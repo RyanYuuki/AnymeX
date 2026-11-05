@@ -19,9 +19,49 @@ class LocaleController extends GetxController {
       nativeName: 'English',
     ),
     const LanguageOption(
-      locale: Locale('es', 'ES'),
-      name: 'Spanish',
-      nativeName: 'Español',
+      locale: Locale('am', 'ET'),
+      name: 'Amharic',
+      nativeName: 'አማርኛ',
+    ),
+    const LanguageOption(
+      locale: Locale('ar', 'SA'),
+      name: 'Arabic',
+      nativeName: 'العربية',
+    ),
+    const LanguageOption(
+      locale: Locale('as', 'IN'),
+      name: 'Assamese',
+      nativeName: 'অসমীয়া',
+    ),
+    const LanguageOption(
+      locale: Locale('bn', 'BD'),
+      name: 'Bengali',
+      nativeName: 'বাংলা',
+    ),
+    const LanguageOption(
+      locale: Locale('hr', 'HR'),
+      name: 'Croatian',
+      nativeName: 'Hrvatski',
+    ),
+    const LanguageOption(
+      locale: Locale('da', 'DK'),
+      name: 'Danish',
+      nativeName: 'Dansk',
+    ),
+    const LanguageOption(
+      locale: Locale('nl', 'NL'),
+      name: 'Dutch',
+      nativeName: 'Nederlands',
+    ),
+    const LanguageOption(
+      locale: Locale('fil', 'PH'),
+      name: 'Filipino',
+      nativeName: 'Filipino',
+    ),
+    const LanguageOption(
+      locale: Locale('fr', 'FR'),
+      name: 'French',
+      nativeName: 'Français',
     ),
     const LanguageOption(
       locale: Locale('de', 'DE'),
@@ -29,9 +69,94 @@ class LocaleController extends GetxController {
       nativeName: 'Deutsch',
     ),
     const LanguageOption(
-      locale: Locale('zh', 'TW'),
-      name: 'Traditional Chinese',
-      nativeName: '繁體中文',
+      locale: Locale('el', 'GR'),
+      name: 'Greek',
+      nativeName: 'Ελληνικά',
+    ),
+    const LanguageOption(
+      locale: Locale('ha', 'NG'),
+      name: 'Hausa',
+      nativeName: 'Hausa',
+    ),
+    const LanguageOption(
+      locale: Locale('he', 'IL'),
+      name: 'Hebrew',
+      nativeName: 'עברית',
+    ),
+    const LanguageOption(
+      locale: Locale('hi', 'IN'),
+      name: 'Hindi',
+      nativeName: 'हिन्दी',
+    ),
+    const LanguageOption(
+      locale: Locale('id', 'ID'),
+      name: 'Indonesian',
+      nativeName: 'Bahasa Indonesia',
+    ),
+    const LanguageOption(
+      locale: Locale('it', 'IT'),
+      name: 'Italian',
+      nativeName: 'Italiano',
+    ),
+    const LanguageOption(
+      locale: Locale('ja', 'JP'),
+      name: 'Japanese',
+      nativeName: '日本語',
+    ),
+    const LanguageOption(
+      locale: Locale('kn', 'IN'),
+      name: 'Kannada',
+      nativeName: 'ಕನ್ನಡ',
+    ),
+    const LanguageOption(
+      locale: Locale('ko', 'KR'),
+      name: 'Korean',
+      nativeName: '한국어',
+    ),
+    const LanguageOption(
+      locale: Locale('ms', 'MY'),
+      name: 'Malay',
+      nativeName: 'Bahasa Melayu',
+    ),
+    const LanguageOption(
+      locale: Locale('ml', 'IN'),
+      name: 'Malayalam',
+      nativeName: 'മലയാളം',
+    ),
+    const LanguageOption(
+      locale: Locale('mr', 'IN'),
+      name: 'Marathi',
+      nativeName: 'मराठी',
+    ),
+    const LanguageOption(
+      locale: Locale('ne', 'NP'),
+      name: 'Nepali',
+      nativeName: 'नेपाली',
+    ),
+    const LanguageOption(
+      locale: Locale('or', 'IN'),
+      name: 'Odia',
+      nativeName: 'ଓଡ଼ିଆ',
+    ),
+    const LanguageOption(
+      locale: Locale('ps', 'AF'),
+      name: 'Pashto',
+      nativeName: 'پښتو',
+    ),
+    const LanguageOption(
+      locale: Locale('fa', 'IR'),
+      name: 'Persian',
+      nativeName: 'فارسی',
+    ),
+    const LanguageOption(
+      locale: Locale('pl', 'PL'),
+      name: 'Polish',
+      nativeName: 'Polski',
+    ),
+    const LanguageOption(
+      locale: Locale('pt', 'PT'),
+      name: 'Portuguese',
+      nativeName: 'Português',
     ),
     const LanguageOption(
       locale: Locale('pt', 'BR'),
@@ -39,9 +164,74 @@ class LocaleController extends GetxController {
       nativeName: 'Português (Brasil)',
     ),
     const LanguageOption(
-      locale: Locale('id', 'ID'),
-      name: 'Indonesian',
-      nativeName: 'Bahasa Indonesia',
+      locale: Locale('ru', 'RU'),
+      name: 'Russian',
+      nativeName: 'Русский',
+    ),
+    const LanguageOption(
+      locale: Locale('sa', 'IN'),
+      name: 'Sanskrit',
+      nativeName: 'संस्कृतम्',
+    ),
+    const LanguageOption(
+      locale: Locale('zh', 'CN'),
+      name: 'Simplified Chinese',
+      nativeName: '简体中文',
+    ),
+    const LanguageOption(
+      locale: Locale('si', 'LK'),
+      name: 'Sinhala',
+      nativeName: 'සිංහල',
+    ),
+    const LanguageOption(
+      locale: Locale('so', 'SO'),
+      name: 'Somali',
+      nativeName: 'Soomaali',
+    ),
+    const LanguageOption(
+      locale: Locale('es', 'ES'),
+      name: 'Spanish',
+      nativeName: 'Español',
+    ),
+    const LanguageOption(
+      locale: Locale('sw', 'KE'),
+      name: 'Swahili',
+      nativeName: 'Kiswahili',
+    ),
+    const LanguageOption(
+      locale: Locale('ta', 'IN'),
+      name: 'Tamil',
+      nativeName: 'தமிழ்',
+    ),
+    const LanguageOption(
+      locale: Locale('te', 'IN'),
+      name: 'Telugu',
+      nativeName: 'తెలుగు',
+    ),
+    const LanguageOption(
+      locale: Locale('th', 'TH'),
+      name: 'Thai',
+      nativeName: 'ไทย',
+    ),
+    const LanguageOption(
+      locale: Locale('zh', 'TW'),
+      name: 'Traditional Chinese',
+      nativeName: '繁體中文',
+    ),
+    const LanguageOption(
+      locale: Locale('tr', 'TR'),
+      name: 'Turkish',
+      nativeName: 'Türkçe',
+    ),
+    const LanguageOption(
+      locale: Locale('uk', 'UA'),
+      name: 'Ukrainian',
+      nativeName: 'Українська',
+    ),
+    const LanguageOption(
+      locale: Locale('vi', 'VN'),
+      name: 'Vietnamese',
+      nativeName: 'Tiếng Việt',
     ),
   ];
 
