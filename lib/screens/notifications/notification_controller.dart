@@ -130,11 +130,20 @@ class NotificationController extends GetxController {
     }
   }
 
-  Future<void> loadAnilistNotifications() async {
+  DateTime? _lastNotificationFetchTime;
+
+  Future<void> loadAnilistNotifications({bool force = false}) async {
     final auth = Get.find<AnilistAuth>();
     final token = AuthKeys.authToken.get<String?>();
     if (!auth.isLoggedIn.value && (token == null || token.isEmpty)) {
       anilistNotifications.clear();
+      return;
+    }
+
+    if (!force &&
+        _lastNotificationFetchTime != null &&
+        DateTime.now().difference(_lastNotificationFetchTime!).inSeconds < 90 &&
+        anilistNotifications.isNotEmpty) {
       return;
     }
 
@@ -144,56 +153,22 @@ class NotificationController extends GetxController {
     _anilistHasMore = true;
 
     try {
-      final results = await Future.wait([
-        auth.getNotifications(
-          page: 1,
-          perPage: _anilistPageSize,
-          resetCount: false,
-          typeIn: _getTypesForCategory('airing'),
-        ).catchError((_) => <AnilistNotificationItem>[]),
-        auth.getNotifications(
-          page: 1,
-          perPage: _anilistPageSize,
-          resetCount: false,
-          typeIn: _getTypesForCategory('activity'),
-        ).catchError((_) => <AnilistNotificationItem>[]),
-        auth.getNotifications(
-          page: 1,
-          perPage: _anilistPageSize,
-          resetCount: false,
-          typeIn: _getTypesForCategory('social'),
-        ).catchError((_) => <AnilistNotificationItem>[]),
-      ]);
+      final items = await auth.getNotifications(
+        page: 1,
+        perPage: 30,
+        resetCount: false,
+      );
 
-      final combined = <AnilistNotificationItem>[];
-      final seenIds = <int>{};
-      for (final list in results) {
-        for (final item in list) {
-          if (seenIds.add(item.id)) {
-            combined.add(item);
-          }
-        }
-      }
+      items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      anilistNotifications.value = items;
+      _lastNotificationFetchTime = DateTime.now();
 
-      if (combined.isEmpty) {
-        final fallback = await auth.getNotifications(
-          page: 1,
-          perPage: _anilistPageSize,
-          resetCount: false,
-        );
-        combined.addAll(fallback);
-      }
-
-      combined.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      anilistNotifications.value = combined;
-
-      if (combined.isNotEmpty) {
+      if (items.isNotEmpty) {
         AnilistNotificationService.instance
-            .updateLastSeenTimestamp(combined.first.createdAt);
+            .updateLastSeenTimestamp(items.first.createdAt);
       }
       _anilistHasMore = true;
       hasFetchedAnilist.value = true;
-      await auth.getUnreadNotificationCount();
     } catch (e) {
       anilistError.value = 'Failed to load AniList notifications';
     } finally {
@@ -242,7 +217,7 @@ class NotificationController extends GetxController {
 
   Future<void> markAnilistAllRead() async {
     await AnilistNotificationService.instance.markAllRead();
-    await loadAnilistNotifications();
+    await loadAnilistNotifications(force: true);
   }
 
   @override
