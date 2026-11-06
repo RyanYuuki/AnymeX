@@ -95,6 +95,13 @@ subprojects {
 }
 
 configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
+        force("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
+        force("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
+        force("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0")
+        force("com.google.code.gson:gson:2.11.0")
+    }
     resolutionStrategy.eachDependency {
         if (requested.group == "io.flutter" && requested.name.contains("flutter_embedding")) {
             useVersion("1.0.0-ef0cd000916d64fa0c5d09cc809fa7ad244a5767")
