@@ -44,6 +44,7 @@ import 'translations/tr.dart';
 import 'translations/uk.dart';
 import 'translations/vi.dart';
 import 'translations/ui_strings.dart';
+import 'translations/ui_strings_extra.dart';
 
 /// Main translations class for AnymeX.
 ///
@@ -75,8 +76,8 @@ class AppTranslations extends Translations {
         'nl': nl,
         'fil_PH': fil,
         'fil': fil,
-        'fr_FR': fr,
-        'fr': fr,
+        'fr_FR': {...fr, ...frUi},
+        'fr': {...fr, ...frUi},
         'de_DE': {...de, ...deUi},
         'de': {...de, ...deUi},
         'el_GR': el,
@@ -113,15 +114,15 @@ class AppTranslations extends Translations {
         'fa': fa,
         'pl_PL': pl,
         'pl': pl,
-        'pt_PT': ptPT,
-        'pt': ptPT,
+        'pt_PT': {...ptPT, ...ptPTUi},
+        'pt': {...ptPT, ...ptPTUi},
         'pt_BR': {...ptBR, ...ptBRUi},
         'ru_RU': ru,
         'ru': ru,
         'sa_IN': sa,
         'sa': sa,
-        'zh_CN': zhCN,
-        'zh': zhCN,
+        'zh_CN': {...zhCN, ...zhCNUi},
+        'zh': {...zhCN, ...zhCNUi},
         'si_LK': si,
         'si': si,
         'so_SO': so,
