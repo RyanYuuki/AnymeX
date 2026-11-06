@@ -78,13 +78,13 @@ class _AudioPopupContentState extends State<_AudioPopupContent> {
       }
 
       return WatchSettingsPane(
-        title: 'Audio Settings',
+        title: 'Audio Settings'.tr,
         onClose: widget.onClose,
         tabBar: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Obx(() => DelayRow(
-                  label: 'Audio Delay',
+                  label: 'Audio Delay'.tr,
                   delay: widget.controller.audioDelay.value,
                   onChange: widget.controller.setAudioDelay,
                 )),

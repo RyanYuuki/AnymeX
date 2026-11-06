@@ -3,6 +3,7 @@ import 'package:anymex/widgets/common/cloudflare_webview.dart';
 import 'package:anymex/widgets/non_widgets/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:rhttp/rhttp.dart';
+import 'package:get/get.dart';
 
 class LogInterceptor extends Interceptor {
   @override
@@ -45,7 +46,7 @@ class LogInterceptor extends Interceptor {
     if (cloudflare) {
       snackBar(
         '⚠️ Detected Cloudflare protection (Tap to solve)',
-        title: 'Cloudflare',
+        title: 'Cloudflare'.tr,
         icon: Icons.warning_amber_rounded,
         iconColor: const Color(0xFFFFB74D),
         onTap: () {

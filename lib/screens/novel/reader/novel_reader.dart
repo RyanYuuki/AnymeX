@@ -139,7 +139,7 @@ class _NovelReaderState extends State<NovelReader>
                           _ttsMenuButton(
                             context: context,
                             icon: Icons.skip_previous_rounded,
-                            tooltip: 'Previous Paragraph',
+                            tooltip: 'Previous Paragraph'.tr,
                             onPressed: () {
                               HapticFeedback.lightImpact();
                               controller.ttsPrevious();
@@ -164,7 +164,7 @@ class _NovelReaderState extends State<NovelReader>
                           _ttsMenuButton(
                             context: context,
                             icon: Icons.skip_next_rounded,
-                            tooltip: 'Next Paragraph',
+                            tooltip: 'Next Paragraph'.tr,
                             onPressed: () {
                               HapticFeedback.lightImpact();
                               controller.ttsNext();

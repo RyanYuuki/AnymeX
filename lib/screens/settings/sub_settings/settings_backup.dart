@@ -532,7 +532,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               AnymeXExpansionTile(
                 title: "Media Library".tr,
                 subtitle:
-                    "$totalTitles titles • $animeCount anime · $mangaCount manga · $novelCount novel",
+                    "@totalTitles titles • @animeCount anime · @mangaCount manga · @novelCount novel".trParams({'totalTitles': (totalTitles).toString(), 'animeCount': (animeCount).toString(), 'mangaCount': (mangaCount).toString(), 'novelCount': (novelCount).toString()}),
                 icon: Icons.video_library_rounded,
                 initialExpanded: true,
                 useCard: false,
@@ -542,7 +542,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.movie_filter_rounded,
                         title: "Anime Library".tr,
-                        subtitle: "$animeCount titles and history",
+                        subtitle: "@animeCount titles and history".trParams({'animeCount': (animeCount).toString()}),
                         value: _restoreOptions.anime,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.anime = v),
@@ -551,7 +551,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.menu_book_rounded,
                         title: "Manga Library".tr,
-                        subtitle: "$mangaCount titles and chapters",
+                        subtitle: "@mangaCount titles and chapters".trParams({'mangaCount': (mangaCount).toString()}),
                         value: _restoreOptions.manga,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.manga = v),
@@ -560,7 +560,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.auto_stories_rounded,
                         title: "Novel Library".tr,
-                        subtitle: "$novelCount titles and reading state",
+                        subtitle: "@novelCount titles and reading state".trParams({'novelCount': (novelCount).toString()}),
                         value: _restoreOptions.novel,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.novel = v),
@@ -581,7 +581,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               AnymeXTile.checkbox(
                 icon: Icons.playlist_play_rounded,
                 title: "Custom Lists".tr,
-                subtitle: "$totalLists custom lists across media",
+                subtitle: "@totalLists custom lists across media".trParams({'totalLists': (totalLists).toString()}),
                 enabled: totalLists > 0,
                 value: _restoreOptions.customLists,
                 onChanged: (v) =>
@@ -590,7 +590,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               AnymeXExpansionTile(
                 title: "Extensions & Sources".tr,
                 subtitle:
-                    "$extDataCount configurations • $extFilesCount packages",
+                    "@extDataCount configurations • @extFilesCount packages".trParams({'extDataCount': (extDataCount).toString(), 'extFilesCount': (extFilesCount).toString()}),
                 icon: Icons.extension_rounded,
                 initialExpanded: true,
                 useCard: false,
@@ -600,7 +600,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.source_rounded,
                         title: "Configurations & Repos".tr,
-                        subtitle: "$extDataCount registered extension entries",
+                        subtitle: "@extDataCount registered extension entries".trParams({'extDataCount': (extDataCount).toString()}),
                         value: _restoreOptions.extensionsData,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.extensionsData = v),
@@ -609,7 +609,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       AnymeXTile.checkbox(
                         icon: Icons.folder_zip_rounded,
                         title: "Installed Packages".tr,
-                        subtitle: "$extFilesCount extension zip bundles",
+                        subtitle: "@extFilesCount extension zip bundles".trParams({'extFilesCount': (extFilesCount).toString()}),
                         value: _restoreOptions.extensionFiles,
                         onChanged: (v) =>
                             setState(() => _restoreOptions.extensionFiles = v),
@@ -621,7 +621,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 AnymeXExpansionTile(
                   title: "App Settings & Sessions".tr,
                   subtitle:
-                      "Themes, playback, reader${hasAuthTokens ? ' • Auth tokens' : ''}",
+                      "Themes, playback, reader@p0".trParams({'p0': (hasAuthTokens ? ' • Auth tokens' : '').toString()}),
                   icon: Icons.settings_rounded,
                   initialExpanded: true,
                   useCard: false,
@@ -702,7 +702,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                   icon: Icons.memory_rounded,
                   title: "Runtime Host".tr,
                   subtitle:
-                      "$runtimePlatform runtime${runtimeSizeStr.isNotEmpty ? ' • $runtimeSizeStr' : ''}",
+                      "@runtimePlatform runtime@p1".trParams({'runtimePlatform': (runtimePlatform).toString(), 'p1': (runtimeSizeStr.isNotEmpty ? ' • $runtimeSizeStr' : '').toString()}),
                   value: _restoreOptions.runtimeHost,
                   onChanged: (v) =>
                       setState(() => _restoreOptions.runtimeHost = v),

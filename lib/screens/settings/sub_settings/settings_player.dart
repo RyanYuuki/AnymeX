@@ -795,7 +795,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                       onLongPress: () {
                         AnymeXDialog(
                           title: 'Delete Font'.tr,
-                          message: 'Are you sure you want to delete "$font"?',
+                          message: 'Are you sure you want to delete "@font"?'.trParams({'font': (font).toString()}),
                           onConfirm: () async {
                             await ExternalFontLoader.deleteCustomFont(font);
                             if (settings.playerSettings.value.subtitleFont ==
@@ -1368,11 +1368,11 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                         fontSize: 13,
                         height: 1.4,
                       ),
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         isDense: true,
                         contentPadding: EdgeInsets.zero,
                         border: InputBorder.none,
-                        hintText: '# Example options:\nhwdec=auto\nscale=ewa_lanczossharp\ncscale=ewa_lanczossharp\ndscale=mitchell\ncorrect-downscaling=yes\nsigmoid-upscaling=yes\ndeband=yes',
+                        hintText: '# Example options:\nhwdec=auto\nscale=ewa_lanczossharp\ncscale=ewa_lanczossharp\ndscale=mitchell\ncorrect-downscaling=yes\nsigmoid-upscaling=yes\ndeband=yes'.tr,
                       ),
                     ),
                   ),
@@ -2280,7 +2280,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                             icon: Icons.developer_board_rounded,
                                             title: 'Decoder Threads'.tr,
                                             subtitle:
-                                                '0 means automatic thread count',
+                                                '0 means automatic thread count'.tr,
                                             value: ((mpvCore['vdLavcThreads']
                                                         as num?) ??
                                                     4)
@@ -2414,7 +2414,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                               ),
                               AnymeXTile(
                                 icon: Icons.edit_note_rounded,
-                                title: 'mpv.conf',
+                                title: 'mpv.conf'.tr,
                                 subtitle:
                                     'Edit custom mpv flags, properties, and configuration file'.tr,
                                 onTap: () => _showMpvConfEditorSheet(context),
@@ -2470,7 +2470,7 @@ class _SettingsPlayerState extends State<SettingsPlayer>
                                     context, setState, settings),
                                 title: 'JSON Theme Manager'.tr,
                                 subtitle:
-                                    '${PlayerControlThemeRegistry.jsonThemes.length} imported theme(s)',
+                                    '@length imported theme(s)'.trParams({'length': (PlayerControlThemeRegistry.jsonThemes.length).toString()}),
                               ),
                               AnymeXTile(
                                 icon: Icons.tune_rounded,

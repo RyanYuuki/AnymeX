@@ -77,7 +77,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
     final cs = theme.colorScheme;
 
     return WatchSettingsPane(
-      title: 'Sync Subtitles',
+      title: 'Sync Subtitles'.tr,
       onClose: widget.onClose,
       child: Column(
         children: [

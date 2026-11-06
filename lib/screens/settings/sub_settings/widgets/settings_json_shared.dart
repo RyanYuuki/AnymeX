@@ -534,7 +534,7 @@ Future<String?> _showUrlDialog(BuildContext context) async {
               keyboardType: TextInputType.url,
               autofocus: true,
               decoration: InputDecoration(
-                hintText: 'https://example.com/themes.json',
+                hintText: 'https://example.com/themes.json'.tr,
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.link_rounded),
                 errorText: error,

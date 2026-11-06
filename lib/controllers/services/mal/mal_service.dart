@@ -464,7 +464,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                   tagIcon: Icons.movie_filter_outlined,
                   height: !isDesktop ? 70 : 90,
                   subText: '${animeList.length} items',
-                  buttonText: "ANIME LIST",
+                  buttonText: "ANIME LIST".tr,
                   backgroundImage: animeButtonMedia?.cover ?? '',
                   borderRadius: 16.multiplyRadius(),
                   onPressed: () {
@@ -481,7 +481,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                     tagIcon: Icons.book_outlined,
                     height: !isDesktop ? 70 : 90,
                     subText: '${mangaList.length} items',
-                    buttonText: "MANGA LIST",
+                    buttonText: "MANGA LIST".tr,
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: mangaButtonMedia?.cover ?? '',
                     onPressed: () {
@@ -500,7 +500,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
                         ? width
                         : width * 2 + 15,
                     height: !isDesktop ? 70 : 90,
-                    buttonText: "OTHER",
+                    buttonText: "OTHER".tr,
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: otherButtonMedia?.cover ?? '',
                     onPressed: () {
@@ -691,7 +691,7 @@ class MalService extends GetxController implements BaseService, OnlineService {
       selectedMethod = await AnymeXSheet.custom<String>(
         loginSheetHelper(
           context: context,
-          title: 'Login to MyAnimeList',
+          title: 'Login to MyAnimeList'.tr,
           serviceName: 'MyAnimeList',
           showTokenOption: false,
         ),

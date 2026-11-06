@@ -640,7 +640,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                   AnymeXTile.checkbox(
                     icon: Icons.movie_filter_rounded,
                     title: "Anime Library".tr,
-                    subtitle: "${widget.info['animeCount'] ?? 0} titles",
+                    subtitle: "@p0 titles".trParams({'p0': (widget.info['animeCount'] ?? 0).toString()}),
                     value: _options.anime,
                     onChanged: (v) => setState(() => _options.anime = v),
                   ),
@@ -648,7 +648,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                   AnymeXTile.checkbox(
                     icon: Icons.menu_book_rounded,
                     title: "Manga Library".tr,
-                    subtitle: "${widget.info['mangaCount'] ?? 0} titles",
+                    subtitle: "@p0 titles".trParams({'p0': (widget.info['mangaCount'] ?? 0).toString()}),
                     value: _options.manga,
                     onChanged: (v) => setState(() => _options.manga = v),
                   ),
@@ -656,7 +656,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                   AnymeXTile.checkbox(
                     icon: Icons.auto_stories_rounded,
                     title: "Novel Library".tr,
-                    subtitle: "${widget.info['novelCount'] ?? 0} titles",
+                    subtitle: "@p0 titles".trParams({'p0': (widget.info['novelCount'] ?? 0).toString()}),
                     value: _options.novel,
                     onChanged: (v) => setState(() => _options.novel = v),
                   ),
@@ -665,7 +665,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                     icon: Icons.playlist_play_rounded,
                     title: "Custom Lists".tr,
                     subtitle:
-                        "${(widget.info['animeCustomListsCount'] ?? 0) + (widget.info['mangaCustomListsCount'] ?? 0) + (widget.info['novelCustomListsCount'] ?? 0)} custom lists",
+                        "@p0 custom lists".trParams({'p0': ((widget.info['animeCustomListsCount'] ?? 0) + (widget.info['mangaCustomListsCount'] ?? 0) + (widget.info['novelCustomListsCount'] ?? 0)).toString()}),
                     value: _options.customLists,
                     onChanged: (v) =>
                         setState(() => _options.customLists = v),
@@ -769,7 +769,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                     icon: Icons.settings_input_component_rounded,
                     title: "Extension Configurations".tr,
                     subtitle:
-                        "${widget.info['extensionsDataCount'] ?? 0} repositories and source settings",
+                        "@p0 repositories and source settings".trParams({'p0': (widget.info['extensionsDataCount'] ?? 0).toString()}),
                     value: _options.extensionsData,
                     onChanged: (v) =>
                         setState(() => _options.extensionsData = v),
@@ -779,7 +779,7 @@ class _RestorePreviewSheetState extends State<RestorePreviewSheet> {
                     icon: Icons.folder_zip_rounded,
                     title: "Extension Packages".tr,
                     subtitle:
-                        "${widget.info['extensionFilesCount'] ?? 0} installed files${widget.info['extensionFilesSize'] != null && (widget.info['extensionFilesSize'] as int) > 0 ? ' • ${((widget.info['extensionFilesSize'] as int) / (1024 * 1024)).toStringAsFixed(1)} MB' : ''}",
+                        "@p0 installed files@p1".trParams({'p0': (widget.info['extensionFilesCount'] ?? 0).toString(), 'p1': (widget.info['extensionFilesSize'] != null && (widget.info['extensionFilesSize'] as int) > 0 ? ' • ${((widget.info['extensionFilesSize'] as int) / (1024 * 1024)).toStringAsFixed(1)} MB' : '').toString()}),
                     value: _options.extensionFiles,
                     onChanged: (v) =>
                         setState(() => _options.extensionFiles = v),
@@ -1252,7 +1252,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                         icon: Icons.settings_input_component_rounded,
                         title: "Extension Configurations & Repos".tr,
                         subtitle:
-                            "$_extensionsDataCount registered repositories and source settings",
+                            "@v registered repositories and source settings".trParams({'v': (_extensionsDataCount).toString()}),
                         value: _options.extensionsData,
                         onChanged: (v) =>
                             setState(() => _options.extensionsData = v),

@@ -135,7 +135,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
           ),
           const SizedBox(height: 8),
           _buildUpiAppItem(
-            title: 'Copy UPI ID ($_upiId)',
+            title: 'Copy UPI ID (@v)'.trParams({'v': (_upiId).toString()}),
             icon: Icons.copy_rounded,
             onTap: () {
               Get.back();
@@ -395,7 +395,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                   AnymeXTile(
                     icon: Icons.account_balance_wallet_rounded,
                     title: 'Pay via any UPI App'.tr,
-                    subtitle: '$_upiId • Tap to launch GPay, PhonePe, Paytm, etc.',
+                    subtitle: '@v • Tap to launch GPay, PhonePe, Paytm, etc.'.trParams({'v': (_upiId).toString()}),
                     trailing: const Icon(Icons.open_in_new_rounded, size: 18),
                     onTap: () => _handleUpiTap(context),
                   ),
@@ -437,7 +437,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                   AnymeXTile(
                     icon: Icons.payment_rounded,
                     title: 'Donate via PayPal'.tr,
-                    subtitle: 'paypal.me/reyyuuki • Cards & PayPal Balance',
+                    subtitle: 'paypal.me/reyyuuki • Cards & PayPal Balance'.tr,
                     trailing: const Icon(Icons.open_in_new_rounded, size: 18),
                     onTap: () => _openUrl(_paypalUrl),
                   ),
@@ -445,7 +445,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                     icon: Icons.info_outline_rounded,
                     title: 'PayPal Recipient Notice'.tr,
                     subtitle:
-                        'The name on PayPal may display as Rey Yuuki (friend\'s account), but all contributions directly support AnymeX.',
+                        'The name on PayPal may display as Rey Yuuki (friend\'s account), but all contributions directly support AnymeX.'.tr,
                     showChevron: false,
                   ),
                 ],
@@ -457,7 +457,7 @@ class _SettingsDonationState extends State<SettingsDonation> {
                   AnymeXTile(
                     icon: HugeIcons.strokeRoundedGithub,
                     title: 'Star on GitHub'.tr,
-                    subtitle: 'github.com/RyanYuuki/AnymeX • Show your love',
+                    subtitle: 'github.com/RyanYuuki/AnymeX • Show your love'.tr,
                     trailing: const Icon(Icons.open_in_new_rounded, size: 18),
                     onTap: () => _openUrl(_githubUrl),
                   ),

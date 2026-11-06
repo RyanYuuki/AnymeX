@@ -150,7 +150,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                             height: buttonHeight,
                             tagIcon: Icons.movie_filter_outlined,
                             subText: '${anilistAuth.animeList.length} items',
-                            buttonText: "ANIME LIST",
+                            buttonText: "ANIME LIST".tr,
                             backgroundImage: animeButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
                             onPressed: () => navigate(() => AnimeList(data: anilistAuth.animeList.removeDupes())),
@@ -165,7 +165,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                             height: buttonHeight,
                             tagIcon: Icons.book_outlined,
                             subText: '${anilistAuth.mangaList.length} items',
-                            buttonText: "MANGA LIST",
+                            buttonText: "MANGA LIST".tr,
                             backgroundImage: mangaButtonMedia?.cover ?? '',
                             borderRadius: 16.multiplyRadius(),
                             onPressed: () =>
@@ -185,7 +185,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                     child: ImageButton(
                       height: buttonHeight,
                       subText: 'Calendar, AI Picks and more',
-                      buttonText: "OTHER",
+                      buttonText: "OTHER".tr,
                       borderRadius: 16.multiplyRadius(),
                       backgroundImage: otherButtonMedia?.cover ?? '',
                       onPressed: () =>
@@ -247,7 +247,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                     ? recAnimes.where((e) => !ids.contains(e.id)).toList()
                     : recAnimes;
                 return ReusableCarousel(
-                  title: "Recommended Anime",
+                  title: "Recommended Anime".tr,
                   data: data,
                   type: ItemType.anime,
                 );
@@ -261,7 +261,7 @@ class AnilistData extends GetxController implements BaseService, OnlineService {
                     ? recMangas.where((e) => !ids.contains(e.id)).toList()
                     : recMangas;
                 return ReusableCarousel(
-                  title: "Recommended Manga",
+                  title: "Recommended Manga".tr,
                   data: data,
                   type: ItemType.manga,
                 );

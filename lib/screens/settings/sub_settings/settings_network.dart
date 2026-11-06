@@ -130,7 +130,7 @@ class _SettingsNetworkState extends State<SettingsNetwork> {
       confirmText: 'Clear'.tr,
       onConfirm: () {
         _network.cookieManager.clear();
-        snackString('Cookies cleared successfully');
+        snackString('Cookies cleared successfully'.tr);
       },
     ).show(context);
   }

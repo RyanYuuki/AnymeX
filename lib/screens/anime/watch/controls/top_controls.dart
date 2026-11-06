@@ -397,7 +397,7 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.fullscreen_rounded,
                 onPressed: () => controller.toggleFullScreen(),
-                tooltip: 'Fullscreen',
+                tooltip: 'Fullscreen'.tr,
                 compact: true,
               ),
               const SizedBox(width: 8),

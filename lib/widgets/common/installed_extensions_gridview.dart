@@ -94,7 +94,7 @@ class _InstalledExtensionsGridViewState
                           source: exactSource,
                         ));
                   },
-                  hintText: "Search $title extensions...",
+                  hintText: "Search @title extensions...".trParams({'title': (title).toString()}),
                 ),
               ),
               const SizedBox(width: 10),

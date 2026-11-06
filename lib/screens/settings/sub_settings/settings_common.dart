@@ -388,7 +388,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AnymeXDialog(
-            title: 'Home Page Cards (${type.name.toUpperCase()})',
+            title: 'Home Page Cards (@p0)'.trParams({'p0': (type.name.toUpperCase()).toString()}),
             contentWidget: AnymeXTileBuilder<String>(
               items: localState.keys.toList(),
               isSelected: (key) => localState[key] ?? true,

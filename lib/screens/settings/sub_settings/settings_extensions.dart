@@ -899,7 +899,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                 color: c.onSurface,
                 height: 1.5),
             decoration: InputDecoration(
-              hintText: 'https://raw.githubusercontent.com/...',
+              hintText: 'https://raw.githubusercontent.com/...'.tr,
               hintStyle: TextStyle(
                   fontSize: 12,
                   color: c.onSurfaceVariant.withOpacity(0.6),

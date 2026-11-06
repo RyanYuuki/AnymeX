@@ -374,7 +374,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                   color: colors.onSurface,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Search chapters...',
+                  hintText: 'Search chapters...'.tr,
                   hintStyle: TextStyle(
                     fontSize: 13,
                     color: colors.onSurface.withOpacity(0.45),

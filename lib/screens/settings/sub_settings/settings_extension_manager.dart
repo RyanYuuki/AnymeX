@@ -178,7 +178,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
         }
       }
     } catch (error) {
-      if (mounted) errorSnackBar('Re-download failed: $error');
+      if (mounted) errorSnackBar('Re-download failed: @error'.trParams({'error': (error).toString()}));
     }
   }
 
@@ -319,7 +319,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             .onRuntimeBridgeInitialization(force: true);
         if (mounted) {
           successSnackBar(
-              'Rollback to ${release.tagName} successful. Restart app to apply.');
+              'Rollback to @tagName successful. Restart app to apply.'.trParams({'tagName': (release.tagName).toString()}));
         }
       } else {
         if (mounted) {
@@ -328,7 +328,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
         }
       }
     } catch (error) {
-      if (mounted) errorSnackBar('Rollback failed: $error');
+      if (mounted) errorSnackBar('Rollback failed: @error'.trParams({'error': (error).toString()}));
     }
   }
 
@@ -758,7 +758,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       if (children.isNotEmpty) {
         settingsList.add(
           AnymeXSectionBuilder(
-            title: '${manager.name} Settings',
+            title: '@name Settings'.trParams({'name': (manager.name).toString()}),
             children: children,
           ),
         );

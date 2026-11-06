@@ -645,7 +645,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             onChanged: (v) => _update((s) => s.airingNotifications = v)),
         AnymeXTile.toggle(
             icon: Icons.warning_amber_rounded,
-            title: '18+ Content',
+            title: '18+ Content'.tr,
             subtitle: 'Enable NSFW/adult entries in AniList content.'.tr,
             value: s.displayAdultContent,
             onChanged: (v) => _update((s) => s.displayAdultContent = v)),
@@ -749,7 +749,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             icon: Icons.reorder_rounded,
             title: 'Anime Section Order'.tr,
             subtitle:
-                'Drag to reorder · ${_normalizeSectionOrder(s.animeSectionOrder, animeSections).length} items',
+                'Drag to reorder · @p0 items'.trParams({'p0': (_normalizeSectionOrder(s.animeSectionOrder, animeSections).length).toString()}),
             onTap: () => _editSectionOrder(
                 title: 'Anime'.tr,
                 current: s.animeSectionOrder,
@@ -759,7 +759,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
             icon: Icons.reorder_rounded,
             title: 'Manga Section Order'.tr,
             subtitle:
-                'Drag to reorder · ${_normalizeSectionOrder(s.mangaSectionOrder, mangaSections).length} items',
+                'Drag to reorder · @p0 items'.trParams({'p0': (_normalizeSectionOrder(s.mangaSectionOrder, mangaSections).length).toString()}),
             onTap: () => _editSectionOrder(
                 title: 'Manga'.tr,
                 current: s.mangaSectionOrder,
@@ -798,7 +798,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
       (Icons.format_bold_rounded, () => _wrapAboutSelection(prefix: '**', suffix: '**')),
       (Icons.format_italic_rounded, () => _wrapAboutSelection(prefix: '*', suffix: '*')),
       (Icons.strikethrough_s_rounded, () => _wrapAboutSelection(prefix: '~~', suffix: '~~')),
-      (Icons.visibility_off_rounded, () => _wrapAboutSelection(prefix: '~!', suffix: '!~', placeholder: 'spoiler')),
+      (Icons.visibility_off_rounded, () => _wrapAboutSelection(prefix: '~!', suffix: '!~', placeholder: 'spoiler'.tr)),
       (Icons.link_rounded, () => _insertAboutText('[title](https://example.com)')),
       (Icons.image_rounded, () => _insertAboutText('![alt](https://image.url)')),
       (Icons.ondemand_video_rounded, () => _insertAboutText('[Video](https://youtube.com/watch?v=)')),
@@ -806,7 +806,7 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
       (Icons.format_list_bulleted_rounded, () => _insertAboutText('- Item\n- Item\n')),
       (Icons.title_rounded, () => _insertAboutText('## Heading\n')),
       (Icons.format_quote_rounded, () => _insertAboutText('> Quote\n')),
-      (Icons.code_rounded, () => _wrapAboutSelection(prefix: '`', suffix: '`', placeholder: 'code')),
+      (Icons.code_rounded, () => _wrapAboutSelection(prefix: '`', suffix: '`', placeholder: 'code'.tr)),
     ];
 
     return Padding(

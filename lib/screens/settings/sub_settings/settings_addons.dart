@@ -53,7 +53,7 @@ class _SettingsAddonsState extends State<SettingsAddons> {
       await _addonManager.checkForUpdates();
       snackBar('Update check complete'.tr);
     } catch (e) {
-      errorSnackBar('Failed to check for updates: $e');
+      errorSnackBar('Failed to check for updates: @e'.trParams({'e': (e).toString()}));
     } finally {
       if (mounted) setState(() => _isCheckingUpdates = false);
     }
@@ -62,9 +62,9 @@ class _SettingsAddonsState extends State<SettingsAddons> {
   Future<void> _installAddon(Addon addon) async {
     try {
       await addon.install();
-      successSnackBar('${addon.name} installed successfully');
+      successSnackBar('@name installed successfully'.trParams({'name': (addon.name).toString()}));
     } catch (e) {
-      errorSnackBar('Failed to install ${addon.name}: $e');
+      errorSnackBar('Failed to install @name: @e'.trParams({'name': (addon.name).toString(), 'e': (e).toString()}));
       print(e);
     }
     if (mounted) setState(() {});
@@ -73,9 +73,9 @@ class _SettingsAddonsState extends State<SettingsAddons> {
   Future<void> _updateAddon(Addon addon) async {
     try {
       await addon.update();
-      successSnackBar('${addon.name} updated successfully');
+      successSnackBar('@name updated successfully'.trParams({'name': (addon.name).toString()}));
     } catch (e) {
-      errorSnackBar('Failed to update ${addon.name}: $e');
+      errorSnackBar('Failed to update @name: @e'.trParams({'name': (addon.name).toString(), 'e': (e).toString()}));
       print(e);
     }
     if (mounted) setState(() {});
@@ -85,16 +85,16 @@ class _SettingsAddonsState extends State<SettingsAddons> {
     showDialog<bool>(
       context: context,
       builder: (ctx) => AnymeXDialog(
-        title: 'Uninstall ${addon.name}',
+        title: 'Uninstall @name'.trParams({'name': (addon.name).toString()}),
         message:
-            'Are you sure you want to uninstall ${addon.name}? This will delete the downloaded binary.',
+            'Are you sure you want to uninstall @name? This will delete the downloaded binary.'.trParams({'name': (addon.name).toString()}),
         confirmText: 'Uninstall'.tr,
         onConfirm: () async {
           try {
             await addon.uninstall();
             snackBar('${addon.name} uninstalled');
           } catch (e) {
-            errorSnackBar('Failed to uninstall ${addon.name}: $e');
+            errorSnackBar('Failed to uninstall @name: @e'.trParams({'name': (addon.name).toString(), 'e': (e).toString()}));
             print(e);
           }
           if (mounted) setState(() {});

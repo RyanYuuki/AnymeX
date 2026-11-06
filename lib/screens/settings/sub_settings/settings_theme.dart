@@ -857,7 +857,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     controller: controller,
                     decoration: InputDecoration(
                       labelText: 'Hex Color Code'.tr,
-                      hintText: '#3F51B5 or 3F51B5',
+                      hintText: '#3F51B5 or 3F51B5'.tr,
                       errorText: isValid ? null : 'Invalid Hex color code',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),

@@ -81,7 +81,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
   ) {
     AnymeXDialog(
       title: 'Log Out'.tr,
-      message: 'Are you sure you want to log out from $title?',
+      message: 'Are you sure you want to log out from @title?'.trParams({'title': (title).toString()}),
       confirmText: 'Log Out'.tr,
       cancelText: 'Cancel'.tr,
       onConfirm: () => service.logout(),

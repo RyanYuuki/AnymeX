@@ -454,7 +454,7 @@ class _CommentSectionState extends State<CommentSection> {
                     AnymeXText(
                       widget.media.title.isNotEmpty
                           ? widget.media.title
-                          : 'Comments',
+                          : 'Comments'.tr,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       size: 14.5,
@@ -724,7 +724,7 @@ class _CommentSectionState extends State<CommentSection> {
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
-              hintText: 'Or type custom tag...',
+              hintText: 'Or type custom tag...'.tr,
               hintStyle: TextStyle(
                 color: colorScheme.onSurfaceVariant.opaque(0.6),
                 fontSize: 14,
@@ -1657,7 +1657,7 @@ class _CommentSectionState extends State<CommentSection> {
                       ),
                       onChanged: (_) => setReplyState(() {}),
                       decoration: InputDecoration(
-                        hintText: 'Write a reply...',
+                        hintText: 'Write a reply...'.tr,
                         hintStyle: TextStyle(
                           color: colorScheme.onSurfaceVariant.opaque(0.5),
                           fontSize: 14,
@@ -2144,7 +2144,7 @@ class _CommentSectionState extends State<CommentSection> {
                     if (!isOwnComment) ...[
                       _buildTextMenuOption(
                         context: context,
-                        label: 'Report',
+                        label: 'Report'.tr,
                         isDestructive: true,
                         onTap: () {
                           Navigator.pop(ctx);
@@ -2295,7 +2295,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'User Info',
+                          label: 'User Info'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _showUserInfoDialog(
@@ -2304,7 +2304,7 @@ class _CommentSectionState extends State<CommentSection> {
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'User History',
+                          label: 'User History'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _showUserHistoryDialog(
@@ -2409,7 +2409,7 @@ class _CommentSectionState extends State<CommentSection> {
                 maxLines: 5,
                 minLines: 2,
                 decoration: InputDecoration(
-                  hintText: 'Edit your comment...',
+                  hintText: 'Edit your comment...'.tr,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -2589,7 +2589,7 @@ class _CommentSectionState extends State<CommentSection> {
                     ? null
                     : reasonController.text,
                 decoration: InputDecoration(
-                  labelText: 'Reason',
+                  labelText: 'Reason'.tr,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -2624,7 +2624,7 @@ class _CommentSectionState extends State<CommentSection> {
                 controller: notesController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'Additional notes (optional)',
+                  labelText: 'Additional notes (optional)'.tr,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -2770,7 +2770,7 @@ class _CommentSectionState extends State<CommentSection> {
                 _buildModAction(
                   context: context,
                   icon: Icons.delete_forever_rounded,
-                  label: 'Delete Comment (Mod)',
+                  label: 'Delete Comment (Mod)'.tr,
                   color: colorScheme.error,
                   onTap: () {
                     Navigator.pop(context);
@@ -2852,9 +2852,9 @@ class _CommentSectionState extends State<CommentSection> {
           controller: reasonController,
           maxLines: 3,
           minLines: 1,
-          decoration: const InputDecoration(
-            labelText: 'Reason',
-            hintText: 'Provide a reason for this action...',
+          decoration: InputDecoration(
+            labelText: 'Reason'.tr,
+            hintText: 'Provide a reason for this action...'.tr,
             border: OutlineInputBorder(),
           ),
         ),
@@ -3071,7 +3071,7 @@ class _CommentSectionState extends State<CommentSection> {
               _buildModAction(
                 context: context,
                 icon: Icons.info_rounded,
-                label: 'View User Info',
+                label: 'View User Info'.tr,
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(context);
@@ -3081,7 +3081,7 @@ class _CommentSectionState extends State<CommentSection> {
               _buildModAction(
                 context: context,
                 icon: Icons.history_rounded,
-                label: 'View User History',
+                label: 'View User History'.tr,
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(context);

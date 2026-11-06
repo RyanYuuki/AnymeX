@@ -330,7 +330,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
       setState(() => _isSaving = false);
       if (success) {
         Get.snackbar(
-          'Profile Updated',
+          'Profile Updated'.tr,
           'Your customizations have been saved and applied!',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: context.colors.surfaceContainerHighest,
@@ -338,7 +338,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
         );
       } else {
         Get.snackbar(
-          'Error',
+          'Error'.tr,
           'Failed to update customizations. Please try again.',
           snackPosition: SnackPosition.BOTTOM,
         );

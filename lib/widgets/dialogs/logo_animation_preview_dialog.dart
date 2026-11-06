@@ -288,7 +288,7 @@ class _LogoAnimationPreviewDialogState
                         setDialogState(() {});
                       },
                       decoration: InputDecoration(
-                        hintText: 'e.g. My Anime Logo',
+                        hintText: 'e.g. My Anime Logo'.tr,
                         errorText: errorText,
                         filled: true,
                         fillColor: dialogContext.colors.surfaceContainer,
@@ -517,7 +517,7 @@ class _LogoAnimationPreviewDialogState
                         setDialogState(() {});
                       },
                       decoration: InputDecoration(
-                        hintText: 'e.g. My Anime Logo',
+                        hintText: 'e.g. My Anime Logo'.tr,
                         errorText: errorText,
                         filled: true,
                         fillColor: dialogContext.colors.surfaceContainer,
@@ -643,7 +643,7 @@ class _LogoAnimationPreviewDialogState
   void _confirmDeleteCustomLogo(CustomLogo logo) {
     AnymeXDialog(
       title: 'Delete Custom Logo'.tr,
-      message: 'Are you sure you want to delete "${logo.name}"?',
+      message: 'Are you sure you want to delete "@name"?'.trParams({'name': (logo.name).toString()}),
       confirmText: 'Delete'.tr,
       onConfirm: () async {
         await CustomLogoService.deleteCustomLogo(logo.id);

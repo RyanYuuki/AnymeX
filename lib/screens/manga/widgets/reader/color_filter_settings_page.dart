@@ -43,8 +43,8 @@ class ColorFilterSettingsPage extends StatelessWidget {
           children: [
             AnymeXTile.toggle(
               icon: Icons.brightness_6_rounded,
-              title: 'Custom Brightness',
-              subtitle: 'Override system screen brightness',
+              title: 'Custom Brightness'.tr,
+              subtitle: 'Override system screen brightness'.tr,
               value: customBrightness,
               onChanged: (_) => controller.toggleCustomBrightness(),
             ),
@@ -52,9 +52,9 @@ class ColorFilterSettingsPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: AnymeXTile.slider(
-                  title: 'Brightness',
+                  title: 'Brightness'.tr,
                   icon: Icons.wb_sunny_rounded,
-                  subtitle: 'Range: -75 (darkest) to 100',
+                  subtitle: 'Range: -75 (darkest) to 100'.tr,
                   value: controller.customBrightnessValue.value.toDouble(),
                   min: -75,
                   max: 100,
@@ -68,8 +68,8 @@ class ColorFilterSettingsPage extends StatelessWidget {
             
             AnymeXTile.toggle(
               icon: Icons.color_lens_rounded,
-              title: 'Color Filter',
-              subtitle: 'Apply a color tint over pages',
+              title: 'Color Filter'.tr,
+              subtitle: 'Apply a color tint over pages'.tr,
               value: colorFilter,
               onChanged: (_) => controller.toggleColorFilter(),
             ),
@@ -77,7 +77,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: AnymeXTile.slider(
-                  title: 'Red',
+                  title: 'Red'.tr,
                   icon: Icons.circle,
                   subtitle: '0 – 255',
                   value: ((colorValue >> 16) & 0xFF).toDouble(),
@@ -91,7 +91,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: AnymeXTile.slider(
-                  title: 'Green',
+                  title: 'Green'.tr,
                   icon: Icons.circle,
                   subtitle: '0 – 255',
                   value: ((colorValue >> 8) & 0xFF).toDouble(),
@@ -105,7 +105,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: AnymeXTile.slider(
-                  title: 'Blue',
+                  title: 'Blue'.tr,
                   icon: Icons.circle,
                   subtitle: '0 – 255',
                   value: (colorValue & 0xFF).toDouble(),
@@ -119,7 +119,7 @@ class ColorFilterSettingsPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: AnymeXTile.slider(
-                  title: 'Alpha',
+                  title: 'Alpha'.tr,
                   icon: Icons.opacity,
                   subtitle: '0 – 255',
                   value: ((colorValue >> 24) & 0xFF).toDouble(),
@@ -163,15 +163,15 @@ class ColorFilterSettingsPage extends StatelessWidget {
             
             AnymeXTile.toggle(
               icon: Icons.gradient_rounded,
-              title: 'Grayscale',
-              subtitle: 'Display pages in black & white',
+              title: 'Grayscale'.tr,
+              subtitle: 'Display pages in black & white'.tr,
               value: controller.grayscaleEnabled.value,
               onChanged: (_) => controller.toggleGrayscale(),
             ),
             AnymeXTile.toggle(
               icon: Icons.invert_colors_rounded,
-              title: 'Invert Colors',
-              subtitle: 'Invert all page colors',
+              title: 'Invert Colors'.tr,
+              subtitle: 'Invert all page colors'.tr,
               value: controller.invertColorsEnabled.value,
               onChanged: (_) => controller.toggleInvertColors(),
             ),

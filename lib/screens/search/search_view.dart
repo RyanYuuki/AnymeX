@@ -901,7 +901,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     final pills = <PillItem>[
       if (widget.source == null)
         PillItem(
-          label: '← All',
+          label: '← All'.tr,
           isSelected: false,
           onTap: () {
             setState(() {

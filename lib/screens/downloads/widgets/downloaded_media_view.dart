@@ -119,7 +119,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     AnymeXDialog(
       title: 'Delete episode?'.tr,
       message:
-          'Episode ${ep.number} will be permanently removed from your downloads.',
+          'Episode @number will be permanently removed from your downloads.'.trParams({'number': (ep.number).toString()}),
       onConfirm: () async {
         _showLoadingDialog(context, 'Deleting episode...');
         try {
@@ -146,7 +146,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     final display = ch.displayTitle;
     AnymeXDialog(
       title: 'Delete chapter?'.tr,
-      message: '$display will be permanently removed from your downloads.',
+      message: '@display will be permanently removed from your downloads.'.trParams({'display': (display).toString()}),
       onConfirm: () async {
         _showLoadingDialog(context, 'Deleting chapter...');
         try {

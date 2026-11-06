@@ -331,7 +331,7 @@ class NovelBottomControls extends StatelessWidget {
                 }
               : null,
           icon: Icons.skip_previous_rounded,
-          tooltip: 'Previous Chapter',
+          tooltip: 'Previous Chapter'.tr,
           isEnabled: controller.canGoPrevious.value,
         ));
   }
@@ -357,7 +357,7 @@ class NovelBottomControls extends StatelessWidget {
                   controller.decreaseFontSize();
                 },
                 icon: Icons.text_decrease_rounded,
-                tooltip: 'Decrease Font Size',
+                tooltip: 'Decrease Font Size'.tr,
               ),
               SizedBox(width: isDesktop ? 16 : 12),
               Container(
@@ -387,7 +387,7 @@ class NovelBottomControls extends StatelessWidget {
                   controller.increaseFontSize();
                 },
                 icon: Icons.text_increase_rounded,
-                tooltip: 'Increase Font Size',
+                tooltip: 'Increase Font Size'.tr,
               ),
             ],
           ),
@@ -405,7 +405,7 @@ class NovelBottomControls extends StatelessWidget {
                 }
               : null,
           icon: Icons.skip_next_rounded,
-          tooltip: 'Next Chapter',
+          tooltip: 'Next Chapter'.tr,
           isEnabled: controller.canGoNext.value,
         ));
   }

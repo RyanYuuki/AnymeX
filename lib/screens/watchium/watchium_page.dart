@@ -191,7 +191,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
         _isLoading = false;
         _error = 'Room not found or expired';
       });
-      errorSnackBar('Room not found or expired');
+      errorSnackBar('Room not found or expired'.tr);
       return;
     }
 
@@ -348,8 +348,8 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       color: cs.onSurface,
                     ),
                     decoration: InputDecoration(
-                      labelText: 'Room password',
-                      hintText: 'Enter the room password',
+                      labelText: 'Room password'.tr,
+                      hintText: 'Enter the room password'.tr,
                       labelStyle: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
@@ -476,7 +476,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
   body: Column(
           children: [
             NestedHeader(
-              title: 'Watch Together',
+              title: 'Watch Together'.tr,
               action: IconButton(
                 onPressed: _loadRooms,
                 icon: const Icon(Icons.refresh),
@@ -1085,7 +1085,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
     if (preview == null) {
       setState(() => _isLoading = false);
       if (!fromDeepLink) {
-        errorSnackBar('Room not found or expired');
+        errorSnackBar('Room not found or expired'.tr);
       }
       return false;
     }

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
 
 class GifPickerSheet extends StatefulWidget {
   final Function(String gifUrl) onGifSelected;
@@ -344,7 +345,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                       color: colorScheme.onSurface,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Search anime GIFs, reactions...',
+                      hintText: 'Search anime GIFs, reactions...'.tr,
                       hintStyle: TextStyle(
                         fontSize: 13,
                         color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
@@ -392,7 +393,7 @@ class _GifPickerSheetState extends State<GifPickerSheet> {
                             color: colorScheme.onSurface,
                           ),
                           decoration: InputDecoration(
-                            hintText: 'Paste direct GIF or image URL...',
+                            hintText: 'Paste direct GIF or image URL...'.tr,
                             hintStyle: TextStyle(
                               fontSize: 12,
                               color: colorScheme.onSurfaceVariant

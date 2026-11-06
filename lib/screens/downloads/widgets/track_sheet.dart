@@ -596,7 +596,7 @@ class _TrackSheetState extends State<_TrackSheet> {
               textInputAction: TextInputAction.search,
               onSubmitted: (q) => _runSearch(tracker, q),
               decoration: InputDecoration(
-                hintText: 'Search ${tracker.label} for "${widget.title}"…',
+                hintText: 'Search @label for "@title"…'.trParams({'label': (tracker.label).toString(), 'title': (widget.title).toString()}),
                 hintStyle: TextStyle(
                     color: theme.onSurface.withOpacity(0.4), fontSize: 13),
                 prefixIcon: Icon(Icons.search_rounded,

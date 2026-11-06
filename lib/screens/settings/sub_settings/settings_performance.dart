@@ -234,7 +234,7 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                       AnymeXTile(
                         icon: Icons.layers_outlined,
                         title: 'Supported Modes'.tr,
-                        subtitle: '${validModes.length} modes',
+                        subtitle: '@length modes'.trParams({'length': (validModes.length).toString()}),
                       ),
                     ],
                   ),

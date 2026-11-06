@@ -190,7 +190,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     AnymeXDialog(
       title: 'Clear Cache & Cookies'.tr,
       message:
-          'Are you sure you want to delete cache and cookies for ${widget.source.name}?',
+          'Are you sure you want to delete cache and cookies for @name?'.trParams({'name': (widget.source.name).toString()}),
       confirmText: 'Clear'.tr,
       onConfirm: () async {
         await _clearCookiesForSource();
@@ -204,7 +204,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     AnymeXDialog(
       title: 'Clear Cookies'.tr,
       message:
-          'Are you sure you want to delete saved cookies and Cloudflare tokens for ${widget.source.name}?',
+          'Are you sure you want to delete saved cookies and Cloudflare tokens for @name?'.trParams({'name': (widget.source.name).toString()}),
       confirmText: 'Clear'.tr,
       onConfirm: () async {
         await _clearCookiesForSource();
@@ -217,7 +217,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
     AnymeXDialog(
       title: 'Clear Cache'.tr,
       message:
-          'Are you sure you want to delete temporary cache for ${widget.source.name}?',
+          'Are you sure you want to delete temporary cache for @name?'.trParams({'name': (widget.source.name).toString()}),
       confirmText: 'Clear'.tr,
       onConfirm: () async {
         await _clearCacheForSource();
@@ -429,7 +429,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
       default:
         return AnymeXTile(
           title: pref.key ?? 'Unknown Preference',
-          subtitle: 'Unsupported type ${pref.type}',
+          subtitle: 'Unsupported type @type'.trParams({'type': (pref.type).toString()}),
           showChevron: false,
           onTap: () {},
         );
@@ -443,7 +443,7 @@ class _SourcePreferenceScreenState extends State<SourcePreferenceScreen> {
       body: Column(
         children: [
           NestedHeader(
-            title: "${widget.source.name} Settings",
+            title: "@name Settings".trParams({'name': (widget.source.name).toString()}),
           ),
           Expanded(
             child: Obx(

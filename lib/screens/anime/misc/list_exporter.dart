@@ -310,12 +310,12 @@ class _ListExporterPageState extends State<ListExporterPage> {
       }
 
       if (serviceHandler.serviceType.value == ServicesType.mal) {
-        successSnackBar('MAL list exported to:\n$savedPath', duration: 5000);
+        successSnackBar('MAL list exported to:\n@savedPath'.trParams({'savedPath': (savedPath).toString()}), duration: 5000);
       } else {
-        successSnackBar('AniList XML exported to:\n$savedPath', duration: 5000);
+        successSnackBar('AniList XML exported to:\n@savedPath'.trParams({'savedPath': (savedPath).toString()}), duration: 5000);
       }
     } catch (e) {
-      errorSnackBar("Export failed: ${e.toString()}");
+      errorSnackBar("Export failed: @p0".trParams({'p0': (e.toString()).toString()}));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

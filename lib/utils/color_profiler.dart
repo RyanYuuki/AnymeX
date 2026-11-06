@@ -632,7 +632,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
                 ),
                 const SizedBox(height: 20),
                 AnymeXExpansionTile(
-                  title: 'ANIME 4K',
+                  title: 'ANIME 4K'.tr,
                   initialExpanded: true,
                   content: Obx(() {
                     final shaders = ["Default", ...PlayerShaders.getShaders()];
@@ -1064,31 +1064,31 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               const SizedBox(height: 20),
               _buildVisualSwitchTile(
                 keyName: 'deband',
-                title: 'Deband',
-                description: 'Reduce color banding in gradients',
+                title: 'Deband'.tr,
+                description: 'Reduce color banding in gradients'.tr,
                 icon: Icons.gradient_rounded,
               ),
               _buildVisualSwitchTile(
                 keyName: 'correctDownscaling',
-                title: 'Correct Downscaling',
-                description: 'Improve quality when scaling down video',
+                title: 'Correct Downscaling'.tr,
+                description: 'Improve quality when scaling down video'.tr,
                 icon: Icons.fit_screen_rounded,
               ),
               _buildVisualSwitchTile(
                 keyName: 'sigmoidUpscaling',
-                title: 'Sigmoid Upscaling',
-                description: 'Reduce haloing while upscaling',
+                title: 'Sigmoid Upscaling'.tr,
+                description: 'Reduce haloing while upscaling'.tr,
                 icon: Icons.auto_fix_high_rounded,
               ),
               _buildVisualSwitchTile(
                 keyName: 'temporalDither',
-                title: 'Temporal Dither',
-                description: 'Smoother gradients with slight temporal noise',
+                title: 'Temporal Dither'.tr,
+                description: 'Smoother gradients with slight temporal noise'.tr,
                 icon: Icons.grain_rounded,
               ),
               _buildVisualSelectionTile(
                 keyName: 'scale',
-                title: 'Luma Upscaler',
+                title: 'Luma Upscaler'.tr,
                 icon: Icons.zoom_in_map_rounded,
                 items: const [
                   'bilinear',
@@ -1099,7 +1099,7 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               ),
               _buildVisualSelectionTile(
                 keyName: 'cscale',
-                title: 'Chroma Upscaler',
+                title: 'Chroma Upscaler'.tr,
                 icon: Icons.color_lens_rounded,
                 items: const [
                   'bilinear',
@@ -1110,26 +1110,26 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               ),
               _buildVisualSelectionTile(
                 keyName: 'dscale',
-                title: 'Downscaler',
+                title: 'Downscaler'.tr,
                 icon: Icons.zoom_out_map_rounded,
                 items: const ['bilinear', 'bicubic', 'mitchell', 'spline36'],
               ),
               _buildVisualSelectionTile(
                 keyName: 'ditherDepth',
-                title: 'Dither Depth',
+                title: 'Dither Depth'.tr,
                 icon: Icons.blur_linear_rounded,
                 items: const ['auto', '8', '10', '12'],
               ),
               _buildVisualSelectionTile(
                 keyName: 'toneMapping',
-                title: 'Tone Mapping',
+                title: 'Tone Mapping'.tr,
                 icon: Icons.hdr_auto_rounded,
                 items: const ['auto', 'mobius', 'reinhard', 'hable', 'bt.2390'],
               ),
               _buildVisualSliderTile(
                 keyName: 'debandIterations',
-                title: 'Deband Iterations',
-                description: 'More iterations = stronger debanding',
+                title: 'Deband Iterations'.tr,
+                description: 'More iterations = stronger debanding'.tr,
                 icon: Icons.layers_rounded,
                 min: 1,
                 max: 4,
@@ -1137,8 +1137,8 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               ),
               _buildVisualSliderTile(
                 keyName: 'debandThreshold',
-                title: 'Deband Threshold',
-                description: 'Higher value increases debanding strength',
+                title: 'Deband Threshold'.tr,
+                description: 'Higher value increases debanding strength'.tr,
                 icon: Icons.tune_rounded,
                 min: 16,
                 max: 128,
@@ -1146,8 +1146,8 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
               ),
               _buildVisualSliderTile(
                 keyName: 'targetPeak',
-                title: 'Target Peak',
-                description: 'HDR tone mapping target peak',
+                title: 'Target Peak'.tr,
+                description: 'HDR tone mapping target peak'.tr,
                 icon: Icons.brightness_6_rounded,
                 min: 50,
                 max: 1000,

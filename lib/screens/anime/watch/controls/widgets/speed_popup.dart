@@ -214,7 +214,7 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
           ],
         ),
         _ActionChip(
-          label: 'Reset to 1×',
+          label: 'Reset to 1×'.tr,
           icon: Icons.replay_rounded,
           onTap: _restoreSpeed,
           color: cs.secondary,
@@ -272,14 +272,14 @@ class _SpeedPopupContentState extends State<_SpeedPopupContent> {
                   color: cs.onSurface.withOpacity(0.7))),
         ),
         _ActionChip(
-          label: 'Restore',
+          label: 'Restore'.tr,
           icon: Icons.settings_backup_restore_rounded,
           onTap: _restoreChips,
           color: cs.tertiary,
         ),
         const SizedBox(width: 8),
         _ActionChip(
-          label: 'Add',
+          label: 'Add'.tr,
           icon: Icons.add_rounded,
           onTap: _addChip,
           color: cs.primary,

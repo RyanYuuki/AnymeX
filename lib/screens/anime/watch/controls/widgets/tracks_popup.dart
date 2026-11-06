@@ -115,7 +115,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
       _activeOnlineSubtitleId.value = sub.id;
       snackBar('Loaded subtitle: ${sub.name}');
     } catch (e) {
-      errorSnackBar('Failed to download subtitle: $e');
+      errorSnackBar('Failed to download subtitle: @e'.trParams({'e': (e).toString()}));
     } finally {
       _downloadingSubtitleId.value = '';
     }
@@ -127,7 +127,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
     final cs = theme.colorScheme;
 
     return WatchSettingsPane(
-      title: 'Subtitle Settings',
+      title: 'Subtitle Settings'.tr,
       onClose: widget.onClose,
       tabBar: _buildTabBar(cs, theme),
       child: switch (_currentTab) {
@@ -235,7 +235,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
                   return AnymeXTile.toggle(
                     value: allMode,
                     icon: Icons.layers_rounded,
-                    title: 'Show all streams',
+                    title: 'Show all streams'.tr,
                     onChanged: (val) {
                       _showAllStreams.value = val;
                       widget.controller.showAllStreamSubtitles.value = val;
@@ -246,9 +246,9 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
 
                 if (index == 1) {
                   return AnymeXTile(
-                    title: 'Import Local Subtitle',
+                    title: 'Import Local Subtitle'.tr,
                     subtitle:
-                        'Choose a subtitle file from your device (.srt, .vtt, .ass, .ssa)',
+                        'Choose a subtitle file from your device (.srt, .vtt, .ass, .ssa)'.tr,
                     icon: Icons.file_open_rounded,
                     onTap: () {
                       widget.controller.pickLocalSubtitle();
@@ -328,7 +328,7 @@ class _TracksPopupContentState extends State<_TracksPopupContent> {
               Expanded(
                 child: AnymeXSearchBar(
                   controller: _onlineSearchController,
-                  hintText: 'Search anime / episode...',
+                  hintText: 'Search anime / episode...'.tr,
                   onSubmitted: (_) => _performOnlineSearch(),
                 ),
               ),

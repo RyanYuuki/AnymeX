@@ -122,7 +122,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     AnymeXDialog(
       title: 'Clear History'.tr,
       message:
-          'Are you sure you want to clear all $label? This action cannot be undone.',
+          'Are you sure you want to clear all @label? This action cannot be undone.'.trParams({'label': (label).toString()}),
       confirmText: 'Clear All'.tr,
       onConfirm: () async {
         final ids = items
@@ -668,7 +668,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
     AnymeXDialog(
       title: 'Delete List'.tr,
       message:
-          'Are you sure you want to delete "${_lists[index].listName}"? This action cannot be undone.',
+          'Are you sure you want to delete "@p0"? This action cannot be undone.'.trParams({'p0': (_lists[index].listName).toString()}),
       confirmText: 'Delete'.tr,
       onConfirm: () {
         setState(() {
@@ -783,7 +783,7 @@ class __ListMediaEditorBottomSheetState
     AnymeXDialog(
       title: 'Remove Items'.tr,
       message:
-          'Are you sure you want to remove the ${_selectedItemIndices.length} selected items from "${widget.listData.listName}"?',
+          'Are you sure you want to remove the @length selected items from "@listName"?'.trParams({'length': (_selectedItemIndices.length).toString(), 'listName': (widget.listData.listName).toString()}),
       confirmText: 'Remove'.tr,
       onConfirm: () {
         final sortedIndices = _selectedItemIndices.toList()

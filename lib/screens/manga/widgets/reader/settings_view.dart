@@ -125,7 +125,7 @@ class ReaderSettings {
                   if (Platform.isAndroid || Platform.isIOS)
                     AnymeXTile(
                       title: 'Tap Zones'.tr,
-                      subtitle: 'Customize gestures',
+                      subtitle: 'Customize gestures'.tr,
                       icon: Icons.touch_app_rounded,
                       onTap: () {
                         Navigator.pop(context);
@@ -238,7 +238,7 @@ class ReaderSettings {
                     return AnymeXTile.toggle(
                       icon: Iconsax.pharagraphspacing,
                       title: 'Spaced Pages'.tr,
-                      subtitle: "Continuous Mode only",
+                      subtitle: "Continuous Mode only".tr,
                       value: controller.spacedPages.value,
                       onChanged: (val) => controller.toggleSpacedPages(),
                     );
@@ -247,7 +247,7 @@ class ReaderSettings {
                     return AnymeXTile.toggle(
                       icon: Iconsax.arrow,
                       title: 'Overscroll'.tr,
-                      subtitle: "To Prev/Next Chapter",
+                      subtitle: "To Prev/Next Chapter".tr,
                       value: controller.overscrollToChapter.value,
                       onChanged: (val) =>
                           controller.toggleOverscrollToChapter(),
@@ -257,7 +257,7 @@ class ReaderSettings {
                     return AnymeXTile.toggle(
                       icon: Iconsax.eye,
                       title: 'Persistent Page Indicator'.tr,
-                      subtitle: "Always show page indicator",
+                      subtitle: "Always show page indicator".tr,
                       value: controller.showPageIndicator.value,
                       onChanged: (val) => controller.togglePageIndicator(),
                     );
@@ -267,7 +267,7 @@ class ReaderSettings {
                       return AnymeXTile.toggle(
                         icon: Iconsax.volume_high,
                         title: 'Volume Keys Navigation'.tr,
-                        subtitle: "Use volume keys to change pages",
+                        subtitle: "Use volume keys to change pages".tr,
                         value: controller.volumeKeysEnabled.value,
                         onChanged: (val) => controller.toggleVolumeKeys(),
                       );
@@ -277,7 +277,7 @@ class ReaderSettings {
                       return AnymeXTile.toggle(
                         icon: Iconsax.arrow_swap_horizontal,
                         title: 'Invert Volume Keys'.tr,
-                        subtitle: "Swap Up/Down actions",
+                        subtitle: "Swap Up/Down actions".tr,
                         value: controller.invertVolumeKeys.value,
                         onChanged: (val) {
                           controller.invertVolumeKeys.value = val;
@@ -290,7 +290,7 @@ class ReaderSettings {
                       icon: Icons.crop_rounded,
                       title: 'Crop Borders'.tr,
                       subtitle:
-                          "Remove white/black borders to maximize content",
+                          "Remove white/black borders to maximize content".tr,
                       value: controller.cropImages.value,
                       onChanged: (val) {
                         controller.toggleCropImages();
@@ -302,7 +302,7 @@ class ReaderSettings {
                       icon: Icons.fullscreen_rounded,
                       title: 'Fit to Screen Width'.tr,
                       subtitle:
-                          "Stretch images to fit screen width on wide screens",
+                          "Stretch images to fit screen width on wide screens".tr,
                       value: controller.fitToScreen.value,
                       onChanged: (val) {
                         controller.toggleFitToScreen();
@@ -316,7 +316,7 @@ class ReaderSettings {
                     return AnymeXTile.toggle(
                       icon: Icons.play_arrow_rounded,
                       title: 'Auto Scroll'.tr,
-                      subtitle: "Automatically scroll/advance pages",
+                      subtitle: "Automatically scroll/advance pages".tr,
                       value: controller.autoScrollEnabled.value,
                       onChanged: (val) => controller.toggleAutoScroll(),
                     );
@@ -350,14 +350,14 @@ class ReaderSettings {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: AnymeXTile.slider(
-                        title: 'Preload Page',
+                        title: 'Preload Page'.tr,
                         value:
                             controller.preloadPages.value.toDouble(),
                         onChanged: (double value) {
                           controller.preloadPages.value = value.toInt();
                         },
                         subtitle:
-                            'Preload Pages ahead of time for faster loading (Consumes more network and ram)',
+                            'Preload Pages ahead of time for faster loading (Consumes more network and ram)'.tr,
                         icon: Icons.image_aspect_ratio_rounded,
                         min: 1.0,
                         max: 15.0,
@@ -371,12 +371,12 @@ class ReaderSettings {
                         padding:
                             const EdgeInsets.symmetric(horizontal: 10.0),
                         child: AnymeXTile.slider(
-                          title: 'Image Width',
+                          title: 'Image Width'.tr,
                           value: controller.pageWidthMultiplier.value,
                           onChanged: (double value) {
                             controller.pageWidthMultiplier.value = value;
                           },
-                          subtitle: 'Continuous Mode only',
+                          subtitle: 'Continuous Mode only'.tr,
                           icon: Icons.image_aspect_ratio_rounded,
                           min: 1.0,
                           max: 2.5,
@@ -390,13 +390,13 @@ class ReaderSettings {
                         padding:
                             const EdgeInsets.symmetric(horizontal: 10.0),
                         child: AnymeXTile.slider(
-                          title: 'Scroll Multiplier',
+                          title: 'Scroll Multiplier'.tr,
                           value:
                               controller.scrollSpeedMultiplier.value,
                           onChanged: (double value) {
                             controller.scrollSpeedMultiplier.value = value;
                           },
-                          subtitle: 'Adjust Key & Volume Scrolling Speed',
+                          subtitle: 'Adjust Key & Volume Scrolling Speed'.tr,
                           icon: Icons.speed,
                           min: 1.0,
                           max: 5.0,

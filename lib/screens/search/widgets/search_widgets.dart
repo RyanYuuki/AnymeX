@@ -1008,7 +1008,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           const SizedBox(height: 8),
           _buildRangeSlider(
             label:
-                '${episodeRange.start.toInt()} – ${episodeRange.end.toInt() >= _maxEpisodes.toInt() ? "${_maxEpisodes.toInt()}+" : episodeRange.end.toInt()} eps',
+                '@p0 – @p1 eps'.trParams({'p0': (episodeRange.start.toInt()).toString(), 'p1': (episodeRange.end.toInt() >= _maxEpisodes.toInt() ? "${_maxEpisodes.toInt()}+" : episodeRange.end.toInt()).toString()}),
             values: episodeRange,
             min: 0,
             max: _maxEpisodes,
@@ -1026,7 +1026,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           const SizedBox(height: 8),
           _buildRangeSlider(
             label:
-                '${durationRange.start.toInt()} – ${durationRange.end.toInt() >= _maxDuration.toInt() ? "${_maxDuration.toInt()}+" : durationRange.end.toInt()} min',
+                '@p0 – @p1 min'.trParams({'p0': (durationRange.start.toInt()).toString(), 'p1': (durationRange.end.toInt() >= _maxDuration.toInt() ? "${_maxDuration.toInt()}+" : durationRange.end.toInt()).toString()}),
             values: durationRange,
             min: 0,
             max: _maxDuration,
@@ -1052,7 +1052,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           const SizedBox(height: 8),
           _buildRangeSlider(
             label:
-                '${chaptersRange.start.toInt()} – ${chaptersRange.end.toInt() >= _maxChapters.toInt() ? "${_maxChapters.toInt()}+" : chaptersRange.end.toInt()} chapters',
+                '@p0 – @p1 chapters'.trParams({'p0': (chaptersRange.start.toInt()).toString(), 'p1': (chaptersRange.end.toInt() >= _maxChapters.toInt() ? "${_maxChapters.toInt()}+" : chaptersRange.end.toInt()).toString()}),
             values: chaptersRange,
             min: 0,
             max: _maxChapters,
@@ -1070,7 +1070,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           const SizedBox(height: 8),
           _buildRangeSlider(
             label:
-                '${volumesRange.start.toInt()} – ${volumesRange.end.toInt() >= _maxVolumes.toInt() ? "${_maxVolumes.toInt()}+" : volumesRange.end.toInt()} volumes',
+                '@p0 – @p1 volumes'.trParams({'p0': (volumesRange.start.toInt()).toString(), 'p1': (volumesRange.end.toInt() >= _maxVolumes.toInt() ? "${_maxVolumes.toInt()}+" : volumesRange.end.toInt()).toString()}),
             values: volumesRange,
             min: 0,
             max: _maxVolumes,
@@ -1971,7 +1971,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: _buildNeonButton(
-                    text: 'DONE (${selectedTags.length} selected)',
+                    text: 'DONE (@length selected)'.trParams({'length': (selectedTags.length).toString()}),
                     icon: Icons.check_rounded,
                     isPrimary: true,
                     onTap: () => Navigator.pop(ctx),
@@ -2105,7 +2105,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                       ? _buildEmptyOptionsState(context,
                           title: 'No Services Available'.tr,
                           message:
-                              'Could not load streaming services from AniList API.\nThe service may be temporarily unavailable or rate-limited.')
+                              'Could not load streaming services from AniList API.\nThe service may be temporarily unavailable or rate-limited.'.tr)
                       : ListView(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                           physics: const BouncingScrollPhysics(),

@@ -117,7 +117,7 @@ class _SettingsModerationState extends State<SettingsModeration> {
                     Obx(() => CustomTile(
                           icon: Icons.report_outlined,
                           title: "Reports Queue".tr,
-                          description: "${reportsQueue.length} pending reports",
+                          description: "@length pending reports".trParams({'length': (reportsQueue.length).toString()}),
                           postFix: isLoadingQueue.value
                               ? const SizedBox(
                                   width: 20,
@@ -626,7 +626,7 @@ class _UserSearchSheetState extends State<_UserSearchSheet> {
             const Divider(height: 1),
             const SizedBox(height: 8),
             Text(
-              '${_searchResults.length} result(s)',
+              '@length result(s)'.trParams({'length': (_searchResults.length).toString()}),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
@@ -1006,7 +1006,7 @@ class _ReportsQueuePageState extends State<ReportsQueuePage> {
                               if (reporterUsername.isNotEmpty ||
                                   reporterId.isNotEmpty)
                                 Text(
-                                  'by ${reporterUsername.isNotEmpty ? reporterUsername : reporterId}',
+                                  'by @p0'.trParams({'p0': (reporterUsername.isNotEmpty ? reporterUsername : reporterId).toString()}),
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                     fontSize: 10,
@@ -1441,7 +1441,7 @@ class _UserListPageState extends State<UserListPage> {
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '${users.length} of $totalUsers users',
+                    '@length of @totalUsers users'.trParams({'length': (users.length).toString(), 'totalUsers': (totalUsers).toString()}),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
@@ -1846,7 +1846,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 : userInfo == null
                     ? Center(
                         child: Text(
-                          'User not found (ID: ${widget.targetUserId})',
+                          'User not found (ID: @targetUserId)'.trParams({'targetUserId': (widget.targetUserId).toString()}),
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),

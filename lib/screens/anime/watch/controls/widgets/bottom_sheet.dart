@@ -486,7 +486,7 @@ class PlayerBottomSheets {
       showSearch: filteredTracks.length > 5,
       searchHint: 'Search audio tracks...',
       items: [
-        const BottomSheetItem(
+        BottomSheetItem(
             title: 'Auto'.tr, subtitle: 'Audio Track'.tr, icon: Icons.audiotrack),
         ...tracks.where((e) => e.title != null).map((entry) {
           return BottomSheetItem(

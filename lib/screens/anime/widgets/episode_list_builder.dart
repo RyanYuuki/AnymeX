@@ -1031,7 +1031,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
           );
         case DownloadItemStatus.downloading:
           return Tooltip(
-            message: 'Downloading (${(state.progress * 100).toInt()}%)',
+            message: 'Downloading (@p0%)'.trParams({'p0': ((state.progress * 100).toInt()).toString()}),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1308,7 +1308,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
     final options = <_BatchOption>[
       (
         title: 'Download Unwatched Episodes'.tr,
-        subtitle: '${unwatched.length} episodes',
+        subtitle: '@length episodes'.trParams({'length': (unwatched.length).toString()}),
         icon: Icons.playlist_play_rounded,
         enabled: unwatched.isNotEmpty,
         onTap: () {
@@ -1322,7 +1322,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       ),
       (
         title: 'Download Current Section'.tr,
-        subtitle: '${chunkNotDownloaded.length} episodes',
+        subtitle: '@length episodes'.trParams({'length': (chunkNotDownloaded.length).toString()}),
         icon: Icons.view_carousel_outlined,
         enabled: chunkNotDownloaded.isNotEmpty,
         onTap: () {
@@ -1336,7 +1336,7 @@ class _EpisodeListBuilderState extends State<EpisodeListBuilder> {
       ),
       (
         title: 'Download All Episodes'.tr,
-        subtitle: '${allNotDownloaded.length} episodes',
+        subtitle: '@length episodes'.trParams({'length': (allNotDownloaded.length).toString()}),
         icon: Icons.file_download_outlined,
         enabled: allNotDownloaded.isNotEmpty,
         onTap: () {
@@ -1409,7 +1409,7 @@ class ContinueEpisodeButton extends StatelessWidget {
         final isMovieMedia =
             data.id.endsWith('*MOVIE') || data.mediaType == ItemType.anime;
         final resolvedTitle = (isGenericMovie || isMovieMedia)
-            ? (data.title.isNotEmpty ? data.title : "Episode ${episode.number}")
+            ? (data.title.isNotEmpty ? data.title : "Episode @number".trParams({'number': (episode.number).toString()}))
             : rawTitle;
         final episodeLabel = 'Episode ${episode.number}: $resolvedTitle';
         final double progressPercentage;

@@ -206,7 +206,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                         controller: _controller,
                         focusNode: _focusNode,
                         decoration: InputDecoration(
-                            hintText: 'https://github.com/username/repo.json',
+                            hintText: 'https://github.com/username/repo.json'.tr,
                             hintStyle: TextStyle(
                               color: colorScheme.onSurfaceVariant.opaque(0.6),
                               fontSize: 14,

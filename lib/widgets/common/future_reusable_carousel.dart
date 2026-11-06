@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:get/get.dart';
 
 class FutureReusableCarousel extends StatefulWidget {
   final Future<List<dynamic>> future;
@@ -113,7 +114,7 @@ class _FutureReusableCarouselState extends State<FutureReusableCarousel> {
           return widget.emptyWidget ??
               ReusableCarousel(
                 data: const [],
-                title: '${widget.title} (No Data)',
+                title: '@title (No Data)'.trParams({'title': (widget.title).toString()}),
                 type: widget.type,
                 variant: widget.variant,
                 isLoading: false,

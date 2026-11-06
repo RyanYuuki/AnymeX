@@ -273,8 +273,8 @@ class _WatchTogetherPopupContentState
           child: OutlinedButton.icon(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: code));
-              successSnackBar('Room code copied to clipboard',
-                  title: 'Copied');
+              successSnackBar('Room code copied to clipboard'.tr,
+                  title: 'Copied'.tr);
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: cs.primary,
@@ -295,12 +295,12 @@ class _WatchTogetherPopupContentState
         const SizedBox(height: 20),
         AnymeXSectionBuilder(
           margin: EdgeInsets.zero,
-          title: 'Invite Link',
+          title: 'Invite Link'.tr,
           children: [
             AnymeXTile(
               icon: Icons.link_rounded,
               iconColor: Colors.purple,
-              title: 'Invite Link',
+              title: 'Invite Link'.tr,
               subtitleWidget: AnymeXText(
                 shareUrl,
                 size: 12,
@@ -311,7 +311,7 @@ class _WatchTogetherPopupContentState
               trailing: GestureDetector(
                 onTap: () {
                   Clipboard.setData(ClipboardData(text: shareUrl));
-                  successSnackBar('Invite link copied!', title: 'Copied');
+                  successSnackBar('Invite link copied!'.tr, title: 'Copied'.tr);
                 },
                 child: Container(
                   padding: const EdgeInsets.all(8),
@@ -328,7 +328,7 @@ class _WatchTogetherPopupContentState
               ),
               onTap: () {
                 Clipboard.setData(ClipboardData(text: shareUrl));
-                successSnackBar('Invite link copied!', title: 'Copied');
+                successSnackBar('Invite link copied!'.tr, title: 'Copied'.tr);
               },
               showChevron: false,
             ),
@@ -427,12 +427,12 @@ class _WatchTogetherPopupContentState
         ],
         AnymeXSectionBuilder(
           margin: EdgeInsets.zero,
-          title: 'Room Settings',
+          title: 'Room Settings'.tr,
           children: [
             AnymeXTile.slider(
               icon: Icons.people_alt_rounded,
-              title: 'Max Members',
-              subtitle: 'How many friends can join',
+              title: 'Max Members'.tr,
+              subtitle: 'How many friends can join'.tr,
               value: _maxMembers,
               min: 2,
               max: 50,
@@ -442,8 +442,8 @@ class _WatchTogetherPopupContentState
             ),
             AnymeXTile.toggle(
               icon: Icons.lock_outline_rounded,
-              title: 'Private Room',
-              subtitle: 'Friends need a password to join',
+              title: 'Private Room'.tr,
+              subtitle: 'Friends need a password to join'.tr,
               value: _isPrivate,
               onChanged: (v) => setState(() {
                 _isPrivate = v;
@@ -451,8 +451,8 @@ class _WatchTogetherPopupContentState
               }),
               child: _buildField(
                 cs,
-                label: 'Room Password',
-                hint: 'Set a password for your room',
+                label: 'Room Password'.tr,
+                hint: 'Set a password for your room'.tr,
                 prefixIcon: Icons.password_rounded,
                 obscureText: _obscurePassword,
                 suffixIcon: _buildVisibilityToggle(cs),
@@ -608,8 +608,8 @@ class _WatchTogetherPopupContentState
   Future<void> _createRoom() async {
     if (_hasLocalProxyStreams()) {
       warningSnackBar(
-        'This extension is not supported for rooms yet. Please switch to a different extension.',
-        title: 'Unsupported Extension',
+        'This extension is not supported for rooms yet. Please switch to a different extension.'.tr,
+        title: 'Unsupported Extension'.tr,
       );
       return;
     }

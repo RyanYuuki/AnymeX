@@ -144,7 +144,7 @@ class _LeaderboardSheetState extends State<LeaderboardSheet> {
                 IconButton(
                   icon: const Icon(Icons.refresh_rounded, size: 20),
                   onPressed: _isLoading ? null : _fetchLeaderboard,
-                  tooltip: 'Refresh',
+                  tooltip: 'Refresh'.tr,
                 ),
               ],
             ),

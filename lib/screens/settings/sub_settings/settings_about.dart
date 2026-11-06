@@ -262,7 +262,7 @@ class _AboutPageState extends State<AboutPage> {
                             leading: const Icon(Icons.bug_report),
                             title: "Features/Issues".tr,
                             subtitle:
-                                'if you have an issue or any suggestion please make an issue at github.',
+                                'if you have an issue or any suggestion please make an issue at github.'.tr,
                           ),
                           CustomListTile(
                             onTap: () {

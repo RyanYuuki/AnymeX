@@ -328,7 +328,7 @@ class _ReadingModePage extends StatelessWidget {
             if (Platform.isAndroid || Platform.isIOS)
               AnymeXTile(
                 title: 'Tap Zones'.tr,
-                subtitle: 'Customize gestures',
+                subtitle: 'Customize gestures'.tr,
                 icon: Icons.touch_app_rounded,
                 onTap: () {
                   Navigator.pop(context);
@@ -338,14 +338,14 @@ class _ReadingModePage extends StatelessWidget {
             AnymeXTile.toggle(
               icon: Iconsax.pharagraphspacing,
               title: 'Spaced Pages'.tr,
-              subtitle: 'Continuous Mode only',
+              subtitle: 'Continuous Mode only'.tr,
               value: controller.spacedPages.value,
               onChanged: (_) => controller.toggleSpacedPages(),
             ),
             AnymeXTile.toggle(
               icon: Iconsax.arrow,
               title: 'Overscroll'.tr,
-              subtitle: 'To Prev/Next Chapter',
+              subtitle: 'To Prev/Next Chapter'.tr,
               value: controller.overscrollToChapter.value,
               onChanged: (_) => controller.toggleOverscrollToChapter(),
             ),
@@ -353,21 +353,21 @@ class _ReadingModePage extends StatelessWidget {
               icon: Icons.smartphone_rounded,
               title: 'Auto Webtoon Mode'.tr,
               subtitle:
-                  'Automatically switch to continuous mode for long-strip manga',
+                  'Automatically switch to continuous mode for long-strip manga'.tr,
               value: controller.autoWebtoonMode.value,
               onChanged: (_) => controller.toggleAutoWebtoonMode(),
             ),
             AnymeXTile.toggle(
               icon: Icons.onetwothree_rounded,
-              title: 'Navigate by Number',
-              subtitle: 'Always checks current chapter number and compares it with next/prev chapter, navigating only when the number is different. Navigate by Chapter will just move to the next item in the list even if there are duplicates.',
+              title: 'Navigate by Number'.tr,
+              subtitle: 'Always checks current chapter number and compares it with next/prev chapter, navigating only when the number is different. Navigate by Chapter will just move to the next item in the list even if there are duplicates.'.tr,
               value: controller.navigateByNumber.value,
               onChanged: (_) => controller.toggleNavigateByNumber(),
             ),
             AnymeXTile.toggle(
               icon: Icons.fullscreen_rounded,
               title: 'Fit to Screen Width'.tr,
-              subtitle: 'Stretch images to fit screen width',
+              subtitle: 'Stretch images to fit screen width'.tr,
               value: controller.fitToScreen.value,
               onChanged: (_) => controller.toggleFitToScreen(),
             ),
@@ -400,7 +400,7 @@ class _GeneralPage extends StatelessWidget {
               onTap: () => _showThemeDialog(context, settings),
             ),
             AnymeXTile(
-              title: 'Background',
+              title: 'Background'.tr,
               subtitle: switch (controller.readerTheme.value) {
                 0 => 'White',
                 1 => 'Black',
@@ -425,21 +425,21 @@ class _GeneralPage extends StatelessWidget {
             AnymeXTile.toggle(
               icon: Iconsax.eye,
               title: 'Persistent Page Indicator'.tr,
-              subtitle: 'Always show page indicator',
+              subtitle: 'Always show page indicator'.tr,
               value: controller.showPageIndicator.value,
               onChanged: (_) => controller.togglePageIndicator(),
             ),
             AnymeXTile.toggle(
               icon: Icons.crop_rounded,
               title: 'Crop Borders'.tr,
-              subtitle: 'Remove white/black borders',
+              subtitle: 'Remove white/black borders'.tr,
               value: controller.cropImages.value,
               onChanged: (_) => controller.toggleCropImages(),
             ),
             AnymeXTile.toggle(
               icon: Icons.screen_lock_rotation_rounded,
               title: 'Keep Screen On'.tr,
-              subtitle: 'Prevent screen from sleeping while reading',
+              subtitle: 'Prevent screen from sleeping while reading'.tr,
               value: controller.keepScreenOn.value,
               onChanged: (_) => controller.toggleKeepScreenOn(),
             ),
@@ -447,21 +447,21 @@ class _GeneralPage extends StatelessWidget {
               icon: Icons.compare_arrows_rounded,
               title: 'Always Show Chapter Transition'.tr,
               subtitle:
-                  'Show transition page even when chapters are adjacent',
+                  'Show transition page even when chapters are adjacent'.tr,
               value: controller.alwaysShowChapterTransition.value,
               onChanged: (_) => controller.toggleAlwaysShowChapterTransition(),
             ),
             AnymeXTile.toggle(
               icon: Icons.touch_app_rounded,
-              title: 'Long Press for Page Actions',
-              subtitle: 'Long-press a page to save, share, or copy it',
+              title: 'Long Press for Page Actions'.tr,
+              subtitle: 'Long-press a page to save, share, or copy it'.tr,
               value: controller.longPressPageActionsEnabled.value,
               onChanged: (_) => controller.toggleLongPressPageActions(),
             ),
             AnymeXTile.toggle(
               icon: Icons.monitor_rounded,
-              title: 'E-ink Display Refresh',
-              subtitle: 'Flash screen on page turn to clear ghosting',
+              title: 'E-ink Display Refresh'.tr,
+              subtitle: 'Flash screen on page turn to clear ghosting'.tr,
               value: controller.displayRefreshEnabled.value,
               onChanged: (_) => controller.toggleDisplayRefresh(),
             ),
@@ -469,9 +469,9 @@ class _GeneralPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: AnymeXTile.slider(
-                  title: 'Flash Duration',
+                  title: 'Flash Duration'.tr,
                   icon: Icons.timer_rounded,
-                  subtitle: 'Milliseconds',
+                  subtitle: 'Milliseconds'.tr,
                   value:
                       controller.displayRefreshDurationMs.value.toDouble(),
                   min: 50,
@@ -484,9 +484,9 @@ class _GeneralPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: AnymeXTile.slider(
-                  title: 'Flash Every N Pages',
+                  title: 'Flash Every N Pages'.tr,
                   icon: Icons.refresh_rounded,
-                  subtitle: 'Flash frequency',
+                  subtitle: 'Flash frequency'.tr,
                   value:
                       controller.displayRefreshInterval.value.toDouble(),
                   min: 1,
@@ -530,14 +530,14 @@ class _GeneralPage extends StatelessWidget {
               AnymeXTile.toggle(
                 icon: Iconsax.volume_high,
                 title: 'Volume Keys Navigation'.tr,
-                subtitle: 'Use volume keys to change pages',
+                subtitle: 'Use volume keys to change pages'.tr,
                 value: controller.volumeKeysEnabled.value,
                 onChanged: (_) => controller.toggleVolumeKeys(),
               ),
               AnymeXTile.toggle(
                 icon: Iconsax.arrow_swap_horizontal,
                 title: 'Invert Volume Keys'.tr,
-                subtitle: 'Swap Up/Down actions',
+                subtitle: 'Swap Up/Down actions'.tr,
                 value: controller.invertVolumeKeys.value,
                 onChanged: (val) {
                   controller.invertVolumeKeys.value = val;
@@ -549,7 +549,7 @@ class _GeneralPage extends StatelessWidget {
               AnymeXTile.toggle(
                 icon: Icons.play_arrow_rounded,
                 title: 'Auto Scroll'.tr,
-                subtitle: 'Automatically scroll/advance pages',
+                subtitle: 'Automatically scroll/advance pages'.tr,
                 value: controller.autoScrollEnabled.value,
                 onChanged: (_) => controller.toggleAutoScroll(),
               ),
@@ -559,7 +559,7 @@ class _GeneralPage extends StatelessWidget {
                   child: AnymeXTile.slider(
                     title: 'Auto Scroll Speed'.tr,
                     icon: Icons.speed,
-                    subtitle: 'Seconds per page / screen',
+                    subtitle: 'Seconds per page / screen'.tr,
                     value: controller.autoScrollSpeed.value,
                     min: 1.0,
                     max: 10.0,
@@ -571,9 +571,9 @@ class _GeneralPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: AnymeXTile.slider(
-                title: 'Preload Pages',
+                title: 'Preload Pages'.tr,
                 icon: Icons.image_aspect_ratio_rounded,
-                subtitle: 'Pages ahead of time for faster loading',
+                subtitle: 'Pages ahead of time for faster loading'.tr,
                 value: controller.preloadPages.value.toDouble(),
                 min: 1,
                 max: 15,
@@ -585,9 +585,9 @@ class _GeneralPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: AnymeXTile.slider(
-                  title: 'Image Width',
+                  title: 'Image Width'.tr,
                   icon: Icons.image_aspect_ratio_rounded,
-                  subtitle: 'Continuous Mode only',
+                  subtitle: 'Continuous Mode only'.tr,
                   value: controller.pageWidthMultiplier.value,
                   min: 1.0,
                   max: 2.5,
@@ -598,9 +598,9 @@ class _GeneralPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: AnymeXTile.slider(
-                  title: 'Scroll Multiplier',
+                  title: 'Scroll Multiplier'.tr,
                   icon: Icons.speed,
-                  subtitle: 'Key & Volume Scrolling Speed',
+                  subtitle: 'Key & Volume Scrolling Speed'.tr,
                   value: controller.scrollSpeedMultiplier.value,
                   min: 1.0,
                   max: 5.0,

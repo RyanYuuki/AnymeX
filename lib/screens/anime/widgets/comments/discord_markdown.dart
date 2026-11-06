@@ -766,7 +766,7 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
         actions: [
           IconButton(
             icon: const Icon(Icons.launch_outlined, size: 20),
-            tooltip: 'Open in browser',
+            tooltip: 'Open in browser'.tr,
             onPressed: () async {
               final uri = Uri.parse(widget.imageUrls[_currentIndex]);
               if (await canLaunchUrl(uri)) {
@@ -810,7 +810,7 @@ class _FullScreenImageViewerState extends State<_FullScreenImageViewer> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Failed to load image',
+                      'Failed to load image'.tr,
                       style:
                           TextStyle(color: Colors.white.withValues(alpha: 0.6)),
                     ),
@@ -902,7 +902,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Code',
+              label: 'Code'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('`', '`'),
               child: Text(
@@ -930,7 +930,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Quote',
+              label: 'Quote'.tr,
               colorScheme: colorScheme,
               onTap: () => _wrapSelection('> ', ''),
               child: Text(
@@ -944,7 +944,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Bullet List',
+              label: 'Bullet List'.tr,
               colorScheme: colorScheme,
               onTap: _insertBulletList,
               child: Icon(
@@ -955,7 +955,7 @@ class MarkdownFormattingToolbar extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             _ToolbarButton(
-              label: 'Numbered List',
+              label: 'Numbered List'.tr,
               colorScheme: colorScheme,
               onTap: _insertNumberedList,
               child: Icon(

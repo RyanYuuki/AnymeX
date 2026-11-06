@@ -1162,7 +1162,7 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
           );
         case DownloadItemStatus.downloading:
           return Tooltip(
-            message: 'Downloading (${(state.progress * 100).toInt()}%)',
+            message: 'Downloading (@p0%)'.trParams({'p0': ((state.progress * 100).toInt()).toString()}),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -1434,21 +1434,21 @@ class _ChapterListBuilderState extends State<ChapterListBuilder> {
     final options = <_BatchOption>[
       (
         title: 'Download Unread Chapters'.tr,
-        subtitle: '${unread.length} chapters',
+        subtitle: '@length chapters'.trParams({'length': (unread.length).toString()}),
         icon: Icons.playlist_play_rounded,
         enabled: unread.isNotEmpty,
         onTap: () => _startMangaDownload(context, unread),
       ),
       (
         title: 'Download Current Section'.tr,
-        subtitle: '${chunkNotDownloaded.length} chapters',
+        subtitle: '@length chapters'.trParams({'length': (chunkNotDownloaded.length).toString()}),
         icon: Icons.view_carousel_outlined,
         enabled: chunkNotDownloaded.isNotEmpty,
         onTap: () => _startMangaDownload(context, chunkNotDownloaded),
       ),
       (
         title: 'Download All Chapters'.tr,
-        subtitle: '${allNotDownloaded.length} chapters',
+        subtitle: '@length chapters'.trParams({'length': (allNotDownloaded.length).toString()}),
         icon: Icons.file_download_outlined,
         enabled: allNotDownloaded.isNotEmpty,
         onTap: () => _startMangaDownload(context, allNotDownloaded),

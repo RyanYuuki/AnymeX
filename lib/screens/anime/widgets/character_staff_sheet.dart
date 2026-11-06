@@ -1373,7 +1373,7 @@ class _SpoilerWidgetState extends State<SpoilerWidget> {
                 ),
               ),
               child: MarkdownBody(
-                data: widget.text.isNotEmpty ? widget.text : 'Spoilers',
+                data: widget.text.isNotEmpty ? widget.text : 'Spoilers'.tr,
                 shrinkWrap: true,
                 styleSheet: MarkdownStyleSheet(
                   p: TextStyle(

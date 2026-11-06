@@ -699,7 +699,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                     TextSpan(text: '$_localProgress / $_displayTotal'),
                     if (overall != null && _simklSeasons.isNotEmpty)
                       TextSpan(
-                        text: '  ($overall total)',
+                        text: '  (@overall total)'.trParams({'overall': (overall).toString()}),
                         style: TextStyle(
                           color: colors.onSurfaceVariant,
                           fontWeight: FontWeight.normal,

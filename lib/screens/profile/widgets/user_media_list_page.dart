@@ -677,7 +677,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                             style: TextStyle(
                                 color: colors.onSurface, fontSize: 14),
                             decoration: InputDecoration(
-                              hintText: 'Search ${typeLabel.toLowerCase()}...',
+                              hintText: 'Search @p0...'.trParams({'p0': (typeLabel.toLowerCase()).toString()}),
                               hintStyle: TextStyle(
                                   color:
                                       colors.onSurfaceVariant.withOpacity(0.4),

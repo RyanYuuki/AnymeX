@@ -244,7 +244,7 @@ class PluginManager {
     }
 
     if (!await File(apkPath).exists()) {
-      errorSnackBar('Local file not found at: $apkPath');
+      errorSnackBar('Local file not found at: @apkPath'.trParams({'apkPath': (apkPath).toString()}));
       return false;
     }
 
@@ -283,7 +283,7 @@ class PluginManager {
       errorSnackBar('Sync completed, but the plugin is not ready yet.'.tr);
       return false;
     } catch (e) {
-      errorSnackBar('Sync failed: $e');
+      errorSnackBar('Sync failed: @e'.trParams({'e': (e).toString()}));
       return false;
     }
   }
@@ -291,7 +291,7 @@ class PluginManager {
   Future<bool> forceSyncLocalApk() async {
     const localPath = '/storage/emulated/0/AnymeX/anymex_runtime_host.apk';
     if (!await File(localPath).exists()) {
-      errorSnackBar('Local APK not found at: $localPath');
+      errorSnackBar('Local APK not found at: @localPath'.trParams({'localPath': (localPath).toString()}));
       return false;
     }
 
@@ -387,7 +387,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         setState(() {
           _isLoadingRelease = false;
         });
-        errorSnackBar('Error: $e');
+        errorSnackBar('Error: @e'.trParams({'e': (e).toString()}));
         Navigator.of(context).pop();
       }
     }
@@ -425,7 +425,7 @@ class _PluginReleaseSheetState extends State<_PluginReleaseSheet>
         }
       }
     } catch (error) {
-      if (mounted) errorSnackBar('Plugin installation failed: $error');
+      if (mounted) errorSnackBar('Plugin installation failed: @error'.trParams({'error': (error).toString()}));
     }
   }
 

@@ -201,7 +201,7 @@ class _UserRecommendationsPageState extends State<UserRecommendationsPage>
           tabAlignment: TabAlignment.start,
           padding: const EdgeInsets.only(left: 12, right: 12),
           tabs: [
-            Tab(text: 'All (${allItems.length})'),
+            Tab(text: 'All (@length)'.trParams({'length': (allItems.length).toString()})),
             Tab(
                 text:
                     'Anime (${allItems.where((i) => i.category == 'anime').length})'),

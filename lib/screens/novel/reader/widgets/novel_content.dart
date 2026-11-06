@@ -46,7 +46,7 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
           buttonItems: [
             ...selectableRegionState.contextMenuButtonItems,
             ContextMenuButtonItem(
-              label: 'Dictionary',
+              label: 'Dictionary'.tr,
               onPressed: () async {
                 selectableRegionState
                     .copySelection(SelectionChangedCause.toolbar);

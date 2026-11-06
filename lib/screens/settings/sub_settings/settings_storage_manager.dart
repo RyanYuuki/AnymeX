@@ -86,28 +86,28 @@ class _SettingsStorageManagerState extends State<SettingsStorageManager> {
                 children: [
                   AnymeXTile.checkbox(
                     title: 'Cached Images'.tr,
-                    subtitle: 'App posters, icons, avatars. Size: ${_service.formatBytes(imageSize)}',
+                    subtitle: 'App posters, icons, avatars. Size: @p0'.trParams({'p0': (_service.formatBytes(imageSize)).toString()}),
                     value: deleteImages,
                     onChanged: (v) => setDialogState(() => deleteImages = v),
                   ),
                   const SizedBox(height: 8),
                   AnymeXTile.checkbox(
                     title: 'Torrent Stream Cache'.tr,
-                    subtitle: 'Temporary video chunks. Size: ${_service.formatBytes(torrentSize)}',
+                    subtitle: 'Temporary video chunks. Size: @p0'.trParams({'p0': (_service.formatBytes(torrentSize)).toString()}),
                     value: deleteTorrents,
                     onChanged: (v) => setDialogState(() => deleteTorrents = v),
                   ),
                   const SizedBox(height: 8),
                   AnymeXTile.checkbox(
                     title: 'Novel Snapshots'.tr,
-                    subtitle: 'Downloaded web novel pages. Size: ${_service.formatBytes(snapshotSize)}',
+                    subtitle: 'Downloaded web novel pages. Size: @p0'.trParams({'p0': (_service.formatBytes(snapshotSize)).toString()}),
                     value: deleteSnapshots,
                     onChanged: (v) => setDialogState(() => deleteSnapshots = v),
                   ),
                   const SizedBox(height: 8),
                   AnymeXTile.checkbox(
                     title: 'Other Temporary Files'.tr,
-                    subtitle: 'Logs, temp downloads. Size: ${_service.formatBytes(otherTempSize)}',
+                    subtitle: 'Logs, temp downloads. Size: @p0'.trParams({'p0': (_service.formatBytes(otherTempSize)).toString()}),
                     value: deleteOther,
                     onChanged: (v) => setDialogState(() => deleteOther = v),
                   ),

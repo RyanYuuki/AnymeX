@@ -209,7 +209,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
 
     AnymeXDialog(
       title: 'Delete History Item'.tr,
-      message: 'Remove "$itemName" from your $_historyLabel?',
+      message: 'Remove "@itemName" from your @v?'.trParams({'itemName': (itemName).toString(), 'v': (_historyLabel).toString()}),
       confirmText: 'Delete'.tr,
       onConfirm: () => _deleteHistory(item),
     ).show(context);
@@ -219,7 +219,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     AnymeXDialog(
       title: 'Clear All History'.tr,
       message:
-          'Are you sure you want to clear all $_historyLabel? This action cannot be undone.',
+          'Are you sure you want to clear all @v? This action cannot be undone.'.trParams({'v': (_historyLabel).toString()}),
       confirmText: 'Clear All'.tr,
       onConfirm: () => _deleteAllHistory(items),
     ).show(context);
@@ -229,7 +229,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     AnymeXDialog(
       title: 'Delete Selected'.tr,
       message:
-          'Are you sure you want to delete ${_selectedMediaIds.length} ${_selectedMediaIds.length == 1 ? "item" : "items"} from your $_historyLabel?',
+          'Are you sure you want to delete @length @p1 from your @v?'.trParams({'length': (_selectedMediaIds.length).toString(), 'p1': (_selectedMediaIds.length == 1 ? "item" : "items").toString(), 'v': (_historyLabel).toString()}),
       confirmText: 'Delete'.tr,
       onConfirm: _deleteSelectedHistory,
     ).show(context);

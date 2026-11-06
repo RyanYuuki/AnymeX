@@ -111,7 +111,7 @@ class _TorrentFilesPopupState extends State<TorrentFilesPopup> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: AnymeXSearchBar(
         controller: _searchController,
-        hintText: 'Search files...',
+        hintText: 'Search files...'.tr,
         prefixIcon: const Icon(Icons.search_rounded, size: 20),
         onClear: () {
           _searchController.clear();
@@ -192,7 +192,7 @@ class _TorrentFilesPopupState extends State<TorrentFilesPopup> {
         isVisible: isVisible,
         onOverlayTap: _closePane,
         child: WatchSettingsPane(
-          title: 'Torrent Files',
+          title: 'Torrent Files'.tr,
           subtitle: _buildSubtitle(context),
           onClose: _closePane,
           tabBar: _buildSearchBar(context, files.length),

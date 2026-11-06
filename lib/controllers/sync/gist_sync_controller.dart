@@ -139,7 +139,7 @@ class GistSyncController extends GetxController {
       Logger.i(
         '[GistSync] GitHub client ID not set in .env (expected GIT_CLIENT_ID or GITHUB_CLIENT_ID)',
       );
-      errorSnackBar('GitHub client ID not configured.');
+      errorSnackBar('GitHub client ID not configured.'.tr);
       return;
     }
 
@@ -170,11 +170,11 @@ class GistSyncController extends GetxController {
         );
       } else {
         Logger.i('[GistSync] OAuth callback did not include code: $result');
-        errorSnackBar('GitHub login failed: missing authorization code.');
+        errorSnackBar('GitHub login failed: missing authorization code.'.tr);
       }
     } catch (e) {
       Logger.i('[GistSync] Error during GitHub login: $e');
-      errorSnackBar('GitHub login was cancelled or failed.');
+      errorSnackBar('GitHub login was cancelled or failed.'.tr);
     } finally {
       isAuthenticating.value = false;
     }
@@ -206,7 +206,7 @@ class GistSyncController extends GetxController {
           final ghError =
               data['error_description'] ?? data['error'] ?? 'Unknown error';
           Logger.i('[GistSync] Token exchange error: $ghError');
-          errorSnackBar('GitHub login failed: $ghError');
+          errorSnackBar('GitHub login failed: @ghError'.trParams({'ghError': (ghError).toString()}));
           return;
         }
 
@@ -343,11 +343,11 @@ class GistSyncController extends GetxController {
 
   Future<void> manualSyncNow() async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first to sync progress.');
+      errorSnackBar('Connect GitHub first to sync progress.'.tr);
       return;
     }
     if (isSyncing.value) {
-      infoSnackBar('Sync already in progress.');
+      infoSnackBar('Sync already in progress.'.tr);
       return;
     }
 
@@ -382,11 +382,11 @@ class GistSyncController extends GetxController {
 
   Future<void> deleteRemoteSyncGist() async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first before deleting sync data.');
+      errorSnackBar('Connect GitHub first before deleting sync data.'.tr);
       return;
     }
     if (isSyncing.value) {
-      infoSnackBar('Another sync action is already in progress.');
+      infoSnackBar('Another sync action is already in progress.'.tr);
       return;
     }
 
@@ -397,7 +397,7 @@ class GistSyncController extends GetxController {
       final elapsed = stopwatch.elapsedMilliseconds;
       if (!deleted) {
         hasCloudGist.value = false;
-        infoSnackBar('No AnymeX sync gist found to delete.');
+        infoSnackBar('No AnymeX sync gist found to delete.'.tr);
         return;
       }
 
@@ -408,11 +408,11 @@ class GistSyncController extends GetxController {
       lastSyncError.value = null;
 
       successSnackBar(
-          'Deleted AnymeX sync gist in ${_formatElapsed(elapsed)}.');
+          'Deleted AnymeX sync gist in @p0.'.trParams({'p0': (_formatElapsed(elapsed)).toString()}));
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
       errorSnackBar(
-        'Failed to delete sync gist after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+        'Failed to delete sync gist after @p0.'.trParams({'p0': (_formatElapsed(stopwatch.elapsedMilliseconds)).toString()}),
       );
     } finally {
       stopwatch.stop();
@@ -422,11 +422,11 @@ class GistSyncController extends GetxController {
 
   Future<Map<String, dynamic>?> fetchRemoteSyncJson() async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first to export sync data.');
+      errorSnackBar('Connect GitHub first to export sync data.'.tr);
       return null;
     }
     if (isSyncing.value) {
-      infoSnackBar('Another sync action is already in progress.');
+      infoSnackBar('Another sync action is already in progress.'.tr);
       return null;
     }
 
@@ -436,7 +436,7 @@ class GistSyncController extends GetxController {
       final raw = await _service.downloadRawIfExists();
       if (raw == null) {
         hasCloudGist.value = false;
-        infoSnackBar('No AnymeX sync gist found. Initialize first.');
+        infoSnackBar('No AnymeX sync gist found. Initialize first.'.tr);
         return null;
       }
       hasCloudGist.value = true;
@@ -445,7 +445,7 @@ class GistSyncController extends GetxController {
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
       errorSnackBar(
-        'Failed to fetch cloud gist after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+        'Failed to fetch cloud gist after @p0.'.trParams({'p0': (_formatElapsed(stopwatch.elapsedMilliseconds)).toString()}),
       );
       return null;
     } finally {
@@ -456,11 +456,11 @@ class GistSyncController extends GetxController {
 
   Future<String?> fetchRemoteSyncGistUrl() async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first to view sync gist.');
+      errorSnackBar('Connect GitHub first to view sync gist.'.tr);
       return null;
     }
     if (isSyncing.value) {
-      infoSnackBar('Another sync action is already in progress.');
+      infoSnackBar('Another sync action is already in progress.'.tr);
       return null;
     }
 
@@ -468,14 +468,14 @@ class GistSyncController extends GetxController {
       final url = await _service.syncGistHtmlUrl(createIfMissing: false);
       if (url == null || url.isEmpty) {
         hasCloudGist.value = false;
-        infoSnackBar('No AnymeX sync gist found. Initialize first.');
+        infoSnackBar('No AnymeX sync gist found. Initialize first.'.tr);
         return null;
       }
       hasCloudGist.value = true;
       return url;
     } catch (e) {
       Logger.i('[GistSync] fetchRemoteSyncGistUrl: $e');
-      errorSnackBar('Failed to get cloud gist link.');
+      errorSnackBar('Failed to get cloud gist link.'.tr);
       return null;
     }
   }
@@ -485,17 +485,17 @@ class GistSyncController extends GetxController {
     required bool mergeWithCloud,
   }) async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first to import sync data.');
+      errorSnackBar('Connect GitHub first to import sync data.'.tr);
       return null;
     }
     if (isSyncing.value) {
-      infoSnackBar('Another sync action is already in progress.');
+      infoSnackBar('Another sync action is already in progress.'.tr);
       return null;
     }
 
     final normalizedImported = _normalizeRawData(importedRaw);
     if (importedRaw.isNotEmpty && normalizedImported.isEmpty) {
-      errorSnackBar('Selected JSON has no valid sync entries.');
+      errorSnackBar('Selected JSON has no valid sync entries.'.tr);
       return null;
     }
 
@@ -524,7 +524,7 @@ class GistSyncController extends GetxController {
     } catch (e) {
       _markSyncFailure(e, durationMs: stopwatch.elapsedMilliseconds);
       errorSnackBar(
-        'Failed to import sync data after ${_formatElapsed(stopwatch.elapsedMilliseconds)}.',
+        'Failed to import sync data after @p0.'.trParams({'p0': (_formatElapsed(stopwatch.elapsedMilliseconds)).toString()}),
       );
       return null;
     } finally {

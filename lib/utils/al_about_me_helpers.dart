@@ -370,8 +370,8 @@ class _AnilistWebmPlayerState extends State<AnilistWebmPlayer> {
         url: widget.url,
         icon: Icons.videocam_rounded,
         color: context.theme.colorScheme.primary,
-        title: 'WebM Video',
-        subtitle: 'Tap to open in browser',
+        title: 'WebM Video'.tr,
+        subtitle: 'Tap to open in browser'.tr,
       );
     }
 

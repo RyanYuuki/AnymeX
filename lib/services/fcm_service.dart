@@ -146,7 +146,7 @@ class FcmService {
     AnymeXDialog(
       title: data['title']?.toString() ?? 'Notification',
       message: data['body']?.toString() ?? '',
-      confirmText: 'Okay',
+      confirmText: 'Okay'.tr,
       showCancelButton: false,
       onConfirm: () {},
     ).show(context);

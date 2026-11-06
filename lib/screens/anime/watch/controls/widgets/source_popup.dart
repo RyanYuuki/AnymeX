@@ -65,7 +65,7 @@ class _SourcePopupContentState extends State<_SourcePopupContent> {
       }
 
       return WatchSettingsPane(
-        title: 'Quality Settings',
+        title: 'Quality Settings'.tr,
         onClose: widget.onClose,
         tabBar: _buildTabBar(cs, theme, hasInbuilt: hasInbuilt),
         child: switch (_currentTab) {

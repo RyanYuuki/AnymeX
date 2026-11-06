@@ -159,7 +159,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
                       if (!isLoading && points != null) ...[
                         _buildSectionHeader(
                           icon: Icons.bar_chart_rounded,
-                          title: 'Activity & Stats',
+                          title: 'Activity & Stats'.tr,
                           colorScheme: colorScheme,
                         ),
                         const SizedBox(height: 10),
@@ -178,7 +178,7 @@ class _UserCommentsSheetContentState extends State<_UserCommentsSheetContent> {
                           _breakdownChips(context, points).isNotEmpty) ...[
                         _buildSectionHeader(
                           icon: Icons.pie_chart_outline_rounded,
-                          title: 'Points Breakdown',
+                          title: 'Points Breakdown'.tr,
                           colorScheme: colorScheme,
                         ),
                         const SizedBox(height: 8),

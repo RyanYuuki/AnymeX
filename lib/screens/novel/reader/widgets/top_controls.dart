@@ -317,7 +317,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                             });
                           },
                           decoration: InputDecoration(
-                            hintText: 'Search chapters...',
+                            hintText: 'Search chapters...'.tr,
                             prefixIcon: const Icon(Icons.search, size: 20),
                             filled: true,
                             fillColor: Theme.of(context)

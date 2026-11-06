@@ -159,7 +159,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
             onChanged: (v) => isGrid.value = v,
           ),
           _PrefOption(
-            title: "18+ Content",
+            title: "18+ Content".tr,
             subtitle: "Include adult & NSFW suggestions".tr,
             icon: Icons.eighteen_up_rating_rounded,
             value: isAdult.value,

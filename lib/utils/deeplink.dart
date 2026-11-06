@@ -173,17 +173,17 @@ class Deeplink {
   static Future<void> _handleThemeDeepLink(Uri uri) async {
     final type = (uri.queryParameters['type'] ?? '').trim().toLowerCase();
     if (type.isEmpty) {
-      errorSnackBar('Missing "type" query parameter. Use type=player.');
+      errorSnackBar('Missing "type" query parameter. Use type=player.'.tr);
       return;
     }
     if (type != 'player') {
-      errorSnackBar('Unsupported theme type "$type". Supported: player.');
+      errorSnackBar('Unsupported theme type "@type". Supported: player.'.trParams({'type': (type).toString()}));
       return;
     }
 
     final rawUrl = uri.queryParameters['url']?.trim();
     if (rawUrl == null || rawUrl.isEmpty) {
-      errorSnackBar('Missing "url" query parameter for the theme JSON.');
+      errorSnackBar('Missing "url" query parameter for the theme JSON.'.tr);
       return;
     }
 
@@ -194,7 +194,7 @@ class Deeplink {
       final extra = result.errors.length > 1
           ? ' (+${result.errors.length - 1} more issue(s))'
           : '';
-      errorSnackBar('Theme is invalid: ${result.errors.first}$extra');
+      errorSnackBar('Theme is invalid: @first@extra'.trParams({'first': (result.errors.first).toString(), 'extra': (extra).toString()}));
       return;
     }
 
@@ -205,9 +205,9 @@ class Deeplink {
           ? ' (+${result.warnings.length - 1} more warning(s))'
           : '';
       warningSnackBar(
-          'Theme imported with warning: ${result.warnings.first}$more');
+          'Theme imported with warning: @first@more'.trParams({'first': (result.warnings.first).toString(), 'more': (more).toString()}));
     } else {
-      successSnackBar('Theme JSON is valid. Imported $imported $label.');
+      successSnackBar('Theme JSON is valid. Imported @imported @label.'.trParams({'imported': (imported).toString(), 'label': (label).toString()}));
     }
   }
 
@@ -498,14 +498,14 @@ class Deeplink {
     // URI: anymex://watchium/join/ABC123
     if (segments.length < 2) {
       Logger.w('Watchium deep link: invalid segments $segments', 'DEEPLINK');
-      errorSnackBar('Invalid Watch Together link');
+      errorSnackBar('Invalid Watch Together link'.tr);
       return;
     }
 
     final code = segments[1].toUpperCase();
     if (code.length != 6) {
       Logger.w('Watchium deep link: invalid code length ${code.length}', 'DEEPLINK');
-      errorSnackBar('Invalid room code in link');
+      errorSnackBar('Invalid room code in link'.tr);
       return;
     }
 
@@ -520,7 +520,7 @@ class Deeplink {
 
     if (!Get.isRegistered<WatchiumService>()) {
       Logger.w('Watchium deep link: WatchiumService not registered after waiting', 'DEEPLINK');
-      errorSnackBar('App is still loading, try again shortly.');
+      errorSnackBar('App is still loading, try again shortly.'.tr);
       return;
     }
 
@@ -528,7 +528,7 @@ class Deeplink {
     // Wait for the user to be authenticated before attempting login/join.
     if (!Get.isRegistered<ServiceHandler>()) {
       Logger.w('Watchium deep link: ServiceHandler not registered', 'DEEPLINK');
-      errorSnackBar('App is still loading, try again shortly.');
+      errorSnackBar('App is still loading, try again shortly.'.tr);
       return;
     }
 
@@ -541,12 +541,12 @@ class Deeplink {
 
     if (!serviceHandler.isLoggedIn.value) {
       Logger.w('Watchium deep link: user not logged in after waiting', 'DEEPLINK');
-      errorSnackBar('Please log in first, then try the link again.');
+      errorSnackBar('Please log in first, then try the link again.'.tr);
       return;
     }
 
     final watchium = Get.find<WatchiumService>();
-    successSnackBar('Joining room $code...');
+    successSnackBar('Joining room @code...'.trParams({'code': (code).toString()}));
 
     // First get room info to navigate to the anime
     final roomInfo = await watchium.getRoomInfo(code);
@@ -554,7 +554,7 @@ class Deeplink {
 
     if (roomInfo == null) {
       Logger.w('Watchium deep link: room not found or expired', 'DEEPLINK');
-      errorSnackBar('Room not found or expired');
+      errorSnackBar('Room not found or expired'.tr);
       return;
     }
 
@@ -566,10 +566,10 @@ class Deeplink {
     if (!ok) {
       final err = watchium.error.value;
       Logger.w('Watchium deep link: join failed: $err', 'DEEPLINK');
-      errorSnackBar('Failed to join room: $err');
+      errorSnackBar('Failed to join room: @err'.trParams({'err': (err).toString()}));
     } else {
       Logger.i('Watchium deep link: joined room $code successfully', 'DEEPLINK');
-      successSnackBar('Joined room $code!');
+      successSnackBar('Joined room @code!'.trParams({'code': (code).toString()}));
       // Wait for room state to populate from socket
       await Future.delayed(const Duration(milliseconds: 1500));
       final rs = watchium.roomState.value;
@@ -632,12 +632,12 @@ class Deeplink {
     user2 = user2?.trim();
 
     if (user1 == null || user1.isEmpty || user2 == null || user2.isEmpty) {
-      errorSnackBar('Invalid compatibility link: missing usernames.');
+      errorSnackBar('Invalid compatibility link: missing usernames.'.tr);
       return;
     }
 
     if (user1.toLowerCase() == user2.toLowerCase()) {
-      errorSnackBar('Cannot compare the same profile with itself.');
+      errorSnackBar('Cannot compare the same profile with itself.'.tr);
       return;
     }
 
@@ -661,7 +661,7 @@ class Deeplink {
     if (controller.result.value != null) {
       navigate(() => CompatibilityResultPage(controller: controller));
     } else {
-      errorSnackBar('Could not calculate compatibility.');
+      errorSnackBar('Could not calculate compatibility.'.tr);
     }
   }
 }

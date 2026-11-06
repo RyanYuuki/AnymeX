@@ -339,7 +339,7 @@ Widget buildExtrasSection(BuildContext context, Media mediaData) {
                   return AnymeXTile(
                     icon: Icons.tv_rounded,
                     title: "Anime Adaptation".tr,
-                    subtitle: "Adapted from Chapter $start to $end",
+                    subtitle: "Adapted from Chapter @start to @end".trParams({'start': (start).toString(), 'end': (end).toString()}),
                     onTap: () {},
                     showChevron: false,
                   );
@@ -363,7 +363,7 @@ Widget buildExtrasSection(BuildContext context, Media mediaData) {
                   return AnymeXTile(
                     icon: Icons.calendar_month_rounded,
                     title: "Next Release Prediction".tr,
-                    subtitle: "$nextCh predicted on $releaseDate",
+                    subtitle: "@nextCh predicted on @releaseDate".trParams({'nextCh': (nextCh).toString(), 'releaseDate': (releaseDate).toString()}),
                     onTap: () {},
                     showChevron: false,
                   );
