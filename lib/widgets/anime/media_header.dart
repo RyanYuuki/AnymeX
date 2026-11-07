@@ -374,7 +374,7 @@ class MediaHeader extends StatelessWidget {
                     ),
                   ],
                   AnymexOnTap(
-                    onTap: () => navigate(() => const SettingsUiDetails()),
+                    onTap: () => navigate(() => SettingsUiDetails(media: data)),
                     margin: 0,
                     child: SizedBox(
                       width: 44,

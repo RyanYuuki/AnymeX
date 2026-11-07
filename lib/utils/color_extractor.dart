@@ -1,12 +1,11 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 
 final Map<String, Color> _colorCache = {};
 
@@ -51,29 +50,8 @@ class ImageColorExtractor {
 
       if (bytes == null || bytes.isEmpty) return null;
 
-      final buffer = await ui.ImmutableBuffer.fromUint8List(bytes);
-      final descriptor = await ui.ImageDescriptor.encoded(buffer);
-      buffer.dispose();
-
-      final codec = await descriptor.instantiateCodec(
-        targetWidth: 32,
-        targetHeight: 32,
-      );
-      descriptor.dispose();
-
-      final frame = await codec.getNextFrame();
-      codec.dispose();
-
-      final image = frame.image;
-      final byteData =
-          await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-      image.dispose();
-
-      if (byteData == null) return null;
-
-      final rawBytes = byteData.buffer.asUint8List();
-
-      final colorInt = await Isolate.run(() => _findDominantColorInt(rawBytes));
+      final colorInt =
+          await Isolate.run(() => _extractDominantColorInt(bytes!));
       if (colorInt != null) {
         final dominantColor = Color(colorInt);
         _cacheColor(imageUrl, dominantColor);
@@ -82,6 +60,18 @@ class ImageColorExtractor {
     } catch (_) {}
 
     return null;
+  }
+
+  static int? _extractDominantColorInt(Uint8List sourceBytes) {
+    final decoded = img.decodeImage(sourceBytes);
+    if (decoded == null) return null;
+
+    final small = img.copyResize(decoded, width: 32, height: 32,
+        interpolation: img.Interpolation.average);
+    final rgba = small.convert(numChannels: 4);
+    final pixels = rgba.getBytes(order: img.ChannelOrder.rgba);
+
+    return _findDominantColorInt(pixels);
   }
 
   static int? _findDominantColorInt(Uint8List pixels) {
