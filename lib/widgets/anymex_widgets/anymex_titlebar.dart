@@ -19,6 +19,7 @@ import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 class AnymeXTitleBar {
   static final ValueNotifier<bool> isFullScreen = ValueNotifier(false);
   static final ValueNotifier<bool> isMaximized = ValueNotifier(false);
+  static final ValueNotifier<bool> isTransparent = ValueNotifier(false);
 
   static Future<void> initialize() async {
     if (kDebugMode && !Platform.isWindows) return;
@@ -144,20 +145,29 @@ class _TitleBarWidget extends StatelessWidget {
     final isOled = Provider.of<ThemeProvider>(context).isOled;
     final defaultColor = context.colors.onSurface;
 
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        height: 40,
-        decoration: BoxDecoration(
-          color: isOled ? Colors.black : Colors.black.opaque(0.1),
-          border: Border(
-            bottom: BorderSide(
-              color: isOled ? Colors.transparent : defaultColor.opaque(0.1),
-              width: 0.5,
+    return ValueListenableBuilder<bool>(
+      valueListenable: AnymeXTitleBar.isTransparent,
+      builder: (context, transparent, _) {
+        return Material(
+          color: Colors.transparent,
+          child: Container(
+            height: 40,
+            decoration: BoxDecoration(
+              color: transparent
+                  ? Colors.transparent
+                  : (isOled ? Colors.black : Colors.black.opaque(0.1)),
+              border: transparent
+                  ? null
+                  : Border(
+                      bottom: BorderSide(
+                        color: isOled
+                            ? Colors.transparent
+                            : defaultColor.opaque(0.1),
+                        width: 0.5,
+                      ),
+                    ),
             ),
-          ),
-        ),
-        child: Row(
+            child: Row(
           children: [
             const SizedBox(width: 16),
             Container(
@@ -217,6 +227,8 @@ class _TitleBarWidget extends StatelessWidget {
           ],
         ),
       ),
+    );
+      },
     );
   }
 }

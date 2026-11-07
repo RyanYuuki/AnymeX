@@ -11,55 +11,6 @@ import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 
 typedef _BakedRaster = ({int width, int height, Uint8List pixels});
 
-Future<_BakedRaster> _prepareNativeRaster(Uint8List sourceBytes,
-    {int targetDimension = 200}) async {
-  final buffer = await ui.ImmutableBuffer.fromUint8List(sourceBytes);
-  final descriptor = await ui.ImageDescriptor.encoded(buffer);
-  final isVertical = descriptor.height > descriptor.width;
-  final codec = await descriptor.instantiateCodec(
-    targetWidth: isVertical ? targetDimension : null,
-    targetHeight: isVertical ? null : targetDimension,
-  );
-  final frame = await codec.getNextFrame();
-  final image = frame.image;
-  final byteData = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
-  final raster = (
-    width: image.width,
-    height: image.height,
-    pixels: byteData!.buffer.asUint8List(),
-  );
-  image.dispose();
-  codec.dispose();
-  descriptor.dispose();
-  buffer.dispose();
-  return raster;
-}
-
-_BakedRaster _processFastFrostedRaster((_BakedRaster, double, double) task) {
-  final (raster, vibrancy, blurAmount) = task;
-  var image = img.Image.fromBytes(
-    width: raster.width,
-    height: raster.height,
-    bytes: raster.pixels.buffer,
-    numChannels: 4,
-    order: img.ChannelOrder.rgba,
-  );
-
-  final blurRadius =
-      (blurAmount * (raster.width / 400.0)).round().clamp(1, 35);
-  var blurred = img.gaussianBlur(image, radius: blurRadius);
-
-  if (vibrancy != 1.0) {
-    blurred = img.adjustColor(blurred, saturation: vibrancy);
-  }
-
-  return (
-    width: blurred.width,
-    height: blurred.height,
-    pixels: blurred.getBytes(order: img.ChannelOrder.rgba),
-  );
-}
-
 _BakedRaster _processLegacyFrostedBackdrop((Uint8List, double, double) task) {
   final (sourceBytes, vibrancy, blurAmount) = task;
   final decoded = img.decodeImage(sourceBytes);
@@ -93,19 +44,11 @@ _BakedRaster _processLegacyFrostedBackdrop((Uint8List, double, double) task) {
 }
 
 Future<_BakedRaster> _generateFrostedRaster(
-    Uint8List rawBytes, double saturation, double blurAmount) async {
-  try {
-    final downscaled = await _prepareNativeRaster(rawBytes);
-    return await compute(
-      _processFastFrostedRaster,
-      (downscaled, saturation, blurAmount),
-    );
-  } catch (_) {
-    return await compute(
-      _processLegacyFrostedBackdrop,
-      (rawBytes, saturation, blurAmount),
-    );
-  }
+    Uint8List rawBytes, double saturation, double blurAmount) {
+  return compute(
+    _processLegacyFrostedBackdrop,
+    (rawBytes, saturation, blurAmount),
+  );
 }
 
 Future<ui.Image> _inflateNativeImage(_BakedRaster raster) {
@@ -434,14 +377,8 @@ class _BakedBlurImageState extends State<BakedBlurImage> {
 
     if (image != null && widget.fadeBottom) {
       final fadeDistance = (widget.blurAmount * 2.5).clamp(32.0, 140.0);
-      content = Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Colors.transparent, width: 2.0),
-          ),
-        ),
-        child: ClipRect(
-          child: ShaderMask(
+      content = ClipRect(
+        child: ShaderMask(
             shaderCallback: (bounds) {
               if (bounds.height <= 0) {
                 return const LinearGradient(
@@ -467,11 +404,10 @@ class _BakedBlurImageState extends State<BakedBlurImage> {
             blendMode: BlendMode.dstIn,
             child: content,
           ),
-        ),
-      );
-    } else {
-      content = ClipRect(child: content);
-    }
+        );
+      } else {
+        content = ClipRect(child: content);
+      }
 
     return AnimatedOpacity(
       opacity: image == null ? 0.0 : 1.0,

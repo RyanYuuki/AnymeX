@@ -51,6 +51,7 @@ class AnymeXScaffold extends StatelessWidget {
   final String color;
   final bool disabled;
   final bool isTabScreen;
+  final bool extendBehindTitleBar;
 
   final bool showHeader;
   final String? headerTitle;
@@ -93,6 +94,7 @@ class AnymeXScaffold extends StatelessWidget {
     this.color = '',
     this.disabled = false,
     this.isTabScreen = false,
+    this.extendBehindTitleBar = false,
     this.showHeader = false,
     this.headerTitle,
     this.headerSubtitle,
@@ -189,7 +191,7 @@ class AnymeXScaffold extends StatelessWidget {
       restorationId: restorationId,
     );
 
-    final ch = (isDesktop && !disabled)
+    final ch = (isDesktop && !disabled && !extendBehindTitleBar)
         ? Container(
             margin: const EdgeInsets.only(top: 40),
             child: scaffold,
