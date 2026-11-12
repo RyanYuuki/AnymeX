@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/utils/function.dart';
@@ -13,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class SettingsExtensions extends StatefulWidget {
@@ -36,7 +39,6 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       AnymeXRuntimeBridge.isPluginInstalled ||
       AnymeXRuntimeBridge.controller.isReady.value;
 
-  int _managerIndex = 0;
   ItemType _tab = ItemType.anime;
   bool _didApplyHighlightTab = false;
   final Map<String, bool> _deleting = {};
@@ -59,8 +61,10 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       });
     }
 
-    final hasAniyomi = activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
-    final hasCloudStream = activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
+    final hasAniyomi =
+        activeManagers.any((m) => m.name.toLowerCase().contains('aniyomi'));
+    final hasCloudStream =
+        activeManagers.any((m) => m.name.toLowerCase().contains('cloudstream'));
 
     if (!hasAniyomi) {
       list.add({
@@ -81,8 +85,10 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       final managerA = a['manager'] as Extension?;
       final managerB = b['manager'] as Extension?;
 
-      final aRequires = managerA?.requiresPlugin ?? _isMockPluginRequired(a['name'] as String);
-      final bRequires = managerB?.requiresPlugin ?? _isMockPluginRequired(b['name'] as String);
+      final aRequires = managerA?.requiresPlugin ??
+          _isMockPluginRequired(a['name'] as String);
+      final bRequires = managerB?.requiresPlugin ??
+          _isMockPluginRequired(b['name'] as String);
 
       if (aRequires != bRequires) {
         return aRequires ? 1 : -1;
@@ -104,11 +110,86 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     return lower.contains('aniyomi') || lower.contains('cloudstream');
   }
 
+  bool _managerSupports(Map<String, dynamic> entry, ItemType type) {
+    final manager = entry['manager'] as Extension?;
+    if (manager != null) {
+      return type == ItemType.anime
+          ? manager.supportsAnime
+          : type == ItemType.manga
+              ? manager.supportsManga
+              : manager.supportsNovel;
+    }
+    final name = (entry['name'] as String).toLowerCase();
+    if (name.contains('cloudstream')) {
+      return type == ItemType.anime;
+    }
+    if (name.contains('aniyomi')) {
+      return type == ItemType.anime || type == ItemType.manga;
+    }
+    return false;
+  }
 
-  Future<void> _addRepos(ItemType type, List<String> urls) async {
-    final currentManagerData = _displayManagers[_managerIndex];
-    if (currentManagerData['isMock'] == true) return;
-    final activeManager = currentManagerData['manager'] as Extension;
+  IconData _managerIcon(String name) {
+    final lower = name.toLowerCase();
+    if (lower.contains('cloudstream')) return Icons.cloud_outlined;
+    if (lower.contains('aniyomi')) return Icons.play_circle_outline_rounded;
+    if (lower.contains('mangayomi')) return Icons.extension_outlined;
+    return Icons.widgets_outlined;
+  }
+
+  String? _getManagerIconUrl(Map<String, dynamic> entry) {
+    final manager = entry['manager'] as Extension?;
+    if (manager != null && manager.icon.isNotEmpty) {
+      return manager.icon;
+    }
+    final name = (entry['name'] as String).toLowerCase();
+    if (name.contains('aniyomi')) {
+      return 'https://aniyomi.org/img/logo-128px.png';
+    }
+    if (name.contains('cloudstream')) {
+      return 'https://static.everythingmoe.com/icons/cloudstream.png';
+    }
+    if (name.contains('mangayomi')) {
+      return 'https://raw.githubusercontent.com/kodjodevf/mangayomi/main/assets/app_icons/icon-red.png';
+    }
+    return null;
+  }
+
+  Widget _buildManagerIcon(String name, String? iconUrl) {
+    final colors = context.colors;
+    final fallbackIcon = _managerIcon(name);
+
+    final iconContent = (iconUrl != null && iconUrl.isNotEmpty)
+        ? ClipRRect(
+            borderRadius: BorderRadius.circular(6.multiplyRoundness()),
+            child: AnymeXImage(
+              imageUrl: iconUrl,
+              width: 22,
+              height: 22,
+              fit: BoxFit.cover,
+              radius: 6.multiplyRoundness(),
+            ),
+          )
+        : Icon(fallbackIcon, size: 16, color: colors.primary);
+
+    return Container(
+      width: 32,
+      height: 32,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerHighest.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(10.multiplyRoundness()),
+        border: Border.all(
+          color: colors.outlineVariant.withOpacity(0.25),
+          width: 0.8,
+        ),
+      ),
+      child: iconContent,
+    );
+  }
+
+  Future<void> _addRepos(
+      ItemType type, List<String> urls, Extension activeManager) async {
     await em.addRepos(urls, type, activeManager.id);
     widget.onSave?.call();
     if (mounted) setState(() {});
@@ -127,16 +208,17 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     }
   }
 
-  void _openAddDialog() {
+  void _openAddDialog(Extension targetManager) {
     showDialog(
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black.withOpacity(0.5),
       builder: (_) => _AddRepoDialog(
         type: _tab,
+        manager: targetManager,
         colors: context.colors,
         onAdd: (urls) async {
-          await _addRepos(_tab, urls);
+          await _addRepos(_tab, urls, targetManager);
           if (mounted) {
             snackBar('${urls.length} repo${urls.length > 1 ? 's' : ''} added');
           }
@@ -164,155 +246,40 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.sizeOf(context).width > 600;
+    final hPad = isDesktop ? 24.0 : 16.0;
+
     return AnymeXScaffold(
-      showHeader: true,
-      headerTitle: 'Extensions',
-      headerAction: IconButton(
-        onPressed: () => navigate(() => const SettingsExtensionManager()),
-        icon: const Icon(Icons.settings_rounded),
-        tooltip: 'Extension Manager',
-      ),
-      floatingActionButton: _buildFab(),
-      body: Builder(
-        builder: (ctx) => Obx(() {
-                  final displayList = _displayManagers;
-                  if (displayList.isEmpty) {
-                    return Center(
-                      child: AnymeXText('No extension managers found.',
-                          style: TextStyle(color: context.colors.onSurfaceVariant)),
-                    );
-                  }
-                  if (_managerIndex >= displayList.length) {
-                    _managerIndex = 0;
-                  }
-                  return Column(children: [
-                    SizedBox(height: AnymeXHeaderScope.of(ctx)),
-                    if (displayList.length > 1) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _buildManagerBar(),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: _buildTypeBar(),
-                    ),
-                    const SizedBox(height: 4),
-                    Expanded(child: _buildBody()),
-                  ]);
-                })
+      showHeader: false,
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AnymeXHeader(
+              title: 'Extensions',
+              action: IconButton(
+                onPressed: () =>
+                    navigate(() => const SettingsExtensionManager()),
+                icon: const Icon(Icons.settings_rounded),
+                tooltip: 'Extension Manager',
+              ),
+            ),
+            const SizedBox(height: 10),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: hPad),
+              child: _buildTypeBar(),
+            ),
+            const SizedBox(height: 18),
+            _buildBody(hPad),
+          ],
+        ),
       ),
     );
-  }
-
-  Widget _buildManagerBar() {
-    final colors = context.colors;
-    final managers = _displayManagers;
-    final total = managers.length;
-
-    double alignX =
-        total > 1 ? -1.0 + (2.0 * _managerIndex / (total - 1)) : 0.0;
-
-    return LayoutBuilder(builder: (context, constraints) {
-      const minTabWidth = 120.0;
-      final naturalTabWidth = constraints.maxWidth / total;
-      final tabWidth =
-          naturalTabWidth < minTabWidth ? minTabWidth : naturalTabWidth;
-      final totalWidth = tabWidth * total;
-
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SizedBox(
-          width: totalWidth,
-          child: Container(
-            height: 46,
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.outline.withOpacity(0.1)),
-            ),
-            child: Stack(children: [
-              AnimatedAlign(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutQuint,
-                alignment: Alignment(alignX, 0),
-                child: FractionallySizedBox(
-                  widthFactor: 1 / total,
-                  heightFactor: 1,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colors.secondary,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                            color: colors.secondary.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2))
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Row(
-                children: managers.asMap().entries.map((e) {
-                  final selected = _managerIndex == e.key;
-                  return Expanded(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        if (!selected) {
-                          HapticFeedback.lightImpact();
-                          setState(() => _managerIndex = e.key);
-                        }
-                      },
-                      child: AnimatedOpacity(
-                        opacity: selected ? 1.0 : 0.6,
-                        duration: const Duration(milliseconds: 200),
-                        child: SizedBox.expand(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(Icons.extension_outlined,
-                                  size: 14,
-                                  color: selected
-                                      ? colors.onSecondary
-                                      : colors.onSurfaceVariant),
-                              const SizedBox(width: 5),
-                              Flexible(
-                                child: AnymeXText(
-                                  e.value['name'] as String,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: selected
-                                        ? FontWeight.w700
-                                        : FontWeight.w400,
-                                    color: selected
-                                        ? colors.onSecondary
-                                        : colors.onSurfaceVariant,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ]),
-          ),
-        ),
-      );
-    });
   }
 
   Widget _buildTypeBar() {
@@ -334,16 +301,17 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
         child: SizedBox(
           width: totalWidth,
           child: Container(
-            height: 54,
+            height: 52,
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colors.outline.withOpacity(0.1)),
+              color: colors.surfaceContainerHighest.withOpacity(0.35),
+              borderRadius: BorderRadius.circular(18.multiplyRoundness()),
+              border: Border.all(
+                  color: colors.outlineVariant.withOpacity(0.35), width: 1),
             ),
             child: Stack(children: [
               AnimatedAlign(
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 280),
                 curve: Curves.easeOutQuint,
                 alignment: Alignment(alignX, 0),
                 child: FractionallySizedBox(
@@ -352,12 +320,14 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: colors.primary,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius:
+                          BorderRadius.circular(14.multiplyRoundness()),
                       boxShadow: [
                         BoxShadow(
-                            color: colors.primary.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2))
+                          color: colors.primary.withOpacity(0.35),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        )
                       ],
                     ),
                   ),
@@ -378,8 +348,8 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                           }
                         },
                         child: AnimatedScale(
-                          scale: selected ? 1.05 : 1.0,
-                          duration: const Duration(milliseconds: 250),
+                          scale: selected ? 1.03 : 1.0,
+                          duration: const Duration(milliseconds: 220),
                           curve: Curves.easeInOut,
                           child: AnimatedOpacity(
                             opacity: selected ? 1.0 : 0.7,
@@ -388,29 +358,26 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(t.icon,
-                                      size: 16,
-                                      color: selected
-                                          ? colors.onPrimary
-                                          : colors.onSurfaceVariant),
+                                  Icon(
+                                    t.icon,
+                                    size: 16,
+                                    color: selected
+                                        ? colors.onPrimary
+                                        : colors.onSurfaceVariant,
+                                  ),
                                   const SizedBox(width: 6),
                                   Flexible(
-                                    child: AnimatedDefaultTextStyle(
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontFamily: 'Linotte',
-                                        fontWeight: selected
-                                            ? FontWeight.w700
-                                            : FontWeight.w400,
-                                        color: selected
-                                            ? colors.onPrimary
-                                            : colors.onSurfaceVariant,
-                                      ),
-                                      child: AnymeXText(t.label,
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1),
+                                    child: AnymeXText(
+                                      t.label,
+                                      variant: selected
+                                          ? TextVariant.bold
+                                          : TextVariant.regular,
+                                      size: 13,
+                                      color: selected
+                                          ? colors.onPrimary
+                                          : colors.onSurfaceVariant,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ],
@@ -430,153 +397,60 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     });
   }
 
-  Widget _buildBody() {
-    if (_managerIndex >= _displayManagers.length) return const SizedBox.shrink();
-    final selectedManagerData = _displayManagers[_managerIndex];
-    final bool isMock = selectedManagerData['isMock'] as bool;
-    
-    if (isMock) {
-      if (_isPluginInstalled) {
-        if (AnymeXRuntimeBridge.controller.error.value.isNotEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.error_outline_rounded,
-                    color: context.colors.error,
-                    size: 48,
-                  ),
-                  const SizedBox(height: 16),
-                  AnymeXText(
-                    'Failed to Start Extension Runtime',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: context.colors.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  AnymeXText(
-                    AnymeXRuntimeBridge.controller.error.value,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: context.colors.error,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  FilledButton.icon(
-                    onPressed: () => AnymeXRuntimeBridge.checkAndInitialize(),
-                    icon: const Icon(Icons.refresh_rounded),
-                    label: const AnymeXText('Retry'),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: context.colors.primary,
-                      foregroundColor: context.colors.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
+  Widget _buildBody(double hPad) {
+    final allManagers = _displayManagers;
+    final supportedManagers =
+        allManagers.where((m) => _managerSupports(m, _tab)).toList();
 
-        return Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(),
-              const SizedBox(height: 16),
-              AnymeXText(
-                'Starting extension runtime...',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: context.colors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-      return _buildPluginRequiredPlaceholder(selectedManagerData['name'] as String);
+    if (supportedManagers.isEmpty) {
+      return _buildEmptyTypeState();
     }
-    
-    final manager = selectedManagerData['manager'] as Extension;
-    final supported = _tab == ItemType.anime
-        ? manager.supportsAnime
-        : _tab == ItemType.manga
-            ? manager.supportsManga
-            : manager.supportsNovel;
 
-    if (!supported) return _buildUnsupported();
-
-    return Obx(() {
-      final repos = manager.getReposRx(_tab).value;
-      return AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        child: repos.isEmpty
-            ? _buildEmpty(key: ValueKey('empty_$_tab'))
-            : _buildRepoList(repos, key: ValueKey('list_$_tab')),
-      );
-    });
+    return Padding(
+      padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 40),
+      child: Column(
+        children: supportedManagers
+            .map((entry) => _buildManagerInsetGroup(entry))
+            .toList(),
+      ),
+    );
   }
 
-  Widget _buildPluginRequiredPlaceholder(String managerName) {
+  Widget _buildEmptyTypeState() {
     final colors = context.colors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+    final tabInfo = _typeTabs.firstWhere((t) => t.type == _tab);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
+      child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 72,
-              height: 72,
+              width: 68,
+              height: 68,
               decoration: BoxDecoration(
-                color: colors.errorContainer.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
+                color: colors.surfaceContainerHighest.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(20.multiplyRoundness()),
+                border:
+                    Border.all(color: colors.outlineVariant.withOpacity(0.3)),
               ),
-              child: Icon(
-                Icons.warning_amber_rounded,
-                size: 32,
-                color: colors.error,
-              ),
+              child:
+                  Icon(tabInfo.icon, size: 30, color: colors.onSurfaceVariant),
             ),
             const SizedBox(height: 16),
             AnymeXText(
-              'Plugin Not Installed',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: colors.onSurface,
-              ),
+              'No ${tabInfo.label} Managers Available',
+              variant: TextVariant.bold,
+              size: 15,
+              color: colors.onSurface,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             AnymeXText(
-              'To use the $managerName extension manager, you need to download and install the runtime plugin.',
+              'No extension managers currently support ${tabInfo.label.toLowerCase()} content.',
+              variant: TextVariant.regular,
+              size: 12.5,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 20),
-            FilledButton.icon(
-              onPressed: () => navigate(() => const SettingsExtensionManager()),
-              icon: const Icon(Icons.download_rounded),
-              label: const AnymeXText('Go to Plugin Downloader'),
-              style: FilledButton.styleFrom(
-                backgroundColor: colors.primary,
-                foregroundColor: colors.onPrimary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              color: colors.onSurfaceVariant,
             ),
           ],
         ),
@@ -584,140 +458,418 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
     );
   }
 
-  Widget _buildUnsupported() {
+  Widget _buildManagerInsetGroup(Map<String, dynamic> entry) {
     final colors = context.colors;
-    return Center(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Container(
-          width: 64,
-          height: 64,
-          decoration: BoxDecoration(
-              color: colors.surfaceContainer,
-              borderRadius: BorderRadius.circular(16)),
-          child: Icon(Icons.block_outlined,
-              size: 28, color: colors.onSurfaceVariant),
+    final name = entry['name'] as String;
+    final bool isMock = entry['isMock'] as bool;
+    final Extension? manager = entry['manager'] as Extension?;
+    final iconUrl = _getManagerIconUrl(entry);
+
+    if (isMock) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+              child: Row(
+                children: [
+                  _buildManagerIcon(name, iconUrl),
+                  const SizedBox(width: 8),
+                  AnymeXText(
+                    name,
+                    variant: TextVariant.bold,
+                    size: 13.5,
+                    color: colors.onSurface,
+                  ),
+                  const Spacer(),
+                  if (!_isPluginInstalled)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: colors.errorContainer.withOpacity(0.2),
+                        borderRadius:
+                            BorderRadius.circular(8.multiplyRoundness()),
+                        border:
+                            Border.all(color: colors.error.withOpacity(0.25)),
+                      ),
+                      child: AnymeXText(
+                        'Plugin Required',
+                        variant: TextVariant.bold,
+                        size: 10,
+                        color: colors.error,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerLow.withValues(alpha: 0.45),
+                borderRadius: BorderRadius.circular(18.multiplyRoundness()),
+                border: Border.all(
+                  color: colors.outlineVariant.withOpacity(0.35),
+                  width: 1,
+                ),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: _buildMockManagerContent(entry, name),
+            ),
+          ],
         ),
-        const SizedBox(height: 14),
-        AnymeXText('Not supported',
-            style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: colors.onSurface)),
-        const SizedBox(height: 4),
-        AnymeXText('${_tab.name.capitalizeFirst} is not supported\nby this manager',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant)),
-      ]),
-    );
+      );
+    }
+
+    if (manager == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Obx(() {
+      final repos = manager.getReposRx(_tab).value;
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+              child: Row(
+                children: [
+                  _buildManagerIcon(name, iconUrl),
+                  const SizedBox(width: 8),
+                  AnymeXText(
+                    name,
+                    variant: TextVariant.bold,
+                    size: 13.5,
+                    color: colors.onSurface,
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHighest.withOpacity(0.4),
+                      borderRadius:
+                          BorderRadius.circular(8.multiplyRoundness()),
+                      border: Border.all(
+                          color: colors.outlineVariant.withOpacity(0.25)),
+                    ),
+                    child: AnymeXText(
+                      '${repos.length} installed',
+                      variant: TextVariant.semiBold,
+                      size: 10,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerLow.withValues(alpha: 0.45),
+                borderRadius: BorderRadius.circular(18.multiplyRoundness()),
+                border: Border.all(
+                  color: colors.outlineVariant.withOpacity(0.35),
+                  width: 1,
+                ),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: _buildRealManagerContent(manager, repos),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
-  Widget _buildEmpty({Key? key}) {
+  Widget _buildMockManagerContent(Map<String, dynamic> entry, String name) {
     final colors = context.colors;
-    final icon = _typeTabs.firstWhere((t) => t.type == _tab).icon;
-    return Center(
-      key: key,
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-              color: colors.surfaceContainer.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(20)),
-          child: Icon(icon, size: 30, color: colors.onSurfaceVariant),
+
+    if (!_isPluginInstalled) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.warning_amber_rounded,
+                    size: 18, color: colors.error),
+                const SizedBox(width: 8),
+                AnymeXText(
+                  'Runtime Plugin Required',
+                  variant: TextVariant.bold,
+                  size: 13,
+                  color: colors.onSurface,
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            AnymeXText(
+              'To use $name repositories and extensions, please download and install the runtime plugin.',
+              variant: TextVariant.regular,
+              size: 12,
+              color: colors.onSurfaceVariant,
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: () => navigate(() => const SettingsExtensionManager()),
+              icon: const Icon(Icons.download_rounded, size: 16),
+              label: const AnymeXText(
+                'Open Plugin Downloader',
+                variant: TextVariant.bold,
+                size: 12,
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: colors.primary,
+                foregroundColor: colors.onPrimary,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.multiplyRoundness()),
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
-        AnymeXText('No repositories yet',
-            style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: colors.onSurface)),
-        const SizedBox(height: 5),
-        AnymeXText('Tap + to add a repository URL',
-            style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant)),
-      ]),
+      );
+    }
+
+    return Obx(() {
+      if (AnymeXRuntimeBridge.controller.error.value.isNotEmpty) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.error_outline_rounded,
+                      size: 18, color: colors.error),
+                  const SizedBox(width: 8),
+                  AnymeXText(
+                    'Runtime Error',
+                    variant: TextVariant.bold,
+                    size: 13,
+                    color: colors.onSurface,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              AnymeXText(
+                AnymeXRuntimeBridge.controller.error.value,
+                variant: TextVariant.regular,
+                size: 12,
+                color: colors.error,
+              ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: () => AnymeXRuntimeBridge.checkAndInitialize(),
+                icon: const Icon(Icons.refresh_rounded, size: 16),
+                label: const AnymeXText('Retry',
+                    variant: TextVariant.bold, size: 12),
+                style: FilledButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.multiplyRoundness()),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                  strokeWidth: 2, color: colors.primary),
+            ),
+            const SizedBox(width: 10),
+            AnymeXText(
+              'Starting extension runtime...',
+              variant: TextVariant.regular,
+              size: 12.5,
+              color: colors.onSurfaceVariant,
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildRealManagerContent(Extension manager, List<Repo> repos) {
+    final colors = context.colors;
+
+    return Column(
+      children: [
+        if (repos.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 22, horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.layers_clear_outlined,
+                  size: 20,
+                  color: colors.onSurfaceVariant.withOpacity(0.5),
+                ),
+                const SizedBox(width: 8),
+                AnymeXText(
+                  'No repositories added yet',
+                  variant: TextVariant.regular,
+                  size: 12.5,
+                  color: colors.onSurfaceVariant,
+                ),
+              ],
+            ),
+          )
+        else
+          ...repos.asMap().entries.map((entry) {
+            final idx = entry.key;
+            final repo = entry.value;
+            final k = '${repo.url}_${_tab.name}';
+            final isDeleting = _deleting[k] == true;
+
+            return Column(
+              children: [
+                if (idx > 0)
+                  Divider(
+                    height: 1,
+                    indent: 52,
+                    endIndent: 12,
+                    color: colors.outlineVariant.withOpacity(0.2),
+                  ),
+                _buildRepoCell(repo, isDeleting),
+              ],
+            );
+          }),
+        Divider(
+          height: 1,
+          color: colors.outlineVariant.withOpacity(0.25),
+        ),
+        ClipRRect(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(18.multiplyRoundness()),
+          ),
+          child: InkWell(
+            onTap: () => _openAddDialog(manager),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(18.multiplyRoundness()),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.add_rounded,
+                    size: 17,
+                    color: colors.primary,
+                  ),
+                  const SizedBox(width: 6),
+                  AnymeXText(
+                    'Add Repository to ${manager.name}',
+                    variant: TextVariant.bold,
+                    size: 12.5,
+                    color: colors.primary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildRepoList(List<Repo> repos, {Key? key}) {
-    return ListView.separated(
-      key: key,
-      padding: EdgeInsets.fromLTRB(16, AnymeXHeaderScope.of(context), 16, 100),
-      itemCount: repos.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (_, i) {
-        final repo = repos[i];
-        final k = '${repo.url}_${_tab.name}';
-        return _buildRepoCard(repo, isDeleting: _deleting[k] == true);
-      },
-    );
-  }
-
-  Widget _buildRepoCard(Repo repo, {required bool isDeleting}) {
+  Widget _buildRepoCell(Repo repo, bool isDeleting) {
     final colors = context.colors;
     final host = _host(repo.url);
 
     return AnimatedOpacity(
       opacity: isDeleting ? 0.4 : 1.0,
       duration: const Duration(milliseconds: 200),
-      child: Container(
-        decoration: BoxDecoration(
-          color: colors.surfaceContainerLow.withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: colors.outlineVariant.withOpacity(0.5)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          child: Row(children: [
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        child: Row(
+          children: [
             Container(
-              width: 36,
-              height: 36,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
-                  color: colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(9)),
-              child: Icon(Icons.storage_outlined,
-                  size: 17, color: colors.onSurfaceVariant),
+                color: colors.surfaceContainerHighest.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(8.multiplyRoundness()),
+              ),
+              child: Icon(
+                Icons.storage_rounded,
+                size: 16,
+                color: colors.onSurfaceVariant,
+              ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnymeXText(
-                      _path(repo.url),
-                      style: TextStyle(
-                          fontSize: 12.5,
-                          fontFamily: 'monospace',
-                          color: colors.onSurface,
-                          fontWeight: FontWeight.w500),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AnymeXText(
+                    _path(repo.url),
+                    variant: TextVariant.semiBold,
+                    size: 12,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'monospace',
+                      color: colors.onSurface,
                     ),
-                    if (host != null) ...[
-                      const SizedBox(height: 2),
-                      AnymeXText(host,
-                          style: TextStyle(
-                              fontSize: 11, color: colors.onSurfaceVariant)),
-                    ],
-                  ]),
+                  ),
+                  if (host != null) ...[
+                    const SizedBox(height: 2),
+                    AnymeXText(
+                      host,
+                      variant: TextVariant.regular,
+                      size: 10.5,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      color: colors.onSurfaceVariant,
+                    ),
+                  ],
+                ],
+              ),
             ),
-            _iconBtn(Icons.copy_outlined, colors.onSurfaceVariant, 'Copy', () {
+            _iconBtn(Icons.copy_rounded, colors.onSurfaceVariant, 'Copy URL',
+                () {
               Clipboard.setData(ClipboardData(text: repo.url));
               snackBar('URL copied to clipboard');
             }),
             const SizedBox(width: 2),
             if (isDeleting)
               Padding(
-                padding: const EdgeInsets.all(9),
+                padding: const EdgeInsets.all(8),
                 child: SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: colors.error)),
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: colors.error,
+                  ),
+                ),
               )
             else
               _iconBtn(Icons.delete_outline_rounded, colors.error, 'Remove',
                   () => _removeRepo(repo, _tab)),
-          ]),
+          ],
         ),
       ),
     );
@@ -729,10 +881,11 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
         message: tooltip,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.multiplyRoundness()),
           child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Icon(icon, size: 18, color: color)),
+            padding: const EdgeInsets.all(7),
+            child: Icon(icon, size: 17, color: color),
+          ),
         ),
       );
 
@@ -753,39 +906,20 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       return null;
     }
   }
-  Widget? _buildFab() {
-    if (_managerIndex >= _displayManagers.length) return null;
-    final selectedManagerData = _displayManagers[_managerIndex];
-    if (selectedManagerData['isMock'] == true) return null;
-
-    final manager = selectedManagerData['manager'] as Extension;
-    final supported = _tab == ItemType.anime
-        ? manager.supportsAnime
-        : _tab == ItemType.manga
-            ? manager.supportsManga
-            : manager.supportsNovel;
-    if (!supported) return null;
-    final colors = context.colors;
-    return FloatingActionButton.extended(
-      onPressed: _openAddDialog,
-      icon: const Icon(Icons.add, size: 20),
-      label: const AnymeXText('Add Repo',
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-      backgroundColor: colors.primary,
-      foregroundColor: colors.onPrimary,
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    );
-  }
 }
 
 class _AddRepoDialog extends StatefulWidget {
   final ItemType type;
+  final Extension manager;
   final ColorScheme colors;
   final Future<void> Function(List<String>) onAdd;
 
-  const _AddRepoDialog(
-      {required this.type, required this.colors, required this.onAdd});
+  const _AddRepoDialog({
+    required this.type,
+    required this.manager,
+    required this.colors,
+    required this.onAdd,
+  });
 
   @override
   State<_AddRepoDialog> createState() => _AddRepoDialogState();
@@ -859,8 +993,9 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                    color: c.primaryContainer,
-                    borderRadius: BorderRadius.circular(10)),
+                  color: c.primaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Icon(icon, size: 18, color: c.onPrimaryContainer),
               ),
               const SizedBox(width: 12),
@@ -869,8 +1004,17 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnymeXText(
-                      label,
-                      style: TextStyle(fontSize: 12, color: c.onSurfaceVariant),
+                      '${widget.manager.name} • $label',
+                      variant: TextVariant.bold,
+                      size: 13,
+                      color: c.onSurface,
+                    ),
+                    const SizedBox(height: 2),
+                    AnymeXText(
+                      'Enter one or more repository URLs',
+                      variant: TextVariant.regular,
+                      size: 11,
+                      color: c.onSurfaceVariant,
                     ),
                   ],
                 ),
@@ -880,11 +1024,12 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
           const SizedBox(height: 18),
           AnymeXText(
             'REPOSITORY URL',
+            variant: TextVariant.bold,
+            size: 10,
             style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.1,
-                color: c.onSurfaceVariant),
+              letterSpacing: 1.1,
+              color: c.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 8),
           TextField(
@@ -894,28 +1039,34 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
             maxLines: 2,
             minLines: 1,
             style: TextStyle(
-                fontSize: 12.5,
-                fontFamily: 'monospace',
-                color: c.onSurface,
-                height: 1.5),
+              fontSize: 12.5,
+              fontFamily: 'monospace',
+              color: c.onSurface,
+              height: 1.5,
+            ),
             decoration: InputDecoration(
               hintText: 'https://raw.githubusercontent.com/...',
               hintStyle: TextStyle(
-                  fontSize: 12,
-                  color: c.onSurfaceVariant.withOpacity(0.6),
-                  height: 1.5),
+                fontSize: 12,
+                color: c.onSurfaceVariant.withOpacity(0.6),
+                height: 1.5,
+              ),
               contentPadding: const EdgeInsets.all(14),
               filled: true,
               fillColor: c.surfaceContainer,
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
               enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: c.outlineVariant.withOpacity(0.6))),
+                borderRadius: BorderRadius.circular(12),
+                borderSide:
+                    BorderSide(color: c.outlineVariant.withOpacity(0.6)),
+              ),
               focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: c.primary, width: 1.5)),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: c.primary, width: 1.5),
+              ),
             ),
           ),
           if (_loading) ...[
@@ -934,7 +1085,9 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                 const SizedBox(width: 12),
                 AnymeXText(
                   'Adding repository & fetching extensions...',
-                  style: TextStyle(fontSize: 12, color: c.onSurfaceVariant),
+                  variant: TextVariant.regular,
+                  size: 12,
+                  color: c.onSurfaceVariant,
                 ),
               ],
             ),
@@ -943,10 +1096,9 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
             const SizedBox(height: 10),
             AnymeXText(
               _error!,
-              style: TextStyle(
-                fontSize: 12,
-                color: c.error,
-              ),
+              variant: TextVariant.regular,
+              size: 12,
+              color: c.error,
             ),
           ],
         ],
