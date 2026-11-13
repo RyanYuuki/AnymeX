@@ -382,6 +382,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
 
   final Rx<BoxFit> videoFit = Rx<BoxFit>(BoxFit.contain);
   final RxBool isLocked = false.obs;
+  Worker? _controlsLockWorker;
+bool? _previousOrientationLock;
   final Rx<int?> videoHeight = Rx<int?>(null);
   final _subscriptions = <StreamSubscription>[];
   final _playerSubscriptions = <StreamSubscription>[];
@@ -393,6 +395,23 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    _controlsLockWorker = ever<bool>(isLocked, (locked) {
+  if (!Platform.isAndroid) return;
+
+  if (locked) {
+    _previousOrientationLock = isOrientationLocked.value;
+    isOrientationLocked.value = true;
+  } else {
+    final wasLocked = _previousOrientationLock ?? false;
+    isOrientationLocked.value = wasLocked;
+    _previousOrientationLock = null;
+
+    if (!wasLocked &&
+        currentOrientation.value != physicalOrientation.value) {
+      _applyOrientation(physicalOrientation.value);
+    }
+  }
+});
     PlayerController.initializePlayerControlsIfNeeded(settings);
     WidgetsBinding.instance.addObserver(this);
     _initDatabaseVars();
@@ -656,6 +675,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       }
     }
     delete();
+    _controlsLockWorker?.dispose();
     super.onClose();
   }
 
