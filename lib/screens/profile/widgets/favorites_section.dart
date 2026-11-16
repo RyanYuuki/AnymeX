@@ -142,7 +142,7 @@ class FavoritesSection extends StatelessWidget {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: context.theme.colorScheme.surfaceContainer,
+                          color: context.theme.colorScheme.surfaceContainer.withOpacity(0.35),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: context.theme.colorScheme.outlineVariant
@@ -254,7 +254,7 @@ class FavoritesSection extends StatelessWidget {
                         errorWidget: (_, __, ___) => Container(
                           width: 112,
                           height: 150,
-                          color: context.theme.colorScheme.surfaceContainer,
+                          color: context.theme.colorScheme.surfaceContainer.withOpacity(0.35),
                         ),
                       )
                     : Container(
@@ -347,7 +347,7 @@ class FavoritesSection extends StatelessWidget {
                           height: 70,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: context.theme.colorScheme.surfaceContainer,
+                            color: context.theme.colorScheme.surfaceContainer.withOpacity(0.35),
                           ),
                           child: const Icon(Icons.person),
                         ),
@@ -357,7 +357,7 @@ class FavoritesSection extends StatelessWidget {
                         height: 70,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: context.theme.colorScheme.surfaceContainer,
+                          color: context.theme.colorScheme.surfaceContainer.withOpacity(0.35),
                         ),
                         child: const Icon(Icons.person),
                       ),

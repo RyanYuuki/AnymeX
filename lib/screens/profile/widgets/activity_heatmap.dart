@@ -145,7 +145,7 @@ class _ActivityHeatmapState extends State<ActivityHeatmap> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.surfaceContainerLow,
+        color: context.theme.colorScheme.surfaceContainerLow.withOpacity(0.35),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: context.theme.colorScheme.outlineVariant.withOpacity(0.3),
@@ -159,7 +159,6 @@ class _ActivityHeatmapState extends State<ActivityHeatmap> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // days
             SizedBox(
               width: dayLabelWidth,
               child: Column(

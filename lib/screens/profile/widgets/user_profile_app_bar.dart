@@ -1,8 +1,7 @@
-import 'dart:ui';
+import 'dart:io';
 import 'package:anymex/models/Anilist/anilist_profile.dart';
 import 'package:anymex/screens/profile/widgets/profile_common.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_fullscreen_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,7 +62,6 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
     final user = widget.user;
     final avatarUrl = widget.avatarUrl;
     final bannerUrl = widget.bannerUrl;
-    final bannerAnim = widget.bannerAnim;
 
     final hasBanner = bannerUrl != null && bannerUrl.trim().isNotEmpty;
     final imageUrl = hasBanner ? bannerUrl : avatarUrl;
@@ -75,18 +73,26 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
             ? donatorBadge
             : 'AniList Member';
 
+    final double desktopTopPad = Platform.isWindows ? 40.0 : 0.0;
     final screenHeight = MediaQuery.sizeOf(context).height;
-    final bannerHeight = (screenHeight * 0.36).clamp(250.0, 390.0);
+    final bannerHeight =
+        (screenHeight * 0.36).clamp(250.0, 390.0) + desktopTopPad;
 
     return SliverAppBar(
       expandedHeight: bannerHeight,
+      toolbarHeight: kToolbarHeight + desktopTopPad,
       floating: false,
       pinned: true,
       elevation: 0,
       scrolledUnderElevation: 0,
-      backgroundColor: context.theme.colorScheme.surface,
+      backgroundColor: Colors.transparent,
       leading: Container(
-        margin: const EdgeInsets.all(8),
+        margin: EdgeInsets.only(
+          top: 8 + desktopTopPad,
+          bottom: 8,
+          left: 8,
+          right: 8,
+        ),
         decoration: BoxDecoration(
           color: context.theme.colorScheme.surface.withOpacity(0.5),
           shape: BoxShape.circle,
@@ -98,7 +104,11 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
       ),
       actions: [
         Container(
-          margin: const EdgeInsets.only(top: 8, bottom: 8, right: 4),
+          margin: EdgeInsets.only(
+            top: 8 + desktopTopPad,
+            bottom: 8,
+            right: 4,
+          ),
           decoration: BoxDecoration(
             color: context.theme.colorScheme.surface.withOpacity(0.5),
             shape: BoxShape.circle,
@@ -120,7 +130,11 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
           ),
         ),
         Container(
-          margin: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
+          margin: EdgeInsets.only(
+            top: 8 + desktopTopPad,
+            bottom: 8,
+            right: 8,
+          ),
           decoration: BoxDecoration(
             color: context.theme.colorScheme.surface.withOpacity(0.5),
             shape: BoxShape.circle,
@@ -240,69 +254,21 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            AnimatedBuilder(
-              animation: bannerAnim,
-              builder: (context, child) {
-                return SizedBox(
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: GestureDetector(
-                    onTap: () {
-                      if (imageUrl.isNotEmpty) {
-                        widget.bannerController.stop();
-                        Navigator.of(context, rootNavigator: true)
-                            .push(
-                          MaterialPageRoute(
-                            builder: (_) => AnymeXFullscreenImageViewer(
-                              imageUrl: imageUrl,
-                              tag: 'profile_banner_$name',
-                            ),
-                          ),
-                        )
-                            .then((_) {
-                          widget.bannerController.repeat(reverse: true);
-                        });
-                      }
-                    },
-                    child: Hero(
-                      tag: 'profile_banner_$name',
-                      child: AnymeXImage(
+            if (imageUrl.isNotEmpty)
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(
+                      builder: (_) => AnymeXFullscreenImageViewer(
                         imageUrl: imageUrl,
-                        fit: BoxFit.cover,
-                        alignment:
-                            hasBanner ? bannerAnim.value : Alignment.center,
-                        radius: 0,
+                        tag: 'profile_banner_$name',
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-            if (!hasBanner)
-              IgnorePointer(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                  child: Container(
-                      color:
-                          context.theme.colorScheme.surface.withOpacity(0.2)),
-                ),
+                  );
+                },
+                child: const SizedBox.expand(),
               ),
-            IgnorePointer(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      context.theme.colorScheme.surface.withOpacity(0.8),
-                      context.theme.colorScheme.surface,
-                    ],
-                    stops: const [0.0, 0.8, 1.0],
-                  ),
-                ),
-              ),
-            ),
             if ((Get.isRegistered<CommentumService>() &&
                     Get.find<CommentumService>().renderProfileEffects.value) &&
                 widget.profileEffect != null &&

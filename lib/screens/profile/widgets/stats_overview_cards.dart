@@ -21,7 +21,6 @@ class DesktopStatsGrid extends StatelessWidget {
         : 0;
     final meanScore = anime?.meanScore ?? '0';
 
-    // first fav poster for each cat
     final animeThumbs = user.favourites?.anime
             .where((f) => f.cover != null)
             .take(1)
@@ -347,7 +346,7 @@ class ScoreCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(compact ? 10 : 12),
       decoration: BoxDecoration(
-        color: context.theme.colorScheme.secondaryContainer.withOpacity(0.3),
+        color: context.theme.colorScheme.secondaryContainer.withOpacity(0.35),
         borderRadius: BorderRadius.circular(compact ? 14 : 16),
       ),
       child: Row(
@@ -471,11 +470,10 @@ class _PressableHighlightCardState extends State<_PressableHighlightCard> {
         duration: const Duration(milliseconds: 120),
         curve: Curves.easeOut,
         child: Material(
-          color: colors.surfaceContainer,
+          color: colors.surfaceContainer.withOpacity(0.35),
           borderRadius: BorderRadius.circular(radius),
-          elevation: _isPressed ? 0 : (widget.imageUrl != null ? 4 : 1),
-          shadowColor:
-              colors.shadow.withOpacity(widget.imageUrl != null ? 0.3 : 0.15),
+          elevation: 0,
+          shadowColor: Colors.transparent,
           child: InkWell(
             onTap: widget.onTap,
             onHighlightChanged: (pressed) {

@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:ui';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:anymex/controllers/services/anilist/anilist_auth.dart';
 import 'package:anymex/models/Anilist/anilist_activity.dart';
 
@@ -21,6 +24,12 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:anymex/screens/profile/widgets/widgets.dart';
 import 'dart:developer';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/widgets/common/baked_blur_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/services/commentum_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -31,9 +40,9 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
+  static final Map<String, Color> _paletteCache = {};
   late final AnimationController _bannerController;
   late final Animation<Alignment> _bannerAnim;
-  bool _ready = false;
   int _selectedTab = 0;
   List<AnilistActivity> _activities = [];
   bool _activitiesLoading = true;
@@ -47,7 +56,6 @@ class _ProfilePageState extends State<ProfilePage>
     'MESSAGE',
   ];
 
-  // Social tab
   final GlobalKey<SocialTabState> _socialTabKey = GlobalKey<SocialTabState>();
   bool _isAboutExpanded = true;
 
@@ -55,17 +63,28 @@ class _ProfilePageState extends State<ProfilePage>
 
   Future<void> _extractDominantColor(String imageUrl) async {
     if (imageUrl.isEmpty) return;
+    final cached = _paletteCache[imageUrl];
+    if (cached != null) {
+      if (mounted && _avatarDominantColor != cached) {
+        setState(() => _avatarDominantColor = cached);
+      }
+      return;
+    }
     try {
       final palette = await PaletteGenerator.fromImageProvider(
-        NetworkImage(imageUrl),
-        size: const Size(100, 100),
-        maximumColorCount: 5,
+        ResizeImage(NetworkImage(imageUrl), width: 32, height: 32),
+        size: const Size(32, 32),
+        maximumColorCount: 4,
       );
+      final color = palette.dominantColor?.color ??
+          palette.vibrantColor?.color ??
+          palette.mutedColor?.color;
+      if (color != null) {
+        _paletteCache[imageUrl] = color;
+      }
       if (mounted) {
         setState(() {
-          _avatarDominantColor = palette.dominantColor?.color ??
-              palette.vibrantColor?.color ??
-              palette.mutedColor?.color;
+          _avatarDominantColor = color;
         });
       }
     } catch (e) {
@@ -79,26 +98,39 @@ class _ProfilePageState extends State<ProfilePage>
     _bannerController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 12),
-    )..repeat(reverse: true);
+    );
     _bannerAnim = Tween<Alignment>(
       begin: Alignment.centerLeft,
       end: Alignment.centerRight,
     ).animate(
       CurvedAnimation(parent: _bannerController, curve: Curves.easeInOut),
     );
+    final handler = Get.find<ServiceHandler>();
+    final cover = handler.profileData.value.cover;
+    final avatar = handler.profileData.value.avatar;
+    final paletteUrl = (cover != null && cover.isNotEmpty) ? cover : (avatar ?? '');
+    if (paletteUrl.isNotEmpty && _paletteCache.containsKey(paletteUrl)) {
+      _avatarDominantColor = _paletteCache[paletteUrl];
+    }
     _fetchActivities();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) setState(() => _ready = true);
-      final handler = Get.find<ServiceHandler>();
-      if (handler.profileData.value.avatar != null) {
-        _extractDominantColor(handler.profileData.value.avatar!);
+      if (Platform.isWindows && mounted) {
+        AnymeXTitleBar.isTransparent.value = true;
+      }
+      if (paletteUrl.isNotEmpty && !_paletteCache.containsKey(paletteUrl)) {
+        _extractDominantColor(paletteUrl);
       }
     });
   }
 
   @override
   void dispose() {
+    if (Platform.isWindows) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        AnymeXTitleBar.isTransparent.value = false;
+      });
+    }
     _bannerController.dispose();
 
     super.dispose();
@@ -314,7 +346,7 @@ class _ProfilePageState extends State<ProfilePage>
         ],
       );
 
-      return NotificationListener<ScrollNotification>(
+      final content = NotificationListener<ScrollNotification>(
         onNotification: (scrollInfo) {
           if (scrollInfo is ScrollUpdateNotification &&
               _selectedTab == 1 &&
@@ -332,26 +364,187 @@ class _ProfilePageState extends State<ProfilePage>
           }
           return false;
         },
-        child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              if (!isDesktop)
-                MobileProfileHeaderSliver(
-                  avatarUrl: user.avatar ?? '',
-                  bannerUrl: user.cover,
-                  user: user,
-                  bannerAnim: _bannerAnim,
-                  bannerController: _bannerController,
+        child: isDesktop
+            ? tabScrollView
+            : NestedScrollView(
+                headerSliverBuilder: (context, innerBoxIsScrolled) {
+                  return [
+                    if (!isDesktop)
+                      MobileProfileHeaderSliver(
+                        avatarUrl: user.avatar ?? '',
+                        bannerUrl: user.cover,
+                        user: user,
+                        bannerAnim: _bannerAnim,
+                        bannerController: _bannerController,
+                      ),
+                  ];
+                },
+                body: _selectedTab == 1
+                    ? RefreshIndicator(
+                        onRefresh: () => _refreshActivityTab(showMessage: false),
+                        child: tabScrollView,
+                      )
+                    : tabScrollView,
+              ),
+      );
+
+      final blurScope = settingsController.detailsBlurScope;
+      final isMesh = settingsController.detailsBlurStyle == 1;
+      final isBaked = isMesh || settingsController.useComputedBlur;
+      final blurAmount =
+          UISettingsKeys.detailsBlurAmount.get<double>(20.0);
+      final brightness =
+          UISettingsKeys.detailsBackdropBrightness.get<double>(1.0);
+      final commentum = Get.isRegistered<CommentumService>()
+          ? Get.find<CommentumService>()
+          : null;
+      final equippedBanner = commentum?.currentUserBanner.value;
+      final effectiveBanner =
+          (equippedBanner != null && equippedBanner.isNotEmpty)
+              ? equippedBanner
+              : user.cover;
+      final hasBanner =
+          effectiveBanner != null && effectiveBanner.trim().isNotEmpty;
+      final blurSourceUrl =
+          hasBanner ? effectiveBanner : (user.avatar ?? '');
+      final blurFallbackUrl =
+          (user.avatar != null && user.avatar!.isNotEmpty)
+              ? user.avatar!
+              : (hasBanner ? effectiveBanner : '');
+      final tintBlur = settingsController.tintBlur;
+      final colors = context.colors;
+      final blurColor = tintBlur ? colors.primary.opaque(0.4) : null;
+      final isDark =
+          Theme.of(context).brightness == Brightness.dark;
+      final baseArtworkColor = tintBlur
+          ? colors.primary
+          : (_avatarDominantColor ?? colors.primary);
+      final gradientBgColor = Color.alphaBlend(
+        baseArtworkColor.withValues(alpha: isDark ? 0.20 : 0.12),
+        colors.surface,
+      );
+
+      Widget buildBlurredImage({double? height}) {
+        if (blurSourceUrl.isEmpty) {
+          return Container(
+            height: height ?? double.infinity,
+            width: double.infinity,
+            color: gradientBgColor,
+          );
+        }
+        return isBaked
+            ? BakedBlurImage(
+                url: blurSourceUrl,
+                fallback: blurFallbackUrl,
+                saturation: 1.0,
+                blurAmount: blurAmount,
+                brightness: brightness,
+                color: blurColor,
+                fit: BoxFit.cover,
+                height: height,
+                width: double.infinity,
+                fadeBottom: true,
+                isMesh: isMesh,
+              )
+            : ColorFiltered(
+                colorFilter: ColorFilter.matrix([
+                  brightness, 0, 0, 0, 0,
+                  0, brightness, 0, 0, 0,
+                  0, 0, brightness, 0, 0,
+                  0, 0, 0, 1, 0,
+                ]),
+                child: ImageFiltered(
+                  imageFilter: ImageFilter.blur(
+                      sigmaX: blurAmount, sigmaY: blurAmount),
+                  child: AnymeXImage(
+                    imageUrl: blurSourceUrl,
+                    errorImage: blurFallbackUrl,
+                    radius: 0,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: height ?? double.infinity,
+                    color: blurColor,
+                  ),
                 ),
-            ];
-          },
-          body: _selectedTab == 1
-              ? RefreshIndicator(
-                  onRefresh: () => _refreshActivityTab(showMessage: false),
-                  child: tabScrollView,
-                )
-              : tabScrollView,
-        ),
+              );
+      }
+
+      if (blurScope == 2) {
+        final washHeight = (MediaQuery.sizeOf(context).height * 0.48)
+            .clamp(320.0, 520.0);
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              child: Container(
+                color: gradientBgColor,
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: washHeight,
+              child: RepaintBoundary(
+                child: buildBlurredImage(height: washHeight),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              height: washHeight + 1.0,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    stops: const [0.0, 0.30, 0.60, 0.85, 1.0],
+                    colors: [
+                      gradientBgColor.withValues(
+                          alpha: isDark ? 0.30 : 0.10),
+                      gradientBgColor.withValues(
+                          alpha: isDark ? 0.55 : 0.25),
+                      gradientBgColor.withValues(
+                          alpha: isDark ? 0.85 : 0.65),
+                      gradientBgColor,
+                      gradientBgColor,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            content,
+          ],
+        );
+      }
+
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned.fill(
+            child: RepaintBoundary(
+              child: buildBlurredImage(),
+            ),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    colors.surface.withValues(alpha: 0.40),
+                    colors.surface.withValues(alpha: 0.65),
+                    colors.surface.withValues(alpha: 0.90),
+                  ],
+                  stops: const [0.0, 0.45, 1.0],
+                ),
+              ),
+            ),
+          ),
+          content,
+        ],
       );
     });
   }
@@ -365,19 +558,18 @@ class _ProfilePageState extends State<ProfilePage>
     );
 
     return AnymeXScaffold(
-  backgroundColor: context.theme.colorScheme.surface,
-  extendBody: true,
-  bottomNavigationBar: isDesktop
-            ? null
-            : ResponsiveNavBar(
-                isDesktop: false,
-                currentIndex: _selectedTab,
-                items: _profileNavItems,
-              ),
-  body: _ready
-            ? _buildBody(context, isDesktop)
-            : const Center(child: CircularProgressIndicator())
-);
+      backgroundColor: Colors.transparent,
+      extendBehindTitleBar: Platform.isWindows,
+      extendBody: true,
+      bottomNavigationBar: isDesktop
+          ? null
+          : ResponsiveNavBar(
+              isDesktop: false,
+              currentIndex: _selectedTab,
+              items: _profileNavItems,
+            ),
+      body: _buildBody(context, isDesktop),
+    );
   }
 
   void _showCreateActivitySheet(BuildContext context) {
@@ -955,7 +1147,7 @@ class _ProfilePageState extends State<ProfilePage>
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Container(
             decoration: BoxDecoration(
-              color: context.theme.colorScheme.surfaceContainerLow,
+              color: context.theme.colorScheme.surfaceContainerLow.withOpacity(0.35),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: context.theme.colorScheme.outlineVariant.withOpacity(
