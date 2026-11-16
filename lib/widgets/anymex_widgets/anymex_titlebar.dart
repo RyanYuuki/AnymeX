@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/controllers/discord/discord_rpc.dart';
 import 'package:anymex/controllers/theme.dart';
-import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:win32/win32.dart';
 import 'dart:ffi';
@@ -142,7 +141,8 @@ class _TitleBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isOled = Provider.of<ThemeProvider>(context).isOled;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isOled = Get.find<ThemeController>().isOled;
     final defaultColor = context.colors.onSurface;
 
     return ValueListenableBuilder<bool>(
@@ -155,14 +155,18 @@ class _TitleBarWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: transparent
                   ? Colors.transparent
-                  : (isOled ? Colors.black : Colors.black.opaque(0.1)),
+                  : (isOled
+                      ? (isDark ? Colors.black : Colors.white)
+                      : (isDark
+                          ? Colors.black.withValues(alpha: 0.15)
+                          : Colors.white.withValues(alpha: 0.35))),
               border: transparent
                   ? null
                   : Border(
                       bottom: BorderSide(
                         color: isOled
                             ? Colors.transparent
-                            : defaultColor.opaque(0.1),
+                            : defaultColor.withValues(alpha: 0.08),
                         width: 0.5,
                       ),
                     ),
@@ -173,7 +177,7 @@ class _TitleBarWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(5),
               decoration: BoxDecoration(
-                color: defaultColor.opaque(0.1),
+                color: defaultColor.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: AnymeXAnimatedLogo(
@@ -298,8 +302,9 @@ class _WindowButtonState extends State<_WindowButton>
             decoration: BoxDecoration(
               color: isHovered
                   ? (widget.isClose
-                      ? Colors.red.opaque(0.9)
-                      : widget.buttonColor.opaque(isDark ? 0.15 : 0.1))
+                      ? Colors.red.withValues(alpha: 0.9)
+                      : widget.buttonColor
+                          .withValues(alpha: isDark ? 0.15 : 0.08))
                   : Colors.transparent,
             ),
             child: Center(
@@ -308,7 +313,7 @@ class _WindowButtonState extends State<_WindowButton>
                 size: widget.isClose ? 18 : 16,
                 color: isHovered && widget.isClose
                     ? Colors.white
-                    : widget.buttonColor.opaque(0.9),
+                    : widget.buttonColor.withValues(alpha: 0.9),
               ),
             ),
           ),
