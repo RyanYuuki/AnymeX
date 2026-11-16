@@ -1,4 +1,5 @@
 import 'package:anymex/controllers/settings/settings.dart';
+import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/widgets/common/marquee_text.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -149,43 +150,42 @@ class AnymeXText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final processedText = stripHtml ? _removeHtmlTags(text) : text;
-      final textStyle = _resolveStyle();
-      final effectiveMaxLines = isMarquee ? 1 : maxLines;
+    final sanitized = text.trim().toLowerCase() == 'null' ? '-' : text;
+    final processedText = stripHtml ? _removeHtmlTags(sanitized) : sanitized;
+    final textStyle = _resolveStyle();
+    final effectiveMaxLines = isMarquee ? 1 : maxLines;
 
-      if (isMarquee) {
-        return MarqueeText(
-          processedText,
-          style: textStyle,
-          textAlign: textAlign,
-          overflow: overflow,
-          maxLines: effectiveMaxLines,
-        );
-      }
+    if (isMarquee) {
+      return MarqueeText(
+        processedText,
+        style: textStyle,
+        textAlign: textAlign,
+        overflow: overflow,
+        maxLines: effectiveMaxLines,
+      );
+    }
 
-      if (!autoResize) {
-        return Text(
-          processedText,
-          textAlign: textAlign,
-          overflow: overflow,
-          maxLines: effectiveMaxLines,
-          style: textStyle,
-          softWrap: softWrap,
-        );
-      }
-
-      return AutoSizeText(
+    if (!autoResize) {
+      return Text(
         processedText,
         textAlign: textAlign,
-        maxLines: effectiveMaxLines,
-        minFontSize: minFontSize ?? 10,
-        stepGranularity: stepGranularity ?? 1,
         overflow: overflow,
+        maxLines: effectiveMaxLines,
         style: textStyle,
         softWrap: softWrap,
       );
-    });
+    }
+
+    return AutoSizeText(
+      processedText,
+      textAlign: textAlign,
+      maxLines: effectiveMaxLines,
+      minFontSize: minFontSize ?? 10,
+      stepGranularity: stepGranularity ?? 1,
+      overflow: overflow,
+      style: textStyle,
+      softWrap: softWrap,
+    );
   }
 
   TextStyle _resolveStyle() {
@@ -193,7 +193,9 @@ class AnymeXText extends StatelessWidget {
     final baseColor = color ?? style?.color;
     final baseFontStyle = style?.fontStyle ?? fontStyle;
 
-    final customFamily = settingsController.appFontFamily;
+    final customFamily = Get.isRegistered<ThemeController>()
+        ? Get.find<ThemeController>().appFontFamily
+        : settingsController.appFontFamily;
     if (customFamily.isNotEmpty) {
       if (customFamily == 'System') {
         final base = TextStyle(

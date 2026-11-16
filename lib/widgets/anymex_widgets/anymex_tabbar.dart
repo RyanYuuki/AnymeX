@@ -79,15 +79,22 @@ class AnymeXTabBar extends StatelessWidget {
                     : null;
 
                 return Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      if (!selected) {
-                        HapticFeedback.lightImpact();
-                        onTabSelected(e.key);
-                      }
-                    },
-                    child: AnimatedScale(
+                  child: Builder(
+                    builder: (tabContext) => GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        if (!selected) {
+                          HapticFeedback.lightImpact();
+                          onTabSelected(e.key);
+                          Scrollable.ensureVisible(
+                            tabContext,
+                            duration: const Duration(milliseconds: 250),
+                            curve: Curves.easeInOut,
+                            alignment: 0.5,
+                          );
+                        }
+                      },
+                      child: AnimatedScale(
                       scale: selected ? 1.03 : 1.0,
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.easeInOut,
@@ -129,7 +136,8 @@ class AnymeXTabBar extends StatelessWidget {
                       ),
                     ),
                   ),
-                );
+                ),
+              );
               }).toList(),
             ),
           ],

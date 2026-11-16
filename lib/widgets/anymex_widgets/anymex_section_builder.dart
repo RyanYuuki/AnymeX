@@ -1,3 +1,4 @@
+import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/animation/widget_animations.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
@@ -16,6 +17,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
   final double separatorIndent;
   final BoxBorder? borderSide;
   final bool disableSeperator;
+  final TileStyle? style;
 
   const AnymeXSectionBuilder({
     super.key,
@@ -28,6 +30,7 @@ class AnymeXSectionBuilder extends StatelessWidget {
     this.disableSeperator = false,
     this.borderSide,
     this.separatorIndent = 66.0,
+    this.style,
   });
 
   bool _isCheckboxTile(Widget w) {
@@ -62,6 +65,11 @@ class AnymeXSectionBuilder extends StatelessWidget {
     if (children.isEmpty) return const SizedBox.shrink();
 
     final colors = context.colors;
+    final effectiveStyle = style ??
+        (settingsController.tileStyle == 1
+            ? TileStyle.modern
+            : TileStyle.classic);
+    final isModern = effectiveStyle == TileStyle.modern;
     final itemCount = children.length;
 
     final List<Widget> formattedChildren = [];
@@ -70,39 +78,45 @@ class AnymeXSectionBuilder extends StatelessWidget {
       final child = children[i];
 
       BorderRadius radius;
-      if (itemCount == 1) {
-        radius = BorderRadius.circular(borderRadius);
-      } else if (i == 0) {
-        radius = BorderRadius.vertical(top: Radius.circular(borderRadius));
-      } else if (i == itemCount - 1) {
-        radius = BorderRadius.vertical(bottom: Radius.circular(borderRadius));
+      if (isModern) {
+        if (itemCount == 1) {
+          radius = BorderRadius.circular(borderRadius);
+        } else if (i == 0) {
+          radius = BorderRadius.vertical(
+            top: Radius.circular(borderRadius),
+            bottom: const Radius.circular(4.0),
+          );
+        } else if (i == itemCount - 1) {
+          radius = BorderRadius.vertical(
+            top: const Radius.circular(4.0),
+            bottom: Radius.circular(borderRadius),
+          );
+        } else {
+          radius = BorderRadius.circular(4.0);
+        }
       } else {
-        radius = BorderRadius.zero;
+        if (itemCount == 1) {
+          radius = BorderRadius.circular(borderRadius);
+        } else if (i == 0) {
+          radius = BorderRadius.vertical(top: Radius.circular(borderRadius));
+        } else if (i == itemCount - 1) {
+          radius =
+              BorderRadius.vertical(bottom: Radius.circular(borderRadius));
+        } else {
+          radius = BorderRadius.zero;
+        }
       }
 
       Widget tileWidget = child;
       if (child is AnymeXTile) {
-        tileWidget = AnymeXTile(
-          icon: child.icon,
-          leading: child.leading,
-          title: child.title,
-          subtitle: child.subtitle,
-          subtitleWidget: child.subtitleWidget,
-          trailing: child.trailing,
-          onTap: child.onTap,
-          onLongPress: child.onLongPress,
-          iconColor: child.iconColor,
-          iconBackgroundColor: child.iconBackgroundColor,
-          showChevron: child.showChevron,
-          borderRadius: radius,
-          padding: child.padding,
-          enabled: child.enabled,
-          customContent: child.customContent,
-          maxLines: child.maxLines,
-          titleStyle: child.titleStyle,
-          subtitleStyle: child.subtitleStyle,
-          isCheckbox: child.isCheckbox,
-          isRadio: child.isRadio,
+        tileWidget = child.copyWith(
+          borderRadius: child.borderRadius ?? radius,
+          style: effectiveStyle,
+          backgroundColor: child.backgroundColor ??
+              (isModern
+                  ? (backgroundColor ??
+                      colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true))
+                  : null),
         );
       } else {
         tileWidget = ClipRRect(
@@ -111,42 +125,52 @@ class AnymeXSectionBuilder extends StatelessWidget {
         );
       }
 
-      formattedChildren.add(tileWidget);
+      formattedChildren.add(
+        AnymeXTileScope(
+          borderRadius: radius,
+          backgroundColor: backgroundColor ??
+              (isModern
+                  ? colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true)
+                  : null),
+          style: effectiveStyle,
+          child: tileWidget,
+        ),
+      );
 
-      if (i < itemCount - 1 && !disableSeperator) {
-        final nextChild = children[i + 1];
-        if (_shouldAddSeparator(child, nextChild)) {
-          formattedChildren.add(
-            Divider(
-              height: 1,
-              thickness: 0.6,
-              indent: separatorIndent,
-              endIndent: 16,
-              color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-            ),
-          );
+      if (i < itemCount - 1) {
+        if (isModern) {
+          formattedChildren.add(const SizedBox(height: 2.0));
+        } else if (!disableSeperator) {
+          final nextChild = children[i + 1];
+          if (_shouldAddSeparator(child, nextChild)) {
+            formattedChildren.add(
+              Divider(
+                height: 1,
+                thickness: 0.6,
+                indent: separatorIndent,
+                endIndent: 16,
+                color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+              ),
+            );
+          }
         }
       }
     }
 
-    return Container(
-      margin: margin ?? const EdgeInsets.only(bottom: 20),
-      padding: padding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (title != null && title!.isNotEmpty) ...[
-            Padding(
-              padding: const EdgeInsets.only(left: 12, bottom: 8),
-              child: AnymeXText(title!.toUpperCase(),
-                size: 11.5,
-                variant: TextVariant.bold,
-                color: colors.onSurface.opaque(0.45, iReallyMeanIt: true),
-              ),
-            ),
-          ],
-          Container(
+    final Widget sectionContent = isModern
+        ? ((title != null && title!.isNotEmpty)
+            ? ExpansionSectionScope(
+                sectionTitle: title!,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: formattedChildren,
+                ),
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: formattedChildren,
+              ))
+        : Container(
             decoration: BoxDecoration(
               color: backgroundColor ??
                   colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
@@ -169,7 +193,27 @@ class AnymeXSectionBuilder extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: formattedChildren,
                   ),
-          ).animateSection(),
+          ).animateSection();
+
+    return Container(
+      margin: margin ?? const EdgeInsets.only(bottom: 20),
+      padding: padding,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (title != null && title!.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 12, bottom: 8),
+              child: AnymeXText(
+                title!.toUpperCase(),
+                size: 11.5,
+                variant: TextVariant.bold,
+                color: colors.onSurface.opaque(0.45, iReallyMeanIt: true),
+              ),
+            ),
+          ],
+          sectionContent,
         ],
       ),
     );

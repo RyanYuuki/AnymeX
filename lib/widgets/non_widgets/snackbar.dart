@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
@@ -30,6 +31,7 @@ void snackBar(
   bool showDurationAnimation = true,
   VoidCallback? onTap,
 }) {
+  HapticFeedback.mediumImpact();
   final navigatorContext = Get.key.currentContext ?? Get.context;
   final theme = navigatorContext != null
       ? Theme.of(navigatorContext)

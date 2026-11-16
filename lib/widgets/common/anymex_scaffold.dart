@@ -7,7 +7,6 @@ import 'package:anymex/widgets/anymex_widgets/anymex_header.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:anymex/widgets/common/grain_texture.dart';
 
@@ -52,6 +51,7 @@ class AnymeXScaffold extends StatelessWidget {
   final bool disabled;
   final bool isTabScreen;
   final bool extendBehindTitleBar;
+  final bool? isOled;
 
   final bool showHeader;
   final String? headerTitle;
@@ -107,6 +107,7 @@ class AnymeXScaffold extends StatelessWidget {
     this.onHeaderSearchSubmitted,
     this.onHeaderSearchClear,
     this.headerSearchHint = 'Search...',
+    this.isOled,
   });
 
   static final Map<String, ColorScheme> _colorSchemeCache = {};
@@ -148,7 +149,7 @@ class AnymeXScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = Get.find<Settings>();
     final isDesktop = Platform.isWindows;
-    final isOled = Provider.of<ThemeProvider>(context).isOled;
+    final isOled = this.isOled ?? Get.find<ThemeController>().isOled;
 
     final resolvedBody = showHeader
         ? _HeaderBodyShell(
@@ -167,9 +168,24 @@ class AnymeXScaffold extends StatelessWidget {
           )
         : body;
 
+    final resolvedWithFade = appBar == null &&
+            !isDesktop &&
+            !extendBehindTitleBar &&
+            (resolvedBody != null)
+        ? ShaderMask(
+            shaderCallback: (bounds) => const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment(0, -0.85),
+              colors: [Colors.transparent, Colors.black],
+            ).createShader(bounds),
+            blendMode: BlendMode.dstIn,
+            child: resolvedBody,
+          )
+        : resolvedBody;
+
     final scaffold = Scaffold(
       appBar: appBar,
-      body: resolvedBody,
+      body: resolvedWithFade,
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
       floatingActionButtonAnimator: floatingActionButtonAnimator,
@@ -210,7 +226,7 @@ class AnymeXScaffold extends StatelessWidget {
             )
           : ch;
 
-      if (disabled || (isOled && isDesktop)) {
+      if (disabled || isOled) {
         return Container(
           color: isOled
               ? Colors.black

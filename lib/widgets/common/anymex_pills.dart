@@ -48,7 +48,7 @@ class AnymeXPills extends StatelessWidget {
   final bool scrollable;
 
   final EdgeInsetsGeometry scrollPadding;
-  
+
   final double selectedOuterRadius;
 
   final bool expandEqually;
@@ -103,7 +103,6 @@ class AnymeXPills extends StatelessWidget {
     return BorderRadius.circular(innerRadius);
   }
 
-  
   BorderRadius _selectedBorderFor(int index) {
     return BorderRadius.circular(selectedOuterRadius);
   }
@@ -120,7 +119,8 @@ class AnymeXPills extends StatelessWidget {
           runSpacing: 8.0,
           children: [
             for (int i = 0; i < items.length; i++)
-              _PillCell(
+              _buildPillCell(
+                context: context,
                 item: items[i],
                 borderRadius: _borderFor(i),
                 selectedBorderRadius: _selectedBorderFor(i),
@@ -137,7 +137,8 @@ class AnymeXPills extends StatelessWidget {
           if (i > 0) SizedBox(width: _effectiveGap),
           if (expandEqually)
             Expanded(
-              child: _PillCell(
+              child: _buildPillCell(
+                context: context,
                 item: items[i],
                 borderRadius: _borderFor(i),
                 selectedBorderRadius: _selectedBorderFor(i),
@@ -145,7 +146,8 @@ class AnymeXPills extends StatelessWidget {
               ),
             )
           else
-            _PillCell(
+            _buildPillCell(
+              context: context,
               item: items[i],
               borderRadius: _borderFor(i),
               selectedBorderRadius: _selectedBorderFor(i),
@@ -164,27 +166,16 @@ class AnymeXPills extends StatelessWidget {
       child: row,
     );
   }
-}
 
-class _PillCell extends StatelessWidget {
-  final PillItem item;
-  final BorderRadius borderRadius;
-  final BorderRadius selectedBorderRadius;
-  final bool isExpanded;
-
-  const _PillCell({
-    required this.item,
-    required this.borderRadius,
-    required this.selectedBorderRadius,
-    this.isExpanded = false,
-  });
-
-  BorderRadius get _activeRadius =>
-      item.isSelected ? selectedBorderRadius : borderRadius;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildPillCell({
+    required BuildContext context,
+    required PillItem item,
+    required BorderRadius borderRadius,
+    required BorderRadius selectedBorderRadius,
+    bool isExpanded = false,
+  }) {
     final colors = Theme.of(context).colorScheme;
+    final activeRadius = item.isSelected ? selectedBorderRadius : borderRadius;
 
     return GestureDetector(
       onTap: item.onTap,
@@ -195,30 +186,34 @@ class _PillCell extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: item.isSelected
-              ? colors.primary.opaque(0.15, iReallyMeanIt: true)
+              ? colors.primary
               : colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-          borderRadius: _activeRadius,
+          borderRadius: activeRadius,
           border: Border.all(
             color: item.isSelected
-                ? colors.primary.opaque(0.4, iReallyMeanIt: true)
+                ? colors.primary
                 : colors.onSurface.opaque(0.08, iReallyMeanIt: true),
             width: 0.5,
           ),
         ),
-        child: item.child ?? _DefaultPillContent(item: item, colors: colors),
+        child: item.child ?? _buildDefaultPillContent(item, colors),
       ),
     );
   }
-}
 
-class _DefaultPillContent extends StatelessWidget {
-  final PillItem item;
-  final ColorScheme colors;
+  Widget _buildDefaultPillContent(PillItem item, ColorScheme colors) {
+    final foregroundColor =
+        item.isSelected ? colors.onPrimary : colors.onSurface;
+    final iconColor = item.isSelected
+        ? colors.onPrimary
+        : colors.onSurface.opaque(0.75, iReallyMeanIt: true);
+    final countBgColor = item.isSelected
+        ? colors.onPrimary.opaque(0.2, iReallyMeanIt: true)
+        : colors.surfaceContainerHighest.opaque(0.6, iReallyMeanIt: true);
+    final countTextColor = item.isSelected
+        ? colors.onPrimary
+        : colors.onSurface.opaque(0.75, iReallyMeanIt: true);
 
-  const _DefaultPillContent({required this.item, required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -226,8 +221,7 @@ class _DefaultPillContent extends StatelessWidget {
           Icon(
             item.icon,
             size: 14,
-            color:
-                item.isSelected ? colors.primary : colors.onSurface.opaque(0.7),
+            color: iconColor,
           ),
           const SizedBox(width: 4),
         ] else if (item.iconUrl != null && item.iconUrl!.isNotEmpty) ...[
@@ -241,27 +235,24 @@ class _DefaultPillContent extends StatelessWidget {
           ),
           const SizedBox(width: 6),
         ],
-        AnymeXText.semiBold(item.label,
+        AnymeXText.semiBold(
+          item.label,
           size: 12,
-          color: item.isSelected ? colors.primary : colors.onSurface,
+          color: foregroundColor,
         ),
         if (item.countText != null || item.count != null) ...[
           const SizedBox(width: 6),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: item.isSelected
-                  ? colors.primary.opaque(0.2, iReallyMeanIt: true)
-                  : colors.surfaceContainerHighest.opaque(0.6, iReallyMeanIt: true),
+              color: countBgColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: AnymeXText(
               item.countText ?? item.count.toString(),
               size: 10,
               variant: TextVariant.bold,
-              color: item.isSelected
-                  ? colors.primary
-                  : colors.onSurface.opaque(0.7),
+              color: countTextColor,
             ),
           ),
         ],

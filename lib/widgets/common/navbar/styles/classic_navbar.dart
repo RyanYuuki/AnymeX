@@ -153,7 +153,8 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
         decoration: BoxDecoration(
           borderRadius: borderRadius,
           border: Border.all(
-            color: theme.colorScheme.onSurface.opaque(0.12, iReallyMeanIt: true),
+            color:
+                theme.colorScheme.onSurface.opaque(0.12, iReallyMeanIt: true),
             width: 0.8,
           ),
           boxShadow: [
@@ -176,7 +177,8 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
               child: Container(
                 decoration: BoxDecoration(
                   color: isTranslucent
-                      ? theme.colorScheme.surfaceContainer.withValues(alpha: 0.3)
+                      ? theme.colorScheme.surfaceContainer
+                          .withValues(alpha: 0.3)
                       : theme.colorScheme.surfaceContainer
                           .withValues(alpha: 0.95),
                   borderRadius: borderRadius,
@@ -237,7 +239,7 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           child: SizedBox(
             height: 58,
             child: LayoutBuilder(

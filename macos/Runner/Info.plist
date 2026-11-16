@@ -26,6 +26,8 @@
     <string>$(PRODUCT_COPYRIGHT)</string>
     <key>NSMainNibFile</key>
     <string>MainMenu</string>
+    <key>FLTEnableImpeller</key>
+    <false/>
     
     <key>CFBundleURLTypes</key>
     <array>

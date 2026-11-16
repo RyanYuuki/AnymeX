@@ -92,7 +92,7 @@ class AnymeXTextSpans extends StatelessWidget {
                   span.variant,
                   context,
                   color: span.color,
-                  size: fontSize,
+                  size: span.size ?? fontSize,
                 ),
               );
             }).toList(),

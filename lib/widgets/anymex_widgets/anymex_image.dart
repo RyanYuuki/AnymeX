@@ -230,10 +230,19 @@ class _AnymeXImageState extends State<AnymeXImage> {
       }
     }
 
-    return ClipRRect(
+    final clipped = ClipRRect(
       borderRadius: widget.borderRadius ?? BorderRadius.circular(widget.radius),
       child: imageContent,
     );
+
+    if (widget.width == null && widget.height == null && widget.isAnime != null) {
+      return AspectRatio(
+        aspectRatio: widget.isAnime! ? (2 / 3) : (16 / 9),
+        child: clipped,
+      );
+    }
+
+    return clipped;
   }
 
     Widget _networkImage(String imageUrl) {
