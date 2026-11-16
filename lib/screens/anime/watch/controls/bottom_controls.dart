@@ -1,15 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/player_control_buttons.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
-import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:get/get.dart';
 
 class BottomControls extends StatelessWidget {
@@ -231,9 +228,7 @@ class BottomControls extends StatelessWidget {
     final theme = context.theme;
     final isDark = theme.brightness == Brightness.dark;
 
-    final String jsonString =
-        PlayerUiKeys.bottomControlsSettings.get<String>('{}');
-    final Map<String, dynamic> decodedConfig = json.decode(jsonString);
+    final Map<String, dynamic> decodedConfig = readPlayerControlConfig();
 
     final List<String> leftButtonIds =
         List<String>.from(decodedConfig['leftButtonIds'] ?? []);
@@ -244,153 +239,8 @@ class BottomControls extends StatelessWidget {
     bool isVisible(String id) =>
         (buttonConfigs[id]?['visible'] as bool?) ?? true;
 
-    final Map<String, Widget> buttonWidgets = {
-      'playlist': ControlButton(
-        icon: Icons.playlist_play_rounded,
-        onPressed: () {
-          controller.isEpisodePaneOpened.value =
-              !controller.isEpisodePaneOpened.value;
-        },
-        tooltip: 'Playlist',
-        compact: true,
-      ),
-      'torrent': ControlButton(
-        icon: Icons.folder_zip_rounded,
-        onPressed: () {
-          controller.isTorrentFilesPaneOpened.value =
-              !controller.isTorrentFilesPaneOpened.value;
-        },
-        tooltip: 'Torrent Files',
-        compact: true,
-      ),
-      'shaders': ControlButton(
-        icon: Icons.tune_rounded,
-        onPressed: () => controller.openColorProfileBottomSheet(context),
-        tooltip: 'Shaders & Color Profiles',
-        compact: true,
-      ),
-      'source': ControlButton(
-        icon: Icons.high_quality_rounded,
-        onPressed: () {
-          controller.isSourcePaneOpened.value =
-              !controller.isSourcePaneOpened.value;
-        },
-        tooltip: 'Quality',
-        compact: true,
-      ),
-      'tracks': ControlButton(
-        icon: Icons.subtitles_rounded,
-        onPressed: () {
-          controller.isTracksPaneOpened.value =
-              !controller.isTracksPaneOpened.value;
-        },
-        tooltip: 'Subtitles',
-        compact: true,
-      ),
-      'audio': ControlButton(
-        icon: Icons.volume_up_rounded,
-        onPressed: () {
-          controller.isAudioPaneOpened.value =
-              !controller.isAudioPaneOpened.value;
-        },
-        tooltip: 'Audio',
-        compact: true,
-      ),
-      'sync_subs': ControlButton(
-        icon: Icons.sync_rounded,
-        onPressed: () {
-          controller.isSyncSubsPaneOpened.value =
-              !controller.isSyncSubsPaneOpened.value;
-        },
-        tooltip: 'Sync Subtitles',
-        compact: true,
-      ),
-      'speed': ControlButton(
-        icon: Icons.speed_rounded,
-        onPressed: () {
-          controller.isSpeedPaneOpened.value =
-              !controller.isSpeedPaneOpened.value;
-        },
-        tooltip: 'Speed',
-        compact: true,
-      ),
-      'orientation': Obx(() {
-        final isLocked = controller.isOrientationLocked.value;
-        return ControlButton(
-          icon: isLocked
-              ? Icons.screen_lock_rotation_rounded
-              : Icons.screen_rotation_rounded,
-          onPressed: () => controller.toggleOrientation(),
-          tooltip: isLocked ? 'Unlock Orientation' : 'Lock Orientation',
-          compact: true,
-        );
-      }),
-      'aspect_ratio': ControlButton(
-        icon: Icons.fit_screen,
-        onPressed: () => controller.toggleVideoFit(),
-        onLongPress: controller.resetVideoFit,
-        tooltip: 'Aspect Ratio',
-        compact: true,
-      ),
-      'external_player': ControlButton(
-        icon: Icons.launch_rounded,
-        onPressed: () => controller.launchExternalPlayer(),
-        tooltip: 'External Player',
-        compact: true,
-      ),
-      'watch_together': Obx(() {
-        final watchium = Get.find<WatchiumService>();
-        final inRoom = watchium.inRoom.value;
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            ControlButton(
-              icon: inRoom
-                  ? Icons.people_rounded
-                  : Icons.people_outline_rounded,
-              onPressed: () {
-                if (inRoom) {
-                  watchium.isPartyPaneOpened.value =
-                      !watchium.isPartyPaneOpened.value;
-                } else {
-                  controller.isWatchTogetherPaneOpened.value =
-                      !controller.isWatchTogetherPaneOpened.value;
-                }
-              },
-              tooltip: inRoom
-                  ? 'Watch Together (In Room)'
-                  : 'Watch Together',
-              compact: true,
-            ),
-            if (inRoom)
-              Positioned(
-                right: 1,
-                top: 1,
-                child: IgnorePointer(
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        );
-      }),
-      'cast': ControlButton(
-        icon: Icons.cast_rounded,
-        onPressed: () => CastDeviceDialog.show(context, controller),
-        tooltip: 'Cast to Device',
-        compact: true,
-      ),
-    };
+    final Map<String, Widget> buttonWidgets =
+        buildPlayerControlButtonMap(context, controller);
 
     List<Widget> buildButtonList(List<String> ids) {
       final regularButtons = <Widget>[];
@@ -398,13 +248,7 @@ class BottomControls extends StatelessWidget {
 
       for (var id in ids) {
         if (!isVisible(id)) continue;
-        if (id == 'orientation' && !(Platform.isAndroid || Platform.isIOS)) {
-          continue;
-        }
-        if (id == 'watch_together' && controller.isOffline.value) {
-          continue;
-        }
-        if (id == 'torrent' && !controller.isTorrentStream.value) {
+        if (!shouldDisplayPlayerControl(id, controller)) {
           continue;
         }
 
@@ -505,6 +349,7 @@ class BottomControls extends StatelessWidget {
                           color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       )),
                 ),
@@ -529,6 +374,7 @@ class BottomControls extends StatelessWidget {
                           color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       )),
                 ),
@@ -596,6 +442,7 @@ class BottomControls extends StatelessWidget {
                             color: theme.colorScheme.onSurface,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.5,
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         )),
                   ),
@@ -629,6 +476,7 @@ class BottomControls extends StatelessWidget {
                             color: theme.colorScheme.onSurface,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.5,
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         )),
                   ),

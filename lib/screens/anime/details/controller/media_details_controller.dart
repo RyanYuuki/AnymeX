@@ -480,6 +480,8 @@ class MediaDetailsController extends GetxController {
       final prevAlt = media.value.altMediaContent;
       final prevStaff = media.value.staff;
       final prevFriends = media.value.friendsWatching;
+      final prevRelations = media.value.relations;
+      final prevRecs = media.value.recommendations;
       media.value = fullMedia;
       if (prevAlt != null && media.value.altMediaContent == null) {
         media.value.altMediaContent = prevAlt;
@@ -489,6 +491,13 @@ class MediaDetailsController extends GetxController {
       }
       if (prevFriends != null && media.value.friendsWatching == null) {
         media.value.friendsWatching = prevFriends;
+      }
+      if (prevRelations != null &&
+          (media.value.relations == null || media.value.relations!.isEmpty)) {
+        media.value.relations = prevRelations;
+      }
+      if (prevRecs.isNotEmpty && media.value.recommendations.isEmpty) {
+        media.value.recommendations = prevRecs;
       }
       if (fullMedia.nextAiringEpisode != null) {
         startCountdown(fullMedia.nextAiringEpisode!.airingAt);

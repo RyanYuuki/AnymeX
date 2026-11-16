@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:anymex/database/database.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
 import 'package:anymex/screens/extensions/ExtensionList.dart';
@@ -482,28 +483,22 @@ class _ExtensionScreenState extends State<ExtensionScreen>
           .toList();
 
       return Container(
-        height: 38,
-        margin: const EdgeInsets.only(top: 8, bottom: 8),
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: filteredSourceTypes.length,
-          itemBuilder: (context, index) {
-            final type = filteredSourceTypes[index];
-            final needsPlugin =
-                _typeRequiresPlugin(type) && !_isPluginInstalled;
-            final isSelected = !needsPlugin && selectedType == type;
-            final label = type == 'all' ? 'All' : type;
-            final iconUrl = _getManagerIcon(type);
+          height: 38,
+          margin: const EdgeInsets.only(top: 8, bottom: 8),
+          padding: const EdgeInsets.only(left: 16),
+          child: AnymeXPills(
+            items: filteredSourceTypes.map((e) {
+              final type = e;
+              final needsPlugin =
+                  _typeRequiresPlugin(type) && !_isPluginInstalled;
+              final isSelected = !needsPlugin && selectedType == type;
+              final label = type == 'all' ? 'All' : type;
+              final iconUrl = _getManagerIcon(type);
 
-            return Opacity(
-              opacity: needsPlugin ? 0.5 : 1.0,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: _buildSourceChip(
-                  label: label,
+              return PillItem(
                   iconUrl: iconUrl,
+                  icon: type == 'all' ? HugeIcons.strokeRoundedPlug01 : null,
+                  label: label,
                   isSelected: isSelected,
                   onTap: needsPlugin
                       ? () {
@@ -511,79 +506,10 @@ class _ExtensionScreenState extends State<ExtensionScreen>
                         }
                       : () {
                           _selectedSourceType.value = type;
-                        },
-                ),
-              ),
-            );
-          },
-        ),
-      );
+                        });
+            }).toList(),
+          ));
     });
-  }
-
-  Widget _buildSourceChip({
-    required String label,
-    String? iconUrl,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? theme.colorScheme.primary.opaque(0.15, iReallyMeanIt: true)
-              : theme.colorScheme.surfaceContainerHighest
-                  .opaque(0.3, iReallyMeanIt: true),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected
-                ? theme.colorScheme.primary.opaque(0.4, iReallyMeanIt: true)
-                : theme.colorScheme.onSurface.opaque(0.08, iReallyMeanIt: true),
-            width: isSelected ? 1.2 : 0.5,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (iconUrl != null && iconUrl.isNotEmpty) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: AnymeXImage(
-                  width: 16,
-                  height: 16,
-                  imageUrl: iconUrl,
-                ),
-              ),
-              const SizedBox(width: 6),
-            ] else ...[
-              Icon(
-                Icons.all_inclusive_rounded,
-                size: 14,
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 6),
-            ],
-            AnymeXText(
-              label,
-              style: TextStyle(
-                fontFamily: 'Linotte',
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurface,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _buildView() {

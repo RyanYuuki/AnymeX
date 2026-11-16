@@ -1366,6 +1366,24 @@ averageScore
         final mediaJson = data['data']['Media'];
         final page = data['data']['Page'];
         media.mergeSecondaryData(mediaJson, pageJson: page);
+        final cached = await AnilistCache.instance.get('media_details_$id');
+        if (cached is Map<String, dynamic>) {
+          if (mediaJson['relations'] != null) {
+            cached['relations'] = mediaJson['relations'];
+          }
+          if (mediaJson['recommendations'] != null) {
+            cached['recommendations'] = mediaJson['recommendations'];
+          }
+          if (mediaJson['staffPreview'] != null) {
+            cached['staffPreview'] = mediaJson['staffPreview'];
+          }
+          AnilistCache.instance.put(
+            'media_details_$id',
+            cached,
+            ttl: const Duration(hours: 12),
+            persist: true,
+          );
+        }
         Logger.i('Secondary Data Loaded for id: $id');
       } else {
         AnilistErrorHandler.handleResponse(response);

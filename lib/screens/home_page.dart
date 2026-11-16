@@ -236,9 +236,11 @@ class _HomePageState extends State<HomePage> {
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
-            CustomScrollView(
+            PrimaryScrollController(
               controller: _scrollController,
-              cacheExtent: 200.0,
+              child: CustomScrollView(
+                controller: _scrollController,
+                cacheExtent: 200.0,
               slivers: [
                 SliverToBoxAdapter(
                   child: SizedBox(
@@ -327,6 +329,7 @@ class _HomePageState extends State<HomePage> {
                   child: SizedBox(height: bottomNavBarHeight + 150),
                 ),
               ],
+            ),
             ),
             if (!isDesktop)
               CustomAnimatedAppBar(

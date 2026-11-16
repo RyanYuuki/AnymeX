@@ -26,6 +26,8 @@ import 'package:anymex/controllers/sync/gist_sync_controller.dart';
 import 'package:anymex/controllers/theme.dart';
 import 'package:anymex/controllers/ui/greeting.dart';
 import 'package:anymex/database/database.dart';
+import 'package:anymex/database/kv_helper.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:anymex/firebase_options.dart';
 import 'package:anymex/screens/anime/home_page.dart';
 import 'package:anymex/screens/anime/widgets/comments/controller/comment_preloader.dart';
@@ -75,7 +77,6 @@ import 'package:iconsax/iconsax.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 late Isar isar;
@@ -173,7 +174,7 @@ void main(List<String> args) async {
     await safeCall(() => Rhttp.init(),
         errorMessage: 'Failed to initialize Rhttp');
 
-    await safeCall(() => dotenv.load(fileName: ".env"),
+    await safeCall(() => dotenv.load(fileName: 'app.env'),
         errorMessage: 'Failed to load .env file');
 
     if (!Platform.isLinux) {
@@ -238,12 +239,38 @@ void main(List<String> args) async {
       Logger.e("STACK: ${details.stack}");
     };
 
-    runApp(
-      ChangeNotifierProvider(
-        create: (context) => ThemeProvider(),
-        child: const MainApp(),
-      ),
-    );
+    ErrorWidget.builder = (FlutterErrorDetails details) {
+      return Material(
+        color: Colors.transparent,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline_rounded,
+                    size: 36, color: Colors.redAccent),
+                const SizedBox(height: 12),
+                const Text(
+                  'Something went wrong',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () {
+                    Clipboard.setData(
+                        ClipboardData(text: details.exceptionAsString()));
+                  },
+                  child: const Text('Copy error details'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    };
+
+    runApp(const MainApp());
   }, (error, stackTrace) async {
     Logger.e("CRASH: $error");
     Logger.e("STACK: $stackTrace");
@@ -260,6 +287,7 @@ void main(List<String> args) async {
 
 void _initializeGetxController() async {
   await safeCall(() {
+    Get.put(ThemeController(), permanent: true);
     Get.put(Settings());
     Get.put(OfflineStorageController());
     Get.put(AnilistAuth());
@@ -346,7 +374,17 @@ class _MainAppState extends State<MainApp> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        precacheImage(const AssetImage('assets/images/bg_glass.webp'), context);
+        const assetImages = [
+          'assets/images/bg_glass.webp',
+          'assets/images/logo.png',
+          'assets/images/logo_transparent.webp',
+          'assets/images/anilist-icon.png',
+          'assets/images/mal-icon.png',
+          'assets/images/simkl-icon.png',
+        ];
+        for (final path in assetImages) {
+          precacheImage(AssetImage(path), context);
+        }
         final customBg = Get.find<Settings>().liquidBackgroundPath;
         if (customBg.isNotEmpty) {
           precacheImage(FileImage(File(customBg)), context);
@@ -379,54 +417,67 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Provider.of<ThemeProvider>(context);
-
-    return Focus(
-      focusNode: focusNode,
-      onKeyEvent: _handleKeyEvent,
-      child: GetMaterialApp(
-        scrollBehavior: MyCustomScrollBehavior(),
-        debugShowCheckedModeBanner: false,
-        title: "AnymeX",
-        theme: theme.lightTheme,
-        darkTheme: theme.darkTheme,
-        themeMode: theme.isSystemMode
-            ? ThemeMode.system
-            : theme.isLightMode
-                ? ThemeMode.light
-                : ThemeMode.dark,
-        home: _showMainApp ? const FilterScreen() : const AnymeXSplashScreen(),
-        builder: (context, child) {
-          if (PlatformDispatcher.instance.views.length > 1) {
-            return child!;
-          }
-          final isDesktop = Platform.isWindows;
-
-          if (isDesktop) {
-            return Stack(
-              children: [
-                RepaintBoundary(child: child!),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: AnymeXTitleBar.titleBar(),
-                ),
-                // const FpsMeter(),
-              ],
+    return GetBuilder<ThemeController>(
+      builder: (themeCtrl) => Focus(
+        focusNode: focusNode,
+        onKeyEvent: _handleKeyEvent,
+        child: GetMaterialApp(
+          scrollBehavior: MyCustomScrollBehavior(),
+          debugShowCheckedModeBanner: false,
+          title: "AnymeX",
+          theme: themeCtrl.lightTheme,
+          darkTheme: themeCtrl.darkTheme,
+          themeMode: themeCtrl.themeMode,
+          home:
+              _showMainApp ? const FilterScreen() : const AnymeXSplashScreen(),
+          builder: (context, child) {
+            if (child == null) return const SizedBox.shrink();
+            final mediaQuery = MediaQuery.of(context);
+            final userScale = themeCtrl.fontScale;
+            final clampedMediaQuery = mediaQuery.copyWith(
+              textScaler: TextScaler.linear(
+                (mediaQuery.textScaler.scale(1.0) * userScale)
+                    .clamp(0.70, 1.80),
+              ),
             );
-          }
-          return Stack(
-            children: [
-              child!,
-              // const FpsMeter(),
-            ],
-          );
-        },
-        enableLog: true,
-        logWriterCallback: (text, {isError = false}) async {
-          Logger.d(text);
-        },
+            if (PlatformDispatcher.instance.views.length > 1) {
+              return MediaQuery(
+                data: clampedMediaQuery,
+                child: child,
+              );
+            }
+            final isDesktop = Platform.isWindows;
+
+            if (isDesktop) {
+              return MediaQuery(
+                data: clampedMediaQuery,
+                child: Stack(
+                  children: [
+                    RepaintBoundary(child: child),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: AnymeXTitleBar.titleBar(),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return MediaQuery(
+              data: clampedMediaQuery,
+              child: Stack(
+                children: [
+                  child,
+                ],
+              ),
+            );
+          },
+          enableLog: true,
+          logWriterCallback: (text, {isError = false}) async {
+            Logger.d(text);
+          },
+        ),
       ),
     );
   }
@@ -453,7 +504,21 @@ class _FilterScreenState extends State<FilterScreen> {
       final settings = Get.find<Settings>();
       settings.checkForUpdates(context);
       settings.showWelcomeDialog(context);
+      _checkVersionChangelog(context);
     });
+  }
+
+  void _checkVersionChangelog(BuildContext context) async {
+    final info = await PackageInfo.fromPlatform();
+    final current = '${info.version}+${info.buildNumber}';
+    final lastSeen =
+        KvHelper.get<String>('last_seen_app_version', defaultVal: '');
+    if (lastSeen.isNotEmpty && lastSeen != current) {
+      if (context.mounted) {
+        snackBar('Updated to v$current', title: "What's New");
+      }
+    }
+    KvHelper.set('last_seen_app_version', current);
   }
 
   void _onItemTapped(int index) {
@@ -463,6 +528,15 @@ class _FilterScreenState extends State<FilterScreen> {
   }
 
   void _onMobileItemTapped(int index) {
+    if (_mobileSelectedIndex == index) {
+      PrimaryScrollController.maybeOf(context)?.animateTo(
+        0,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
+      );
+      return;
+    }
+    HapticFeedback.lightImpact();
     setState(() {
       _mobileSelectedIndex = index;
     });
@@ -659,7 +733,7 @@ class _FilterScreenState extends State<FilterScreen> {
     final settings = Get.find<Settings>();
     return Scaffold(
       extendBody: true,
-      backgroundColor: Provider.of<ThemeProvider>(context).isOled
+      backgroundColor: Get.find<ThemeController>().isOled
           ? Colors.black
           : Colors.transparent,
       body: Row(

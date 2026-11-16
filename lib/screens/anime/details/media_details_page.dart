@@ -18,7 +18,6 @@ import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.
 import 'package:anymex/widgets/common/policy_sheet.dart';
 import 'package:anymex/screens/anime/widgets/episode_section.dart';
 import 'package:anymex/screens/manga/widgets/chapter_section.dart';
-import 'package:anymex/screens/anime/widgets/voice_actor.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/ui_extensions/sizing.dart';
@@ -43,11 +42,13 @@ import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/helper/platform_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
 import 'package:anymex/widgets/animation/widget_animations.dart';
+import 'package:anymex/widgets/common/sliver_slide_fade_transition.dart';
 
 class MediaDetailsPage extends StatefulWidget {
   final Media media;
@@ -69,10 +70,17 @@ class MediaDetailsPage extends StatefulWidget {
   State<MediaDetailsPage> createState() => _MediaDetailsPageState();
 }
 
-class _MediaDetailsPageState extends State<MediaDetailsPage> {
+class _MediaDetailsPageState extends State<MediaDetailsPage>
+    with TickerProviderStateMixin {
   late final MediaDetailsController controller;
   late final RxString _posterColor;
   bool _isRouteAnimating = true;
+  late final AnimationController _tabTransitionController;
+  late final Tween<Offset> _slideOffsetTween;
+  late final Animation<Offset> _tabPositionAnimation;
+  late final Animation<double> _tabOpacityAnimation;
+  double _dragDistanceX = 0.0;
+  int _lastTrackpadScrollTime = 0;
 
   static final Map<String, ColorScheme> _posterSchemeCache = {};
   static ColorScheme? _getPosterScheme(Color? seed, Brightness brightness) {
@@ -149,6 +157,22 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
   @override
   void initState() {
     super.initState();
+    _tabTransitionController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    )..value = 1.0;
+
+    final curve = CurvedAnimation(
+      parent: _tabTransitionController,
+      curve: Curves.easeOutCubic,
+    );
+    _tabOpacityAnimation = curve;
+    _slideOffsetTween = Tween<Offset>(
+      begin: Offset.zero,
+      end: Offset.zero,
+    );
+    _tabPositionAnimation = _slideOffsetTween.animate(curve);
+
     final usePoster = settingsController.usePosterForBlur;
     _posterColor = (usePoster && widget.media.color.isNotEmpty
             ? widget.media.color
@@ -200,6 +224,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
 
   @override
   void dispose() {
+    _tabTransitionController.dispose();
     _mediaColorWorker?.dispose();
     Get.delete<MediaDetailsController>(tag: widget.tag);
     final isPreloaded = CommentPreloader.to.isPreloaded(widget.media.uniqueId);
@@ -218,7 +243,24 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
 
   void _onTabSelected(int index) {
     if (controller.selectedPage.value == index) return;
+    final direction = index > controller.selectedPage.value ? 1.0 : -1.0;
+    _slideOffsetTween.begin = Offset(0.06 * direction, 0.0);
     controller.selectedPage.value = index;
+    _tabTransitionController.forward(from: 0.0);
+  }
+
+  void _nextTab() {
+    final current = controller.selectedPage.value;
+    if (current < 2) {
+      _onTabSelected(current + 1);
+    }
+  }
+
+  void _previousTab() {
+    final current = controller.selectedPage.value;
+    if (current > 0) {
+      _onTabSelected(current - 1);
+    }
   }
 
   @override
@@ -232,22 +274,33 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
       final activeColor = _posterColor.value.isNotEmpty
           ? _posterColor.value
           : (settingsController.usePosterForBlur ? currentMedia.color : '');
+      final isDetailsOled = settingsController.detailsOledMode;
       final posterSeed =
           (activeColor.isNotEmpty && settingsController.usePosterColor)
               ? AnymeXScaffold.parseColor(activeColor)
               : null;
-      final posterScheme = posterSeed != null
+      final basePosterScheme = posterSeed != null
           ? _getPosterScheme(posterSeed, Theme.of(context).brightness)
           : null;
+      final posterScheme = (basePosterScheme != null && isDetailsOled)
+          ? basePosterScheme.copyWith(
+              surface: Colors.black,
+              surfaceDim: Colors.black,
+              surfaceBright: Colors.black,
+              surfaceContainerLowest: Colors.black,
+            )
+          : basePosterScheme;
 
       Widget buildScaffold(BuildContext themedContext) {
         return AnymeXScaffold(
           extendBehindTitleBar: true,
-          color: _posterColor.value,
+          color: isDetailsOled ? '' : _posterColor.value,
+          isOled: isDetailsOled,
           extendBody: true,
           resizeToAvoidBottomInset: false,
           bottomNavigationBar: buildBottomNavBar(themedContext),
           body: Obx(() {
+            final isDetailsOled = settingsController.detailsOledMode;
             final blurScope = settingsController.detailsBlurScope;
             final isMesh = settingsController.detailsBlurStyle == 1;
             final isBaked = isMesh || settingsController.useComputedBlur;
@@ -281,62 +334,102 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                   .copyWith(scrollbars: false),
               child: Align(
                 alignment: Alignment.topCenter,
-                child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics(),
-                  ),
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Obx(() => MediaHeader(
-                            tag: widget.tag,
-                            data: controller.media.value,
-                            posterUrl: controller.media.value.poster,
-                            userStatus: controller.mediaStatus.value,
-                            userProgress: '${controller.mediaProgress.value}',
-                            extendBehindTitleBar: Platform.isWindows,
-                            onShare: () => MediaShare.showOptions(
-                              context: themedContext,
-                              baseMedia: controller.media.value,
-                              hydratedMedia: controller.media.value,
-                              isManga: controller.isManga || controller.isNovel,
-                            ),
-                          )),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Center(
-                        child: Column(
-                          children: [
-                            buildMediaQuickActions(themedContext, controller)
-                                .animateSpring(
-                                    delay: const Duration(milliseconds: 100)),
-                            const SizedBox(height: 12),
-                          ],
-                        ),
+                child: Listener(
+                  onPointerSignal: (signal) {
+                    if (signal is PointerScrollEvent) {
+                      final dx = signal.scrollDelta.dx;
+                      final dy = signal.scrollDelta.dy;
+                      if (dx.abs() > 30 && dx.abs() > dy.abs()) {
+                        final now = DateTime.now().millisecondsSinceEpoch;
+                        if (now - _lastTrackpadScrollTime > 350) {
+                          _lastTrackpadScrollTime = now;
+                          if (dx > 30) {
+                            _nextTab();
+                          } else if (dx < -30) {
+                            _previousTab();
+                          }
+                        }
+                      }
+                    }
+                  },
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onHorizontalDragStart: (_) {
+                      _dragDistanceX = 0.0;
+                    },
+                    onHorizontalDragUpdate: (details) {
+                      _dragDistanceX += details.primaryDelta ?? 0.0;
+                    },
+                    onHorizontalDragEnd: (details) {
+                      final velocity = details.primaryVelocity ?? 0.0;
+                      if (velocity < -200 || _dragDistanceX < -50) {
+                        _nextTab();
+                      } else if (velocity > 200 || _dragDistanceX > 50) {
+                        _previousTab();
+                      }
+                      _dragDistanceX = 0.0;
+                    },
+                    onHorizontalDragCancel: () {
+                      _dragDistanceX = 0.0;
+                    },
+                    child: CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(
+                        parent: BouncingScrollPhysics(),
                       ),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: Obx(() => MediaHeader(
+                                tag: widget.tag,
+                                data: controller.media.value,
+                                posterUrl: controller.media.value.poster,
+                                userStatus: controller.mediaStatus.value,
+                                userProgress:
+                                    '${controller.mediaProgress.value}',
+                                extendBehindTitleBar: Platform.isWindows,
+                                quickActions: buildMediaQuickActions(
+                                  themedContext,
+                                  controller,
+                                  padding: EdgeInsets.zero,
+                                  height: 40,
+                                ),
+                                onShare: () => MediaShare.showOptions(
+                                  context: themedContext,
+                                  baseMedia: controller.media.value,
+                                  hydratedMedia: controller.media.value,
+                                  isManga:
+                                      controller.isManga || controller.isNovel,
+                                ),
+                              )),
+                        ),
+                        Obx(() {
+                          final selected = controller.selectedPage.value;
+                          return SliverSlideFadeTransition(
+                            opacity: _tabOpacityAnimation,
+                            position: _tabPositionAnimation,
+                            sliver: SliverMainAxisGroup(
+                              slivers: [
+                                SliverVisibility(
+                                  visible: selected == 0,
+                                  maintainState: true,
+                                  sliver: _buildOverviewTab(themedContext),
+                                ),
+                                SliverVisibility(
+                                  visible: selected == 1,
+                                  maintainState: true,
+                                  sliver: _buildContentTab(themedContext),
+                                ),
+                                SliverVisibility(
+                                  visible: selected == 2,
+                                  maintainState: true,
+                                  sliver: _buildCommentsTab(themedContext),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ],
                     ),
-                    Obx(() {
-                      final selected = controller.selectedPage.value;
-                      return SliverMainAxisGroup(
-                        slivers: [
-                          SliverVisibility(
-                            visible: selected == 0,
-                            maintainState: true,
-                            sliver: _buildOverviewTab(themedContext),
-                          ),
-                          SliverVisibility(
-                            visible: selected == 1,
-                            maintainState: true,
-                            sliver: _buildContentTab(themedContext),
-                          ),
-                          SliverVisibility(
-                            visible: selected == 2,
-                            maintainState: true,
-                            sliver: _buildCommentsTab(themedContext),
-                          ),
-                        ],
-                      );
-                    }),
-                  ],
+                  ),
                 ),
               ),
             );
@@ -386,7 +479,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     );
             }
 
-            if (blurScope == 0) {
+            if (isDetailsOled || blurScope == 0) {
               return scrollView;
             }
 
@@ -569,8 +662,10 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
             const SizedBox(height: 12),
             SizedBox(
               height: 180,
+              width: double.infinity,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
                 itemCount: 5,
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 itemBuilder: (context, index) {
@@ -692,8 +787,11 @@ class _MediaDetailsPageState extends State<MediaDetailsPage> {
                     }
                     return KeyedSubtree(
                       key: const ValueKey('media_staff'),
-                      child: StaffCarousel(staff: mediaData.staff!)
-                          .bottomSpacing(16),
+                      child: ReusableCarousel(
+                        data: mediaData.staff!,
+                        title: 'Staff',
+                        variant: DataVariant.staff,
+                      ).bottomSpacing(16),
                     );
                   }),
                   Obx(() {

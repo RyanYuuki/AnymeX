@@ -33,7 +33,9 @@ class UISettings {
   double grainIntensity;
   bool enableImmersiveMode;
   int navBarStyle;
+  int tileStyle;
   String appFontFamily;
+  double appFontScale;
   double bottomNavBarMargin;
   bool useLegacyNavbar;
   bool useComputedBlur;
@@ -42,6 +44,7 @@ class UISettings {
   bool usePosterForBlur;
   int detailsBlurStyle;
   int detailsBlurScope;
+  bool detailsOledMode;
 
   UISettings({
     this.glowMultiplier = 1.0,
@@ -74,7 +77,9 @@ class UISettings {
     this.grainIntensity = 0.05,
     this.enableImmersiveMode = false,
     this.navBarStyle = 1,
+    this.tileStyle = 1,
     this.appFontFamily = '',
+    this.appFontScale = 1.0,
     this.bottomNavBarMargin = 32.0,
     this.useLegacyNavbar = true,
     this.useComputedBlur = true,
@@ -83,6 +88,7 @@ class UISettings {
     this.usePosterForBlur = true,
     this.detailsBlurStyle = 0,
     this.detailsBlurScope = 1,
+    this.detailsOledMode = false,
   })  : homePageCards = homePageCards ??
             {
               "Continue Watching": true,
@@ -217,8 +223,11 @@ class UISettings {
       enableImmersiveMode: UISettingsKeys.enableImmersiveMode
           .get<bool>(uiDefaults.enableImmersiveMode),
       navBarStyle: UISettingsKeys.navBarStyle.get<int>(uiDefaults.navBarStyle),
+      tileStyle: UISettingsKeys.tileStyle.get<int>(uiDefaults.tileStyle),
       appFontFamily:
           UISettingsKeys.appFontFamily.get<String>(uiDefaults.appFontFamily),
+      appFontScale:
+          UISettingsKeys.appFontScale.get<double>(uiDefaults.appFontScale),
       bottomNavBarMargin: UISettingsKeys.bottomNavBarMargin
           .get<double>(uiDefaults.bottomNavBarMargin),
       useLegacyNavbar:
@@ -234,6 +243,8 @@ class UISettings {
           UISettingsKeys.detailsBlurStyle.get<int>(uiDefaults.detailsBlurStyle),
       detailsBlurScope:
           UISettingsKeys.detailsBlurScope.get<int>(uiDefaults.detailsBlurScope),
+      detailsOledMode: UISettingsKeys.detailsOledMode
+          .get<bool>(uiDefaults.detailsOledMode),
     );
   }
 }

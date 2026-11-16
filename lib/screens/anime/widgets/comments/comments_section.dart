@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:anymex/database/comments/model/commentum_role.dart';
 import 'package:anymex/database/comments/model/comment.dart';
 import 'package:anymex/database/data_keys/keys.dart';
@@ -2095,6 +2096,7 @@ class _CommentSectionState extends State<CommentSection>
       CommentSectionController controller,
       bool isOwnComment,
       bool canModerate) {
+    FocusManager.instance.primaryFocus?.unfocus();
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -3740,7 +3742,7 @@ class _CommentSectionState extends State<CommentSection>
       } else if (diff.inDays < 30) {
         return '${diff.inDays}d ago';
       } else {
-        return '${dt.day}/${dt.month}/${dt.year}';
+        return DateFormat.yMMMd().format(dt);
       }
     } catch (_) {
       return isoString.length > 10 ? isoString.substring(0, 10) : isoString;

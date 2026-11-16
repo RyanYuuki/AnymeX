@@ -625,6 +625,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       title: 'Rename List',
       contentWidget: TextField(
         controller: controller,
+        autofocus: true,
         style: TextStyle(color: theme.colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: 'Enter list name',
@@ -688,6 +689,7 @@ class _CustomListsEditorState extends State<CustomListsEditor> {
       title: 'Create New List',
       contentWidget: TextField(
         controller: controller,
+        autofocus: true,
         style: TextStyle(color: theme.colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: 'Enter list name',
@@ -970,6 +972,8 @@ class __ListMediaEditorBottomSheetState
                     ? _buildEmptyState()
                     : ListView.builder(
                         physics: const BouncingScrollPhysics(),
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
                         padding: const EdgeInsets.fromLTRB(0, 4, 0, 80),
                         itemCount: filteredItems.length,
                         itemBuilder: (context, index) {

@@ -495,7 +495,12 @@ class _CalendarState extends State<Calendar>
                   }
 
                   return GridView.builder(
-                    padding: EdgeInsets.fromLTRB(10, headerHeight + 10, 10, 10),
+                    padding: EdgeInsets.fromLTRB(
+                      10,
+                      headerHeight + 10,
+                      10,
+                      MediaQuery.viewPaddingOf(context).bottom + 24,
+                    ),
                     itemCount: filteredList.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: getResponsiveCrossAxisVal(

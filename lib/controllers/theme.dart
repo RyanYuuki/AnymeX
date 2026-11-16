@@ -1,11 +1,13 @@
+import 'dart:async';
 import 'package:anymex/constants/contants.dart';
 import 'package:anymex/constants/themes.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
-class ThemeProvider extends ChangeNotifier {
+class ThemeController extends GetxController {
   bool isLightMode;
   bool isSystemMode;
   bool isOled;
@@ -14,28 +16,39 @@ class ThemeProvider extends ChangeNotifier {
   late String currentThemeMode;
   Color _seedColor;
   late int selectedVariantIndex;
+  String appFontFamily;
+  double fontScale;
+
+  Timer? _debounce;
 
   List<String> availThemeModes = ["default", "material", "custom"];
 
-  ThemeProvider()
+  ThemeController()
       : _seedColor = Colors.indigo,
         isLightMode = ThemeKeys.isLightMode.get<bool>(false),
         isSystemMode = ThemeKeys.isSystemMode.get<bool>(false),
         isOled = ThemeKeys.isOled.get<bool>(false),
         selectedVariantIndex = ThemeKeys.selectedVariantIndex.get<int>(0),
-        currentThemeMode = ThemeKeys.themeMode.get<String>("default") {
+        currentThemeMode = ThemeKeys.themeMode.get<String>("default"),
+        appFontFamily = UISettingsKeys.appFontFamily.get<String>(''),
+        fontScale = UISettingsKeys.appFontScale.get<double>(1.0) {
     _determineSeedColor();
-    _updateTheme();
+    _applyTheme();
   }
 
   ThemeData get lightTheme => _lightTheme;
   ThemeData get darkTheme => _darkTheme;
 
+  ThemeMode get themeMode => isSystemMode
+      ? ThemeMode.system
+      : isLightMode
+          ? ThemeMode.light
+          : ThemeMode.dark;
+
   void _determineSeedColor() {
     if (currentThemeMode == "default") {
       _seedColor = Colors.indigo;
     } else if (currentThemeMode == "material") {
-      loadDynamicTheme();
     } else {
       int colorIndex = ThemeKeys.customColorIndex.get<int>(0);
       if (colorIndex == -1) {
@@ -47,6 +60,59 @@ class ThemeProvider extends ChangeNotifier {
     }
   }
 
+  void _applyTheme() {
+    final lightSeed = ColorScheme.fromSeed(
+      seedColor: _seedColor,
+      brightness: Brightness.light,
+      dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex],
+    );
+    final darkSeed = ColorScheme.fromSeed(
+      seedColor: _seedColor,
+      brightness: Brightness.dark,
+      dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex],
+    );
+
+    final effectiveFont = appFontFamily.isEmpty
+        ? 'Linotte'
+        : (appFontFamily == 'System' ? null : appFontFamily);
+
+    _lightTheme = lightMode.copyWith(
+      scaffoldBackgroundColor: isOled ? Colors.white : Colors.transparent,
+      canvasColor: isOled ? Colors.white : lightSeed.surface,
+      colorScheme: lightSeed,
+      textTheme: effectiveFont != null
+          ? lightMode.textTheme.apply(fontFamily: effectiveFont)
+          : lightMode.textTheme,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: lightSeed.primary,
+        selectionColor: lightSeed.primary.withValues(alpha: 0.35),
+        selectionHandleColor: lightSeed.primary,
+      ),
+    );
+
+    _darkTheme = darkMode.copyWith(
+      scaffoldBackgroundColor: isOled ? Colors.black : Colors.transparent,
+      canvasColor: isOled ? Colors.black : darkSeed.surface,
+      colorScheme: darkSeed,
+      textTheme: effectiveFont != null
+          ? darkMode.textTheme.apply(fontFamily: effectiveFont)
+          : darkMode.textTheme,
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: darkSeed.primary,
+        selectionColor: darkSeed.primary.withValues(alpha: 0.35),
+        selectionHandleColor: darkSeed.primary,
+      ),
+    );
+
+    _syncStatusBar();
+  }
+
+  void _updateThemeImmediately() {
+    _debounce?.cancel();
+    _applyTheme();
+    update();
+  }
+
   Future<void> loadDynamicTheme() async {
     currentThemeMode = "material";
     ThemeKeys.themeMode.set("material");
@@ -54,13 +120,13 @@ class ThemeProvider extends ChangeNotifier {
     _seedColor = corePalette != null
         ? Color(corePalette.primary.get(40))
         : Colors.indigo;
-    _updateTheme();
+    _updateThemeImmediately();
   }
 
   void updateSchemeVariant(int index) {
     ThemeKeys.selectedVariantIndex.set(index);
     selectedVariantIndex = index;
-    _updateTheme();
+    _updateThemeImmediately();
   }
 
   void toggleTheme() {
@@ -68,19 +134,19 @@ class ThemeProvider extends ChangeNotifier {
     isSystemMode = false;
     ThemeKeys.isSystemMode.set(isSystemMode);
     ThemeKeys.isLightMode.set(isLightMode);
-    _updateTheme();
+    _updateThemeImmediately();
   }
 
   void setSystemMode() {
     isSystemMode = true;
     ThemeKeys.isSystemMode.set(isSystemMode);
-    notifyListeners();
+    update();
   }
 
   void setLightMode() {
     isLightMode = true;
     ThemeKeys.isLightMode.set(true);
-    _updateTheme();
+    _updateThemeImmediately();
   }
 
   void setDarkMode() {
@@ -88,14 +154,14 @@ class ThemeProvider extends ChangeNotifier {
     isSystemMode = false;
     ThemeKeys.isSystemMode.set(isSystemMode);
     ThemeKeys.isLightMode.set(false);
-    _updateTheme();
+    _updateThemeImmediately();
   }
 
   void setDefaultTheme() {
     currentThemeMode = "default";
     ThemeKeys.themeMode.set("default");
     _seedColor = Colors.indigo;
-    _updateTheme();
+    _updateThemeImmediately();
   }
 
   void setCustomSeedColor(int index, {Color? customColor}) {
@@ -104,7 +170,8 @@ class ThemeProvider extends ChangeNotifier {
     ThemeKeys.customColorIndex.set(index);
     if (index == -1) {
       if (customColor != null) {
-        final hexStr = '#${customColor.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+        final hexStr =
+            '#${customColor.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
         ThemeKeys.customHexColor.set(hexStr);
         _seedColor = customColor;
       } else {
@@ -114,16 +181,16 @@ class ThemeProvider extends ChangeNotifier {
     } else {
       _seedColor = colorList[index];
     }
-    _updateTheme();
+    _updateThemeImmediately();
   }
 
   void toggleOled(bool value) {
     isOled = value;
     ThemeKeys.isOled.set(value);
-    _updateTheme();
+    _updateThemeImmediately();
   }
 
-  void syncStatusBar() {
+  void _syncStatusBar() {
     final enableImmersive = UISettingsKeys.enableImmersiveMode.get<bool>(false);
     SystemChrome.setEnabledSystemUIMode(
         enableImmersive ? SystemUiMode.immersiveSticky : SystemUiMode.edgeToEdge);
@@ -139,6 +206,18 @@ class ThemeProvider extends ChangeNotifier {
             isLightMode ? Brightness.dark : Brightness.light));
   }
 
+  void setFontFamily(String family) {
+    appFontFamily = family;
+    UISettingsKeys.appFontFamily.set(family);
+    _updateThemeImmediately();
+  }
+
+  void setFontScale(double scale) {
+    fontScale = scale;
+    UISettingsKeys.appFontScale.set(scale);
+    update();
+  }
+
   void clearCache() {
     ThemeKeys.isLightMode.delete();
     ThemeKeys.isSystemMode.delete();
@@ -146,6 +225,10 @@ class ThemeProvider extends ChangeNotifier {
     ThemeKeys.selectedVariantIndex.delete();
     ThemeKeys.themeMode.delete();
     ThemeKeys.customColorIndex.delete();
+    UISettingsKeys.appFontFamily.delete();
+    UISettingsKeys.appFontScale.delete();
+    appFontFamily = '';
+    fontScale = 1.0;
     isLightMode = false;
     isSystemMode = false;
     ThemeKeys.isSystemMode.set(isSystemMode);
@@ -153,32 +236,12 @@ class ThemeProvider extends ChangeNotifier {
     selectedVariantIndex = 0;
     currentThemeMode = "default";
     _seedColor = Colors.indigo;
-
-    _updateTheme();
-    notifyListeners();
+    _updateThemeImmediately();
   }
 
-  void _updateTheme() {
-    final lightSeed = ColorScheme.fromSeed(
-        seedColor: _seedColor,
-        brightness: Brightness.light,
-        dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex]);
-    final darkSeed = ColorScheme.fromSeed(
-        seedColor: _seedColor,
-        brightness: Brightness.dark,
-        dynamicSchemeVariant: dynamicSchemeVariantList[selectedVariantIndex]);
-
-    _lightTheme = lightMode.copyWith(
-      scaffoldBackgroundColor: isOled ? Colors.white : Colors.transparent,
-      canvasColor: isOled ? Colors.white : lightSeed.surface,
-      colorScheme: lightSeed,
-    );
-    _darkTheme = darkMode.copyWith(
-      scaffoldBackgroundColor: isOled ? Colors.black : Colors.transparent,
-      canvasColor: isOled ? Colors.black : darkSeed.surface,
-      colorScheme: darkSeed,
-    );
-    syncStatusBar();
-    notifyListeners();
+  @override
+  void onClose() {
+    _debounce?.cancel();
+    super.onClose();
   }
 }

@@ -78,47 +78,6 @@ const detailsPrimaryQuery = '''
             }
           }
         }
-        relations {
-          edges {
-            relationType
-            node {
-              id
-              title {
-          userPreferred
-                romaji
-                english
-              }
-              coverImage {
-                large
-                color
-              }
-              bannerImage
-              type
-              status
-              averageScore
-            }
-          }
-        }
-        recommendations {
-          edges {
-            node {
-              mediaRecommendation {
-                id
-                title {
-          userPreferred
-                  romaji
-                  english
-                }
-                coverImage {
-                  large
-                  color
-                }
-                type
-                averageScore
-              }
-            }
-          }
-        }
         nextAiringEpisode {
           airingAt
           timeUntilAiring
@@ -128,6 +87,8 @@ const detailsPrimaryQuery = '''
           rank
           type
           year
+          allTime
+          context
         }
       }
     }
@@ -156,6 +117,47 @@ const detailsSecondaryQuery = '''
         externalLinks {
           url
           site
+        }
+        relations {
+          edges {
+            relationType
+            node {
+              id
+              title {
+                userPreferred
+                romaji
+                english
+              }
+              coverImage {
+                large
+                color
+              }
+              bannerImage
+              type
+              status
+              averageScore
+            }
+          }
+        }
+        recommendations {
+          edges {
+            node {
+              mediaRecommendation {
+                id
+                title {
+                  userPreferred
+                  romaji
+                  english
+                }
+                coverImage {
+                  large
+                  color
+                }
+                type
+                averageScore
+              }
+            }
+          }
         }
       }
       Page(page: 1) {

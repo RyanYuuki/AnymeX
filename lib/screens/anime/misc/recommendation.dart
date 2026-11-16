@@ -288,7 +288,12 @@ class _AIRecommendationState extends State<AIRecommendation> {
 
   Widget _buildRecommendations(BuildContext context, double headerHeight) {
     return GridView.builder(
-      padding: EdgeInsets.fromLTRB(12, headerHeight + 8, 12, 24),
+      padding: EdgeInsets.fromLTRB(
+        12,
+        headerHeight + 8,
+        12,
+        MediaQuery.viewPaddingOf(context).bottom + 24,
+      ),
       controller: _scrollController,
       itemCount: recItems.length + 3,
       itemBuilder: (context, index) {

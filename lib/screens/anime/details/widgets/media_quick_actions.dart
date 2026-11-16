@@ -9,7 +9,11 @@ import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 Widget buildMediaQuickActions(
-    BuildContext context, MediaDetailsController controller) {
+  BuildContext context,
+  MediaDetailsController controller, {
+  EdgeInsetsGeometry? padding,
+  double height = 42,
+}) {
   final isOnlineService =
       controller.media.value.serviceType != ServicesType.extensions;
 
@@ -17,7 +21,7 @@ Widget buildMediaQuickActions(
       controller.media.value.serviceType.onlineService.isLoggedIn.value;
 
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
     child: Obx(() {
       controller.media.value;
       return Row(
@@ -34,14 +38,12 @@ Widget buildMediaQuickActions(
 
                 return _buildQuickActionButton(
                   context: context,
-                  radius: const BorderRadius.horizontal(
-                    right: Radius.circular(5),
-                    left: Radius.circular(16),
-                  ),
+                  radius: BorderRadius.circular(16),
                   icon:
                       isListed ? Icons.check_circle_rounded : Icons.add_rounded,
                   label: statusText,
                   isPrimary: true,
+                  height: height,
                   onTap: () {
                     AnymeXSheet.custom(
                         ListEditorModal(
@@ -73,19 +75,19 @@ Widget buildMediaQuickActions(
               }),
             ),
           ],
-          const SizedBox(width: 4),
+          if (isLoggedIn) const SizedBox(width: 8),
           Expanded(
             child: Obx(() {
               final inList = controller.isInCustomList.value;
               return _buildQuickActionButton(
                 context: context,
-                icon: inList ? Icons.bookmark_added_rounded : Icons.bookmark_add_outlined,
+                icon: inList
+                    ? Icons.bookmark_added_rounded
+                    : Icons.bookmark_add_outlined,
                 label: inList ? 'In Custom List' : 'Custom List',
                 isPrimary: inList,
-                radius: BorderRadius.horizontal(
-                  left: Radius.circular(isLoggedIn ? 5 : 16),
-                  right: const Radius.circular(16),
-                ),
+                radius: BorderRadius.circular(16),
+                height: height,
                 onTap: () async {
                   await showDialog(
                     context: context,
@@ -111,6 +113,7 @@ Widget _buildQuickActionButton({
   required VoidCallback onTap,
   required BorderRadius radius,
   bool isPrimary = false,
+  double height = 42,
 }) {
   final colors = context.colors;
   final borderClr = isPrimary
@@ -118,7 +121,7 @@ Widget _buildQuickActionButton({
       : colors.onSurface.opaque(0.08, iReallyMeanIt: true);
   final bgClr = isPrimary
       ? colors.primary.opaque(0.12, iReallyMeanIt: true)
-      : colors.surfaceContainerHighest.opaque(0.4, iReallyMeanIt: true);
+      : colors.surfaceContainerHighest.opaque(0.35, iReallyMeanIt: true);
   final textClr = isPrimary ? colors.primary : colors.onSurface;
 
   return Material(
@@ -128,31 +131,31 @@ Widget _buildQuickActionButton({
       borderRadius: radius,
       onTap: onTap,
       child: Container(
-        height: 50,
+        height: height,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: radius,
-          border: Border.all(color: borderClr, width: 1.2),
+          border: Border.all(color: borderClr, width: 1.0),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
-              size: 18,
+              size: 16,
               color: textClr,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Flexible(
               child: AnymeXText(
-                label.toUpperCase(),
+                label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: textClr,
                   fontWeight: FontWeight.bold,
-                  fontSize: 12.5,
-                  letterSpacing: 0.6,
+                  fontSize: 12,
+                  letterSpacing: 0.3,
                 ),
               ),
             ),

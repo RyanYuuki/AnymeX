@@ -101,10 +101,29 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   final RxList<ReaderPage> spreads = RxList();
   late ServicesType serviceHandler;
   final bool shouldTrack;
+  final bool isPreview;
 
   ReaderController({
     required this.shouldTrack,
+    this.isPreview = false,
   });
+
+  factory ReaderController.preview() {
+    final c = ReaderController(shouldTrack: false, isPreview: true);
+    c.media = Media(
+      id: '0',
+      title: 'Attack on Titan',
+      poster: '',
+      serviceType: ServicesType.anilist,
+    );
+    c.chapterList = [Chapter(number: 138), Chapter(number: 139, title: 'Freedom', totalPages: 24)];
+    c.currentChapter.value = c.chapterList.last;
+    c.pageList.value = List.generate(24, (_) => PageUrl(''));
+    c.currentPageIndex.value = 6;
+    c.showControls.value = true;
+    c.loadingState.value = LoadingState.loaded;
+    return c;
+  }
 
   final SourceController sourceController = Get.find<SourceController>();
   final OfflineStorageController offlineStorageController =
@@ -425,6 +444,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
+    if (isPreview) {
+      showControls.value = true;
+      return;
+    }
     WakelockPlus.enable();
     WidgetsBinding.instance.addObserver(this);
     _performSave(reason: 'Page opened');
@@ -588,6 +611,10 @@ class ReaderController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
+    if (isPreview) {
+      super.onClose();
+      return;
+    }
     WidgetsBinding.instance.removeObserver(this);
 
     _performFinalSave();

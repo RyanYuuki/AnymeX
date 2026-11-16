@@ -35,7 +35,7 @@ class Media {
     if (Get.isRegistered<AnilistAuth>() &&
         Get.find<AnilistAuth>().isLoggedIn.value) {
       final lang =
-          Get.find<AnilistAuth>().cachedSettings?.titleLanguage?.toUpperCase();
+          Get.find<AnilistAuth>().cachedSettings?.titleLanguage.toUpperCase();
       if (lang == 'ROMAJI' && romajiTitle.isNotEmpty && romajiTitle != '?') {
         return romajiTitle;
       } else if (lang == 'NATIVE' &&
@@ -80,6 +80,7 @@ class Media {
   List<Media> recommendations;
   NextAiringEpisode? nextAiringEpisode;
   List<Ranking> rankings;
+  String? countryOfOrigin;
   ServicesType serviceType;
   DateTime? createdAt;
   bool? isAdult;
@@ -132,6 +133,7 @@ class Media {
       this.recommendations = const [],
       this.nextAiringEpisode,
       this.rankings = const [],
+      this.countryOfOrigin,
       this.mediaContent,
       required this.serviceType,
       this.sourceName,
@@ -1178,7 +1180,7 @@ class Media {
 
     final String? anilistTitleLang = (Get.isRegistered<AnilistAuth>() &&
             Get.find<AnilistAuth>().isLoggedIn.value)
-        ? Get.find<AnilistAuth>().cachedSettings?.titleLanguage?.toUpperCase()
+        ? Get.find<AnilistAuth>().cachedSettings?.titleLanguage.toUpperCase()
         : null;
 
     final String parsedEnglish =
@@ -1277,6 +1279,7 @@ class Media {
       status: (json['status']?.toString() ?? '?').replaceAll('_', ' '),
       rating: ((json['averageScore'] ?? 0) / 10).toString(),
       popularity: json['popularity']?.toString() ?? '6900',
+      countryOfOrigin: json['countryOfOrigin']?.toString() ?? json['country']?.toString(),
       format: formatFormatString(json['format']?.toString(), json['countryOfOrigin']?.toString()),
       sourceMaterial: json['source']?.toString() ?? '?',
       aired: _parseDateRange(json['startDate'], json['endDate']),
@@ -1342,6 +1345,44 @@ class Media {
           .toList();
     }
 
+    if (mediaJson['relations'] != null) {
+      final relationsVal = mediaJson['relations'];
+      if (relationsVal is Map && relationsVal['edges'] is List) {
+        relations = (relationsVal['edges'] as List)
+            .map((relation) => Relation.fromJson(relation))
+            .toList();
+      }
+    }
+
+    if (mediaJson['recommendations'] != null) {
+      final recsJson = mediaJson['recommendations'];
+      if (recsJson is Map) {
+        if (recsJson['nodes'] != null) {
+          recommendations = (recsJson['nodes'] as List)
+              .map((r) => Media.fromRecs(r))
+              .toList();
+        } else if (recsJson['edges'] != null) {
+          recommendations = (recsJson['edges'] as List)
+              .map((e) => Media.fromRecs(e['node'] ?? {}))
+              .where((m) => m.id.isNotEmpty && m.id != '')
+              .toList();
+        }
+      } else if (recsJson is List) {
+        recommendations = recsJson
+            .map((r) {
+              if (r is Map) {
+                final nodeData = r['node'] ?? r;
+                if (nodeData is Map) {
+                  return Media.fromMAL(Map<String, dynamic>.from(r));
+                }
+              }
+              return null;
+            })
+            .whereType<Media>()
+            .toList();
+      }
+    }
+
     if (pageJson != null) {
       friendsWatching = (pageJson['mediaList'] as List?)
           ?.map((e) => TrackedMedia.fromSocialJson(e))
@@ -1366,7 +1407,7 @@ class Media {
 
     final String? anilistTitleLang = (Get.isRegistered<AnilistAuth>() &&
             Get.find<AnilistAuth>().isLoggedIn.value)
-        ? Get.find<AnilistAuth>().cachedSettings?.titleLanguage?.toUpperCase()
+        ? Get.find<AnilistAuth>().cachedSettings?.titleLanguage.toUpperCase()
         : null;
 
     final String parsedEnglish =
@@ -1623,16 +1664,36 @@ class NextAiringEpisode {
 class Ranking {
   final int rank;
   final String type;
-  final int year;
+  final int? year;
+  final bool? allTime;
+  final String? context;
 
-  Ranking({required this.rank, required this.type, required this.year});
+  Ranking({
+    required this.rank,
+    required this.type,
+    this.year,
+    this.allTime,
+    this.context,
+  });
 
   factory Ranking.fromJson(Map<String, dynamic> json) {
     return Ranking(
       rank: json['rank'] ?? 0,
       type: json['type'] ?? '?',
-      year: json['year'] ?? 0,
+      year: json['year'] is int ? json['year'] as int : int.tryParse(json['year']?.toString() ?? ''),
+      allTime: json['allTime'] is bool ? json['allTime'] as bool : null,
+      context: json['context']?.toString(),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'rank': rank,
+      'type': type,
+      'year': year,
+      if (allTime != null) 'allTime': allTime,
+      if (context != null) 'context': context,
+    };
   }
 }
 

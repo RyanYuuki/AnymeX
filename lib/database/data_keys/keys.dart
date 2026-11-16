@@ -74,6 +74,8 @@ enum PlayerUiKeys {
   shadersEnabled,
   cacheDays,
   useMpvConf,
+  brightnessGestureWidth,
+  volumeGestureWidth,
 }
 
 enum ReaderKeys {
@@ -305,7 +307,9 @@ enum UISettingsKeys {
   grainIntensity,
   enableImmersiveMode,
   navBarStyle,
+  tileStyle,
   appFontFamily,
+  appFontScale,
   bottomNavBarMargin,
   useLegacyNavbar,
   useComputedBlur,
@@ -317,6 +321,7 @@ enum UISettingsKeys {
   detailsFadeAdjuster,
   detailsBlurStyle,
   detailsBlurScope,
+  detailsOledMode,
   customCardStyleJson,
 }
 

@@ -1282,7 +1282,10 @@ class _CharacterStaffSheetContentState
           data: before,
           onTapLink: (text, href, title) {
             if (href != null) {
-              launchUrl(Uri.parse(href));
+              launchUrl(
+                Uri.parse(href),
+                mode: LaunchMode.externalApplication,
+              );
             }
           },
           styleSheet: MarkdownStyleSheet(
@@ -1309,7 +1312,10 @@ class _CharacterStaffSheetContentState
         data: remaining,
         onTapLink: (text, href, title) {
           if (href != null) {
-            launchUrl(Uri.parse(href));
+            launchUrl(
+              Uri.parse(href),
+              mode: LaunchMode.externalApplication,
+            );
           }
         },
         styleSheet: MarkdownStyleSheet(
@@ -1496,7 +1502,10 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
                 shrinkWrap: true,
                 onTapLink: (text, href, title) {
                   if (href != null) {
-                    launchUrl(Uri.parse(href));
+                    launchUrl(
+                      Uri.parse(href),
+                      mode: LaunchMode.externalApplication,
+                    );
                   }
                 },
                 styleSheet: MarkdownStyleSheet(

@@ -10,6 +10,7 @@ import 'dart:async';
 
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/controllers/watchium/watchium_service.dart';
+import 'package:anymex/database/data_keys/keys.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
@@ -922,33 +923,49 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                 color: Colors.transparent,
                 child: Stack(
                   children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          flex: 35,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTap: _onLeftTap,
-                            child: Container(color: Colors.transparent),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 30,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTap: _handleSingleTap,
-                            child: Container(color: Colors.transparent),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 35,
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTap: _onRightTap,
-                            child: Container(color: Colors.transparent),
-                          ),
-                        ),
-                      ],
+                    Builder(
+                      builder: (context) {
+                        final brightnessWidth = PlayerUiKeys
+                            .brightnessGestureWidth
+                            .get<double>(0.35)
+                            .clamp(0.10, 0.45);
+                        final volumeWidth = PlayerUiKeys
+                            .volumeGestureWidth
+                            .get<double>(0.35)
+                            .clamp(0.10, 0.45);
+                        final overlayWidth =
+                            (1.0 - brightnessWidth - volumeWidth)
+                                .clamp(0.10, 0.80);
+
+                        return Row(
+                          children: [
+                            Expanded(
+                              flex: (brightnessWidth * 100).round(),
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTap: _onLeftTap,
+                                child: Container(color: Colors.transparent),
+                              ),
+                            ),
+                            Expanded(
+                              flex: (overlayWidth * 100).round(),
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTap: _handleSingleTap,
+                                child: Container(color: Colors.transparent),
+                              ),
+                            ),
+                            Expanded(
+                              flex: (volumeWidth * 100).round(),
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTap: _onRightTap,
+                                child: Container(color: Colors.transparent),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
                     Positioned(
                       left: 0,

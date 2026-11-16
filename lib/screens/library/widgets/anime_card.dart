@@ -3,6 +3,7 @@ import 'package:anymex/database/isar_models/offline_media.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/utils/function.dart';
+import 'package:anymex/utils/string_extensions.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -116,7 +117,8 @@ class AnimeCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               width: double.infinity,
-              child: AnymeXText(data.name ?? '??',
+              child: AnymeXText(
+                data.name.orPlaceholder('Unknown Media'),
                 size: 13,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

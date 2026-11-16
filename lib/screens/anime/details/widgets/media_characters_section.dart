@@ -25,15 +25,26 @@ Widget buildCharactersSection(BuildContext context, Media media) {
       ),
       SizedBox(
         height: 110,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: characters.length,
-          cacheExtent: 1000,
-          physics: const BouncingScrollPhysics(),
-          itemBuilder: (context, index) {
-            return buildCharacterCard(context, characters[index]);
+        child: ShaderMask(
+          shaderCallback: (Rect bounds) {
+            return const LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [Colors.black, Colors.black, Colors.transparent],
+              stops: [0.0, 0.90, 1.0],
+            ).createShader(bounds);
           },
+          blendMode: BlendMode.dstIn,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: characters.length,
+            cacheExtent: 1000,
+            physics: const BouncingScrollPhysics(),
+            itemBuilder: (context, index) {
+              return buildCharacterCard(context, characters[index]);
+            },
+          ),
         ),
       ),
     ],

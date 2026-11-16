@@ -6,30 +6,71 @@ import 'package:anymex/utils/logger.dart';
 import 'package:isar_community/isar.dart';
 
 extension KvExtensions on Enum {
+  String get _storageKey {
+    if (runtimeType.toString() == 'NovelReaderKeys' && name == 'themeMode') {
+      return 'novel_themeMode';
+    }
+    return name;
+  }
+
   T get<T>([T? defaultValue]) =>
-      KvHelper.get<T>(name, defaultVal: defaultValue);
+      KvHelper.get<T>(_storageKey, defaultVal: defaultValue);
 
-  void set<T>(T value) => KvHelper.set(name, value);
+  void set<T>(T value) => KvHelper.set(_storageKey, value);
 
-  Future<void> setAsync<T>(T value) => KvHelper.setAsync(name, value);
+  Future<void> setAsync<T>(T value) => KvHelper.setAsync(_storageKey, value);
 
-  void delete() => KvHelper.remove(name);
+  void delete() => KvHelper.remove(_storageKey);
 
-  Future<void> deleteAsync() => KvHelper.removeAsync(name);
+  Future<void> deleteAsync() => KvHelper.removeAsync(_storageKey);
 }
 
 class KvHelper {
+  static final Map<String, dynamic> _cache = {};
+  static final Set<String> _missingKeys = {};
+
   static T get<T>(String key, {T? defaultVal}) {
+    if (_cache.containsKey(key)) {
+      final dynamic cached = _cache[key];
+      if (cached is num) {
+        if (T == double) {
+          return cached.toDouble() as T;
+        }
+        if (T == int) {
+          return cached.toInt() as T;
+        }
+      }
+      if (cached is List && cached.every((e) => e is String)) {
+        return cached.cast<String>() as T;
+      }
+      if (cached is Map) {
+        return Map<String, dynamic>.from(cached) as T;
+      }
+      if (cached is T) {
+        return cached;
+      }
+      if (valMatches<T>(cached)) {
+        return cached as T;
+      }
+    }
+
+    if (_missingKeys.contains(key)) {
+      if (defaultVal != null) return defaultVal;
+      return null as T;
+    }
+
     final col = isar.collection<KeyValue>();
     final result = col.filter().keyEqualTo(key).findFirstSync();
 
     if (result?.value == null) {
+      _missingKeys.add(key);
       if (defaultVal != null) return defaultVal;
       Logger.e('Key $key not found');
       return null as T;
     }
 
     final dynamic val = jsonDecode(result!.value!)['val'];
+    _cache[key] = val;
 
     if (val is num) {
       if (T == double) {
@@ -49,9 +90,17 @@ class KvHelper {
     }
 
     if (val is! T) {
-      print(
-        'Key $key expected type $T but got ${val.runtimeType}',
-      );
+      if (T == int && val is String) {
+        final parsed = int.tryParse(val);
+        if (parsed != null) return parsed as T;
+      }
+      if (T == double && val is String) {
+        final parsed = double.tryParse(val);
+        if (parsed != null) return parsed as T;
+      }
+      if (T == String && val != null) {
+        return val.toString() as T;
+      }
       if (defaultVal != null) return defaultVal;
       return null as T;
     }
@@ -59,23 +108,27 @@ class KvHelper {
     return val;
   }
 
+  static bool valMatches<T>(dynamic val) {
+    return val is T;
+  }
+
   static void set<T>(String key, T value) {
+    _missingKeys.remove(key);
+    _cache[key] = value;
+
     final data = KeyValue()
       ..key = key
       ..value = jsonEncode({'val': value});
 
-    try {
-      isar.writeTxnSync(() {
-        isar.collection<KeyValue>().putSync(data);
-      });
-    } catch (_) {
-      isar.writeTxn(() async {
-        await isar.collection<KeyValue>().put(data);
-      });
-    }
+    isar.writeTxn(() async {
+      await isar.collection<KeyValue>().put(data);
+    });
   }
 
   static Future<void> setAsync<T>(String key, T value) async {
+    _missingKeys.remove(key);
+    _cache[key] = value;
+
     final data = KeyValue()
       ..key = key
       ..value = jsonEncode({'val': value});
@@ -86,23 +139,22 @@ class KvHelper {
   }
 
   static void remove(String key) {
-    final col = isar.collection<KeyValue>();
-    final data = col.filter().keyEqualTo(key).findFirstSync();
+    _cache.remove(key);
+    _missingKeys.add(key);
 
-    if (data == null) return;
-
-    try {
-      isar.writeTxnSync(() {
-        col.deleteSync(data.id);
-      });
-    } catch (_) {
-      isar.writeTxn(() async {
+    isar.writeTxn(() async {
+      final col = isar.collection<KeyValue>();
+      final data = await col.filter().keyEqualTo(key).findFirst();
+      if (data != null) {
         await col.delete(data.id);
-      });
-    }
+      }
+    });
   }
 
   static Future<void> removeAsync(String key) async {
+    _cache.remove(key);
+    _missingKeys.add(key);
+
     final col = isar.collection<KeyValue>();
     final data = await col.filter().keyEqualTo(key).findFirst();
 
