@@ -661,8 +661,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
     final pct = max != null ? (_localProgress / max).clamp(0.0, 1.0) : null;
     final overall = _overallTotal;
 
-    final subtitleText = '$_localProgress / $_displayTotal' +
-        ((overall != null && _simklSeasons.isNotEmpty) ? '  ($overall total)' : '');
+    final extraTotal =
+        (overall != null && _simklSeasons.isNotEmpty) ? '  ($overall total)' : '';
+    final subtitleText = '$_localProgress / $_displayTotal$extraTotal';
 
     return AnymeXTile(
       icon: widget.isManga

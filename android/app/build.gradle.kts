@@ -19,6 +19,10 @@ android {
         includeInBundle = false
     }
 
+    androidResources {
+        ignoreAssetsPattern = "!.env:!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

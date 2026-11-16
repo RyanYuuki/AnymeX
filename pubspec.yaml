@@ -225,7 +225,7 @@ flutter:
 
     assets:
         - assets/images/
-        - app.env
+        - .env
 
     fonts:
         - family: Linotte

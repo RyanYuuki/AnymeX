@@ -174,7 +174,7 @@ void main(List<String> args) async {
     await safeCall(() => Rhttp.init(),
         errorMessage: 'Failed to initialize Rhttp');
 
-    await safeCall(() => dotenv.load(fileName: 'app.env'),
+    await safeCall(() => dotenv.load(fileName: '.env'),
         errorMessage: 'Failed to load .env file');
 
     if (!Platform.isLinux) {

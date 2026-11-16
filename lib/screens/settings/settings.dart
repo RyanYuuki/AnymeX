@@ -1,4 +1,3 @@
-import 'package:anymex/widgets/anymex_widgets/anymex_popup_menu.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/settings/registry/settings_model.dart';
 import 'package:anymex/screens/settings/registry/settings_registry.dart';
@@ -189,7 +188,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: 'Test',
                     description: 'Debug stuffs',
                     customTap: () async {
-                      final file = await rootBundle.loadString('app.env');
+                      final file = await rootBundle.loadString('.env');
                       print('ENV FILE CONTENTS:\n$file');
                     },
                   ),
