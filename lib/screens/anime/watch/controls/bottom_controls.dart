@@ -499,12 +499,15 @@ class BottomControls extends StatelessWidget {
                       width: 0.5,
                     ),
                   ),
-                  child: Obx(() => AnymeXText(
-                        controller.formattedCurrentPosition,
+                  child: Obx(() => GestureDetector(
+                        onTap: controller.toggleTimeDisplay,
+                        child: AnymeXText(
+                          controller.formattedDisplayedPosition,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
+                        ),
                         ),
                       )),
                 ),
@@ -590,12 +593,15 @@ class BottomControls extends StatelessWidget {
                         width: 0.5,
                       ),
                     ),
-                    child: Obx(() => AnymeXText(
-                          controller.formattedCurrentPosition,
+                    child: Obx(() => GestureDetector(
+                          onTap: controller.toggleTimeDisplay,
+                          child: AnymeXText(
+                            controller.formattedDisplayedPosition,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurface,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.5,
+                          ),
                           ),
                         )),
                   ),

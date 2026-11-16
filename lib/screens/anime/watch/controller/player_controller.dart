@@ -186,6 +186,21 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   String get formattedCurrentPosition =>
       PlayerUtils.formatDuration(currentPosition.value);
 
+  // Toggle the timestamp between elapsed time and remaining time.
+  final RxBool showRemainingTime = false.obs;
+
+  String get formattedDisplayedPosition {
+    if (!showRemainingTime.value) return formattedCurrentPosition;
+
+    final remaining = episodeDuration.value - currentPosition.value;
+    final safeRemaining = remaining.isNegative ? Duration.zero : remaining;
+    return '-${PlayerUtils.formatDuration(safeRemaining)}';
+  }
+
+  void toggleTimeDisplay() {
+    showRemainingTime.toggle();
+  }
+
   final Rx<Duration> episodeDuration = Rx<Duration>(Duration.zero);
   String get formattedEpisodeDuration =>
       PlayerUtils.formatDuration(episodeDuration.value);
