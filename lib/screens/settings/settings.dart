@@ -1,3 +1,4 @@
+import 'package:anymex/widgets/anymex_widgets/anymex_popup_menu.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/settings/registry/settings_model.dart';
 import 'package:anymex/screens/settings/registry/settings_registry.dart';
@@ -10,8 +11,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
 import 'package:anymex/widgets/dialogs/donation_dialog.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
 
@@ -181,12 +182,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   description: cat.description,
                   destination: cat.destination,
                 ),
-              if (entry.key == 'About' && kDebugMode)
-                _buildTile(
-                  icon: HugeIcons.strokeRoundedBug01,
-                  title: 'Test',
-                  description: 'Debug stuffs',
-                  customTap: () async {},
+              if (entry.key == 'About & Support')
+                Builder(
+                  builder: (tileContext) => _buildTile(
+                    icon: HugeIcons.strokeRoundedBug01,
+                    title: 'Test',
+                    description: 'Debug stuffs',
+                    customTap: () async {
+                      final file = await rootBundle.loadString('app.env');
+                      print('ENV FILE CONTENTS:\n$file');
+                    },
+                  ),
                 ),
             ],
           ),

@@ -1,4 +1,6 @@
 import 'package:anymex/database/data_keys/keys.dart';
+import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
+import 'package:anymex/screens/profile/widgets/decoration_closet_sheet.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_moderation.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
@@ -73,7 +75,7 @@ class _SettingsCommentsState extends State<SettingsComments> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Comment System',
+      headerTitle: 'Community & Comments',
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -86,32 +88,21 @@ class _SettingsCommentsState extends State<SettingsComments> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AnymeXSectionBuilder(
-                title: 'General',
+                title: 'Closet & Community',
                 children: [
                   AnymeXTile(
-                    icon: Icons.info_outline_rounded,
-                    title: 'About Commentum v2',
+                    icon: Icons.checkroom_rounded,
+                    title: 'Open Closet',
                     subtitle:
-                        'Powered by Commentum v2 - Advanced comment system with moderation',
-                    onTap: _showAboutDialog,
+                        'Avatar decorations, nameplates, banners & profile effects',
+                    onTap: () => DecorationClosetSheet.show(context),
                   ),
                   AnymeXTile(
-                    icon: Icons.code_rounded,
-                    title: 'Markdown Guide',
-                    subtitle: 'Learn how to format your comments',
-                    onTap: _showMarkdownGuide,
-                  ),
-                  AnymeXTile(
-                    icon: Icons.help_outline_rounded,
-                    title: 'Help & Support',
-                    subtitle: 'Get help with the comment system',
-                    onTap: _showHelpDialog,
-                  ),
-                  AnymeXTile(
-                    icon: Icons.privacy_tip_outlined,
-                    title: 'Privacy & Safety',
-                    subtitle: 'Privacy settings and safety features',
-                    onTap: _showPrivacyDialog,
+                    icon: Icons.emoji_events_rounded,
+                    title: 'Leaderboard',
+                    subtitle:
+                        'View user rankings, top contributors & reputation',
+                    onTap: () => LeaderboardSheet.show(context),
                   ),
                 ],
               ),
@@ -163,105 +154,131 @@ class _SettingsCommentsState extends State<SettingsComments> {
                 );
               }),
               const SizedBox(height: 16),
-              Obx(() {
-                if (commentumService.currentUserId == null) {
-                  return const AnymeXSectionBuilder(
-                    title: 'Notification Preferences',
-                    children: [
-                      AnymeXTile(
+              AnymeXSectionBuilder(
+                title: 'Notification Preferences',
+                children: [
+                  Obx(() {
+                    if (commentumService.currentUserId == null) {
+                      return const AnymeXTile(
                         icon: Icons.notifications_off_outlined,
                         title: 'Log In Required',
                         subtitle:
                             'Log in to customize your push notification preferences.',
                         showChevron: false,
-                      ),
-                    ],
-                  );
-                }
+                      );
+                    }
 
-                if (_isLoadingPreferences.value) {
-                  return AnymeXSectionBuilder(
-                    title: 'Notification Preferences',
-                    children: [
-                      Container(
+                    if (_isLoadingPreferences.value) {
+                      return Container(
                         padding: const EdgeInsets.symmetric(vertical: 24.0),
                         alignment: Alignment.center,
                         child: const CircularProgressIndicator(),
-                      ),
-                    ],
-                  );
-                }
+                      );
+                    }
 
-                return AnymeXSectionBuilder(
-                  title: 'Notification Preferences',
-                  children: [
-                    AnymeXTile.toggle(
-                      icon: Icons.reply_rounded,
-                      title: 'Comment Replies',
-                      subtitle: 'Notify when someone replies to your comment',
-                      value: _notifyOnReply.value,
-                      onChanged: (v) =>
-                          _updatePreference('notify_on_reply', _notifyOnReply, v),
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.alternate_email_rounded,
-                      title: 'Mentions',
-                      subtitle: 'Notify when someone @mentions your username',
-                      value: _notifyOnMention.value,
-                      onChanged: (v) => _updatePreference(
-                          'notify_on_mention', _notifyOnMention, v),
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.campaign_outlined,
-                      title: 'Announcements',
-                      subtitle:
-                          'Notify for official announcements and app updates',
-                      value: _notifyOnAnnouncement.value,
-                      onChanged: (v) => _updatePreference(
-                          'notify_on_announcement', _notifyOnAnnouncement, v),
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.forum_outlined,
-                      title: 'Recent Media Comments',
-                      subtitle:
-                          'Notify on new comments for media you discussed',
-                      value: _notifyOnRecentComment.value,
-                      onChanged: (v) => _updatePreference(
-                          'notify_on_recent_comment',
-                          _notifyOnRecentComment,
-                          v),
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.thumb_up_alt_outlined,
-                      title: 'Votes',
-                      subtitle: 'Notify on upvotes and downvotes',
-                      value: _notifyOnVote.value,
-                      onChanged: (v) =>
-                          _updatePreference('notify_on_vote', _notifyOnVote, v),
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.delete_outline_rounded,
-                      title: 'Comment Deleted',
-                      subtitle:
-                          'Notify if your comment is removed by a moderator',
-                      value: _notifyOnCommentDelete.value,
-                      onChanged: (v) => _updatePreference(
-                          'notify_on_comment_delete',
-                          _notifyOnCommentDelete,
-                          v),
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.shield_outlined,
-                      title: 'Moderation Actions',
-                      subtitle:
-                          'Notify on warnings, pinned comments, or thread locks',
-                      value: _notifyOnModAction.value,
-                      onChanged: (v) => _updatePreference(
-                          'notify_on_mod_action', _notifyOnModAction, v),
-                    ),
-                  ],
-                );
-              }),
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnymeXTile.toggle(
+                          icon: Icons.reply_rounded,
+                          title: 'Comment Replies',
+                          subtitle: 'Notify when someone replies to your comment',
+                          value: _notifyOnReply.value,
+                          onChanged: (v) =>
+                              _updatePreference('notify_on_reply', _notifyOnReply, v),
+                        ),
+                        AnymeXTile.toggle(
+                          icon: Icons.alternate_email_rounded,
+                          title: 'Mentions',
+                          subtitle: 'Notify when someone @mentions your username',
+                          value: _notifyOnMention.value,
+                          onChanged: (v) => _updatePreference(
+                              'notify_on_mention', _notifyOnMention, v),
+                        ),
+                        AnymeXTile.toggle(
+                          icon: Icons.campaign_outlined,
+                          title: 'Announcements',
+                          subtitle:
+                              'Notify for official announcements and app updates',
+                          value: _notifyOnAnnouncement.value,
+                          onChanged: (v) => _updatePreference(
+                              'notify_on_announcement', _notifyOnAnnouncement, v),
+                        ),
+                        AnymeXTile.toggle(
+                          icon: Icons.forum_outlined,
+                          title: 'Recent Media Comments',
+                          subtitle:
+                              'Notify on new comments for media you discussed',
+                          value: _notifyOnRecentComment.value,
+                          onChanged: (v) => _updatePreference(
+                              'notify_on_recent_comment',
+                              _notifyOnRecentComment,
+                              v),
+                        ),
+                        AnymeXTile.toggle(
+                          icon: Icons.thumb_up_alt_outlined,
+                          title: 'Votes',
+                          subtitle: 'Notify on upvotes and downvotes',
+                          value: _notifyOnVote.value,
+                          onChanged: (v) =>
+                              _updatePreference('notify_on_vote', _notifyOnVote, v),
+                        ),
+                        AnymeXTile.toggle(
+                          icon: Icons.delete_outline_rounded,
+                          title: 'Comment Deleted',
+                          subtitle:
+                              'Notify if your comment is removed by a moderator',
+                          value: _notifyOnCommentDelete.value,
+                          onChanged: (v) => _updatePreference(
+                              'notify_on_comment_delete',
+                              _notifyOnCommentDelete,
+                              v),
+                        ),
+                        AnymeXTile.toggle(
+                          icon: Icons.shield_outlined,
+                          title: 'Moderation Actions',
+                          subtitle:
+                              'Notify on warnings, pinned comments, or thread locks',
+                          value: _notifyOnModAction.value,
+                          onChanged: (v) => _updatePreference(
+                              'notify_on_mod_action', _notifyOnModAction, v),
+                        ),
+                      ],
+                    );
+                  }),
+                ],
+              ),
+              const SizedBox(height: 16),
+              AnymeXSectionBuilder(
+                title: 'Help & Information',
+                children: [
+                  AnymeXTile(
+                    icon: Icons.info_outline_rounded,
+                    title: 'About Commentum v2',
+                    subtitle:
+                        'Powered by Commentum v2 - Advanced comment system with moderation',
+                    onTap: _showAboutDialog,
+                  ),
+                  AnymeXTile(
+                    icon: Icons.code_rounded,
+                    title: 'Markdown Guide',
+                    subtitle: 'Learn how to format your comments',
+                    onTap: _showMarkdownGuide,
+                  ),
+                  AnymeXTile(
+                    icon: Icons.help_outline_rounded,
+                    title: 'Help & Support',
+                    subtitle: 'Get help with the comment system',
+                    onTap: _showHelpDialog,
+                  ),
+                  AnymeXTile(
+                    icon: Icons.privacy_tip_outlined,
+                    title: 'Privacy & Safety',
+                    subtitle: 'Privacy settings and safety features',
+                    onTap: _showPrivacyDialog,
+                  ),
+                ],
+              ),
               Obx(() {
                 if (commentumService.currentUserRole.value == 'user') {
                   return const SizedBox.shrink();

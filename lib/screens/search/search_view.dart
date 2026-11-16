@@ -1,3 +1,4 @@
+import 'package:anymex/widgets/anymex_widgets/anymex_popup_menu.dart';
 import 'package:anymex/controllers/service_handler/params.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/source/source_controller.dart';
@@ -1288,6 +1289,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.fromLTRB(16, 8, 16, bottomPadding),
       child: Column(
         children: [
@@ -1457,6 +1459,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
 
     return GridView.builder(
       controller: _resultsScrollController,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: EdgeInsets.fromLTRB(16, 12, 16, bottomPadding),
       physics: const BouncingScrollPhysics(),
       gridDelegate: _currentViewMode == ViewMode.list
@@ -1731,64 +1734,25 @@ class _MoreOptionsPillContent extends StatelessWidget {
     return GestureDetector(
       onTapDown: (details) {
         final position = details.globalPosition;
-        showMenu<String>(
+        showAnymeXPopupMenu<String>(
           context: context,
-          position: RelativeRect.fromLTRB(
-            position.dx,
-            position.dy + 10,
-            position.dx + 40,
-            position.dy + 100,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: colors.outline.withOpacity(0.12)),
-          ),
-          color: colors.surface,
-          elevation: 6,
+          position: position,
+          width: 190.0,
           items: [
-            PopupMenuItem<String>(
+            AnymeXMenuItem<String>(
               value: 'settings',
-              height: 40,
-              child: Row(
-                children: [
-                  Icon(Icons.settings_outlined,
-                      size: 18, color: colors.primary),
-                  const SizedBox(width: 12),
-                  AnymeXText(
-                    'Extension Settings',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontFamily: 'Linotte',
-                      fontWeight: FontWeight.w500,
-                      color: colors.onSurface,
-                    ),
-                  ),
-                ],
-              ),
+              title: 'Extension Settings',
+              leadingIcon: Icons.settings_outlined,
+              onTap: () => onTap('settings'),
             ),
-            PopupMenuItem<String>(
+            AnymeXMenuItem<String>(
               value: 'webview',
-              height: 40,
-              child: Row(
-                children: [
-                  Icon(Icons.public_rounded, size: 18, color: colors.primary),
-                  const SizedBox(width: 12),
-                  AnymeXText(
-                    'Open Webview',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontFamily: 'Linotte',
-                      fontWeight: FontWeight.w500,
-                      color: colors.onSurface,
-                    ),
-                  ),
-                ],
-              ),
+              title: 'Open Webview',
+              leadingIcon: Icons.public_rounded,
+              onTap: () => onTap('webview'),
             ),
           ],
-        ).then((value) {
-          if (value != null) onTap(value);
-        });
+        );
       },
       child: Icon(
         Icons.more_vert_rounded,

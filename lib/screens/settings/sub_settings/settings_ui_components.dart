@@ -4,10 +4,10 @@ import 'package:anymex/screens/library/widgets/history_model.dart';
 import 'package:anymex/screens/settings/widgets/history_card_gate.dart';
 import 'package:anymex/screens/settings/widgets/history_card_selector.dart';
 import 'package:anymex/screens/settings/widgets/navbar_selector.dart';
+import 'package:anymex/screens/settings/widgets/style_picker_section.dart';
 import 'package:anymex/utils/fallback/fallback_anime.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
-import 'package:anymex/widgets/common/anymex_pills.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_tile_builder.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/common/carousel/carousel_style_registry.dart';
 import 'package:anymex/widgets/common/carousel/carousel_types.dart';
@@ -39,215 +39,77 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
     registerBuiltInNavBarStyles();
   }
 
-  Widget _buildCustomizerSection({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String currentStyleName,
-    required String description,
-    required Widget previewWidget,
-    required List<PillItem> pills,
-  }) {
-    final colors = context.colors;
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-          width: 0.8,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: colors.primary.opaque(0.12, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, size: 20, color: colors.primary),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AnymeXText(
-                      title,
-                      size: 15,
-                      variant: TextVariant.bold,
-                    ),
-                    const SizedBox(height: 2),
-                    AnymeXText(
-                      description,
-                      size: 11.5,
-                      color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
-                      maxLines: 2,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: colors.primary.opaque(0.12, iReallyMeanIt: true),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: colors.primary.opaque(0.25, iReallyMeanIt: true),
-                    width: 0.8,
-                  ),
-                ),
-                child: AnymeXText(
-                  currentStyleName,
-                  size: 11,
-                  variant: TextVariant.semiBold,
-                  color: colors.primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Icon(Iconsax.eye,
-                  size: 12,
-                  color: colors.onSurface.opaque(0.5, iReallyMeanIt: true)),
-              const SizedBox(width: 6),
-              AnymeXText(
-                'PREVIEW',
-                size: 10.5,
-                variant: TextVariant.bold,
-                color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          previewWidget,
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Icon(Iconsax.category,
-                  size: 12,
-                  color: colors.onSurface.opaque(0.5, iReallyMeanIt: true)),
-              const SizedBox(width: 6),
-              AnymeXText(
-                'STYLE',
-                size: 10.5,
-                variant: TextVariant.bold,
-                color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          AnymeXPills(
-            style: PillStyle.standalone,
-            expandEqually: false,
-            wrap: true,
-            items: pills,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildHistoryCardStyleSection(BuildContext context, bool desktop) {
-    final currentStyle = HistoryCardStyle.values[settings.historyCardStyle];
-    return _buildCustomizerSection(
-      context: context,
+    final cardWidth = desktop ? 360.0 : 300.0;
+
+    return StylePickerSection(
       icon: Iconsax.clock,
-      title: 'History Card Style',
-      currentStyleName: currentStyle.displayName,
-      description: currentStyle.description,
-      previewWidget: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: SizedBox(
-          height: getHistoryCardHeight(currentStyle, context),
+      title: 'History card',
+      itemCount: HistoryCardStyle.values.length,
+      appliedIndex: settings.historyCardStyle,
+      labelFor: (i) => HistoryCardStyle.values[i].displayName,
+      descriptionFor: (i) => HistoryCardStyle.values[i].description,
+      previewBuilder: (i) {
+        final style = HistoryCardStyle.values[i];
+        return SizedBox(
+          height: getHistoryCardHeight(style, context),
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 14),
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: _sampleHistoryCards.length,
             separatorBuilder: (_, __) => const SizedBox(width: 14),
-            itemBuilder: (context, index) {
-              return SizedBox(
-                width: desktop ? 360 : 300,
-                child: HistoryCardGate(
-                  data: _sampleHistoryCards[index],
-                  cardStyle: currentStyle,
-                ),
-              );
-            },
+            itemBuilder: (context, index) => SizedBox(
+              width: cardWidth,
+              child: HistoryCardGate(
+                data: _sampleHistoryCards[index],
+                cardStyle: style,
+              ),
+            ),
           ),
-        ),
-      ),
-      pills: List.generate(HistoryCardStyle.values.length, (index) {
-        final style = HistoryCardStyle.values[index];
-        return PillItem(
-          label: style.displayName,
-          isSelected: settings.historyCardStyle == index,
-          onTap: () {
-            settings.historyCardStyle = index;
-          },
         );
-      }),
+      },
+      onApply: (i) => settings.historyCardStyle = i,
     );
   }
 
   Widget _buildCarouselStyleSection(BuildContext context) {
-    final currentStyle = CarouselStyleRegistry.byIndex(settings.carouselStyle);
-    return _buildCustomizerSection(
-      context: context,
+    return StylePickerSection(
       icon: Icons.view_carousel_rounded,
-      title: 'Carousel Style',
-      currentStyleName: currentStyle.name,
-      description: currentStyle.description,
-      previewWidget: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
-        child: IgnorePointer(
-          child: CarouselStyleRegistry.build(
-            selectedIndex: settings.carouselStyle,
-            data: _sampleHeroMedia,
-            carouselType: CarouselType.anime,
-          ),
+      title: 'Carousel',
+      itemCount: CarouselStyleRegistry.styles.length,
+      appliedIndex:
+          CarouselStyleRegistry.normalizeIndex(settings.carouselStyle),
+      labelFor: (i) => CarouselStyleRegistry.styles[i].name,
+      descriptionFor: (i) => CarouselStyleRegistry.styles[i].description,
+      previewBuilder: (i) => ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: CarouselStyleRegistry.build(
+          selectedIndex: i,
+          data: _sampleHeroMedia,
+          carouselType: CarouselType.anime,
         ),
       ),
-      pills: List.generate(CarouselStyleRegistry.styles.length, (index) {
-        final style = CarouselStyleRegistry.styles[index];
-        return PillItem(
-          label: style.name,
-          isSelected:
-              CarouselStyleRegistry.normalizeIndex(settings.carouselStyle) ==
-                  index,
-          onTap: () {
-            settings.carouselStyle = index;
-          },
-        );
-      }),
+      onApply: (i) => settings.carouselStyle = i,
     );
   }
 
   Widget _buildNavBarStyleSection(BuildContext context) {
-    final currentStyle = NavBarRegistry.getByIndex(settings.navBarStyle);
-    return _buildCustomizerSection(
-      context: context,
+    return StylePickerSection(
       icon: Icons.navigation_rounded,
-      title: 'Nav Bar Style',
-      currentStyleName: currentStyle.displayName,
-      description: currentStyle.description,
-      previewWidget: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
+      title: 'Nav bar',
+      itemCount: NavStyleVariant.values.length,
+      appliedIndex: settings.navBarStyle,
+      labelFor: (i) =>
+          NavBarRegistry.getByIndex(NavStyleVariant.values[i].index)
+              .displayName,
+      descriptionFor: (i) =>
+          NavBarRegistry.getByIndex(NavStyleVariant.values[i].index)
+              .description,
+      previewBuilder: (i) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: NavBarRegistry.buildByIndex(
           context: context,
-          index: settings.navBarStyle,
+          index: NavStyleVariant.values[i].index,
           props: NavBarProps(
             items: _navPreviewItems,
             currentIndex: 0,
@@ -255,16 +117,48 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
           ),
         ),
       ),
-      pills: List.generate(NavStyleVariant.values.length, (index) {
-        final style = NavStyleVariant.values[index];
-        return PillItem(
-          label: NavBarRegistry.getByIndex(style.index).displayName,
-          isSelected: settings.navBarStyle == style.index,
-          onTap: () {
-            settings.navBarStyle = style.index;
-          },
-        );
-      }),
+      onApply: (i) => settings.navBarStyle = NavStyleVariant.values[i].index,
+    );
+  }
+
+  Widget _buildTileStyleSection(BuildContext context) {
+    final sampleItems = [
+      (
+        title: 'Appearance',
+        subtitle: 'Theme, dark mode & layout styling',
+        icon: Icons.palette_outlined,
+      ),
+      (
+        title: 'Player Controls',
+        subtitle: 'Gestures, subtitles & video settings',
+        icon: Icons.play_circle_outline_rounded,
+      ),
+    ];
+
+    const labels = ['Classic', 'M3 Expressive'];
+    const descriptions = [
+      'Original AnymeX borderless list tiles',
+      'Material 3 Expressive rounded tiles with circular icons, bold type, and connected corners',
+    ];
+
+    return StylePickerSection(
+      icon: Icons.view_agenda_rounded,
+      title: 'Settings tiles',
+      itemCount: 2,
+      appliedIndex: settings.tileStyle,
+      labelFor: (i) => labels[i],
+      descriptionFor: (i) => descriptions[i],
+      previewBuilder: (i) => AnymeXTileBuilder(
+        items: sampleItems,
+        getTitle: (item) => item.title,
+        getSubtitle: (item) => item.subtitle,
+        getIcon: (item) => item.icon,
+        showChevron: (_) => true,
+        isSelection: false,
+        style: i == 1 ? TileStyle.modern : TileStyle.classic,
+        onItemPressed: (_) {},
+      ),
+      onApply: (i) => settings.tileStyle = i,
     );
   }
 
@@ -286,6 +180,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
                 _buildHistoryCardStyleSection(context, desktop),
                 _buildCarouselStyleSection(context),
                 _buildNavBarStyleSection(context),
+                _buildTileStyleSection(context),
               ],
             ),
           ),

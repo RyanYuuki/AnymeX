@@ -222,11 +222,11 @@ class _SettingsPerformanceState extends State<SettingsPerformance> {
                   ),
                   const SizedBox(height: 20),
                   AnymeXSectionBuilder(
-                    title: 'Info',
+                    title: 'Detected Modes & Display',
                     children: [
                       AnymeXTile(
                         icon: Icons.monitor_rounded,
-                        title: 'Display Mode',
+                        title: 'Current Display Mode',
                         subtitle: active != null
                             ? '${active.width}x${active.height} @ ${active.refreshRate.round()}Hz'
                             : 'Unknown',

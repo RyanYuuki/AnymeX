@@ -361,89 +361,85 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                     8.height(),
                     ..._buildExtensionSettings(context),
                     8.height(),
-                    AnymeXSectionBuilder(
-                      title: 'Plugin Installation & Sync',
-                      children: [
-                        Obx(() {
-                          final isReady = bridge.isReady.value;
-                          final hasInstalled = isReady ||
-                              _isLoadedFromStorage.value ||
-                              _isPluginInstalled ||
-                              _installedVersion.isNotEmpty;
-                          return Column(
-                            children: [
-                              AnymeXTile(
-                                icon: Icons.cloud_download_rounded,
-                                title: hasInstalled
-                                    ? 'Update Plugin'
-                                    : 'Download the Plugin',
-                                subtitle: hasInstalled
-                                    ? 'Check and install the latest plugin update from Github'
-                                    : 'Automatically download and install the latest plugin version',
-                                onTap: hasInstalled
-                                    ? (_isCheckingUpdate
-                                        ? null
-                                        : _checkForUpdates)
-                                    : _showInstallPopup,
-                                trailing: _isCheckingUpdate
-                                    ? SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: colors.primary,
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              AnymeXTile(
-                                icon: Icons.install_mobile_rounded,
-                                title: Platform.isAndroid
-                                    ? 'Load Plugin APK from Storage'
-                                    : 'Load Plugin JAR from Storage',
-                                subtitle: Platform.isAndroid
-                                    ? 'Select a runtime APK from local storage to manually install'
-                                    : 'Select a runtime JAR from local storage to manually install',
-                                onTap:
-                                    _isSyncingLocalApk ? null : _syncLocalApk,
-                                trailing: _isSyncingLocalApk
-                                    ? SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: colors.primary,
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              if (hasInstalled || bridge.error.value.isNotEmpty)
-                                AnymeXTile(
-                                  icon: Icons.refresh_rounded,
-                                  title: 'Force Re-download',
-                                  subtitle:
-                                      'Re-download and reinstall the plugin from scratch',
-                                  onTap: _forceReDownload,
-                                ),
-                              AnymeXTile(
-                                icon: Icons.history_rounded,
-                                title: 'Rollback Version',
-                                subtitle:
-                                    'Downgrade or switch to a specific plugin version',
-                                onTap: _showRollbackDialog,
-                              ),
-                              AnymeXTile(
-                                icon: Icons.open_in_new_rounded,
-                                title: 'Runtime Host Releases',
-                                subtitle:
-                                    'Visit GitHub releases page for changelogs and manual downloads',
-                                onTap: _openReleasesPage,
-                              ),
-                            ],
-                          );
-                        }),
-                      ],
-                    ),
+                    Obx(() {
+                      final isReady = bridge.isReady.value;
+                      final hasInstalled = isReady ||
+                          _isLoadedFromStorage.value ||
+                          _isPluginInstalled ||
+                          _installedVersion.isNotEmpty;
+                      return AnymeXSectionBuilder(
+                        title: 'Plugin Installation & Sync',
+                        children: [
+                          AnymeXTile(
+                            icon: Icons.cloud_download_rounded,
+                            title: hasInstalled
+                                ? 'Update Plugin'
+                                : 'Download the Plugin',
+                            subtitle: hasInstalled
+                                ? 'Check and install the latest plugin update from Github'
+                                : 'Automatically download and install the latest plugin version',
+                            onTap: hasInstalled
+                                ? (_isCheckingUpdate
+                                    ? null
+                                    : _checkForUpdates)
+                                : _showInstallPopup,
+                            trailing: _isCheckingUpdate
+                                ? SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: colors.primary,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          AnymeXTile(
+                            icon: Icons.install_mobile_rounded,
+                            title: Platform.isAndroid
+                                ? 'Load Plugin APK from Storage'
+                                : 'Load Plugin JAR from Storage',
+                            subtitle: Platform.isAndroid
+                                ? 'Select a runtime APK from local storage to manually install'
+                                : 'Select a runtime JAR from local storage to manually install',
+                            onTap:
+                                _isSyncingLocalApk ? null : _syncLocalApk,
+                            trailing: _isSyncingLocalApk
+                                ? SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: colors.primary,
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          if (hasInstalled || bridge.error.value.isNotEmpty)
+                            AnymeXTile(
+                              icon: Icons.refresh_rounded,
+                              title: 'Force Re-download',
+                              subtitle:
+                                  'Re-download and reinstall the plugin from scratch',
+                              onTap: _forceReDownload,
+                            ),
+                          AnymeXTile(
+                            icon: Icons.history_rounded,
+                            title: 'Rollback Version',
+                            subtitle:
+                                'Downgrade or switch to a specific plugin version',
+                            onTap: _showRollbackDialog,
+                          ),
+                          AnymeXTile(
+                            icon: Icons.open_in_new_rounded,
+                            title: 'Runtime Host Releases',
+                            subtitle:
+                                'Visit GitHub releases page for changelogs and manual downloads',
+                            onTap: _openReleasesPage,
+                          ),
+                        ],
+                      );
+                    }),
                   ],
                 ),
               )),

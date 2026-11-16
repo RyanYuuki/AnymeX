@@ -248,6 +248,30 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                       },
                     ),
                   ),
+                  Obx(
+                    () => AnymeXTile.toggle(
+                      icon: Icons.color_lens_outlined,
+                      title: 'Use Poster Color',
+                      subtitle:
+                          'Applies anime/manga poster color scheme on the details page',
+                      value: settings.usePosterColor,
+                      onChanged: (val) {
+                        settings.usePosterColor = val;
+                      },
+                    ),
+                  ),
+                  Obx(
+                    () => AnymeXTile.toggle(
+                      icon: Icons.brightness_2_outlined,
+                      title: 'OLED Mode',
+                      subtitle:
+                          'Pure black background on details page without gradients',
+                      value: settings.detailsOledMode,
+                      onChanged: (val) {
+                        settings.detailsOledMode = val;
+                      },
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 14),
@@ -354,22 +378,24 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
       );
     }
 
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(cardRadius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
-            blurRadius: 28,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Obx(() {
-        final blurScope = settings.detailsBlurScope;
+    return Obx(() {
+      final isOled = settings.detailsOledMode;
+      return Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: isOled ? Colors.black : colors.surface,
+          borderRadius: BorderRadius.circular(cardRadius),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 28,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Builder(builder: (context) {
+          final blurScope = settings.detailsBlurScope;
         final isMesh = settings.detailsBlurStyle == 1;
         final isBaked = isMesh || settings.useComputedBlur;
         final usePoster = settings.usePosterForBlur;
@@ -632,8 +658,11 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
                 ),
               );
 
-        if (blurScope == 0) {
-          return fullMockContent;
+        if (isOled || blurScope == 0) {
+          return Container(
+            color: isOled ? Colors.black : Colors.transparent,
+            child: fullMockContent,
+          );
         }
 
         final washHeight = isDesktop ? 460.0 : 380.0;
@@ -709,5 +738,6 @@ class _SettingsUiDetailsState extends State<SettingsUiDetails> {
         );
       }),
     );
-  }
+  });
+}
 }

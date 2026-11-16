@@ -24,7 +24,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
   final settings = Get.find<Settings>();
 
   late bool uniScrapper;
-  late bool shouldAskForPermission = General.shouldAskForTrack.get<bool>(true);
   late bool hideAdultContent = General.hideAdultContent.get<bool>(true);
   late bool showCommunityRecs =
       General.showCommunityRecommendations.get<bool>(true);
@@ -41,7 +40,7 @@ class _SettingsCommonState extends State<SettingsCommon> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Common Settings',
+      headerTitle: 'Content & Preferences',
       body: Builder(
           builder: (ctx) => SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
@@ -50,21 +49,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AnymeXSectionBuilder(
-                      title: 'Universal',
+                      title: 'Library & Content Safety',
                       children: [
-                        AnymeXTile.toggle(
-                          icon: Icons.touch_app_rounded,
-                          title: 'Ask for tracking permission',
-                          subtitle:
-                              'If enabled, Anymex will ask for tracking permission if not then it will track by default.',
-                          value: shouldAskForPermission,
-                          onChanged: (e) {
-                            setState(() {
-                              shouldAskForPermission = e;
-                              General.shouldAskForTrack.set(e);
-                            });
-                          },
-                        ),
                         AnymeXTile.toggle(
                           icon: Icons.collections_bookmark_rounded,
                           title: 'Unified Library',
@@ -91,16 +77,6 @@ class _SettingsCommonState extends State<SettingsCommon> {
                             });
                           },
                         ),
-                        Obx(() => AnymeXTile.toggle(
-                              icon: Icons.play_circle_outline_rounded,
-                              title: 'Show Continue Watching on Home',
-                              subtitle:
-                                  'If enabled, a continue watching bar will be shown above the bottom navigation bar on the home page.',
-                              value: settings.showHomeContinueWatching.value,
-                              onChanged: (e) {
-                                settings.saveShowHomeContinueWatching(e);
-                              },
-                            )),
                       ],
                     ),
                     AnymeXSectionBuilder(
@@ -229,36 +205,26 @@ class _SettingsCommonState extends State<SettingsCommon> {
                       ],
                     ),
                     AnymeXSectionBuilder(
-                      title: 'Anilist',
+                      title: 'Home Page Lists',
                       children: [
                         AnymeXTile(
                           icon: Icons.format_list_bulleted_sharp,
                           title: 'Manage Anilist Lists',
-                          subtitle: "Choose which list to show on home page",
+                          subtitle: "Choose which lists to show on home page",
                           onTap: () =>
                               _showHomePageCardsDialog(ServicesType.anilist),
                         ),
-                      ],
-                    ),
-                    AnymeXSectionBuilder(
-                      title: 'MyAnimeList',
-                      children: [
                         AnymeXTile(
                           icon: Icons.format_list_bulleted_sharp,
                           title: 'Manage MyAnimeList Lists',
-                          subtitle: "Choose which list to show on home page",
+                          subtitle: "Choose which lists to show on home page",
                           onTap: () =>
                               _showHomePageCardsDialog(ServicesType.mal),
                         ),
-                      ],
-                    ),
-                    AnymeXSectionBuilder(
-                      title: 'Simkl',
-                      children: [
                         AnymeXTile(
                           icon: Icons.format_list_bulleted_sharp,
                           title: 'Manage Simkl Lists',
-                          subtitle: "Choose which list to show on home page",
+                          subtitle: "Choose which lists to show on home page",
                           onTap: () =>
                               _showHomePageCardsDialog(ServicesType.simkl),
                         ),

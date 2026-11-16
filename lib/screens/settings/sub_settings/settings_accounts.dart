@@ -2,8 +2,6 @@ import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/controllers/services/storage/anymex_cache_manager.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/models/Service/online_service.dart';
-import 'package:anymex/screens/anime/widgets/comments/widgets/leaderboard_sheet.dart';
-import 'package:anymex/screens/profile/widgets/decoration_closet_sheet.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_anilist_api.dart';
 import 'package:anymex/services/commentum_service.dart';
 import 'package:anymex/utils/function.dart';
@@ -26,9 +24,12 @@ class SettingsAccounts extends StatefulWidget {
 }
 
 class _SettingsAccountsState extends State<SettingsAccounts> {
+  late bool shouldAskForPermission;
+
   @override
   void initState() {
     super.initState();
+    shouldAskForPermission = General.shouldAskForTrack.get<bool>(true);
     _autoSyncLinkedAccounts();
   }
 
@@ -233,32 +234,13 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Accounts',
+      headerTitle: 'Tracking Accounts',
       body: Builder(
         builder: (ctx) => ScrollWrapper(
           comfortPadding: false,
           customPadding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 30.0),
           children: [
             SizedBox(height: AnymeXHeaderScope.of(ctx)),
-            AnymeXSectionBuilder(
-              title: 'Closet & Community',
-              children: [
-                AnymeXTile(
-                  icon: Icons.checkroom_rounded,
-                  title: 'Open Closet',
-                  subtitle:
-                      'Avatar decorations, nameplates, banners & profile effects',
-                  onTap: () => DecorationClosetSheet.show(context),
-                ),
-                AnymeXTile(
-                  icon: Icons.emoji_events_rounded,
-                  title: 'Leaderboard',
-                  subtitle: 'View user rankings, top contributors & reputation',
-                  onTap: () => LeaderboardSheet.show(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
             AnymeXSectionBuilder(
               title: 'Tracking Services',
               children: services
@@ -269,6 +251,25 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                         title: s['title'] as String,
                       ))
                   .toList(),
+            ),
+            const SizedBox(height: 16),
+            AnymeXSectionBuilder(
+              title: 'Tracking Behavior',
+              children: [
+                AnymeXTile.toggle(
+                  icon: Icons.touch_app_rounded,
+                  title: 'Ask for tracking permission',
+                  subtitle:
+                      'If enabled, AnymeX will ask before updating your tracking progress; otherwise it tracks automatically.',
+                  value: shouldAskForPermission,
+                  onChanged: (e) {
+                    setState(() {
+                      shouldAskForPermission = e;
+                      General.shouldAskForTrack.set(e);
+                    });
+                  },
+                ),
+              ],
             ),
           ],
         ),

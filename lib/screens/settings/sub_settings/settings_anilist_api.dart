@@ -865,20 +865,44 @@ class _SettingsAnilistApiState extends State<SettingsAnilistApi> {
     final tzValue = _normalizeTimezoneValue(s.timezone);
     if (!tzValues.contains(tzValue)) tzValues.add(tzValue);
 
-    return AnymeXSectionBuilder(
-      title: 'Other',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnymeXTile.toggle(icon: Icons.lock_rounded, title: 'Restrict Messages To Following',
-          subtitle: 'Allow only users I follow to message me.',
-          value: s.restrictMessagesToFollowing,
-          onChanged: (v) => _update((s) => s.restrictMessagesToFollowing = v)),
-        AnymeXTile(icon: Icons.public_rounded, title: 'Select Timezone',
-          subtitle: _timezoneLabel(tzValue),
-          onTap: () => _showOptionPicker<String>(title: 'Select Timezone', items: tzValues,
-            value: tzValue, itemLabel: _timezoneLabel,
-            onChanged: (v) => _update((s) => s.timezone = v))),
-
-        _buildAboutEditor(),
+        AnymeXSectionBuilder(
+          title: 'Privacy & Safety',
+          children: [
+            AnymeXTile.toggle(
+              icon: Icons.lock_rounded,
+              title: 'Restrict Messages To Following',
+              subtitle: 'Allow only users I follow to message me.',
+              value: s.restrictMessagesToFollowing,
+              onChanged: (v) => _update((s) => s.restrictMessagesToFollowing = v),
+            ),
+          ],
+        ),
+        AnymeXSectionBuilder(
+          title: 'Region & Timezone',
+          children: [
+            AnymeXTile(
+              icon: Icons.public_rounded,
+              title: 'Select Timezone',
+              subtitle: _timezoneLabel(tzValue),
+              onTap: () => _showOptionPicker<String>(
+                title: 'Select Timezone',
+                items: tzValues,
+                value: tzValue,
+                itemLabel: _timezoneLabel,
+                onChanged: (v) => _update((s) => s.timezone = v),
+              ),
+            ),
+          ],
+        ),
+        AnymeXSectionBuilder(
+          title: 'Profile Bio',
+          children: [
+            _buildAboutEditor(),
+          ],
+        ),
       ],
     );
   }
