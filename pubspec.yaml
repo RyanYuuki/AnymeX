@@ -122,7 +122,6 @@ dependencies:
         # path: ../AnymeXExtensionRuntimeBridge
     
     jxl_coder: ^0.1.0
-    thanos_snap_effect: ^0.0.9
     code_assets: ^1.2.1
     hooks: ^2.0.2
     native_toolchain_c: ^0.19.2
@@ -219,9 +218,6 @@ flutter_native_splash:
 
 flutter:
     uses-material-design: true
-
-    shaders:
-        - packages/thanos_snap_effect/shader/thanos_snap_effect.glsl
 
     assets:
         - assets/images/

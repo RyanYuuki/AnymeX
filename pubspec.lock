@@ -54,7 +54,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "7d0d60e310b62b4fcd150955f07e8b92801017a0"
+      resolved-ref: "98402444842f5bc1ad85ac381401640af486fa2b"
       url: "https://github.com/RyanYuuki/AnymeXExtensionRuntimeBridge.git"
     source: git
     version: "1.6.1"
@@ -2227,14 +2227,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.14"
-  thanos_snap_effect:
-    dependency: "direct main"
-    description:
-      name: thanos_snap_effect
-      sha256: "728595a48480c58244d9851f2182b6d43f78470074697c61e1ffc061f8a1234f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.9"
   time:
     dependency: transitive
     description:
