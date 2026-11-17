@@ -20,7 +20,7 @@ android {
     }
 
     androidResources {
-        ignoreAssetsPattern = "!.env:!.svn:!.git:!.ds_store:!*.scc:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"
+        ignoreAssetsPattern = "!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~"
     }
 
     compileOptions {
