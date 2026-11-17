@@ -503,11 +503,11 @@ class BottomControls extends StatelessWidget {
                         onTap: controller.toggleTimeDisplay,
                         child: AnymeXText(
                           controller.formattedDisplayedPosition,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                        ),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                          ),
                         ),
                       )),
                 ),
@@ -597,11 +597,11 @@ class BottomControls extends StatelessWidget {
                           onTap: controller.toggleTimeDisplay,
                           child: AnymeXText(
                             controller.formattedDisplayedPosition,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
                           ),
                         )),
                   ),
