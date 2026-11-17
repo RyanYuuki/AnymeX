@@ -79,28 +79,26 @@ class _SettingsCommonState extends State<SettingsCommon> {
                         ),
                       ],
                     ),
-                    AnymeXSectionBuilder(
-                      title: 'Community Recommendations',
-                      children: [
-                        AnymeXTile.toggle(
-                          icon: Icons.people_rounded,
-                          title: 'Show Community Recommendations',
-                          subtitle:
-                              'Display anime, manga, movies and shows recommended by the community on the home page.',
-                          value: showCommunityRecs,
-                          onChanged: (e) {
-                            setState(() {
-                              showCommunityRecs = e;
-                              General.showCommunityRecommendations.set(e);
-                              Get.find<CommunityService>()
-                                  .communityEnabled
-                                  .value = e;
-                            });
-                          },
-                        ),
-                        Obx(() {
-                          final svc = Get.find<CommunityService>();
-                          return AnymeXTile.toggle(
+                    Obx(() {
+                      final svc = Get.find<CommunityService>();
+                      return AnymeXSectionBuilder(
+                        title: 'Community Recommendations',
+                        children: [
+                          AnymeXTile.toggle(
+                            icon: Icons.people_rounded,
+                            title: 'Show Community Recommendations',
+                            subtitle:
+                                'Display anime, manga, movies and shows recommended by the community on the home page.',
+                            value: showCommunityRecs,
+                            onChanged: (e) {
+                              setState(() {
+                                showCommunityRecs = e;
+                                General.showCommunityRecommendations.set(e);
+                                svc.communityEnabled.value = e;
+                              });
+                            },
+                          ),
+                          AnymeXTile.toggle(
                             icon: Icons.no_adult_content_rounded,
                             title: 'Hide NSFW Recommendations',
                             subtitle:
@@ -110,11 +108,8 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               svc.hideNsfw.value = v;
                               General.hideNsfwRecommendations.set(v);
                             },
-                          );
-                        }),
-                        Obx(() {
-                          final svc = Get.find<CommunityService>();
-                          return AnymeXTile.toggle(
+                          ),
+                          AnymeXTile.toggle(
                             icon: Icons.filter_list_rounded,
                             title: 'Hide by List Status',
                             subtitle:
@@ -124,86 +119,77 @@ class _SettingsCommonState extends State<SettingsCommon> {
                               svc.filterByListEnabled.value = v;
                               General.filterByListEnabled.set(v);
                             },
-                          );
-                        }),
-                        Obx(() {
-                          final svc = Get.find<CommunityService>();
-                          if (!svc.filterByListEnabled.value) {
-                            return const SizedBox.shrink();
-                          }
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AnymeXTile.toggle(
-                                icon: Icons.check_circle_outline_rounded,
-                                title: 'Hide Completed',
-                                subtitle:
-                                    'Hide entries that are marked as completed in your list.',
-                                value: svc.filterCompleted.value,
-                                onChanged: (v) {
-                                  svc.filterCompleted.value = v;
-                                  General.filterCompleted.set(v);
-                                },
-                              ),
-                              AnymeXTile.toggle(
-                                icon: Icons.remove_red_eye_outlined,
-                                title: 'Hide Watching / Reading',
-                                subtitle:
-                                    'Hide entries that you are currently watching or reading.',
-                                value: svc.filterWatching.value,
-                                onChanged: (v) {
-                                  svc.filterWatching.value = v;
-                                  General.filterWatching.set(v);
-                                },
-                              ),
-                              AnymeXTile.toggle(
-                                icon: Icons.cancel_outlined,
-                                title: 'Hide Dropped',
-                                subtitle: 'Hide entries that you have dropped.',
-                                value: svc.filterDropped.value,
-                                onChanged: (v) {
-                                  svc.filterDropped.value = v;
-                                  General.filterDropped.set(v);
-                                },
-                              ),
-                              AnymeXTile.toggle(
-                                icon: Icons.event_note_outlined,
-                                title: 'Hide Planning',
-                                subtitle:
-                                    'Hide entries that are in your plan list.',
-                                value: svc.filterPlanning.value,
-                                onChanged: (v) {
-                                  svc.filterPlanning.value = v;
-                                  General.filterPlanning.set(v);
-                                },
-                              ),
-                              AnymeXTile.toggle(
-                                icon: Icons.pause_circle_outline_rounded,
-                                title: 'Hide On Hold / Paused',
-                                subtitle:
-                                    'Hide entries that you have put on hold.',
-                                value: svc.filterPaused.value,
-                                onChanged: (v) {
-                                  svc.filterPaused.value = v;
-                                  General.filterPaused.set(v);
-                                },
-                              ),
-                              AnymeXTile.toggle(
-                                icon: Icons.replay_rounded,
-                                title: 'Hide Rewatching',
-                                subtitle:
-                                    'Hide entries that you are rewatching.',
-                                value: svc.filterRepeating.value,
-                                onChanged: (v) {
-                                  svc.filterRepeating.value = v;
-                                  General.filterRepeating.set(v);
-                                },
-                              ),
-                            ],
-                          );
-                        }),
-                      ],
-                    ),
+                          ),
+                          if (svc.filterByListEnabled.value) ...[
+                            AnymeXTile.toggle(
+                              icon: Icons.check_circle_outline_rounded,
+                              title: 'Hide Completed',
+                              subtitle:
+                                  'Hide entries that are marked as completed in your list.',
+                              value: svc.filterCompleted.value,
+                              onChanged: (v) {
+                                svc.filterCompleted.value = v;
+                                General.filterCompleted.set(v);
+                              },
+                            ),
+                            AnymeXTile.toggle(
+                              icon: Icons.remove_red_eye_outlined,
+                              title: 'Hide Watching / Reading',
+                              subtitle:
+                                  'Hide entries that you are currently watching or reading.',
+                              value: svc.filterWatching.value,
+                              onChanged: (v) {
+                                svc.filterWatching.value = v;
+                                General.filterWatching.set(v);
+                              },
+                            ),
+                            AnymeXTile.toggle(
+                              icon: Icons.cancel_outlined,
+                              title: 'Hide Dropped',
+                              subtitle: 'Hide entries that you have dropped.',
+                              value: svc.filterDropped.value,
+                              onChanged: (v) {
+                                svc.filterDropped.value = v;
+                                General.filterDropped.set(v);
+                              },
+                            ),
+                            AnymeXTile.toggle(
+                              icon: Icons.event_note_outlined,
+                              title: 'Hide Planning',
+                              subtitle:
+                                  'Hide entries that are in your plan list.',
+                              value: svc.filterPlanning.value,
+                              onChanged: (v) {
+                                svc.filterPlanning.value = v;
+                                General.filterPlanning.set(v);
+                              },
+                            ),
+                            AnymeXTile.toggle(
+                              icon: Icons.pause_circle_outline_rounded,
+                              title: 'Hide On Hold / Paused',
+                              subtitle:
+                                  'Hide entries that you have put on hold.',
+                              value: svc.filterPaused.value,
+                              onChanged: (v) {
+                                svc.filterPaused.value = v;
+                                General.filterPaused.set(v);
+                              },
+                            ),
+                            AnymeXTile.toggle(
+                              icon: Icons.replay_rounded,
+                              title: 'Hide Rewatching',
+                              subtitle:
+                                  'Hide entries that you are rewatching.',
+                              value: svc.filterRepeating.value,
+                              onChanged: (v) {
+                                svc.filterRepeating.value = v;
+                                General.filterRepeating.set(v);
+                              },
+                            ),
+                          ],
+                        ],
+                      );
+                    }),
                     AnymeXSectionBuilder(
                       title: 'Home Page Lists',
                       children: [

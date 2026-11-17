@@ -86,7 +86,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
     defaultTheme = provider.currentThemeMode == "default";
     materialTheme = provider.currentThemeMode == "material";
     customTheme = provider.currentThemeMode == "custom";
-    selectedColorIndex = ThemeKeys.customColorIndex.get<int>(0);
+    selectedColorIndex =
+        ThemeKeys.customColorIndex.get<int>(colorKeys.indexOf("DeepPurple"));
     isOled = provider.isOled;
     themeMode = provider.isSystemMode
         ? "System"

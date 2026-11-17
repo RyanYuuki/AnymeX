@@ -1073,7 +1073,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            padding: const EdgeInsets.only(bottom: 8),
             child: Row(
               children: [
                 Expanded(
@@ -1125,7 +1125,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(4, 12, 4, 16),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
                 AnymeXExpansionTile(
                   title: "Media Library",
@@ -1172,7 +1172,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 AnymeXExpansionTile(
                   title: "Settings & Authentication",
                   icon: Icons.tune_rounded,
@@ -1241,7 +1241,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 AnymeXExpansionTile(
                   title: "Extensions",
                   icon: Icons.extension_rounded,
@@ -1270,7 +1270,7 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 AnymeXExpansionTile(
                   title: "Runtime Host",
                   icon: Icons.memory_rounded,
@@ -1295,14 +1295,13 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 AnymeXExpansionTile(
                   title: "Security & Encryption",
                   icon: Icons.lock_outline_rounded,
                   initialExpanded: true,
                   content: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 4, vertical: 8),
+                    padding: const EdgeInsets.only(top: 2, bottom: 6),
                     child: Column(
                       children: [
                         AnymeXTile.checkbox(
@@ -1436,15 +1435,15 @@ class _ExportBackupSheetState extends State<ExportBackupSheet> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(4, 12, 4, 4),
+            padding: const EdgeInsets.only(top: 8),
             child: ElevatedButton(
               onPressed: _handleExport,
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
-                minimumSize: const Size(double.infinity, 54),
+                minimumSize: const Size(double.infinity, 48),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 elevation: 0,
               ),

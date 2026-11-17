@@ -5,6 +5,7 @@ import 'package:anymex/screens/settings/sub_settings/settings_extension_manager.
 import 'package:anymex/screens/settings/sub_settings/widgets/backup_and_restore_widgets.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -331,78 +332,71 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
             color: theme.colorScheme.onSurfaceVariant.opaque(0.7),
           ),
         ),
-        AnymeXTileBuilder<dynamic>(
-          items: const [],
-          getTitle: (_) => '',
-          onItemPressed: (_) {},
-          children: [
-            AnymeXTile(
-              icon: Icons.archive_outlined,
-              title: "Export Device Backup",
-              subtitle:
-                  "Create a full .anymex archive of your media library, settings, extensions, and host runtime",
-              trailing: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.opaque(0.12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: AnymeXText(
-                  "NEW",
-                  size: 11,
-                  variant: TextVariant.bold,
-                  color: theme.colorScheme.primary,
-                ),
+        AnymeXContainer(
+          color: theme.colorScheme.surfaceContainer
+              .opaque(0.45, iReallyMeanIt: true),
+          borderRadius: BorderRadius.circular(18.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnymeXTile(
+                backgroundColor: Colors.transparent,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(18.0)),
+                icon: Icons.archive_outlined,
+                title: "Export Device Backup",
+                subtitle:
+                    "Create a full .anymex archive of your media library, settings, extensions, and host runtime",
+                showChevron: false,
+                onTap: controller.isBackingUp.value ? null : _openExportSheet,
               ),
-              onTap: controller.isBackingUp.value ? null : _openExportSheet,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed:
-                      controller.isBackingUp.value ? null : _openExportSheet,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed:
+                        controller.isBackingUp.value ? null : _openExportSheet,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
                     ),
-                    elevation: 0,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (controller.isBackingUp.value)
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                theme.colorScheme.onPrimary),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (controller.isBackingUp.value)
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  theme.colorScheme.onPrimary),
+                            ),
+                          )
+                        else ...[
+                          Icon(Icons.file_upload_outlined,
+                              color: theme.colorScheme.onPrimary, size: 20),
+                          const SizedBox(width: 8),
+                          AnymeXText(
+                            "Configure & Export",
+                            variant: TextVariant.bold,
+                            color: theme.colorScheme.onPrimary,
+                            size: 15,
                           ),
-                        )
-                      else ...[
-                        Icon(Icons.file_upload_outlined,
-                            color: theme.colorScheme.onPrimary, size: 20),
-                        const SizedBox(width: 8),
-                        AnymeXText(
-                          "Configure & Export",
-                          variant: TextVariant.bold,
-                          color: theme.colorScheme.onPrimary,
-                          size: 15,
-                        ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -460,41 +454,99 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
             color: theme.colorScheme.onSurfaceVariant.opaque(0.7),
           ),
         ),
-        AnymeXTileBuilder<dynamic>(
-          items: const [],
-          getTitle: (_) => '',
-          onItemPressed: (_) {},
-          children: [
-            AnymeXTile(
-              icon: Icons.folder_open_rounded,
-              title: "Backup Archive",
-              subtitle:
-                  _selectedFileName ?? "Select an .anymex, .tachibk, .proto.gz, or .zip backup file",
-              trailing: _selectedFileName != null
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.opaque(0.12),
-                        borderRadius: BorderRadius.circular(8),
+        if (info == null)
+          AnymeXContainer(
+            color: theme.colorScheme.surfaceContainer
+                .opaque(0.45, iReallyMeanIt: true),
+            borderRadius: BorderRadius.circular(18.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnymeXTile(
+                  backgroundColor: Colors.transparent,
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(18.0)),
+                  icon: Icons.folder_open_rounded,
+                  title: "Backup Archive",
+                  subtitle:
+                      "Select an .anymex, .tachibk, .proto.gz, or .zip backup file",
+                  showChevron: false,
+                  onTap: _isLoadingFile ? null : _pickAndLoadFile,
+                ),
+                if (_isLoadingFile)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _pickAndLoadFile,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.file_open_outlined,
+                                color: theme.colorScheme.onPrimary, size: 20),
+                            const SizedBox(width: 8),
+                            AnymeXText(
+                              "Choose a backup file (.anymex)",
+                              variant: TextVariant.bold,
+                              color: theme.colorScheme.onPrimary,
+                              size: 15,
+                            ),
+                          ],
+                        ),
                       ),
-                      child: AnymeXText(
-                        (info?['format'] as String?)?.toUpperCase() ?? "LOADED",
-                        size: 10,
-                        variant: TextVariant.bold,
-                        color: theme.colorScheme.primary,
-                      ),
-                    )
-                  : Icon(Icons.arrow_forward_ios_rounded,
-                      size: 14, color: theme.colorScheme.onSurfaceVariant),
-              onTap: _pickAndLoadFile,
+                    ),
+                  ),
+              ],
             ),
-            if (_isLoadingFile)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 32),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (info != null) ...[
+          )
+        else
+          AnymeXTileBuilder<dynamic>(
+            items: const [],
+            getTitle: (_) => '',
+            onItemPressed: (_) {},
+            children: [
+              AnymeXTile(
+                icon: Icons.folder_open_rounded,
+                title: "Backup Archive",
+                subtitle: _selectedFileName ??
+                    "Select an .anymex, .tachibk, .proto.gz, or .zip backup file",
+                trailing: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.opaque(0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: AnymeXText(
+                    (info['format'] as String?)?.toUpperCase() ?? "LOADED",
+                    size: 10,
+                    variant: TextVariant.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                onTap: _pickAndLoadFile,
+              ),
+              if (_isLoadingFile)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 32),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else ...[
               AnymeXTile(
                 icon: Icons.tune_rounded,
                 title: "Conflict Handling",
@@ -748,43 +800,6 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                           ),
                         ],
                       ],
-                    ),
-                  ),
-                ),
-              ),
-            ] else ...[
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-                child: Center(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: _pickAndLoadFile,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 14),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest
-                            .opaque(0.3),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: theme.colorScheme.outlineVariant.opaque(0.3),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.file_open_outlined,
-                              color: theme.colorScheme.primary, size: 20),
-                          const SizedBox(width: 10),
-                          AnymeXText(
-                            "Choose a backup file (.anymex)",
-                            variant: TextVariant.semiBold,
-                            color: theme.colorScheme.primary,
-                            size: 14,
-                          ),
-                        ],
-                      ),
                     ),
                   ),
                 ),

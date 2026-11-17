@@ -154,100 +154,105 @@ class _SettingsCommentsState extends State<SettingsComments> {
                 );
               }),
               const SizedBox(height: 16),
-              AnymeXSectionBuilder(
-                title: 'Notification Preferences',
-                children: [
-                  Obx(() {
-                    if (commentumService.currentUserId == null) {
-                      return const AnymeXTile(
+              Obx(() {
+                if (commentumService.currentUserId == null) {
+                  return const AnymeXSectionBuilder(
+                    title: 'Notification Preferences',
+                    children: [
+                      AnymeXTile(
                         icon: Icons.notifications_off_outlined,
                         title: 'Log In Required',
                         subtitle:
                             'Log in to customize your push notification preferences.',
                         showChevron: false,
-                      );
-                    }
+                      ),
+                    ],
+                  );
+                }
 
-                    if (_isLoadingPreferences.value) {
-                      return Container(
+                if (_isLoadingPreferences.value) {
+                  return AnymeXSectionBuilder(
+                    title: 'Notification Preferences',
+                    children: [
+                      Container(
                         padding: const EdgeInsets.symmetric(vertical: 24.0),
                         alignment: Alignment.center,
                         child: const CircularProgressIndicator(),
-                      );
-                    }
+                      ),
+                    ],
+                  );
+                }
 
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnymeXTile.toggle(
-                          icon: Icons.reply_rounded,
-                          title: 'Comment Replies',
-                          subtitle: 'Notify when someone replies to your comment',
-                          value: _notifyOnReply.value,
-                          onChanged: (v) =>
-                              _updatePreference('notify_on_reply', _notifyOnReply, v),
-                        ),
-                        AnymeXTile.toggle(
-                          icon: Icons.alternate_email_rounded,
-                          title: 'Mentions',
-                          subtitle: 'Notify when someone @mentions your username',
-                          value: _notifyOnMention.value,
-                          onChanged: (v) => _updatePreference(
-                              'notify_on_mention', _notifyOnMention, v),
-                        ),
-                        AnymeXTile.toggle(
-                          icon: Icons.campaign_outlined,
-                          title: 'Announcements',
-                          subtitle:
-                              'Notify for official announcements and app updates',
-                          value: _notifyOnAnnouncement.value,
-                          onChanged: (v) => _updatePreference(
-                              'notify_on_announcement', _notifyOnAnnouncement, v),
-                        ),
-                        AnymeXTile.toggle(
-                          icon: Icons.forum_outlined,
-                          title: 'Recent Media Comments',
-                          subtitle:
-                              'Notify on new comments for media you discussed',
-                          value: _notifyOnRecentComment.value,
-                          onChanged: (v) => _updatePreference(
-                              'notify_on_recent_comment',
-                              _notifyOnRecentComment,
-                              v),
-                        ),
-                        AnymeXTile.toggle(
-                          icon: Icons.thumb_up_alt_outlined,
-                          title: 'Votes',
-                          subtitle: 'Notify on upvotes and downvotes',
-                          value: _notifyOnVote.value,
-                          onChanged: (v) =>
-                              _updatePreference('notify_on_vote', _notifyOnVote, v),
-                        ),
-                        AnymeXTile.toggle(
-                          icon: Icons.delete_outline_rounded,
-                          title: 'Comment Deleted',
-                          subtitle:
-                              'Notify if your comment is removed by a moderator',
-                          value: _notifyOnCommentDelete.value,
-                          onChanged: (v) => _updatePreference(
-                              'notify_on_comment_delete',
-                              _notifyOnCommentDelete,
-                              v),
-                        ),
-                        AnymeXTile.toggle(
-                          icon: Icons.shield_outlined,
-                          title: 'Moderation Actions',
-                          subtitle:
-                              'Notify on warnings, pinned comments, or thread locks',
-                          value: _notifyOnModAction.value,
-                          onChanged: (v) => _updatePreference(
-                              'notify_on_mod_action', _notifyOnModAction, v),
-                        ),
-                      ],
-                    );
-                  }),
-                ],
-              ),
+                return AnymeXSectionBuilder(
+                  title: 'Notification Preferences',
+                  children: [
+                    AnymeXTile.toggle(
+                      icon: Icons.reply_rounded,
+                      title: 'Comment Replies',
+                      subtitle: 'Notify when someone replies to your comment',
+                      value: _notifyOnReply.value,
+                      onChanged: (v) =>
+                          _updatePreference('notify_on_reply', _notifyOnReply, v),
+                    ),
+                    AnymeXTile.toggle(
+                      icon: Icons.alternate_email_rounded,
+                      title: 'Mentions',
+                      subtitle: 'Notify when someone @mentions your username',
+                      value: _notifyOnMention.value,
+                      onChanged: (v) => _updatePreference(
+                          'notify_on_mention', _notifyOnMention, v),
+                    ),
+                    AnymeXTile.toggle(
+                      icon: Icons.campaign_outlined,
+                      title: 'Announcements',
+                      subtitle:
+                          'Notify for official announcements and app updates',
+                      value: _notifyOnAnnouncement.value,
+                      onChanged: (v) => _updatePreference(
+                          'notify_on_announcement', _notifyOnAnnouncement, v),
+                    ),
+                    AnymeXTile.toggle(
+                      icon: Icons.forum_outlined,
+                      title: 'Recent Media Comments',
+                      subtitle:
+                          'Notify on new comments for media you discussed',
+                      value: _notifyOnRecentComment.value,
+                      onChanged: (v) => _updatePreference(
+                          'notify_on_recent_comment',
+                          _notifyOnRecentComment,
+                          v),
+                    ),
+                    AnymeXTile.toggle(
+                      icon: Icons.thumb_up_alt_outlined,
+                      title: 'Votes',
+                      subtitle: 'Notify on upvotes and downvotes',
+                      value: _notifyOnVote.value,
+                      onChanged: (v) =>
+                          _updatePreference('notify_on_vote', _notifyOnVote, v),
+                    ),
+                    AnymeXTile.toggle(
+                      icon: Icons.delete_outline_rounded,
+                      title: 'Comment Deleted',
+                      subtitle:
+                          'Notify if your comment is removed by a moderator',
+                      value: _notifyOnCommentDelete.value,
+                      onChanged: (v) => _updatePreference(
+                          'notify_on_comment_delete',
+                          _notifyOnCommentDelete,
+                          v),
+                    ),
+                    AnymeXTile.toggle(
+                      icon: Icons.shield_outlined,
+                      title: 'Moderation Actions',
+                      subtitle:
+                          'Notify on warnings, pinned comments, or thread locks',
+                      value: _notifyOnModAction.value,
+                      onChanged: (v) => _updatePreference(
+                          'notify_on_mod_action', _notifyOnModAction, v),
+                    ),
+                  ],
+                );
+              }),
               const SizedBox(height: 16),
               AnymeXSectionBuilder(
                 title: 'Help & Information',

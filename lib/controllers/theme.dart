@@ -24,7 +24,7 @@ class ThemeController extends GetxController {
   List<String> availThemeModes = ["default", "material", "custom"];
 
   ThemeController()
-      : _seedColor = Colors.indigo,
+      : _seedColor = Colors.deepPurple,
         isLightMode = ThemeKeys.isLightMode.get<bool>(false),
         isSystemMode = ThemeKeys.isSystemMode.get<bool>(false),
         isOled = ThemeKeys.isOled.get<bool>(false),
@@ -47,10 +47,11 @@ class ThemeController extends GetxController {
 
   void _determineSeedColor() {
     if (currentThemeMode == "default") {
-      _seedColor = Colors.indigo;
+      _seedColor = Colors.deepPurple;
     } else if (currentThemeMode == "material") {
     } else {
-      int colorIndex = ThemeKeys.customColorIndex.get<int>(0);
+      int colorIndex =
+          ThemeKeys.customColorIndex.get<int>(colorKeys.indexOf("DeepPurple"));
       if (colorIndex == -1) {
         final hexStr = ThemeKeys.customHexColor.get<String>("#FFFFFF");
         _seedColor = Color(int.parse(hexStr.replaceFirst('#', '0xff')));
@@ -119,7 +120,7 @@ class ThemeController extends GetxController {
     final corePalette = await DynamicColorPlugin.getCorePalette();
     _seedColor = corePalette != null
         ? Color(corePalette.primary.get(40))
-        : Colors.indigo;
+        : Colors.deepPurple;
     _updateThemeImmediately();
   }
 
@@ -160,7 +161,7 @@ class ThemeController extends GetxController {
   void setDefaultTheme() {
     currentThemeMode = "default";
     ThemeKeys.themeMode.set("default");
-    _seedColor = Colors.indigo;
+    _seedColor = Colors.deepPurple;
     _updateThemeImmediately();
   }
 
@@ -235,7 +236,7 @@ class ThemeController extends GetxController {
     isOled = false;
     selectedVariantIndex = 0;
     currentThemeMode = "default";
-    _seedColor = Colors.indigo;
+    _seedColor = Colors.deepPurple;
     _updateThemeImmediately();
   }
 

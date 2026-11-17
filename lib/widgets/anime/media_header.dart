@@ -506,50 +506,47 @@ class MediaHeader extends StatelessWidget {
     VoidCallback? onTap,
     IconData? icon,
     Color? dotColor,
+    bool highlighted = false,
   }) {
+    final colors = context.colors;
+    final isDesktop = MediaQuery.sizeOf(context).width > 700;
+    final height = isDesktop ? 36.0 : 32.0;
     final chip = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      height: height,
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 16 : 13),
       decoration: BoxDecoration(
-        color: context.colors.surfaceContainerHighest
-            .opaque(0.35, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: context.colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-          width: 0.8,
-        ),
+        color: highlighted
+            ? colors.primary.opaque(0.2, iReallyMeanIt: true)
+            : colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(height / 2),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (dotColor != null) ...[
             Container(
-              width: 7,
-              height: 7,
+              width: 8,
+              height: 8,
               decoration: BoxDecoration(
                 color: dotColor,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: dotColor.withValues(alpha: 0.5),
-                    blurRadius: 4,
-                  ),
-                ],
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
           ] else if (icon != null) ...[
             Icon(
               icon,
-              size: 13,
-              color: context.colors.primary,
+              size: isDesktop ? 16 : 14,
+              color: colors.primary,
             ),
-            const SizedBox(width: 5),
+            const SizedBox(width: 6),
           ],
           Flexible(
             child: AnymeXText(
               val,
               variant: TextVariant.semiBold,
-              size: 11,
+              size: isDesktop ? 14 : 12.5,
+              color: highlighted ? colors.primary : colors.onSurface,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

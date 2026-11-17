@@ -22,7 +22,8 @@ import 'package:anymex/widgets/anymex_widgets/anymex_textspan.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_linear_indicator.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/common/baked_blur_image.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -85,12 +86,9 @@ Widget buildMediaStatsSection(
         MapEntry(genresTagsCard, _estimateGenresTagsHeight(media)),
       if (altTitlesCard != null)
         MapEntry(altTitlesCard, _estimateAltTitlesHeight(media)),
-      if (friendsCard != null)
-        MapEntry(friendsCard, _estimateFriendsHeight()),
-      if (seasonsCard != null)
-        MapEntry(seasonsCard, _estimateSeasonsHeight()),
-      if (extrasCard != null)
-        MapEntry(extrasCard, _estimateExtrasHeight()),
+      if (friendsCard != null) MapEntry(friendsCard, _estimateFriendsHeight()),
+      if (seasonsCard != null) MapEntry(seasonsCard, _estimateSeasonsHeight()),
+      if (extrasCard != null) MapEntry(extrasCard, _estimateExtrasHeight()),
     ];
 
     for (final item in dynamicPool) {
@@ -191,9 +189,8 @@ double _estimateStatsHeight(Media media, MediaDetailsController? controller) {
       (isAnime && media.duration.isNotEmpty && media.duration != '?')
           ? media.duration
           : '';
-  final formatVal = media.format.isNotEmpty && media.format != '?'
-      ? media.format
-      : '';
+  final formatVal =
+      media.format.isNotEmpty && media.format != '?' ? media.format : '';
   final sourceVal = media.sourceMaterial != null &&
           media.sourceMaterial!.isNotEmpty &&
           media.sourceMaterial != '?'
@@ -270,9 +267,9 @@ double _estimateAltTitlesHeight(Media media) {
   return h;
 }
 
-double _estimateFriendsHeight() => 125.0;
+double _estimateFriendsHeight() => 185.0;
 
-double _estimateSeasonsHeight() => 130.0;
+double _estimateSeasonsHeight() => 270.0;
 
 double _estimateExtrasHeight() => 185.0;
 
@@ -295,6 +292,57 @@ List<Widget> _withSpacers(List<Widget> widgets, double spacing) {
     }
   }
   return result;
+}
+
+BoxDecoration _cardDecoration(ColorScheme colors) {
+  return BoxDecoration(
+    color: colors.surfaceContainerHighest.opaque(0.4, iReallyMeanIt: true),
+    borderRadius: BorderRadius.circular(28),
+    border: Border.all(
+      color: colors.onSurface.opaque(0.07, iReallyMeanIt: true),
+      width: 1,
+    ),
+  );
+}
+
+Widget _cardTitle(ColorScheme colors, String text) {
+  return AnymeXText(
+    text,
+    size: 16,
+    variant: TextVariant.bold,
+    color: colors.onSurface,
+  );
+}
+
+Widget _chipShell(ColorScheme colors, Widget child, {Color? fill}) {
+  return Container(
+    height: 28,
+    padding: const EdgeInsets.symmetric(horizontal: 10),
+    decoration: BoxDecoration(
+      color: fill ?? colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+      borderRadius: BorderRadius.circular(14),
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [child],
+    ),
+  );
+}
+
+Widget _moreChip(ColorScheme colors, String label, VoidCallback onTap) {
+  return GestureDetector(
+    onTap: onTap,
+    child: _chipShell(
+      colors,
+      AnymeXText(
+        label,
+        size: 11.5,
+        variant: TextVariant.bold,
+        color: colors.primary,
+      ),
+      fill: colors.primary.opaque(0.16, iReallyMeanIt: true),
+    ),
+  );
 }
 
 Widget buildProgressContainer(
@@ -359,14 +407,7 @@ Widget buildProgressContainer(
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-          width: 0.8,
-        ),
-      ),
+      decoration: _cardDecoration(colors),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -375,11 +416,9 @@ Widget buildProgressContainer(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              AnymeXText(
-                (controller.isAnime ? 'WATCHING PROGRESS' : 'READING PROGRESS'),
-                size: 11,
-                variant: TextVariant.bold,
-                color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
+              _cardTitle(
+                colors,
+                controller.isAnime ? 'Watching progress' : 'Reading progress',
               ),
               AnymeXTextSpans(
                 spans: [
@@ -403,8 +442,7 @@ Widget buildProgressContainer(
           AnymeXLinearIndicator(
             value: pct,
             color: colors.primary,
-            backgroundColor:
-                colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+            backgroundColor: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
             minHeight: 4.5,
           ),
           const SizedBox(height: 12),
@@ -436,14 +474,7 @@ Widget buildAiringCountdownCard(
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-          width: 0.8,
-        ),
-      ),
+      decoration: _cardDecoration(colors),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -451,16 +482,11 @@ Widget buildAiringCountdownCard(
             children: [
               Icon(
                 Icons.timer_outlined,
-                color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
-                size: 14,
+                color: colors.primary,
+                size: 16,
               ),
-              const SizedBox(width: 6),
-              AnymeXText(
-                'EPISODE ${airing.episode} AIRING IN',
-                size: 11,
-                variant: TextVariant.bold,
-                color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
-              ),
+              const SizedBox(width: 8),
+              _cardTitle(colors, 'Episode ${airing.episode} Airing in'),
             ],
           ),
           const SizedBox(height: 12),
@@ -503,12 +529,8 @@ Widget _buildTimeSegment(BuildContext context, String value, String unit) {
     padding: const EdgeInsets.symmetric(vertical: 10),
     alignment: Alignment.center,
     decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.35, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.06, iReallyMeanIt: true),
-        width: 0.8,
-      ),
+      color: colors.onSurface.opaque(0.05, iReallyMeanIt: true),
+      borderRadius: BorderRadius.circular(20),
     ),
     child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -549,11 +571,12 @@ Widget buildStatsGrid(BuildContext context, Media media,
           ? controller.chapterList.length.toString()
           : '');
 
-  final scoreVal = (media.rating.isNotEmpty && media.rating != '?')
-      ? media.rating
-      : '0.0';
+  final scoreVal =
+      (media.rating.isNotEmpty && media.rating != '?') ? media.rating : '0.0';
   final scoreDouble = double.tryParse(scoreVal) ?? 0.0;
-  final scoreProgress = (scoreDouble > 10 ? scoreDouble / 100.0 : scoreDouble / 10.0).clamp(0.0, 1.0);
+  final scoreProgress =
+      (scoreDouble > 10 ? scoreDouble / 100.0 : scoreDouble / 10.0)
+          .clamp(0.0, 1.0);
   final ratingAdjective = scoreDouble >= 8.5
       ? 'Masterpiece'
       : (scoreDouble >= 8.0
@@ -681,20 +704,14 @@ Widget buildStatsGrid(BuildContext context, Media media,
     statusDotColor = colors.secondary;
   }
   final statusLabel = media.status.isNotEmpty && media.status != '?'
-      ? (media.status[0].toUpperCase() + media.status.substring(1).toLowerCase())
+      ? (media.status[0].toUpperCase() +
+          media.status.substring(1).toLowerCase())
       : 'Unknown';
 
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-        width: 0.8,
-      ),
-    ),
+    decoration: _cardDecoration(colors),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -755,46 +772,20 @@ Widget buildStatsGrid(BuildContext context, Media media,
           ],
         ),
         if (validRankings.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Divider(
-              color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-              height: 1,
-              thickness: 0.8,
-            ),
-          ),
+          const SizedBox(height: 10),
           ...rankingRows,
         ],
         if (stats.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Divider(
-              color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-              height: 1,
-              thickness: 0.8,
-            ),
-          ),
+          const SizedBox(height: 10),
           ...statRows,
         ],
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Divider(
-            color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-            height: 1,
-            thickness: 0.8,
-          ),
-        ),
+        const SizedBox(height: 10),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color:
-                colors.surfaceContainerHighest.opaque(0.14, iReallyMeanIt: true),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: colors.onSurface.opaque(0.04, iReallyMeanIt: true),
-              width: 0.8,
-            ),
+            color: colors.onSurface.opaque(0.05, iReallyMeanIt: true),
+            borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -878,14 +869,14 @@ Widget _buildRankingItem(ColorScheme colors, Ranking ranking) {
     width: double.infinity,
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.14, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(
-        color: isRankOne
-            ? const Color(0xFFE5A93C).withValues(alpha: 0.35)
-            : colors.onSurface.opaque(0.04, iReallyMeanIt: true),
-        width: 0.8,
-      ),
+      color: colors.onSurface.opaque(0.05, iReallyMeanIt: true),
+      borderRadius: BorderRadius.circular(20),
+      border: isRankOne
+          ? Border.all(
+              color: const Color(0xFFE5A93C).withValues(alpha: 0.35),
+              width: 1,
+            )
+          : null,
     ),
     child: Row(
       children: [
@@ -956,12 +947,8 @@ Widget _buildStatItem(ColorScheme colors, String label, String value) {
     width: double.infinity,
     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.14, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.04, iReallyMeanIt: true),
-        width: 0.8,
-      ),
+      color: colors.onSurface.opaque(0.05, iReallyMeanIt: true),
+      borderRadius: BorderRadius.circular(20),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -998,23 +985,11 @@ Widget buildSynopsisCard(BuildContext context, Media media) {
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-        width: 0.8,
-      ),
-    ),
+    decoration: _cardDecoration(colors),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnymeXText(
-          'SYNOPSIS',
-          size: 11,
-          variant: TextVariant.bold,
-          color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-        ),
+        _cardTitle(colors, 'Synopsis'),
         const SizedBox(height: 10),
         ValueListenableBuilder<bool>(
           valueListenable: isExpanded,
@@ -1029,31 +1004,25 @@ Widget buildSynopsisCard(BuildContext context, Media media) {
                   overflow: TextOverflow.ellipsis,
                   isMarquee: false,
                   style: TextStyle(
-                    height: 1.5,
+                    height: 1.55,
                     color: colors.onSurface.opaque(0.85, iReallyMeanIt: true),
                   ),
                 ),
                 if (cleanDesc.length > 200) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   InkWell(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(20),
                     onTap: () => isExpanded.value = !expanded,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
+                          horizontal: 14, vertical: 6),
                       decoration: BoxDecoration(
-                        color: colors.surfaceContainerHighest
-                            .opaque(0.5, iReallyMeanIt: true),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: colors.onSurface
-                              .opaque(0.08, iReallyMeanIt: true),
-                          width: 0.8,
-                        ),
+                        color: colors.primary.opaque(0.16, iReallyMeanIt: true),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: AnymeXText(
                         expanded ? 'Show less' : 'Read more',
-                        size: 11,
+                        size: 11.5,
                         variant: TextVariant.bold,
                         color: colors.primary,
                       ),
@@ -1078,24 +1047,12 @@ Widget buildGenresAndTagsCard(BuildContext context, Media media) {
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-        width: 0.8,
-      ),
-    ),
+    decoration: _cardDecoration(colors),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (hasGenres) ...[
-          AnymeXText(
-            'GENRES',
-            size: 11,
-            variant: TextVariant.bold,
-            color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-          ),
+          _cardTitle(colors, 'Genres'),
           const SizedBox(height: 10),
           Wrap(
             spacing: 6,
@@ -1107,12 +1064,7 @@ Widget buildGenresAndTagsCard(BuildContext context, Media media) {
         ],
         if (hasGenres && hasTags) const SizedBox(height: 16),
         if (hasTags) ...[
-          AnymeXText(
-            'TAGS',
-            size: 11,
-            variant: TextVariant.bold,
-            color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-          ),
+          _cardTitle(colors, 'Tags'),
           const SizedBox(height: 10),
           if (media.tags.length <= 10)
             Wrap(
@@ -1134,29 +1086,10 @@ Widget buildGenresAndTagsCard(BuildContext context, Media media) {
                   children: [
                     ...visibleTags.map(
                         (tag) => buildTagChip(context, tag, media.mediaType)),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () => isTagsExpanded.value = !expanded,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 9, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: colors.primary.opaque(0.18, iReallyMeanIt: true),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: colors.primary.opaque(0.4, iReallyMeanIt: true),
-                            width: 0.8,
-                          ),
-                        ),
-                        child: AnymeXText(
-                          expanded
-                              ? 'Less'
-                              : 'More (${media.tags.length - 10})',
-                          size: 10.5,
-                          variant: TextVariant.semiBold,
-                          color: colors.primary,
-                        ),
-                      ),
+                    _moreChip(
+                      colors,
+                      expanded ? 'Less' : 'More (${media.tags.length - 10})',
+                      () => isTagsExpanded.value = !expanded,
                     ),
                   ],
                 );
@@ -1176,13 +1109,8 @@ Widget? buildStudiosCard(BuildContext context, Media media) {
 
   Widget buildStudioChip(int index, String studioName) {
     final isMainStudio = index == 0;
-    final chipColor = isMainStudio
-        ? colors.primary.opaque(0.18, iReallyMeanIt: true)
-        : colors.surfaceContainerHighest.opaque(0.35, iReallyMeanIt: true);
-    final borderColor = isMainStudio
-        ? colors.primary.opaque(0.4, iReallyMeanIt: true)
-        : colors.onSurface.opaque(0.08, iReallyMeanIt: true);
-    final textColor = isMainStudio ? colors.primary : colors.onSurface;
+    final chipFill =
+        isMainStudio ? colors.primary.opaque(0.2, iReallyMeanIt: true) : null;
 
     return GestureDetector(
       onTap: () async {
@@ -1195,36 +1123,28 @@ Widget? buildStudiosCard(BuildContext context, Media media) {
           );
         }
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: chipColor,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: borderColor,
-            width: isMainStudio ? 1.0 : 0.8,
-          ),
-        ),
-        child: Row(
+      child: _chipShell(
+        colors,
+        Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isMainStudio) ...[
               Icon(
                 Icons.movie_creation_rounded,
-                size: 12,
+                size: 13,
                 color: colors.primary,
               ),
-              const SizedBox(width: 5),
+              const SizedBox(width: 6),
             ],
             AnymeXText(
               studioName,
               size: 11,
-              variant:
-                  isMainStudio ? TextVariant.bold : TextVariant.semiBold,
-              color: textColor,
+              variant: isMainStudio ? TextVariant.bold : TextVariant.semiBold,
+              color: isMainStudio ? colors.primary : colors.onSurface,
             ),
           ],
         ),
+        fill: chipFill,
       ),
     );
   }
@@ -1232,23 +1152,11 @@ Widget? buildStudiosCard(BuildContext context, Media media) {
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-        width: 0.8,
-      ),
-    ),
+    decoration: _cardDecoration(colors),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnymeXText(
-          'STUDIOS',
-          size: 11,
-          variant: TextVariant.bold,
-          color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-        ),
+        _cardTitle(colors, 'Studios'),
         const SizedBox(height: 12),
         if (studios.length <= 4)
           Wrap(
@@ -1274,27 +1182,10 @@ Widget? buildStudiosCard(BuildContext context, Media media) {
                       .asMap()
                       .entries
                       .map((entry) => buildStudioChip(entry.key, entry.value)),
-                  InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () => isStudiosExpanded.value = !expanded,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: colors.primary.opaque(0.18, iReallyMeanIt: true),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: colors.primary.opaque(0.4, iReallyMeanIt: true),
-                          width: 0.8,
-                        ),
-                      ),
-                      child: AnymeXText(
-                        expanded ? 'Less' : 'More (${studios.length - 4})',
-                        size: 11,
-                        variant: TextVariant.semiBold,
-                        color: colors.primary,
-                      ),
-                    ),
+                  _moreChip(
+                    colors,
+                    expanded ? 'Less' : 'More (${studios.length - 4})',
+                    () => isStudiosExpanded.value = !expanded,
                   ),
                 ],
               );
@@ -1327,17 +1218,9 @@ Widget? buildAlternativeTitles(BuildContext context, Media media) {
   final ValueNotifier<bool> isSynonymsExpanded = ValueNotifier(false);
 
   Widget buildSynonymChip(String syn) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.opaque(0.4, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: colors.onSurface.opaque(0.06, iReallyMeanIt: true),
-          width: 0.8,
-        ),
-      ),
-      child: AnymeXText(
+    return _chipShell(
+      colors,
+      AnymeXText(
         syn,
         size: 11,
         variant: TextVariant.semiBold,
@@ -1348,23 +1231,11 @@ Widget? buildAlternativeTitles(BuildContext context, Media media) {
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-        width: 0.8,
-      ),
-    ),
+    decoration: _cardDecoration(colors),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnymeXText(
-          'ALTERNATIVE TITLES',
-          size: 11,
-          variant: TextVariant.bold,
-          color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-        ),
+        _cardTitle(colors, 'Alternative titles'),
         const SizedBox(height: 12),
         ...titles.map((entry) => Padding(
               padding: const EdgeInsets.only(bottom: 8),
@@ -1410,9 +1281,8 @@ Widget? buildAlternativeTitles(BuildContext context, Media media) {
                       ? Wrap(
                           spacing: 6,
                           runSpacing: 6,
-                          children: media.synonyms
-                              .map(buildSynonymChip)
-                              .toList(),
+                          children:
+                              media.synonyms.map(buildSynonymChip).toList(),
                         )
                       : ValueListenableBuilder<bool>(
                           valueListenable: isSynonymsExpanded,
@@ -1425,32 +1295,12 @@ Widget? buildAlternativeTitles(BuildContext context, Media media) {
                               runSpacing: 6,
                               children: [
                                 ...visibleSynonyms.map(buildSynonymChip),
-                                InkWell(
-                                  borderRadius: BorderRadius.circular(8),
-                                  onTap: () =>
-                                      isSynonymsExpanded.value = !expanded,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: colors.primary
-                                          .opaque(0.18, iReallyMeanIt: true),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(
-                                        color: colors.primary
-                                            .opaque(0.4, iReallyMeanIt: true),
-                                        width: 0.8,
-                                      ),
-                                    ),
-                                    child: AnymeXText(
-                                      expanded
-                                          ? 'Less'
-                                          : 'More (${media.synonyms.length - 5})',
-                                      size: 11,
-                                      variant: TextVariant.semiBold,
-                                      color: colors.primary,
-                                    ),
-                                  ),
+                                _moreChip(
+                                  colors,
+                                  expanded
+                                      ? 'Less'
+                                      : 'More (${media.synonyms.length - 5})',
+                                  () => isSynonymsExpanded.value = !expanded,
                                 ),
                               ],
                             );
@@ -1470,23 +1320,11 @@ Widget _buildSection(String title, List<Widget> children, ColorScheme colors) {
   return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: colors.surfaceContainerHighest.opaque(0.3, iReallyMeanIt: true),
-      borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-        width: 0.8,
-      ),
-    ),
+    decoration: _cardDecoration(colors),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnymeXText(
-          title.toUpperCase(),
-          size: 11,
-          variant: TextVariant.bold,
-          color: colors.onSurface.opaque(0.5, iReallyMeanIt: true),
-        ),
+        _cardTitle(colors, title),
         const SizedBox(height: 12),
         ...children,
       ],
@@ -1680,9 +1518,12 @@ Widget? buildSeasonsSection(BuildContext context, Media mediaData) {
 
   final colors = context.colors;
   final isDesktop = MediaQuery.sizeOf(context).width > 700;
+  final isPair = filteredRelations.length == 2;
 
-  Widget buildRelationButton(dynamic relation) {
+  Widget buildRelationCard(dynamic relation, BorderRadius radius,
+      {double height = 190}) {
     final isMangaRelation = relation.type == 'MANGA';
+    final isPrequel = relation.relationType == 'PREQUEL';
     final media = Media(
       id: relation.id.toString(),
       title: relation.title,
@@ -1692,51 +1533,266 @@ Widget? buildSeasonsSection(BuildContext context, Media mediaData) {
       mediaType: isMangaRelation ? ItemType.manga : ItemType.anime,
       serviceType: ServicesType.anilist,
     );
+    final imageUrl =
+        relation.cover.isNotEmpty ? relation.cover : relation.poster;
+    final fallbackUrl =
+        relation.poster.isNotEmpty ? relation.poster : relation.cover;
+    print('imageUrl=$imageUrl');
+    final rawLabel = relation.relationType.toString();
+    final label = rawLabel.isEmpty
+        ? rawLabel
+        : '${rawLabel[0]}${rawLabel.substring(1).toLowerCase()}';
+    final hint = isPrequel
+        ? (isMangaRelation ? 'Read before' : 'Watch before')
+        : (isMangaRelation ? 'Read next' : 'Up next');
 
-    return ImageButton(
-      buttonText: relation.relationType,
-      backgroundImage:
-          relation.cover.isNotEmpty ? relation.cover : relation.poster,
-      width: double.infinity,
-      height: 70,
-      borderRadius: 12,
-      onPressed: () {
+    return GestureDetector(
+      onTap: () {
         navigate(() => MediaDetailsPage(
               media: media,
               tag: relation.id.toString(),
             ));
       },
-      imageProportion: 0.5,
+      child: ClipRRect(
+        borderRadius: radius,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        child: SizedBox(
+          height: height,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (imageUrl.isNotEmpty)
+                Positioned.fill(
+                  child: RepaintBoundary(
+                    child: BakedBlurImage(
+                      url: imageUrl,
+                      fallback: fallbackUrl,
+                      isMesh: true,
+                      blurAmount: 20.0,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: height,
+                      fadeBottom: false,
+                    ),
+                  ),
+                ),
+              Positioned.fill(
+                child: ShaderMask(
+                  shaderCallback: (bounds) {
+                    return const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: [0.0, 0.40, 0.75],
+                      colors: [
+                        Colors.black,
+                        Colors.black,
+                        Colors.transparent,
+                      ],
+                    ).createShader(bounds);
+                  },
+                  blendMode: BlendMode.dstIn,
+                  child: AnymeXImage(
+                    imageUrl: imageUrl,
+                    errorImage: fallbackUrl,
+                    radius: 0,
+                    width: double.infinity,
+                    height: height,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 12,
+                top: 12,
+                child: Container(
+                  height: 30,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.55),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AnymeXText(
+                        label,
+                        size: 13,
+                        variant: TextVariant.semiBold,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 12,
+                top: 10,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isPrequel
+                        ? Icons.arrow_back_rounded
+                        : Icons.arrow_forward_rounded,
+                    size: 18,
+                    color: colors.onPrimary,
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 14,
+                right: 14,
+                bottom: 14,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnymeXText(
+                      relation.title,
+                      size: 14,
+                      variant: TextVariant.bold,
+                      color: Colors.white,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      isMarquee: false,
+                      style: const TextStyle(
+                        shadows: [
+                          Shadow(
+                            color: Colors.black54,
+                            blurRadius: 8,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    AnymeXText(
+                      hint,
+                      size: 12,
+                      variant: TextVariant.bold,
+                      color: colors.primary,
+                      style: const TextStyle(
+                        shadows: [
+                          Shadow(
+                            color: Colors.black54,
+                            blurRadius: 8,
+                            offset: Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  return _buildSection(
-    'Seasons',
-    [
-      if (isDesktop)
-        Row(
-          children: filteredRelations.map((relation) {
-            return Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                child: buildRelationButton(relation),
+  final Widget cards;
+  if (isPair) {
+    if (isDesktop) {
+      cards = Stack(
+        alignment: Alignment.center,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: buildRelationCard(
+                  filteredRelations[0],
+                  const BorderRadius.horizontal(
+                    left: Radius.circular(28),
+                    right: Radius.circular(12),
+                  ),
+                  height: 190,
+                ),
               ),
-            );
-          }).toList(),
-        )
-      else
-        Column(
-          children: filteredRelations.asMap().entries.map((entry) {
-            final isLast = entry.key == filteredRelations.length - 1;
-            return Padding(
-              padding: EdgeInsets.only(bottom: isLast ? 0.0 : 8.0),
-              child: buildRelationButton(entry.value),
-            );
-          }).toList(),
-        ),
-    ],
-    colors,
-  );
+              const SizedBox(width: 4),
+              Expanded(
+                child: buildRelationCard(
+                  filteredRelations[1],
+                  const BorderRadius.horizontal(
+                    left: Radius.circular(12),
+                    right: Radius.circular(28),
+                  ),
+                  height: 190,
+                ),
+              ),
+            ],
+          ),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHighest,
+              shape: BoxShape.circle,
+              border: Border.all(color: colors.surfaceContainer, width: 4),
+            ),
+            child: Icon(
+              Icons.link_rounded,
+              size: 17,
+              color: colors.primary,
+            ),
+          ),
+        ],
+      );
+    } else {
+      cards = Stack(
+        alignment: Alignment.center,
+        children: [
+          Column(
+            children: [
+              buildRelationCard(
+                filteredRelations[0],
+                const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                  bottom: Radius.circular(12),
+                ),
+                height: 150,
+              ),
+              const SizedBox(height: 6),
+              buildRelationCard(
+                filteredRelations[1],
+                const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                  bottom: Radius.circular(24),
+                ),
+                height: 150,
+              ),
+            ],
+          ),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHighest,
+              shape: BoxShape.circle,
+              border: Border.all(color: colors.surfaceContainer, width: 4),
+            ),
+            child: Icon(
+              Icons.link_rounded,
+              size: 17,
+              color: colors.primary,
+            ),
+          ),
+        ],
+      );
+    }
+  } else {
+    cards = buildRelationCard(
+      filteredRelations.first,
+      BorderRadius.circular(isDesktop ? 28 : 24),
+      height: isDesktop ? 190 : 160,
+    );
+  }
+
+  return _buildSection('Seasons', [cards], colors);
 }
 
 Widget buildExtrasSection(
@@ -1879,21 +1935,15 @@ Widget buildGenreChip(BuildContext context, String genre, ItemType type) {
             },
           ));
     },
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.opaque(0.4, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
-          width: 0.8,
-        ),
-      ),
-      child: AnymeXText(
+    child: _chipShell(
+      colors,
+      AnymeXText(
         genre,
         size: 11,
         variant: TextVariant.semiBold,
+        color: colors.primary,
       ),
+      fill: colors.primary.opaque(0.14, iReallyMeanIt: true),
     ),
   );
 }
@@ -1913,16 +1963,13 @@ Widget buildTagChip(BuildContext context, MediaTag tag, ItemType type) {
           ));
     },
     child: Container(
+      height: 28,
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.opaque(0.25, iReallyMeanIt: true),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: colors.onSurface.opaque(0.06, iReallyMeanIt: true),
-          width: 0.8,
-        ),
+        color: colors.onSurface.opaque(0.08, iReallyMeanIt: true),
+        borderRadius: BorderRadius.circular(14),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         child: Stack(
           alignment: Alignment.centerLeft,
           children: [
@@ -1937,22 +1984,28 @@ Widget buildTagChip(BuildContext context, MediaTag tag, ItemType type) {
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-              child: AnymeXTextSpans(
-                spans: [
-                  AnymeXTextSpan(
-                    text: tag.name,
-                    variant: TextVariant.semiBold,
-                    color: Colors.white,
-                    size: 10.5,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnymeXTextSpans(
+                    spans: [
+                      AnymeXTextSpan(
+                        text: tag.name,
+                        variant: TextVariant.semiBold,
+                        color: colors.onSurface,
+                        size: 11,
+                      ),
+                      if (tag.rank > 0)
+                        AnymeXTextSpan(
+                          text: ' ${tag.rank}%',
+                          variant: TextVariant.regular,
+                          color: colors.onSurface
+                              .opaque(0.55, iReallyMeanIt: true),
+                          size: 10,
+                        ),
+                    ],
                   ),
-                  if (tag.rank > 0)
-                    AnymeXTextSpan(
-                      text: ' ${tag.rank}%',
-                      variant: TextVariant.regular,
-                      color: colors.onSurface.opaque(0.55, iReallyMeanIt: true),
-                      size: 10.0,
-                    ),
                 ],
               ),
             ),

@@ -23,7 +23,7 @@ class SocialSection extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: 160,
+          height: 185,
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             scrollDirection: Axis.horizontal,
@@ -61,13 +61,14 @@ class SocialSection extends StatelessWidget {
                 }
               },
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Stack(
               alignment: Alignment.bottomCenter,
               children: [
                 Container(
-                  margin: const EdgeInsets.only(bottom: 10),
+                  margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
@@ -84,7 +85,7 @@ class SocialSection extends StatelessWidget {
                             user.userAvatar!.isNotEmpty)
                         ? user.userAvatar
                         : 'https://s4.anilist.co/file/anilistcdn/user/avatar/large/default.png',
-                    size: 80,
+                    size: 75,
                   ),
                 ),
                 if (user.userScore != null && user.userScore! > 0)
