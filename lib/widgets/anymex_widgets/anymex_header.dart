@@ -68,33 +68,35 @@ class AnymeXHeaderState extends State<AnymeXHeader> {
     final isDark = theme.brightness == Brightness.dark;
     final radius = BorderRadius.circular(30.multiplyRadius());
 
+    final pillContent = Container(
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainer
+            .withValues(alpha: isDark ? 0.55 : 0.80),
+        borderRadius: radius,
+        border: Border.all(
+          color: theme.colorScheme.onSurface
+              .withValues(alpha: isDark ? 0.08 : 0.12),
+          width: 0.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.08 : 0.05),
+            blurRadius: 24,
+            spreadRadius: 0,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
+    );
+
     Widget content = ClipRRect(
       borderRadius: radius,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          padding:
-              padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainer
-                .withValues(alpha: isDark ? 0.55 : 0.80),
-            borderRadius: radius,
-            border: Border.all(
-              color: theme.colorScheme.onSurface
-                  .withValues(alpha: isDark ? 0.08 : 0.12),
-              width: 0.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.08 : 0.05),
-                blurRadius: 24,
-                spreadRadius: 0,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: child,
-        ),
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: pillContent,
       ),
     );
 

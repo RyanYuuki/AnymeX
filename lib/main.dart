@@ -38,6 +38,7 @@ import 'package:anymex/screens/library/history_page.dart';
 import 'package:anymex/screens/search/search_view.dart';
 import 'package:anymex/screens/manga/home_page.dart';
 import 'package:anymex/screens/novel/home_page.dart';
+import 'package:anymex/services/upscale/shader_registry.dart';
 import 'package:anymex/widgets/common/lazy_indexed_stack.dart';
 import 'package:anymex/widgets/common/media_mode_selector.dart';
 import 'package:anymex/widgets/common/home_continue_button.dart';
@@ -54,6 +55,7 @@ import 'package:anymex/utils/deeplink.dart';
 import 'package:anymex/utils/external_font_loader.dart';
 import 'package:anymex/utils/register_protocol/register_protocol.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
+import 'package:anymex/widgets/common/fps_meter.dart';
 import 'package:anymex/widgets/common/navbar.dart';
 import 'package:anymex_extension_runtime_bridge/Models/Source.dart';
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -173,6 +175,9 @@ void main(List<String> args) async {
 
     await safeCall(() => Rhttp.init(),
         errorMessage: 'Failed to initialize Rhttp');
+
+    await safeCall(() => ShaderRegistry.load(),
+        errorMessage: 'Failed to load upscale shaders');
 
     await safeCall(() => dotenv.load(fileName: '.env'),
         errorMessage: 'Failed to load .env file');
@@ -460,6 +465,7 @@ class _MainAppState extends State<MainApp> {
                       right: 0,
                       child: AnymeXTitleBar.titleBar(),
                     ),
+                    const FpsMeter(),
                   ],
                 ),
               );
@@ -469,6 +475,7 @@ class _MainAppState extends State<MainApp> {
               child: Stack(
                 children: [
                   child,
+                  const FpsMeter(),
                 ],
               ),
             );

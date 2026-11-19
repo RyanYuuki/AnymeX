@@ -170,23 +170,27 @@ class _ClassicNavBarState extends State<_ClassicNavBar>
           borderRadius: borderRadius,
           child: Obx(() {
             final isTranslucent = translucent.value;
-            return BackdropFilter(
-              filter: isTranslucent
-                  ? ImageFilter.blur(sigmaX: 25, sigmaY: 25)
-                  : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isTranslucent
-                      ? theme.colorScheme.surfaceContainer
-                          .withValues(alpha: 0.3)
-                      : theme.colorScheme.surfaceContainer
-                          .withValues(alpha: 0.95),
-                  borderRadius: borderRadius,
-                ),
-                child: widget.isDesktop
-                    ? _buildDesktopLayout(theme)
-                    : _buildMobileLayout(theme),
+            final navContent = Container(
+              decoration: BoxDecoration(
+                color: isTranslucent
+                    ? theme.colorScheme.surfaceContainer
+                        .withValues(alpha: 0.3)
+                    : theme.colorScheme.surfaceContainer
+                        .withValues(alpha: 0.95),
+                borderRadius: borderRadius,
               ),
+              child: widget.isDesktop
+                  ? _buildDesktopLayout(theme)
+                  : _buildMobileLayout(theme),
+            );
+
+            if (!isTranslucent) {
+              return navContent;
+            }
+
+            return BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: navContent,
             );
           }),
         ),

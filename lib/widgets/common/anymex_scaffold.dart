@@ -168,24 +168,9 @@ class AnymeXScaffold extends StatelessWidget {
           )
         : body;
 
-    final resolvedWithFade = appBar == null &&
-            !isDesktop &&
-            !extendBehindTitleBar &&
-            (resolvedBody != null)
-        ? ShaderMask(
-            shaderCallback: (bounds) => const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment(0, -0.85),
-              colors: [Colors.transparent, Colors.black],
-            ).createShader(bounds),
-            blendMode: BlendMode.dstIn,
-            child: resolvedBody,
-          )
-        : resolvedBody;
-
     final scaffold = Scaffold(
       appBar: appBar,
-      body: resolvedWithFade,
+      body: resolvedBody,
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
       floatingActionButtonAnimator: floatingActionButtonAnimator,
