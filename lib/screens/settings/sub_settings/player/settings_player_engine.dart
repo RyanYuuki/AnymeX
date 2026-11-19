@@ -54,7 +54,12 @@ class _AudioOption {
 
 class SettingsPlayerEngine extends StatefulWidget {
   final bool isModal;
-  const SettingsPlayerEngine({super.key, this.isModal = false});
+  final bool isEmbedded;
+  const SettingsPlayerEngine({
+    super.key,
+    this.isModal = false,
+    this.isEmbedded = false,
+  });
 
   @override
   State<SettingsPlayerEngine> createState() => _SettingsPlayerEngineState();
@@ -549,24 +554,13 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
     final mpvCore = PlayerCoreVisualSettings.getMpvCoreSettings();
     final mpvVisual = PlayerCoreVisualSettings.getMpvVisualSettings();
 
-    return AnymeXScaffold(
-      showHeader: !widget.isModal,
-      headerTitle: 'Engine & Advanced',
-      body: Builder(
-        builder: (ctx) => SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            16.0,
-            widget.isModal ? 16.0 : AnymeXHeaderScope.of(ctx),
-            16.0,
-            30.0,
-          ),
-          child: Obx(
-            () => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (_supportsDecoderSelection)
-                  AnymeXSectionBuilder(
-                    title: 'Hardware & Drivers',
+    final content = Obx(
+      () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (_supportsDecoderSelection)
+            AnymeXSectionBuilder(
+              title: 'Hardware & Drivers',
                     children: [
                       AnymeXTile(
                         icon: Icons.memory_rounded,
@@ -863,7 +857,24 @@ class _SettingsPlayerEngineState extends State<SettingsPlayerEngine> {
                 ),
               ],
             ),
+          );
+
+    if (widget.isEmbedded) {
+      return content;
+    }
+
+    return AnymeXScaffold(
+      showHeader: !widget.isModal,
+      headerTitle: 'Engine & Advanced',
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            16.0,
+            widget.isModal ? 16.0 : AnymeXHeaderScope.of(ctx),
+            16.0,
+            30.0,
           ),
+          child: content,
         ),
       ),
     );

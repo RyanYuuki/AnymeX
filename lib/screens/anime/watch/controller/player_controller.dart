@@ -251,6 +251,7 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
   final Rx<bool> isAudioPaneOpened = false.obs;
   final Rx<bool> isSyncSubsPaneOpened = false.obs;
   final Rx<bool> isSettingsPaneOpened = false.obs;
+  final Rx<bool> isCastPaneOpened = false.obs;
   final RxList<model.Track> localSubtitles = <model.Track>[].obs;
   final RxList<SubtitleCue> parsedSubtitleCues = <SubtitleCue>[].obs;
   final Rx<bool> isEpisodePaneOpened = false.obs;
@@ -1665,7 +1666,10 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
             !isSyncSubsPaneOpened.value &&
             !isEpisodePaneOpened.value &&
             !isTorrentFilesPaneOpened.value &&
-            !isWatchTogetherPaneOpened.value) {
+            !isWatchTogetherPaneOpened.value &&
+            !isSpeedPaneOpened.value &&
+            !isSettingsPaneOpened.value &&
+            !isCastPaneOpened.value) {
           showControls.value = false;
         }
       });
@@ -1747,6 +1751,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
       isSpeedPaneOpened.value = false;
       isWatchTogetherPaneOpened.value = false;
       isTorrentFilesPaneOpened.value = false;
+      isSettingsPaneOpened.value = false;
+      isCastPaneOpened.value = false;
       currentEpisode.value = episode;
       _hasTrackedCompletedOnline = false;
       final stamp = DynamicKeys.offlineVideoProgress.get<int?>(videoPath, null);
@@ -2868,6 +2874,8 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     isSpeedPaneOpened.value = false;
     isWatchTogetherPaneOpened.value = false;
     isTorrentFilesPaneOpened.value = false;
+    isSettingsPaneOpened.value = false;
+    isCastPaneOpened.value = false;
     resetListeners();
     fetchEpisode(episode);
     _updateMediaSessionMetadata();
@@ -2878,6 +2886,19 @@ class PlayerController extends GetxController with WidgetsBindingObserver {
     currentPosition.value = Duration.zero;
     episodeDuration.value = Duration.zero;
     bufferred.value = Duration.zero;
+  }
+
+  void closePanes() {
+    isEpisodePaneOpened.value = false;
+    isSourcePaneOpened.value = false;
+    isTracksPaneOpened.value = false;
+    isAudioPaneOpened.value = false;
+    isSyncSubsPaneOpened.value = false;
+    isSpeedPaneOpened.value = false;
+    isWatchTogetherPaneOpened.value = false;
+    isTorrentFilesPaneOpened.value = false;
+    isSettingsPaneOpened.value = false;
+    isCastPaneOpened.value = false;
   }
 
   void openColorProfileBottomSheet(BuildContext context) {

@@ -1,6 +1,6 @@
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
-import 'package:anymex/utils/theme_extensions.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/episodes_pane.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/watch_settings_pane.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_progress.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/common/anymex_slider_m3.dart';
@@ -8,24 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../cast_service.dart';
 
-class CastDeviceDialog extends StatefulWidget {
-  final PlayerController controller;
-
-  const CastDeviceDialog({super.key, required this.controller});
-
-  static Future<void> show(BuildContext context, PlayerController controller) async {
-    await AnymeXSheet.custom(
-      CastDeviceDialog(controller: controller),
-      context,
-      showDragHandle: true,
-    );
+class CastDeviceDialog {
+  static void show(BuildContext context, PlayerController controller) {
+    controller.isCastPaneOpened.value = !controller.isCastPaneOpened.value;
   }
-
-  @override
-  State<CastDeviceDialog> createState() => _CastDeviceDialogState();
 }
 
-class _CastDeviceDialogState extends State<CastDeviceDialog> {
+class CastDevicePane extends StatefulWidget {
+  final PlayerController controller;
+
+  const CastDevicePane({super.key, required this.controller});
+
+  @override
+  State<CastDevicePane> createState() => _CastDevicePaneState();
+}
+
+class _CastDevicePaneState extends State<CastDevicePane> {
   final castService = CastService.instance;
   final RxString _connectingDeviceId = ''.obs;
 
@@ -35,45 +33,8 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
     castService.startDiscovery();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildHeader(theme),
-        const SizedBox(height: 16),
-        _buildActiveCastingCard(theme),
-        _buildDeviceList(theme),
-      ],
-    );
-  }
-
-  Widget _buildHeader(ThemeData theme) {
-    return Row(
-      children: [
-        Icon(Icons.cast_rounded, color: theme.colorScheme.primary, size: 22),
-        const SizedBox(width: 10),
-        const AnymeXText(
-          'Cast to Device',
-          variant: TextVariant.bold,
-          size: 18,
-        ),
-        const Spacer(),
-        Obx(() => castService.isSearching.value
-            ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : IconButton(
-                onPressed: () => castService.startDiscovery(),
-                icon: const Icon(Icons.refresh_rounded),
-              )),
-      ],
-    );
+  void _closePane() {
+    widget.controller.isCastPaneOpened.value = false;
   }
 
   Widget _buildActiveCastingCard(ThemeData theme) {
@@ -97,9 +58,9 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer.opaque(0.25),
+          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.25),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: theme.colorScheme.primary.opaque(0.3)),
+          border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
         ),
         child: Column(
           children: [
@@ -213,14 +174,14 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
       final devices = castService.discoveredDevices;
       if (devices.isEmpty && castService.isSearching.value) {
         return const SizedBox(
-          height: 120,
+          height: 140,
           child: Center(child: AnymeXProgressIndicator()),
         );
       }
 
       if (devices.isEmpty) {
         return const SizedBox(
-          height: 120,
+          height: 140,
           child: Center(
             child: AnymeXText(
               'No casting devices found on local network.',
@@ -230,72 +191,84 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
         );
       }
 
-      return ConstrainedBox(
-        constraints: const BoxConstraints(maxHeight: 280),
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: devices.length,
-          itemBuilder: (context, index) {
-            final device = devices[index];
-            return ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.opaque(0.5),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  _getProtocolIcon(device.protocol),
-                  color: theme.colorScheme.primary,
-                  size: 22,
-                ),
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: devices.length,
+        itemBuilder: (context, index) {
+          final device = devices[index];
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.2),
               ),
-              title: AnymeXText(
-                device.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-              ),
-              subtitle: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    margin: const EdgeInsets.only(top: 4, right: 6),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.opaque(0.15),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: AnymeXText(
-                      _getProtocolLabel(device.protocol),
-                      size: 10,
-                      variant: TextVariant.bold,
-                      color: theme.colorScheme.primary,
-                    ),
+            ),
+            child: Material(
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+              borderRadius: BorderRadius.circular(14),
+              clipBehavior: Clip.antiAlias,
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  Expanded(
-                    child: AnymeXText(
-                      device.host,
-                      size: 12,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                  child: Icon(
+                    _getProtocolIcon(device.protocol),
+                    color: theme.colorScheme.primary,
+                    size: 22,
                   ),
-                ],
+                ),
+                title: AnymeXText(
+                  device.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                subtitle: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      margin: const EdgeInsets.only(top: 4, right: 6),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: AnymeXText(
+                        _getProtocolLabel(device.protocol),
+                        size: 10,
+                        variant: TextVariant.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    Expanded(
+                      child: AnymeXText(
+                        device.host,
+                        size: 12,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+                trailing: Obx(() {
+                  if (_connectingDeviceId.value == device.id) {
+                    return const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    );
+                  }
+                  if (castService.connectedDevice.value?.id == device.id && castService.isCasting.value) {
+                    return Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary);
+                  }
+                  return const Icon(Icons.chevron_right_rounded);
+                }),
+                onTap: () => _handleDeviceTap(device),
               ),
-              trailing: Obx(() {
-                if (_connectingDeviceId.value == device.id) {
-                  return const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  );
-                }
-                if (castService.connectedDevice.value?.id == device.id && castService.isCasting.value) {
-                  return Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary);
-                }
-                return const Icon(Icons.chevron_right_rounded);
-              }),
-              onTap: () => _handleDeviceTap(device),
-            );
-          },
-        ),
+            ),
+          );
+        },
       );
     });
   }
@@ -374,5 +347,39 @@ class _CastDeviceDialogState extends State<CastDeviceDialog> {
     }
     return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
-}
 
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => EpisodeSidePane(
+          isVisible: widget.controller.isCastPaneOpened.value,
+          onOverlayTap: _closePane,
+          child: WatchSettingsPane(
+            title: 'Cast to Device',
+            onClose: _closePane,
+            actions: [
+              Obx(() => castService.isSearching.value
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : IconButton(
+                      tooltip: 'Refresh devices',
+                      onPressed: () => castService.startDiscovery(),
+                      icon: const Icon(Icons.refresh_rounded),
+                    )),
+            ],
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 30.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildActiveCastingCard(context.theme),
+                  _buildDeviceList(context.theme),
+                ],
+              ),
+            ),
+          ),
+        ));
+  }
+}

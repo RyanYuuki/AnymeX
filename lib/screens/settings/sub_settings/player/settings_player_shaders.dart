@@ -20,7 +20,12 @@ import 'package:path_provider/path_provider.dart';
 
 class SettingsPlayerShaders extends StatefulWidget {
   final bool isModal;
-  const SettingsPlayerShaders({super.key, this.isModal = false});
+  final bool isEmbedded;
+  const SettingsPlayerShaders({
+    super.key,
+    this.isModal = false,
+    this.isEmbedded = false,
+  });
 
   @override
   State<SettingsPlayerShaders> createState() => _SettingsPlayerShadersState();
@@ -326,22 +331,11 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
     final colors = theme.colorScheme;
     final cardBg = colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true);
 
-    return AnymeXScaffold(
-      showHeader: !widget.isModal,
-      headerTitle: 'Shaders & Colors',
-      body: Builder(
-        builder: (ctx) => SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            16.0,
-            widget.isModal ? 16.0 : AnymeXHeaderScope.of(ctx),
-            16.0,
-            30.0,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AnymeXSectionBuilder(
-                title: 'Anime4K Engine',
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnymeXSectionBuilder(
+          title: 'Anime4K Engine',
                 children: [
                   Obx(() {
                     if (!_shadersDownloaded.value) {
@@ -805,7 +799,24 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                 ),
               ),
             ],
+          );
+
+    if (widget.isEmbedded) {
+      return content;
+    }
+
+    return AnymeXScaffold(
+      showHeader: !widget.isModal,
+      headerTitle: 'Shaders & Colors',
+      body: Builder(
+        builder: (ctx) => SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            16.0,
+            widget.isModal ? 16.0 : AnymeXHeaderScope.of(ctx),
+            16.0,
+            30.0,
           ),
+          child: content,
         ),
       ),
     );

@@ -7,7 +7,6 @@ import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/progress_slider.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:expressive_loading_indicator/expressive_loading_indicator.dart';
 import 'package:flutter/cupertino.dart';
@@ -84,24 +83,8 @@ class Ios26PlayerControlTheme extends PlayerControlTheme {
                             icon: CupertinoIcons.gear_alt_fill,
                             tooltip: 'Player Settings',
                             onPressed: () {
-                              controller.showSheetWithPause(
-                                () => showModalBottomSheet(
-                                  context: Get.context!,
-                                  isScrollControlled: true,
-                                  backgroundColor: Colors.transparent,
-                                  builder: (sheetContext) => Container(
-                                    height:
-                                        MediaQuery.of(sheetContext).size.height,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.transparent,
-                                      borderRadius: BorderRadius.vertical(
-                                          top: Radius.circular(28)),
-                                    ),
-                                    child: const SettingsPlayer(isModal: true),
-                                  ),
-                                ),
-                              );
+                              controller.isSettingsPaneOpened.value =
+                                  !controller.isSettingsPaneOpened.value;
                             },
                           ),
                           if (Platform.isAndroid || Platform.isIOS) ...[

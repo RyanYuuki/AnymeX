@@ -29,7 +29,12 @@ const String _previewAnimeImage =
 
 class SettingsPlayerControls extends StatefulWidget {
   final bool isModal;
-  const SettingsPlayerControls({super.key, this.isModal = false});
+  final bool isEmbedded;
+  const SettingsPlayerControls({
+    super.key,
+    this.isModal = false,
+    this.isEmbedded = false,
+  });
 
   @override
   State<SettingsPlayerControls> createState() => _SettingsPlayerControlsState();
@@ -1066,6 +1071,180 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
         .round();
     final overlayPct = (100 - brightnessPct - volumePct).clamp(10, 80);
 
+    final content = Obx(
+      () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnymeXSectionBuilder(
+            title: 'Themes & Overlay',
+            children: [
+              AnymeXTile(
+                icon: HugeIcons.strokeRoundedPlaySquare,
+                onTap: _showPlayerControlThemeDialog,
+                title: 'Player Theme',
+                subtitle: PlayerControlThemeRegistry.resolve(
+                  settings.playerControlTheme,
+                ).name,
+              ),
+              AnymeXTile(
+                icon: Icons.data_object_rounded,
+                onTap: () =>
+                    showJsonPlayerThemesSheet(context, setState, settings),
+                title: 'JSON Theme Manager',
+                subtitle:
+                    '${PlayerControlThemeRegistry.jsonThemes.length} imported theme(s)',
+              ),
+              AnymeXTile(
+                icon: Icons.tune_rounded,
+                onTap: _showMediaIndicatorThemeDialog,
+                title: 'Swipe Indicator Theme',
+                subtitle: MediaIndicatorThemeRegistry.resolve(
+                  settings.mediaIndicatorTheme,
+                ).name,
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.animation_rounded,
+                title: 'Animate Control Overlay',
+                subtitle:
+                    'Disable to show and hide player controls instantly',
+                value: settings.playerMenuAnimation,
+                onChanged: (val) => settings.playerMenuAnimation = val,
+              ),
+            ],
+          ),
+          AnymeXSectionBuilder(
+            title: 'Gestures & Seeking',
+            children: [
+              AnymeXTile(
+                icon: Icons.aspect_ratio_rounded,
+                title: 'Gesture Areas',
+                subtitle:
+                    'Brightness $brightnessPct% • Overlay $overlayPct% • Volume $volumePct%',
+                onTap: _showGestureAreasDialog,
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.brightness_6_rounded,
+                title: 'Gesture for Brightness & Volume',
+                subtitle:
+                    'Vertical swipe on brightness & volume areas to adjust levels',
+                value: settings.enableSwipeControls,
+                onChanged: (val) => settings.enableSwipeControls = val,
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.gesture_rounded,
+                title: 'Hold to Speed Up',
+                subtitle:
+                    'Press and hold on player screen to temporarily speed up playback',
+                value: settings.enableHoldToSeek,
+                onChanged: (val) => settings.enableHoldToSeek = val,
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.swap_horiz_rounded,
+                title: 'Swipe to Seek',
+                subtitle: 'Horizontal swipe across the screen to seek',
+                value: settings.enableSlideToSeek,
+                onChanged: (val) => settings.enableSlideToSeek = val,
+              ),
+              AnymeXTile.slider(
+                value: settings.seekDuration.toDouble(),
+                max: 50,
+                min: 0,
+                divisions: 10,
+                onChanged: (double value) {
+                  setState(() {
+                    settings.seekDuration = value.toInt();
+                  });
+                },
+                title: 'DoubleTap to Seek',
+                subtitle: 'Adjust Double Tap To Seek Duration',
+                icon: Iconsax.forward5,
+              ),
+              AnymeXTile.slider(
+                value: settings.skipDuration.toDouble(),
+                max: 120,
+                min: 0,
+                divisions: 24,
+                onChanged: (double value) {
+                  setState(() {
+                    settings.skipDuration = value.toInt();
+                  });
+                },
+                title: 'MegaSkip Duration',
+                subtitle: 'Adjust MegaSkip Duration',
+                icon: Iconsax.forward5,
+              ),
+            ],
+          ),
+          AnymeXSectionBuilder(
+            title: 'Auto Skip & Completion',
+            children: [
+              AnymeXTile.toggle(
+                icon: Icons.fast_forward,
+                title: 'Auto Skip OP',
+                subtitle: 'Auto skip the opening song',
+                value: settings.autoSkipOP,
+                onChanged: (val) => settings.autoSkipOP = val,
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.fast_forward_outlined,
+                title: 'Auto Skip ED',
+                subtitle: 'Auto skip the ending song',
+                value: settings.autoSkipED,
+                onChanged: (val) => settings.autoSkipED = val,
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.fast_forward_outlined,
+                title: 'Auto Skip Recap',
+                subtitle: 'Auto skip the recap section',
+                value: settings.autoSkipRecap,
+                onChanged: (val) => settings.autoSkipRecap = val,
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.all_inclusive,
+                title: 'Auto Skip Once Only',
+                subtitle: 'Auto skip only once per watch',
+                value: settings.autoSkipOnce,
+                onChanged: (val) => settings.autoSkipOnce = val,
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.skip_next_rounded,
+                title: 'Auto Skip Filler',
+                subtitle:
+                    'Automatically skip filler episodes when going to next episode',
+                value: settings.autoSkipFiller,
+                onChanged: (val) => settings.autoSkipFiller = val,
+              ),
+              AnymeXTile.slider(
+                value: settings.markAsCompleted.toDouble(),
+                max: 100,
+                min: 0,
+                divisions: 20,
+                onChanged: (double value) {
+                  setState(() {
+                    settings.markAsCompleted = value.toInt();
+                  });
+                },
+                title: 'Mark As Watched',
+                subtitle: 'Percentage watched before marking completed',
+                icon: Iconsax.tick_circle,
+              ),
+            ],
+          ),
+          AnymeXSectionBuilder(
+            title: 'Player Controls',
+            disableSeperator: true,
+            children: [
+              _buildPlayerControlsBoard(),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    if (widget.isEmbedded) {
+      return content;
+    }
+
     return AnymeXScaffold(
       showHeader: !widget.isModal,
       headerTitle: 'Controls & Gestures',
@@ -1077,175 +1256,7 @@ class _SettingsPlayerControlsState extends State<SettingsPlayerControls> {
             16.0,
             30.0,
           ),
-          child: Obx(
-            () => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AnymeXSectionBuilder(
-                  title: 'Themes & Overlay',
-                  children: [
-                    AnymeXTile(
-                      icon: HugeIcons.strokeRoundedPlaySquare,
-                      onTap: _showPlayerControlThemeDialog,
-                      title: 'Player Theme',
-                      subtitle: PlayerControlThemeRegistry.resolve(
-                        settings.playerControlTheme,
-                      ).name,
-                    ),
-                    AnymeXTile(
-                      icon: Icons.data_object_rounded,
-                      onTap: () =>
-                          showJsonPlayerThemesSheet(context, setState, settings),
-                      title: 'JSON Theme Manager',
-                      subtitle:
-                          '${PlayerControlThemeRegistry.jsonThemes.length} imported theme(s)',
-                    ),
-                    AnymeXTile(
-                      icon: Icons.tune_rounded,
-                      onTap: _showMediaIndicatorThemeDialog,
-                      title: 'Swipe Indicator Theme',
-                      subtitle: MediaIndicatorThemeRegistry.resolve(
-                        settings.mediaIndicatorTheme,
-                      ).name,
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.animation_rounded,
-                      title: 'Animate Control Overlay',
-                      subtitle:
-                          'Disable to show and hide player controls instantly',
-                      value: settings.playerMenuAnimation,
-                      onChanged: (val) => settings.playerMenuAnimation = val,
-                    ),
-                  ],
-                ),
-                AnymeXSectionBuilder(
-                  title: 'Gestures & Seeking',
-                  children: [
-                    AnymeXTile(
-                      icon: Icons.aspect_ratio_rounded,
-                      title: 'Gesture Areas',
-                      subtitle:
-                          'Brightness $brightnessPct% • Overlay $overlayPct% • Volume $volumePct%',
-                      onTap: _showGestureAreasDialog,
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.brightness_6_rounded,
-                      title: 'Gesture for Brightness & Volume',
-                      subtitle:
-                          'Vertical swipe on brightness & volume areas to adjust levels',
-                      value: settings.enableSwipeControls,
-                      onChanged: (val) => settings.enableSwipeControls = val,
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.gesture_rounded,
-                      title: 'Hold to Speed Up',
-                      subtitle:
-                          'Press and hold on player screen to temporarily speed up playback',
-                      value: settings.enableHoldToSeek,
-                      onChanged: (val) => settings.enableHoldToSeek = val,
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.swap_horiz_rounded,
-                      title: 'Swipe to Seek',
-                      subtitle: 'Horizontal swipe across the screen to seek',
-                      value: settings.enableSlideToSeek,
-                      onChanged: (val) => settings.enableSlideToSeek = val,
-                    ),
-                    AnymeXTile.slider(
-                      value: settings.seekDuration.toDouble(),
-                      max: 50,
-                      min: 0,
-                      divisions: 10,
-                      onChanged: (double value) {
-                        setState(() {
-                          settings.seekDuration = value.toInt();
-                        });
-                      },
-                      title: 'DoubleTap to Seek',
-                      subtitle: 'Adjust Double Tap To Seek Duration',
-                      icon: Iconsax.forward5,
-                    ),
-                    AnymeXTile.slider(
-                      value: settings.skipDuration.toDouble(),
-                      max: 120,
-                      min: 0,
-                      divisions: 24,
-                      onChanged: (double value) {
-                        setState(() {
-                          settings.skipDuration = value.toInt();
-                        });
-                      },
-                      title: 'MegaSkip Duration',
-                      subtitle: 'Adjust MegaSkip Duration',
-                      icon: Iconsax.forward5,
-                    ),
-                  ],
-                ),
-                AnymeXSectionBuilder(
-                  title: 'Auto Skip & Completion',
-                  children: [
-                    AnymeXTile.toggle(
-                      icon: Icons.fast_forward,
-                      title: 'Auto Skip OP',
-                      subtitle: 'Auto skip the opening song',
-                      value: settings.autoSkipOP,
-                      onChanged: (val) => settings.autoSkipOP = val,
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.fast_forward_outlined,
-                      title: 'Auto Skip ED',
-                      subtitle: 'Auto skip the ending song',
-                      value: settings.autoSkipED,
-                      onChanged: (val) => settings.autoSkipED = val,
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.fast_forward_outlined,
-                      title: 'Auto Skip Recap',
-                      subtitle: 'Auto skip the recap section',
-                      value: settings.autoSkipRecap,
-                      onChanged: (val) => settings.autoSkipRecap = val,
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.all_inclusive,
-                      title: 'Auto Skip Once Only',
-                      subtitle: 'Auto skip only once per watch',
-                      value: settings.autoSkipOnce,
-                      onChanged: (val) => settings.autoSkipOnce = val,
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.skip_next_rounded,
-                      title: 'Auto Skip Filler',
-                      subtitle:
-                          'Automatically skip filler episodes when going to next episode',
-                      value: settings.autoSkipFiller,
-                      onChanged: (val) => settings.autoSkipFiller = val,
-                    ),
-                    AnymeXTile.slider(
-                      value: settings.markAsCompleted.toDouble(),
-                      max: 100,
-                      min: 0,
-                      divisions: 20,
-                      onChanged: (double value) {
-                        setState(() {
-                          settings.markAsCompleted = value.toInt();
-                        });
-                      },
-                      title: 'Mark As Watched',
-                      subtitle: 'Percentage watched before marking completed',
-                      icon: Iconsax.tick_circle,
-                    ),
-                  ],
-                ),
-                AnymeXSectionBuilder(
-                  title: 'Player Controls',
-                  disableSeperator: true,
-                  children: [
-                    _buildPlayerControlsBoard(),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          child: content,
         ),
       ),
     );

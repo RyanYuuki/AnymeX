@@ -13,6 +13,8 @@ import 'package:anymex/screens/anime/watch/controls/widgets/speed_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/subtitle_text.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/sync_subs_popup.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/tracks_popup.dart';
+import 'package:anymex/screens/anime/watch/controls/widgets/player_settings_pane.dart';
+import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:anymex/screens/anime/widgets/media_indicator.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/shader_osd.dart';
 import 'dart:io';
@@ -201,6 +203,20 @@ class _OfflineWatchPageState extends State<OfflineWatchPage> {
                     bottom: 0,
                     left: 0,
                     child: SpeedPopup(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: PlayerSettingsPane(controller: controller),
+                  ),
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: CastDevicePane(controller: controller),
                   ),
                 ],
               ],

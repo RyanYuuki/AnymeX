@@ -1,7 +1,6 @@
 import 'dart:io' show Platform;
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:flutter/material.dart';
@@ -356,17 +355,8 @@ class NFMoreSheet extends StatelessWidget {
               label: 'Player settings',
               onTap: () {
                 Get.back();
-                controller.showSheetWithPause(
-                  () => showModalBottomSheet(
-                    context: Get.context!,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (c) => SizedBox(
-                      height: MediaQuery.of(c).size.height,
-                      child: const SettingsPlayer(isModal: true),
-                    ),
-                  ),
-                );
+                controller.isSettingsPaneOpened.value =
+                    !controller.isSettingsPaneOpened.value;
               },
             ),
             NFSheetTile(

@@ -5,7 +5,6 @@ import 'package:anymex/controllers/watchium/watchium_service.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -311,22 +310,8 @@ Map<String, Widget> buildPlayerControlButtonMap(
       icon: Icons.settings_rounded,
       onPressed: () {
         if (controller.isPreview) return;
-        controller.showSheetWithPause(
-          () => showModalBottomSheet(
-            context: Get.context!,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (context) => Container(
-              height: MediaQuery.sizeOf(context).height,
-              clipBehavior: Clip.antiAlias,
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-              ),
-              child: const SettingsPlayer(isModal: true),
-            ),
-          ),
-        );
+        controller.isSettingsPaneOpened.value =
+            !controller.isSettingsPaneOpened.value;
       },
       tooltip: 'Settings',
       compact: true,

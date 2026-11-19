@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
@@ -10,7 +11,9 @@ import 'package:anymex/screens/settings/sub_settings/player/settings_player_subt
 import 'package:anymex/utils/function.dart';
 import 'package:anymex/utils/subtitle_translator.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:anymex/widgets/common/anymex_scaffold.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
 import 'package:flutter/material.dart';
@@ -113,6 +116,60 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
     }
   }
 
+  Widget _buildModalHeader(BuildContext context) {
+    final theme = context.theme;
+    final cs = theme.colorScheme;
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+    final titleBarHeight =
+        (Platform.isWindows && !AnymeXTitleBar.isFullScreen.value) ? 40.0 : 0.0;
+    final topPadding = MediaQuery.paddingOf(context).top +
+        titleBarHeight +
+        (isDesktop ? 16.0 : 10.0);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: topPadding, bottom: 8),
+          width: 40,
+          height: 4,
+          decoration: BoxDecoration(
+            color: cs.outline.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: AnymeXText(
+                  'Player Settings',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontFamily: 'Linotte',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    color: cs.onSurface,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                style: IconButton.styleFrom(
+                  backgroundColor: cs.surfaceContainerHigh,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                icon: Icon(Icons.close_rounded, color: cs.onSurface),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnymeXScaffold(
@@ -122,7 +179,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
             16.0,
-            widget.isModal ? 16.0 : AnymeXHeaderScope.of(ctx),
+            widget.isModal ? 0.0 : AnymeXHeaderScope.of(ctx),
             16.0,
             30.0,
           ),
@@ -142,6 +199,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (widget.isModal) _buildModalHeader(context),
                 AnymeXSectionBuilder(
                   title: 'Quick Defaults',
                   children: [

@@ -29,7 +29,12 @@ const Map<String, List<String>> _subtitleFontGroups = {
 
 class SettingsPlayerSubtitles extends StatefulWidget {
   final bool isModal;
-  const SettingsPlayerSubtitles({super.key, this.isModal = false});
+  final bool isEmbedded;
+  const SettingsPlayerSubtitles({
+    super.key,
+    this.isModal = false,
+    this.isEmbedded = false,
+  });
 
   @override
   State<SettingsPlayerSubtitles> createState() =>
@@ -339,6 +344,221 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
 
   @override
   Widget build(BuildContext context) {
+    final content = Obx(
+      () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSubtitlePreviewCard(),
+          AnymeXSectionBuilder(
+            title: 'Language & Translation',
+            children: [
+              AnymeXTile(
+                icon: Icons.closed_caption_rounded,
+                title: 'Preferred Subtitle Language',
+                subtitle: SubtitleTranslator
+                        .languages[settings.preferredSubtitleLanguage] ??
+                    'None (Disabled)',
+                onTap: () => showSelectionDialog<String>(
+                  title: 'Preferred Subtitle Language',
+                  items: ['none', ...SubtitleTranslator.languages.keys],
+                  selectedItem: settings
+                      .playerSettings.value.preferredSubtitleLanguage.obs,
+                  getTitle: (code) => code == 'none'
+                      ? 'None (Disabled)'
+                      : SubtitleTranslator.languages[code]!,
+                  onItemSelected: (code) {
+                    settings.preferredSubtitleLanguage = code;
+                    setState(() {});
+                  },
+                ),
+              ),
+              AnymeXTile.toggle(
+                icon: HugeIcons.strokeRoundedTranslate,
+                title: 'Auto Translate Subtitles',
+                subtitle: 'Use AI to translate soft-subtitles live',
+                value: settings.playerSettings.value.autoTranslate,
+                onChanged: (val) {
+                  settings.playerSettings.update((s) => s?.autoTranslate = val);
+                  PlayerSettingsKeys.autoTranslate.set(val);
+                  setState(() {});
+                },
+              ),
+              if ((!widget.isModal || widget.isEmbedded) &&
+                  settings.playerSettings.value.autoTranslate)
+                AnymeXTile(
+                  icon: Icons.language,
+                  title: 'Translate To',
+                  subtitle: SubtitleTranslator.languages[
+                          settings.playerSettings.value.translateTo] ??
+                      'Select Language',
+                  onTap: _showTranslationLanguageDialog,
+                ),
+            ],
+          ),
+          AnymeXSectionBuilder(
+            title: 'Rendering & Behavior',
+            children: [
+              AnymeXTile.toggle(
+                icon: Icons.subtitles,
+                title: 'Use Libass for Subtitles',
+                subtitle: 'Better subtitle rendering using libass library',
+                value: _useLibass,
+                onChanged: (val) async {
+                  setState(() {
+                    _useLibass = val;
+                  });
+                  PlayerKeys.useLibass.set<bool>(val);
+                  if (Get.isRegistered<PlayerController>()) {
+                    final controller = Get.find<PlayerController>();
+                    if (!controller.isClosed) {
+                      await controller.onLibassPreferenceChanged(val);
+                    }
+                  }
+                },
+              ),
+              AnymeXTile.toggle(
+                icon: Icons.lightbulb,
+                title: 'Transition Subtitle',
+                subtitle: 'Disable to avoid fade transitions between subtitles',
+                value: settings.transitionSubtitle,
+                onChanged: (e) {
+                  settings.transitionSubtitle = e;
+                },
+              ),
+            ],
+          ),
+          AnymeXSectionBuilder(
+            title: 'Typography & Outline',
+            children: [
+              AnymeXTile(
+                icon: Icons.font_download_rounded,
+                title: 'Subtitle Font',
+                subtitle: settings.playerSettings.value.subtitleFont,
+                onTap: _showFontSelectionDialog,
+              ),
+              AnymeXTile.slider(
+                value: settings.subtitleSize.toDouble(),
+                min: 12.0,
+                max: 90.0,
+                onChanged: (double value) {
+                  settings.subtitleSize = value.toInt();
+                },
+                title: 'Subtitle Size',
+                subtitle: 'Adjust subtitle font size',
+                icon: Iconsax.subtitle5,
+              ),
+              AnymeXTile(
+                icon: Icons.format_paint_rounded,
+                title: 'Outline Type',
+                subtitle: normalizeSubtitleOutlineType(
+                    settings.playerSettings.value.subtitleOutlineType),
+                onTap: _showOutlineTypeDialog,
+              ),
+              AnymeXTile.slider(
+                value: settings.subtitleOutlineWidth.toDouble(),
+                min: 1.0,
+                max: 8.0,
+                divisions: 14,
+                onChanged: (double value) {
+                  settings.subtitleOutlineWidth = value.toInt();
+                },
+                title: 'Subtitle Outline Width',
+                subtitle: 'Adjust subtitle outline thickness',
+                icon: Iconsax.subtitle5,
+              ),
+            ],
+          ),
+          AnymeXSectionBuilder(
+            title: 'Colors & Position',
+            children: [
+              AnymeXTile(
+                subtitle: 'Change subtitle text color',
+                icon: Icons.palette,
+                title: 'Subtitle Color',
+                onTap: () {
+                  _showColorSelectionDialog(
+                    'Select Subtitle Color',
+                    fontColorOptions[settings.subtitleColor] ??
+                        fontColorOptions['Default']!,
+                    (color) {
+                      settings.subtitleColor = color;
+                    },
+                    fontColorOptions,
+                  );
+                },
+              ),
+              AnymeXTile(
+                icon: Icons.palette,
+                title: 'Subtitle Outline Color',
+                subtitle: 'Change subtitle outline color',
+                onTap: () {
+                  _showColorSelectionDialog(
+                    'Select Subtitle Outline Color',
+                    colorOptions[settings.subtitleOutlineColor] ??
+                        colorOptions['None']!,
+                    (color) {
+                      settings.subtitleOutlineColor = color;
+                    },
+                    colorOptions,
+                  );
+                },
+              ),
+              AnymeXTile(
+                subtitle: 'Change subtitle background color',
+                icon: Icons.palette,
+                title: 'Subtitle Background Color',
+                onTap: () {
+                  _showColorSelectionDialog(
+                    'Select Subtitle Background Color',
+                    colorOptions[settings.subtitleBackgroundColor] ??
+                        colorOptions['None']!,
+                    (color) {
+                      settings.subtitleBackgroundColor = color;
+                    },
+                    colorOptions,
+                  );
+                },
+              ),
+              AnymeXTile.slider(
+                value: settings.playerSettings.value.subtitleOpacity,
+                min: 0.1,
+                max: 1.0,
+                divisions: 10,
+                onChanged: (val) {
+                  final current = settings.playerSettings.value;
+                  current.subtitleOpacity = val;
+                  PlayerSettingsKeys.subtitleOpacity.set(val);
+                  settings.playerSettings.refresh();
+                },
+                title: 'Subtitle Transparency',
+                subtitle: 'Adjust text visibility',
+                icon: Icons.opacity,
+              ),
+              AnymeXTile.slider(
+                value: settings.playerSettings.value.subtitleBottomMargin,
+                min: 0.0,
+                max: 500.0,
+                divisions: 500,
+                onChanged: (val) {
+                  final current = settings.playerSettings.value;
+                  current.subtitleBottomMargin = val;
+                  PlayerSettingsKeys.subtitleBottomMargin.set(val);
+                  settings.playerSettings.refresh();
+                },
+                title: 'Bottom Margin',
+                subtitle: 'Distance from bottom of screen',
+                icon: Icons.vertical_align_bottom,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    if (widget.isEmbedded) {
+      return content;
+    }
+
     return AnymeXScaffold(
       showHeader: !widget.isModal,
       headerTitle: 'Subtitles & Translation',
@@ -350,220 +570,7 @@ class _SettingsPlayerSubtitlesState extends State<SettingsPlayerSubtitles> {
             16.0,
             30.0,
           ),
-          child: Obx(
-            () => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSubtitlePreviewCard(),
-                AnymeXSectionBuilder(
-                  title: 'Language & Translation',
-                  children: [
-                    AnymeXTile(
-                      icon: Icons.closed_caption_rounded,
-                      title: 'Preferred Subtitle Language',
-                      subtitle: SubtitleTranslator.languages[
-                              settings.preferredSubtitleLanguage] ??
-                          'None (Disabled)',
-                      onTap: () => showSelectionDialog<String>(
-                        title: 'Preferred Subtitle Language',
-                        items: ['none', ...SubtitleTranslator.languages.keys],
-                        selectedItem: settings
-                            .playerSettings.value.preferredSubtitleLanguage.obs,
-                        getTitle: (code) => code == 'none'
-                            ? 'None (Disabled)'
-                            : SubtitleTranslator.languages[code]!,
-                        onItemSelected: (code) {
-                          settings.preferredSubtitleLanguage = code;
-                          setState(() {});
-                        },
-                      ),
-                    ),
-                    AnymeXTile.toggle(
-                      icon: HugeIcons.strokeRoundedTranslate,
-                      title: 'Auto Translate Subtitles',
-                      subtitle: 'Use AI to translate soft-subtitles live',
-                      value: settings.playerSettings.value.autoTranslate,
-                      onChanged: (val) {
-                        settings.playerSettings
-                            .update((s) => s?.autoTranslate = val);
-                        PlayerSettingsKeys.autoTranslate.set(val);
-                        setState(() {});
-                      },
-                    ),
-                    if (!widget.isModal &&
-                        settings.playerSettings.value.autoTranslate)
-                      AnymeXTile(
-                        icon: Icons.language,
-                        title: 'Translate To',
-                        subtitle: SubtitleTranslator.languages[
-                                settings.playerSettings.value.translateTo] ??
-                            'Select Language',
-                        onTap: _showTranslationLanguageDialog,
-                      ),
-                  ],
-                ),
-                AnymeXSectionBuilder(
-                  title: 'Rendering & Behavior',
-                  children: [
-                    AnymeXTile.toggle(
-                      icon: Icons.subtitles,
-                      title: 'Use Libass for Subtitles',
-                      subtitle:
-                          'Better subtitle rendering using libass library',
-                      value: _useLibass,
-                      onChanged: (val) async {
-                        setState(() {
-                          _useLibass = val;
-                        });
-                        PlayerKeys.useLibass.set<bool>(val);
-                        if (Get.isRegistered<PlayerController>()) {
-                          final controller = Get.find<PlayerController>();
-                          if (!controller.isClosed) {
-                            await controller.onLibassPreferenceChanged(val);
-                          }
-                        }
-                      },
-                    ),
-                    AnymeXTile.toggle(
-                      icon: Icons.lightbulb,
-                      title: 'Transition Subtitle',
-                      subtitle:
-                          'Disable to avoid fade transitions between subtitles',
-                      value: settings.transitionSubtitle,
-                      onChanged: (e) {
-                        settings.transitionSubtitle = e;
-                      },
-                    ),
-                  ],
-                ),
-                AnymeXSectionBuilder(
-                  title: 'Typography & Outline',
-                  children: [
-                    AnymeXTile(
-                      icon: Icons.font_download_rounded,
-                      title: 'Subtitle Font',
-                      subtitle: settings.playerSettings.value.subtitleFont,
-                      onTap: _showFontSelectionDialog,
-                    ),
-                    AnymeXTile.slider(
-                      value: settings.subtitleSize.toDouble(),
-                      min: 12.0,
-                      max: 90.0,
-                      onChanged: (double value) {
-                        settings.subtitleSize = value.toInt();
-                      },
-                      title: 'Subtitle Size',
-                      subtitle: 'Adjust subtitle font size',
-                      icon: Iconsax.subtitle5,
-                    ),
-                    AnymeXTile(
-                      icon: Icons.format_paint_rounded,
-                      title: 'Outline Type',
-                      subtitle: normalizeSubtitleOutlineType(
-                          settings.playerSettings.value.subtitleOutlineType),
-                      onTap: _showOutlineTypeDialog,
-                    ),
-                    AnymeXTile.slider(
-                      value: settings.subtitleOutlineWidth.toDouble(),
-                      min: 1.0,
-                      max: 8.0,
-                      divisions: 14,
-                      onChanged: (double value) {
-                        settings.subtitleOutlineWidth = value.toInt();
-                      },
-                      title: 'Subtitle Outline Width',
-                      subtitle: 'Adjust subtitle outline thickness',
-                      icon: Iconsax.subtitle5,
-                    ),
-                  ],
-                ),
-                AnymeXSectionBuilder(
-                  title: 'Colors & Position',
-                  children: [
-                    AnymeXTile(
-                      subtitle: 'Change subtitle text color',
-                      icon: Icons.palette,
-                      title: 'Subtitle Color',
-                      onTap: () {
-                        _showColorSelectionDialog(
-                          'Select Subtitle Color',
-                          fontColorOptions[settings.subtitleColor] ??
-                              fontColorOptions['Default']!,
-                          (color) {
-                            settings.subtitleColor = color;
-                          },
-                          fontColorOptions,
-                        );
-                      },
-                    ),
-                    AnymeXTile(
-                      icon: Icons.palette,
-                      title: 'Subtitle Outline Color',
-                      subtitle: 'Change subtitle outline color',
-                      onTap: () {
-                        _showColorSelectionDialog(
-                          'Select Subtitle Outline Color',
-                          colorOptions[settings.subtitleOutlineColor] ??
-                              colorOptions['None']!,
-                          (color) {
-                            settings.subtitleOutlineColor = color;
-                          },
-                          colorOptions,
-                        );
-                      },
-                    ),
-                    AnymeXTile(
-                      subtitle: 'Change subtitle background color',
-                      icon: Icons.palette,
-                      title: 'Subtitle Background Color',
-                      onTap: () {
-                        _showColorSelectionDialog(
-                          'Select Subtitle Background Color',
-                          colorOptions[settings.subtitleBackgroundColor] ??
-                              colorOptions['None']!,
-                          (color) {
-                            settings.subtitleBackgroundColor = color;
-                          },
-                          colorOptions,
-                        );
-                      },
-                    ),
-                    AnymeXTile.slider(
-                      value: settings.playerSettings.value.subtitleOpacity,
-                      min: 0.1,
-                      max: 1.0,
-                      divisions: 10,
-                      onChanged: (val) {
-                        final current = settings.playerSettings.value;
-                        current.subtitleOpacity = val;
-                        PlayerSettingsKeys.subtitleOpacity.set(val);
-                        settings.playerSettings.refresh();
-                      },
-                      title: 'Subtitle Transparency',
-                      subtitle: 'Adjust text visibility',
-                      icon: Icons.opacity,
-                    ),
-                    AnymeXTile.slider(
-                      value:
-                          settings.playerSettings.value.subtitleBottomMargin,
-                      min: 0.0,
-                      max: 500.0,
-                      divisions: 500,
-                      onChanged: (val) {
-                        final current = settings.playerSettings.value;
-                        current.subtitleBottomMargin = val;
-                        PlayerSettingsKeys.subtitleBottomMargin.set(val);
-                        settings.playerSettings.refresh();
-                      },
-                      title: 'Bottom Margin',
-                      subtitle: 'Distance from bottom of screen',
-                      icon: Icons.vertical_align_bottom,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          child: content,
         ),
       ),
     );

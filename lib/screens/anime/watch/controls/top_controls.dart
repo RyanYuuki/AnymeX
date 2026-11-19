@@ -6,7 +6,6 @@ import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/control_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/decoder_quick_button.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/player_control_buttons.dart';
-import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/utils/function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -387,24 +386,9 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.settings_rounded,
                 onPressed: () {
-                  Get.find<PlayerController>().showSheetWithPause(
-                    () => showModalBottomSheet(
-                        context: Get.context!,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => Container(
-                              height: MediaQuery.sizeOf(context).height,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: const BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(28)),
-                              ),
-                              child: const SettingsPlayer(
-                                isModal: true,
-                              ),
-                            )),
-                  );
+                  final player = Get.find<PlayerController>();
+                  player.isSettingsPaneOpened.value =
+                      !player.isSettingsPaneOpened.value;
                 },
                 tooltip: 'Settings',
                 compact: true,
@@ -466,23 +450,9 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.settings_rounded,
                 onPressed: () {
-                  Get.find<PlayerController>().showSheetWithPause(
-                    () => showModalBottomSheet(
-                      context: Get.context!,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (context) => Container(
-                        height: MediaQuery.sizeOf(context).height,
-                        clipBehavior: Clip.antiAlias,
-                        decoration: const BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(28)),
-                        ),
-                        child: const SettingsPlayer(isModal: true),
-                      ),
-                    ),
-                  );
+                  final player = Get.find<PlayerController>();
+                  player.isSettingsPaneOpened.value =
+                      !player.isSettingsPaneOpened.value;
                 },
                 tooltip: 'Settings',
                 compact: true,
