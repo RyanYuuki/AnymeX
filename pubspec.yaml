@@ -219,6 +219,14 @@ flutter_native_splash:
 flutter:
     uses-material-design: true
 
+    shaders:
+        - assets/shaders/upscale/clamp_highlights.frag
+        - assets/shaders/upscale/edge_sharpen.frag
+        - assets/shaders/upscale/soft_smooth.frag
+        - assets/shaders/upscale/bilateral_denoise.frag
+        - assets/shaders/upscale/bicubic_x2.frag
+        - assets/shaders/upscale/anymex_sharpen.frag
+
     assets:
         - assets/images/
         - .env

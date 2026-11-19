@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
+import 'package:anymex/services/upscale/page_upscale_service.dart';
 import 'package:anymex/screens/manga/widgets/reader/continuous_reader.dart';
 import 'package:anymex/screens/manga/widgets/reader/display_refresh_host.dart';
 import 'package:anymex/screens/manga/widgets/reader/reader_chapter_transition.dart';
@@ -349,6 +350,18 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
       }
       final fitMode = isFitToScreen ? BoxFit.fitWidth : BoxFit.contain;
 
+      final dpr = MediaQuery.devicePixelRatioOf(context);
+      final targetWidth = ((calculatedWidth ?? screenWidth) * dpr).round();
+
+      final upscaleFuture = ctrl.upscalingEnabled.value
+          ? PageUpscaleService.instance.upscaled(
+              page,
+              ctrl.currentUpscaleConfig,
+              targetWidthPx: targetWidth,
+              priority: index == ctrl.currentPageIndex.value ? 1 : 0,
+            )
+          : null;
+
       return Padding(
         padding: EdgeInsets.symmetric(
             vertical: ctrl.spacedPages.value ? 8.0 : 0),
@@ -358,6 +371,7 @@ class _ReaderViewState extends State<ReaderView> with TickerProviderStateMixin {
               page.url,
               headers: getPageImageHeaders(page.headers),
             ),
+            upscaledFileFuture: upscaleFuture,
             width: calculatedWidth,
             fit: fitMode,
             alignment: Alignment.center,

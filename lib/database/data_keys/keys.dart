@@ -114,6 +114,12 @@ enum ReaderKeys {
   imageFilterQuality,
   fitToScreen,
   navigateByNumber,
+  upscalingEnabled,
+  upscalerShader,
+  upscalerProfile,
+  upscalerSharpness,
+  upscalerDenoise,
+  customGlslShaders,
 }
 
 enum NovelReaderKeys {

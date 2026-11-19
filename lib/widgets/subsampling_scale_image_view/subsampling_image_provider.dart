@@ -18,6 +18,7 @@ class SubsamplingImageProvider extends StatefulWidget {
   final Function(double width, double height)? onImageLoaded;
   final double? width;
   final double? height;
+  final Future<File?>? upscaledFileFuture;
 
   const SubsamplingImageProvider({
     super.key,
@@ -30,6 +31,7 @@ class SubsamplingImageProvider extends StatefulWidget {
     this.onImageLoaded,
     this.width,
     this.height,
+    this.upscaledFileFuture,
   });
 
   @override
@@ -39,22 +41,43 @@ class SubsamplingImageProvider extends StatefulWidget {
 
 class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
   Future<File>? _loadFuture;
+  File? _upscaledFile;
 
   @override
   void initState() {
     super.initState();
     _initLoad();
+    _subscribeUpscale();
   }
 
   @override
   void didUpdateWidget(SubsamplingImageProvider oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.page.url != widget.page.url) {
+      _upscaledFile = null;
       _initLoad();
+      _subscribeUpscale();
+    } else if (oldWidget.upscaledFileFuture != widget.upscaledFileFuture) {
+      _subscribeUpscale();
     }
   }
 
+  void _subscribeUpscale() {
+    widget.upscaledFileFuture?.then((file) {
+      if (file != null && mounted) {
+        setState(() {
+          _upscaledFile = file;
+          _loadFuture = Future.value(file);
+        });
+      }
+    });
+  }
+
   void _initLoad() {
+    if (_upscaledFile != null) {
+      _loadFuture = Future.value(_upscaledFile);
+      return;
+    }
     final url = widget.page.url;
     if (url.startsWith('http')) {
       _loadFuture = AnymeXCacheManager.instance.getSingleFile(
@@ -68,12 +91,16 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
 
   @override
   Widget build(BuildContext context) {
+    final effectiveUrl = _upscaledFile?.path ?? widget.page.url;
+    final effectiveHeaders =
+        _upscaledFile != null ? null : widget.page.headers;
+
     if (widget.isContinuousMode) {
-      final url = widget.page.url;
+      final url = effectiveUrl;
       if (url.startsWith('http')) {
         return ext.ExtendedImage.network(
           url,
-          headers: widget.page.headers,
+          headers: effectiveHeaders,
           width: widget.width,
           height: widget.height,
           fit: widget.fit,
@@ -100,6 +127,7 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
         if (file.existsSync()) {
           return ext.ExtendedImage.file(
             file,
+            scale: 1.0,
             width: widget.width,
             height: widget.height,
             fit: widget.fit,
@@ -135,19 +163,19 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
     if (Platform.isLinux) {
       if (widget.cropBorders) {
         return CroppedNetworkImage(
-          url: widget.page.url,
-          headers: widget.page.headers,
+          url: effectiveUrl,
+          headers: effectiveHeaders,
           fit: widget.fit,
           alignment: widget.alignment,
           cropThreshold: 30,
           placeholder: widget.placeholder,
         );
       } else {
-        final url = widget.page.url;
+        final url = effectiveUrl;
         if (url.startsWith('http')) {
           return ext.ExtendedImage.network(
             url,
-            headers: widget.page.headers,
+            headers: effectiveHeaders,
             width: widget.width,
             height: widget.height,
             fit: widget.fit,
@@ -168,6 +196,7 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
           if (file.existsSync()) {
             return ext.ExtendedImage.file(
               file,
+              scale: 1.0,
               width: widget.width,
               height: widget.height,
               fit: widget.fit,
@@ -199,16 +228,24 @@ class _SubsamplingImageProviderState extends State<SubsamplingImageProvider> {
             final scaleType = widget.fit == BoxFit.fitWidth
                 ? ScaleType.fitWidth
                 : ScaleType.centerInside;
-            return SubsamplingScaleImageView(
+            Widget subsamplingView = SubsamplingScaleImageView(
               key: ValueKey(file.path),
-              image: FileImage(file),
+              image: FileImage(file, scale: 1.0),
               resolvedFilePath: file.path,
               cropBorders: widget.cropBorders,
+              fit: widget.fit,
               minimumScaleType: scaleType,
               panEnabled: false,
               zoomEnabled: false,
               quickScaleEnabled: false,
             );
+            if (widget.width != null) {
+              subsamplingView = SizedBox(
+                width: widget.width,
+                child: subsamplingView,
+              );
+            }
+            return subsamplingView;
           }
         }
         return _buildErrorWidget(context, () {

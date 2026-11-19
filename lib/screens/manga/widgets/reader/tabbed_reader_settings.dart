@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/screens/manga/controller/reader_controller.dart';
 import 'package:anymex/screens/manga/widgets/reader/color_filter_settings_page.dart';
+import 'package:anymex/screens/manga/widgets/reader/upscale_settings_page.dart';
 import 'package:anymex/screens/manga/widgets/reader/themes/setup/reader_control_theme_registry.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_tap_zones.dart';
 import 'package:anymex/utils/function.dart';
@@ -60,6 +61,7 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
     Tab(text: 'Reading Mode'),
     Tab(text: 'General'),
     Tab(text: 'Color Filter'),
+    Tab(text: 'Upscale'),
   ];
 
   void _onTabChanged() {
@@ -112,7 +114,13 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
             padding:
                 const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
             child: AnymeXTabBar(
-              selectTabs: const ['Reading Mode', 'General', 'Color Filter'],
+              minTabWidth: 105,
+              selectTabs: const [
+                'Reading Mode',
+                'General',
+                'Color Filter',
+                'Upscale'
+              ],
               selectedIndex: _selectedIndex,
               onTabSelected: (index) {
                 setState(() {
@@ -143,8 +151,10 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
                     1 => _GeneralPage(
                         controller: widget.controller,
                         settings: widget.settings),
-                    _ =>
+                    2 =>
                       ColorFilterSettingsPage(controller: widget.controller),
+                    _ =>
+                      UpscaleSettingsPage(controller: widget.controller),
                   },
                 ),
               ),
