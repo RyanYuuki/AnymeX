@@ -1,24 +1,33 @@
-// ignore_for_file: deprecated_member_use
-
+import 'dart:async';
+import 'dart:io';
+import 'dart:math' as math;
+import 'dart:ui';
 import 'package:anymex/controllers/settings/settings.dart';
 import 'package:anymex/database/data_keys/keys.dart';
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
+import 'package:anymex/screens/settings/sub_settings/player/settings_player_shaders.dart';
 import 'package:anymex/utils/logger.dart';
 import 'package:anymex/utils/player_core_visual_settings.dart';
 import 'package:anymex/utils/shaders.dart';
 import 'package:anymex/utils/theme_extensions.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_image.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_section_builder.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_segmented_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_tile.dart';
-import 'package:anymex/widgets/common/slider_semantics.dart';
-import 'package:anymex/widgets/anymex_widgets/anymex_expansion_tile.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
+import 'package:anymex/widgets/common/anymex_pills.dart';
+import 'package:anymex/widgets/common/anymex_slider_m3.dart';
 import 'package:anymex/widgets/non_widgets/reusable_checkmark.dart';
+import 'package:archive/archive.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ColorProfileManager {
-
   static const Map<String, Map<String, int>> profiles = {
     "cinema": {
       "brightness": 2,
@@ -50,45 +59,45 @@ class ColorProfileManager {
     },
     "anime_vibrant": {
       "brightness": 14,
-      "contrast": 28,
-      "saturation": 42,
-      "gamma": -6,
+      "contrast": 25,
+      "saturation": 35,
+      "gamma": -4,
       "hue": 4,
     },
     "anime_soft": {
-      "brightness": 8,
-      "contrast": 16,
-      "saturation": 25,
-      "gamma": -1,
-      "hue": 2,
+      "brightness": 5,
+      "contrast": 10,
+      "saturation": 15,
+      "gamma": 0,
+      "hue": 0,
     },
     "anime_4k": {
-      "brightness": 0,
-      "contrast": 20,
-      "saturation": 100,
+      "brightness": 2,
+      "contrast": 8,
+      "saturation": 12,
       "gamma": 1,
-      "hue": 2,
+      "hue": 1,
     },
     "vivid": {
       "brightness": 8,
       "contrast": 25,
-      "saturation": 35,
-      "gamma": 2,
-      "hue": 1,
+      "saturation": 30,
+      "gamma": -2,
+      "hue": 0,
     },
     "vivid_pop": {
-      "brightness": 12,
-      "contrast": 32,
-      "saturation": 48,
-      "gamma": 4,
-      "hue": 2,
+      "brightness": 10,
+      "contrast": 28,
+      "saturation": 35,
+      "gamma": -3,
+      "hue": 0,
     },
     "vivid_warm": {
       "brightness": 6,
-      "contrast": 24,
-      "saturation": 32,
-      "gamma": 1,
-      "hue": 8,
+      "contrast": 22,
+      "saturation": 28,
+      "gamma": -1,
+      "hue": 5,
     },
     "natural": {
       "brightness": 0,
@@ -97,228 +106,273 @@ class ColorProfileManager {
       "gamma": 0,
       "hue": 0,
     },
-    "dark": {
-      "brightness": -18,
-      "contrast": 15,
-      "saturation": -8,
-      "gamma": 15,
-      "hue": -2,
-    },
-    "warm": {
-      "brightness": 3,
-      "contrast": 10,
-      "saturation": 15,
-      "gamma": 2,
-      "hue": 6,
-    },
-    "cool": {
-      "brightness": 1,
-      "contrast": 8,
-      "saturation": 12,
-      "gamma": 1,
-      "hue": -6,
-    },
     "grayscale": {
-      "brightness": 2,
-      "contrast": 20,
-      "saturation": -100,
-      "gamma": 8,
-      "hue": 0,
-    },
-    "custom": {
       "brightness": 0,
-      "contrast": 0,
-      "saturation": 0,
+      "contrast": 10,
+      "saturation": -100,
       "gamma": 0,
       "hue": 0,
     },
+    "warm": {
+      "brightness": 3,
+      "contrast": 8,
+      "saturation": 15,
+      "gamma": -2,
+      "hue": 10,
+    },
+    "cool": {
+      "brightness": 0,
+      "contrast": 10,
+      "saturation": 10,
+      "gamma": 2,
+      "hue": -10,
+    },
+    "dark": {
+      "brightness": -15,
+      "contrast": 15,
+      "saturation": -5,
+      "gamma": 10,
+      "hue": 0,
+    },
   };
 
-  static const Map<String, String> profileDescriptions = {
-    "cinema": "Balanced colors for movie watching",
-    "cinema_dark": "Optimized for dark room cinema viewing",
-    "cinema_hdr": "Enhanced cinema with HDR-like contrast",
-    "anime": "Enhanced colors perfect for animation",
-    "anime_vibrant": "Maximum saturation for colorful anime",
-    "anime_soft": "Gentle enhancement for pastel anime",
-    "anime_4k": "Ultra-sharp with vibrant 4K clarity",
-    "vivid": "Bright and punchy colors",
-    "vivid_pop": "Maximum vibrancy for eye-catching content",
-    "vivid_warm": "Vivid colors with warm temperature",
-    "natural": "Default balanced settings",
-    "dark": "Optimized for dark environments",
-    "warm": "Warmer tones for comfort viewing",
-    "cool": "Cooler tones for clarity",
-    "grayscale": "Black and white viewing",
-    "custom": "Your personalized settings",
-  };
+  Future<void> show(
+    BuildContext context, {
+    required dynamic player,
+    required String currentProfile,
+    required Map<String, int> activeSettings,
+    required ValueChanged<String> onProfileSelected,
+    required ValueChanged<Map<String, int>> onCustomSettingsChanged,
+  }) {
+    return showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'ColorProfiler',
+      barrierColor: Colors.transparent,
+      transitionDuration: const Duration(milliseconds: 240),
+      pageBuilder: (ctx, anim1, anim2) => _ColorProfilerContent(
+        animation: anim1,
+        player: player,
+        currentProfile: currentProfile,
+        activeSettings: activeSettings,
+        onProfileSelected: onProfileSelected,
+        onCustomSettingsChanged: onCustomSettingsChanged,
+      ),
+      transitionBuilder: (ctx, anim1, anim2, child) => Material(
+        type: MaterialType.transparency,
+        child: child,
+      ),
+    );
+  }
 
-  static const Map<String, IconData> profileIcons = {
-    "cinema": Icons.movie,
-    "cinema_dark": Icons.movie_outlined,
-    "cinema_hdr": Icons.hd,
-    "anime": Icons.animation,
-    "anime_vibrant": Icons.color_lens,
-    "anime_soft": Icons.blur_on,
-    "anime_4k": Icons.four_k,
-    "vivid": Icons.palette,
-    "vivid_pop": Icons.auto_awesome,
-    "vivid_warm": Icons.wb_sunny,
-    "natural": Icons.nature,
-    "dark": Icons.dark_mode,
-    "warm": Icons.wb_sunny,
-    "cool": Icons.ac_unit,
-    "grayscale": Icons.gradient,
-    "custom": Icons.tune,
-  };
+  Future<void> applyColorProfile(String profileKey, dynamic player) async {
+    if (player == null) return;
+    try {
+      final settings = profiles[profileKey] ?? profiles["natural"]!;
+      final b = (settings["brightness"] ?? 0).toDouble();
+      final c = (settings["contrast"] ?? 0).toDouble();
+      final s = (settings["saturation"] ?? 0).toDouble();
+      final g = (settings["gamma"] ?? 0).toDouble();
+      final h = (settings["hue"] ?? 0).toDouble();
 
-  Future<void> applyColorProfile(String profile, dynamic player) async {
-    final settings = profiles[profile.toLowerCase()];
-    if (settings != null && player.platform != null) {
-      try {
-        for (final entry in settings.entries) {
-          await (player.platform as dynamic)
-              .setProperty(entry.key, entry.value.toString());
-          Logger.i('Applied ${entry.key}: ${entry.value}');
-        }
-      } catch (e) {
-        Logger.i('Error applying color profile: $e');
+      final p = player.platform;
+      if (p != null) {
+        await p.setProperty("brightness", b.toString());
+        await p.setProperty("contrast", c.toString());
+        await p.setProperty("saturation", s.toString());
+        await p.setProperty("gamma", g.toString());
+        await p.setProperty("hue", h.toString());
       }
+    } catch (e) {
+      Logger.e("ColorProfileManager Error", error: e);
     }
   }
 
   Future<void> applyCustomSettings(
       Map<String, int> customSettings, dynamic player) async {
-    if (player.platform != null) {
-      try {
-        for (final entry in customSettings.entries) {
-          await (player.platform as dynamic)
-              .setProperty(entry.key, entry.value.toString());
-        }
-      } catch (e) {
-        Logger.i('Error applying custom settings: $e');
-      }
-    }
-  }
-
-  Future<void> resetToNatural(dynamic player) async {
-    await applyColorProfile('natural', player);
-  }
-
-  Future<void> resetShader(dynamic player) async {
+    if (player == null) return;
     try {
-      if (player.platform != null) {
-        await PlayerShaders.setShaders(player, "Default");
-        Logger.i('Shader reset to Default');
+      final b = (customSettings["brightness"] ?? 0).toDouble();
+      final c = (customSettings["contrast"] ?? 0).toDouble();
+      final s = (customSettings["saturation"] ?? 0).toDouble();
+      final g = (customSettings["gamma"] ?? 0).toDouble();
+      final h = (customSettings["hue"] ?? 0).toDouble();
+
+      final p = player.platform;
+      if (p != null) {
+        await p.setProperty("brightness", b.toString());
+        await p.setProperty("contrast", c.toString());
+        await p.setProperty("saturation", s.toString());
+        await p.setProperty("gamma", g.toString());
+        await p.setProperty("hue", h.toString());
       }
     } catch (e) {
-      Logger.i('Error resetting shader: $e');
+      Logger.e("ColorProfileManager Error", error: e);
     }
   }
 }
 
-class ColorProfileBottomSheet extends StatefulWidget {
+class ColorProfileBottomSheet {
+  static Future<void> showColorProfileSheet(
+    BuildContext context,
+    PlayerController controller,
+    dynamic player,
+  ) {
+    return ColorProfileManager().show(
+      context,
+      player: player,
+      currentProfile: controller.currentVisualProfile.value,
+      activeSettings: Map<String, int>.from(controller.customSettings),
+      onProfileSelected: (val) {
+        controller.currentVisualProfile.value = val;
+        PlayerUiKeys.currentVisualProfile.set(val);
+      },
+      onCustomSettingsChanged: (val) {
+        controller.customSettings.value = val;
+        PlayerUiKeys.currentVisualSettings.set(val);
+      },
+    );
+  }
+}
+
+class _ColorProfilerContent extends StatefulWidget {
+  final Animation<double> animation;
+  final dynamic player;
   final String currentProfile;
   final Map<String, int> activeSettings;
-  final Function(String) onProfileSelected;
-  final Function(Map<String, int>) onCustomSettingsChanged;
-  final dynamic player;
+  final ValueChanged<String> onProfileSelected;
+  final ValueChanged<Map<String, int>> onCustomSettingsChanged;
 
-  const ColorProfileBottomSheet({
-    super.key,
+  const _ColorProfilerContent({
+    required this.animation,
+    required this.player,
     required this.currentProfile,
     required this.activeSettings,
     required this.onProfileSelected,
     required this.onCustomSettingsChanged,
-    required this.player,
   });
 
-  static Future<void> showColorProfileSheet(
-      BuildContext context, PlayerController controller, dynamic player) {
-    return showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: 'Color Profile',
-      barrierColor: Colors.black54,
-      transitionDuration: const Duration(milliseconds: 300),
-      transitionBuilder: (context, anim1, anim2, child) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(1.0, 0.0),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: anim1,
-            curve: Curves.easeOutCubic,
-          )),
-          child: child,
-        );
-      },
-      pageBuilder: (context, anim1, anim2) {
-        return Align(
-          alignment: Alignment.centerRight,
-          child: Material(
-            color: Colors.transparent,
-            child: SizedBox(
-              width: MediaQuery.sizeOf(context).width * 0.85,
-              height: double.infinity,
-              child: ColorProfileBottomSheet(
-                activeSettings: controller.customSettings,
-                currentProfile: controller.currentVisualProfile.value,
-                player: player,
-                onProfileSelected: (profile) {
-                  controller.currentVisualProfile.value = profile;
-                  PlayerUiKeys.currentVisualProfile.set(profile);
-                },
-                onCustomSettingsChanged: (sett) {
-                  controller.customSettings.value = sett;
-                  PlayerUiKeys.currentVisualSettings.set(sett);
-                },
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   @override
-  State<ColorProfileBottomSheet> createState() =>
-      _ColorProfileBottomSheetState();
+  State<_ColorProfilerContent> createState() => _ColorProfilerContentState();
 }
 
-class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
-    with TickerProviderStateMixin {
-  late TabController _tabController;
-  String _selectedProfile = '';
-  String _selectedShader = '';
+class _ColorProfilerContentState extends State<_ColorProfilerContent> {
+  final settingsController = Get.find<Settings>();
+
+  String _selectedTab = 'shaders';
+  late String _selectedProfile;
+  late String _selectedShader;
+  late String _selectedMode;
+  late String _selectedTier;
+  late bool _shadersOn;
+  late bool _experimentalEnabled;
+  bool _isComparing = false;
+  bool _isFullFramePreview = false;
+  bool _resetDone = false;
+  Timer? _resetTimer;
+  Timer? _holdTimer;
+  Uint8List? _capturedFrame;
+
   Map<String, int> _customSettings = {
-    "brightness": 0,
-    "contrast": 0,
-    "saturation": 0,
-    "gamma": 0,
-    "hue": 0,
+    'brightness': 0,
+    'contrast': 0,
+    'saturation': 0,
+    'gamma': 0,
+    'hue': 0,
   };
   late Map<String, dynamic> _visualSettings;
   bool _areShadersDownloaded = false;
+  bool _isDownloading = false;
+  double _downloadProgress = 0.0;
+  String _statusText = 'Connecting…';
+  Dio? _dio;
 
-  bool get _experimentalEnabled =>
-      PlayerUiKeys.playerExperimentalEnabled.get<bool>(false);
+  static const List<({String id, String title, String sub})> _modeDefs = [
+    (id: 'A', title: 'Mode A', sub: 'Sharpen soft lines'),
+    (id: 'B', title: 'Mode B', sub: 'Gentle, keeps grain'),
+    (id: 'C', title: 'Mode C', sub: 'Denoise, upscale'),
+    (id: 'A+A', title: 'Mode A+A', sub: 'Sharper · heavier'),
+    (id: 'B+B', title: 'Mode B+B', sub: 'Gentle · heavier'),
+    (id: 'C+A', title: 'Mode C+A', sub: 'Clean, then sharpen'),
+  ];
+
+  static const List<({String key, String title})> _presetDefs = [
+    (key: 'natural', title: 'Natural'),
+    (key: 'vivid', title: 'Vivid'),
+    (key: 'cinema', title: 'Cinema'),
+    (key: 'anime_soft', title: 'Soft'),
+    (key: 'warm', title: 'Warm'),
+    (key: 'cool', title: 'Cool'),
+    (key: 'anime_4k', title: 'Anime 4K'),
+    (key: 'cinema_hdr', title: 'Cinema HDR'),
+    (key: 'vivid_pop', title: 'Vivid Pop'),
+    (key: 'dark', title: 'Dark'),
+    (key: 'grayscale', title: 'Grayscale'),
+  ];
+
+  static const List<({String key, String label})> _adjustDefs = [
+    (key: 'brightness', label: 'Brightness'),
+    (key: 'contrast', label: 'Contrast'),
+    (key: 'saturation', label: 'Saturation'),
+    (key: 'gamma', label: 'Gamma'),
+    (key: 'hue', label: 'Hue'),
+  ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
     _selectedProfile = widget.currentProfile;
-    _selectedShader = settingsController.selectedShader.isEmpty
-        ? "Default"
-        : settingsController.selectedShader;
+    _shadersOn = PlayerUiKeys.shadersEnabled.get<bool>(false);
+    final savedShader = settingsController.selectedShader;
+    _selectedShader = savedShader.isEmpty ? 'Default' : savedShader;
+    _selectedMode = _extractModeFromShader(_selectedShader);
+    _selectedTier =
+        settingsController.selectedProfile == 'HIGH-END' ? 'high' : 'mid';
+
     if (widget.currentProfile.toLowerCase() == 'custom') {
       _customSettings = Map.from(widget.activeSettings);
+    } else if (ColorProfileManager.profiles
+        .containsKey(widget.currentProfile)) {
+      _customSettings =
+          Map.from(ColorProfileManager.profiles[widget.currentProfile]!);
     } else {
       _customSettings = Map.from(ColorProfileManager.profiles['natural']!);
     }
     _visualSettings = PlayerCoreVisualSettings.getMpvVisualSettings();
+    _experimentalEnabled =
+        PlayerUiKeys.playerExperimentalEnabled.get<bool>(false);
     _checkShaders();
+    _captureCurrentFrame();
+  }
+
+  @override
+  void dispose() {
+    _resetTimer?.cancel();
+    _holdTimer?.cancel();
+    _dio?.close(force: true);
+    super.dispose();
+  }
+
+  String _extractModeFromShader(String shader) {
+    if (shader.contains('Mode A+A')) return 'A+A';
+    if (shader.contains('Mode B+B')) return 'B+B';
+    if (shader.contains('Mode C+A')) return 'C+A';
+    if (shader.contains('Mode A')) return 'A';
+    if (shader.contains('Mode B')) return 'B';
+    if (shader.contains('Mode C')) return 'C';
+    return 'B';
+  }
+
+  String get _summaryText {
+    if (!_areShadersDownloaded) {
+      return 'Not installed';
+    }
+    if (_shadersOn &&
+        _selectedShader.isNotEmpty &&
+        _selectedShader != 'Default') {
+      return 'Mode $_selectedMode';
+    }
+    return 'Shaders off';
   }
 
   Future<void> _checkShaders() async {
@@ -330,15 +384,62 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     }
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  Future<void> _captureCurrentFrame() async {
+    try {
+      if (widget.player != null) {
+        final dynamic p = widget.player;
+        final bytes = await p.screenshot(
+          includeLibassSubtitles: false,
+          format: 'image/jpeg',
+        );
+        if (bytes != null && mounted) {
+          setState(() {
+            _capturedFrame = bytes;
+          });
+        }
+      }
+    } catch (_) {}
   }
 
-  void _showProfileAppliedFeedback(String profileName) {
+  Future<void> _applyCurrentShaderMode() async {
+    String shaderName;
+    if (!_shadersOn || _selectedMode == 'Default' || _selectedMode.isEmpty) {
+      shaderName = 'Default';
+    } else {
+      final suffix = _selectedTier == 'high' ? '(HQ)' : '(Fast)';
+      shaderName = 'Anime4K: Mode $_selectedMode $suffix';
+    }
+    await _setShader(shaderName);
+  }
+
+  Future<void> _setShader(String shader) async {
+    setState(() {
+      _selectedShader = shader;
+    });
+    if (Get.isRegistered<PlayerController>()) {
+      await Get.find<PlayerController>().applyShader(shader);
+    } else {
+      await PlayerShaders.setShaders(widget.player, shader);
+      settingsController.selectedShader = shader == "Default" ? "" : shader;
+      PlayerUiKeys.selectedShader.set(shader == "Default" ? "" : shader);
+    }
     HapticFeedback.lightImpact();
-    Logger.i('Applied ${profileName.toUpperCase()} profile');
+  }
+
+  Future<void> _selectProfile(String profileKey) async {
+    final presetVals = ColorProfileManager.profiles[profileKey];
+    setState(() {
+      _selectedProfile = profileKey;
+      if (presetVals != null) {
+        _customSettings = Map<String, int>.from(presetVals);
+      }
+    });
+    await ColorProfileManager().applyColorProfile(profileKey, widget.player);
+    widget.onProfileSelected(profileKey);
+    if (presetVals != null) {
+      widget.onCustomSettingsChanged(_customSettings);
+    }
+    HapticFeedback.lightImpact();
   }
 
   Future<void> _applyCustomSettings() async {
@@ -347,237 +448,392 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
         .applyCustomSettings(_customSettings, widget.player);
     widget.onProfileSelected('custom');
     widget.onCustomSettingsChanged(_customSettings);
-    _showProfileAppliedFeedback('Custom');
-  }
-
-  Future<void> _resetShaderToDefault() async {
-    setState(() {
-      _selectedShader = "Default";
-    });
-    if (Get.isRegistered<PlayerController>()) {
-      await Get.find<PlayerController>().applyShader("Default");
-    } else {
-      await ColorProfileManager().resetShader(widget.player);
-      settingsController.selectedShader = "Default";
-      PlayerUiKeys.selectedShader.set("Default");
-    }
-    HapticFeedback.lightImpact();
-    Logger.i('Shader reset to Default');
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const AnymeXText('Shader reset to Default'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      );
-    }
-  }
-
-  void _resetPresetToNatural() async {
-    setState(() {
-      _selectedProfile = 'natural';
-    });
-    await ColorProfileManager().resetToNatural(widget.player);
-    widget.onProfileSelected('natural');
-    _showProfileAppliedFeedback('natural');
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const AnymeXText('Reset to Natural profile'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      );
-    }
-  }
-
-  void _resetCustomToDefault() async {
-    setState(() {
-      _customSettings = Map.from(ColorProfileManager.profiles['natural']!);
-    });
-    await _applyCustomSettings();
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const AnymeXText('Custom settings reset to default'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      );
-    }
   }
 
   Future<void> _applyVisualSettings() async {
-    if (!_experimentalEnabled) return;
     PlayerUiKeys.mpvVisualSettings.set(_visualSettings);
     await PlayerCoreVisualSettings.applyMpvVisualSettings(widget.player);
   }
 
-  Future<void> _resetVisualToDefault() async {
-    setState(() {
-      _visualSettings = Map<String, dynamic>.from(
-        PlayerCoreVisualSettings.mpvVisualDefaults,
-      );
-    });
-    await _applyVisualSettings();
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const AnymeXText('Visual settings reset to defaults'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      );
+  void _showVisualSelectionDialog({
+    required String title,
+    required List<String> items,
+    required String selected,
+    required String key,
+  }) {
+    showSelectionDialog<String>(
+      title: title,
+      items: items,
+      selectedItem: selected.obs,
+      getTitle: (item) => item,
+      onItemSelected: (value) {
+        setState(() {
+          _visualSettings[key] = value;
+        });
+        _applyVisualSettings();
+      },
+      leadingIcon: Icons.tune_rounded,
+    );
+  }
+
+  void _onCompareStart() {
+    setState(() => _isComparing = true);
+    HapticFeedback.mediumImpact();
+    if (Get.isRegistered<PlayerController>()) {
+      Get.find<PlayerController>().showControls.value = false;
     }
+    PlayerShaders.setShaders(widget.player, "Default");
+    ColorProfileManager().applyColorProfile('natural', widget.player);
+  }
+
+  void _onCompareEnd() {
+    if (!_isComparing) return;
+    setState(() => _isComparing = false);
+    HapticFeedback.lightImpact();
+    if (_shadersOn &&
+        _selectedShader.isNotEmpty &&
+        _selectedShader != 'Default') {
+      _applyCurrentShaderMode();
+    }
+    if (_selectedProfile == 'custom') {
+      ColorProfileManager().applyCustomSettings(_customSettings, widget.player);
+    } else {
+      ColorProfileManager().applyColorProfile(_selectedProfile, widget.player);
+    }
+  }
+
+  void _onPointerDownCompare() {
+    _holdTimer?.cancel();
+    _holdTimer = Timer(const Duration(milliseconds: 120), () {
+      if (mounted) {
+        _onCompareStart();
+      }
+    });
+  }
+
+  void _onPointerUpCompare() {
+    _holdTimer?.cancel();
+    _holdTimer = null;
+    if (_isComparing) {
+      _onCompareEnd();
+    }
+  }
+
+  void _resetTab() {
+    setState(() {
+      _resetDone = true;
+      if (_selectedTab == 'shaders') {
+        _shadersOn = false;
+        _selectedMode = 'B';
+        _selectedTier = 'mid';
+        settingsController.selectedProfile = 'MID-END';
+        _setShader('Default');
+      } else if (_selectedTab == 'presets') {
+        _selectProfile('natural');
+      } else if (_selectedTab == 'custom') {
+        _customSettings = Map.from(ColorProfileManager.profiles['natural']!);
+        _applyCustomSettings();
+      } else if (_selectedTab == 'visual') {
+        _visualSettings = Map<String, dynamic>.from(
+          PlayerCoreVisualSettings.mpvVisualDefaults,
+        );
+        _applyVisualSettings();
+      }
+    });
+    _resetTimer?.cancel();
+    _resetTimer = Timer(const Duration(milliseconds: 1800), () {
+      if (mounted) setState(() => _resetDone = false);
+    });
+  }
+
+  String get _tabResetName {
+    switch (_selectedTab) {
+      case 'shaders':
+        return 'shaders';
+      case 'presets':
+        return 'preset';
+      case 'custom':
+        return 'adjustments';
+      case 'visual':
+        return 'quality';
+      default:
+        return 'settings';
+    }
+  }
+
+  Future<void> _downloadShaders() async {
+    setState(() {
+      _isDownloading = true;
+      _downloadProgress = 0.0;
+      _statusText = 'Connecting…';
+    });
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 200));
+      if (!mounted) return;
+      setState(() {
+        _statusText = 'Downloading shaders…';
+        _downloadProgress = 10.0;
+      });
+
+      final shadersPath = await PlayerShaders.getShaderBasePath();
+      final mpvPath = Directory(shadersPath).path;
+
+      final tempDir = await getTemporaryDirectory();
+      final tempFilePath = '${tempDir.path}/anime4k_shaders.zip';
+      final tempFile = File(tempFilePath);
+
+      _dio = Dio();
+      await _dio!.download(
+        'https://github.com/RyanYuuki/AnymeX/raw/refs/heads/main/assets/shaders/shaders_new.zip',
+        tempFilePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1 && mounted) {
+            final progress = 10.0 + (received / total) * 60.0;
+            setState(() {
+              _downloadProgress = progress;
+            });
+          }
+        },
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _statusText = 'Extracting files…';
+        _downloadProgress = 75.0;
+      });
+
+      final bytes = await tempFile.readAsBytes();
+      final archive = ZipDecoder().decodeBytes(bytes);
+
+      for (final file in archive) {
+        if (file.isFile) {
+          final outFile = File('$mpvPath${file.name}');
+          await outFile.parent.create(recursive: true);
+          await outFile.writeAsBytes(file.content as List<int>);
+        }
+      }
+
+      if (await tempFile.exists()) {
+        await tempFile.delete();
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _statusText = 'Finishing up…';
+        _downloadProgress = 100.0;
+        _isDownloading = false;
+        _areShadersDownloaded = true;
+        _shadersOn = true;
+      });
+      await _applyCurrentShaderMode();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isDownloading = false;
+        _statusText = 'Download failed';
+      });
+    }
+  }
+
+  void _cancelDownload() {
+    _dio?.close(force: true);
+    setState(() {
+      _isDownloading = false;
+      _downloadProgress = 0.0;
+      _statusText = 'Connecting…';
+    });
+  }
+
+  Widget _buildPaneHeader() {
+    final theme = context.theme;
+    final colors = theme.colorScheme;
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+    final titleBarHeight =
+        (Platform.isWindows && !AnymeXTitleBar.isFullScreen.value) ? 40.0 : 0.0;
+    final topPadding = (MediaQuery.paddingOf(context).top +
+            titleBarHeight +
+            (isDesktop ? 16.0 : 10.0))
+        .clamp(16.0, 120.0);
+
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, topPadding, 16, 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnymeXText(
+                  'Color & Shaders',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontFamily: 'Linotte',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    color: colors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                AnymeXText(
+                  _summaryText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colors.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              if (Get.isRegistered<PlayerController>()) {
+                Get.find<PlayerController>().showControls.value = false;
+              }
+              setState(() => _isFullFramePreview = true);
+            },
+            style: IconButton.styleFrom(
+              backgroundColor: colors.surfaceContainerHigh,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: Icon(Icons.fullscreen_rounded, color: colors.onSurface),
+            tooltip: 'Full frame',
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            onPressed: () => Navigator.pop(context),
+            style: IconButton.styleFrom(
+              backgroundColor: colors.surfaceContainerHigh,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            icon: Icon(Icons.close_rounded, color: colors.onSurface),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    if (_isFullFramePreview) {
+      return Material(
+        type: MaterialType.transparency,
+        child: _buildFullFramePreview(),
+      );
+    }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withValues(alpha: 0.90),
-        borderRadius: const BorderRadius.horizontal(left: Radius.circular(28)),
-      ),
-      child: Column(
+    final colors = context.theme.colorScheme;
+    final size = MediaQuery.sizeOf(context);
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+    final panelWidth = size.width * (isDesktop ? 0.4 : 0.6);
+    final titleBarHeight =
+        (Platform.isWindows && !AnymeXTitleBar.isFullScreen.value) ? 40.0 : 0.0;
+    final topSafe = MediaQuery.paddingOf(context).top + titleBarHeight;
+
+    return Material(
+      type: MaterialType.transparency,
+      child: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.tune,
-                    color: theme.colorScheme.onPrimaryContainer,
-                    size: 24,
-                  ),
+          Positioned.fill(
+            child: FadeTransition(
+              opacity: widget.animation,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => Navigator.pop(context),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  color: _isComparing
+                      ? Colors.transparent
+                      : colors.scrim.withValues(alpha: 0.45),
                 ),
-                const SizedBox(width: 12),
-                AnymeXText(
-                  'Color Profiles',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                  style: IconButton.styleFrom(
-                    backgroundColor: theme.colorScheme.surfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceVariant,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: theme.colorScheme.shadow.opaque(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Iconsax.eye, size: 20),
-                      SizedBox(width: 8),
-                      AnymeXText.semiBold('Shaders'),
-                    ],
-                  ),
-                ),
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.movie_filter_rounded, size: 20),
-                      SizedBox(width: 8),
-                      AnymeXText.semiBold('Visual'),
-                    ],
-                  ),
-                ),
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.dashboard_customize, size: 20),
-                      SizedBox(width: 8),
-                      AnymeXText.semiBold('Presets'),
-                    ],
-                  ),
-                ),
-                Tab(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.tune, size: 20),
-                      SizedBox(width: 8),
-                      AnymeXText.semiBold('Custom'),
-                    ],
-                  ),
-                ),
-              ],
-              indicator: BoxDecoration(
-                color: theme.colorScheme.primary,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.opaque(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
-              labelColor: theme.colorScheme.onPrimary,
-              unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-              indicatorSize: TabBarIndicatorSize.tab,
-              dividerColor: Colors.transparent,
-              labelStyle: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildShadersTab(theme),
-                _buildVisualTab(theme),
-                _buildPresetsTab(theme),
-                _buildCustomTab(theme),
-              ],
+          if (_isComparing)
+            Positioned(
+              top: topSafe + 24.0,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.shadow.withValues(alpha: 0.3),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: AnymeXText.semiBold(
+                    'Original · shaders off',
+                    style: TextStyle(
+                      color: colors.onPrimary,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: widget.animation,
+                curve: Curves.easeOutCubic,
+              )),
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 100),
+                opacity: _isComparing ? 0.0 : 1.0,
+                child: Container(
+                  width: panelWidth,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainer.withValues(alpha: 0.82),
+                    border: Border(
+                      left: BorderSide(
+                        color: colors.outlineVariant.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: ClipRect(
+                    child: AnimatedBuilder(
+                      animation: widget.animation,
+                      builder: (context, childWidget) {
+                        if (widget.animation.status ==
+                                AnimationStatus.completed &&
+                            !_isComparing) {
+                          return BackdropFilter(
+                            filter:
+                                ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
+                            child: childWidget,
+                          );
+                        }
+                        return childWidget!;
+                      },
+                      child: isDesktop
+                          ? _buildDesktopLayout()
+                          : _buildMobileLandscapeLayout(),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
@@ -585,892 +841,1787 @@ class _ColorProfileBottomSheetState extends State<ColorProfileBottomSheet>
     );
   }
 
-  Widget _buildShadersTab(ThemeData theme) {
-    bool enableShaders = PlayerUiKeys.shadersEnabled.get<bool>(false) && _areShadersDownloaded;
+  Widget _buildDesktopLayout() {
+    final colors = context.theme.colorScheme;
+
     return Column(
       children: [
-        Expanded(
-          child: Opacity(
-            opacity: enableShaders ? 1 : 0.3,
-            child: ListView(
-              padding: const EdgeInsets.all(20),
+        _buildPaneHeader(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          child: Container(
+            height: 60,
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        theme.colorScheme.primaryContainer.opaque(0.3),
-                        theme.colorScheme.secondaryContainer.opaque(0.3),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: theme.colorScheme.primary,
-                        size: 20,
+                Expanded(
+                  child:
+                      _buildDesktopTabButton('shaders', 'Shaders', Iconsax.eye),
+                ),
+                Expanded(
+                  child: _buildDesktopTabButton(
+                      'presets', 'Presets', Icons.dashboard_customize_rounded),
+                ),
+                Expanded(
+                  child: _buildDesktopTabButton(
+                      'custom', 'Custom', Icons.tune_rounded),
+                ),
+                Expanded(
+                  child: _buildDesktopTabButton(
+                      'visual', 'Visual', Icons.movie_filter_rounded),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+            child: _buildTabContent(true),
+          ),
+        ),
+        Container(
+          height: 84,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerLow.withValues(alpha: 0.35),
+            border: Border(
+              top: BorderSide(
+                color: colors.outlineVariant.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: _resetTab,
+                  borderRadius: BorderRadius.circular(28),
+                  child: Container(
+                    height: 54,
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerHighest
+                          .withValues(alpha: 0.45),
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(
+                        color: colors.outlineVariant.withValues(alpha: 0.2),
+                        width: 1,
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: AnymeXText(
-                          enableShaders
-                              ? 'Choose a shader that matches your viewing preference'
-                              : 'Shaders are not installed or disabled. Enable and download them from Settings > Experimental',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
+                    ),
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          _resetDone
+                              ? Icons.check_circle_rounded
+                              : Icons.restart_alt_rounded,
+                          size: 18,
+                          color: _resetDone ? colors.primary : colors.onSurface,
+                        ),
+                        const SizedBox(width: 8),
+                        AnymeXText.semiBold(
+                          _resetDone ? 'Reset done' : 'Reset $_tabResetName',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color:
+                                _resetDone ? colors.primary : colors.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Listener(
+                  onPointerDown: (_) => _onPointerDownCompare(),
+                  onPointerUp: (_) => _onPointerUpCompare(),
+                  onPointerCancel: (_) => _onPointerUpCompare(),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    height: 54,
+                    decoration: BoxDecoration(
+                      color: _isComparing
+                          ? colors.primary
+                          : colors.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(
+                        color: colors.primary.withValues(alpha: 0.5),
+                        width: 1.5,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Iconsax.eye,
+                          size: 18,
+                          color:
+                              _isComparing ? colors.onPrimary : colors.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        AnymeXText.semiBold(
+                          'Hold to compare',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: _isComparing
+                                ? colors.onPrimary
+                                : colors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDesktopTabButton(String tabId, String label, IconData icon) {
+    final theme = context.theme;
+    final colors = theme.colorScheme;
+    final isSelected = _selectedTab == tabId;
+    return InkWell(
+      onTap: () {
+        setState(() => _selectedTab = tabId);
+        if (tabId == 'presets' && _capturedFrame == null) {
+          _captureCurrentFrame();
+        }
+      },
+      borderRadius: BorderRadius.circular(26),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        height: 52,
+        decoration: BoxDecoration(
+          color: isSelected ? colors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(26),
+        ),
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 17,
+              color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
+            ),
+            const SizedBox(width: 6),
+            AnymeXText.semiBold(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileLandscapeLayout() {
+    final colors = context.theme.colorScheme;
+    return Column(
+      children: [
+        _buildPaneHeader(),
+        Expanded(
+          child: Row(
+            children: [
+              Container(
+                width: 76,
+                decoration: BoxDecoration(
+                  color: colors.surfaceContainerLowest.withValues(alpha: 0.25),
+                  border: Border(
+                    right: BorderSide(
+                      color: colors.outlineVariant.withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.shadow.withValues(alpha: 0.12),
+                      blurRadius: 10,
+                      offset: const Offset(3, 0),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
+                child: Column(
+                  children: [
+                    _buildMobileTabButton('shaders', 'Shaders', Iconsax.eye),
+                    const SizedBox(height: 6),
+                    _buildMobileTabButton('presets', 'Presets',
+                        Icons.dashboard_customize_rounded),
+                    const SizedBox(height: 6),
+                    _buildMobileTabButton(
+                        'custom', 'Custom', Icons.tune_rounded),
+                    const SizedBox(height: 6),
+                    _buildMobileTabButton(
+                        'visual', 'Visual', Icons.movie_filter_rounded),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(8, 4, 20, 12),
+                        child: _buildTabContent(false),
+                      ),
+                    ),
+                    Container(
+                      height: 64,
+                      padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
+                      decoration: BoxDecoration(
+                        color:
+                            colors.surfaceContainerLow.withValues(alpha: 0.35),
+                        border: Border(
+                          top: BorderSide(
+                            color: colors.outlineVariant.withValues(alpha: 0.2),
+                            width: 1,
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                AnymeXExpansionTile(
-                  title: 'ANIME 4K',
-                  initialExpanded: true,
-                  content: Obx(() {
-                    final shaders = ["Default", ...PlayerShaders.getShaders()];
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        mainAxisExtent: 64,
-                      ),
-                      itemCount: shaders.length,
-                      itemBuilder: (context, index) {
-                        final shader = shaders[index];
-                        final isSelected = shader == "Default"
-                            ? settingsController.selectedShader.isEmpty ||
-                                settingsController.selectedShader == shader
-                            : settingsController.selectedShader == shader;
-
-                        return IgnorePointer(
-                          ignoring: !enableShaders,
-                          child: Material(
-                            color: Colors.transparent,
+                      child: Row(
+                        children: [
+                          Expanded(
                             child: InkWell(
-                              onTap: () => setShaders(shader),
-                              borderRadius: BorderRadius.circular(16),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              onTap: _resetTab,
+                              borderRadius: BorderRadius.circular(24),
+                              child: Container(
+                                height: 48,
                                 decoration: BoxDecoration(
-                                  gradient: isSelected
-                                      ? LinearGradient(
-                                          colors: [
-                                            theme.colorScheme.primaryContainer,
-                                            theme.colorScheme.primaryContainer.opaque(0.8),
-                                          ],
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                        )
-                                      : null,
-                                  color: isSelected
-                                      ? null
-                                      : theme.colorScheme.surfaceVariant.opaque(0.5),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: isSelected
-                                      ? Border.all(color: theme.colorScheme.primary, width: 2)
-                                      : Border.all(color: theme.colorScheme.outline.opaque(0.2), width: 1),
-                                  boxShadow: isSelected
-                                      ? [
-                                          BoxShadow(
-                                            color: theme.colorScheme.primary.opaque(0.2),
-                                            blurRadius: 12,
-                                            offset: const Offset(0, 4),
-                                          ),
-                                        ]
-                                      : null,
+                                  color: colors.surfaceContainerHighest
+                                      .withValues(alpha: 0.45),
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+                                    color: colors.outlineVariant
+                                        .withValues(alpha: 0.2),
+                                    width: 1,
+                                  ),
                                 ),
+                                alignment: Alignment.center,
                                 child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Expanded(
-                                      child: AnymeXText(
-                                        shader,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: theme.textTheme.titleSmall?.copyWith(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 12,
-                                          color: isSelected
-                                              ? theme.colorScheme.onPrimaryContainer
-                                              : theme.colorScheme.onSurface,
-                                        ),
+                                    Icon(
+                                      _resetDone
+                                          ? Icons.check_circle_rounded
+                                          : Icons.restart_alt_rounded,
+                                      size: 16,
+                                      color: _resetDone
+                                          ? colors.primary
+                                          : colors.onSurface,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    AnymeXText.semiBold(
+                                      _resetDone ? 'Done' : 'Reset',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: _resetDone
+                                            ? colors.primary
+                                            : colors.onSurface,
                                       ),
                                     ),
-                                    if (isSelected)
-                                      Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                          color: theme.colorScheme.primary,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.check,
-                                          color: theme.colorScheme.onPrimary,
-                                          size: 14,
-                                        ),
-                                      ),
                                   ],
                                 ),
                               ),
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Listener(
+                              onPointerDown: (_) => _onPointerDownCompare(),
+                              onPointerUp: (_) => _onPointerUpCompare(),
+                              onPointerCancel: (_) => _onPointerUpCompare(),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 150),
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: _isComparing
+                                      ? colors.primary
+                                      : colors.primary.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(
+                                    color:
+                                        colors.primary.withValues(alpha: 0.5),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Iconsax.eye,
+                                      size: 16,
+                                      color: _isComparing
+                                          ? colors.onPrimary
+                                          : colors.primary,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    AnymeXText.semiBold(
+                                      'Compare',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: _isComparing
+                                            ? colors.onPrimary
+                                            : colors.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMobileTabButton(String tabId, String label, IconData icon) {
+    final theme = context.theme;
+    final colors = theme.colorScheme;
+    final isSelected = _selectedTab == tabId;
+    return InkWell(
+      onTap: () {
+        setState(() => _selectedTab = tabId);
+        if (tabId == 'presets' && _capturedFrame == null) {
+          _captureCurrentFrame();
+        }
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        height: 64,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: isSelected ? colors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 22,
+              color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
+            ),
+            const SizedBox(height: 3),
+            AnymeXText.semiBold(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabContent(bool isDesktop) {
+    switch (_selectedTab) {
+      case 'shaders':
+        return _buildShadersTab(isDesktop);
+      case 'presets':
+        return _buildPresetsTab();
+      case 'custom':
+        return _buildCustomTab();
+      case 'visual':
+        return _buildVisualTab();
+      default:
+        return _buildShadersTab(isDesktop);
+    }
+  }
+
+  Widget _buildShadersTab(bool isDesktop) {
+    final theme = context.theme;
+    final colors = theme.colorScheme;
+    final cardBg = colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true);
+
+    if (!_areShadersDownloaded) {
+      return Container(
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: colors.outlineVariant.withValues(alpha: 0.2),
+          ),
+        ),
+        padding: EdgeInsets.all(isDesktop ? 20 : 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: colors.primaryContainer,
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.download_rounded,
+                    size: 24,
+                    color: colors.primary,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AnymeXText.semiBold(
+                        'Anime4K Shaders',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      AnymeXText(
+                        'High-quality real-time upscaling & line reconstruction GLSL shaders (~1.2 MB).',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.onSurfaceVariant,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            if (!_isDownloading)
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: _downloadShaders,
+                      borderRadius: BorderRadius.circular(26),
+                      child: Container(
+                        height: 52,
+                        decoration: BoxDecoration(
+                          color: colors.primary,
+                          borderRadius: BorderRadius.circular(26),
+                        ),
+                        alignment: Alignment.center,
+                        child: AnymeXText.semiBold(
+                          'Download now',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: colors.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  InkWell(
+                    onTap: () => Get.to(() => const SettingsPlayerShaders()),
+                    borderRadius: BorderRadius.circular(26),
+                    child: Container(
+                      height: 52,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: colors.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(26),
+                      ),
+                      alignment: Alignment.center,
+                      child: AnymeXText.semiBold(
+                        'Settings',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: colors.onSurface,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            else
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AnymeXText(
+                        _statusText,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      AnymeXText.semiBold(
+                        '${_downloadProgress.toInt()}%',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: LinearProgressIndicator(
+                      value: _downloadProgress / 100.0,
+                      backgroundColor: colors.surfaceContainerHighest,
+                      valueColor: AlwaysStoppedAnimation<Color>(colors.primary),
+                      minHeight: 8,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _cancelDownload,
+                      child: AnymeXText.semiBold(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      );
+    }
+
+    final isDefault =
+        !_shadersOn || _selectedShader == 'Default' || _selectedShader.isEmpty;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnymeXSectionBuilder(
+          title: 'Anime4K Engine',
+          children: [
+            AnymeXTile.toggle(
+              title: 'Anime4K shaders',
+              subtitle: 'Real-time upscaling & line reconstruction',
+              value: _shadersOn,
+              onChanged: (val) {
+                setState(() {
+                  _shadersOn = val;
+                });
+                PlayerUiKeys.shadersEnabled.set(val);
+                _applyCurrentShaderMode();
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        AnymeXSectionBuilder(
+          title: 'Device Performance',
+          children: [
+            AnymeXSegmentedButtonGroup<String>(
+              selected: _selectedTier,
+              items: const [
+                (value: 'mid', title: 'Mid-range', icon: null),
+                (value: 'high', title: 'High-end', icon: null),
+              ],
+              onSelected: (tier) {
+                setState(() {
+                  _selectedTier = tier;
+                  settingsController.selectedProfile =
+                      tier == 'high' ? 'HIGH-END' : 'MID-END';
+                });
+                if (_shadersOn) _applyCurrentShaderMode();
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        AnymeXSectionBuilder(
+          title: 'Shader Mode',
+          children: [
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _shadersOn = false;
+                  _selectedMode = 'Default';
+                });
+                _setShader('Default');
+              },
+              borderRadius: BorderRadius.circular(isDefault ? 28 : 20),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                height: 72,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: isDefault ? colors.primaryContainer : cardBg,
+                  borderRadius: BorderRadius.circular(isDefault ? 28 : 20),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: isDefault
+                            ? colors.primary
+                            : colors.surfaceContainerHighest,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.block_rounded,
+                        size: 18,
+                        color: isDefault ? colors.onPrimary : colors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AnymeXText.semiBold(
+                            'Default · no shader',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: isDefault
+                                  ? colors.onPrimaryContainer
+                                  : colors.onSurface,
+                            ),
+                          ),
+                          AnymeXText(
+                            'Native source without upscaling',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDefault
+                                  ? colors.onPrimaryContainer
+                                      .withValues(alpha: 0.8)
+                                  : colors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isDefault)
+                      Icon(Icons.check_circle_rounded,
+                          size: 20, color: colors.primary),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+                mainAxisExtent: 82,
+              ),
+              itemCount: _modeDefs.length,
+              itemBuilder: (context, index) {
+                final m = _modeDefs[index];
+                final isSelected = _shadersOn && _selectedMode == m.id;
+                return InkWell(
+                  onTap: () {
+                    setState(() {
+                      _selectedMode = m.id;
+                      _shadersOn = true;
+                    });
+                    _applyCurrentShaderMode();
+                  },
+                  borderRadius: BorderRadius.circular(isSelected ? 28 : 16),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    decoration: BoxDecoration(
+                      color: isSelected ? colors.primaryContainer : cardBg,
+                      borderRadius: BorderRadius.circular(isSelected ? 28 : 16),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AnymeXText.semiBold(
+                          m.title,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: isSelected
+                                ? colors.onPrimaryContainer
+                                : colors.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        AnymeXText(
+                          m.sub,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isSelected
+                                ? colors.onPrimaryContainer
+                                    .withValues(alpha: 0.8)
+                                : colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  static List<double> _identityMatrix() => [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+      ];
+
+  static List<double> _multiplyColorMatrices(List<double> a, List<double> b) {
+    final result = List<double>.filled(20, 0.0);
+    for (int y = 0; y < 4; y++) {
+      for (int x = 0; x < 4; x++) {
+        result[y * 5 + x] = a[y * 5 + 0] * b[0 * 5 + x] +
+            a[y * 5 + 1] * b[1 * 5 + x] +
+            a[y * 5 + 2] * b[2 * 5 + x] +
+            a[y * 5 + 3] * b[3 * 5 + x];
+      }
+      result[y * 5 + 4] = a[y * 5 + 0] * b[0 * 5 + 4] +
+          a[y * 5 + 1] * b[1 * 5 + 4] +
+          a[y * 5 + 2] * b[2 * 5 + 4] +
+          a[y * 5 + 3] * b[3 * 5 + 4] +
+          a[y * 5 + 4];
+    }
+    return result;
+  }
+
+  static List<double> _brightnessMatrix(double b) {
+    final offset = b * 2.55;
+    return [
+      1,
+      0,
+      0,
+      0,
+      offset,
+      0,
+      1,
+      0,
+      0,
+      offset,
+      0,
+      0,
+      1,
+      0,
+      offset,
+      0,
+      0,
+      0,
+      1,
+      0,
+    ];
+  }
+
+  static List<double> _contrastMatrix(double c) {
+    final f = (c + 100.0) / 100.0;
+    final off = 128.0 * (1.0 - f);
+    return [
+      f,
+      0,
+      0,
+      0,
+      off,
+      0,
+      f,
+      0,
+      0,
+      off,
+      0,
+      0,
+      f,
+      0,
+      off,
+      0,
+      0,
+      0,
+      1,
+      0,
+    ];
+  }
+
+  static List<double> _saturationMatrix(double s) {
+    final sat = (s + 100.0) / 100.0;
+    final invSat = 1.0 - sat;
+    final r = 0.2126 * invSat;
+    final g = 0.7152 * invSat;
+    final b = 0.0722 * invSat;
+    return [
+      r + sat,
+      g,
+      b,
+      0,
+      0,
+      r,
+      g + sat,
+      b,
+      0,
+      0,
+      r,
+      g,
+      b + sat,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+    ];
+  }
+
+  static List<double> _hueMatrix(double degrees) {
+    final rad = degrees * math.pi / 180.0;
+    final cosVal = math.cos(rad);
+    final sinVal = math.sin(rad);
+    const lumR = 0.213;
+    const lumG = 0.715;
+    const lumB = 0.072;
+    return [
+      lumR + cosVal * (1 - lumR) + sinVal * (-lumR),
+      lumG + cosVal * (-lumG) + sinVal * (-lumG),
+      lumB + cosVal * (-lumB) + sinVal * (1 - lumB),
+      0,
+      0,
+      lumR + cosVal * (-lumR) + sinVal * (0.143),
+      lumG + cosVal * (1 - lumG) + sinVal * (0.140),
+      lumB + cosVal * (-lumB) + sinVal * (-0.283),
+      0,
+      0,
+      lumR + cosVal * (-lumR) + sinVal * (-(1 - lumR)),
+      lumG + cosVal * (-lumG) + sinVal * (lumG),
+      lumB + cosVal * (1 - lumB) + sinVal * (lumB),
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+    ];
+  }
+
+  static List<double> _calculateColorMatrixForPreset(String key) {
+    final settings = ColorProfileManager.profiles[key] ??
+        ColorProfileManager.profiles['natural']!;
+    final b = (settings['brightness'] ?? 0).toDouble();
+    final c = (settings['contrast'] ?? 0).toDouble();
+    final s = (settings['saturation'] ?? 0).toDouble();
+    final h = (settings['hue'] ?? 0).toDouble();
+
+    var m = _identityMatrix();
+    if (b != 0) m = _multiplyColorMatrices(m, _brightnessMatrix(b));
+    if (c != 0) m = _multiplyColorMatrices(m, _contrastMatrix(c));
+    if (s != 0) m = _multiplyColorMatrices(m, _saturationMatrix(s));
+    if (h != 0) m = _multiplyColorMatrices(m, _hueMatrix(h));
+    return m;
+  }
+
+  Widget _buildFramePreview() {
+    if (_capturedFrame != null) {
+      return Image.memory(
+        _capturedFrame!,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        gaplessPlayback: true,
+      );
+    }
+    if (Get.isRegistered<PlayerController>()) {
+      final pc = Get.find<PlayerController>();
+      final thumb = pc.currentEpisode.value.thumbnail;
+      if (thumb != null && thumb.isNotEmpty) {
+        return AnymeXImage(
+          imageUrl: thumb,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        );
+      }
+      final poster = pc.anilistData.poster.isNotEmpty
+          ? pc.anilistData.poster
+          : (pc.anilistData.cover ?? '');
+      if (poster.isNotEmpty) {
+        return AnymeXImage(
+          imageUrl: poster,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+        );
+      }
+    }
+    return Container(
+      color: context.theme.colorScheme.surfaceContainerHighest,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.movie_filter_rounded,
+        size: 24,
+        color:
+            context.theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+      ),
+    );
+  }
+
+  Widget _buildPresetsTab() {
+    final colors = context.theme.colorScheme;
+    final cardBg = colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnymeXSectionBuilder(
+          title: 'Color Presets',
+          children: [
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+                mainAxisExtent: 132,
+              ),
+              itemCount: _presetDefs.length,
+              itemBuilder: (context, index) {
+                final p = _presetDefs[index];
+                final isSelected = _selectedProfile == p.key;
+                return InkWell(
+                  onTap: () => _selectProfile(p.key),
+                  borderRadius: BorderRadius.circular(isSelected ? 24 : 16),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? colors.primaryContainer.withValues(alpha: 0.6)
+                          : cardBg,
+                      borderRadius: BorderRadius.circular(isSelected ? 24 : 16),
+                      border: Border.all(
+                        color: isSelected
+                            ? colors.primary
+                            : colors.outlineVariant.withValues(alpha: 0.18),
+                        width: isSelected ? 1.5 : 1,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.matrix(
+                                _calculateColorMatrixForPreset(p.key),
+                              ),
+                              child: _buildFramePreview(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AnymeXText.semiBold(
+                                p.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: isSelected
+                                      ? colors.onPrimaryContainer
+                                      : colors.onSurface,
+                                ),
+                              ),
+                            ),
+                            if (isSelected) ...[
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.check_circle_rounded,
+                                size: 16,
+                                color: colors.primary,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCustomTab() {
+    final theme = context.theme;
+    final colors = theme.colorScheme;
+    final cardBg = colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnymeXSectionBuilder(
+          title: 'Custom Adjustments',
+          children: _adjustDefs.map((adj) {
+            final val = _customSettings[adj.key] ?? 0;
+            final showText = val > 0 ? '+$val' : '$val';
+            return Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AnymeXText.semiBold(
+                        adj.label,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 3),
+                        constraints: const BoxConstraints(minWidth: 28),
+                        decoration: BoxDecoration(
+                          color: colors.primary,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        alignment: Alignment.center,
+                        child: AnymeXText.semiBold(
+                          showText,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colors.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  AnymeXSliderM3(
+                    value: val.toDouble().clamp(-50.0, 50.0),
+                    min: -50,
+                    max: 50,
+                    divisions: 100,
+                    label: showText,
+                    onChanged: (newVal) {
+                      setState(() {
+                        _customSettings[adj.key] = newVal.round();
+                      });
+                      _applyCustomSettings();
+                    },
+                    theme: AnymeXSliderM3Theme(
+                      activeColor: colors.primary,
+                      inactiveColor: colors.surfaceContainerHighest,
+                      trackHeight: 16,
+                      thumbHeight: 40,
+                      thumbWidth: 6,
+                      outerRadius: 8,
+                      thumbCornerRadius: 3,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVisualTab() {
+    final theme = context.theme;
+    final colors = theme.colorScheme;
+    final cardBg = colors.surfaceContainer.opaque(0.45, iReallyMeanIt: true);
+    final deband = (_visualSettings['deband'] as bool?) ?? true;
+    final iter =
+        ((_visualSettings['debandIterations'] as num?) ?? 2).toDouble();
+    final threshold =
+        ((_visualSettings['debandThreshold'] as num?) ?? 64).toDouble();
+    final scale = (_visualSettings['scale'] as String?) ?? 'spline36';
+    final cscale = (_visualSettings['cscale'] as String?) ?? 'spline36';
+    final dscale = (_visualSettings['dscale'] as String?) ?? 'mitchell';
+    final sigmoid = (_visualSettings['sigmoidUpscaling'] as bool?) ?? true;
+    final downscale = (_visualSettings['correctDownscaling'] as bool?) ?? true;
+    final interpolation = (_visualSettings['interpolation'] as bool?) ?? false;
+    final dither = (_visualSettings['temporalDither'] as bool?) ?? true;
+    final ditherDepth = (_visualSettings['ditherDepth'] as String?) ?? 'auto';
+    final toneMapping = (_visualSettings['toneMapping'] as String?) ?? 'auto';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AnymeXSectionBuilder(
+          title: 'Experimental MPV Tuning',
+          children: [
+            AnymeXTile.toggle(
+              icon: Icons.science_outlined,
+              title: 'Enable Experimental Tuning',
+              subtitle:
+                  'Required for MPV visual & core tuning. Keep off on low-end devices.',
+              value: _experimentalEnabled,
+              onChanged: (val) {
+                setState(() => _experimentalEnabled = val);
+                PlayerUiKeys.playerExperimentalEnabled.set<bool>(val);
+                if (val) {
+                  _applyVisualSettings();
+                }
+              },
+            ),
+            if (!_experimentalEnabled)
+              Container(
+                padding: const EdgeInsets.all(14),
+                margin: const EdgeInsets.only(top: 8),
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: colors.outlineVariant.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline_rounded,
+                        size: 20, color: colors.primary),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: AnymeXText(
+                        'Experimental tuning is currently disabled. Toggle it on above to adjust debanding, scaling algorithms, frame interpolation, dithering, and tone mapping directly.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colors.onSurfaceVariant,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        AnymeXSectionBuilder(
+          title: 'Debanding',
+          children: [
+            AnymeXTile.toggle(
+              title: 'Debanding filter',
+              subtitle: 'Smooths gradient lines and eliminates banding',
+              value: deband,
+              onChanged: (val) {
+                setState(() => _visualSettings['deband'] = val);
+                _applyVisualSettings();
+              },
+            ),
+            Opacity(
+              opacity: deband ? 1.0 : 0.4,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AnymeXText(
+                          'Passes',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                        AnymeXText.semiBold(
+                          '${iter.toInt()}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    AnymeXSliderM3(
+                      value: iter.clamp(1.0, 4.0),
+                      min: 1,
+                      max: 4,
+                      divisions: 3,
+                      label: '${iter.toInt()}',
+                      onChanged: deband
+                          ? (val) {
+                              setState(() =>
+                                  _visualSettings['debandIterations'] =
+                                      val.round());
+                              _applyVisualSettings();
+                            }
+                          : null,
+                      theme: AnymeXSliderM3Theme(
+                        activeColor: colors.primary,
+                        inactiveColor: colors.surfaceContainerHighest,
+                        trackHeight: 16,
+                        thumbHeight: 40,
+                        thumbWidth: 6,
+                        outerRadius: 8,
+                        thumbCornerRadius: 3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Opacity(
+              opacity: deband ? 1.0 : 0.4,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AnymeXText(
+                          'Sensitivity',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                        AnymeXText.semiBold(
+                          '${threshold.toInt()}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    AnymeXSliderM3(
+                      value: threshold.clamp(16.0, 128.0),
+                      min: 16,
+                      max: 128,
+                      divisions: 14,
+                      label: '${threshold.toInt()}',
+                      onChanged: deband
+                          ? (val) {
+                              setState(() =>
+                                  _visualSettings['debandThreshold'] =
+                                      val.round());
+                              _applyVisualSettings();
+                            }
+                          : null,
+                      theme: AnymeXSliderM3Theme(
+                        activeColor: colors.primary,
+                        inactiveColor: colors.surfaceContainerHighest,
+                        trackHeight: 16,
+                        thumbHeight: 40,
+                        thumbWidth: 6,
+                        outerRadius: 8,
+                        thumbCornerRadius: 3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        AnymeXSectionBuilder(
+          title: 'Scaling & Algorithms',
+          children: [
+            AnymeXTile(
+              icon: Icons.aspect_ratio_rounded,
+              title: 'Scaling (Luma)',
+              subtitle: scale,
+              onTap: () => _showVisualSelectionDialog(
+                title: 'Scaling Algorithm',
+                items: const [
+                  'spline36',
+                  'ewa_lanczossharp',
+                  'bilinear',
+                  'bicubic',
+                  'oversample',
+                ],
+                selected: scale,
+                key: 'scale',
+              ),
+            ),
+            AnymeXTile(
+              icon: Icons.palette_outlined,
+              title: 'Chroma Scaler',
+              subtitle: cscale,
+              onTap: () => _showVisualSelectionDialog(
+                title: 'Chroma Scaler',
+                items: const [
+                  'spline36',
+                  'ewa_lanczossharp',
+                  'bilinear',
+                  'mitchell',
+                ],
+                selected: cscale,
+                key: 'cscale',
+              ),
+            ),
+            AnymeXTile(
+              icon: Icons.photo_size_select_small_rounded,
+              title: 'Downscaling Algorithm',
+              subtitle: dscale,
+              onTap: () => _showVisualSelectionDialog(
+                title: 'Downscaling Algorithm',
+                items: const [
+                  'mitchell',
+                  'bicubic',
+                  'bilinear',
+                  'hermite',
+                ],
+                selected: dscale,
+                key: 'dscale',
+              ),
+            ),
+            AnymeXTile.toggle(
+              title: 'Sigmoid upscaling',
+              subtitle: 'Reduces color ringing artifacts',
+              value: sigmoid,
+              onChanged: (val) {
+                setState(() => _visualSettings['sigmoidUpscaling'] = val);
+                _applyVisualSettings();
+              },
+            ),
+            AnymeXTile.toggle(
+              title: 'Correct downscaling',
+              subtitle: 'Downscales in linear light space',
+              value: downscale,
+              onChanged: (val) {
+                setState(() => _visualSettings['correctDownscaling'] = val);
+                _applyVisualSettings();
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        AnymeXSectionBuilder(
+          title: 'Motion & Dithering',
+          children: [
+            AnymeXTile.toggle(
+              title: 'Frame interpolation',
+              subtitle: 'Smooth motion between video frames',
+              value: interpolation,
+              onChanged: (val) {
+                setState(() => _visualSettings['interpolation'] = val);
+                _applyVisualSettings();
+              },
+            ),
+            AnymeXTile.toggle(
+              title: 'Temporal dither',
+              subtitle: 'Reduces color banding with subtle noise',
+              value: dither,
+              onChanged: (val) {
+                setState(() => _visualSettings['temporalDither'] = val);
+                _applyVisualSettings();
+              },
+            ),
+            AnymeXTile(
+              icon: Icons.grain_rounded,
+              title: 'Dither Depth',
+              subtitle: ditherDepth,
+              onTap: () => _showVisualSelectionDialog(
+                title: 'Dither Depth',
+                items: const ['auto', '8', '10', 'no'],
+                selected: ditherDepth,
+                key: 'ditherDepth',
+              ),
+            ),
+            AnymeXTile(
+              icon: Icons.hdr_auto_rounded,
+              title: 'Tone Mapping',
+              subtitle: toneMapping,
+              onTap: () => _showVisualSelectionDialog(
+                title: 'Tone Mapping',
+                items: const [
+                  'auto',
+                  'clip',
+                  'mobius',
+                  'reinhard',
+                  'hable',
+                  'bt.2390',
+                  'spline',
+                ],
+                selected: toneMapping,
+                key: 'toneMapping',
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFullFramePreview() {
+    if (Get.isRegistered<PlayerController>()) {
+      final pc = Get.find<PlayerController>();
+      if (pc.showControls.value) {
+        pc.showControls.value = false;
+      }
+    }
+
+    final theme = context.theme;
+    final colors = theme.colorScheme;
+    final padding = MediaQuery.paddingOf(context);
+    final isDesktop = !Platform.isAndroid && !Platform.isIOS;
+    final titleBarHeight =
+        (Platform.isWindows && !AnymeXTitleBar.isFullScreen.value) ? 40.0 : 0.0;
+    final safeTop = (padding.top + titleBarHeight + (isDesktop ? 16.0 : 10.0))
+        .clamp(16.0, 120.0);
+    final safeBottom = math.max(padding.bottom, 16.0);
+
+    const shaderModes = [
+      'Default',
+      'Mode A',
+      'Mode B',
+      'Mode C',
+      'Mode A+A',
+      'Mode B+B',
+      'Mode C+A',
+    ];
+
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              if (Get.isRegistered<PlayerController>()) {
+                Get.find<PlayerController>().showControls.value = false;
+              }
+            },
+          ),
+        ),
+        if (_isComparing)
+          Positioned(
+            top: safeTop,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.shadow.withValues(alpha: 0.3),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: AnymeXText.semiBold(
+                  'Original · shaders off',
+                  style: TextStyle(
+                    color: colors.onPrimary,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        Positioned(
+          top: safeTop,
+          left: 16,
+          right: 16,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 100),
+            opacity: _isComparing ? 0.0 : 1.0,
+            child: Row(
+              children: [
+                InkWell(
+                  onTap: () => setState(() => _isFullFramePreview = false),
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: colors.surface.withValues(alpha: 0.90),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: colors.outlineVariant.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.tune_rounded,
+                            size: 18, color: colors.onSurface),
+                        const SizedBox(width: 8),
+                        AnymeXText(
+                          'Controls',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: colors.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: colors.surface.withValues(alpha: 0.90),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: colors.outlineVariant.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          color: colors.primary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      AnymeXText.semiBold(
+                        _summaryText,
+                        style: TextStyle(
+                          color: colors.primary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: IconButton.styleFrom(
+                    backgroundColor: colors.surfaceContainerHigh,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: Icon(Icons.close_rounded, color: colors.onSurface),
                 ),
               ],
             ),
           ),
         ),
-        // Reset button for Shaders tab
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton.tonal(
-              onPressed: enableShaders ? _resetShaderToDefault : null,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+        Positioned(
+          bottom: safeBottom,
+          left: 16,
+          right: 16,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 100),
+            opacity: _isComparing ? 0.0 : 1.0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: colors.surface.withValues(alpha: 0.94),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: colors.outlineVariant.withValues(alpha: 0.3),
                 ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.refresh, size: 20),
-                  SizedBox(width: 8),
-                  AnymeXText('Reset Shader to Default'),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.shadow.withValues(alpha: 0.35),
+                    blurRadius: 20,
+                    offset: const Offset(0, 6),
+                  ),
                 ],
               ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> setShaders(String message, {bool backOut = true}) async {
-    if (Get.isRegistered<PlayerController>()) {
-      await Get.find<PlayerController>().applyShader(message);
-    } else {
-      await PlayerShaders.setShaders(widget.player, message);
-      settingsController.selectedShader = message == "Default" ? "" : message;
-      PlayerUiKeys.selectedShader.set(message == "Default" ? "" : message);
-    }
-    setState(() {
-      _selectedShader = message;
-    });
-    HapticFeedback.lightImpact();
-    if (backOut && mounted) {
-      Navigator.pop(context);
-    }
-  }
-
-  Widget _buildPresetsTab(ThemeData theme) {
-    Map<String, List<String>> groupedProfiles = {
-      'Anime': ['anime_4k', 'anime', 'anime_vibrant', 'anime_soft'],
-      'Cinema': ['cinema', 'cinema_dark', 'cinema_hdr'],
-      'Vivid': ['vivid', 'vivid_pop', 'vivid_warm'],
-      'Other': ['natural', 'dark', 'warm', 'cool', 'grayscale'],
-    };
-
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.primaryContainer.opaque(0.3),
-                      theme.colorScheme.secondaryContainer.opaque(0.3),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: theme.colorScheme.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AnymeXText(
-                        'Choose a preset that matches your viewing preference',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              ...groupedProfiles.entries.map((category) {
-                return AnymeXExpansionTile(
-                  title: category.key,
-                  initialExpanded: true,
-                  content: Column(
-                    children: category.value.map((profileKey) {
-                      final isSelected = _selectedProfile == profileKey;
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () async {
-                              setState(() => _selectedProfile = profileKey);
-                              await ColorProfileManager()
-                                  .applyColorProfile(profileKey, widget.player);
-                              widget.onProfileSelected(profileKey);
-                              _showProfileAppliedFeedback(profileKey);
-                            },
-                            borderRadius: BorderRadius.circular(16),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                gradient: isSelected
-                                    ? LinearGradient(
-                                        colors: [
-                                          theme.colorScheme.primaryContainer,
-                                          theme.colorScheme.primaryContainer
-                                              .opaque(0.8),
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      )
-                                    : null,
-                                color: isSelected
-                                    ? null
-                                    : theme.colorScheme.surfaceVariant
-                                        .opaque(0.5),
-                                borderRadius: BorderRadius.circular(16),
-                                border: isSelected
-                                    ? Border.all(
-                                        color: theme.colorScheme.primary,
-                                        width: 2,
-                                      )
-                                    : Border.all(
-                                        color: theme.colorScheme.outline
-                                            .opaque(0.2),
-                                        width: 1,
-                                      ),
-                                boxShadow: isSelected
-                                    ? [
-                                        BoxShadow(
-                                          color: theme.colorScheme.primary
-                                              .opaque(0.2),
-                                          blurRadius: 12,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ]
-                                    : null,
-                              ),
-                              child: Row(
-                                children: [
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 200),
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      gradient: isSelected
-                                          ? LinearGradient(
-                                              colors: [
-                                                theme.colorScheme.primary,
-                                                theme.colorScheme.primary
-                                                    .opaque(0.8),
-                                              ],
-                                            )
-                                          : null,
-                                      color: isSelected
-                                          ? null
-                                          : theme.colorScheme.surface,
-                                      borderRadius: BorderRadius.circular(12),
-                                      boxShadow: isSelected
-                                          ? [
-                                              BoxShadow(
-                                                color: theme.colorScheme.primary
-                                                    .opaque(0.3),
-                                                blurRadius: 8,
-                                                offset: const Offset(0, 2),
-                                              ),
-                                            ]
-                                          : null,
-                                    ),
-                                    child: Icon(
-                                      ColorProfileManager
-                                          .profileIcons[profileKey],
-                                      color: isSelected
-                                          ? theme.colorScheme.onPrimary
-                                          : theme.colorScheme.onSurface,
-                                      size: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        AnymeXText(
-                                          profileKey
-                                              .replaceAll('_', ' ')
-                                              .toUpperCase(),
-                                          style: theme.textTheme.titleSmall
-                                              ?.copyWith(
-                                            fontWeight: FontWeight.w700,
-                                            color: isSelected
-                                                ? theme.colorScheme
-                                                    .onPrimaryContainer
-                                                : theme.colorScheme.onSurface,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        AnymeXText(
-                                          ColorProfileManager
-                                                      .profileDescriptions[
-                                                  profileKey] ??
-                                              '',
-                                          style: theme.textTheme.bodySmall
-                                              ?.copyWith(
-                                            color: isSelected
-                                                ? theme.colorScheme
-                                                    .onPrimaryContainer
-                                                    .opaque(0.8)
-                                                : theme.colorScheme
-                                                    .onSurfaceVariant,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (isSelected)
-                                    Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        color: theme.colorScheme.primary,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.check,
-                                        color: theme.colorScheme.onPrimary,
-                                        size: 16,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 60,
+                        child: AnymeXText.semiBold(
+                          'Profile',
+                          style: TextStyle(
+                            color: colors.onSurfaceVariant,
+                            fontSize: 11,
                           ),
                         ),
-                      );
-                    }).toList(),
-                  ),
-                );
-              }),
-            ],
-          ),
-        ),
-        // Reset button for Presets tab
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton.tonal(
-              onPressed: _resetPresetToNatural,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.refresh, size: 20),
-                  SizedBox(width: 8),
-                  AnymeXText('Reset to Natural Profile'),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVisualTab(ThemeData theme) {
-    if (!_experimentalEnabled) {
-      return _buildVisualLockedState(theme);
-    }
-
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.primaryContainer.opaque(0.3),
-                      theme.colorScheme.secondaryContainer.opaque(0.3),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.tune_rounded,
-                        color: theme.colorScheme.primary, size: 20),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AnymeXText(
-                        'These controls directly affect mpv rendering quality & picture output',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w500,
+                      ),
+                      Expanded(
+                        child: AnymeXSegmentedButtonGroup<String>(
+                          selected: _selectedTier,
+                          items: const [
+                            (value: 'mid', title: 'Mid-range', icon: null),
+                            (value: 'high', title: 'High-end', icon: null),
+                          ],
+                          height: 38,
+                          selectedRadius: 19,
+                          unselectedRadius: 10,
+                          onSelected: (tier) {
+                            setState(() {
+                              _selectedTier = tier;
+                              settingsController.selectedProfile =
+                                  tier == 'high' ? 'HIGH-END' : 'MID-END';
+                            });
+                            if (_shadersOn) _applyCurrentShaderMode();
+                          },
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildVisualSwitchTile(
-                keyName: 'deband',
-                title: 'Deband',
-                description: 'Reduce color banding in gradients',
-                icon: Icons.gradient_rounded,
-              ),
-              _buildVisualSwitchTile(
-                keyName: 'correctDownscaling',
-                title: 'Correct Downscaling',
-                description: 'Improve quality when scaling down video',
-                icon: Icons.fit_screen_rounded,
-              ),
-              _buildVisualSwitchTile(
-                keyName: 'sigmoidUpscaling',
-                title: 'Sigmoid Upscaling',
-                description: 'Reduce haloing while upscaling',
-                icon: Icons.auto_fix_high_rounded,
-              ),
-              _buildVisualSwitchTile(
-                keyName: 'temporalDither',
-                title: 'Temporal Dither',
-                description: 'Smoother gradients with slight temporal noise',
-                icon: Icons.grain_rounded,
-              ),
-              _buildVisualSelectionTile(
-                keyName: 'scale',
-                title: 'Luma Upscaler',
-                icon: Icons.zoom_in_map_rounded,
-                items: const [
-                  'bilinear',
-                  'bicubic',
-                  'spline36',
-                  'ewa_lanczossharp',
-                ],
-              ),
-              _buildVisualSelectionTile(
-                keyName: 'cscale',
-                title: 'Chroma Upscaler',
-                icon: Icons.color_lens_rounded,
-                items: const [
-                  'bilinear',
-                  'bicubic',
-                  'spline36',
-                  'ewa_lanczossharp',
-                ],
-              ),
-              _buildVisualSelectionTile(
-                keyName: 'dscale',
-                title: 'Downscaler',
-                icon: Icons.zoom_out_map_rounded,
-                items: const ['bilinear', 'bicubic', 'mitchell', 'spline36'],
-              ),
-              _buildVisualSelectionTile(
-                keyName: 'ditherDepth',
-                title: 'Dither Depth',
-                icon: Icons.blur_linear_rounded,
-                items: const ['auto', '8', '10', '12'],
-              ),
-              _buildVisualSelectionTile(
-                keyName: 'toneMapping',
-                title: 'Tone Mapping',
-                icon: Icons.hdr_auto_rounded,
-                items: const ['auto', 'mobius', 'reinhard', 'hable', 'bt.2390'],
-              ),
-              _buildVisualSliderTile(
-                keyName: 'debandIterations',
-                title: 'Deband Iterations',
-                description: 'More iterations = stronger debanding',
-                icon: Icons.layers_rounded,
-                min: 1,
-                max: 4,
-                divisions: 3,
-              ),
-              _buildVisualSliderTile(
-                keyName: 'debandThreshold',
-                title: 'Deband Threshold',
-                description: 'Higher value increases debanding strength',
-                icon: Icons.tune_rounded,
-                min: 16,
-                max: 128,
-                divisions: 28,
-              ),
-              _buildVisualSliderTile(
-                keyName: 'targetPeak',
-                title: 'Target Peak',
-                description: 'HDR tone mapping target peak',
-                icon: Icons.brightness_6_rounded,
-                min: 50,
-                max: 1000,
-                divisions: 38,
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton.tonal(
-              onPressed: _resetVisualToDefault,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.refresh, size: 20),
-                  SizedBox(width: 8),
-                  AnymeXText('Reset Visual Settings'),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVisualLockedState(ThemeData theme) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primaryContainer.opaque(0.2),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: theme.colorScheme.primary.opaque(0.35),
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.science_outlined,
-                size: 28,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(height: 12),
-              AnymeXText(
-                'Visual settings are experimental',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              AnymeXText(
-                'Enable Experimental in Player Settings to use this tab.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVisualSwitchTile({
-    required String keyName,
-    required String title,
-    required String description,
-    required IconData icon,
-  }) {
-    return AnymeXTile.toggle(
-      icon: icon,
-      title: title,
-      subtitle: description,
-      value: (_visualSettings[keyName] as bool?) ?? false,
-      onChanged: (value) {
-        setState(() => _visualSettings[keyName] = value);
-        _applyVisualSettings();
-      },
-    );
-  }
-
-  Widget _buildVisualSelectionTile({
-    required String keyName,
-    required String title,
-    required IconData icon,
-    required List<String> items,
-  }) {
-    final current = (_visualSettings[keyName] as String?) ?? items.first;
-    return AnymeXTile(
-      icon: icon,
-      title: title,
-      subtitle: current,
-      onTap: () {
-        showSelectionDialog<String>(
-          title: title,
-          items: items,
-          selectedItem: current.obs,
-          getTitle: (v) => v,
-          onItemSelected: (v) {
-            setState(() => _visualSettings[keyName] = v);
-            _applyVisualSettings();
-          },
-          leadingIcon: icon,
-        );
-      },
-    );
-  }
-
-  Widget _buildVisualSliderTile({
-    required String keyName,
-    required String title,
-    required String description,
-    required IconData icon,
-    required double min,
-    required double max,
-    required int divisions,
-  }) {
-    final value = ((_visualSettings[keyName] as num?) ?? min).toDouble();
-    return AnymeXTile.slider(
-      icon: icon,
-      title: title,
-      subtitle: description,
-      value: value.clamp(min, max),
-      min: min,
-      max: max,
-      divisions: divisions,
-      onChanged: (newValue) {
-        setState(() => _visualSettings[keyName] = newValue.round());
-        _applyVisualSettings();
-      },
-    );
-  }
-
-  Widget _buildCustomTab(ThemeData theme) {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.primaryContainer.opaque(0.3),
-                      theme.colorScheme.secondaryContainer.opaque(0.3),
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.tune,
-                      color: theme.colorScheme.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AnymeXText(
-                        'Fine-tune individual settings to your preference',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w500,
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 60,
+                        child: AnymeXText.semiBold(
+                          'Shaders',
+                          style: TextStyle(
+                            color: colors.onSurfaceVariant,
+                            fontSize: 11,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              ..._customSettings.keys.map((setting) {
-                return _buildSliderTile(setting, theme);
-              }),
-            ],
-          ),
-        ),
-        // Reset button for Custom tab
-        Padding(
-          padding: const EdgeInsets.all(24),
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton.tonal(
-              onPressed: _resetCustomToDefault,
-              style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.refresh, size: 20),
-                  SizedBox(width: 8),
-                  AnymeXText('Reset to Default Settings'),
+                      Expanded(
+                        child: AnymeXPills(
+                          items: shaderModes.map((mode) {
+                            final isSelected = mode == 'Default'
+                                ? (!_shadersOn ||
+                                    _selectedShader == 'Default' ||
+                                    _selectedShader.isEmpty)
+                                : (_shadersOn &&
+                                    _selectedShader.contains(mode));
+                            return PillItem(
+                              label: mode,
+                              isSelected: isSelected,
+                              onTap: () {
+                                if (mode == 'Default') {
+                                  setState(() => _shadersOn = false);
+                                  _setShader('Default');
+                                } else {
+                                  final cleanMode =
+                                      mode.replaceFirst('Mode ', '');
+                                  setState(() {
+                                    _selectedMode = cleanMode;
+                                    _shadersOn = true;
+                                  });
+                                  _applyCurrentShaderMode();
+                                }
+                              },
+                            );
+                          }).toList(),
+                          style: PillStyle.connective,
+                          scrollable: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 60,
+                        child: AnymeXText.semiBold(
+                          'Presets',
+                          style: TextStyle(
+                            color: colors.onSurfaceVariant,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: AnymeXPills(
+                          items: _presetDefs.map((p) {
+                            return PillItem(
+                              label: p.title,
+                              isSelected: _selectedProfile == p.key,
+                              onTap: () => _selectProfile(p.key),
+                            );
+                          }).toList(),
+                          style: PillStyle.connective,
+                          scrollable: true,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildSliderTile(String setting, ThemeData theme) {
-    final value = _customSettings[setting]!;
-    final displayName = setting[0].toUpperCase() + setting.substring(1);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.colorScheme.outline.opaque(0.1),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.shadow.opaque(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AnymeXText(
-                displayName,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      theme.colorScheme.primary,
-                      theme.colorScheme.primary.opaque(0.8),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: theme.colorScheme.primary.opaque(0.3),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: AnymeXText(
-                  value.toString(),
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.onPrimary,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          CustomSlider(
-            value: value.toDouble(),
-            min: -100,
-            max: 100,
-            divisions: 200,
-            onChanged: (newValue) {
-              setState(() {
-                _customSettings[setting] = newValue.round();
-              });
-              _applyCustomSettings();
-            },
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              AnymeXText(
-                '-100',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              AnymeXText(
-                '100',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

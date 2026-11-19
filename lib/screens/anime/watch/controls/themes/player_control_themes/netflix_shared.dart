@@ -1,7 +1,9 @@
+import 'dart:io' show Platform;
 import 'package:anymex/screens/anime/watch/controller/player_controller.dart';
 import 'package:anymex/screens/anime/watch/controls/widgets/bottom_sheet.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_player.dart';
 import 'package:anymex/services/cast/widgets/cast_device_dialog.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -277,7 +279,11 @@ class NFMoreSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maxSheetHeight = MediaQuery.sizeOf(context).height * 0.75;
+    final titleBarHeight =
+        (Platform.isWindows && !AnymeXTitleBar.isFullScreen.value) ? 40.0 : 0.0;
+    final topInset = MediaQuery.paddingOf(context).top + titleBarHeight;
+    final maxSheetHeight = (MediaQuery.sizeOf(context).height - topInset - 20.0)
+        .clamp(120.0, MediaQuery.sizeOf(context).height * 0.75);
 
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: maxSheetHeight),
@@ -291,7 +297,8 @@ class NFMoreSheet extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.only(bottom: 24),
               decoration: BoxDecoration(
-                color: Colors.white24,
+                color: context.theme.colorScheme.outline
+                    .withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),

@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'package:anymex/widgets/anymex_widgets/anymex_titlebar.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
@@ -25,7 +26,12 @@ class WatchSettingsPane extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final isDesktop = !Platform.isAndroid && !Platform.isIOS;
-    final topPadding = (MediaQuery.paddingOf(context).top + (isDesktop ? 20 : 12)).clamp(16.0, 100.0);
+    final titleBarHeight =
+        (Platform.isWindows && !AnymeXTitleBar.isFullScreen.value) ? 40.0 : 0.0;
+    final topPadding = (MediaQuery.paddingOf(context).top +
+            titleBarHeight +
+            (isDesktop ? 16.0 : 10.0))
+        .clamp(16.0, 120.0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

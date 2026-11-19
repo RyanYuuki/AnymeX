@@ -91,6 +91,7 @@ class _ExtensionScreenState extends State<ExtensionScreen>
     const appBarHeight = kToolbarHeight + 20;
 
     final mainContent = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.isTabScreen) ...[
           if (isDesktop) ...[
@@ -486,28 +487,33 @@ class _ExtensionScreenState extends State<ExtensionScreen>
           height: 38,
           margin: const EdgeInsets.only(top: 8, bottom: 8),
           padding: const EdgeInsets.only(left: 16),
-          child: AnymeXPills(
-            items: filteredSourceTypes.map((e) {
-              final type = e;
-              final needsPlugin =
-                  _typeRequiresPlugin(type) && !_isPluginInstalled;
-              final isSelected = !needsPlugin && selectedType == type;
-              final label = type == 'all' ? 'All' : type;
-              final iconUrl = _getManagerIcon(type);
+          alignment: Alignment.centerLeft,
+          width: double.infinity,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: AnymeXPills(
+              items: filteredSourceTypes.map((e) {
+                final type = e;
+                final needsPlugin =
+                    _typeRequiresPlugin(type) && !_isPluginInstalled;
+                final isSelected = !needsPlugin && selectedType == type;
+                final label = type == 'all' ? 'All' : type;
+                final iconUrl = _getManagerIcon(type);
 
-              return PillItem(
-                  iconUrl: iconUrl,
-                  icon: type == 'all' ? HugeIcons.strokeRoundedPlug01 : null,
-                  label: label,
-                  isSelected: isSelected,
-                  onTap: needsPlugin
-                      ? () {
-                          navigate(() => const SettingsExtensionManager());
-                        }
-                      : () {
-                          _selectedSourceType.value = type;
-                        });
-            }).toList(),
+                return PillItem(
+                    iconUrl: iconUrl,
+                    icon: type == 'all' ? HugeIcons.strokeRoundedPlug01 : null,
+                    label: label,
+                    isSelected: isSelected,
+                    onTap: needsPlugin
+                        ? () {
+                            navigate(() => const SettingsExtensionManager());
+                          }
+                        : () {
+                            _selectedSourceType.value = type;
+                          });
+              }).toList(),
+            ),
           ));
     });
   }

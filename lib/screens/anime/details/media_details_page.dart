@@ -149,7 +149,16 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
     _lastExtractedUrl = targetUrl;
     ImageColorExtractor.extractColor(targetUrl).then((c) {
       if (c != null && mounted) {
-        _posterColor.value = '#${c.value.toRadixString(16).padLeft(8, '0')}';
+        final hex = '#${c.value.toRadixString(16).padLeft(8, '0')}';
+        if (_isRouteAnimating) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted && !_isRouteAnimating) {
+              _posterColor.value = hex;
+            }
+          });
+        } else {
+          _posterColor.value = hex;
+        }
       }
     });
   }
@@ -293,6 +302,7 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
 
       Widget buildScaffold(BuildContext themedContext) {
         return AnymeXScaffold(
+          disabled: true,
           extendBehindTitleBar: true,
           color: isDetailsOled ? '' : _posterColor.value,
           isOled: isDetailsOled,
@@ -740,86 +750,95 @@ class _MediaDetailsPageState extends State<MediaDetailsPage>
       return SliverMainAxisGroup(
         slivers: [
           SliverToBoxAdapter(
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Obx(() {
-                    if (controller.isAnilistLoading.value) {
-                      return _buildStatsShimmer(context).bottomSpacing(16);
-                    }
-                    return KeyedSubtree(
-                      key: const ValueKey('media_stats'),
-                      child: buildMediaStatsSection(context, controller)
-                          .bottomSpacing(16)
-                          .animateSection(onScroll: false),
-                    );
-                  }),
-                  Obx(() {
-                    if (controller.isAnilistLoading.value) {
-                      return _buildShimmerCarousel(context);
-                    }
-                    return KeyedSubtree(
-                      key: const ValueKey('media_characters'),
-                      child: buildCharactersSection(context, mediaData),
-                    );
-                  }),
-                  Obx(() {
-                    if (controller.isAnilistLoading.value) {
-                      return _buildShimmerCarousel(context);
-                    }
-                    if (rels.isEmpty) return const SizedBox.shrink();
-                    return KeyedSubtree(
-                      key: const ValueKey('media_relations'),
-                      child: ReusableCarousel(
-                        data: rels,
-                        title: 'Relations',
-                        variant: DataVariant.relation,
-                      ).bottomSpacing(16),
-                    );
-                  }),
-                  Obx(() {
-                    if (controller.isSecondaryLoading.value) {
-                      return _buildShimmerCarousel(context);
-                    }
-                    if (mediaData.staff == null || mediaData.staff!.isEmpty) {
-                      return const SizedBox.shrink();
-                    }
-                    return KeyedSubtree(
-                      key: const ValueKey('media_staff'),
-                      child: ReusableCarousel(
-                        data: mediaData.staff!,
-                        title: 'Staff',
-                        variant: DataVariant.staff,
-                      ).bottomSpacing(16),
-                    );
-                  }),
-                  Obx(() {
-                    if (controller.isAnilistLoading.value) {
-                      return _buildShimmerCarousel(context);
-                    }
-                    final recs = mediaData.recommendations;
-                    if (recs.isEmpty) return const SizedBox.shrink();
-                    return KeyedSubtree(
-                      key: const ValueKey('media_recommendations'),
-                      child: ReusableCarousel(
-                        data: recs,
-                        title: controller.isNovel
-                            ? 'Recommended Novels'
-                            : (controller.isAnime
-                                ? 'Recommended Anime'
-                                : 'Recommended Manga'),
-                        variant: DataVariant.recommendation,
-                        type: controller.isNovel
-                            ? ItemType.novel
-                            : (controller.isAnime
-                                ? ItemType.anime
-                                : ItemType.manga),
-                      ),
-                    );
-                  }),
-                ],
-              ),
+            child: Obx(() {
+              if (controller.isAnilistLoading.value) {
+                return _buildStatsShimmer(context).bottomSpacing(16);
+              }
+              return KeyedSubtree(
+                key: const ValueKey('media_stats'),
+                child: buildMediaStatsSection(context, controller)
+                    .bottomSpacing(16)
+                    .animateSection(onScroll: false),
+              );
+            }),
+          ),
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
+              child: Obx(() {
+                if (controller.isAnilistLoading.value) {
+                  return _buildShimmerCarousel(context);
+                }
+                return KeyedSubtree(
+                  key: const ValueKey('media_characters'),
+                  child: buildCharactersSection(context, mediaData),
+                );
+              }),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
+              child: Obx(() {
+                if (controller.isAnilistLoading.value) {
+                  return _buildShimmerCarousel(context);
+                }
+                if (rels.isEmpty) return const SizedBox.shrink();
+                return KeyedSubtree(
+                  key: const ValueKey('media_relations'),
+                  child: ReusableCarousel(
+                    data: rels,
+                    title: 'Relations',
+                    variant: DataVariant.relation,
+                  ).bottomSpacing(16),
+                );
+              }),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
+              child: Obx(() {
+                if (controller.isSecondaryLoading.value) {
+                  return _buildShimmerCarousel(context);
+                }
+                if (mediaData.staff == null || mediaData.staff!.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                return KeyedSubtree(
+                  key: const ValueKey('media_staff'),
+                  child: ReusableCarousel(
+                    data: mediaData.staff!,
+                    title: 'Staff',
+                    variant: DataVariant.staff,
+                  ).bottomSpacing(16),
+                );
+              }),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: RepaintBoundary(
+              child: Obx(() {
+                if (controller.isAnilistLoading.value) {
+                  return _buildShimmerCarousel(context);
+                }
+                final recs = mediaData.recommendations;
+                if (recs.isEmpty) return const SizedBox.shrink();
+                return KeyedSubtree(
+                  key: const ValueKey('media_recommendations'),
+                  child: ReusableCarousel(
+                    data: recs,
+                    title: controller.isNovel
+                        ? 'Recommended Novels'
+                        : (controller.isAnime
+                            ? 'Recommended Anime'
+                            : 'Recommended Manga'),
+                    variant: DataVariant.recommendation,
+                    type: controller.isNovel
+                        ? ItemType.novel
+                        : (controller.isAnime
+                            ? ItemType.anime
+                            : ItemType.manga),
+                  ),
+                );
+              }),
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 250)),

@@ -82,7 +82,6 @@ class PlayerCoreVisualSettings {
     final settings = getMpvCoreSettings();
     final mpv = player.platform as dynamic;
 
-    // await _safeSet(mpv, 'hwdec', settings['hwdec']);
     await _safeSet(mpv, 'video-sync', settings['videoSync']);
     await _safeSet(mpv, 'interpolation', _boolToMpv(settings['interpolation']));
     final cacheMinutes = (settings['cacheMinutes'] as num?)?.toInt() ?? 5;
@@ -141,6 +140,9 @@ class PlayerCoreVisualSettings {
     );
     await _safeSet(mpv, 'tone-mapping', settings['toneMapping']);
     await _safeSet(mpv, 'target-peak', (settings['targetPeak'] as num?) ?? 100);
+    if (settings.containsKey('interpolation')) {
+      await _safeSet(mpv, 'interpolation', _boolToMpv(settings['interpolation']));
+    }
   }
 
   static Future<void> applyMpvConf(dynamic player) async {
