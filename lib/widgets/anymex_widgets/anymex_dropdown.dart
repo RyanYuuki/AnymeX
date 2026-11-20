@@ -294,7 +294,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                                                     : Theme.of(context)
                                                         .colorScheme
                                                         .onSurface,
-                                              ),
+                                              ), translate: false,
                                             ),
                                             if (item.subtitle != null) ...[
                                               const SizedBox(height: 2),
@@ -308,7 +308,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                                                       .onSurface
                                                       .opaque(0.6,
                                                           iReallyMeanIt: true),
-                                                ),
+                                                ), translate: false,
                                               ),
                                             ],
                                           ],
@@ -406,7 +406,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                       fontWeight: FontWeight.w600,
                       color: context.colors.primary,
                       letterSpacing: 0.5,
-                    ),
+                    ), translate: false,
                   ),
                   const Spacer(),
                   RotationTransition(
@@ -469,7 +469,7 @@ class _AnymexDropdownState extends State<AnymeXDropdown>
                                         .colorScheme
                                         .onSurface
                                         .opaque(0.6, iReallyMeanIt: true),
-                                  ),
+                                  ), translate: false,
                                 ),
                               ],
                             ],

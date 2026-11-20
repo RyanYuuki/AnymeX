@@ -222,8 +222,8 @@ class _UserStatsPageState extends State<UserStatsPage> {
               isVisible: _isAppBarVisibleExternally,
               scrollController: _scrollController,
               headerContent: Header(
-                title: 'Stats',
-                subtitle: 'Your watch & read statistics',
+                title: 'Stats'.tr,
+                subtitle: 'Your watch & read statistics'.tr,
                 bottom: isLegacy ? _buildStatsModeChips(context) : null,
               ),
               visibleStatusBarStyle: SystemUiOverlayStyle(
@@ -302,7 +302,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
     );
 
     final daysCard = _buildSmallInfoCard(
-      title: 'DAYS ACTIVE',
+      title: 'DAYS ACTIVE'.tr,
       value: controller.totalDaysActive.toFormattedNumber(),
       icon: IconlyLight.calendar,
     );
@@ -339,7 +339,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                 children: [
                   AnymeXText(
                     rankIcon,
-                    size: 20,
+                    size: 20, translate: false,
                   ),
                   const SizedBox(width: 8),
                   Column(
@@ -349,7 +349,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                         title.toUpperCase(),
                         size: 13,
                         variant: TextVariant.bold,
-                        color: context.colors.primary,
+                        color: context.colors.primary, translate: false,
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
@@ -418,7 +418,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       children: [
         Expanded(
           child: _buildSmallInfoCard(
-            title: 'Avg Episodes',
+            title: 'Avg Episodes'.tr,
             value: '${controller.averageEpisodesPerDay.toStringAsFixed(1)}/day',
             icon: Icons.play_circle_outline_rounded,
           ),
@@ -426,7 +426,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         const SizedBox(width: 8),
         Expanded(
           child: _buildSmallInfoCard(
-            title: 'Avg Chapters',
+            title: 'Avg Chapters'.tr,
             value: '${controller.averageChaptersPerDay.toStringAsFixed(1)}/day',
             icon: Icons.chrome_reader_mode_outlined,
           ),
@@ -434,7 +434,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
         const SizedBox(width: 8),
         Expanded(
           child: _buildSmallInfoCard(
-            title: 'Streak (Cur/Long)',
+            title: 'Streak (Cur/Long)'.tr,
             value: '${currentStreak}d / ${longestStreak}d',
             icon: Icons.local_fire_department_rounded,
           ),
@@ -472,7 +472,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
             'Favorite Title',
@@ -530,7 +530,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                   title,
                   size: 9,
                   color: context.colors.onSurfaceVariant.withOpacity(0.5),
-                  maxLines: 1,
+                  maxLines: 1, translate: false,
                 ),
               ),
             ],
@@ -540,7 +540,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
             value,
             size: 14,
             variant: TextVariant.bold,
-            color: context.colors.onSurface,
+            color: context.colors.onSurface, translate: false,
           ),
         ],
       ),
@@ -649,7 +649,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AnymeXText(
+          AnymeXText(
             'Activity Heatmap',
             size: 14,
             variant: TextVariant.bold,
@@ -670,7 +670,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                           height: cellStep,
                           child: Center(
                             child: AnymeXText(dayLabels[row],
-                                style: dayLabelStyle),
+                                style: dayLabelStyle, translate: false),
                           ),
                         );
                       }),
@@ -695,7 +695,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                 child: AnymeXText(
                                   monthLabels[i],
                                   style:
-                                      TextStyle(fontSize: 9, color: subtleText),
+                                      TextStyle(fontSize: 9, color: subtleText), translate: false,
                                 ),
                               );
                             }),
@@ -844,7 +844,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
               AnymeXText(
                 formattedDate,
                 size: 13,
-                variant: TextVariant.bold,
+                variant: TextVariant.bold, translate: false,
               ),
               if (watchMins + readMins == 0)
                 AnymeXText(
@@ -898,7 +898,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
             'Frequently Revisited',
@@ -1002,7 +1002,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
                                     maxLines: 2,
                                     size: 14,
                                     variant: TextVariant.semiBold,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: TextOverflow.ellipsis, translate: false,
                                   ),
                                   const SizedBox(height: 6),
                                   AnymeXText(
@@ -1045,7 +1045,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.only(left: 4.0),
           child: AnymeXText(
             'Detailed Insights',
@@ -1071,7 +1071,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           if (genres.isNotEmpty) ...[
             _buildInsightCard(
               context: context,
-              title: 'Top Genres',
+              title: 'Top Genres'.tr,
               icon: Icons.category_outlined,
               data: genres.entries.take(5).toList(),
             ),
@@ -1080,7 +1080,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           if (showStudios && studios.isNotEmpty) ...[
             _buildInsightCard(
               context: context,
-              title: 'Top Studios',
+              title: 'Top Studios'.tr,
               icon: Icons.movie_creation_outlined,
               data: studios.entries.take(5).toList(),
             ),
@@ -1089,7 +1089,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
           if (formats.isNotEmpty) ...[
             _buildInsightCard(
               context: context,
-              title: 'Media Type Breakdown',
+              title: 'Media Type Breakdown'.tr,
               icon: Icons.grid_view_rounded,
               data: formats.entries.toList(),
             ),
@@ -1121,7 +1121,7 @@ class _UserStatsPageState extends State<UserStatsPage> {
               AnymeXText(
                 title,
                 size: 14,
-                variant: TextVariant.bold,
+                variant: TextVariant.bold, translate: false,
               ),
             ],
           ),
@@ -1139,12 +1139,12 @@ class _UserStatsPageState extends State<UserStatsPage> {
                       AnymeXText(
                         entry.key,
                         size: 12,
-                        variant: TextVariant.semiBold,
+                        variant: TextVariant.semiBold, translate: false,
                       ),
                       AnymeXText(
                         '${entry.value} ${entry.value == 1 ? "title" : "titles"}',
                         size: 11,
-                        color: context.colors.onSurfaceVariant.withOpacity(0.6),
+                        color: context.colors.onSurfaceVariant.withOpacity(0.6), translate: false,
                       ),
                     ],
                   ),

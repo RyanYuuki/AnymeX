@@ -107,7 +107,7 @@ Widget buildCharacterCard(BuildContext context, Character character) {
                         AnymeXText(character.favourites.toString(),
                           size: 8,
                           color: Colors.white,
-                          variant: TextVariant.bold,
+                          variant: TextVariant.bold, translate: false,
                         ),
                       ],
                     ),

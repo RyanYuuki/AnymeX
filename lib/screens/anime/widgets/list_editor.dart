@@ -399,9 +399,9 @@ class _ListEditorModalState extends State<ListEditorModal> {
       context: context,
       builder: (dialogCtx) => StatefulBuilder(
         builder: (context, setDialogState) => AnymeXDialog(
-          title: 'Select Status',
+          title: 'Select Status'.tr,
           showCancelButton: true,
-          confirmText: 'Done',
+          confirmText: 'Done'.tr,
           onConfirm: () {},
           contentWidget: AnymeXTileBuilder<(String, String)>(
             items: _statuses.map((s) {
@@ -444,7 +444,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           children: [
             AnymeXTile(
               icon: Icons.info_outline_rounded,
-              title: 'Status',
+              title: 'Status'.tr,
               subtitle: displayStatus,
               onTap: () => _showStatusSelectionDialog(context),
             ),
@@ -535,7 +535,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
-                    ),
+                    ), translate: false,
               ),
             ],
           ),
@@ -569,7 +569,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
 
     return AnymeXTile(
       icon: Icons.layers_rounded,
-      title: 'Season',
+      title: 'Season'.tr,
       subtitle: maxSeason != null ? '$_localSeason / $maxSeason' : _localSeason.toString(),
       showChevron: false,
       trailing: Container(
@@ -582,7 +582,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           '$_localSeason',
           size: 12,
           variant: TextVariant.semiBold,
-          color: colors.primary,
+          color: colors.primary, translate: false,
         ),
       ),
       customContent: Padding(
@@ -644,7 +644,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           ),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          hintText: 'Season',
+          hintText: 'Season'.tr,
           hintStyle: TextStyle(color: colors.onSurfaceVariant),
         ),
         onChanged: (v) {
@@ -669,7 +669,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
       icon: widget.isManga
           ? Icons.menu_book_rounded
           : Icons.play_circle_outline_rounded,
-      title: 'Progress',
+      title: 'Progress'.tr,
       subtitle: subtitleText,
       showChevron: false,
       trailing: Container(
@@ -682,7 +682,7 @@ class _ListEditorModalState extends State<ListEditorModal> {
           '$_localProgress',
           size: 12,
           variant: TextVariant.semiBold,
-          color: colors.primary,
+          color: colors.primary, translate: false,
         ),
       ),
       customContent: Padding(

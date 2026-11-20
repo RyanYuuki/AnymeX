@@ -56,7 +56,7 @@ class Header extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (type == PageType.library) ...[
-                      const AnymeXText(
+                      AnymeXText(
                         "Library",
                         autoResize: true,
                         maxLines: 1,
@@ -69,7 +69,7 @@ class Header extends StatelessWidget {
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.history) ...[
-                      const AnymeXText(
+                      AnymeXText(
                         "History",
                         autoResize: true,
                         maxLines: 1,
@@ -82,7 +82,7 @@ class Header extends StatelessWidget {
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.stats) ...[
-                      const AnymeXText(
+                      AnymeXText(
                         "Stats",
                         autoResize: true,
                         maxLines: 1,
@@ -95,7 +95,7 @@ class Header extends StatelessWidget {
                         variant: TextVariant.semiBold,
                       ),
                     ] else if (type == PageType.extensions) ...[
-                      const AnymeXText(
+                      AnymeXText(
                         "Extensions",
                         autoResize: true,
                         maxLines: 1,
@@ -109,9 +109,9 @@ class Header extends StatelessWidget {
                       ),
                     ] else ...[
                       Obx(() => AnymeXText(
-                            "${greetingController.currentGreeting.value},",
+                            "${greetingController.currentGreeting.value.tr},",
                             autoResize: true,
-                            maxLines: 1,
+                            maxLines: 1, translate: false,
                           )),
                       AnymeXText(
                         profileData.profileData.value.name ?? 'Guest',
@@ -334,15 +334,15 @@ class Header extends StatelessWidget {
                       AnymeXTextSpans(
                         fontSize: 18,
                         spans: [
-                          const AnymeXTextSpan(
-                              text: 'Hey ', variant: TextVariant.bold),
+                          AnymeXTextSpan(
+                              text: 'Hey '.tr, variant: TextVariant.bold),
                           AnymeXTextSpan(
                               text:
-                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'}',
+                                  '${serviceHandler.isLoggedIn.value ? serviceHandler.profileData.value.name : 'Guest'.tr}',
                               color: context.colors.primary,
                               variant: TextVariant.bold),
-                          const AnymeXTextSpan(
-                              text: ', what are we doing today?',
+                          AnymeXTextSpan(
+                              text: ', what are we doing today?'.tr,
                               variant: TextVariant.bold)
                         ],
                       ),

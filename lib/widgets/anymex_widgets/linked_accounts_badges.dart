@@ -1,5 +1,7 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 class LinkedAccountsBadges extends StatelessWidget {
   final Map<String, dynamic>? linkedAccounts;
@@ -37,7 +39,7 @@ class LinkedAccountsBadges extends StatelessWidget {
 
     if (normExclude != 'anilist' && anilistUsername != null && anilistUsername.isNotEmpty) {
       badges.add(_buildBadge(
-        label: 'AL',
+        label: 'AL'.tr,
         username: anilistUsername,
         bgColor: const Color(0xFF02A9FF).withOpacity(0.18),
         textColor: const Color(0xFF02A9FF),
@@ -48,7 +50,7 @@ class LinkedAccountsBadges extends StatelessWidget {
 
     if (normExclude != 'mal' && normExclude != 'myanimelist' && malUsername != null && malUsername.isNotEmpty) {
       badges.add(_buildBadge(
-        label: 'MAL',
+        label: 'MAL'.tr,
         username: malUsername,
         bgColor: const Color(0xFF2E51A2).withOpacity(0.18),
         textColor: const Color(0xFF4C75D6),
@@ -59,7 +61,7 @@ class LinkedAccountsBadges extends StatelessWidget {
 
     if (normExclude != 'simkl' && simklUsername != null && simklUsername.isNotEmpty) {
       badges.add(_buildBadge(
-        label: 'SIMKL',
+        label: 'SIMKL'.tr,
         username: simklUsername,
         bgColor: const Color(0xFFE5A00D).withOpacity(0.18),
         textColor: const Color(0xFFFFAE19),
@@ -95,14 +97,14 @@ class LinkedAccountsBadges extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
         border: Border.all(color: borderColor, width: 0.8),
       ),
-      child: Text(
+      child: AnymeXText(
         label,
         style: TextStyle(
           color: textColor,
           fontSize: fontSize,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.3,
-        ),
+        ), maxLines: null, translate: false,
       ),
     );
 

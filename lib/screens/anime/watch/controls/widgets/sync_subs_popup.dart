@@ -77,7 +77,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
     final cs = theme.colorScheme;
 
     return WatchSettingsPane(
-      title: 'Sync Subtitles',
+      title: 'Sync Subtitles'.tr,
       onClose: widget.onClose,
       child: Column(
         children: [
@@ -170,7 +170,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
           style: theme.textTheme.labelMedium?.copyWith(
             fontWeight: FontWeight.w600,
             color: cs.onSurface,
-          ),
+          ), translate: false,
         ),
       ),
     );
@@ -312,7 +312,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                                   ? cs.primary
                                   : cs.onSurface
                                       .withOpacity(isPast ? 0.35 : 0.5),
-                            ),
+                            ), translate: false,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -327,7 +327,7 @@ class _SyncSubsContentState extends State<_SyncSubsContent> {
                               fontWeight:
                                   isActive ? FontWeight.w600 : FontWeight.w400,
                               height: 1.4,
-                            ),
+                            ), translate: false,
                           ),
                         ),
                       ],

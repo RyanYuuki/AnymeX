@@ -144,7 +144,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         AnymeXText("Episodes",
                             size: 20,
@@ -254,7 +254,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
       padding: EdgeInsets.all(20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
+        children: [
           ExpressiveLoadingIndicator(),
           SizedBox(height: 16),
           AnymeXText(
@@ -296,7 +296,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
             variant: TextVariant.regular,
             size: 14,
             textAlign: TextAlign.center,
-            color: Colors.red.opaque(0.8),
+            color: Colors.red.opaque(0.8), translate: false,
           ),
         ),
       ],
@@ -304,7 +304,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
   }
 
   Widget _buildEmptyState() {
-    return const SizedBox(
+    return SizedBox(
       height: 200,
       child: Center(
         child: AnymeXText("No servers available",
@@ -326,7 +326,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
           Container(
             padding: const EdgeInsets.all(10),
             alignment: Alignment.center,
-            child: const AnymeXText("Choose Server",
+            child: AnymeXText("Choose Server",
               size: 18,
               variant: TextVariant.bold,
             ),
@@ -356,7 +356,7 @@ class _EpisodeWatchScreenState extends State<EpisodeWatchScreen> {
                 ),
                 trailing: const Icon(Iconsax.play5),
                 subtitle: AnymeXText(sourceController.activeSource.value!.name!.toUpperCase(),
-                  variant: TextVariant.semiBold,
+                  variant: TextVariant.semiBold, translate: false,
                 ),
               ),
             );

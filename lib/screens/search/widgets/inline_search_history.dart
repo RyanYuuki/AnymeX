@@ -182,7 +182,7 @@ class InlineSearchHistory extends StatelessWidget {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurface
-                                    .opaque(0.9, iReallyMeanIt: true),
+                                    .opaque(0.9, iReallyMeanIt: true), translate: false,
                               ),
                             ),
                             GestureDetector(

@@ -54,9 +54,9 @@ class DownloadPermissionDialog extends StatelessWidget {
     final colors = context.colors;
 
     return AnymeXDialog(
-      title: 'Download Permissions',
-      confirmText: 'Go to Downloads',
-      cancelText: 'Cancel',
+      title: 'Download Permissions'.tr,
+      confirmText: 'Go to Downloads'.tr,
+      cancelText: 'Cancel'.tr,
       onConfirm: () {
         DownloadKeys.hasSeenDownloadGuide.set(true);
         navigate(() => const DownloadScreen());
@@ -89,24 +89,24 @@ class DownloadPermissionDialog extends StatelessWidget {
             context,
             stepNumber: '1',
             icon: HugeIcons.strokeRoundedUser,
-            title: 'Profile Icon',
-            description: 'Tap your profile icon in the top app bar',
+            title: 'Profile Icon'.tr,
+            description: 'Tap your profile icon in the top app bar'.tr,
           ),
           const SizedBox(height: 8),
           _buildStepRow(
             context,
             stepNumber: '2',
             icon: HugeIcons.strokeRoundedDownload04,
-            title: 'Downloads Page',
-            description: 'Open the Downloads screen from the menu',
+            title: 'Downloads Page'.tr,
+            description: 'Open the Downloads screen from the menu'.tr,
           ),
           const SizedBox(height: 8),
           _buildStepRow(
             context,
             stepNumber: '3',
             icon: HugeIcons.strokeRoundedFolder01,
-            title: 'Grant Permissions',
-            description: 'Allow storage access and select download folder',
+            title: 'Grant Permissions'.tr,
+            description: 'Allow storage access and select download folder'.tr,
           ),
         ],
       ),
@@ -173,7 +173,7 @@ Widget _buildStepRow(
                   AnymeXText(
                     title,
                     size: 13,
-                    variant: TextVariant.bold,
+                    variant: TextVariant.bold, translate: false,
                   ),
                 ],
               ),
@@ -181,7 +181,7 @@ Widget _buildStepRow(
               AnymeXText(
                 description,
                 size: 11,
-                color: colors.onSurface.opaque(0.7),
+                color: colors.onSurface.opaque(0.7), translate: false,
               ),
             ],
           ),

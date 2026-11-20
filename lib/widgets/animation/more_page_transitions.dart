@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -429,7 +430,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                    ),
+                    ), translate: false,
                   ),
                   const SizedBox(height: 4),
                   AnymeXText(
@@ -437,7 +438,7 @@ class _PageAnimationDemoState extends State<PageAnimationDemo> {
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
-                    ),
+                    ), translate: false,
                   ),
                 ],
               ),

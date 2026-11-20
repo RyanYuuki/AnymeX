@@ -265,7 +265,7 @@ class _CommentCard extends StatelessWidget {
                     height: 1.3,
                   ),
                   maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis, translate: false,
                 ),
               ),
             ],
@@ -416,7 +416,7 @@ class _EmojiBubble extends StatelessWidget {
       ),
       child: AnymeXText(
         emoji.emoji,
-        style: const TextStyle(fontSize: 28, height: 1),
+        style: const TextStyle(fontSize: 28, height: 1), translate: false,
       ),
     );
   }

@@ -81,10 +81,10 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
     String title,
   ) {
     AnymeXDialog(
-      title: 'Log Out',
+      title: 'Log Out'.tr,
       message: 'Are you sure you want to log out from $title?',
-      confirmText: 'Log Out',
-      cancelText: 'Cancel',
+      confirmText: 'Log Out'.tr,
+      cancelText: 'Cancel'.tr,
       onConfirm: () => service.logout(),
     ).show(context);
   }
@@ -176,14 +176,14 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
                   if (title.toLowerCase() == 'anilist')
                     IconButton(
                       icon: const Icon(Icons.settings_outlined, size: 20),
-                      tooltip: 'Anilist Settings',
+                      tooltip: 'Anilist Settings'.tr,
                       onPressed: () =>
                           navigate(() => const SettingsAnilistApi()),
                     ),
                   IconButton(
                     icon: Icon(Icons.logout_rounded,
                         size: 20, color: colors.error),
-                    tooltip: 'Log Out',
+                    tooltip: 'Log Out'.tr,
                     onPressed: () => _showLogoutDialog(context, service, title),
                   ),
                 ],
@@ -242,7 +242,7 @@ class _SettingsAccountsState extends State<SettingsAccounts> {
           children: [
             SizedBox(height: AnymeXHeaderScope.of(ctx)),
             AnymeXSectionBuilder(
-              title: 'Tracking Services',
+              title: 'Tracking Services'.tr,
               children: services
                   .map((s) => _buildTrackingServiceTile(
                         context,

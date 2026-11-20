@@ -174,7 +174,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: !widget.isModal,
-      headerTitle: 'Player Settings',
+      headerTitle: 'Player Settings'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
@@ -224,7 +224,7 @@ class _SettingsPlayerState extends State<SettingsPlayer> {
                     ),
                     AnymeXTile(
                       icon: Icons.aspect_ratio_rounded,
-                      title: 'Resize Mode',
+                      title: 'Resize Mode'.tr,
                       subtitle: settings.resizeMode.capitalizeFirst ??
                           settings.resizeMode,
                       onTap: _showResizeModeDialog,

@@ -218,7 +218,7 @@ class AnilistAuth extends GetxController {
       selectedMethod = await AnymeXSheet.custom<String>(
         loginSheetHelper(
           context: context,
-          title: 'Login to AniList',
+          title: 'Login to AniList'.tr,
           serviceName: 'AniList',
           showTokenOption: true,
         ),
@@ -298,7 +298,7 @@ class AnilistAuth extends GetxController {
             TextField(
               controller: tokenController,
               decoration: InputDecoration(
-                hintText: 'Enter token here',
+                hintText: 'Enter token here'.tr,
                 hintStyle: TextStyle(
                   fontFamily: 'Linotte',
                   color: theme.onSurface.opaque(0.5),

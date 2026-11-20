@@ -343,7 +343,7 @@ class _Badge extends StatelessWidget {
           fontFamily: 'Linotte',
           fontWeight: FontWeight.w700,
           color: textColor,
-        ),
+        ), translate: false,
       ),
     );
   }
@@ -605,7 +605,7 @@ class _SourceSheetContentState extends State<_SourceSheetContent> {
             fontFamily: 'Linotte',
           ),
           decoration: InputDecoration(
-            hintText: 'Search sources...',
+            hintText: 'Search sources...'.tr,
             hintStyle: TextStyle(
               fontSize: 14,
               fontFamily: 'Linotte',
@@ -943,7 +943,7 @@ class _LangSubPicker extends StatelessWidget {
                         fontFamily: 'Linotte',
                         fontWeight: FontWeight.w600,
                         color: isActive ? colors.onPrimary : colors.onSurface,
-                      ),
+                      ), translate: false,
                     ),
                   ),
                 );

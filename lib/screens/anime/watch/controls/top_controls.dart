@@ -116,7 +116,7 @@ class TopControls extends StatelessWidget {
           ControlButton(
             icon: Icons.arrow_back_ios_rounded,
             onPressed: () => _handleBack(),
-            tooltip: 'Back',
+            tooltip: 'Back'.tr,
             isPrimary: true,
           ),
           const SizedBox(width: 20),
@@ -171,7 +171,7 @@ class TopControls extends StatelessWidget {
                             fontSize: 12,
                           ),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis, translate: false,
                         ),
                       ),
                     ),
@@ -256,7 +256,7 @@ class TopControls extends StatelessWidget {
                 ControlButton(
                   icon: Icons.arrow_back_ios_rounded,
                   onPressed: () => _handleBack(),
-                  tooltip: 'Back',
+                  tooltip: 'Back'.tr,
                   isPrimary: true,
                 ),
                 const SizedBox(width: 24),
@@ -310,7 +310,7 @@ class TopControls extends StatelessWidget {
                                   fontWeight: FontWeight.w600,
                                 ),
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: TextOverflow.ellipsis, translate: false,
                               ),
                             ),
                           ),
@@ -379,7 +379,7 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.fullscreen_rounded,
                 onPressed: () => controller.toggleFullScreen(),
-                tooltip: 'Fullscreen',
+                tooltip: 'Fullscreen'.tr,
                 compact: true,
               ),
               const SizedBox(width: 8),
@@ -390,7 +390,7 @@ class TopControls extends StatelessWidget {
                   player.isSettingsPaneOpened.value =
                       !player.isSettingsPaneOpened.value;
                 },
-                tooltip: 'Settings',
+                tooltip: 'Settings'.tr,
                 compact: true,
               ),
             ],
@@ -423,7 +423,7 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.arrow_back_ios_rounded,
                 onPressed: () => _handleBack(),
-                tooltip: 'Back',
+                tooltip: 'Back'.tr,
                 isPrimary: true,
               ),
               const Spacer(),
@@ -435,7 +435,7 @@ class TopControls extends StatelessWidget {
               ControlButton(
                 icon: Icons.lock_rounded,
                 onPressed: () => controller.isLocked.value = true,
-                tooltip: 'Lock Controls',
+                tooltip: 'Lock Controls'.tr,
                 compact: true,
               ),
               const SizedBox(width: 8),
@@ -443,7 +443,7 @@ class TopControls extends StatelessWidget {
                 ControlButton(
                   icon: Icons.picture_in_picture_rounded,
                   onPressed: () => controller.enterPip(),
-                  tooltip: 'Picture in Picture',
+                  tooltip: 'Picture in Picture'.tr,
                   compact: true,
                 ),
               const SizedBox(width: 8),
@@ -454,7 +454,7 @@ class TopControls extends StatelessWidget {
                   player.isSettingsPaneOpened.value =
                       !player.isSettingsPaneOpened.value;
                 },
-                tooltip: 'Settings',
+                tooltip: 'Settings'.tr,
                 compact: true,
               ),
             ],
@@ -490,7 +490,7 @@ class TopControls extends StatelessWidget {
                       fontSize: 12,
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis, translate: false,
                   ),
                 ),
               ),
@@ -570,7 +570,7 @@ class _QualityChip extends StatelessWidget {
               : theme.colorScheme.onPrimaryContainer,
           fontWeight: FontWeight.w600,
           fontSize: isMobile ? 12 : null,
-        ),
+        ), translate: false,
       ),
     );
   }

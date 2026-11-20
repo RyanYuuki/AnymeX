@@ -44,7 +44,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
     return AnymeXScaffold(
   body: Column(
           children: [
-            const NestedHeader(title: 'Extension Testing'),
+            NestedHeader(title: 'Extension Testing'.tr),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
@@ -148,7 +148,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               fontWeight: FontWeight.w600,
               fontSize: 14,
               color: isSelected ? theme.primary : theme.onSurface,
-            ),
+            ), translate: false,
           ),
         ),
       ),
@@ -214,7 +214,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               fontWeight: FontWeight.w600,
               fontSize: 14,
               color: isSelected ? theme.primary : theme.onSurface,
-            ),
+            ), translate: false,
           ),
         ),
       ),
@@ -250,7 +250,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
             decoration: InputDecoration(
               filled: true,
               fillColor: theme.surfaceContainer.withValues(alpha: 0.2),
-              hintText: 'Enter search query',
+              hintText: 'Enter search query'.tr,
               hintStyle: TextStyle(
                 fontFamily: 'Linotte',
                 color: theme.onSurface.withValues(alpha: 0.4),
@@ -432,7 +432,7 @@ class _ExtensionTestPageState extends State<ExtensionTestPage> {
               ),
               elevation: 0,
             ),
-            child: const AnymeXText(
+            child: AnymeXText(
               'Start Test',
               style: TextStyle(
                 fontFamily: 'Linotte',

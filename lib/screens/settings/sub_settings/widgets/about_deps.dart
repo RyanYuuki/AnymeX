@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/screens/settings/sub_settings/settings_about.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/common/custom_tiles.dart';
@@ -29,27 +30,27 @@ class ProfileInfo extends StatelessWidget {
           style: theme.textTheme.headlineSmall?.copyWith(
             color: theme.colorScheme.onSurface,
             fontWeight: FontWeight.bold,
-          ),
+          ), translate: false,
         ),
         const SizedBox(height: 4),
         GestureDetector(
           onLongPress: () {
             Clipboard.setData(ClipboardData(text: version));
-            snackBar('Version copied');
+            snackBar('Version copied'.tr);
           },
           child: AnymeXText(
             version,
             style: theme.textTheme.bodyLarge?.copyWith(
               fontFamily: 'Linotte',
               color: theme.colorScheme.onSurface.opaque(0.7),
-            ),
+            ), translate: false,
           ),
         ),
         AnymeXText(
           subtitle,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurface.opaque(0.5),
-          ),
+          ), translate: false,
         ),
       ],
     );
@@ -114,26 +115,26 @@ class ProfileSection extends StatelessWidget {
             style: theme.textTheme.headlineSmall?.copyWith(
               color: theme.colorScheme.onSurface,
               fontWeight: FontWeight.bold,
-            ),
+            ), translate: false,
           ),
           const SizedBox(height: 4),
           GestureDetector(
             onLongPress: () {
               Clipboard.setData(ClipboardData(text: version));
-              snackBar('Version copied');
+              snackBar('Version copied'.tr);
             },
             child: AnymeXText(
               version,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurface.opaque(0.7),
-              ),
+              ), translate: false,
             ),
           ),
           AnymeXText(
             subtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.opaque(0.5),
-            ),
+            ), translate: false,
           ),
           InfoCard(
             onTap: () async {
@@ -145,8 +146,8 @@ class ProfileSection extends StatelessWidget {
                 autoPlay: true,
               ),
             ),
-            title: "Developer",
-            subtitle: "RyanYuuki",
+            title: "Developer".tr,
+            subtitle: "RyanYuuki".tr,
             trailing: IconButton(
                 onPressed: () async {
                   await launchUrlHelper('https://github.com/');
@@ -202,13 +203,13 @@ class InfoCard extends StatelessWidget {
                       title,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: theme.colorScheme.onSurface,
-                      ),
+                      ), translate: false,
                     ),
                     AnymeXText(
                       subtitle,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface.opaque(0.7),
-                      ),
+                      ), translate: false,
                     ),
                   ],
                 ),
@@ -263,7 +264,7 @@ class CustomSection extends StatelessWidget {
                       AnymeXText(
                         title,
                         style: const TextStyle(
-                            fontSize: 16, fontFamily: 'Linotte'),
+                            fontSize: 16, fontFamily: 'Linotte'), translate: false,
                       ),
                       if (subtitle != null)
                         AnymeXText(
@@ -271,7 +272,7 @@ class CustomSection extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             color: theme.colorScheme.onSurface.opaque(0.7),
-                          ),
+                          ), translate: false,
                         ),
                     ],
                   ),
@@ -328,7 +329,7 @@ class CustomListTile extends StatelessWidget {
                       title,
                       style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurface.opaque(0.9),
-                          fontFamily: 'Linotte'),
+                          fontFamily: 'Linotte'), translate: false,
                     ),
                     const SizedBox(height: 1),
                     if (subtitle != null)
@@ -336,7 +337,7 @@ class CustomListTile extends StatelessWidget {
                         subtitle!,
                         style: TextStyle(
                             fontSize: 12,
-                            color: theme.colorScheme.onSurface.opaque(0.7)),
+                            color: theme.colorScheme.onSurface.opaque(0.7)), translate: false,
                       )
                   ],
                 ),

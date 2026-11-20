@@ -104,9 +104,9 @@ class _SettingsThemeState extends State<SettingsTheme> {
 
   void _showLogoAnimationDialog() {
     AnymeXDialog(
-      title: 'Logo Animation',
+      title: 'Logo Animation'.tr,
       showCancelButton: false,
-      confirmText: 'Close',
+      confirmText: 'Close'.tr,
       onConfirm: () {},
       contentWidget: LogoAnimationPreviewDialog(
         initialAnimation: selectedLogoAnimation,
@@ -182,7 +182,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
     return GetBuilder<ThemeController>(
       builder: (_) => AnymeXScaffold(
         showHeader: true,
-        headerTitle: 'Theme',
+        headerTitle: 'Theme'.tr,
         body: Builder(
           builder: (ctx) => SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
@@ -210,26 +210,26 @@ class _SettingsThemeState extends State<SettingsTheme> {
         _buildModeTemplates(),
         const SizedBox(height: 20),
         AnymeXSectionBuilder(
-          title: 'Themes',
+          title: 'Themes'.tr,
           children: [
             AnymeXTile.toggle(
               icon: HugeIcons.strokeRoundedPaintBrush01,
-              title: "Default Theme",
-              subtitle: "Play around with App theme",
+              title: "Default Theme".tr,
+              subtitle: "Play around with App theme".tr,
               value: defaultTheme,
               onChanged: handleDefaultSwitch,
             ),
             AnymeXTile.toggle(
               icon: HugeIcons.strokeRoundedImage01,
-              title: "Material You",
-              subtitle: "Take color from your wallpaper (A12+)",
+              title: "Material You".tr,
+              subtitle: "Take color from your wallpaper (A12+)".tr,
               value: materialTheme,
               onChanged: handleMaterialSwitch,
             ),
             AnymeXTile.expandableToggle(
               icon: HugeIcons.strokeRoundedColors,
-              title: "Custom Theme",
-              subtitle: "Choose your favourite color!",
+              title: "Custom Theme".tr,
+              subtitle: "Choose your favourite color!".tr,
               value: customTheme,
               onChanged: handleCustomThemeSwitch,
               child: _buildColorTemplates(),
@@ -238,22 +238,22 @@ class _SettingsThemeState extends State<SettingsTheme> {
         ),
         const SizedBox(height: 20),
         AnymeXSectionBuilder(
-          title: 'Appearance',
+          title: 'Appearance'.tr,
           children: [
             Obx(() {
               return AnymeXTile.toggle(
                 enabled: !settings.liquidMode,
                 icon: HugeIcons.strokeRoundedFlower,
-                title: "Bloom",
-                subtitle: "Enables a soft, glowing gradient effect.",
+                title: "Bloom".tr,
+                subtitle: "Enables a soft, glowing gradient effect.".tr,
                 value: !settings.disableGradient,
                 onChanged: (val) => settings.disableGradient = !val,
               );
             }),
             AnymeXTile(
               icon: HugeIcons.strokeRoundedPaintBoard,
-              title: "Palette",
-              subtitle: "Choose your favourite palette!",
+              title: "Palette".tr,
+              subtitle: "Choose your favourite palette!".tr,
               onTap: () {
                 showPaletteSelectionDialog(context);
               },
@@ -261,9 +261,9 @@ class _SettingsThemeState extends State<SettingsTheme> {
             Obx(() {
               return AnymeXTile.toggle(
                 icon: Icons.texture_rounded,
-                title: "Grain Texture Overlay",
+                title: "Grain Texture Overlay".tr,
                 subtitle:
-                    "Apply a subtle film grain texture over the interface",
+                    "Apply a subtle film grain texture over the interface".tr,
                 value: settings.useGrainTexture,
                 onChanged: (val) => settings.useGrainTexture = val,
               );
@@ -280,8 +280,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
                       : 0.15;
               return AnymeXTile.segmented<double>(
                 icon: Icons.grain_rounded,
-                title: 'Grain Intensity',
-                subtitle: 'Amount of film grain applied',
+                title: 'Grain Intensity'.tr,
+                subtitle: 'Amount of film grain applied'.tr,
                 value: current,
                 options: intensities,
                 optionLabelTransformer: (v) => labels[intensities.indexOf(v)],
@@ -290,8 +290,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
             }),
             AnymeXTile.toggle(
               icon: HugeIcons.strokeRoundedMoon,
-              title: "Oled Mode",
-              subtitle: "Go Super Dark Mode!",
+              title: "Oled Mode".tr,
+              subtitle: "Go Super Dark Mode!".tr,
               value: isOled,
               onChanged: handleOledSwitch,
             ),
@@ -304,12 +304,12 @@ class _SettingsThemeState extends State<SettingsTheme> {
   Widget _buildWallpaperTab() {
     return Obx(() {
       return AnymeXSectionBuilder(
-        title: 'Wallpaper',
+        title: 'Wallpaper'.tr,
         children: [
           AnymeXTile.toggle(
             icon: HugeIcons.strokeRoundedBlur,
-            title: "Liquid Mode",
-            subtitle: "Make everything glassy & liquidy...",
+            title: "Liquid Mode".tr,
+            subtitle: "Make everything glassy & liquidy...".tr,
             value: settings.liquidMode,
             onChanged: (e) {
               settings.disableGradient = false;
@@ -319,8 +319,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
           if (settings.liquidMode) ...[
             AnymeXTile(
               icon: HugeIcons.strokeRoundedImageAdd01,
-              title: "Liquid Background",
-              subtitle: "Choose a custom background for liquid mode.",
+              title: "Liquid Background".tr,
+              subtitle: "Choose a custom background for liquid mode.".tr,
               onTap: () async {
                 await Liquid.pickLiquidBackground(context);
               },
@@ -328,16 +328,16 @@ class _SettingsThemeState extends State<SettingsTheme> {
             AnymeXTile.toggle(
               value: settings.retainOriginalColor,
               icon: HugeIcons.strokeRoundedImageComposition,
-              title: "Retain Original Color",
+              title: "Retain Original Color".tr,
               subtitle:
-                  "Enable this if you want to retain the original color of your wallpaper",
+                  "Enable this if you want to retain the original color of your wallpaper".tr,
               onChanged: (e) => settings.retainOriginalColor = e,
             ),
             AnymeXTile(
               icon: HugeIcons.strokeRoundedRefresh,
-              title: "Reset to Default Picture",
+              title: "Reset to Default Picture".tr,
               showChevron: false,
-              subtitle: "Reset to default wallpaper!",
+              subtitle: "Reset to default wallpaper!".tr,
               onTap: () => settings.liquidBackgroundPath = "",
             ),
           ],
@@ -348,12 +348,12 @@ class _SettingsThemeState extends State<SettingsTheme> {
 
   Widget _buildExtrasTab() {
     return AnymeXSectionBuilder(
-      title: 'Miscellaneous',
+      title: 'Miscellaneous'.tr,
       children: [
         AnymeXTile(
           icon: HugeIcons.strokeRoundedPlayCircle,
-          title: "Logo Animation",
-          subtitle: "Customize your logo animation style",
+          title: "Logo Animation".tr,
+          subtitle: "Customize your logo animation style".tr,
           onTap: _showLogoAnimationDialog,
         ),
       ],
@@ -362,9 +362,9 @@ class _SettingsThemeState extends State<SettingsTheme> {
 
   void showPaletteSelectionDialog(BuildContext context) {
     AnymeXDialog(
-      title: 'Palettes',
+      title: 'Palettes'.tr,
       showCancelButton: false,
-      confirmText: 'Close',
+      confirmText: 'Close'.tr,
       onConfirm: () {},
       contentWidget: StatefulBuilder(
         builder: (context, setDialogState) {
@@ -710,8 +710,8 @@ class _SettingsThemeState extends State<SettingsTheme> {
             }
 
             return AnymeXDialog(
-              title: 'Custom Color Picker',
-              confirmText: 'Confirm',
+              title: 'Custom Color Picker'.tr,
+              confirmText: 'Confirm'.tr,
               onConfirm: () {
                 if (isValid) {
                   handleCustomColorSelection(previewColor);
@@ -744,7 +744,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const AnymeXText(
+                  AnymeXText(
                     'Hue',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
@@ -786,7 +786,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const AnymeXText(
+                  AnymeXText(
                     'Saturation',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
@@ -823,7 +823,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const AnymeXText(
+                  AnymeXText(
                     'Lightness',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                   ),
@@ -864,7 +864,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                   TextField(
                     controller: controller,
                     decoration: InputDecoration(
-                      labelText: 'Hex Color Code',
+                      labelText: 'Hex Color Code'.tr,
                       hintText: '#3F51B5 or 3F51B5',
                       errorText: isValid ? null : 'Invalid Hex color code',
                       border: OutlineInputBorder(
@@ -964,7 +964,7 @@ class _SettingsThemeState extends State<SettingsTheme> {
                           : colors.onSurface.opaque(0.7, iReallyMeanIt: true),
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis, translate: false,
                   ),
                 ],
               ),

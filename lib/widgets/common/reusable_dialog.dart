@@ -25,7 +25,7 @@ void showCustomDialog({
           mainAxisSize: MainAxisSize.min,
           children: [
             AnymeXText(title,
-              variant: TextVariant.bold,
+              variant: TextVariant.bold, translate: false,
             ),
             const SizedBox(height: 15),
             Wrap(
@@ -59,6 +59,6 @@ Widget _buildButton(BuildContext context, String title, VoidCallback onTap) {
       Get.back();
       onTap();
     },
-    child: AnymeXText(title),
+    child: AnymeXText(title, translate: false),
   );
 }

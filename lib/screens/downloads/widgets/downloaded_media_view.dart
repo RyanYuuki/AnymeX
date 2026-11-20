@@ -103,7 +103,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                 Expanded(
                   child: AnymeXText(
                     message,
-                    size: 15,
+                    size: 15, translate: false,
                   ),
                 ),
               ],
@@ -117,7 +117,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
   void _showDeleteEpisodeDialog(
       BuildContext context, DownloadedEpisodeMeta ep) {
     AnymeXDialog(
-      title: 'Delete episode?',
+      title: 'Delete episode?'.tr,
       message:
           'Episode ${ep.number} will be permanently removed from your downloads.',
       onConfirm: () async {
@@ -131,7 +131,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           );
           await _refresh();
         } catch (e) {
-          snackBar('Failed to delete episode');
+          snackBar('Failed to delete episode'.tr);
         } finally {
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
@@ -145,7 +145,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       BuildContext context, DownloadedChapterMeta ch) {
     final display = ch.displayTitle;
     AnymeXDialog(
-      title: 'Delete chapter?',
+      title: 'Delete chapter?'.tr,
       message: '$display will be permanently removed from your downloads.',
       onConfirm: () async {
         _showLoadingDialog(context, 'Deleting chapter...');
@@ -157,7 +157,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           );
           await _refresh();
         } catch (e) {
-          snackBar('Failed to delete chapter');
+          snackBar('Failed to delete chapter'.tr);
         } finally {
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
@@ -189,7 +189,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
         } catch (e) {
           if (context.mounted) {
             Navigator.of(context, rootNavigator: true).pop();
-            snackBar('Failed to delete media');
+            snackBar('Failed to delete media'.tr);
           }
         }
       },
@@ -292,7 +292,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
       target ??= chapters.first;
 
       return continueFab(
-        label: 'Continue Reading',
+        label: 'Continue Reading'.tr,
         subtitle: target.displayTitle,
         icon: HugeIcons.strokeRoundedBookOpen01,
         onTap: () => _playChapter(target!),
@@ -336,7 +336,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
     }
 
     return continueFab(
-      label: 'Continue Watching',
+      label: 'Continue Watching'.tr,
       subtitle: subtitle,
       icon: Icons.play_arrow_rounded,
       onTap: () => _playEpisode(target!),
@@ -583,7 +583,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                           fontSize: 9.5,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.8,
-                        ),
+                        ), translate: false,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -597,7 +597,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                         letterSpacing: -0.5,
                       ),
                       maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis, translate: false,
                     ),
                     const SizedBox(height: 12),
                     Wrap(
@@ -701,7 +701,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                   color: theme.primary.withOpacity(0.8),
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                ),
+                ), translate: false,
               ),
             ),
         ],
@@ -792,7 +792,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                         : theme.onSurface.withOpacity(0.5),
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                  ),
+                  ), translate: false,
                 ),
               );
             }),
@@ -816,7 +816,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
           color: color.withOpacity(0.85),
           fontSize: 9.5,
           fontWeight: FontWeight.w600,
-        ),
+        ), translate: false,
       ),
     );
   }
@@ -894,7 +894,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                               theme.onSurface.withOpacity(0.3),
                                           fontSize: 16,
                                           fontWeight: FontWeight.w800,
-                                        ),
+                                        ), translate: false,
                                       ),
                                     ),
                                   ),
@@ -1010,7 +1010,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                                       .computeLuminance() >
                                                   0.5
                                               ? Colors.black
-                                              : Colors.white,
+                                              : Colors.white, translate: false,
                                         ),
                                       ),
                                       const SizedBox(width: 2),
@@ -1099,7 +1099,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                   height: 1.3,
                 ),
                 maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, translate: false,
               ),
             ),
           ],
@@ -1195,7 +1195,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                 letterSpacing: -0.2,
                               ),
                               maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                              overflow: TextOverflow.ellipsis, translate: false,
                             ),
                             const SizedBox(height: 6),
                             Wrap(
@@ -1223,7 +1223,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                                                   0.5
                                               ? Colors.black
                                               : Colors.white,
-                                    ),
+                                    ), translate: false,
                                   ),
                                 ),
                                 Container(
@@ -1356,7 +1356,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.2,
-                  ),
+                  ), translate: false,
                 ),
                 AnymeXText(
                   subtitle,
@@ -1364,7 +1364,7 @@ class _DownloadedMediaViewState extends State<DownloadedMediaView> {
                     color: theme.onPrimary.withOpacity(0.7),
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                  ),
+                  ), translate: false,
                 ),
               ],
             ),

@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/controllers/settings/methods.dart';
 import 'package:anymex/models/Media/character.dart';
 import 'package:anymex/models/Media/staff.dart';
@@ -112,7 +113,7 @@ class CharactersCarousel extends StatelessWidget {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .inverseSurface
-                                              .opaque(0.9)),
+                                              .opaque(0.9)), translate: false,
                                     ),
                                     const SizedBox(width: 3),
                                   ],
@@ -129,7 +130,7 @@ class CharactersCarousel extends StatelessWidget {
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: true,
+                            isMarquee: true, translate: false,
                           ),
                         )
                       ],
@@ -389,7 +390,7 @@ class StaffCarousel extends StatelessWidget {
                             size: isDesktop ? 14 : 12,
                             variant: TextVariant.semiBold,
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: true,
+                            isMarquee: true, translate: false,
                           ),
                         ),
                         if (itemData.primaryOccupations != null &&
@@ -399,7 +400,7 @@ class StaffCarousel extends StatelessWidget {
                             size: 10,
                             color: context.colors.onSurface.withOpacity(0.7),
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: true,
+                            isMarquee: true, translate: false,
                           )
                       ],
                     ),

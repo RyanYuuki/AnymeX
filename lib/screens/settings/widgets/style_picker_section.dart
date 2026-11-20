@@ -144,7 +144,7 @@ class _StylePickerSectionState extends State<StylePickerSection> {
                 child: AnymeXText(
                   widget.title,
                   size: 15,
-                  variant: TextVariant.bold,
+                  variant: TextVariant.bold, translate: false,
                 ),
               ),
               AnymeXText(
@@ -186,7 +186,7 @@ class _StylePickerSectionState extends State<StylePickerSection> {
                 AnymeXText(
                   widget.labelFor(_index),
                   size: 15,
-                  variant: TextVariant.bold,
+                  variant: TextVariant.bold, translate: false,
                 ),
                 if (isApplied) ...[
                   const SizedBox(width: 8),
@@ -216,7 +216,7 @@ class _StylePickerSectionState extends State<StylePickerSection> {
                 widget.descriptionFor(_index),
                 size: 12,
                 maxLines: 2,
-                color: colors.onSurface.opaque(0.6, iReallyMeanIt: true),
+                color: colors.onSurface.opaque(0.6, iReallyMeanIt: true), translate: false,
               ),
             ),
           ),
@@ -260,11 +260,11 @@ class _StylePickerSectionState extends State<StylePickerSection> {
                     ? FilledButton.tonalIcon(
                         onPressed: () {},
                         icon: const Icon(Icons.check_rounded, size: 18),
-                        label: const Text('Current style'),
+                        label: const AnymeXText('Current style', maxLines: null),
                       )
                     : FilledButton(
                         onPressed: () => widget.onApply(_index),
-                        child: const Text('Use this style'),
+                        child: const AnymeXText('Use this style', maxLines: null),
                       ),
               ),
             ),

@@ -239,7 +239,7 @@ class _InAppBannerWidgetState extends State<_InAppBannerWidget>
                                       variant: TextVariant.bold,
                                       color: cs.onSurface,
                                       maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: TextOverflow.ellipsis, translate: false,
                                     ),
                                     const SizedBox(height: 2),
                                     AnymeXText(
@@ -247,7 +247,7 @@ class _InAppBannerWidgetState extends State<_InAppBannerWidget>
                                       size: 12,
                                       color: cs.onSurfaceVariant,
                                       maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: TextOverflow.ellipsis, translate: false,
                                     ),
                                   ],
                                 ),

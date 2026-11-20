@@ -76,14 +76,14 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymeXText('Start Manga Download',
+                    AnymeXText('Start Manga Download',
                       variant: TextVariant.bold,
                       size: 16,
                     ),
                     AnymeXText(media.name ?? '',
                       size: 13,
                       maxLines: 1,
-                      color: theme.onSurface.opaque(0.6),
+                      color: theme.onSurface.opaque(0.6), translate: false,
                     ),
                   ],
                 ),
@@ -103,14 +103,14 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                 _buildInfoRow(
                   theme: theme,
                   icon: HugeIcons.strokeRoundedBook02,
-                  label: 'Chapters',
+                  label: 'Chapters'.tr,
                   value: count.toString(),
                 ),
                 const SizedBox(height: 12),
                 _buildInfoRow(
                   theme: theme,
                   icon: HugeIcons.strokeRoundedGlobe,
-                  label: 'Source',
+                  label: 'Source'.tr,
                   value: (source.lang ?? '').isNotEmpty
                       ? '${source.name ?? 'Unknown'} (${completeLanguageName(source.lang!)})'
                       : (source.name ?? 'Unknown'),
@@ -119,7 +119,7 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
                 _buildInfoRow(
                   theme: theme,
                   icon: HugeIcons.strokeRoundedFolder01,
-                  label: 'Location',
+                  label: 'Location'.tr,
                   value: 'AnymeX/Downloads/Manga',
                 ),
               ],
@@ -204,14 +204,14 @@ class MangaChapterDownloadConfirm extends StatelessWidget {
         const SizedBox(width: 10),
         AnymeXText(label,
           size: 13,
-          color: theme.onSurface.opaque(0.6),
+          color: theme.onSurface.opaque(0.6), translate: false,
         ),
         const Spacer(),
         Flexible(
           child: AnymeXText(value,
             size: 13,
             variant: TextVariant.semiBold,
-            maxLines: 1,
+            maxLines: 1, translate: false,
           ),
         ),
       ],

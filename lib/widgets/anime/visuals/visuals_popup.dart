@@ -161,13 +161,13 @@ class _VisualsPopupState extends State<VisualsPopup> {
 
   Future<void> _saveImage(String url) async {
     try {
-      snackBar("Downloading image...");
+      snackBar("Downloading image...".tr);
       final response = await http.get(Uri.parse(url));
 
       if (!mounted) return;
 
       if (response.statusCode != 200) {
-        snackBar("Failed to download image");
+        snackBar("Failed to download image".tr);
         return;
       }
 
@@ -231,14 +231,14 @@ class _VisualsPopupState extends State<VisualsPopup> {
             final file = File('${tempDir.path}/$fileName');
             await file.writeAsBytes(bytes);
             await Share.shareXFiles([XFile(file.path)],
-                text: "Visual from AnymeX");
+                text: "Visual from AnymeX".tr);
           }
         }
       } else if (Platform.isIOS) {
         final tempDir = await getTemporaryDirectory();
         final file = File('${tempDir.path}/$fileName');
         await file.writeAsBytes(bytes);
-        await Share.shareXFiles([XFile(file.path)], text: "Visual from AnymeX");
+        await Share.shareXFiles([XFile(file.path)], text: "Visual from AnymeX".tr);
       } else {
         // pc
         String? downloadPath = (await getDownloadsDirectory())?.path;
@@ -274,7 +274,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
       }
     } catch (e) {
       if (mounted) {
-        snackBar("Error saving image");
+        snackBar("Error saving image".tr);
       }
     }
   }
@@ -373,7 +373,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
                       },
                     ),
                   )
-                : const Center(
+                : Center(
                     child: AnymeXText("No Visuals found for this Anime (╥﹏╥)",
                       color: Colors.white,
                     ),
@@ -419,7 +419,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
                           ]),
                       child: AnymeXText("${effectiveIndex + 1} / ${currentList.length}",
                         color: Colors.white,
-                        variant: TextVariant.bold,
+                        variant: TextVariant.bold, translate: false,
                       ),
                     ),
                   if (currentImage != null)
@@ -547,7 +547,7 @@ class _VisualsPopupState extends State<VisualsPopup> {
               AnymeXText(label,
                 color: Colors.white,
                 variant: TextVariant.bold,
-                size: 14,
+                size: 14, translate: false,
               ),
             ]
           ],

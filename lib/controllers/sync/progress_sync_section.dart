@@ -134,7 +134,7 @@ class _GistSyncCard extends StatelessWidget {
                               ),
                             )
                           : const Icon(Icons.login_rounded),
-                      label: AnymeXText(primaryActionLabel),
+                      label: AnymeXText(primaryActionLabel, translate: false),
                     ),
                   ),
                 if (isLogged)
@@ -164,7 +164,7 @@ class _GistSyncCard extends StatelessWidget {
                                           ? Icons.cloud_upload_rounded
                                           : Icons.sync_rounded,
                                     ),
-                              label: AnymeXText(primaryActionLabel),
+                              label: AnymeXText(primaryActionLabel, translate: false),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -185,22 +185,22 @@ class _GistSyncCard extends StatelessWidget {
                       ),
                       if (hasCloudGist == true) ...[
                         AnymeXSectionBuilder(
-                          title: 'Sync Preferences',
+                          title: 'Sync Preferences'.tr,
                           margin: const EdgeInsets.only(top: 14),
                           children: [
                             AnymeXTile.toggle(
                               icon: Icons.sync_rounded,
-                              title: 'Auto-sync progress',
+                              title: 'Auto-sync progress'.tr,
                               subtitle:
-                                  'While watching episodes or reading chapters',
+                                  'While watching episodes or reading chapters'.tr,
                               value: syncEnabled,
                               onChanged: (v) => ctrl.syncEnabled.value = v,
                             ),
                             AnymeXTile.toggle(
                               icon: Icons.auto_delete_rounded,
-                              title: 'Auto-delete completed entries',
+                              title: 'Auto-delete completed entries'.tr,
                               subtitle:
-                                  'Removes finished media from cloud gist',
+                                  'Removes finished media from cloud gist'.tr,
                               value: autoDeleteCompletedOnExit,
                               onChanged: (v) {
                                 unawaited(ctrl.setAutoDeleteCompletedOnExit(v));
@@ -208,9 +208,9 @@ class _GistSyncCard extends StatelessWidget {
                             ),
                             AnymeXTile.toggle(
                               icon: Icons.notifications_active_outlined,
-                              title: 'Exit sync notifications',
+                              title: 'Exit sync notifications'.tr,
                               subtitle:
-                                  'Show sync result when player or reader closes',
+                                  'Show sync result when player or reader closes'.tr,
                               value: showExitSyncNotifications,
                               onChanged: (v) {
                                 unawaited(ctrl.setExitSyncNotifications(v));
@@ -482,14 +482,14 @@ class _GistSyncCard extends StatelessWidget {
                                   children: [
                                     AnymeXText(displayName ?? username,
                                       variant: TextVariant.semiBold,
-                                      size: 14,
+                                      size: 14, translate: false,
                                     ),
                                     if (displayName != null &&
                                         username.isNotEmpty &&
                                         username != 'GitHub User')
                                       AnymeXText('@$username',
                                         size: 11,
-                                        color: ctx.colors.onSurfaceVariant,
+                                        color: ctx.colors.onSurfaceVariant, translate: false,
                                       ),
                                   ],
                                 ),
@@ -517,7 +517,7 @@ class _GistSyncCard extends StatelessWidget {
                               lastSyncError: lastSyncError,
                             ),
                             size: 12,
-                            color: ctx.colors.onSurfaceVariant,
+                            color: ctx.colors.onSurfaceVariant, translate: false,
                           ),
                         ],
                       ),
@@ -552,42 +552,42 @@ class _GistSyncCard extends StatelessWidget {
                           isAuthenticating: ctrl.isAuthenticating.value,
                           isSyncing: ctrl.isSyncing.value,
                           needsInitialize: ctrl.hasCloudGist.value == false,
-                        ),
+                        ), translate: false,
                       ),
                     ),
                   ),
                   AnymeXSectionBuilder(
-                    title: 'Cloud Tools',
+                    title: 'Cloud Tools'.tr,
                     margin: const EdgeInsets.only(top: 16),
                     children: [
                       AnymeXTile(
                         icon: Icons.open_in_new_rounded,
-                        title: 'View Cloud Gist',
-                        subtitle: 'Open your AnymeX sync gist on GitHub',
+                        title: 'View Cloud Gist'.tr,
+                        subtitle: 'Open your AnymeX sync gist on GitHub'.tr,
                         enabled: !ctrl.isSyncing.value &&
                             ctrl.hasCloudGist.value != false,
                         onTap: () => _openGistInBrowser(ctx, ctrl),
                       ),
                       AnymeXTile(
                         icon: Icons.download_rounded,
-                        title: 'Export Gist JSON',
-                        subtitle: 'Save your current cloud progress to a file',
+                        title: 'Export Gist JSON'.tr,
+                        subtitle: 'Save your current cloud progress to a file'.tr,
                         enabled: !ctrl.isSyncing.value &&
                             ctrl.hasCloudGist.value != false,
                         onTap: () => _exportGistJson(ctx, ctrl),
                       ),
                       AnymeXTile(
                         icon: Icons.upload_file_rounded,
-                        title: 'Import Gist JSON',
+                        title: 'Import Gist JSON'.tr,
                         subtitle:
-                            'Merge uploaded entries or replace cloud data',
+                            'Merge uploaded entries or replace cloud data'.tr,
                         enabled: !ctrl.isSyncing.value,
                         onTap: () => _importGistJson(ctx, ctrl),
                       ),
                       AnymeXTile(
                         icon: Icons.delete_forever_rounded,
-                        title: 'Delete Cloud Gist',
-                        subtitle: 'Permanently remove AnymeX sync data',
+                        title: 'Delete Cloud Gist'.tr,
+                        subtitle: 'Permanently remove AnymeX sync data'.tr,
                         iconColor: ctx.colors.error,
                         enabled: !ctrl.isSyncing.value &&
                             ctrl.hasCloudGist.value != false,
@@ -598,13 +598,13 @@ class _GistSyncCard extends StatelessWidget {
                     ],
                   ),
                   AnymeXSectionBuilder(
-                    title: 'Account',
+                    title: 'Account'.tr,
                     margin: const EdgeInsets.only(top: 16),
                     children: [
                       AnymeXTile(
                         icon: IconlyLight.logout,
-                        title: 'Log Out',
-                        subtitle: 'Disconnect this GitHub account from AnymeX',
+                        title: 'Log Out'.tr,
+                        subtitle: 'Disconnect this GitHub account from AnymeX'.tr,
                         onTap: () {
                           ctrl.logout();
                           Navigator.pop(ctx);
@@ -667,10 +667,10 @@ class _GistSyncCard extends StatelessWidget {
       }
 
       if (outputPath == null) return;
-      successSnackBar('Exported gist JSON.');
+      successSnackBar('Exported gist JSON.'.tr);
     } catch (e) {
       Logger.i('[GistSync] _exportGistJson: $e');
-      errorSnackBar('Failed to export gist JSON.');
+      errorSnackBar('Failed to export gist JSON.'.tr);
     }
   }
 
@@ -683,13 +683,13 @@ class _GistSyncCard extends StatelessWidget {
 
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      errorSnackBar('Invalid gist URL.');
+      errorSnackBar('Invalid gist URL.'.tr);
       return;
     }
 
     try {
       if (!await canLaunchUrl(uri)) {
-        errorSnackBar('Could not open gist in browser.');
+        errorSnackBar('Could not open gist in browser.'.tr);
         return;
       }
       final opened = await launchUrl(
@@ -697,11 +697,11 @@ class _GistSyncCard extends StatelessWidget {
         mode: LaunchMode.externalApplication,
       );
       if (!opened) {
-        errorSnackBar('Could not open gist in browser.');
+        errorSnackBar('Could not open gist in browser.'.tr);
       }
     } catch (e) {
       Logger.i('[GistSync] _openGistInBrowser: $e');
-      errorSnackBar('Failed to open gist in browser.');
+      errorSnackBar('Failed to open gist in browser.'.tr);
     }
   }
 
@@ -721,13 +721,13 @@ class _GistSyncCard extends StatelessWidget {
       final bytes = file.bytes ??
           (file.path != null ? await File(file.path!).readAsBytes() : null);
       if (bytes == null || bytes.isEmpty) {
-        errorSnackBar('Unable to read selected JSON file.');
+        errorSnackBar('Unable to read selected JSON file.'.tr);
         return;
       }
 
       final decoded = json.decode(utf8.decode(bytes));
       if (decoded is! Map) {
-        errorSnackBar('Selected file must contain a JSON object.');
+        errorSnackBar('Selected file must contain a JSON object.'.tr);
         return;
       }
 
@@ -756,7 +756,7 @@ class _GistSyncCard extends StatelessWidget {
       }
     } catch (e) {
       Logger.i('[GistSync] _importGistJson: $e');
-      errorSnackBar('Failed to import gist JSON.');
+      errorSnackBar('Failed to import gist JSON.'.tr);
     }
   }
 
@@ -765,9 +765,9 @@ class _GistSyncCard extends StatelessWidget {
     return showDialog<_GistImportMode>(
       context: context,
       builder: (ctx) => Obx(() => AnymeXDialog(
-            title: 'Import Gist JSON',
+            title: 'Import Gist JSON'.tr,
             message:
-                'Choose how to apply the selected JSON file to your AnymeX cloud gist.',
+                'Choose how to apply the selected JSON file to your AnymeX cloud gist.'.tr,
             confirmText: 'Import',
             onConfirm: () {},
             confirmResultGetter: () => selectedMode.value,
@@ -776,17 +776,17 @@ class _GistSyncCard extends StatelessWidget {
               children: [
                 AnymeXTile.radio(
                   selected: selectedMode.value == _GistImportMode.merge,
-                  title: 'Merge With Cloud',
+                  title: 'Merge With Cloud'.tr,
                   subtitle:
-                      'Keep both uploaded and cloud entries. If the same entry exists in both places, the newer one is kept. (Recommended)',
+                      'Keep both uploaded and cloud entries. If the same entry exists in both places, the newer one is kept. (Recommended)'.tr,
                   onTap: () => selectedMode.value = _GistImportMode.merge,
                 ),
                 const SizedBox(height: 8),
                 AnymeXTile.radio(
                   selected: selectedMode.value == _GistImportMode.replace,
-                  title: 'Replace Cloud Gist',
+                  title: 'Replace Cloud Gist'.tr,
                   subtitle:
-                      'Remove current cloud entries and replace them with the uploaded file.',
+                      'Remove current cloud entries and replace them with the uploaded file.'.tr,
                   onTap: () => selectedMode.value = _GistImportMode.replace,
                 ),
               ],
@@ -817,7 +817,7 @@ class _StatusPill extends StatelessWidget {
       child: AnymeXText(label,
         size: 10,
         variant: TextVariant.semiBold,
-        color: color,
+        color: color, translate: false,
       ),
     );
   }
@@ -898,9 +898,9 @@ class _DeleteGistConfirmDialogState extends State<_DeleteGistConfirmDialog> {
   @override
   Widget build(BuildContext context) {
     return AnymeXDialog(
-      title: 'Delete AnymeX Sync Gist?',
+      title: 'Delete AnymeX Sync Gist?'.tr,
       message:
-          'This permanently deletes your AnymeX cloud progress gist from GitHub and cannot be undone.',
+          'This permanently deletes your AnymeX cloud progress gist from GitHub and cannot be undone.'.tr,
       confirmText: _secondsLeft == 0
           ? 'I Understand, Delete'
           : 'I Understand ($_secondsLeft)',

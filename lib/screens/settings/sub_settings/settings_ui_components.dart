@@ -168,7 +168,7 @@ class _SettingsUiComponentsState extends State<SettingsUiComponents> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'UI Components',
+      headerTitle: 'UI Components'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding:

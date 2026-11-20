@@ -159,7 +159,7 @@ class _CharacterStaffSheetContentState
               final dynamic fullItem = snapshot.data;
               if (snapshot.connectionState == ConnectionState.done &&
                   fullItem == null) {
-                return const Center(child: AnymeXText("Failed to load details"));
+                return Center(child: AnymeXText("Failed to load details"));
               }
 
               final isLoading =
@@ -305,7 +305,7 @@ class _CharacterStaffSheetContentState
                                         if (GetPlatform.isDesktop) {
                                           await Clipboard.setData(
                                               ClipboardData(text: url));
-                                          snackBar("Link copied to clipboard!",
+                                          snackBar("Link copied to clipboard!".tr,
                                               duration: 2000);
                                         } else {
                                           Share.share(url);
@@ -334,7 +334,7 @@ class _CharacterStaffSheetContentState
                                           size: 16,
                                           color:
                                               theme.onSurface.withOpacity(0.7),
-                                          variant: TextVariant.semiBold,
+                                          variant: TextVariant.semiBold, translate: false,
                                         ),
                                       ],
                                     );
@@ -345,7 +345,7 @@ class _CharacterStaffSheetContentState
                                 Obx(() => GestureDetector(
                                       onTap: () async {
                                         if (!anilistAuth.isLoggedIn.value) {
-                                          snackBar("Please login to favorite!");
+                                          snackBar("Please login to favorite!".tr);
                                           return;
                                         }
 
@@ -363,7 +363,7 @@ class _CharacterStaffSheetContentState
 
                                         if (!success) {
                                           isFav.value = previousState;
-                                          snackBar("Failed to update AniList");
+                                          snackBar("Failed to update AniList".tr);
                                         } else {
                                           snackBar(isFav.value
                                               ? "Added to Favorites"
@@ -418,7 +418,7 @@ class _CharacterStaffSheetContentState
                                               variant: TextVariant.bold,
                                               color: isFav.value
                                                   ? Colors.red
-                                                  : theme.onSurface,
+                                                  : theme.onSurface, translate: false,
                                             ),
                                           ],
                                         ),
@@ -441,7 +441,7 @@ class _CharacterStaffSheetContentState
                                       child: AnymeXText(occupations.join(", "),
                                         size: 12,
                                         color: theme.primary,
-                                        maxLines: 2,
+                                        maxLines: 2, translate: false,
                                       ),
                                     );
                                   }
@@ -679,7 +679,7 @@ class _CharacterStaffSheetContentState
                             const SizedBox(height: 30),
                             if (widget.isCharacter &&
                                 voiceActors.isNotEmpty) ...[
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
                                 child: AnymeXText("Voice Actors",
                                   variant: TextVariant.bold,
@@ -761,7 +761,7 @@ class _CharacterStaffSheetContentState
                                                   ),
                                                   child: AnymeXText(actor.language!,
                                                     size: 10,
-                                                    color: theme.primary,
+                                                    color: theme.primary, translate: false,
                                                   ),
                                                 ),
                                               ]
@@ -776,7 +776,7 @@ class _CharacterStaffSheetContentState
                               const SizedBox(height: 30),
                             ],
                             if (voicedCharacters.isNotEmpty) ...[
-                              const Padding(
+                              Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20),
                                 child: AnymeXText("Voiced Characters",
                                   variant: TextVariant.bold,
@@ -810,7 +810,7 @@ class _CharacterStaffSheetContentState
                                     GestureDetector(
                                       onTap: () {
                                         if (!anilistAuth.isLoggedIn.value) {
-                                          snackBar("Please login to use this filter!");
+                                          snackBar("Please login to use this filter!".tr);
                                           return;
                                         }
                                         showOnlyOnList.value =
@@ -954,7 +954,7 @@ class _CharacterStaffSheetContentState
                                                   child: AnymeXText("$year (${mediaList.length})",
                                                     variant: TextVariant.bold,
                                                     size: 18,
-                                                    color: theme.primary,
+                                                    color: theme.primary, translate: false,
                                                   ),
                                                 ),
                                                 Expanded(
@@ -1055,7 +1055,7 @@ class _CharacterStaffSheetContentState
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               isMarquee: true,
-                              variant: TextVariant.bold,
+                              variant: TextVariant.bold, translate: false,
                             ),
                             if (media != null)
                               AnymeXText(media.title,
@@ -1063,7 +1063,7 @@ class _CharacterStaffSheetContentState
                                 color: theme.primary,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                isMarquee: true,
+                                isMarquee: true, translate: false,
                               ),
                           ],
                         ),
@@ -1218,7 +1218,7 @@ class _CharacterStaffSheetContentState
                                     color: Colors.white,
                                     fontSize: 9,
                                     fontWeight: FontWeight.bold,
-                                  ),
+                                  ), translate: false,
                                 ),
                               ],
                             ),
@@ -1245,7 +1245,7 @@ class _CharacterStaffSheetContentState
                                   fontWeight: FontWeight.w900,
                                   fontFamily: 'Linotte',
                                   letterSpacing: 0.5,
-                                ),
+                                ), translate: false,
                               ),
                             ),
                           ),
@@ -1259,7 +1259,7 @@ class _CharacterStaffSheetContentState
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     isMarquee: true,
-                    size: 11,
+                    size: 11, translate: false,
                   )
                 ],
               ),
@@ -1379,7 +1379,7 @@ class _SpoilerWidgetState extends State<SpoilerWidget> {
                 ),
               ),
               child: MarkdownBody(
-                data: widget.text.isNotEmpty ? widget.text : 'Spoilers',
+                data: widget.text.isNotEmpty ? widget.text : 'Spoilers'.tr,
                 shrinkWrap: true,
                 styleSheet: MarkdownStyleSheet(
                   p: TextStyle(
@@ -1464,7 +1464,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
               child: AnymeXText("$label:",
                 size: 14,
                 variant: TextVariant.bold,
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.primary, translate: false,
               ),
             ),
             const SizedBox(width: 10),
@@ -1473,7 +1473,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
                 size: 14,
                 maxLines: 10,
                 variant: TextVariant.semiBold,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: Theme.of(context).colorScheme.onSurface, translate: false,
               ),
             ),
           ],
@@ -1492,7 +1492,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
               child: AnymeXText("$label:",
                 size: 14,
                 variant: TextVariant.bold,
-                color: Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.primary, translate: false,
               ),
             ),
             const SizedBox(width: 10),
@@ -1531,7 +1531,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
         widgets.add(AnymeXText(before,
           size: 14,
           variant: TextVariant.semiBold,
-          color: Theme.of(context).colorScheme.onSurface,
+          color: Theme.of(context).colorScheme.onSurface, translate: false,
         ));
       }
       widgets.add(SpoilerWidget(text: match.group(1)?.trim() ?? ''));
@@ -1542,7 +1542,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
       widgets.add(AnymeXText(remaining,
         size: 14,
         variant: TextVariant.semiBold,
-        color: Theme.of(context).colorScheme.onSurface,
+        color: Theme.of(context).colorScheme.onSurface, translate: false,
       ));
     }
 
@@ -1556,7 +1556,7 @@ extension _CharacterStaffSheetExtension on _CharacterStaffSheetContentState {
             child: AnymeXText("$label:",
               size: 14,
               variant: TextVariant.bold,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primary, translate: false,
             ),
           ),
           const SizedBox(width: 10),

@@ -73,7 +73,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
   Future<bool> _postReply(String text) async {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: AnymeXText('Please login first'),
           duration: Duration(milliseconds: 1500),
         ),
@@ -112,7 +112,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
   void _toggleReplyLike(ActivityReply reply) async {
     if (!Get.find<AnilistAuth>().isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: AnymeXText('Please login first'),
           duration: Duration(milliseconds: 1500),
         ),
@@ -141,9 +141,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: context.theme.colorScheme.surfaceContainerHigh,
-        title: const AnymeXText('Delete Reply'),
+        title: AnymeXText('Delete Reply'),
         content:
-            const AnymeXText('Are you sure you want to delete this reply?'),
+            AnymeXText('Are you sure you want to delete this reply?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -211,9 +211,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
       onWillPop: () => confirmDiscardComposer(
         context,
         composerKey: _composerKey,
-        discardTitle: 'Discard reply?',
+        discardTitle: 'Discard reply?'.tr,
         discardMessage:
-            'You have unsent text. Closing now will lose your reply.',
+            'You have unsent text. Closing now will lose your reply.'.tr,
       ),
       child: Padding(
         padding:
@@ -253,9 +253,9 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                             final discard = await confirmDiscardComposer(
                               context,
                               composerKey: _composerKey,
-                              discardTitle: 'Discard reply?',
+                              discardTitle: 'Discard reply?'.tr,
                               discardMessage:
-                                  'You have unsent text. Closing now will lose your reply.',
+                                  'You have unsent text. Closing now will lose your reply.'.tr,
                             );
                             if (discard && context.mounted) {
                               Navigator.pop(context);
@@ -285,7 +285,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               child: Center(child: CircularProgressIndicator()),
                             )
                           else if (replies!.isEmpty)
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.all(32.0),
                               child: Center(
                                 child:
@@ -403,7 +403,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                       style: TextStyle(
                         fontSize: 11,
                         color: subtleText,
-                      ),
+                      ), translate: false,
                     ),
                   ],
                 ),
@@ -497,7 +497,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                               style: TextStyle(
                                 fontSize: 11,
                                 color: reply.isLiked ? Colors.red : subtleText,
-                              ),
+                              ), translate: false,
                             ),
                           ],
                         ),
@@ -574,7 +574,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                             fontSize: 14,
                             color:
                                 dragContext.theme.colorScheme.onSurfaceVariant,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ),
@@ -672,7 +672,7 @@ class _ActivityDetailsSheetState extends State<ActivityDetailsSheet> {
                           color: context.theme.colorScheme.onSurface,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true,
+                          isMarquee: true, translate: false,
                         ),
                       ),
                     ],

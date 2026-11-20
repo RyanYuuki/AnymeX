@@ -94,7 +94,7 @@ class _MangaStatsState extends State<MangaStats> {
           _buildCollapsibleSectionContainer(
             context,
             icon: Icons.analytics_outlined,
-            title: "Statistics",
+            title: "Statistics".tr,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -111,12 +111,12 @@ class _MangaStatsState extends State<MangaStats> {
                 child: _buildInfoCard(
                   context,
                   icon: Icons.language_rounded,
-                  title: "Romaji Title",
+                  title: "Romaji Title".tr,
                   content: AnymeXText(widget.data.romajiTitle,
                     variant: TextVariant.semiBold,
                     size: 15,
                     maxLines: 3,
-                    autoResize: true,
+                    autoResize: true, translate: false,
                   ),
                 ),
               ),
@@ -126,7 +126,7 @@ class _MangaStatsState extends State<MangaStats> {
           _buildCollapsibleInfoCard(
             context,
             icon: Icons.description_outlined,
-            title: "Synopsis",
+            title: "Synopsis".tr,
             content: Html(
               data: widget.data.description,
               style: {
@@ -146,7 +146,7 @@ class _MangaStatsState extends State<MangaStats> {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'Synonyms',
+              title: 'Synonyms'.tr,
               icon: Icons.translate_rounded,
               chips: widget.data.synonyms.map((s) => _ChipData(label: s)).toList(),
             ),
@@ -155,7 +155,7 @@ class _MangaStatsState extends State<MangaStats> {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'Tags',
+              title: 'Tags'.tr,
               icon: Icons.label_rounded,
               chips: widget.data.tags
                   .map((t) => _ChipData(
@@ -196,18 +196,18 @@ class _MangaStatsState extends State<MangaStats> {
                   _buildInfoCard(
                     context,
                     icon: Icons.tv_rounded,
-                    title: "Anime Adaptation",
+                    title: "Anime Adaptation".tr,
                     content: Column(
                       children: [
                         _buildAdaptationItem(
                           context,
-                          label: "Start Chapter",
+                          label: "Start Chapter".tr,
                           value: adaptation.animeStart ?? 'Unknown',
                         ),
                         const SizedBox(height: 12),
                         _buildAdaptationItem(
                           context,
-                          label: "End Chapter",
+                          label: "End Chapter".tr,
                           value: adaptation.animeEnd ?? 'Unknown',
                         ),
                       ],
@@ -221,7 +221,7 @@ class _MangaStatsState extends State<MangaStats> {
           _buildSectionContainer(
             context,
             icon: Icons.category_rounded,
-            title: "Genres",
+            title: "Genres".tr,
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.only(top: 15),
@@ -322,7 +322,7 @@ class _MangaStatsState extends State<MangaStats> {
               const SizedBox(width: 12),
               AnymeXText(title,
                 variant: TextVariant.bold,
-                size: 20,
+                size: 20, translate: false,
               ),
             ],
           ),
@@ -372,7 +372,7 @@ class _MangaStatsState extends State<MangaStats> {
               AnymeXText(title,
                 variant: TextVariant.bold,
                 size: 16,
-                autoResize: true,
+                autoResize: true, translate: false,
               ),
             ],
           ),
@@ -389,7 +389,7 @@ class _MangaStatsState extends State<MangaStats> {
   return _buildCollapsibleSectionContainer(
     context, 
     icon: Icons.more,
-    title: "Others", 
+    title: "Others".tr, 
     child: Column(
       children: [
         GestureDetector(
@@ -425,7 +425,7 @@ class _MangaStatsState extends State<MangaStats> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const AnymeXText("Recent News",
+                      AnymeXText("Recent News",
                         variant: TextVariant.bold,
                         size: 14,
                       ),
@@ -595,7 +595,7 @@ class _MangaStatsState extends State<MangaStats> {
                             AnymeXText(_latestChapter!,
                               variant: TextVariant.bold,
                               size: 11,
-                              color: colorScheme.primary,
+                              color: colorScheme.primary, translate: false,
                             ),
                           ],
                         ),
@@ -612,7 +612,7 @@ class _MangaStatsState extends State<MangaStats> {
                         variant: TextVariant.bold,
                         size: 14,
                         color: colorScheme.primary,
-                        maxLines: 2,
+                        maxLines: 2, translate: false,
                       ),
                     ],
                   ),
@@ -653,7 +653,7 @@ class _MangaStatsState extends State<MangaStats> {
             child: AnymeXText(label,
               variant: TextVariant.semiBold,
               size: 13,
-              color: colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true),
+              color: colorScheme.onSurface.opaque(0.7, iReallyMeanIt: true), translate: false,
             ),
           ),
           Expanded(
@@ -666,7 +666,7 @@ class _MangaStatsState extends State<MangaStats> {
                       variant: TextVariant.bold,
                       size: 13,
                       color: colorScheme.primary,
-                      textAlign: TextAlign.right,
+                      textAlign: TextAlign.right, translate: false,
                     ),
                   )
                   .toList(),
@@ -712,7 +712,7 @@ class _MangaStatsState extends State<MangaStats> {
                 child: AnymeXText(chip.label,
                   size: 12,
                   variant: TextVariant.semiBold,
-                  color: color,
+                  color: color, translate: false,
                 ),
               ),
             );
@@ -749,7 +749,7 @@ class _MangaStatsState extends State<MangaStats> {
           const SizedBox(width: 10),
           AnymeXText(title,
             variant: TextVariant.bold,
-            size: 16,
+            size: 16, translate: false,
           ),
         ],
       ),
@@ -786,7 +786,7 @@ class _MangaStatsState extends State<MangaStats> {
           const SizedBox(width: 12),
           AnymeXText(title,
             variant: TextVariant.bold,
-            size: 20,
+            size: 20, translate: false,
           ),
         ],
       ),

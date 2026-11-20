@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/utils/theme_extensions.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_button.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
@@ -117,7 +118,7 @@ class ContentErrorWidget extends StatelessWidget {
         _getEmoticon(errorType),
         size: 26,
         variant: TextVariant.bold,
-        color: accentColor,
+        color: accentColor, translate: false,
       ),
     );
   }
@@ -149,7 +150,7 @@ class ContentErrorWidget extends StatelessWidget {
               size: 12,
               color: colors.onSurface.opaque(0.75, iReallyMeanIt: true),
               maxLines: 4,
-              overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.ellipsis, translate: false,
             ),
           ),
         ],
@@ -245,7 +246,7 @@ class ContentErrorWidget extends StatelessWidget {
             _getTitle(errorType, isManga),
             variant: TextVariant.bold,
             size: 16,
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.center, translate: false,
           ),
           const SizedBox(height: 10),
           _buildDetailsBox(context, accentColor),

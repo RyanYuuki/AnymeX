@@ -191,7 +191,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
         _isLoading = false;
         _error = 'Room not found or expired';
       });
-      errorSnackBar('Room not found or expired');
+      errorSnackBar('Room not found or expired'.tr);
       return;
     }
 
@@ -349,8 +349,8 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       color: cs.onSurface,
                     ),
                     decoration: InputDecoration(
-                      labelText: 'Room password',
-                      hintText: 'Enter the room password',
+                      labelText: 'Room password'.tr,
+                      hintText: 'Enter the room password'.tr,
                       labelStyle: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 13,
@@ -410,7 +410,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                               dialogError!,
                               size: 12,
                               color: cs.error,
-                              maxLines: 3,
+                              maxLines: 3, translate: false,
                             ),
                           ),
                         ],
@@ -477,7 +477,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
   body: Column(
           children: [
             NestedHeader(
-              title: 'Watch Together',
+              title: 'Watch Together'.tr,
               action: IconButton(
                 onPressed: _loadRooms,
                 icon: const Icon(Icons.refresh),
@@ -541,7 +541,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                   child: AnymeXText('$count',
                                     size: 12,
                                     color: theme
-                                        .colorScheme.onPrimaryContainer,
+                                        .colorScheme.onPrimaryContainer, translate: false,
                                   ),
                                 );
                               }),
@@ -685,7 +685,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                 ? cs.onPrimaryContainer
                                 : hasError && hasChar
                                     ? cs.onErrorContainer
-                                    : cs.onSurface,
+                                    : cs.onSurface, translate: false,
                           ),
                         );
                       }),
@@ -770,7 +770,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                       _error!,
                       size: 12,
                       color: cs.error,
-                      maxLines: 3,
+                      maxLines: 3, translate: false,
                     ),
                   ),
                 ],
@@ -824,7 +824,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                 const SizedBox(height: 4),
                 AnymeXText(errorMsg,
                   size: 12,
-                  color: theme.colorScheme.error.opaque(0.8),
+                  color: theme.colorScheme.error.opaque(0.8), translate: false,
                 ),
               ],
               const SizedBox(height: 12),
@@ -913,14 +913,14 @@ class _WatchiumPageState extends State<WatchiumPage> {
                             : null,
                         child: m.avatarUrl == null
                             ? AnymeXText(m.username[0].toUpperCase(),
-                                style: const TextStyle(fontSize: 12))
+                                style: const TextStyle(fontSize: 12), translate: false)
                             : null,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: AnymeXText(m.username,
                             style: const TextStyle(fontSize: 12),
-                            overflow: TextOverflow.ellipsis),
+                            overflow: TextOverflow.ellipsis, translate: false),
                       ),
                       if (m.role == 'host')
                         Container(
@@ -1087,7 +1087,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
     if (preview == null) {
       setState(() => _isLoading = false);
       if (!fromDeepLink) {
-        errorSnackBar('Room not found or expired');
+        errorSnackBar('Room not found or expired'.tr);
       }
       return false;
     }
@@ -1264,7 +1264,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                             color: Colors.white,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ),
@@ -1339,7 +1339,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   height: 1.3,
-                                ),
+                                ), translate: false,
                               )
                             else
                               AnymeXText(
@@ -1390,7 +1390,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                     hostMember.username[0].toUpperCase(),
                                     style: const TextStyle(
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w700),
+                                        fontWeight: FontWeight.w700), translate: false,
                                   )
                                 : null,
                           )
@@ -1451,7 +1451,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                             .toUpperCase(),
                                         style: const TextStyle(
                                             fontSize: 9,
-                                            fontWeight: FontWeight.w700),
+                                            fontWeight: FontWeight.w700), translate: false,
                                       )
                                     : null,
                               ),
@@ -1473,7 +1473,7 @@ class _WatchiumPageState extends State<WatchiumPage> {
                                     fontSize: 9,
                                     fontWeight: FontWeight.w700,
                                     color: cs.onSurface,
-                                  ),
+                                  ), translate: false,
                                 ),
                               ),
                             ),

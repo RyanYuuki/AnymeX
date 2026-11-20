@@ -619,7 +619,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                                   style: theme.textTheme.labelLarge?.copyWith(
                                     color: colorScheme.onSurface,
                                     fontWeight: FontWeight.w600,
-                                  ),
+                                  ), translate: false,
                                 ),
                                 const SizedBox(height: 1),
                                 AnymeXText(
@@ -628,7 +628,7 @@ class _DoubleTapSeekWidgetState extends State<DoubleTapSeekWidget>
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
-                                  ),
+                                  ), translate: false,
                                 ),
                               ],
                             ),

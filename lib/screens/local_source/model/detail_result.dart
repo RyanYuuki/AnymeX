@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'dart:convert';
 
 import 'package:anymex_extension_runtime_bridge/anymex_extension_runtime_bridge.dart';
@@ -34,11 +35,11 @@ class DetailResult {
                       'year': year,
                     }),
                     poster: 'https://image.tmdb.org/t/p/w500$posterPath',
-                    title: 'Movie',
+                    title: 'Movie'.tr,
                   )
                 ],
                 id: '',
-                title: 'Movie',
+                title: 'Movie'.tr,
                 poster: 'https://image.tmdb.org/t/p/w500$backdropPath',
               ),
             ],

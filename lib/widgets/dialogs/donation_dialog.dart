@@ -32,10 +32,10 @@ class DonationDialog extends StatelessWidget {
         final launched =
             await launchUrl(uri, mode: LaunchMode.externalApplication);
         if (!launched) {
-          snackBar('Could not open donation link');
+          snackBar('Could not open donation link'.tr);
         }
       } catch (_) {
-        snackBar('Could not open donation link');
+        snackBar('Could not open donation link'.tr);
       }
     } else {
       navigate(SettingsDonation.new);
@@ -49,9 +49,9 @@ class DonationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnymeXDialog(
-      title: 'Support AnymeX',
-      confirmText: 'Donate',
-      cancelText: 'Maybe Later',
+      title: 'Support AnymeX'.tr,
+      confirmText: 'Donate'.tr,
+      cancelText: 'Maybe Later'.tr,
       showCancelButton: true,
       onConfirm: () => _handleDonate(context),
       contentWidget: Column(
@@ -75,17 +75,17 @@ class DonationDialog extends StatelessWidget {
               _buildPerk(
                 context,
                 icon: Icons.block_rounded,
-                label: 'Ad-Free App',
+                label: 'Ad-Free App'.tr,
               ),
               _buildPerk(
                 context,
                 icon: Icons.code_rounded,
-                label: 'Open Source',
+                label: 'Open Source'.tr,
               ),
               _buildPerk(
                 context,
                 icon: Icons.volunteer_activism_rounded,
-                label: 'Community Driven',
+                label: 'Community Driven'.tr,
               ),
             ],
           ),
@@ -144,7 +144,7 @@ class DonationDialog extends StatelessWidget {
         children: [
           Icon(icon, size: 14, color: context.colors.primary),
           const SizedBox(width: 6),
-          AnymeXText(label, size: 11.5, variant: TextVariant.semiBold),
+          AnymeXText(label, size: 11.5, variant: TextVariant.semiBold, translate: false),
         ],
       ),
     );

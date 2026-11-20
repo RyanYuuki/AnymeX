@@ -103,7 +103,7 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
 
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Tap Zones',
+      headerTitle: 'Tap Zones'.tr,
       headerAction: IconButton(
         icon: const Icon(Icons.refresh_rounded),
         tooltip: 'Reset to default',
@@ -117,8 +117,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       child: _ElegantSegmentedControl(
                         options: [
-                          (title: "Paged", icon: Transform.rotate(angle: 1.5708, child: const Icon(Icons.view_day_rounded, size: 18))),
-                          (title: "Webtoon", icon: const Icon(Icons.view_day_rounded, size: 18)),
+                          (title: "Paged".tr, icon: Transform.rotate(angle: 1.5708, child: const Icon(Icons.view_day_rounded, size: 18))),
+                          (title: "Webtoon".tr, icon: const Icon(Icons.view_day_rounded, size: 18)),
                         ],
                         selectedIndex: _isWebtoon ? 1 : 0,
                         onChanged: (index) {
@@ -132,9 +132,9 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                       child: _ElegantSegmentedControl(
-                        options: const [
-                          (title: "Horizontal", icon: Icon(Icons.swap_horiz_rounded, size: 18)),
-                          (title: "Vertical", icon: Icon(Icons.swap_vert_rounded, size: 18)),
+                        options: [
+                          (title: "Horizontal".tr, icon: Icon(Icons.swap_horiz_rounded, size: 18)),
+                          (title: "Vertical".tr, icon: Icon(Icons.swap_vert_rounded, size: 18)),
                         ],
                         selectedIndex: _isVertical ? 1 : 0,
                         onChanged: (index) {
@@ -150,8 +150,8 @@ class _TapZoneSettingsScreenState extends State<TapZoneSettingsScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: AnymeXTile.toggle(
                         icon: Icons.touch_app_rounded,
-                        title: "Enable Tap Zones",
-                        subtitle: "Use custom gestures for reader navigation",
+                        title: "Enable Tap Zones".tr,
+                        subtitle: "Use custom gestures for reader navigation".tr,
                         value: _tapZonesEnabled,
                         onChanged: (val) {
                           setState(() => _tapZonesEnabled = val);
@@ -303,7 +303,7 @@ class VisualZoneEditor extends StatelessWidget {
                         style: TextStyle(
                           color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
                           fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                        ),
+                        ), translate: false,
                       ),
                       trailing: isSelected
                           ? Icon(Icons.check_circle_rounded, color: theme.colorScheme.primary)
@@ -421,7 +421,7 @@ class VisualZoneEditor extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                                 color: Theme.of(context).colorScheme.primary,
                                 letterSpacing: 0.5,
-                              ),
+                              ), translate: false,
                             ),
                           ),
                         ],
@@ -540,7 +540,7 @@ class _ElegantSegmentedControl extends StatelessWidget {
                                     ? Theme.of(context).colorScheme.onPrimary 
                                     : Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
                               ),
-                              child: AnymeXText(item.title),
+                              child: AnymeXText(item.title, translate: false),
                             ),
                           ],
                         ),

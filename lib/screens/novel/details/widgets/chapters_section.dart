@@ -272,7 +272,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                         ),
                       )
                     else if (chunkedChapters.isEmpty)
-                      const SliverToBoxAdapter(
+                      SliverToBoxAdapter(
                         child: SizedBox(
                           height: 240,
                           child: Center(
@@ -307,7 +307,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
             activeSource: controller.activeSource.value,
             installedSources: _sourceController.installedNovelExtensions,
             isManga: false,
-            label: 'Select Novel Source',
+            label: 'Select Novel Source'.tr,
             onSourceSelected: (source) {
               controller.switchSource(source);
             },
@@ -336,7 +336,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                     color: title.contains('No Match Found')
                         ? context.colors.error
                         : context.colors.primary,
-                    maxLines: 1,
+                    maxLines: 1, translate: false,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -387,7 +387,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
           const SizedBox(height: 10),
           Row(
             children: [
-              const AnymeXText('Chapters',
+              AnymeXText('Chapters',
                 variant: TextVariant.bold,
                 size: 18,
               ),
@@ -404,7 +404,7 @@ class _ChapterSliverSectionState extends State<ChapterSliverSection> {
                       )
                     : IconButton(
                         onPressed: controller.syncDetails,
-                        tooltip: 'Sync Details',
+                        tooltip: 'Sync Details'.tr,
                         icon: const Icon(Icons.sync_rounded),
                       )),
               IconButton(

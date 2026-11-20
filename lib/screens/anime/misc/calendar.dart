@@ -367,7 +367,7 @@ class _CalendarState extends State<Calendar>
                 size: 13,
                 color: isSelected
                     ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurface,
+                    : theme.colorScheme.onSurface, translate: false,
               ),
               const SizedBox(width: 4),
               AnymeXText(
@@ -376,7 +376,7 @@ class _CalendarState extends State<Calendar>
                 size: 11.5,
                 color: isSelected
                     ? theme.colorScheme.primary.opaque(0.8)
-                    : theme.colorScheme.onSurface.opaque(0.5),
+                    : theme.colorScheme.onSurface.opaque(0.5), translate: false,
               ),
               const SizedBox(width: 8),
               AnimatedContainer(
@@ -396,7 +396,7 @@ class _CalendarState extends State<Calendar>
                   size: 11,
                   color: isSelected
                       ? theme.colorScheme.onPrimary
-                      : theme.colorScheme.onSurfaceVariant.opaque(0.8),
+                      : theme.colorScheme.onSurfaceVariant.opaque(0.8), translate: false,
                 ),
               ),
             ],
@@ -446,7 +446,7 @@ class _CalendarState extends State<Calendar>
 
       return AnymeXScaffold(
         showHeader: true,
-        headerTitle: 'Calendar',
+        headerTitle: 'Calendar'.tr,
         headerSubtitle: subtitleText,
         headerAction: _buildHeaderActions(context),
         headerBottom: _buildTabsRow(context),
@@ -490,7 +490,7 @@ class _CalendarState extends State<Calendar>
                   } else if (filteredList.isEmpty) {
                     return Padding(
                       padding: EdgeInsets.only(top: headerHeight),
-                      child: const Center(child: AnymeXText("No Anime found")),
+                      child: Center(child: AnymeXText("No Anime found")),
                     );
                   }
 
@@ -717,14 +717,14 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                            final airDate = DateTime.fromMillisecondsSinceEpoch(nextEp.airingAt * 1000);
                            return AnymeXText(_formatAirTime(airDate),
                               size: 10,
-                              color: context.colors.primary,
+                              color: context.colors.primary, translate: false,
                            );
                         }
                         
                         
                         return AnymeXText(_formatAirTime(widget.dubInfo!.airDateTime),
                           size: 10,
-                          color: context.colors.primary,
+                          color: context.colors.primary, translate: false,
                         );
                       }
                     ),
@@ -843,7 +843,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
             child: AnymeXText(widget.data.title,
               maxLines: 2,
               size: 14,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.center, translate: false,
             ),
           ),
           if (isAnilist && !widget.isDubMode &&
@@ -854,7 +854,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
                 maxLines: 1,
                 size: 12,
                 color: Colors.grey,
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.center, translate: false,
               ),
             ),
         ],
@@ -884,7 +884,7 @@ class _GridAnimeCardState extends State<GridAnimeCard> {
           AnymeXText(media.rating,
             color: context.colors.onPrimary,
             size: 12,
-            variant: TextVariant.bold,
+            variant: TextVariant.bold, translate: false,
           ),
         ],
       ),
@@ -1032,7 +1032,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                           size: 14,
                           maxLines: 2,
                           variant: TextVariant.bold,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis, translate: false,
                         ),
                       ],
                     ),
@@ -1054,7 +1054,7 @@ class _BlurAnimeCardState extends State<BlurAnimeCard> {
                   child: AnymeXText(formatTime(timeLeft.value),
                     size: 12,
                     color: context.colors.onPrimary,
-                    variant: TextVariant.bold,
+                    variant: TextVariant.bold, translate: false,
                   ),
                 );
               }),

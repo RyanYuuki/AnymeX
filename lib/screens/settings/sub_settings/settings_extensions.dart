@@ -43,10 +43,10 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
   bool _didApplyHighlightTab = false;
   final Map<String, bool> _deleting = {};
 
-  static const _typeTabs = [
-    (label: 'Anime', icon: Icons.movie_creation_outlined, type: ItemType.anime),
-    (label: 'Manga', icon: Icons.menu_book_outlined, type: ItemType.manga),
-    (label: 'Novel', icon: Icons.auto_stories_outlined, type: ItemType.novel),
+  static List<({String label, IconData icon, ItemType type})> get _typeTabs => [
+    (label: 'Anime'.tr, icon: Icons.movie_creation_outlined, type: ItemType.anime),
+    (label: 'Manga'.tr, icon: Icons.menu_book_outlined, type: ItemType.manga),
+    (label: 'Novel'.tr, icon: Icons.auto_stories_outlined, type: ItemType.novel),
   ];
 
   List<Map<String, dynamic>> get _displayManagers {
@@ -202,7 +202,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
       await em.removeRepo(repo, type);
       widget.onSave?.call();
     } catch (_) {
-      snackBar('Failed to remove repo');
+      snackBar('Failed to remove repo'.tr);
     } finally {
       if (mounted) setState(() => _deleting.remove(key));
     }
@@ -261,12 +261,12 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AnymeXHeader(
-              title: 'Extensions',
+              title: 'Extensions'.tr,
               action: IconButton(
                 onPressed: () =>
                     navigate(() => const SettingsExtensionManager()),
                 icon: const Icon(Icons.settings_rounded),
-                tooltip: 'Extension Manager',
+                tooltip: 'Extension Manager'.tr,
               ),
             ),
             const SizedBox(height: 10),
@@ -284,7 +284,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
 
   Widget _buildTypeBar() {
     final colors = context.colors;
-    const tabs = _typeTabs;
+    final tabs = _typeTabs;
     final total = tabs.length;
     final currentIndex = tabs.indexWhere((t) => t.type == _tab);
     final alignX = -1.0 + (2.0 * currentIndex / (total - 1));
@@ -377,7 +377,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                                           ? colors.onPrimary
                                           : colors.onSurfaceVariant,
                                       maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: TextOverflow.ellipsis, translate: false,
                                     ),
                                   ),
                                 ],
@@ -481,7 +481,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     name,
                     variant: TextVariant.bold,
                     size: 13.5,
-                    color: colors.onSurface,
+                    color: colors.onSurface, translate: false,
                   ),
                   const Spacer(),
                   if (!_isPluginInstalled)
@@ -543,7 +543,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     name,
                     variant: TextVariant.bold,
                     size: 13.5,
-                    color: colors.onSurface,
+                    color: colors.onSurface, translate: false,
                   ),
                   const Spacer(),
                   Container(
@@ -662,7 +662,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                 AnymeXRuntimeBridge.controller.error.value,
                 variant: TextVariant.regular,
                 size: 12,
-                color: colors.error,
+                color: colors.error, translate: false,
               ),
               const SizedBox(height: 12),
               FilledButton.icon(
@@ -832,7 +832,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                     style: TextStyle(
                       fontFamily: 'monospace',
                       color: colors.onSurface,
-                    ),
+                    ), translate: false,
                   ),
                   if (host != null) ...[
                     const SizedBox(height: 2),
@@ -842,7 +842,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
                       size: 10.5,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      color: colors.onSurfaceVariant,
+                      color: colors.onSurfaceVariant, translate: false,
                     ),
                   ],
                 ],
@@ -851,7 +851,7 @@ class _SettingsExtensionsState extends State<SettingsExtensions> {
             _iconBtn(Icons.copy_rounded, colors.onSurfaceVariant, 'Copy URL',
                 () {
               Clipboard.setData(ClipboardData(text: repo.url));
-              snackBar('URL copied to clipboard');
+              snackBar('URL copied to clipboard'.tr);
             }),
             const SizedBox(width: 2),
             if (isDeleting)
@@ -976,7 +976,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
     final label = widget.type.name.capitalizeFirst!;
 
     return AnymeXDialog(
-      title: 'Add Repository',
+      title: 'Add Repository'.tr,
       confirmText: _loading ? 'Adding...' : 'Add Repository',
       onConfirm: _loading ? () {} : _submit,
       isConfirmEnabled: !_loading,
@@ -1007,7 +1007,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
                       '${widget.manager.name} • $label',
                       variant: TextVariant.bold,
                       size: 13,
-                      color: c.onSurface,
+                      color: c.onSurface, translate: false,
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
@@ -1098,7 +1098,7 @@ class _AddRepoDialogState extends State<_AddRepoDialog> {
               _error!,
               variant: TextVariant.regular,
               size: 12,
-              color: c.error,
+              color: c.error, translate: false,
             ),
           ],
         ],

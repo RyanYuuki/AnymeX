@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/widgets/wrongtitle_modal.dart';
 import 'package:anymex/screens/extensions/ExtensionSettings/ExtensionSettings.dart';
@@ -103,7 +104,7 @@ class UnifiedSourceSection extends StatelessWidget {
               prefix,
               variant: TextVariant.semiBold,
               size: 12.5,
-              color: colors.primary,
+              color: colors.primary, translate: false,
             ),
             const SizedBox(width: 4),
           ],
@@ -114,7 +115,7 @@ class UnifiedSourceSection extends StatelessWidget {
               size: 12.5,
               color: isError ? colors.error : colors.primary,
               isMarquee: isTitleMarquee,
-              maxLines: 1,
+              maxLines: 1, translate: false,
             ),
           ),
           const SizedBox(width: 8),

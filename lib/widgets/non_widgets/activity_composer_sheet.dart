@@ -369,20 +369,20 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
 
   Widget _buildGifButton() {
     return IconButton(
-      tooltip: 'GIF',
+      tooltip: 'GIF'.tr,
       icon: Container(
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
         decoration: BoxDecoration(
           color: context.theme.colorScheme.primary.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(5),
         ),
-        child: Text(
+        child: AnymeXText(
           'GIF',
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w800,
             color: context.theme.colorScheme.primary,
-          ),
+          ), maxLines: null,
         ),
       ),
       onPressed: _openGifPicker,
@@ -403,7 +403,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
           content: TextField(
             autofocus: true,
             decoration: InputDecoration(
-              hintText: 'Paste URL here...',
+              hintText: 'Paste URL here...'.tr,
               filled: true,
               fillColor: context.theme.colorScheme.surface,
               border: OutlineInputBorder(
@@ -427,7 +427,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
                 foregroundColor: context.theme.colorScheme.onPrimary,
               ),
               onPressed: () => Navigator.pop(context, inputUrl),
-              child: const AnymeXText('Insert'),
+              child: AnymeXText('Insert'),
             ),
           ],
         );
@@ -683,7 +683,7 @@ class ActivityComposerSheetState extends State<ActivityComposerSheet> {
               Container(
                 margin: EdgeInsets.only(bottom: _isExpanded ? 16 : 2, right: 8),
                 child: IconButton(
-                  tooltip: 'Cancel',
+                  tooltip: 'Cancel'.tr,
                   icon: Icon(
                     Icons.close_rounded,
                     color: context.theme.colorScheme.onSurfaceVariant,

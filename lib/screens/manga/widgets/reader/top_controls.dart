@@ -321,7 +321,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                       fontFamily: 'Linotte',
                       fontWeight: FontWeight.w600,
                       color: colors.primary,
-                    ),
+                    ), translate: false,
                   ),
                 ),
                 const Spacer(),
@@ -374,7 +374,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                   color: colors.onSurface,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'Search chapters...',
+                  hintText: 'Search chapters...'.tr,
                   hintStyle: TextStyle(
                     fontSize: 13,
                     color: colors.onSurface.withOpacity(0.45),
@@ -541,7 +541,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     size: 13,
                     color: isCurrent ? colors.primary : colors.onSurface,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis, translate: false,
                   ),
                 ),
                 if (isCurrent) ...[
@@ -611,7 +611,7 @@ class _ChapterListSheetState extends State<ChapterListSheet> {
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.center, translate: false,
                   ),
                 ),
               ],

@@ -373,7 +373,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                 final label = {
                   _MangaSortMode.lastUpdated: 'Last Updated',
                   _MangaSortMode.score: 'Score',
-                  _MangaSortMode.title: 'Title',
+                  _MangaSortMode.title: 'Title'.tr,
                   _MangaSortMode.releaseDate: 'Release Date',
                 }[mode]!;
                 final icon = {
@@ -391,7 +391,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
                         color: selected ? colors.primary : colors.onSurface,
-                      )),
+                      ), translate: false),
                   trailing: selected
                       ? Icon(Icons.check_rounded,
                           color: colors.primary, size: 20)
@@ -442,7 +442,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                     TextButton(
                       onPressed: () =>
                           setSheetState(() => tempSelected.clear()),
-                      child: const AnymeXText('Clear',
+                      child: AnymeXText('Clear',
                           style: TextStyle(fontSize: 12)),
                     ),
                 ],
@@ -464,7 +464,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                             color: isSelected
                                 ? colors.onPrimaryContainer
                                 : colors.onSurfaceVariant,
-                          )),
+                          ), translate: false),
                       selected: isSelected,
                       onSelected: (val) {
                         setSheetState(() {
@@ -602,7 +602,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                   size: 13,
                   color: isSelected
                       ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface,
+                      : theme.colorScheme.onSurface, translate: false,
                 ),
                 const SizedBox(width: 8),
                 AnimatedContainer(
@@ -622,7 +622,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
                     size: 11,
                     color: isSelected
                         ? theme.colorScheme.onPrimary
-                        : theme.colorScheme.onSurfaceVariant.opaque(0.8),
+                        : theme.colorScheme.onSurfaceVariant.opaque(0.8), translate: false,
                   ),
                 ),
               ],
@@ -710,7 +710,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               Icon(Iconsax.shuffle,
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
-              const AnymeXText('Random'),
+              AnymeXText('Random'),
             ],
           ),
         ),
@@ -734,7 +734,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
               Icon(Icons.sort_rounded,
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
-              const AnymeXText('Sort'),
+              AnymeXText('Sort'),
             ],
           ),
         ),
@@ -778,7 +778,7 @@ class _AnilistMangaListState extends State<AnilistMangaList>
           : '${activeMediaList.length} Manga',
       headerEnableSearch: true,
       headerSearchController: _searchController,
-      headerSearchHint: 'Search manga...',
+      headerSearchHint: 'Search manga...'.tr,
       onHeaderSearchChanged: (val) {
         setState(() => _searchQuery = val.trim().toLowerCase());
       },

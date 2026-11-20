@@ -120,7 +120,7 @@ class _ActivityCardState extends State<ActivityCard> {
     final anilistAuth = Get.find<AnilistAuth>();
     if (!anilistAuth.isLoggedIn.value) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: AnymeXText('Please login first'),
           duration: Duration(milliseconds: 1500),
         ),
@@ -192,7 +192,7 @@ class _ActivityCardState extends State<ActivityCard> {
                     if (error != null && mounted) {
                       setState(() => activity.isPinned = !activity.isPinned);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: AnymeXText(error)),
+                        SnackBar(content: AnymeXText(error, translate: false)),
                       );
                     }
                   },
@@ -221,7 +221,7 @@ class _ActivityCardState extends State<ActivityCard> {
               ),
               ListTile(
                 leading: const Icon(Icons.open_in_browser),
-                title: const AnymeXText("Open in Browser"),
+                title: AnymeXText("Open in Browser"),
                 onTap: () {
                   Navigator.pop(sheetContext);
                   launchUrlString('https://anilist.co/activity/${activity.id}');
@@ -231,7 +231,7 @@ class _ActivityCardState extends State<ActivityCard> {
                   (activity.type == 'TEXT' || activity.type == 'MESSAGE'))
                 ListTile(
                   leading: const Icon(Icons.edit_outlined),
-                  title: const AnymeXText("Edit Activity"),
+                  title: AnymeXText("Edit Activity"),
                   onTap: () {
                     Navigator.pop(sheetContext);
                     _showEditSheet();
@@ -240,7 +240,7 @@ class _ActivityCardState extends State<ActivityCard> {
               if (isOwner)
                 ListTile(
                   leading: const Icon(Icons.delete_outline, color: Colors.red),
-                  title: const AnymeXText("Delete Activity",
+                  title: AnymeXText("Delete Activity",
                       style: TextStyle(color: Colors.red)),
                   onTap: () async {
                     Navigator.pop(sheetContext);
@@ -323,7 +323,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             fontSize: 14,
                             color: dragContext
                                 .theme.colorScheme.onSurfaceVariant,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ),
@@ -430,7 +430,7 @@ class _ActivityCardState extends State<ActivityCard> {
                             fontFamily: 'Linotte',
                             fontWeight: FontWeight.w600,
                             color: context.theme.colorScheme.onSurface,
-                          ),
+                          ), translate: false,
                         ),
                       ),
                     ],
@@ -498,7 +498,7 @@ class _ActivityCardState extends State<ActivityCard> {
                 child: ActivityComposerSheet(
                   initialText: activity.text,
                   isModal: true,
-                  hintText: "Update your activity...",
+                  hintText: "Update your activity...".tr,
                   onSubmit: (text, {isPrivate = false}) async {
                     final success = await Get.find<AnilistAuth>()
                         .editActivity(activity.id, text.trim());
@@ -698,7 +698,7 @@ class _ActivityCardState extends State<ActivityCard> {
                               style: TextStyle(
                                 fontSize: 11,
                                 color: subtleText,
-                              ),
+                              ), translate: false,
                             ),
                           ],
                         ),
@@ -808,7 +808,7 @@ class _ActivityCardState extends State<ActivityCard> {
                                         color: context
                                             .theme.colorScheme.onSurface
                                             .withOpacity(0.9),
-                                      ),
+                                      ), translate: false,
                                     ),
                                   ],
                                   const SizedBox(height: 6),
@@ -919,7 +919,7 @@ class _ActivityCardState extends State<ActivityCard> {
           style: TextStyle(
             fontSize: 14,
             color: context.theme.colorScheme.onSurface,
-          ),
+          ), translate: false,
         );
       }
     }
@@ -1037,7 +1037,7 @@ class _ActivityActionChip extends StatelessWidget {
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: foreground,
-                    ),
+                    ), translate: false,
                   ),
                 ],
               ),
@@ -1157,7 +1157,7 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: context.theme.colorScheme.onSurface,
-                        ),
+                        ), translate: false,
                       ),
                       if (format.isNotEmpty) ...[
                         const SizedBox(height: 4),
@@ -1168,7 +1168,7 @@ class _ActivityAnilistCardState extends State<_ActivityAnilistCard> {
                           style: TextStyle(
                             fontSize: 11,
                             color: context.theme.colorScheme.onSurfaceVariant,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ],

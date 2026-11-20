@@ -183,9 +183,9 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
     final colorScheme = context.colors;
 
     AnymeXDialog(
-      title: 'Unlock Customizations',
+      title: 'Unlock Customizations'.tr,
       showCancelButton: true,
-      cancelText: 'Cancel',
+      cancelText: 'Cancel'.tr,
       confirmText: canAfford ? 'Unlock & Equip' : 'Not Enough Points',
       isConfirmEnabled: canAfford,
       contentWidget: Column(
@@ -330,7 +330,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
       setState(() => _isSaving = false);
       if (success) {
         Get.snackbar(
-          'Profile Updated',
+          'Profile Updated'.tr,
           'Your customizations have been saved and applied!',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: context.colors.surfaceContainerHighest,
@@ -338,7 +338,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
         );
       } else {
         Get.snackbar(
-          'Error',
+          'Error'.tr,
           'Failed to update customizations. Please try again.',
           snackPosition: SnackPosition.BOTTOM,
         );
@@ -597,7 +597,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
             size: 15,
             color: Colors.white,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+            overflow: TextOverflow.ellipsis, translate: false,
           ),
         ),
       );
@@ -611,7 +611,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
         shadows: [Shadow(color: Colors.black87, blurRadius: 4)],
       ),
       maxLines: 1,
-      overflow: TextOverflow.ellipsis,
+      overflow: TextOverflow.ellipsis, translate: false,
     );
   }
 
@@ -708,7 +708,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                               ? colorScheme.primary
                               : colorScheme.onSurface,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis, translate: false,
                         ),
                       ),
                       if (!unlocked)
@@ -724,7 +724,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                             '★ ${item.pointsRequired}',
                             size: 9,
                             variant: TextVariant.bold,
-                            color: colorScheme.primary,
+                            color: colorScheme.primary, translate: false,
                           ),
                         ),
                     ],
@@ -831,14 +831,14 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                                   ? colorScheme.primary
                                   : colorScheme.onSurface,
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              overflow: TextOverflow.ellipsis, translate: false,
                             ),
                             AnymeXText(
                               item.category,
                               size: 9.5,
                               color: colorScheme.onSurfaceVariant,
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              overflow: TextOverflow.ellipsis, translate: false,
                             ),
                           ],
                         ),
@@ -855,7 +855,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                             '★ ${item.pointsRequired}',
                             size: 9,
                             variant: TextVariant.bold,
-                            color: colorScheme.primary,
+                            color: colorScheme.primary, translate: false,
                           ),
                         ),
                     ],
@@ -887,7 +887,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                 child: TextField(
                   controller: _customBannerController,
                   decoration: InputDecoration(
-                    hintText: 'Paste custom image URL...',
+                    hintText: 'Paste custom image URL...'.tr,
                     hintStyle: TextStyle(
                       color: colorScheme.onSurfaceVariant.withOpacity(0.6),
                       fontSize: 12,
@@ -925,7 +925,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text('Apply', style: TextStyle(fontSize: 12)),
+                child: AnymeXText('Apply', style: TextStyle(fontSize: 12), maxLines: null),
               ),
               if (_previewBannerUrl != null) ...[
                 const SizedBox(width: 4),
@@ -937,7 +937,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                     });
                   },
                   icon: Icon(Icons.clear, color: colorScheme.error, size: 20),
-                  tooltip: 'Remove Banner',
+                  tooltip: 'Remove Banner'.tr,
                 ),
               ],
             ],
@@ -956,7 +956,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
               final cat = categories[index];
               final isSelected = _selectedBannerCategory == cat;
               return ChoiceChip(
-                label: Text(cat, style: const TextStyle(fontSize: 11)),
+                label: AnymeXText(cat, style: const TextStyle(fontSize: 11), maxLines: null, translate: false),
                 selected: isSelected,
                 onSelected: (_) {
                   setState(() => _selectedBannerCategory = cat);
@@ -1048,7 +1048,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                               overflow: TextOverflow.ellipsis,
                               size: 9.5,
                               color: Colors.white,
-                              variant: TextVariant.semiBold,
+                              variant: TextVariant.semiBold, translate: false,
                             ),
                           ),
                         ),
@@ -1172,7 +1172,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                               ? colorScheme.primary
                               : colorScheme.onSurface,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis, translate: false,
                         ),
                       ),
                       if (!unlocked)
@@ -1188,7 +1188,7 @@ class _DecorationClosetSheetState extends State<DecorationClosetSheet>
                             '★ ${item.pointsRequired}',
                             size: 9,
                             variant: TextVariant.bold,
-                            color: colorScheme.primary,
+                            color: colorScheme.primary, translate: false,
                           ),
                         ),
                     ],

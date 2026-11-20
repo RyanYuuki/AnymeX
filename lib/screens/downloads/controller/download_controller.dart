@@ -1169,7 +1169,7 @@ class DownloadController extends GetxController {
     _sendToBackground({
       'type': 'UPDATE_NOTIFICATION',
       'title': title,
-      'text': text.isNotEmpty ? text : 'Downloading…'
+      'text': text.isNotEmpty ? text : 'Downloading…'.tr
     });
   }
 

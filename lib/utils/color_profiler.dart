@@ -682,7 +682,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                   style: TextStyle(
                     fontSize: 12,
                     color: colors.primary,
-                  ),
+                  ), translate: false,
                 ),
               ],
             ),
@@ -1023,7 +1023,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
               style: TextStyle(
                 fontSize: 13,
                 color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
-              ),
+              ), translate: false,
             ),
           ],
         ),
@@ -1234,7 +1234,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
               style: TextStyle(
                 fontSize: 12,
                 color: isSelected ? colors.onPrimary : colors.onSurfaceVariant,
-              ),
+              ), translate: false,
             ),
           ],
         ),
@@ -1378,14 +1378,14 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                         style: TextStyle(
                           fontSize: 13,
                           color: colors.onSurface,
-                        ),
+                        ), translate: false,
                       ),
                       AnymeXText.semiBold(
                         '${_downloadProgress.toInt()}%',
                         style: TextStyle(
                           fontSize: 13,
                           color: colors.primary,
-                        ),
+                        ), translate: false,
                       ),
                     ],
                   ),
@@ -1578,7 +1578,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                             color: isSelected
                                 ? colors.onPrimaryContainer
                                 : colors.onSurface,
-                          ),
+                          ), translate: false,
                         ),
                         const SizedBox(height: 2),
                         AnymeXText(
@@ -1589,7 +1589,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                                 ? colors.onPrimaryContainer
                                     .withValues(alpha: 0.8)
                                 : colors.onSurfaceVariant,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ),
@@ -1887,7 +1887,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                                   color: isSelected
                                       ? colors.onPrimaryContainer
                                       : colors.onSurface,
-                                ),
+                                ), translate: false,
                               ),
                             ),
                             if (isSelected) ...[
@@ -1943,7 +1943,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                         style: TextStyle(
                           fontSize: 14,
                           color: colors.onSurface,
-                        ),
+                        ), translate: false,
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -1959,7 +1959,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                           style: TextStyle(
                             fontSize: 12,
                             color: colors.onPrimary,
-                          ),
+                          ), translate: false,
                         ),
                       ),
                     ],
@@ -2101,7 +2101,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                           style: TextStyle(
                             fontSize: 13,
                             color: colors.primary,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ),
@@ -2155,7 +2155,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                           style: TextStyle(
                             fontSize: 13,
                             color: colors.primary,
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ),
@@ -2460,7 +2460,7 @@ class _ColorProfilerContentState extends State<_ColorProfilerContent> {
                         style: TextStyle(
                           color: colors.primary,
                           fontSize: 12,
-                        ),
+                        ), translate: false,
                       ),
                     ],
                   ),

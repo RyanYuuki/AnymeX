@@ -67,7 +67,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     final release = await _pluginManager.fetchLatestRelease();
     if (!mounted) return;
     if (release == null) {
-      errorSnackBar('Failed to check for updates.');
+      errorSnackBar('Failed to check for updates.'.tr);
       return;
     }
     final currentVersion = _installedVersion;
@@ -92,7 +92,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
         }
       }
     } else {
-      successSnackBar('Plugin is already up to date.');
+      successSnackBar('Plugin is already up to date.'.tr);
     }
   }
 
@@ -102,7 +102,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       final release = await _pluginManager.fetchLatestRelease();
       if (!mounted) return;
       if (release == null) {
-        errorSnackBar('Failed to check for updates.');
+        errorSnackBar('Failed to check for updates.'.tr);
         return;
       }
       final currentVersion = _installedVersion;
@@ -113,7 +113,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       if (_pluginManager.isNewerVersion(currentVersion, release.tagName)) {
         _showUpdatePopup();
       } else {
-        successSnackBar('Plugin is already up to date.');
+        successSnackBar('Plugin is already up to date.'.tr);
       }
     } finally {
       if (mounted) setState(() => _isCheckingUpdate = false);
@@ -169,12 +169,12 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
             .onRuntimeBridgeInitialization(force: true);
         if (mounted) {
           successSnackBar(
-              'Plugin re-downloaded successfully. Please restart to apply.');
+              'Plugin re-downloaded successfully. Please restart to apply.'.tr);
         }
       } else {
         if (mounted) {
           snackBar(
-              'Plugin re-downloaded. Please restart the app to apply.');
+              'Plugin re-downloaded. Please restart the app to apply.'.tr);
         }
       }
     } catch (error) {
@@ -187,13 +187,13 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     final releases = await _pluginManager.fetchReleases();
     setState(() => _isCheckingUpdate = false);
     if (releases.isEmpty) {
-      errorSnackBar('No releases found.');
+      errorSnackBar('No releases found.'.tr);
       return;
     }
     if (!mounted) return;
     final theme = Theme.of(context);
     AnymeXSheet(
-      title: 'Select Version to Rollback',
+      title: 'Select Version to Rollback'.tr,
       showDragHandle: true,
       contentWidget: Container(
         constraints: BoxConstraints(
@@ -273,7 +273,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                     ? FontWeight.bold
                                     : FontWeight.normal,
                                 color: theme.colorScheme.onSurface,
-                              ),
+                              ), translate: false,
                             ),
                             const SizedBox(height: 2),
                             AnymeXText(
@@ -283,7 +283,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                                 fontSize: 12,
                                 color: theme.colorScheme.onSurface
                                     .withOpacity(0.6),
-                              ),
+                              ), translate: false,
                             ),
                           ],
                         ),
@@ -338,7 +338,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (_) {
-      snackBar('Could not open releases page');
+      snackBar('Could not open releases page'.tr);
     }
   }
 
@@ -349,7 +349,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
  
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Extension Manager',
+      headerTitle: 'Extension Manager'.tr,
       body: Builder(
           builder: (ctx) => SingleChildScrollView(
                 padding: EdgeInsets.fromLTRB(
@@ -368,7 +368,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           _isPluginInstalled ||
                           _installedVersion.isNotEmpty;
                       return AnymeXSectionBuilder(
-                        title: 'Plugin Installation & Sync',
+                        title: 'Plugin Installation & Sync'.tr,
                         children: [
                           AnymeXTile(
                             icon: Icons.cloud_download_rounded,
@@ -418,23 +418,23 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           if (hasInstalled || bridge.error.value.isNotEmpty)
                             AnymeXTile(
                               icon: Icons.refresh_rounded,
-                              title: 'Force Re-download',
+                              title: 'Force Re-download'.tr,
                               subtitle:
-                                  'Re-download and reinstall the plugin from scratch',
+                                  'Re-download and reinstall the plugin from scratch'.tr,
                               onTap: _forceReDownload,
                             ),
                           AnymeXTile(
                             icon: Icons.history_rounded,
-                            title: 'Rollback Version',
+                            title: 'Rollback Version'.tr,
                             subtitle:
-                                'Downgrade or switch to a specific plugin version',
+                                'Downgrade or switch to a specific plugin version'.tr,
                             onTap: _showRollbackDialog,
                           ),
                           AnymeXTile(
                             icon: Icons.open_in_new_rounded,
-                            title: 'Runtime Host Releases',
+                            title: 'Runtime Host Releases'.tr,
                             subtitle:
-                                'Visit GitHub releases page for changelogs and manual downloads',
+                                'Visit GitHub releases page for changelogs and manual downloads'.tr,
                             onTap: _openReleasesPage,
                           ),
                         ],
@@ -558,7 +558,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: colors.onSurface,
-                        ),
+                        ), translate: false,
                       ),
                       const SizedBox(height: 3),
                       AnymeXText(
@@ -566,7 +566,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         style: TextStyle(
                           fontSize: 13,
                           color: hasError ? colors.error : colors.onSurfaceVariant,
-                        ),
+                        ), translate: false,
                       ),
                     ],
                   ),
@@ -598,7 +598,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: colors.primary,
-                      ),
+                      ), translate: false,
                     ),
                   ],
                 ],
@@ -618,7 +618,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
                   style: TextStyle(
                     fontSize: 12,
                     color: colors.error,
-                  ),
+                  ), translate: false,
                 ),
               ),
             ],
@@ -682,7 +682,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
           style: TextStyle(
             fontSize: 13,
             color: colors.onSurfaceVariant,
-          ),
+          ), translate: false,
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -697,7 +697,7 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
               fontWeight: FontWeight.w600,
               color: colors.onSurface,
               fontFamily: 'monospace',
-            ),
+            ), translate: false,
           ),
         ),
       ],
@@ -775,25 +775,25 @@ class _SettingsExtensionManagerState extends State<SettingsExtensionManager> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: AnymeXText(title),
+          title: AnymeXText(title, translate: false),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               border: OutlineInputBorder(),
-              labelText: 'Enter value',
+              labelText: 'Enter value'.tr,
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const AnymeXText('Cancel'),
+              child: AnymeXText('Cancel'),
             ),
             TextButton(
               onPressed: () {
                 onSave(controller.text);
                 Navigator.of(context).pop();
               },
-              child: const AnymeXText('Save'),
+              child: AnymeXText('Save'),
             ),
           ],
         );

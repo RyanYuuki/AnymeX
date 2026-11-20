@@ -929,7 +929,7 @@ class MediaDetailsController extends GetxController {
     try {
       await _fetchFullDetails();
     } catch (e) {
-      errorSnackBar('Sync failed');
+      errorSnackBar('Sync failed'.tr);
     } finally {
       isSyncing.value = false;
     }
@@ -967,9 +967,9 @@ class MediaDetailsController extends GetxController {
       mediaProgress.value = progress;
       mediaScore.value = score;
       isListedMedia.value = true;
-      snackBar('List entry updated successfully!');
+      snackBar('List entry updated successfully!'.tr);
     } catch (e) {
-      errorSnackBar('Failed to update list entry');
+      errorSnackBar('Failed to update list entry'.tr);
     }
   }
 
@@ -990,7 +990,7 @@ class MediaDetailsController extends GetxController {
       isListedMedia.value = false;
       trackedMedia.value = null;
     } catch (e) {
-      errorSnackBar('Failed to delete list entry');
+      errorSnackBar('Failed to delete list entry'.tr);
     }
   }
 

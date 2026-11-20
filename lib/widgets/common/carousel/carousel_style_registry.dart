@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/common/carousel/themes/big_carousel_classic.dart';
 import 'package:anymex/widgets/common/carousel/themes/big_carousel_portrait.dart';
@@ -25,17 +26,17 @@ class CarouselStyleDefinition {
 }
 
 class CarouselStyleRegistry {
-  static const List<CarouselStyleDefinition> styles = [
+  static List<CarouselStyleDefinition> styles = [
     CarouselStyleDefinition(
       id: 'classic',
       name: 'Classic',
-      description: 'Full-width hero banner with compact details and quick synopsis.',
+      description: 'Full-width hero banner with compact details and quick synopsis.'.tr,
       builder: _buildClassic,
     ),
     CarouselStyleDefinition(
       id: 'portrait',
       name: 'Portrait',
-      description: 'Classic carousel card layout featuring vertical poster cards.',
+      description: 'Classic carousel card layout featuring vertical poster cards.'.tr,
       builder: _buildPortrait,
     ),
   ];

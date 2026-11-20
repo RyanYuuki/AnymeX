@@ -813,7 +813,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 child: AnymeXPills(
                   items: [
                     PillItem(
-                      label: 'All Sources',
+                      label: 'All Sources'.tr,
                       isSelected: _selectedSource == null,
                       onTap: () {
                         setState(() => _selectedSource = null);
@@ -862,7 +862,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 serviceHandler.serviceType.value == ServicesType.mal) ...[
               if (!General.hideAdultContent.get(true)) ...[
                 _buildToggleButton(
-                  label: 'Adult',
+                  label: 'Adult'.tr,
                   isActive: isAdult,
                   onTap: () {
                     setState(() {
@@ -878,7 +878,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                   serviceHandler.serviceType.value == ServicesType.anilist) ...[
                 _buildActionButton(
                   icon: Iconsax.eye,
-                  label: 'Image',
+                  label: 'Image'.tr,
                   isActive: false,
                   onTap: () => navigate(() => const SauceFinderView()),
                 ),
@@ -902,7 +902,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
     final pills = <PillItem>[
       if (widget.source == null)
         PillItem(
-          label: '← All',
+          label: '← All'.tr,
           isSelected: false,
           onTap: () {
             setState(() {
@@ -918,7 +918,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ),
       if (hasPopular)
         PillItem(
-          label: 'Popular',
+          label: 'Popular'.tr,
           isSelected: _extensionBrowseMode == _ExtensionBrowseMode.popular,
           onTap: () {
             _searchController.clear();
@@ -931,7 +931,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ),
       if (hasLatest)
         PillItem(
-          label: 'Latest',
+          label: 'Latest'.tr,
           isSelected: _extensionBrowseMode == _ExtensionBrowseMode.latest,
           onTap: () {
             _searchController.clear();
@@ -944,7 +944,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
         ),
       if (hasFilters)
         PillItem(
-          label: 'Filter',
+          label: 'Filter'.tr,
           icon: Icons.tune_rounded,
           isSelected: hasActiveFilters,
           onTap: _showExtensionFilterSheet,
@@ -961,7 +961,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                 if (src.baseUrl != null && src.baseUrl!.isNotEmpty) {
                   navigate(() => CloudflareBypassWebView(url: src.baseUrl!));
                 } else {
-                  snackBar('Base URL not available for this source');
+                  snackBar('Base URL not available for this source'.tr);
                 }
               }
             }),
@@ -1002,7 +1002,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                         ? context.colors.primary
                         : context.colors.onSurface,
                     fontWeight: FontWeight.w600,
-                  ),
+                  ), translate: false,
             ),
             const SizedBox(width: 8),
             AnimatedContainer(
@@ -1075,7 +1075,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                         ? context.colors.primary
                         : context.colors.onSurface,
                     fontWeight: FontWeight.w600,
-                  ),
+                  ), translate: false,
             ),
           ],
         ),
@@ -1247,7 +1247,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: context.colors.primary,
                     fontWeight: FontWeight.w600,
-                  ),
+                  ), translate: false,
             ),
             const SizedBox(width: 4),
             Icon(
@@ -1558,7 +1558,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
                       maxLines: 2,
                       size: 16,
                       variant: TextVariant.semiBold,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                     if (media.rating != "??") ...[
                       const SizedBox(height: 8),
@@ -1603,7 +1603,7 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: context.colors.primary,
                   fontWeight: FontWeight.w600,
-                ),
+                ), translate: false,
           ),
         ],
       ),
@@ -1741,13 +1741,13 @@ class _MoreOptionsPillContent extends StatelessWidget {
           items: [
             AnymeXMenuItem<String>(
               value: 'settings',
-              title: 'Extension Settings',
+              title: 'Extension Settings'.tr,
               leadingIcon: Icons.settings_outlined,
               onTap: () => onTap('settings'),
             ),
             AnymeXMenuItem<String>(
               value: 'webview',
-              title: 'Open Webview',
+              title: 'Open Webview'.tr,
               leadingIcon: Icons.public_rounded,
               onTap: () => onTap('webview'),
             ),

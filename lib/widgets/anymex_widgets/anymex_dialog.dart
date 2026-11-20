@@ -152,7 +152,7 @@ class AnymeXDialog extends StatelessWidget {
                                   size: 20,
                                   variant: TextVariant.semiBold,
                                   color: context.colors.onSurface,
-                                  textAlign: TextAlign.center,
+                                  textAlign: TextAlign.center, translate: false,
                                 ),
                                 const SizedBox(height: 12),
                               ],
@@ -170,7 +170,7 @@ class AnymeXDialog extends StatelessWidget {
                                             color: context
                                                 .colors.onSurfaceVariant,
                                             textAlign: TextAlign.center,
-                                            maxLines: 100,
+                                            maxLines: 100, translate: false,
                                           ),
                                         )
                                       : (contentWidget ??
@@ -214,7 +214,7 @@ class AnymeXDialog extends StatelessWidget {
                                             cancelText,
                                             size: 14,
                                             color: context.colors.onSurface,
-                                            variant: TextVariant.bold,
+                                            variant: TextVariant.bold, translate: false,
                                           ),
                                         ),
                                       ),
@@ -273,7 +273,7 @@ class AnymeXDialog extends StatelessWidget {
                                               ? context.colors.onPrimary
                                               : context.colors.onSurface
                                                   .withOpacity(0.4),
-                                          variant: TextVariant.bold,
+                                          variant: TextVariant.bold, translate: false,
                                         ),
                                       ),
                                     ),

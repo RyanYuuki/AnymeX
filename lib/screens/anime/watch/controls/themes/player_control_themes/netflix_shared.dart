@@ -134,7 +134,7 @@ class NFLabeledButton extends StatelessWidget {
               color: color,
               fontSize: 14,
               fontWeight: FontWeight.w500,
-            ),
+            ), translate: false,
           ),
         ],
       ),
@@ -303,7 +303,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.high_quality_rounded,
-              label: 'Quality',
+              label: 'Quality'.tr,
               onTap: () {
                 Get.back();
                 PlayerBottomSheets.showVideoQuality(ctx, controller);
@@ -311,7 +311,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.speed_rounded,
-              label: 'Playback speed',
+              label: 'Playback speed'.tr,
               onTap: () {
                 Get.back();
                 controller.isSpeedPaneOpened.value = true;
@@ -319,7 +319,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.music_note_rounded,
-              label: 'Audio track',
+              label: 'Audio track'.tr,
               onTap: () {
                 Get.back();
                 PlayerBottomSheets.showAudioTracks(ctx, controller);
@@ -327,7 +327,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.tune_rounded,
-              label: 'Picture & shaders',
+              label: 'Picture & shaders'.tr,
               onTap: () {
                 Get.back();
                 controller.openColorProfileBottomSheet(ctx);
@@ -335,7 +335,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.cast_rounded,
-              label: 'Cast to device',
+              label: 'Cast to device'.tr,
               onTap: () {
                 Get.back();
                 CastDeviceDialog.show(ctx, controller);
@@ -344,7 +344,7 @@ class NFMoreSheet extends StatelessWidget {
             if (!controller.isOffline.value)
               NFSheetTile(
                 icon: Icons.cloud_rounded,
-                label: 'Server',
+                label: 'Server'.tr,
                 onTap: () {
                   Get.back();
                   PlayerBottomSheets.showVideoServers(ctx, controller);
@@ -352,7 +352,7 @@ class NFMoreSheet extends StatelessWidget {
               ),
             NFSheetTile(
               icon: Icons.settings_outlined,
-              label: 'Player settings',
+              label: 'Player settings'.tr,
               onTap: () {
                 Get.back();
                 controller.isSettingsPaneOpened.value =
@@ -361,7 +361,7 @@ class NFMoreSheet extends StatelessWidget {
             ),
             NFSheetTile(
               icon: Icons.lock_outline_rounded,
-              label: 'Lock screen',
+              label: 'Lock screen'.tr,
               onTap: () {
                 Get.back();
                 controller.isLocked.value = true;
@@ -409,7 +409,7 @@ class NFSheetTile extends StatelessWidget {
           color: NFColors.white,
           fontSize: 16,
           fontWeight: FontWeight.w500,
-        ),
+        ), translate: false,
       ),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),

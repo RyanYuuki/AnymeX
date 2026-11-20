@@ -57,11 +57,11 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
   late final TabController _tabController;
   int _selectedIndex = 0;
 
-  static const _tabs = [
-    Tab(text: 'Reading Mode'),
-    Tab(text: 'General'),
-    Tab(text: 'Color Filter'),
-    Tab(text: 'Upscale'),
+  static final _tabs = [
+    Tab(text: 'Reading Mode'.tr),
+    Tab(text: 'General'.tr),
+    Tab(text: 'Color Filter'.tr),
+    Tab(text: 'Upscale'.tr),
   ];
 
   void _onTabChanged() {
@@ -115,10 +115,10 @@ class _TabbedSettingsSheetState extends State<_TabbedSettingsSheet>
                 const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
             child: AnymeXTabBar(
               minTabWidth: 105,
-              selectTabs: const [
-                'Reading Mode',
-                'General',
-                'Color Filter',
+              selectTabs: [
+                'Reading Mode'.tr,
+                'General'.tr,
+                'Color Filter'.tr,
                 'Upscale'
               ],
               selectedIndex: _selectedIndex,
@@ -185,7 +185,7 @@ class _ReadingModePage extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 12),
               children: [
                 AnymeXTile(
-                  title: 'Layout',
+                  title: 'Layout'.tr,
                   subtitle: switch (currentLayout) {
                     MangaPageViewMode.continuous => 'Continuous',
                     MangaPageViewMode.paged => 'Paged',
@@ -415,7 +415,7 @@ class _GeneralPage extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 12),
               children: [
                 AnymeXTile(
-                  title: 'Control Theme',
+                  title: 'Control Theme'.tr,
                   subtitle: ReaderControlThemeRegistry.resolve(
                           settings.readerControlThemeRx.value)
                       .name,
@@ -423,7 +423,7 @@ class _GeneralPage extends StatelessWidget {
                   onTap: () => _showThemeDialog(context, settings),
                 ),
                 AnymeXTile(
-                  title: 'Background',
+                  title: 'Background'.tr,
                   subtitle: switch (controller.readerTheme.value) {
                     0 => 'White',
                     1 => 'Black',
@@ -598,9 +598,9 @@ class _GeneralPage extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 20),
               children: [
                 AnymeXTile.slider(
-                  title: 'Preload Pages',
+                  title: 'Preload Pages'.tr,
                   icon: Icons.image_aspect_ratio_rounded,
-                  subtitle: 'Pages ahead of time for faster loading',
+                  subtitle: 'Pages ahead of time for faster loading'.tr,
                   value: controller.preloadPages.value.toDouble(),
                   min: 1,
                   max: 15,
@@ -609,9 +609,9 @@ class _GeneralPage extends StatelessWidget {
                 ),
                 if (!Platform.isAndroid && !Platform.isIOS) ...[
                   AnymeXTile.slider(
-                    title: 'Image Width',
+                    title: 'Image Width'.tr,
                     icon: Icons.image_aspect_ratio_rounded,
-                    subtitle: 'Continuous Mode only',
+                    subtitle: 'Continuous Mode only'.tr,
                     value: controller.pageWidthMultiplier.value,
                     min: 1.0,
                     max: 2.5,
@@ -619,9 +619,9 @@ class _GeneralPage extends StatelessWidget {
                     onChanged: (v) => controller.pageWidthMultiplier.value = v,
                   ),
                   AnymeXTile.slider(
-                    title: 'Scroll Multiplier',
+                    title: 'Scroll Multiplier'.tr,
                     icon: Icons.speed,
-                    subtitle: 'Key & Volume Scrolling Speed',
+                    subtitle: 'Key & Volume Scrolling Speed'.tr,
                     value: controller.scrollSpeedMultiplier.value,
                     min: 1.0,
                     max: 5.0,
@@ -642,12 +642,12 @@ class _GeneralPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const AnymeXText('Control Theme'),
+        title: AnymeXText('Control Theme'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ReaderControlThemeRegistry.themes
               .map((t) => RadioListTile<String>(
-                    title: AnymeXText(t.name),
+                    title: AnymeXText(t.name, translate: false),
                     value: t.id,
                     groupValue: settings.readerControlThemeRx.value,
                     onChanged: (id) {

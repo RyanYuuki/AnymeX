@@ -205,7 +205,7 @@ class NovelBottomControls extends StatelessWidget {
                             Theme.of(context).colorScheme.onSurface.opaque(0.6),
                         fontSize: isDesktop ? 13 : 11,
                         fontWeight: FontWeight.w500,
-                      ),
+                      ), translate: false,
                     ),
                 ],
               ),
@@ -286,7 +286,7 @@ class NovelBottomControls extends StatelessWidget {
                             Theme.of(context).colorScheme.onSurface.opaque(0.6),
                         fontSize: isDesktop ? 13 : 11,
                         fontWeight: FontWeight.w500,
-                      ),
+                      ), translate: false,
                     ),
                 ],
               ),
@@ -331,7 +331,7 @@ class NovelBottomControls extends StatelessWidget {
                 }
               : null,
           icon: Icons.skip_previous_rounded,
-          tooltip: 'Previous Chapter',
+          tooltip: 'Previous Chapter'.tr,
           isEnabled: controller.canGoPrevious.value,
         ));
   }
@@ -357,7 +357,7 @@ class NovelBottomControls extends StatelessWidget {
                   controller.decreaseFontSize();
                 },
                 icon: Icons.text_decrease_rounded,
-                tooltip: 'Decrease Font Size',
+                tooltip: 'Decrease Font Size'.tr,
               ),
               SizedBox(width: isDesktop ? 16 : 12),
               Container(
@@ -375,7 +375,7 @@ class NovelBottomControls extends StatelessWidget {
                     color: context.colors.onPrimary,
                     fontSize: isDesktop ? 16 : 14,
                     fontWeight: FontWeight.w700,
-                  ),
+                  ), translate: false,
                 ),
               ),
               SizedBox(width: isDesktop ? 16 : 12),
@@ -387,7 +387,7 @@ class NovelBottomControls extends StatelessWidget {
                   controller.increaseFontSize();
                 },
                 icon: Icons.text_increase_rounded,
-                tooltip: 'Increase Font Size',
+                tooltip: 'Increase Font Size'.tr,
               ),
             ],
           ),
@@ -405,7 +405,7 @@ class NovelBottomControls extends StatelessWidget {
                 }
               : null,
           icon: Icons.skip_next_rounded,
-          tooltip: 'Next Chapter',
+          tooltip: 'Next Chapter'.tr,
           isEnabled: controller.canGoNext.value,
         ));
   }

@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/controllers/services/anilist/anilist_data.dart';
 import 'package:anymex/screens/search/widgets/search_filter_selector.dart';
 import 'package:anymex/utils/theme_extensions.dart';
@@ -810,7 +811,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,
-                    ),
+                    ), translate: false,
                   ),
                 ),
               ],
@@ -851,7 +852,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                   color: colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1,
-                ),
+                ), translate: false,
               ),
             ],
           ),
@@ -884,7 +885,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         _buildSectionHeader('FILTERS', Icons.filter_list_rounded),
         if (cfg.supportsSeason) ...[
           _buildNeonSelector(
-            hint: 'Season',
+            hint: 'Season'.tr,
             value: selectedSeason,
             options: seasons,
             optionLabels: {
@@ -909,7 +910,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         if (cfg.supportsCountry) ...[
           const SizedBox(height: 12),
           _buildNeonSelector(
-            hint: 'Country of Origin',
+            hint: 'Country of Origin'.tr,
             value: selectedCountry,
             options: countries,
             optionLabels: _countryLabels,
@@ -919,7 +920,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         ],
         const SizedBox(height: 12),
         _buildNeonSelector(
-          hint: 'Format',
+          hint: 'Format'.tr,
           value: selectedFormat,
           options: formats,
           optionLabels: formatLabels,
@@ -929,7 +930,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         if (cfg.supportsSource) ...[
           const SizedBox(height: 12),
           _buildNeonSelector(
-            hint: 'Source',
+            hint: 'Source'.tr,
             value: selectedSource,
             options: isManga ? mangaSources : animeSources,
             optionLabels: isManga ? mangaSourceLabels : animeSourceLabels,
@@ -969,7 +970,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         const SizedBox(height: 8),
         if (!useYearRange)
           _buildNeonSelector(
-            hint: 'Year',
+            hint: 'Year'.tr,
             value: selectedYear?.toString(),
             options: List.generate(DateTime.now().year + 1 - _minYear + 1,
                 (i) => (_minYear + i).toString()).reversed.toList(),
@@ -999,7 +1000,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         _buildSectionHeader(
             'EPISODES & DURATION', Icons.play_circle_outline_rounded),
         _buildSwitchRow(
-          label: 'Filter by Episode Count',
+          label: 'Filter by Episode Count'.tr,
           value: useEpisodeRange,
           onChanged: (v) => setState(() => useEpisodeRange = v),
         ),
@@ -1017,7 +1018,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         ],
         const SizedBox(height: 12),
         _buildSwitchRow(
-          label: 'Filter by Duration (min)',
+          label: 'Filter by Duration (min)'.tr,
           value: useDurationRange,
           onChanged: (v) => setState(() => useDurationRange = v),
         ),
@@ -1043,7 +1044,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
       children: [
         _buildSectionHeader('CHAPTERS & VOLUMES', Icons.menu_book_rounded),
         _buildSwitchRow(
-          label: 'Filter by Chapter Count',
+          label: 'Filter by Chapter Count'.tr,
           value: useChaptersRange,
           onChanged: (v) => setState(() => useChaptersRange = v),
         ),
@@ -1061,7 +1062,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
         ],
         const SizedBox(height: 12),
         _buildSwitchRow(
-          label: 'Filter by Volume Count',
+          label: 'Filter by Volume Count'.tr,
           value: useVolumesRange,
           onChanged: (v) => setState(() => useVolumesRange = v),
         ),
@@ -1179,7 +1180,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           style: theme.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w600,
             color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
-          ),
+          ), translate: false,
         ),
         selected: isSelected,
         checkmarkColor: colorScheme.onPrimary,
@@ -1218,7 +1219,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                       label: AnymeXText(t,
                           style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.w600)),
+                              fontWeight: FontWeight.w600), translate: false),
                       backgroundColor: colorScheme.primary,
                       deleteIconColor: colorScheme.onPrimary,
                       onDeleted: () => setState(() => selectedTags.remove(t)),
@@ -1290,7 +1291,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                       label: AnymeXText(name,
                           style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.w600)),
+                              fontWeight: FontWeight.w600), translate: false),
                       backgroundColor: colorScheme.primary,
                       deleteIconColor: colorScheme.onPrimary,
                       onDeleted: () => setState(() {
@@ -1416,7 +1417,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                     color: value
                         ? colorScheme.primary
                         : colorScheme.onSurface
-                            .opaque(0.7, iReallyMeanIt: true))),
+                            .opaque(0.7, iReallyMeanIt: true)), translate: false),
           ],
         ),
       ),
@@ -1470,7 +1471,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: AnymeXText(label,
               style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.primary, fontWeight: FontWeight.w700)),
+                  color: colorScheme.primary, fontWeight: FontWeight.w700), translate: false),
         ),
         RangeSlider(
           values: values,
@@ -1497,7 +1498,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
       children: [
         AnymeXText(label,
             style: theme.textTheme.bodyMedium
-                ?.copyWith(fontWeight: FontWeight.w600)),
+                ?.copyWith(fontWeight: FontWeight.w600), translate: false),
         Switch(
             value: value,
             activeColor: colorScheme.primary,
@@ -1568,7 +1569,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                               .opaque(0.7, iReallyMeanIt: true),
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
-                        ),
+                        ), translate: false,
                       ),
                       const SizedBox(height: 2),
                       AnymeXText(
@@ -1579,7 +1580,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                               ? colorScheme.onSurface
                               : colorScheme.onSurface
                                   .opaque(0.5, iReallyMeanIt: true),
-                        ),
+                        ), translate: false,
                       ),
                     ],
                   ),
@@ -1653,7 +1654,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                               ? colorScheme.onSurface
                               : colorScheme.onSurface
                                   .opaque(0.5, iReallyMeanIt: true),
-                        ),
+                        ), translate: false,
                       ),
                     ],
                   ),
@@ -1733,7 +1734,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                             ? colorScheme.onSurface
                             : colorScheme.onSurface
                                 .opaque(0.5, iReallyMeanIt: true),
-                      ),
+                      ), translate: false,
                     ),
                   ],
                 ),
@@ -1765,7 +1766,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
       children: [
         Expanded(
           child: _buildNeonButton(
-            text: 'RESET',
+            text: 'RESET'.tr,
             icon: Icons.refresh_rounded,
             isPrimary: false,
             onTap: _resetFilters,
@@ -1832,7 +1833,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                     color: isPrimary
                         ? colorScheme.onPrimary
                         : colorScheme.onSurface,
-                  ),
+                  ), translate: false,
                 ),
               ],
             ),
@@ -1844,7 +1845,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
 
   void _showSortBottomSheet() {
     _showNeonBottomSheet(
-      title: 'Sort By',
+      title: 'Sort By'.tr,
       options: sortOptions.keys.toList(),
       optionLabels: {},
       selectedValue: selectedSortBy,
@@ -1925,7 +1926,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                                 .toList();
                           }),
                           decoration: InputDecoration(
-                            hintText: 'Search tags...',
+                            hintText: 'Search tags...'.tr,
                             prefixIcon: const Icon(Icons.search),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12)),
@@ -1956,7 +1957,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                             return CheckboxListTile(
                               title: AnymeXText(tag,
                                   style: theme.textTheme.bodyMedium
-                                      ?.copyWith(fontWeight: FontWeight.w500)),
+                                      ?.copyWith(fontWeight: FontWeight.w500), translate: false),
                               value: isSelected,
                               activeColor: colorScheme.primary,
                               onChanged: (v) => setModalState(() => setState(() =>
@@ -1989,7 +1990,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
     return CheckboxListTile(
       title: AnymeXText(entry.key,
           style: theme.textTheme.bodyMedium
-              ?.copyWith(fontWeight: FontWeight.w500)),
+              ?.copyWith(fontWeight: FontWeight.w500), translate: false),
       value: selectedStreamingOn.contains(entry.value) ||
           (entry.value is List &&
               selectedStreamingOn.contains((entry.value as List).first)),
@@ -2027,7 +2028,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
             color: colorScheme.primary,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.5,
-          ),
+          ), translate: false,
         ),
       ));
       for (var entry in langEntry.value.entries) {
@@ -2102,9 +2103,9 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                 Expanded(
                   child: !hasServices
                       ? _buildEmptyOptionsState(context,
-                          title: 'No Services Available',
+                          title: 'No Services Available'.tr,
                           message:
-                              'Could not load streaming services from AniList API.\nThe service may be temporarily unavailable or rate-limited.')
+                              'Could not load streaming services from AniList API.\nThe service may be temporarily unavailable or rate-limited.'.tr)
                       : ListView(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                           physics: const BouncingScrollPhysics(),
@@ -2120,7 +2121,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: _buildNeonButton(
-                    text: 'DONE',
+                    text: 'DONE'.tr,
                     icon: Icons.check_rounded,
                     isPrimary: true,
                     onTap: () => Navigator.pop(ctx),
@@ -2158,7 +2159,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onSurface,
-              ),
+              ), translate: false,
             ),
             const SizedBox(height: 6),
             AnymeXText(
@@ -2166,7 +2167,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurface.opaque(0.6, iReallyMeanIt: true),
-              ),
+              ), translate: false,
             ),
           ],
         ),
@@ -2269,7 +2270,7 @@ class _FuturisticFilterSheetState extends State<FuturisticFilterSheet> {
                               fontWeight: FontWeight.w800,
                               letterSpacing: 1.5,
                               color: colorScheme.onSurface,
-                            ),
+                            ), translate: false,
                           ),
                         ],
                       ),

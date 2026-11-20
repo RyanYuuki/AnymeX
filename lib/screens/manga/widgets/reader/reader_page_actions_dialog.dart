@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,17 +74,17 @@ class _ReaderPageActionsSheet extends StatelessWidget {
             children: [
               _ActionButton(
                 icon: Icons.save_alt_rounded,
-                label: 'Save',
+                label: 'Save'.tr,
                 onTap: () => _savePage(context),
               ),
               _ActionButton(
                 icon: Icons.share_rounded,
-                label: 'Share',
+                label: 'Share'.tr,
                 onTap: () => _sharePage(context),
               ),
               _ActionButton(
                 icon: Icons.content_copy_rounded,
-                label: 'Copy URL',
+                label: 'Copy URL'.tr,
                 onTap: () => _copyPage(context),
               ),
             ],
@@ -152,7 +153,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
         final dir = await getTemporaryDirectory();
         final file = File('${dir.path}/$fileName');
         await file.writeAsBytes(bytes);
-        await Share.shareXFiles([XFile(file.path)], text: 'Manga page');
+        await Share.shareXFiles([XFile(file.path)], text: 'Manga page'.tr);
       } else {
         String? downloadPath = (await getDownloadsDirectory())?.path;
 
@@ -196,7 +197,7 @@ class _ReaderPageActionsSheet extends StatelessWidget {
       final file = File(
           '${dir.path}/share_page_${DateTime.now().millisecondsSinceEpoch}.jpg');
       await file.writeAsBytes(bytes);
-      await Share.shareXFiles([XFile(file.path)], text: 'Manga page');
+      await Share.shareXFiles([XFile(file.path)], text: 'Manga page'.tr);
     } catch (e) {
       snackBar('Failed to share page: $e', duration: 2500);
     }
@@ -243,7 +244,7 @@ class _ActionButton extends StatelessWidget {
             Icon(icon, size: 28, color: context.colors.primary),
             const SizedBox(height: 6),
             AnymeXText(label,
-                style: TextStyle(fontSize: 12, color: context.colors.onSurface)),
+                style: TextStyle(fontSize: 12, color: context.colors.onSurface), translate: false),
           ],
         ),
       ),

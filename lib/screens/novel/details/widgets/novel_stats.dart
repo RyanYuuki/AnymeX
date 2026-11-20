@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 // ignore_for_file: prefer_const_constructors
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_image_button.dart';
@@ -45,7 +46,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const AnymeXText("Statistics",
+              AnymeXText("Statistics",
                 variant: TextVariant.bold,
                 size: 20,
               ),
@@ -53,10 +54,10 @@ class NovelStats extends StatelessWidget {
           ),
           content: Column(
             children: [
-              StateItem(label: "Type", value: 'NOVEL'),
-              StateItem(label: "Status", value: data.status),
+              StateItem(label: "Type".tr, value: 'NOVEL'),
+              StateItem(label: "Status".tr, value: data.status),
               StateItem(
-                  label: "Total Chapters", value: data.totalChapters ?? '??'),
+                  label: "Total Chapters".tr, value: data.totalChapters ?? '??'),
             ],
           ),
           padding: const EdgeInsets.all(24),
@@ -80,7 +81,7 @@ class NovelStats extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const AnymeXText("Synopsis",
+              AnymeXText("Synopsis",
                 variant: TextVariant.bold,
                 size: 16,
               ),
@@ -100,7 +101,7 @@ class NovelStats extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (data.genres.isNotEmpty) ...[
-          const AnymeXText("Genres",
+          AnymeXText("Genres",
             variant: TextVariant.bold,
             size: 17,
           ),
@@ -149,7 +150,7 @@ class StateItem extends StatelessWidget {
       children: [
         AnymeXText(label,
           variant: TextVariant.semiBold,
-          color: context.colors.onSurface.opaque(0.9),
+          color: context.colors.onSurface.opaque(0.9), translate: false,
         ),
         Expanded(
           child: AnymeXText(value,
@@ -157,7 +158,7 @@ class StateItem extends StatelessWidget {
             color: context.colors.primary,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.right,
+            textAlign: TextAlign.right, translate: false,
           ),
         ),
       ],
@@ -181,7 +182,7 @@ class AdaptationInfoColumn extends StatelessWidget {
       children: chapters
           .map((chapter) => AnymeXText(
                 chapter,
-                style: TextStyle(color: context.colors.primary),
+                style: TextStyle(color: context.colors.primary), translate: false,
               ))
           .toList(),
     );

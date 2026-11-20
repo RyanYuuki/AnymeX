@@ -1,0 +1,28 @@
+name: Sync translation source strings
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lib/**.dart"
+      - "tool/sync_l10n.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tool/sync_l10n.py
+      - name: Commit new strings
+        run: |
+          git diff --quiet assets/l10n/en.json && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/l10n/en.json
+          git commit -m "chore(l10n): sync source strings"
+          git pull --rebase
+          git push

@@ -133,7 +133,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaLayoutDialog() {
     showSelectionDialog<int>(
-      title: 'Reading Layout',
+      title: 'Reading Layout'.tr,
       items: const [0, 1],
       selectedItem: _mangaLayout.obs,
       getTitle: (value) => value == 0 ? 'Continuous' : 'Paged',
@@ -149,7 +149,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaDirectionDialog() {
     showSelectionDialog<int>(
-      title: 'Reading Direction',
+      title: 'Reading Direction'.tr,
       items: const [0, 1, 2, 3],
       selectedItem: _mangaDirection.obs,
       getTitle: (value) => switch (value) {
@@ -170,7 +170,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaDualPageDialog() {
     showSelectionDialog<int>(
-      title: 'Dual Page Mode',
+      title: 'Dual Page Mode'.tr,
       items: const [0, 1, 2],
       selectedItem: _mangaDualPageMode.obs,
       getTitle: (value) => switch (value) {
@@ -190,7 +190,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showMangaFilterQualityDialog() {
     showSelectionDialog<int>(
-      title: 'Image Filter Quality',
+      title: 'Image Filter Quality'.tr,
       items: const [0, 1, 2, 3, 4],
       selectedItem: _mangaFilterQuality.obs,
       getTitle: (value) => switch (value) {
@@ -212,7 +212,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showChapterStyleDialog() {
     showSelectionDialog<String>(
-      title: 'Chapter Tile Style',
+      title: 'Chapter Tile Style'.tr,
       items: const ['compact', 'detailed'],
       selectedItem: settings.chapterStyleRx,
       getTitle: (value) =>
@@ -244,7 +244,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showNovelThemeDialog() {
     showSelectionDialog<int>(
-      title: 'Novel Theme',
+      title: 'Novel Theme'.tr,
       items: const [0, 1, 2, 3],
       selectedItem: _novelThemeMode.obs,
       getTitle: (value) => switch (value) {
@@ -265,7 +265,7 @@ class _SettingsReaderState extends State<SettingsReader> {
 
   void _showNovelFontDialog() {
     showSelectionDialog<String>(
-      title: 'Novel Font Family',
+      title: 'Novel Font Family'.tr,
       items: _novelFonts,
       selectedItem: _novelFontFamily.obs,
       getTitle: (value) => value,
@@ -392,7 +392,7 @@ class _SettingsReaderState extends State<SettingsReader> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AnymeXText(
                   'The wind swept quietly across the lantern-lit courtyard as the final bell echoed through the valley.',
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
@@ -401,10 +401,10 @@ class _SettingsReaderState extends State<SettingsReader> {
                     letterSpacing: _novelLetterSpacing,
                     wordSpacing: _novelWordSpacing,
                     color: fgColor,
-                  ),
+                  ), maxLines: null,
                 ),
                 SizedBox(height: _novelParagraphSpacing.clamp(4.0, 24.0)),
-                Text(
+                AnymeXText(
                   'He adjusted his coat and stepped forward into the mist.',
                   style: TextStyle(
                     fontFamily: resolvedFontFamily,
@@ -413,7 +413,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                     letterSpacing: _novelLetterSpacing,
                     wordSpacing: _novelWordSpacing,
                     color: fgColor.withValues(alpha: 0.85),
-                  ),
+                  ), maxLines: null,
                 ),
               ],
             ),
@@ -460,7 +460,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                     themeObj.name,
                     size: 12,
                     color: colors.primary,
-                    variant: TextVariant.semiBold,
+                    variant: TextVariant.semiBold, translate: false,
                   ),
                 ],
               ),
@@ -688,8 +688,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                     child: SegmentedButton<bool>(
                       showSelectedIcon: false,
                       segments: const [
-                        ButtonSegment(value: false, label: Text('Paged')),
-                        ButtonSegment(value: true, label: Text('Webtoon')),
+                        ButtonSegment(value: false, label: AnymeXText('Paged', maxLines: null)),
+                        ButtonSegment(value: true, label: AnymeXText('Webtoon', maxLines: null)),
                       ],
                       selected: {isWebtoon},
                       onSelectionChanged: (s) {
@@ -705,8 +705,8 @@ class _SettingsReaderState extends State<SettingsReader> {
                     child: SegmentedButton<bool>(
                       showSelectedIcon: false,
                       segments: const [
-                        ButtonSegment(value: false, label: Text('Horiz')),
-                        ButtonSegment(value: true, label: Text('Vert')),
+                        ButtonSegment(value: false, label: AnymeXText('Horiz', maxLines: null)),
+                        ButtonSegment(value: true, label: AnymeXText('Vert', maxLines: null)),
                       ],
                       selected: {isVertical},
                       onSelectionChanged: (s) {
@@ -787,7 +787,7 @@ class _SettingsReaderState extends State<SettingsReader> {
                                           variant: TextVariant.semiBold,
                                           color: Colors.white,
                                           textAlign: TextAlign.center,
-                                          maxLines: 2,
+                                          maxLines: 2, translate: false,
                                         ),
                                       ),
                                     ),
@@ -1447,7 +1447,7 @@ class _SettingsReaderState extends State<SettingsReader> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Reader Settings',
+      headerTitle: 'Reader Settings'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(

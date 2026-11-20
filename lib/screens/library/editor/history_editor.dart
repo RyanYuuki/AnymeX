@@ -87,7 +87,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
     if (!deleted) return;
 
     HapticFeedback.lightImpact();
-    snackBar('History item deleted');
+    snackBar('History item deleted'.tr);
   }
 
   Future<void> _deleteAllHistory(List<OfflineMedia> items) async {
@@ -208,29 +208,29 @@ class _HistoryEditorState extends State<HistoryEditor> {
                 : item.name ?? 'Item'));
 
     AnymeXDialog(
-      title: 'Delete History Item',
+      title: 'Delete History Item'.tr,
       message: 'Remove "$itemName" from your $_historyLabel?',
-      confirmText: 'Delete',
+      confirmText: 'Delete'.tr,
       onConfirm: () => _deleteHistory(item),
     ).show(context);
   }
 
   void _showClearAllDialog(List<OfflineMedia> items) {
     AnymeXDialog(
-      title: 'Clear All History',
+      title: 'Clear All History'.tr,
       message:
           'Are you sure you want to clear all $_historyLabel? This action cannot be undone.',
-      confirmText: 'Clear All',
+      confirmText: 'Clear All'.tr,
       onConfirm: () => _deleteAllHistory(items),
     ).show(context);
   }
 
   void _showDeleteSelectedDialog() {
     AnymeXDialog(
-      title: 'Delete Selected',
+      title: 'Delete Selected'.tr,
       message:
           'Are you sure you want to delete ${_selectedMediaIds.length} ${_selectedMediaIds.length == 1 ? "item" : "items"} from your $_historyLabel?',
-      confirmText: 'Delete',
+      confirmText: 'Delete'.tr,
       onConfirm: _deleteSelectedHistory,
     ).show(context);
   }
@@ -312,7 +312,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                     epLabel,
                     size: 11,
                     variant: TextVariant.semiBold,
-                    color: context.colors.primary,
+                    color: context.colors.primary, translate: false,
                   ),
                 ],
               ),
@@ -334,7 +334,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                     : '${(progress * 100).toInt()}%',
                 size: 11,
                 variant: TextVariant.semiBold,
-                color: context.colors.onSurface.withOpacity(0.65),
+                color: context.colors.onSurface.withOpacity(0.65), translate: false,
               ),
             ),
           ],
@@ -412,7 +412,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                     chapLabel,
                     size: 11,
                     variant: TextVariant.semiBold,
-                    color: context.colors.primary,
+                    color: context.colors.primary, translate: false,
                   ),
                 ],
               ),
@@ -605,7 +605,7 @@ class _HistoryEditorState extends State<HistoryEditor> {
                           size: 12,
                           color: context.colors.onSurfaceVariant,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis, translate: false,
                         ),
                       ],
                       const SizedBox(height: 6),

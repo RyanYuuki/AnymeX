@@ -86,7 +86,7 @@ Container buildChip(String label) {
       child: AnymeXText(label,
         variant: TextVariant.bold,
         color: Get.theme.colorScheme.onPrimary,
-        size: 14,
+        size: 14, translate: false,
       ),
     ),
   );
@@ -175,7 +175,7 @@ class _UnderratedCarousel extends StatelessWidget {
                     fontFamily: 'Linotte',
                     fontSize: 17,
                     color: theme.colorScheme.primary,
-                  ),
+                  ), translate: false,
                 ),
                 if (onSeeAll != null)
                   GestureDetector(
@@ -446,7 +446,7 @@ class _AuthorAvatar extends StatelessWidget {
                   fontSize: size * 0.52,
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
+                ), translate: false,
               ),
             ),
     );

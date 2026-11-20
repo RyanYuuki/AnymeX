@@ -206,7 +206,7 @@ class EpisodesPane extends StatelessWidget {
           isVisible: controller.isEpisodePaneOpened.value,
           onOverlayTap: _closePane,
           child: WatchSettingsPane(
-            title: 'Episodes',
+            title: 'Episodes'.tr,
             onClose: _closePane,
             actions: [
               IconButton(

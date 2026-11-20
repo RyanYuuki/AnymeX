@@ -24,16 +24,16 @@ Future<bool> confirmDiscardComposer(
   final discard = await showDialog<bool>(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: AnymeXText(discardTitle),
-          content: AnymeXText(discardMessage),
+          title: AnymeXText(discardTitle, translate: false),
+          content: AnymeXText(discardMessage, translate: false),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const AnymeXText('Keep editing'),
+              child: AnymeXText('Keep editing'),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: const AnymeXText('Discard'),
+              child: AnymeXText('Discard'),
             ),
           ],
         ),
@@ -65,7 +65,7 @@ Widget buildProfileSheetOption(
               fontSize: 15,
               fontWeight: FontWeight.w500,
               color: context.theme.colorScheme.onSurface,
-            ),
+            ), translate: false,
           ),
         ],
       ),
@@ -105,7 +105,7 @@ class PlaceholderTab extends StatelessWidget {
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: context.theme.colorScheme.onSurface,
-              ),
+              ), translate: false,
             ),
             const SizedBox(height: 6),
             AnymeXText(
@@ -115,7 +115,7 @@ class PlaceholderTab extends StatelessWidget {
                 fontSize: 13,
                 color:
                     context.theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
-              ),
+              ), translate: false,
             ),
           ],
         ),
@@ -162,7 +162,7 @@ class StatRow extends StatelessWidget {
               fontSize: compact ? 12.5 : 14,
               color: context.theme.colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w500,
-            ),
+            ), translate: false,
           ),
         ),
         AnymeXText(
@@ -171,7 +171,7 @@ class StatRow extends StatelessWidget {
             fontSize: compact ? 14 : 15,
             fontWeight: FontWeight.bold,
             color: context.theme.colorScheme.onSurface,
-          ),
+          ), translate: false,
         ),
       ],
     );
@@ -216,7 +216,7 @@ void showActivityFilterSheet(
                   ),
                   const SizedBox(height: 10),
                   CheckboxListTile(
-                    title: const AnymeXText('All'),
+                    title: AnymeXText('All'),
                     value: activityFilters.length == 4,
                     activeColor: context.theme.colorScheme.primary,
                     checkboxShape: RoundedRectangleBorder(
@@ -237,7 +237,7 @@ void showActivityFilterSheet(
                   ...availableFilters.entries.map((entry) {
                     final isSelected = activityFilters.contains(entry.key);
                     return CheckboxListTile(
-                      title: AnymeXText(entry.value),
+                      title: AnymeXText(entry.value, translate: false),
                       value: isSelected,
                       activeColor: context.theme.colorScheme.primary,
                       checkboxShape: RoundedRectangleBorder(
@@ -270,7 +270,7 @@ void showActivityFilterSheet(
                         Navigator.pop(context);
                         onApply();
                       },
-                      child: const AnymeXText(
+                      child: AnymeXText(
                         "Apply Filters",
                         style: TextStyle(
                           fontSize: 16,
@@ -351,7 +351,7 @@ class ProfileDesktopTabs extends StatelessWidget {
                       color: isSelected
                           ? context.theme.colorScheme.primary
                           : context.theme.colorScheme.onSurfaceVariant,
-                    ),
+                    ), translate: false,
                   ),
                 ),
               );

@@ -77,9 +77,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
       final user2 = widget.controller.user2.value;
 
       if (result == null || user1 == null || user2 == null) {
-        return const AnymeXScaffold(
+        return AnymeXScaffold(
           showHeader: true,
-          headerTitle: 'Compatibility',
+          headerTitle: 'Compatibility'.tr,
           body: Center(
             child: AnymeXText('No result', size: 16),
           ),
@@ -93,7 +93,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
 
       return AnymeXScaffold(
         showHeader: true,
-        headerTitle: 'AniMatch',
+        headerTitle: 'AniMatch'.tr,
         headerAction: IconButton(
           icon: _isSharing
               ? const SizedBox(
@@ -105,7 +105,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           onPressed: _isSharing
               ? null
               : () => _shareCard(user1.name ?? '', user2.name ?? '', result),
-          tooltip: 'Share Match Card',
+          tooltip: 'Share Match Card'.tr,
         ),
         body: Builder(
           builder: (ctx) => ScrollWrapper(
@@ -209,7 +209,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           children: [
             Icon(Iconsax.heart5, color: c.primary, size: 20),
             const SizedBox(width: 8),
-            const AnymeXText(
+            AnymeXText(
               'AniMatch',
               size: 18,
               variant: TextVariant.bold,
@@ -334,7 +334,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                               '${val.toStringAsFixed(0)}%',
                               size: 42,
                               variant: TextVariant.bold,
-                              color: c.onSurface,
+                              color: c.onSurface, translate: false,
                             );
                           },
                         ),
@@ -364,7 +364,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                               rank.name,
                               size: 26,
                               variant: TextVariant.bold,
-                              color: rankColor,
+                              color: rankColor, translate: false,
                             ),
                           ),
                         ),
@@ -376,7 +376,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                       size: 12,
                       textAlign: TextAlign.center,
                       color: c.onSurfaceVariant.opaque(0.85),
-                      maxLines: 2,
+                      maxLines: 2, translate: false,
                     ),
                   ],
                 ),
@@ -449,10 +449,10 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                         height: 72,
                         color: c.surfaceContainerHigh,
                         alignment: Alignment.center,
-                        child: Text(
+                        child: AnymeXText(
                           name.isNotEmpty ? name[0].toUpperCase() : '?',
                           style: const TextStyle(
-                              fontSize: 26, fontWeight: FontWeight.bold),
+                              fontSize: 26, fontWeight: FontWeight.bold), maxLines: null, translate: false,
                         ),
                       ),
               ),
@@ -516,7 +516,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
         _buildSectionTabItem(
           context,
           tabIndex: 0,
-          title: 'Anime',
+          title: 'Anime'.tr,
           percentage: result.animeSection.percentage,
           rank: animeRank,
           icon: Iconsax.video_play,
@@ -525,7 +525,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
         _buildSectionTabItem(
           context,
           tabIndex: 1,
-          title: 'Manga',
+          title: 'Manga'.tr,
           percentage: result.mangaSection.percentage,
           rank: mangaRank,
           icon: Iconsax.book,
@@ -771,7 +771,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
   }) {
     final c = context.colors;
     final totalsCard =
-        detail.cards.where((c) => c.title == 'Totals').firstOrNull;
+        detail.cards.where((c) => c.title == 'Totals'.tr).firstOrNull;
     final rows = totalsCard?.rows ?? [];
 
     Widget body;
@@ -828,7 +828,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                           variant: TextVariant.bold,
                           textAlign: TextAlign.right,
                           color: c.primary,
-                          maxLines: 1,
+                          maxLines: 1, translate: false,
                         ),
                       ),
                       Container(
@@ -853,7 +853,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                           variant: TextVariant.bold,
                           textAlign: TextAlign.left,
                           color: c.secondary,
-                          maxLines: 1,
+                          maxLines: 1, translate: false,
                         ),
                       ),
                     ],
@@ -963,9 +963,9 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
           _buildCardHeader(
             context,
             icon: Iconsax.calendar,
-            title: 'Release Year Stats',
+            title: 'Release Year Stats'.tr,
             subtitle:
-                'Calculated based on which release decades you watched the most and scored the highest.',
+                'Calculated based on which release decades you watched the most and scored the highest.'.tr,
             percentage: detail.percentage,
             weight: detail.weight,
           ),
@@ -1002,7 +1002,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
         AnymeXText(
           card.title,
           size: 13,
-          variant: TextVariant.bold,
+          variant: TextVariant.bold, translate: false,
         ),
         const SizedBox(height: 4),
         if (propRow != null)
@@ -1010,7 +1010,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               AnymeXText(propRow.user1Value,
-                  size: 11, variant: TextVariant.bold, color: c.primary),
+                  size: 11, variant: TextVariant.bold, color: c.primary, translate: false),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
                 child: AnymeXText('vs',
@@ -1019,7 +1019,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                     variant: TextVariant.bold),
               ),
               AnymeXText(propRow.user2Value,
-                  size: 11, variant: TextVariant.bold, color: c.secondary),
+                  size: 11, variant: TextVariant.bold, color: c.secondary, translate: false),
             ],
           ),
       ],
@@ -1031,14 +1031,14 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Iconsax.category,
-      title: 'Common Genres',
-      subtitle: 'Based on your top 5 genres.',
+      title: 'Common Genres'.tr,
+      subtitle: 'Based on your top 5 genres.'.tr,
       detail: detail,
       padding: const EdgeInsets.all(18),
       child: _buildExpandableCardListBody(
         context,
         detail,
-        emptyText: 'No common genres',
+        emptyText: 'No common genres'.tr,
         itemTypeLabel: 'Genres',
         isTag: false,
         isManga: isManga,
@@ -1051,14 +1051,14 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Icons.tag,
-      title: 'Common Tags',
-      subtitle: 'Based on your top 10 tags.',
+      title: 'Common Tags'.tr,
+      subtitle: 'Based on your top 10 tags.'.tr,
       detail: detail,
       padding: const EdgeInsets.all(18),
       child: _buildExpandableCardListBody(
         context,
         detail,
-        emptyText: 'No common tags',
+        emptyText: 'No common tags'.tr,
         itemTypeLabel: 'Tags',
         isTag: true,
         isManga: isManga,
@@ -1190,7 +1190,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 meanScoreRow.user1Value,
                                 size: 12,
                                 variant: TextVariant.bold,
-                                color: c.primary,
+                                color: c.primary, translate: false,
                               ),
                               AnymeXText('Mean Score',
                                   size: 10,
@@ -1199,7 +1199,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 meanScoreRow.user2Value,
                                 size: 12,
                                 variant: TextVariant.bold,
-                                color: c.secondary,
+                                color: c.secondary, translate: false,
                               ),
                             ],
                           ),
@@ -1212,7 +1212,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 countRow.user1Value,
                                 size: 12,
                                 variant: TextVariant.bold,
-                                color: c.primary.opaque(0.9),
+                                color: c.primary.opaque(0.9), translate: false,
                               ),
                               AnymeXText('Count',
                                   size: 10,
@@ -1221,7 +1221,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 countRow.user2Value,
                                 size: 12,
                                 variant: TextVariant.bold,
-                                color: c.secondary.opaque(0.9),
+                                color: c.secondary.opaque(0.9), translate: false,
                               ),
                             ],
                           ),
@@ -1510,7 +1510,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 maxLines: 2,
                                 textAlign: TextAlign.center,
                                 overflow: TextOverflow.ellipsis,
-                                color: c.onSurface,
+                                color: c.onSurface, translate: false,
                               ),
                             ),
                           ],
@@ -1731,8 +1731,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Iconsax.profile_2user,
-      title: 'Common Characters',
-      subtitle: 'Based on your favourite characters.',
+      title: 'Common Characters'.tr,
+      subtitle: 'Based on your favourite characters.'.tr,
       percentage: detail?.percentage ?? 0.0,
       weight: detail?.weight ?? 0.8,
       detail: detail,
@@ -1860,7 +1860,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 AnymeXText(meanScoreRow.user1Value,
                                     size: 10,
                                     variant: TextVariant.bold,
-                                    color: c.primary),
+                                    color: c.primary, translate: false),
                                 Padding(
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 2),
@@ -1872,7 +1872,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 AnymeXText(meanScoreRow.user2Value,
                                     size: 10,
                                     variant: TextVariant.bold,
-                                    color: c.secondary),
+                                    color: c.secondary, translate: false),
                               ],
                             ),
                           ),
@@ -1890,8 +1890,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Icons.mic_rounded,
-      title: 'Common Voice Actors',
-      subtitle: 'Based on your top 6 voice actors.',
+      title: 'Common Voice Actors'.tr,
+      subtitle: 'Based on your top 6 voice actors.'.tr,
       percentage: detail?.percentage ?? 0.0,
       weight: detail?.weight ?? 0.5,
       detail: detail,
@@ -1973,7 +1973,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 meanScoreRow.user1Value,
                                 size: 9.5,
                                 variant: TextVariant.bold,
-                                color: c.primary,
+                                color: c.primary, translate: false,
                               ),
                               Padding(
                                 padding:
@@ -1989,7 +1989,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                 meanScoreRow.user2Value,
                                 size: 9.5,
                                 variant: TextVariant.bold,
-                                color: c.secondary,
+                                color: c.secondary, translate: false,
                               ),
                             ],
                           ),
@@ -2013,8 +2013,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Icons.business_outlined,
-      title: 'Common Studios',
-      subtitle: 'Based on your top 3 studios.',
+      title: 'Common Studios'.tr,
+      subtitle: 'Based on your top 3 studios.'.tr,
       percentage: detail?.percentage ?? 0.0,
       weight: detail?.weight ?? 0.9,
       detail: detail,
@@ -2028,8 +2028,8 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
     return _buildHeuristicCardContainer(
       context,
       icon: Iconsax.user_tag,
-      title: 'Common Favourite Staff',
-      subtitle: 'Based on your favourite staff.',
+      title: 'Common Favourite Staff'.tr,
+      subtitle: 'Based on your favourite staff.'.tr,
       percentage: detail?.percentage ?? 0.0,
       weight: detail?.weight ?? 0.5,
       detail: detail,
@@ -2251,7 +2251,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                 size: 11,
                 color: c.onSurfaceVariant.opaque(0.75),
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, translate: false,
               ),
             ],
           ),
@@ -2267,7 +2267,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             '${percentage.toStringAsFixed(0)}%',
             size: 11,
             variant: TextVariant.bold,
-            color: c.primary,
+            color: c.primary, translate: false,
           ),
         ),
         const SizedBox(width: 5),
@@ -2301,7 +2301,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
             text,
             size: 12,
             color: c.onSurfaceVariant.opaque(0.65),
-            variant: TextVariant.semiBold,
+            variant: TextVariant.semiBold, translate: false,
           ),
         ],
       ),
@@ -2358,7 +2358,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                 child: Icon(Iconsax.profile_2user, size: 18, color: c.primary),
               ),
               const SizedBox(width: 10),
-              const Expanded(
+              Expanded(
                 child: AnymeXText(
                   'Mutual Connections',
                   variant: TextVariant.bold,
@@ -2398,7 +2398,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                   child: AnymeXText(
                     relationshipText,
                     size: 12,
-                    variant: TextVariant.semiBold,
+                    variant: TextVariant.semiBold, translate: false,
                   ),
                 ),
               ],
@@ -2682,7 +2682,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                                   r.name,
                                   size: 11,
                                   variant: TextVariant.bold,
-                                  color: rankColor,
+                                  color: rankColor, translate: false,
                                 ),
                               ),
                             ),
@@ -2693,7 +2693,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                               r.name,
                               size: 12,
                               variant: TextVariant.bold,
-                              color: c.onSurface,
+                              color: c.onSurface, translate: false,
                             ),
                           ),
                           SizedBox(
@@ -2702,14 +2702,14 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
                               rangeStr,
                               size: 11.5,
                               color: c.onSurfaceVariant,
-                              variant: TextVariant.semiBold,
+                              variant: TextVariant.semiBold, translate: false,
                             ),
                           ),
                           Expanded(
                             child: AnymeXText(
                               r.description,
                               size: 11.5,
-                              color: c.onSurfaceVariant.opaque(0.9),
+                              color: c.onSurfaceVariant.opaque(0.9), translate: false,
                             ),
                           ),
                         ],
@@ -2759,7 +2759,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       await Clipboard.setData(ClipboardData(text: shareUrl));
-      snackBar('AniMatch link copied to clipboard!');
+      snackBar('AniMatch link copied to clipboard!'.tr);
       return;
     }
 
@@ -2813,7 +2813,7 @@ class _CompatibilityResultPageState extends State<CompatibilityResultPage> {
 
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       Clipboard.setData(ClipboardData(text: shareUrl));
-      snackBar('AniMatch link copied to clipboard!');
+      snackBar('AniMatch link copied to clipboard!'.tr);
       return;
     }
 
@@ -2923,7 +2923,7 @@ class _BikeMeterSweepGaugeState extends State<_BikeMeterSweepGauge>
             AnymeXText(
               '$displayPct%',
               size: 11,
-              variant: TextVariant.bold,
+              variant: TextVariant.bold, translate: false,
             ),
           ],
         );

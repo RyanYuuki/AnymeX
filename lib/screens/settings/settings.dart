@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:super_sliver_list/super_sliver_list.dart';
+import 'package:get/get.dart';
+import 'package:anymex/l10n/locale_keys.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -65,10 +67,10 @@ class _SettingsPageState extends State<SettingsPage> {
     return AnymeXScaffold(
       resizeToAvoidBottomInset: false,
       showHeader: true,
-      headerTitle: 'Settings',
+      headerTitle: LocaleKeys.labelSettings.tr,
       headerEnableSearch: true,
       headerSearchController: _search.textController,
-      headerSearchHint: 'Search settings...',
+      headerSearchHint: LocaleKeys.settingsSearchHint.tr,
       onHeaderSearchChanged: (value) => setState(() {}),
       onHeaderSearchClear: () => setState(() {}),
       body: Builder(
@@ -140,12 +142,12 @@ class _SettingsPageState extends State<SettingsPage> {
         final items = _searchResults[category]!;
 
         return AnymeXSectionBuilder(
-          title: category,
+          title: category.tr,
           children: items
               .map((item) => AnymeXTile(
                     leading: _buildSearchLeading(context, item),
-                    title: item.title,
-                    subtitle: item.section ?? category,
+                    title: item.title.tr,
+                    subtitle: (item.section ?? category).tr,
                     onTap: () async {
                       final builder = SettingsRegistry.categoryRoutes[category];
                       if (builder != null) {
@@ -172,21 +174,21 @@ class _SettingsPageState extends State<SettingsPage> {
         SizedBox(height: headerHeight),
         for (final entry in groups.entries)
           AnymeXSectionBuilder(
-            title: entry.key,
+            title: entry.key.tr,
             children: [
               for (final cat in entry.value)
                 _buildTile(
                   icon: cat.icon,
-                  title: cat.title,
-                  description: cat.description,
+                  title: cat.title.tr,
+                  description: cat.description.tr,
                   destination: cat.destination,
                 ),
               if (entry.key == 'About & Support')
                 Builder(
                   builder: (tileContext) => _buildTile(
                     icon: HugeIcons.strokeRoundedBug01,
-                    title: 'Test',
-                    description: 'Debug stuffs',
+                    title: 'Test'.tr,
+                    description: 'Debug stuffs'.tr,
                     customTap: () async {
                       final file = await rootBundle.loadString('.env');
                       print('ENV FILE CONTENTS:\n$file');

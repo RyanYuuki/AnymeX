@@ -171,7 +171,7 @@ class _AnymeXExpansionTileState extends State<AnymeXExpansionTile>
                       maxLines: 4,
                       variant: TextVariant.semiBold,
                       color: colors.onSurface,
-                      style: widget.titleStyle,
+                      style: widget.titleStyle, translate: false,
                     ),
                     if (widget.subtitle != null &&
                         widget.subtitle!.isNotEmpty) ...[
@@ -184,7 +184,7 @@ class _AnymeXExpansionTileState extends State<AnymeXExpansionTile>
                             colors.onSurface.opaque(0.45, iReallyMeanIt: true),
                         maxLines: 4,
                         overflow: TextOverflow.ellipsis,
-                        style: widget.subtitleStyle,
+                        style: widget.subtitleStyle, translate: false,
                       ),
                     ],
                   ],

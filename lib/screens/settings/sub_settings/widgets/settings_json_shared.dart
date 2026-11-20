@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'dart:convert';
 
 import 'package:anymex/screens/anime/watch/controls/themes/setup/player_control_theme_registry.dart';
@@ -129,13 +130,13 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
     final confirmed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const AnymeXText('Remove Theme'),
+            title: AnymeXText('Remove Theme'),
             icon: const Icon(Icons.delete_forever_rounded),
             content: AnymeXText('Remove "$id"? This cannot be undone.'),
             actions: [
               TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
-                  child: const AnymeXText('Cancel')),
+                  child: AnymeXText('Cancel')),
               FilledButton.tonal(
                 style: FilledButton.styleFrom(
                     backgroundColor: Theme.of(ctx).colorScheme.errorContainer),
@@ -248,7 +249,7 @@ class JsonThemesSheetState extends State<JsonThemesSheet>
                 '${_themes.length}',
                 style: tt.labelSmall?.copyWith(
                     color: context.colors.onSecondaryContainer,
-                    fontWeight: FontWeight.w700),
+                    fontWeight: FontWeight.w700), translate: false,
               ),
             ),
           ],
@@ -332,7 +333,7 @@ class _ImportActionsRow extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16)),
             ),
             icon: const Icon(Icons.link_rounded, size: 18),
-            label: const AnymeXText('From URL'),
+            label: AnymeXText('From URL'),
           ),
         ),
       ],
@@ -367,7 +368,7 @@ class _StatusBanner extends StatelessWidget {
         style: Theme.of(context)
             .textTheme
             .bodySmall
-            ?.copyWith(color: fg, fontWeight: FontWeight.w600),
+            ?.copyWith(color: fg, fontWeight: FontWeight.w600), translate: false,
       ),
     );
   }
@@ -446,7 +447,7 @@ class _ThemeCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: tt.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600, color: nameColor),
+                          fontWeight: FontWeight.w600, color: nameColor), translate: false,
                     ),
                     const SizedBox(height: 2),
                     AnymeXText(
@@ -454,14 +455,14 @@ class _ThemeCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: tt.bodySmall
-                          ?.copyWith(color: idColor, fontFamily: 'monospace'),
+                          ?.copyWith(color: idColor, fontFamily: 'monospace'), translate: false,
                     ),
                   ],
                 ),
               ),
               IconButton(
                 onPressed: onDelete,
-                tooltip: 'Remove',
+                tooltip: 'Remove'.tr,
                 icon: Icon(Icons.delete_outline_rounded,
                     size: 20,
                     color: context.colors.error.withValues(alpha: 0.8)),
@@ -523,7 +524,7 @@ Future<String?> _showUrlDialog(BuildContext context) async {
     context: context,
     builder: (ctx) => StatefulBuilder(
       builder: (ctx, setState) => AlertDialog(
-        title: const AnymeXText('Import from URL'),
+        title: AnymeXText('Import from URL'),
         icon: const Icon(Icons.link_rounded),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -553,7 +554,7 @@ Future<String?> _showUrlDialog(BuildContext context) async {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const AnymeXText('Cancel')),
+              onPressed: () => Navigator.pop(ctx), child: AnymeXText('Cancel')),
           FilledButton(
             onPressed: () {
               final v = controller.text.trim();
@@ -563,7 +564,7 @@ Future<String?> _showUrlDialog(BuildContext context) async {
               }
               Navigator.pop(ctx, v);
             },
-            child: const AnymeXText('Import'),
+            child: AnymeXText('Import'),
           ),
         ],
       ),

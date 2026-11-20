@@ -80,6 +80,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:isar_community/isar.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:anymex/l10n/app_translations.dart';
+import 'package:anymex/l10n/locale_controller.dart';
+import 'package:anymex/l10n/locale_keys.dart';
+import 'package:anymex/widgets/anymex_widgets/anymex_text.dart';
 
 late Isar isar;
 final appLinks = AppLinks();
@@ -182,6 +186,9 @@ void main(List<String> args) async {
     await safeCall(() => dotenv.load(fileName: '.env'),
         errorMessage: 'Failed to load .env file');
 
+    await safeCall(() => AppTranslations.load(),
+        errorMessage: 'Failed to load translations');
+
     if (!Platform.isLinux) {
       await safeCall(
           () => Firebase.initializeApp(
@@ -256,9 +263,9 @@ void main(List<String> args) async {
                 const Icon(Icons.error_outline_rounded,
                     size: 36, color: Colors.redAccent),
                 const SizedBox(height: 12),
-                const Text(
+                const AnymeXText(
                   'Something went wrong',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14), maxLines: null,
                 ),
                 const SizedBox(height: 8),
                 TextButton(
@@ -266,7 +273,7 @@ void main(List<String> args) async {
                     Clipboard.setData(
                         ClipboardData(text: details.exceptionAsString()));
                   },
-                  child: const Text('Copy error details'),
+                  child: const AnymeXText('Copy error details', maxLines: null),
                 ),
               ],
             ),
@@ -294,6 +301,7 @@ void _initializeGetxController() async {
   await safeCall(() {
     Get.put(ThemeController(), permanent: true);
     Get.put(Settings());
+    Get.put(LocaleController());
     Get.put(OfflineStorageController());
     Get.put(AnilistAuth());
     Get.put(CommunityService());
@@ -632,7 +640,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: IconlyLight.home,
           selectedIcon: IconlyBold.home,
           onTap: onTap,
-          label: 'Home',
+          label: LocaleKeys.navHome.tr,
           subWidget: subWidget,
         );
       case 'Discover':
@@ -640,7 +648,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Iconsax.discover_13,
           selectedIcon: Iconsax.discover5,
           onTap: onTap,
-          label: 'Discover',
+          label: LocaleKeys.navDiscover.tr,
           subWidget: subWidget,
         );
       case 'Search':
@@ -648,7 +656,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: IconlyLight.search,
           selectedIcon: IconlyBold.search,
           onTap: onTap,
-          label: 'Search',
+          label: LocaleKeys.navSearch.tr,
           subWidget: subWidget,
         );
       case 'Library':
@@ -656,7 +664,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: HugeIcons.strokeRoundedLibrary,
           selectedIcon: HugeIcons.strokeRoundedLibrary,
           onTap: onTap,
-          label: 'Library',
+          label: LocaleKeys.navLibrary.tr,
           subWidget: subWidget,
         );
       case 'History':
@@ -664,7 +672,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Iconsax.clock,
           selectedIcon: Iconsax.clock5,
           onTap: onTap,
-          label: 'History',
+          label: LocaleKeys.navHistory.tr,
           subWidget: subWidget,
         );
       case 'Anime':
@@ -672,7 +680,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Icons.movie_filter_outlined,
           selectedIcon: Icons.movie_filter_rounded,
           onTap: onTap,
-          label: isSimkl ? 'Movies' : 'Anime',
+          label: isSimkl ? LocaleKeys.navMovies.tr : LocaleKeys.navAnime.tr,
           subWidget: subWidget,
         );
       case 'Manga':
@@ -680,7 +688,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: isSimkl ? Iconsax.monitor : Iconsax.book,
           selectedIcon: isSimkl ? Iconsax.monitor5 : Iconsax.book,
           onTap: onTap,
-          label: isSimkl ? 'Series' : 'Manga',
+          label: isSimkl ? LocaleKeys.navSeries.tr : LocaleKeys.navManga.tr,
           subWidget: subWidget,
         );
       case 'Novel':
@@ -688,7 +696,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Icons.auto_stories_outlined,
           selectedIcon: Icons.auto_stories_rounded,
           onTap: onTap,
-          label: 'Novel',
+          label: LocaleKeys.navNovel.tr,
           subWidget: subWidget,
         );
       case 'Extensions':
@@ -696,7 +704,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: Icons.extension_outlined,
           selectedIcon: Icons.extension_rounded,
           onTap: onTap,
-          label: 'Extensions',
+          label: LocaleKeys.navExtensions.tr,
           subWidget: subWidget,
         );
       case 'Stats':
@@ -704,7 +712,7 @@ class _FilterScreenState extends State<FilterScreen> {
           unselectedIcon: IconlyLight.chart,
           selectedIcon: IconlyBold.chart,
           onTap: onTap,
-          label: 'Stats',
+          label: LocaleKeys.navStats.tr,
           subWidget: subWidget,
         );
       default:
@@ -747,6 +755,7 @@ class _FilterScreenState extends State<FilterScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Obx(() {
+            Get.find<LocaleController>().currentLocale.value;
             final mediaModeController = Get.put(MediaModeController());
             final _ = mediaModeController.rxMode.value;
             final isSimkl = authService.serviceType.value == ServicesType.simkl;
@@ -770,7 +779,7 @@ class _FilterScreenState extends State<FilterScreen> {
                             onTap: (index) {
                               return SettingsSheet.show(context);
                             },
-                            label: 'Profile',
+                            label: LocaleKeys.navProfile.tr,
                             altIcon: Obx(() {
                               final count = Get.find<SourceController>()
                                   .extensionUpdatesCount
@@ -860,6 +869,7 @@ class _FilterScreenState extends State<FilterScreen> {
   Widget _buildAndroidLayout(ServiceHandler authService) {
     final settings = Get.find<Settings>();
     return Obx(() {
+      Get.find<LocaleController>().currentLocale.value;
       final isSimkl = authService.serviceType.value == ServicesType.simkl;
       final navTabs = _getNavTabs(authService, settings);
       final mobileRoutes = [

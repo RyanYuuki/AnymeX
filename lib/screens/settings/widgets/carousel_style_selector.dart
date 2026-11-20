@@ -16,7 +16,7 @@ void showCarouselStyleSelector(BuildContext context) {
     builder: (dialogContext) {
       return Obx(
         () => AnymeXDialog(
-          title: 'Carousel Style',
+          title: 'Carousel Style'.tr,
           onConfirm: () {
             settingsController.carouselStyle = selectedIndex.value;
           },

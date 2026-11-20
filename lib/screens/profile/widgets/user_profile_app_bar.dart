@@ -119,7 +119,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
               color: context.theme.colorScheme.primary,
               size: 20,
             ),
-            tooltip: 'Check Compatibility',
+            tooltip: 'Check Compatibility'.tr,
             onPressed: () {
               navigate(() => CompatibilityInputPage(
                     prefillProfile: user,
@@ -180,7 +180,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Icons.north_east_rounded,
-                          label: 'View on AniList',
+                          label: 'View on AniList'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             launchUrlString('https://anilist.co/user/$name');
@@ -189,7 +189,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Iconsax.export,
-                          label: 'Share Profile',
+                          label: 'Share Profile'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             Share.share('https://anilist.co/user/$name');
@@ -198,7 +198,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Iconsax.copy,
-                          label: 'Copy User ID',
+                          label: 'Copy User ID'.tr,
                           onTap: () async {
                             Navigator.pop(ctx);
                             await Clipboard.setData(
@@ -207,7 +207,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: const AnymeXText(
+                                  content: AnymeXText(
                                     'User ID copied to clipboard',
                                   ),
                                   backgroundColor: context.theme.colorScheme
@@ -221,7 +221,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Iconsax.heart4,
-                          label: 'Check Compatibility',
+                          label: 'Check Compatibility'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             navigate(() => CompatibilityInputPage(
@@ -234,7 +234,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                         buildProfileSheetOption(
                           ctx,
                           icon: Icons.emoji_events_outlined,
-                          label: 'Community Leaderboard',
+                          label: 'Community Leaderboard'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             LeaderboardSheet.show(context);
@@ -411,7 +411,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                               ? context
                                                   .theme.colorScheme.onPrimary
                                               : Colors.white,
-                                        ),
+                                        ), translate: false,
                                       ),
                                     ],
                                   ),
@@ -485,7 +485,7 @@ class _UserProfileAppBarState extends State<UserProfileAppBar> {
                                           color: donatorTier > 0
                                               ? const Color(0xFFE85D75)
                                               : Colors.white,
-                                        ),
+                                        ), translate: false,
                                       ),
                                     ),
                                   ],

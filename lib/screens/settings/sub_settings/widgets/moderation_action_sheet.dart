@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_bottomsheet.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_container.dart';
 import 'package:anymex/widgets/anymex_widgets/anymex_decorated_avatar.dart';
@@ -233,7 +234,7 @@ class _AnymeXModerationActionSheetState
         _currentAction != ModerationActionType.unban &&
         _currentAction != ModerationActionType.unmute) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
             content: AnymeXText('Please provide a reason for this action')),
       );
       return;
@@ -298,7 +299,7 @@ class _AnymeXModerationActionSheetState
                               widget.targetUsername,
                               variant: TextVariant.bold,
                               size: 16,
-                              overflow: TextOverflow.ellipsis,
+                              overflow: TextOverflow.ellipsis, translate: false,
                             ),
                           ),
                           if (widget.targetClientType != null) ...[
@@ -313,7 +314,7 @@ class _AnymeXModerationActionSheetState
                                 widget.targetClientType!.toUpperCase(),
                                 size: 10,
                                 variant: TextVariant.bold,
-                                color: colorScheme.primary,
+                                color: colorScheme.primary, translate: false,
                               ),
                             ),
                           ],
@@ -340,7 +341,7 @@ class _AnymeXModerationActionSheetState
                     _getActionTitle(),
                     color: actionColor,
                     variant: TextVariant.bold,
-                    size: 12,
+                    size: 12, translate: false,
                   ),
                 ),
               ],
@@ -365,7 +366,7 @@ class _AnymeXModerationActionSheetState
                   final isSelected = !_isCustomDuration &&
                       _selectedDurationHours == preset.hours;
                   return ChoiceChip(
-                    label: AnymeXText(preset.label),
+                    label: AnymeXText(preset.label, translate: false),
                     selected: isSelected,
                     selectedColor: actionColor.withValues(alpha: 0.2),
                     labelStyle: TextStyle(
@@ -384,7 +385,7 @@ class _AnymeXModerationActionSheetState
                   );
                 }),
                 ChoiceChip(
-                  label: const AnymeXText('Custom...'),
+                  label: AnymeXText('Custom...'),
                   selected: _isCustomDuration,
                   selectedColor: actionColor.withValues(alpha: 0.2),
                   labelStyle: TextStyle(
@@ -414,8 +415,8 @@ class _AnymeXModerationActionSheetState
                       controller: _customHoursController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: 'Custom Value',
-                        hintText: 'Enter amount...',
+                        labelText: 'Custom Value'.tr,
+                        hintText: 'Enter amount...'.tr,
                         isDense: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -426,7 +427,7 @@ class _AnymeXModerationActionSheetState
                   ),
                   const SizedBox(width: 10),
                   SegmentedButton<String>(
-                    segments: const [
+                    segments: [
                       ButtonSegment(value: 'hours', label: AnymeXText('Hours')),
                       ButtonSegment(value: 'days', label: AnymeXText('Days')),
                     ],
@@ -464,7 +465,7 @@ class _AnymeXModerationActionSheetState
                       _getExpirationPreview(),
                       size: 12,
                       variant: TextVariant.semiBold,
-                      color: actionColor,
+                      color: actionColor, translate: false,
                     ),
                   ),
                 ],
@@ -489,7 +490,7 @@ class _AnymeXModerationActionSheetState
                 return Padding(
                   padding: const EdgeInsets.only(right: 6),
                   child: ActionChip(
-                    label: AnymeXText(reason),
+                    label: AnymeXText(reason, translate: false),
                     avatar: isCurrent
                         ? Icon(Icons.check, size: 14, color: actionColor)
                         : null,
@@ -516,7 +517,7 @@ class _AnymeXModerationActionSheetState
             controller: _reasonController,
             maxLines: 2,
             decoration: InputDecoration(
-              hintText: 'Enter reason or details for this action...',
+              hintText: 'Enter reason or details for this action...'.tr,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

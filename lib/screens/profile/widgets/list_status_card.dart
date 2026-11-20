@@ -63,7 +63,7 @@ class ListStatusCard extends StatelessWidget {
               fontWeight: FontWeight.bold,
               letterSpacing: 1.5,
               color: context.theme.colorScheme.onSurfaceVariant,
-            ),
+            ), translate: false,
           ),
           SizedBox(height: isDesktop ? 16 : 8),
           ...List.generate(order.length, (index) {
@@ -104,14 +104,14 @@ class ListStatusCard extends StatelessWidget {
                       if (isAnime) {
                         navigate(() => AnimeList(
                               data: data,
-                              title: "Anime",
+                              title: "Anime".tr,
                               initialTab: mappedTabForNav,
                               userName: userName,
                             ));
                       } else {
                         navigate(() => AnilistMangaList(
                               data: data,
-                              title: "Manga",
+                              title: "Manga".tr,
                               initialTab: mappedTabForNav,
                               userName: userName,
                             ));
@@ -130,7 +130,7 @@ class ListStatusCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: isDesktop ? 14 : 12,
                             color: context.theme.colorScheme.onSurfaceVariant,
-                          ),
+                          ), translate: false,
                         ),
                         AnymeXText(
                           count.toString(),
@@ -139,7 +139,7 @@ class ListStatusCard extends StatelessWidget {
                             fontFamily: 'Linotte',
                             fontWeight: FontWeight.bold,
                             color: count > 0 ? color : color.withOpacity(0.5),
-                          ),
+                          ), translate: false,
                         ),
                       ],
                     ),

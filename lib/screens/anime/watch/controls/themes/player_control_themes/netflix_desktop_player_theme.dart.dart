@@ -57,7 +57,7 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
                                 shadows: [
                                   Shadow(color: Colors.black87, blurRadius: 4)
                                 ],
-                              ),
+                              ), translate: false,
                             )),
                       ),
                     ),
@@ -150,7 +150,7 @@ class NetflixDesktopPlayerControlTheme extends PlayerControlTheme {
                                 color: NFColors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
-                              ),
+                              ), translate: false,
                             )),
                         const Spacer(),
                         Obx(() => NFDesktopButton(

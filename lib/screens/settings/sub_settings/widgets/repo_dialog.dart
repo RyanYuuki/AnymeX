@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'dart:io';
 
 import 'package:anymex/utils/extensions.dart';
@@ -81,7 +82,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
             .toList();
 
         if (widget.managerId.toLowerCase().contains('kotatsu')) {
-          snackBar("Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...");
+          snackBar("Adding Kotatsu repository. This will take at least 1-2 minutes, please wait...".tr);
         }
 
         await Extensions().addRepos(widget.type, urls, widget.managerId);
@@ -256,7 +257,7 @@ class _GitHubRepoDialogState extends State<GitHubRepoDialog> {
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.error,
                               fontWeight: FontWeight.w500,
-                            ),
+                            ), translate: false,
                           ),
                         ),
                       ],

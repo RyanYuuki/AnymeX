@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
@@ -77,7 +78,7 @@ class MinimalEpisodeWidget extends StatelessWidget {
                   epNum,
                   size: 13,
                   variant: TextVariant.bold,
-                  color: isSelected ? colors.onPrimary : colors.primary,
+                  color: isSelected ? colors.onPrimary : colors.primary, translate: false,
                 ),
               ),
               const SizedBox(width: 12),
@@ -91,11 +92,11 @@ class MinimalEpisodeWidget extends StatelessWidget {
                       size: 13,
                       variant: TextVariant.semiBold,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis, translate: false,
                     ),
                     if (isFiller) ...[
                       const SizedBox(height: 2),
-                      const AnymeXText(
+                      AnymeXText(
                         'FILLER',
                         size: 10,
                         variant: TextVariant.bold,

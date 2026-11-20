@@ -511,7 +511,7 @@ class SourceController extends GetxController implements BaseService {
       _homeReady = true;
     } catch (e) {
       Logger.i('Error in fetchHomePage: $e');
-      errorSnackBar('Failed to fetch data from sources.');
+      errorSnackBar('Failed to fetch data from sources.'.tr);
     }
   }
 
@@ -646,7 +646,7 @@ class SourceController extends GetxController implements BaseService {
             manager.isNewerVersion(installed, latestRelease.tagName)) {
           infoSnackBar(
             "Extension Bridge has an update available (${latestRelease.tagName})",
-            title: "Bridge Update Available",
+            title: "Bridge Update Available".tr,
             onTap: () {
               navigate(() => const SettingsExtensionManager());
             },

@@ -195,7 +195,7 @@ class _DynamicBottomSheetState extends State<DynamicBottomSheet>
                                             fontSize: 22,
                                             color: context
                                                 .theme.colorScheme.onSurface,
-                                          ),
+                                          ), translate: false,
                                         ),
                                       ),
                                       IconButton(
@@ -418,7 +418,7 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                                 color: widget.isSelected
                                     ? context.theme.colorScheme.primary
                                     : context.theme.colorScheme.onSurface,
-                              ),
+                              ), translate: false,
                             ),
                             if (widget.item.subtitle != null)
                               Padding(
@@ -429,7 +429,7 @@ class _BottomSheetListItemState extends State<_BottomSheetListItem>
                                       ?.copyWith(
                                     color: context.theme.colorScheme.onSurface
                                         .opaque(0.6, iReallyMeanIt: true),
-                                  ),
+                                  ), translate: false,
                                 ),
                               ),
                           ],
@@ -531,16 +531,16 @@ class PlayerBottomSheets {
 
     return show<int>(
       context: context,
-      title: 'Audio Tracks',
+      title: 'Audio Tracks'.tr,
       showSearch: filteredTracks.length > 5,
       searchHint: 'Search audio tracks...',
       items: [
-        const BottomSheetItem(
-            title: 'Auto', subtitle: 'Audio Track', icon: Icons.audiotrack),
+        BottomSheetItem(
+            title: 'Auto'.tr, subtitle: 'Audio Track'.tr, icon: Icons.audiotrack),
         ...tracks.where((e) => e.title != null).map((entry) {
           return BottomSheetItem(
             title: completeLanguageName(entry.language ?? '').toUpperCase(),
-            subtitle: 'Audio Track',
+            subtitle: 'Audio Track'.tr,
             icon: Icons.audiotrack,
           );
         })
@@ -600,11 +600,11 @@ class PlayerBottomSheets {
     final selectedQuality = controller.selectedVideo.value;
     return show<String>(
       context: context,
-      title: 'Video Servers',
+      title: 'Video Servers'.tr,
       items: qualities.map((quality) {
         return BottomSheetItem(
-          title: quality.quality ?? 'Auto',
-          subtitle: 'Server',
+          title: quality.quality ?? 'Auto'.tr.tr,
+          subtitle: 'Server'.tr,
           icon: Icons.high_quality,
         );
       }).toList(),
@@ -625,13 +625,13 @@ class PlayerBottomSheets {
     final selectedQuality = controller.selectedQualityTrack.value;
     return show<String>(
       context: context,
-      title: 'Video Quality',
+      title: 'Video Quality'.tr,
       items: qualities.map((quality) {
         return BottomSheetItem(
           title: quality.height == 0
-              ? 'Auto'
+              ? 'Auto'.tr
               : '${quality.width}x${quality.height}',
-          subtitle: 'Quality Setting',
+          subtitle: 'Quality Setting'.tr,
           icon: Icons.high_quality,
         );
       }).toList(),
@@ -654,7 +654,7 @@ class PlayerBottomSheets {
 
     return showCustom<double>(
       context: context,
-      title: 'Episodes',
+      title: 'Episodes'.tr,
       isExpanded: true,
       content: ScrollablePositionedList.separated(
         initialScrollIndex: selectedEpisode.value.number.toInt() - 1,

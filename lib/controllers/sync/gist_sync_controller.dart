@@ -139,7 +139,7 @@ class GistSyncController extends GetxController {
       Logger.i(
         '[GistSync] GitHub client ID not set in .env (expected GIT_CLIENT_ID or GITHUB_CLIENT_ID)',
       );
-      errorSnackBar('GitHub client ID not configured.');
+      errorSnackBar('GitHub client ID not configured.'.tr);
       return;
     }
 
@@ -170,11 +170,11 @@ class GistSyncController extends GetxController {
         );
       } else {
         Logger.i('[GistSync] OAuth callback did not include code: $result');
-        errorSnackBar('GitHub login failed: missing authorization code.');
+        errorSnackBar('GitHub login failed: missing authorization code.'.tr);
       }
     } catch (e) {
       Logger.i('[GistSync] Error during GitHub login: $e');
-      errorSnackBar('GitHub login was cancelled or failed.');
+      errorSnackBar('GitHub login was cancelled or failed.'.tr);
     } finally {
       isAuthenticating.value = false;
     }
@@ -343,7 +343,7 @@ class GistSyncController extends GetxController {
 
   Future<void> manualSyncNow() async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first to sync progress.');
+      errorSnackBar('Connect GitHub first to sync progress.'.tr);
       return;
     }
     if (isSyncing.value) {
@@ -382,7 +382,7 @@ class GistSyncController extends GetxController {
 
   Future<void> deleteRemoteSyncGist() async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first before deleting sync data.');
+      errorSnackBar('Connect GitHub first before deleting sync data.'.tr);
       return;
     }
     if (isSyncing.value) {
@@ -422,7 +422,7 @@ class GistSyncController extends GetxController {
 
   Future<Map<String, dynamic>?> fetchRemoteSyncJson() async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first to export sync data.');
+      errorSnackBar('Connect GitHub first to export sync data.'.tr);
       return null;
     }
     if (isSyncing.value) {
@@ -456,7 +456,7 @@ class GistSyncController extends GetxController {
 
   Future<String?> fetchRemoteSyncGistUrl() async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first to view sync gist.');
+      errorSnackBar('Connect GitHub first to view sync gist.'.tr);
       return null;
     }
     if (isSyncing.value) {
@@ -475,7 +475,7 @@ class GistSyncController extends GetxController {
       return url;
     } catch (e) {
       Logger.i('[GistSync] fetchRemoteSyncGistUrl: $e');
-      errorSnackBar('Failed to get cloud gist link.');
+      errorSnackBar('Failed to get cloud gist link.'.tr);
       return null;
     }
   }
@@ -485,7 +485,7 @@ class GistSyncController extends GetxController {
     required bool mergeWithCloud,
   }) async {
     if (!isLoggedIn.value || !_service.isReady) {
-      errorSnackBar('Connect GitHub first to import sync data.');
+      errorSnackBar('Connect GitHub first to import sync data.'.tr);
       return null;
     }
     if (isSyncing.value) {
@@ -495,7 +495,7 @@ class GistSyncController extends GetxController {
 
     final normalizedImported = _normalizeRawData(importedRaw);
     if (importedRaw.isNotEmpty && normalizedImported.isEmpty) {
-      errorSnackBar('Selected JSON has no valid sync entries.');
+      errorSnackBar('Selected JSON has no valid sync entries.'.tr);
       return null;
     }
 

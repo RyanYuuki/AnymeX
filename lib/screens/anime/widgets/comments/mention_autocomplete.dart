@@ -332,7 +332,7 @@ class _MentionAutocompleteState extends State<MentionAutocomplete> {
                                   maxLines: 1,
                                   style: const TextStyle(
                                     decoration: TextDecoration.none,
-                                  ),
+                                  ), translate: false,
                                 ),
                               ),
                             ],

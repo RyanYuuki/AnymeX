@@ -139,7 +139,7 @@ class _NovelReaderState extends State<NovelReader>
                           _ttsMenuButton(
                             context: context,
                             icon: Icons.skip_previous_rounded,
-                            tooltip: 'Previous Paragraph',
+                            tooltip: 'Previous Paragraph'.tr,
                             onPressed: () {
                               HapticFeedback.lightImpact();
                               controller.ttsPrevious();
@@ -164,7 +164,7 @@ class _NovelReaderState extends State<NovelReader>
                           _ttsMenuButton(
                             context: context,
                             icon: Icons.skip_next_rounded,
-                            tooltip: 'Next Paragraph',
+                            tooltip: 'Next Paragraph'.tr,
                             onPressed: () {
                               HapticFeedback.lightImpact();
                               controller.ttsNext();
@@ -328,7 +328,7 @@ class _NovelReaderState extends State<NovelReader>
                         style: TextStyle(
                           fontSize: 12,
                           color: context.colors.onSurface.opaque(0.6),
-                        ),
+                        ), translate: false,
                       ),
                       const SizedBox(height: 4),
                       AnymeXText(displayTitle,
@@ -338,7 +338,7 @@ class _NovelReaderState extends State<NovelReader>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        isMarquee: true,
+                        isMarquee: true, translate: false,
                       ),
                     ],
                   ),

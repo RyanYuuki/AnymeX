@@ -389,7 +389,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                 final label = {
                   _SortMode.lastUpdated: 'Last Updated',
                   _SortMode.score: 'Score',
-                  _SortMode.title: 'Title',
+                  _SortMode.title: 'Title'.tr,
                   _SortMode.releaseDate: 'Release Date',
                 }[mode]!;
                 final icon = {
@@ -407,7 +407,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
                         color: selected ? colors.primary : colors.onSurface,
-                      )),
+                      ), translate: false),
                   trailing: selected
                       ? Icon(Icons.check_rounded,
                           color: colors.primary, size: 20)
@@ -459,7 +459,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                       onPressed: () =>
                           setSheetState(() => tempSelected.clear()),
                       child:
-                          const AnymeXText('Clear', style: TextStyle(fontSize: 12)),
+                          AnymeXText('Clear', style: TextStyle(fontSize: 12)),
                     ),
                 ],
               ),
@@ -480,7 +480,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                             color: isSelected
                                 ? colors.onPrimaryContainer
                                 : colors.onSurfaceVariant,
-                          )),
+                          ), translate: false),
                       selected: isSelected,
                       onSelected: (val) {
                         setSheetState(() {
@@ -618,7 +618,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                   size: 13,
                   color: isSelected
                       ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface,
+                      : theme.colorScheme.onSurface, translate: false,
                 ),
                 const SizedBox(width: 8),
                 AnimatedContainer(
@@ -638,7 +638,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
                     size: 11,
                     color: isSelected
                         ? theme.colorScheme.onPrimary
-                        : theme.colorScheme.onSurfaceVariant.opaque(0.8),
+                        : theme.colorScheme.onSurfaceVariant.opaque(0.8), translate: false,
                   ),
                 ),
               ],
@@ -726,7 +726,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               Icon(Iconsax.shuffle,
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
-              const AnymeXText('Random'),
+              AnymeXText('Random'),
             ],
           ),
         ),
@@ -750,7 +750,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
               Icon(Icons.sort_rounded,
                   size: 20, color: colors.onSurfaceVariant),
               const SizedBox(width: 12),
-              const AnymeXText('Sort'),
+              AnymeXText('Sort'),
             ],
           ),
         ),
@@ -793,7 +793,7 @@ class _AnimeListState extends State<AnimeList> with TickerProviderStateMixin {
           : '${activeMediaList.length} Anime',
       headerEnableSearch: true,
       headerSearchController: _searchController,
-      headerSearchHint: 'Search anime...',
+      headerSearchHint: 'Search anime...'.tr,
       onHeaderSearchChanged: (val) {
         setState(() => _searchQuery = val.trim().toLowerCase());
       },

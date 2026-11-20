@@ -501,7 +501,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 size: 15,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                isMarquee: true,
+                isMarquee: true, translate: false,
               ),
               if (widget.media.romajiTitle.isNotEmpty &&
                   widget.media.romajiTitle != widget.media.title &&
@@ -513,7 +513,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                   color: colors.onSurfaceVariant,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  isMarquee: true,
+                  isMarquee: true, translate: false,
                 ),
               ],
               const SizedBox(height: 10),
@@ -602,7 +602,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
           AnymeXText(label,
               size: 11,
               color: color,
-              variant: TextVariant.semiBold),
+              variant: TextVariant.semiBold, translate: false),
         ],
       ),
     );
@@ -686,7 +686,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                             variant: TextVariant.semiBold,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: false,
+                            isMarquee: false, translate: false,
                           ),
                         ),
                       ],
@@ -835,7 +835,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
     return AnymeXText(label,
         variant: TextVariant.bold,
         size: 13,
-        color: colors.primary);
+        color: colors.primary, translate: false);
   }
 
   Widget _buildSynopsis(String text, ColorScheme colors) {
@@ -857,7 +857,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
             overflow: _synopsisExpanded
                 ? TextOverflow.visible
                 : TextOverflow.ellipsis,
-            color: colors.onSurface,
+            color: colors.onSurface, translate: false,
           ),
           if (overflows || _synopsisExpanded) ...[
             const SizedBox(height: 6),
@@ -905,7 +905,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration:
           BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: AnymeXText(label, size: 12, color: fg, variant: TextVariant.semiBold),
+      child: AnymeXText(label, size: 12, color: fg, variant: TextVariant.semiBold, translate: false),
     );
 
     if (onTap == null) return chip;
@@ -1025,7 +1025,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                                 size: 14,
                                 color: colors.primary,
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: TextOverflow.ellipsis, translate: false,
                               ),
                             ),
                             if (widget.reasons?.isNotEmpty == true &&
@@ -1058,7 +1058,7 @@ class _MediaPeekPopupState extends State<MediaPeekPopup> {
                 fontSize: 13,
                 fontStyle: FontStyle.italic,
                 color: colors.onSurface,
-              ),
+              ), translate: false,
             ),
           ],
           if (widget.reasons != null && widget.reasons!.length > 1) ...[
@@ -1161,7 +1161,7 @@ class _PeekAuthorAvatar extends StatelessWidget {
                   fontSize: size * 0.46,
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
+                ), translate: false,
               ),
             ),
     );
@@ -1258,7 +1258,7 @@ class _PopupVoteButton extends StatelessWidget {
               AnymeXText('$count',
                 size: 13,
                 color: active ? activeColor : colors.onSurfaceVariant,
-                variant: TextVariant.semiBold,
+                variant: TextVariant.semiBold, translate: false,
               ),
             ],
           ),

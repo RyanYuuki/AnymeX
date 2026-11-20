@@ -38,7 +38,7 @@ class DesktopStatsGrid extends StatelessWidget {
 
     final items = [
       _StatCard(
-        label: 'ANIME',
+        label: 'ANIME'.tr,
         value: anime?.animeCount ?? '0',
         sub: 'entries',
         color: context.theme.colorScheme.primary,
@@ -54,19 +54,19 @@ class DesktopStatsGrid extends StatelessWidget {
         ),
       ),
       _StatCard(
-        label: 'DAYS',
+        label: 'DAYS'.tr,
         value: days.toString(),
         sub: 'watched',
         color: context.theme.colorScheme.onSurface,
       ),
       _StatCard(
-        label: 'MEAN',
+        label: 'MEAN'.tr,
         value: meanScore,
         sub: 'score',
         color: context.theme.colorScheme.primary,
       ),
       _StatCard(
-        label: 'CHAPTERS',
+        label: 'CHAPTERS'.tr,
         value: manga?.chaptersRead ?? '0',
         sub: 'read',
         color: context.theme.colorScheme.primary,
@@ -82,13 +82,13 @@ class DesktopStatsGrid extends StatelessWidget {
         ),
       ),
       _StatCard(
-        label: 'VOLUMES',
+        label: 'VOLUMES'.tr,
         value: manga?.volumesRead ?? '0',
         sub: 'read',
         color: context.theme.colorScheme.onSurface,
       ),
       _StatCard(
-        label: 'MEAN',
+        label: 'MEAN'.tr,
         value: manga?.meanScore ?? '0',
         sub: 'score',
         color: context.theme.colorScheme.primary,
@@ -371,7 +371,7 @@ class ScoreCard extends StatelessWidget {
               fontSize: compact ? 14 : 16,
               fontWeight: FontWeight.bold,
               color: context.theme.colorScheme.primary,
-            ),
+            ), translate: false,
           ),
         ],
       ),
@@ -405,7 +405,7 @@ class SectionHeader extends StatelessWidget {
             fontSize: 16,
             fontWeight: FontWeight.bold,
             fontFamily: 'Linotte',
-          ),
+          ), translate: false,
         ),
       ],
     );
@@ -553,7 +553,7 @@ class _PressableHighlightCardState extends State<_PressableHighlightCard> {
                                   : colors.onSurface,
                             ),
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: TextOverflow.ellipsis, translate: false,
                           ),
                           AnymeXText(
                             widget.label,
@@ -565,7 +565,7 @@ class _PressableHighlightCardState extends State<_PressableHighlightCard> {
                                   : colors.onSurfaceVariant,
                             ),
                             maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            overflow: TextOverflow.ellipsis, translate: false,
                           ),
                         ],
                       ),

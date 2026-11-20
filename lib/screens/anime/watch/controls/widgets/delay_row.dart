@@ -66,7 +66,7 @@ class DelayRow extends StatelessWidget {
                   label,
                   variant: TextVariant.semiBold,
                   size: 13,
-                  color: colors.onSurface,
+                  color: colors.onSurface, translate: false,
                 ),
                 const SizedBox(height: 2),
                 AnymeXText(
@@ -74,7 +74,7 @@ class DelayRow extends StatelessWidget {
                   size: 12,
                   color: isOffset ? colors.primary : colors.onSurfaceVariant,
                   variant:
-                      isOffset ? TextVariant.semiBold : TextVariant.regular,
+                      isOffset ? TextVariant.semiBold : TextVariant.regular, translate: false,
                 ),
               ],
             ),

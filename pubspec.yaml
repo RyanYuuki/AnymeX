@@ -229,6 +229,7 @@ flutter:
 
     assets:
         - assets/images/
+        - assets/l10n/
         - .env
 
     fonts:

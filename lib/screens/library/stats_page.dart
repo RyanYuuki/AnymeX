@@ -16,7 +16,7 @@ class StatisticsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const AnymeXText('Library Statistics'),
+        title: AnymeXText('Library Statistics'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: SingleChildScrollView(
@@ -25,7 +25,7 @@ class StatisticsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Anime Library Section
-            const AnymeXText(
+            AnymeXText(
               'Anime Library',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -44,7 +44,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Manga Library Section
-            const AnymeXText(
+            AnymeXText(
               'Manga Library',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -63,7 +63,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Novel Library Section
-            const AnymeXText(
+            AnymeXText(
               'Novel Library',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -82,7 +82,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Anime Custom Lists Section
-            const AnymeXText(
+            AnymeXText(
               'Anime Custom Lists',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -100,7 +100,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Manga Custom Lists Section
-            const AnymeXText(
+            AnymeXText(
               'Manga Custom Lists',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -118,7 +118,7 @@ class StatisticsPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Novel Custom Lists Section
-            const AnymeXText(
+            AnymeXText(
               'Novel Custom Lists',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
@@ -146,11 +146,11 @@ class StatisticsPage extends StatelessWidget {
       children: [
         AnymeXText(
           title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600), translate: false,
         ),
         const SizedBox(height: 8),
         library.isEmpty
-            ? const AnymeXText(
+            ? AnymeXText(
                 'No items in this library.',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
@@ -197,7 +197,7 @@ class StatisticsPage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         customLists.isEmpty
-            ? const AnymeXText(
+            ? AnymeXText(
                 'No custom lists available.',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               )
@@ -218,11 +218,11 @@ class StatisticsPage extends StatelessWidget {
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         child: ExpansionTile(
-                          title: AnymeXText(listName),
+                          title: AnymeXText(listName, translate: false),
                           subtitle: AnymeXText('Items: ${listData.length}'),
                           children: listData.isEmpty
                               ? [
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(16.0),
                                     child: AnymeXText('No media in this list.'),
                                   )

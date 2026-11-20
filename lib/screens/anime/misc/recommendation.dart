@@ -147,20 +147,20 @@ class _AIRecommendationState extends State<AIRecommendation> {
 
   void _showSettings() {
     AnymeXSheet(
-      title: 'Preferences',
+      title: 'Preferences'.tr,
       showDragHandle: true,
       contentWidget: Obx(() {
         final options = [
           _PrefOption(
-            title: "Grid View",
-            subtitle: "Toggle between grid and detailed list",
+            title: "Grid View".tr,
+            subtitle: "Toggle between grid and detailed list".tr,
             icon: Iconsax.grid_1,
             value: isGrid.value,
             onChanged: (v) => isGrid.value = v,
           ),
           _PrefOption(
-            title: "18+ Content",
-            subtitle: "Include adult & NSFW suggestions",
+            title: "18+ Content".tr,
+            subtitle: "Include adult & NSFW suggestions".tr,
             icon: Icons.eighteen_up_rating_rounded,
             value: isAdult.value,
             onChanged: (v) {
@@ -253,7 +253,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                     }
                   },
                   disableIcons: true,
-                  hintText: "Enter Username",
+                  hintText: "Enter Username".tr,
                 ),
               ),
               const SizedBox(height: 16),
@@ -436,7 +436,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                       size: 14,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                     const SizedBox(height: 5),
                     if (metaPills.isNotEmpty) ...[
@@ -454,7 +454,7 @@ class _AIRecommendationState extends State<AIRecommendation> {
                         color: colors.onSurfaceVariant.opaque(0.75, iReallyMeanIt: true),
                         size: 11.5,
                         maxLines: 4,
-                        overflow: TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis, translate: false,
                       ),
                     ),
                     if (data.genres.isNotEmpty) ...[

@@ -258,7 +258,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.transparent,
-                hintText: 'Search anime, movies...',
+                hintText: 'Search anime, movies...'.tr,
                 hintStyle: TextStyle(
                   color: theme.colorScheme.onSurface.opaque(0.5),
                   fontSize: 14,
@@ -532,7 +532,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                       size: 16,
                       variant: TextVariant.semiBold,
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -615,7 +615,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                       size: 16,
                       variant: TextVariant.semiBold,
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -683,7 +683,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                       size: 16,
                       variant: TextVariant.semiBold,
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -851,7 +851,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ElevatedButton.icon(
               onPressed: controller.checkPermissionAndShowPicker,
               icon: const Icon(Icons.folder_open),
-              label: const AnymeXText('Grant Permission'),
+              label: AnymeXText('Grant Permission'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary.opaque(0.4),
                 foregroundColor: theme.colorScheme.onPrimary,
@@ -904,7 +904,7 @@ class _WatchOfflineState extends State<WatchOffline> {
             ElevatedButton.icon(
               onPressed: controller.showDirectoryPicker,
               icon: const Icon(Icons.folder_open),
-              label: const AnymeXText('Select Directory'),
+              label: AnymeXText('Select Directory'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary.opaque(0.4),
                 foregroundColor: theme.colorScheme.onPrimary,
@@ -1017,7 +1017,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ? _buildModernTab(
                   controller: controller,
                   icon: Iconsax.search_normal,
-                  label: 'Search',
+                  label: 'Search'.tr,
                   viewMode: ViewMode.search,
                   isSelected: controller.viewMode.value == ViewMode.search,
                 )
@@ -1026,7 +1026,7 @@ class _WatchOfflineState extends State<WatchOffline> {
               ? _buildModernTab(
                   controller: controller,
                   icon: Icons.download_rounded,
-                  label: 'Download',
+                  label: 'Download'.tr,
                   viewMode: ViewMode.download,
                   isSelected: controller.viewMode.value == ViewMode.download,
                 )
@@ -1034,7 +1034,7 @@ class _WatchOfflineState extends State<WatchOffline> {
           Obx(() => _buildModernTab(
                 controller: controller,
                 icon: Iconsax.folder_open,
-                label: 'Local',
+                label: 'Local'.tr,
                 viewMode: ViewMode.local,
                 isSelected: controller.viewMode.value == ViewMode.local,
               )),
@@ -1103,7 +1103,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                             color: theme.colorScheme.onPrimary,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.1,
-                            fontSize: 11),
+                            fontSize: 11), translate: false,
                       ),
                     ),
                     if (canChangeDirectory) ...[
@@ -1212,7 +1212,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                      ),
+                      ), translate: false,
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -1292,7 +1292,7 @@ class _WatchOfflineState extends State<WatchOffline> {
                 fontWeight: FontWeight.w600,
               ),
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.ellipsis, translate: false,
             ),
           ),
         ],

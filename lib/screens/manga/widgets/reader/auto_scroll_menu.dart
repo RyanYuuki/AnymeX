@@ -74,7 +74,7 @@ class ReaderAutoScrollMenu extends StatelessWidget {
                           _menuButton(
                             context: context,
                             icon: Icons.add_rounded,
-                            tooltip: 'Increase auto-scroll speed',
+                            tooltip: 'Increase auto-scroll speed'.tr,
                             onPressed: () =>
                                 _changeSpeed(controller, -_speedStep),
                           ),
@@ -94,7 +94,7 @@ class ReaderAutoScrollMenu extends StatelessWidget {
                           _menuButton(
                             context: context,
                             icon: Icons.remove_rounded,
-                            tooltip: 'Decrease auto-scroll speed',
+                            tooltip: 'Decrease auto-scroll speed'.tr,
                             onPressed: () =>
                                 _changeSpeed(controller, _speedStep),
                           ),

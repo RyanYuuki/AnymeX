@@ -693,7 +693,7 @@ class ThemeRenderer {
             fontSize: topFontSize,
             fontWeight: topFontWeight,
             letterSpacing: 0.1,
-          ),
+          ), translate: false,
         ),
         SizedBox(height: gap),
         MarqueeText(
@@ -886,7 +886,7 @@ class ThemeRenderer {
           fontSize: style.fontSize,
           fontWeight: style.fontWeight,
           letterSpacing: style.letterSpacing,
-        ),
+        ), translate: false,
       ),
     );
   }
@@ -950,7 +950,7 @@ class ThemeRenderer {
         fontWeight: style.fontWeight,
         letterSpacing: style.letterSpacing,
         height: style.height,
-      ),
+      ), translate: false,
     );
     if (isMarquee) {
       textWidget = MarqueeText(

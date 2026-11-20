@@ -350,7 +350,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                 final label = {
                   _SortMode.lastUpdated: 'Last Updated',
                   _SortMode.score: 'Score',
-                  _SortMode.title: 'Title',
+                  _SortMode.title: 'Title'.tr,
                   _SortMode.releaseDate: 'Release Date',
                 }[mode]!;
                 final icon = {
@@ -368,7 +368,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                         fontWeight:
                             selected ? FontWeight.w700 : FontWeight.w500,
                         color: selected ? colors.primary : colors.onSurface,
-                      )),
+                      ), translate: false),
                   trailing: selected
                       ? Icon(Icons.check_rounded,
                           color: colors.primary, size: 20)
@@ -436,7 +436,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                         TextButton(
                           onPressed: () =>
                               setSheetState(() => tempSelected.clear()),
-                          child: const AnymeXText('Clear',
+                          child: AnymeXText('Clear',
                               style: TextStyle(fontSize: 12)),
                         ),
                     ],
@@ -458,7 +458,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                                 color: isSelected
                                     ? colors.onPrimaryContainer
                                     : colors.onSurfaceVariant,
-                              )),
+                              ), translate: false),
                           selected: isSelected,
                           onSelected: (val) {
                             setSheetState(() {
@@ -552,7 +552,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
               style: TextStyle(fontSize: 16, color: colors.primary),
             ),
           ),
-  body: const Center(child: AnymeXText('No entries found'))
+  body: Center(child: AnymeXText('No entries found'))
 );
     }
 
@@ -594,17 +594,17 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                         IconButton(
               onPressed: _openRandom,
               icon: const Icon(Iconsax.shuffle, size: 20),
-              tooltip: 'Random',
+              tooltip: 'Random'.tr,
             ),
                         IconButton(
               onPressed: () => _showGenreFilter(context),
               icon: Badge(
                 isLabelVisible: _selectedGenres.isNotEmpty,
                 label: AnymeXText('${_selectedGenres.length}',
-                    style: const TextStyle(fontSize: 9)),
+                    style: const TextStyle(fontSize: 9), translate: false),
                 child: const Icon(Iconsax.filter, size: 20),
               ),
-              tooltip: 'Filter genres',
+              tooltip: 'Filter genres'.tr,
             ),
                         PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert_rounded, size: 22),
@@ -631,7 +631,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                       Icon(Icons.sort_rounded,
                           size: 20, color: colors.onSurfaceVariant),
                       const SizedBox(width: 12),
-                      const AnymeXText('Sort'),
+                      AnymeXText('Sort'),
                     ],
                   ),
                 ),
@@ -729,7 +729,7 @@ class _UserMediaListPageState extends State<UserMediaListPage>
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
-                          ),
+                          ), translate: false,
                         ),
                       ),
                     );

@@ -493,7 +493,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
       builder: (context) => AlertDialog(
         icon: const Icon(Icons.error_outline, size: 32, color: Colors.red),
         title: const AnymeXText('Download Failed'),
-        content: AnymeXText(message),
+        content: AnymeXText(message, translate: false),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -690,7 +690,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                       child: AnymeXText(
                         _downloadStatus,
                         style: const TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.w500),
+                            fontSize: 13, fontWeight: FontWeight.w500), translate: false,
                       ),
                     ),
                     AnymeXText(
@@ -699,7 +699,7 @@ class _UpdateBottomSheetState extends State<UpdateBottomSheet>
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: colorScheme.primary,
-                      ),
+                      ), translate: false,
                     ),
                   ],
                 ),

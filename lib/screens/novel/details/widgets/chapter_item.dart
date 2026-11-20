@@ -127,7 +127,7 @@ class ChapterListItem extends StatelessWidget {
       ),
       child: AnymeXText(chapter.formattedNumber,
         variant: TextVariant.bold,
-        color: context.colors.onPrimary,
+        color: context.colors.onPrimary, translate: false,
       ),
     );
   }
@@ -190,7 +190,7 @@ class ChapterListItem extends StatelessWidget {
           child: AnymeXText('${chapter.title}$progressText',
             variant: TextVariant.semiBold,
             maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+            overflow: TextOverflow.ellipsis, translate: false,
           ),
         ),
         const SizedBox(height: 5),
@@ -202,7 +202,7 @@ class ChapterListItem extends StatelessWidget {
                 : calcTime(chapter.releaseDate ?? '0'),
             color: context.colors.inverseSurface.opaque(0.9),
             fontStyle: FontStyle.italic,
-            maxLines: 2,
+            maxLines: 2, translate: false,
           ),
         ),
       ],

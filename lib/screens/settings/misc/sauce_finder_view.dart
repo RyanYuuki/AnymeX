@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'dart:io';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
@@ -526,7 +527,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
               fontSize: 14,
               color: colorScheme.onSurface.opaque(0.7),
             ),
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.center, translate: false,
           ),
           const SizedBox(height: 20),
           Container(
@@ -656,7 +657,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
                     color: colorScheme.onSurface,
                     letterSpacing: -0.3,
                     height: 1.2,
-                  ),
+                  ), translate: false,
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -760,7 +761,7 @@ class _SauceFinderViewState extends State<SauceFinderView> {
               fontWeight: FontWeight.w600,
               color: textColor,
               letterSpacing: -0.1,
-            ),
+            ), translate: false,
           ),
         ],
       ),

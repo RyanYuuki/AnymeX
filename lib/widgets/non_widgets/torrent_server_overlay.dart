@@ -226,7 +226,7 @@ class _TorrentServerOverlayWidgetState
         '$percentage%',
         variant: TextVariant.bold,
         size: 12.5,
-        color: theme.primary,
+        color: theme.primary, translate: false,
       );
     }
 
@@ -322,7 +322,7 @@ class _TorrentServerOverlayWidgetState
                                               ? theme.error
                                               : theme.onSurfaceVariant,
                                           maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                          overflow: TextOverflow.ellipsis, translate: false,
                                         ),
                                       ],
                                     ),

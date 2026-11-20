@@ -22,7 +22,7 @@ void showSelectionDialog<T>({
         return AnymeXDialog(
           title: title,
           showCancelButton: false,
-          confirmText: 'Close',
+          confirmText: 'Close'.tr,
           onConfirm: () {},
           contentWidget: ConstrainedBox(
             constraints: BoxConstraints(

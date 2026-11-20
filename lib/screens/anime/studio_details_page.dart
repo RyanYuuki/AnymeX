@@ -157,13 +157,13 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           size: 20,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true,
+                          isMarquee: true, translate: false,
                         ),
                       ),
                       Obx(() => GestureDetector(
                             onTap: () async {
                               if (!anilistAuth.isLoggedIn.value) {
-                                snackBar("Please login to favorite!");
+                                snackBar("Please login to favorite!".tr);
                                 return;
                               }
 
@@ -190,7 +190,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                     _favouritesCount++;
                                   }
                                 });
-                                snackBar("Failed to update AniList");
+                                snackBar("Failed to update AniList".tr);
                               } else {
                                 snackBar(isFav.value
                                     ? "Added to Favorites"
@@ -230,7 +230,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                     variant: TextVariant.bold,
                                     color: isFav.value
                                         ? Colors.red
-                                        : theme.onSurface,
+                                        : theme.onSurface, translate: false,
                                   ),
                                 ],
                               ),
@@ -298,7 +298,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
               child: GestureDetector(
                 onTap: () {
                   if (!anilistAuth.isLoggedIn.value) {
-                    snackBar("Please login to use this filter!");
+                    snackBar("Please login to use this filter!".tr);
                     return;
                   }
                   showOnlyOnList.value = !showOnlyOnList.value;
@@ -371,7 +371,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                           child: AnymeXText("$year (${mediaList.length})",
                             variant: TextVariant.bold,
                             size: 18,
-                            color: theme.primary,
+                            color: theme.primary, translate: false,
                           ),
                         ),
                         Expanded(
@@ -484,7 +484,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
                                   AnymeXText(media.rating,
                                     variant: TextVariant.bold,
                                     size: 10,
-                                    color: Colors.white,
+                                    color: Colors.white, translate: false,
                                   ),
                                 ],
                               ),
@@ -502,7 +502,7 @@ class _StudioDetailsSheetContentState extends State<StudioDetailsSheetContent> {
               variant: TextVariant.semiBold,
               size: 12,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.ellipsis, translate: false,
             ),
           ],
         ),

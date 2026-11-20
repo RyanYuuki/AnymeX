@@ -145,7 +145,7 @@ class _WatchiumPartyPopupContentState
   Widget build(BuildContext context) {
     if (_showSettings) {
       return WatchSettingsPane(
-        title: 'Party Settings',
+        title: 'Party Settings'.tr,
         onClose: widget.onClose,
         actions: [
           IconButton(
@@ -168,7 +168,7 @@ class _WatchiumPartyPopupContentState
 
     final cs = context.colors;
     return WatchSettingsPane(
-      title: 'Watch Party',
+      title: 'Watch Party'.tr,
       subtitle: _buildHeaderSubtitle(cs),
       onClose: widget.onClose,
       actions: [
@@ -398,7 +398,7 @@ class _WatchiumPartyPopupContentState
                                         msg.username,
                                         size: 10,
                                         variant: TextVariant.semiBold,
-                                        color: cs.primary,
+                                        color: cs.primary, translate: false,
                                       ),
                                     ],
                                   ),
@@ -433,7 +433,7 @@ class _WatchiumPartyPopupContentState
                                 child: AnymeXText(
                                   msg.text,
                                   size: 13,
-                                  color: cs.onSurface,
+                                  color: cs.onSurface, translate: false,
                                 ),
                               ),
                             ],
@@ -507,7 +507,7 @@ class _WatchiumPartyPopupContentState
             message,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: cs.onSurface.opaque(0.5, iReallyMeanIt: true),
-            ),
+            ), translate: false,
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 4),
@@ -515,7 +515,7 @@ class _WatchiumPartyPopupContentState
               subtitle,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: cs.onSurface.opaque(0.35, iReallyMeanIt: true),
-              ),
+              ), translate: false,
             ),
           ],
         ],
@@ -564,7 +564,7 @@ class _WatchiumPartyPopupContentState
                   alignment: Alignment.center,
                   child: AnymeXText(
                     emoji,
-                    style: const TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18), translate: false,
                   ),
                 ),
               );
@@ -772,13 +772,13 @@ class _WatchiumPartyPopupContentState
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AnymeXText(r.emoji, style: const TextStyle(fontSize: 18)),
+              AnymeXText(r.emoji, style: const TextStyle(fontSize: 18), translate: false),
               const SizedBox(width: 6),
               AnymeXText(
                 r.username,
                 size: 11,
                 variant: TextVariant.semiBold,
-                color: cs.primary,
+                color: cs.primary, translate: false,
               ),
             ],
           ),
@@ -1116,7 +1116,7 @@ class _WatchiumPartyPopupContentState
           value: emoji,
           height: 40,
           child: Center(
-            child: AnymeXText(emoji, style: const TextStyle(fontSize: 24)),
+            child: AnymeXText(emoji, style: const TextStyle(fontSize: 24), translate: false),
           ),
         );
       }).toList(),
@@ -1146,17 +1146,17 @@ class _WatchiumPartyPopupContentState
         children: [
           AnymeXSectionBuilder(
             margin: EdgeInsets.zero,
-            title: 'Room Access',
+            title: 'Room Access'.tr,
             children: [
               AnymeXTile(
                 icon: Icons.vpn_key_rounded,
-                title: 'Room Code',
+                title: 'Room Code'.tr,
                 subtitleWidget: AnymeXText(
                   code,
                   size: 14,
                   variant: TextVariant.semiBold,
                   color: cs.onSurface,
-                  style: const TextStyle(letterSpacing: 2),
+                  style: const TextStyle(letterSpacing: 2), translate: false,
                 ),
                 trailing: _buildCopyButton(
                   cs,
@@ -1168,13 +1168,13 @@ class _WatchiumPartyPopupContentState
               AnymeXTile(
                 icon: Icons.link_rounded,
                 iconColor: Colors.purple,
-                title: 'Invite Link',
+                title: 'Invite Link'.tr,
                 subtitleWidget: AnymeXText(
                   inviteUrl,
                   size: 12,
                   color: cs.primary,
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+                  maxLines: 1, translate: false,
                 ),
                 trailing: _buildCopyButton(
                   cs,
@@ -1188,19 +1188,19 @@ class _WatchiumPartyPopupContentState
           const SizedBox(height: 20),
           AnymeXSectionBuilder(
             margin: EdgeInsets.zero,
-            title: 'Activity',
+            title: 'Activity'.tr,
             children: [
               AnymeXTile(
                 icon: Icons.schedule_rounded,
                 iconColor: Colors.blue,
-                title: 'Room Duration',
+                title: 'Room Duration'.tr,
                 subtitle: durationStr,
                 showChevron: false,
               ),
               AnymeXTile(
                 icon: Icons.people_rounded,
                 iconColor: Colors.green.opaque(0.8, iReallyMeanIt: true),
-                title: 'Watching Now',
+                title: 'Watching Now'.tr,
                 subtitle: '$onlineCount / ${state.maxMembers} members',
                 showChevron: false,
               ),
@@ -1209,12 +1209,12 @@ class _WatchiumPartyPopupContentState
           const SizedBox(height: 20),
           AnymeXSectionBuilder(
             margin: EdgeInsets.zero,
-            title: 'Details',
+            title: 'Details'.tr,
             children: [
               AnymeXTile(
                 icon: Icons.calendar_today_rounded,
                 iconColor: Colors.amber,
-                title: 'Created',
+                title: 'Created'.tr,
                 subtitle: _formatDateTime(createdAt),
                 showChevron: false,
               ),

@@ -57,7 +57,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
             _initialLoad = false;
             if (cleared && mounted) {
               setState(() => _synced = true);
-              snackBar('Cloudflare challenge solved!');
+              snackBar('Cloudflare challenge solved!'.tr);
               await Future.delayed(const Duration(milliseconds: 600));
               if (!context.mounted) return;
               Navigator.of(context).pop(true);
@@ -171,7 +171,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
     await _syncCookiesAndUserAgent();
     if (mounted) {
       setState(() => _synced = true);
-      snackBar('Cookies & User-Agent synced!');
+      snackBar('Cookies & User-Agent synced!'.tr);
       Navigator.of(context).pop(true);
     }
   }
@@ -203,7 +203,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                   IconButton(
                     icon: Icon(Icons.close_rounded, color: colors.onSurface),
                     onPressed: () => Navigator.of(context).pop(),
-                    tooltip: 'Close',
+                    tooltip: 'Close'.tr,
                   ),
                   const SizedBox(width: 4),
                   Container(
@@ -238,7 +238,7 @@ class _CloudflareBypassWebViewState extends State<CloudflareBypassWebView> {
                             fontSize: 11,
                           ),
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis, translate: false,
                         ),
                       ],
                     ),

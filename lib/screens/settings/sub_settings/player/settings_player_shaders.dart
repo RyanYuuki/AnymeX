@@ -307,7 +307,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                 fontFamily: 'monospace',
                 color: colors.onPrimaryContainer,
                 fontSize: 12,
-              ),
+              ), translate: false,
             ),
           ),
           const SizedBox(width: 14),
@@ -317,7 +317,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
               style: TextStyle(
                 color: colors.onSurface,
                 fontSize: 13,
-              ),
+              ), translate: false,
             ),
           ),
         ],
@@ -429,14 +429,14 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                         style: TextStyle(
                                           fontSize: 13,
                                           color: colors.onSurface,
-                                        ),
+                                        ), translate: false,
                                       ),
                                       AnymeXText.semiBold(
                                         '${(_downloadProgress.value * 100).toInt()}%',
                                         style: TextStyle(
                                           fontSize: 13,
                                           color: colors.primary,
-                                        ),
+                                        ), translate: false,
                                       ),
                                     ],
                                   ),
@@ -650,7 +650,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                         color: isSelected
                                             ? colors.onPrimaryContainer
                                             : colors.onSurface,
-                                      ),
+                                      ), translate: false,
                                     ),
                                     const SizedBox(height: 2),
                                     AnymeXText(
@@ -661,7 +661,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                             ? colors.onPrimaryContainer
                                                 .withValues(alpha: 0.8)
                                             : colors.onSurfaceVariant,
-                                      ),
+                                      ), translate: false,
                                     ),
                                   ],
                                 ),
@@ -758,7 +758,7 @@ class _SettingsPlayerShadersState extends State<SettingsPlayerShaders> {
                                           color: isSelected
                                               ? colors.onPrimaryContainer
                                               : colors.onSurface,
-                                        ),
+                                        ), translate: false,
                                       ),
                                     ),
                                     if (isSelected)

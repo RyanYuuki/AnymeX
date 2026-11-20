@@ -281,7 +281,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                                               color: Colors.black45,
                                               blurRadius: 10)
                                         ],
-                                      ),
+                                      ), translate: false,
                                     ),
                                     const SizedBox(height: 8),
                                     AnymeXText(
@@ -443,7 +443,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                           fontWeight:
                               isCurrent ? FontWeight.bold : FontWeight.normal,
                           fontSize: 14,
-                        ),
+                        ), translate: false,
                       ),
               ),
               const SizedBox(width: 16),
@@ -459,7 +459,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                           : colorScheme.onSurface,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -479,7 +479,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                             style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: colorScheme.onPrimary),
+                                color: colorScheme.onPrimary), translate: false,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -595,7 +595,7 @@ class _AnimeThemePlayerPageState extends State<AnimeThemePlayerPage> {
                             variant: TextVariant.bold,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            isMarquee: true,
+                            isMarquee: true, translate: false,
                           ),
                           AnymeXText(currentTheme.artist.isNotEmpty
                                 ? currentTheme.artist

@@ -22,7 +22,7 @@ class ScanlatorsRanges extends StatelessWidget {
         scrollPadding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
         items: [
           PillItem(
-            label: 'All',
+            label: 'All'.tr,
             isSelected: selected == 0,
             onTap: () {
               selectedScanIndex.value = 0;

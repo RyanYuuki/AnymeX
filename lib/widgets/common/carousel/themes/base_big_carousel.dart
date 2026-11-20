@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
 import 'package:anymex/screens/manga/details_page.dart';
@@ -89,7 +90,7 @@ abstract class BaseBigCarouselState<T extends BaseBigCarousel>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const AnymeXText(
+                  AnymeXText(
                     'Description',
                     style: TextStyle(
                       fontSize: 26,
@@ -118,7 +119,7 @@ abstract class BaseBigCarouselState<T extends BaseBigCarousel>
                           height: 1.75,
                           letterSpacing: 0.1,
                           color: colors.onSurfaceVariant,
-                        ),
+                        ), translate: false,
                       ),
               ),
             ),

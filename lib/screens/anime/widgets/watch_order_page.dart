@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/controllers/service_handler/service_handler.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/screens/anime/details_page.dart';
@@ -70,7 +71,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
     return AnymeXScaffold(
   body: Column(
           children: [
-            const NestedHeader(title: 'Watch Order'),
+            NestedHeader(title: 'Watch Order'.tr),
             Expanded(
               child: Builder(
                 builder: (context) {
@@ -82,13 +83,13 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: AnymeXText(error!,
-                          textAlign: TextAlign.center,
+                          textAlign: TextAlign.center, translate: false,
                         ),
                       ),
                     );
                   }
                   if (watchOrder.isEmpty) {
-                    return const Center(
+                    return Center(
                         child: AnymeXText("No watch order found."));
                   }
 
@@ -143,7 +144,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                     color: colorScheme.onPrimary,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
-                  ),
+                  ), translate: false,
                 ),
               ),
               if (!isLast)
@@ -229,7 +230,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                         child: AnymeXText(item.relationType.toUpperCase(),
                           size: 9,
                           color: colorScheme.onPrimaryContainer,
-                          variant: TextVariant.bold,
+                          variant: TextVariant.bold, translate: false,
                         ),
                       ),
                     AnymeXText(item.nameEnglish ?? item.name,
@@ -237,7 +238,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                       size: 15,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      isMarquee: true,
+                      isMarquee: true, translate: false,
                     ),
                     if (item.nameEnglish != null &&
                         item.nameEnglish!.isNotEmpty)
@@ -248,7 +249,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                           color: colorScheme.onSurfaceVariant,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true,
+                          isMarquee: true, translate: false,
                         ),
                       ),
                     const SizedBox(height: 8),
@@ -273,7 +274,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
                       AnymeXText((item.rating),
                         size: 12,
                         variant: TextVariant.semiBold,
-                        color: colorScheme.onSurface,
+                        color: colorScheme.onSurface, translate: false,
                       ),
                   ],
                 ),
@@ -302,7 +303,7 @@ class _WatchOrderPageState extends State<WatchOrderPage> {
             fontSize: 10,
             fontWeight: FontWeight.bold,
             color: color,
-          ),
+          ), translate: false,
         ),
       ],
     );

@@ -90,7 +90,7 @@ class SaikouCard extends CarouselCard {
                 size: desktop ? 14 : 12,
                 variant: TextVariant.semiBold,
                 overflow: TextOverflow.ellipsis,
-                isMarquee: false,
+                isMarquee: false, translate: false,
               ),
             ),
           ],

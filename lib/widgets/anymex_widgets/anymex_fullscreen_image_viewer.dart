@@ -26,13 +26,13 @@ class AnymeXFullscreenImageViewer extends StatefulWidget {
 class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
   Future<void> _saveImage(String url) async {
     try {
-      snackBar("Downloading image...");
+      snackBar("Downloading image...".tr);
       final response = await http.get(Uri.parse(url));
 
       if (!mounted) return;
 
       if (response.statusCode != 200) {
-        snackBar("Failed to download image");
+        snackBar("Failed to download image".tr);
         return;
       }
 
@@ -96,7 +96,7 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
             final file = File('${tempDir.path}/$fileName');
             await file.writeAsBytes(bytes);
             await Share.shareXFiles([XFile(file.path)],
-                text: "Image shared from AnymeX");
+                text: "Image shared from AnymeX".tr);
           }
         }
       } else if (Platform.isIOS) {
@@ -104,7 +104,7 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
         final file = File('${tempDir.path}/$fileName');
         await file.writeAsBytes(bytes);
         await Share.shareXFiles([XFile(file.path)],
-            text: "Image shared from AnymeX");
+            text: "Image shared from AnymeX".tr);
       } else {
         // pc
         String? downloadPath = (await getDownloadsDirectory())?.path;
@@ -140,7 +140,7 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
       }
     } catch (e) {
       if (mounted) {
-        snackBar("Error saving image");
+        snackBar("Error saving image".tr);
       }
     }
   }
@@ -148,17 +148,17 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
   Future<void> _shareImage(String url) async {
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       await Clipboard.setData(ClipboardData(text: url));
-      if (mounted) snackBar("Link copied to clipboard!");
+      if (mounted) snackBar("Link copied to clipboard!".tr);
       return;
     }
     try {
-      snackBar("Preparing image to share...");
+      snackBar("Preparing image to share...".tr);
       final response = await http.get(Uri.parse(url));
 
       if (!mounted) return;
 
       if (response.statusCode != 200) {
-        snackBar("Failed to fetch image for sharing");
+        snackBar("Failed to fetch image for sharing".tr);
         return;
       }
 
@@ -181,10 +181,10 @@ class _FullscreenImageViewerState extends State<AnymeXFullscreenImageViewer> {
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsBytes(bytes);
 
-      await Share.shareXFiles([XFile(file.path)], text: "Shared from AnymeX");
+      await Share.shareXFiles([XFile(file.path)], text: "Shared from AnymeX".tr);
     } catch (e) {
       if (mounted) {
-        snackBar("Error sharing image");
+        snackBar("Error sharing image".tr);
       }
     }
   }

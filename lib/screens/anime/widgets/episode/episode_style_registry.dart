@@ -53,26 +53,26 @@ class EpisodeStyleRegistry {
   static EpisodeStyle get activeStyle => getStyle(currentStyleId.value);
 
   static final List<EpisodeStyle> _styles = [
-    const EpisodeStyle(
+    EpisodeStyle(
       id: 'minimal',
       name: 'Minimal',
       description:
-          'Simple layout displaying episode number, title, and progress without thumbnail',
+          'Simple layout displaying episode number, title, and progress without thumbnail'.tr,
       styleType: EpisodeStyleType.minimal,
       builder: buildMinimalEpisodeStyle,
     ),
-    const EpisodeStyle(
+    EpisodeStyle(
       id: 'compact',
       name: 'Compact',
-      description: 'Compact card with episode thumbnail and title',
+      description: 'Compact card with episode thumbnail and title'.tr,
       styleType: EpisodeStyleType.compact,
       builder: buildCompactEpisodeStyle,
     ),
-    const EpisodeStyle(
+    EpisodeStyle(
       id: 'detailed',
       name: 'Detailed',
       description:
-          'Full-width detailed card with large thumbnail and episode metadata',
+          'Full-width detailed card with large thumbnail and episode metadata'.tr,
       styleType: EpisodeStyleType.detailed,
       builder: buildDetailedEpisodeStyle,
     ),

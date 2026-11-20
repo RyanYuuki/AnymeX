@@ -251,7 +251,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                   maxLength: 700,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Why are you recommending this? (min 30 chars)',
+                    hintText: 'Why are you recommending this? (min 30 chars)'.tr,
                     filled: true,
                     fillColor: colors.surfaceContainerLow,
                     border: OutlineInputBorder(
@@ -275,7 +275,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                     onPressed: () async {
                       final newReason = controller.text.trim();
                       if (newReason.length < 30) {
-                        warningSnackBar('Please write at least 30 characters');
+                        warningSnackBar('Please write at least 30 characters'.tr);
                         return;
                       }
                       Navigator.of(ctx).pop();
@@ -292,13 +292,13 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
 
                       if (!mounted) return;
                       if (error == null) {
-                        successSnackBar('Reason updated!');
+                        successSnackBar('Reason updated!'.tr);
                       } else {
                         errorSnackBar(error);
                       }
                     },
                     icon: const Icon(Icons.save_rounded, size: 18),
-                    label: const AnymeXText('Save Changes'),
+                    label: AnymeXText('Save Changes'),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -322,7 +322,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const AnymeXText('Delete Reason?'),
+        title: AnymeXText('Delete Reason?'),
         content: AnymeXText(
           _isAdmin
               ? 'This reason will be deleted immediately.'
@@ -331,12 +331,12 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const AnymeXText('Cancel'),
+            child: AnymeXText('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: colors.error),
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const AnymeXText('Delete'),
+            child: AnymeXText('Delete'),
           ),
         ],
       ),
@@ -355,9 +355,9 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
     if (!mounted) return;
     if (error == null) {
       if (pending) {
-        successSnackBar('Deletion request sent to admins for review.');
+        successSnackBar('Deletion request sent to admins for review.'.tr);
       } else {
-        successSnackBar('Reason deleted.');
+        successSnackBar('Reason deleted.'.tr);
       }
       Navigator.of(context).pop();
     } else {
@@ -478,7 +478,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                 variant: TextVariant.bold,
                 size: 14,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis, translate: false,
               ),
               const SizedBox(height: 4),
               AnymeXText(count == 1 ? '1 Recommendation' : '$count Recommendations',
@@ -584,7 +584,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                               color:
                                   hasValidProfile ? colors.primary : colors.onSurface,
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              overflow: TextOverflow.ellipsis, translate: false,
                             ),
                           ),
                           if (reason.user?.isAdmin == true) ...[
@@ -601,7 +601,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                         if (reason.addedAt != null) ...[
                           AnymeXText(_formatDate(reason.addedAt!),
                             size: 11,
-                            color: colors.onSurfaceVariant,
+                            color: colors.onSurfaceVariant, translate: false,
                           ),
                         ],
                         if (reason.editedAt != null) ...[
@@ -656,7 +656,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                 fontStyle: FontStyle.italic,
                 color: colors.onSurface,
                 height: 1.5,
-              ),
+              ), translate: false,
             ),
           ],
           // Edit / Delete buttons
@@ -755,7 +755,7 @@ class _ReasonsSheetState extends State<ReasonsSheet> {
                   );
                 },
                 icon: const Icon(Icons.add_rounded, size: 18),
-                label: const AnymeXText('Add Your Recommendation'),
+                label: AnymeXText('Add Your Recommendation'),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -875,7 +875,7 @@ class _ReasonAvatar extends StatelessWidget {
                   fontSize: size * 0.44,
                   fontWeight: FontWeight.w700,
                   color: colors.onPrimaryContainer,
-                ),
+                ), translate: false,
               ),
             ),
     );
@@ -938,7 +938,7 @@ class _ReasonsVoteButton extends StatelessWidget {
               AnymeXText('$count',
                 size: 13,
                 color: active ? activeColor : colors.onSurfaceVariant,
-                variant: TextVariant.semiBold,
+                variant: TextVariant.semiBold, translate: false,
               ),
             ],
           ),

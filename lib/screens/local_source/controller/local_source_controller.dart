@@ -563,7 +563,7 @@ class LocalSourceController extends GetxController
           selectedMedia.value = data;
         }
       } else {
-        errorSnackBar('Failed to fetch details');
+        errorSnackBar('Failed to fetch details'.tr);
       }
     } else {
       final data = await selectedSource.value!.methods.getDetail(searchResult);
@@ -608,6 +608,6 @@ class LocalSourceController extends GetxController
     //     },
     //     filename:
     //         '${selectedMedia.value!.title}/${selectedSeason.value!.title}/${selectedEpisode.value?.title} - ${video.quality}');
-    snackBar('Added to downloads');
+    snackBar('Added to downloads'.tr);
   }
 }

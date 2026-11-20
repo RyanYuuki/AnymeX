@@ -322,7 +322,7 @@ class SimklService extends GetxController
                     height: buttonHeight,
                     tagIcon: Icons.movie_filter_outlined,
                     subText: '${animeList.length} items',
-                    buttonText: "MOVIES LIST",
+                    buttonText: "MOVIES LIST".tr,
                     backgroundImage: trendingMovies
                             .firstWhere(
                               (e) => e.cover != null,
@@ -334,7 +334,7 @@ class SimklService extends GetxController
                     borderRadius: 16.multiplyRadius(),
                     onPressed: () {
                       navigate(() => AnimeList(
-                            title: "Movies",
+                            title: "Movies".tr,
                             data: animeList.value.removeDupes(),
                           ));
                     },
@@ -345,7 +345,7 @@ class SimklService extends GetxController
                     height: buttonHeight,
                     tagIcon: Icons.movie_filter_outlined,
                     subText: '${mangaList.length} items',
-                    buttonText: "SERIES LIST",
+                    buttonText: "SERIES LIST".tr,
                     borderRadius: 16.multiplyRadius(),
                     backgroundImage: trendingSeries
                             .firstWhere(
@@ -357,7 +357,7 @@ class SimklService extends GetxController
                         '',
                     onPressed: () {
                       navigate(() => AnimeList(
-                            title: "Shows",
+                            title: "Shows".tr,
                             data: mangaList.value.removeDupes(),
                           ));
                     },
@@ -380,7 +380,7 @@ class SimklService extends GetxController
               child: ImageButton(
                 width: buttonWidth,
                 height: buttonHeight,
-                buttonText: "CALENDAR",
+                buttonText: "CALENDAR".tr,
                 borderRadius: 16.multiplyRadius(),
                 backgroundImage: trendingMovies.isNotEmpty
                     ? trendingMovies[0].cover ?? ''
@@ -423,13 +423,13 @@ class SimklService extends GetxController
           ? ReusableCarousel(
               data: trendingMovies.value
                   .sublist(0, math.min(10, trendingMovies.length)),
-              title: "Trending Movies")
+              title: "Trending Movies".tr)
           : const SizedBox.shrink()),
       Obx(() => trendingSeries.value.isNotEmpty
           ? ReusableCarousel(
               data: trendingSeries.value
                   .sublist(0, math.min(10, trendingSeries.length)),
-              title: "Trending Series")
+              title: "Trending Series".tr)
           : const SizedBox.shrink()),
     ].obs;
   }
@@ -457,16 +457,16 @@ class SimklService extends GetxController
           if (trendingMovies.value.isNotEmpty)
             ReusableCarousel(
                 data: trendingMovies.value.sublist(0, 10),
-                title: "Trending Movies"),
+                title: "Trending Movies".tr),
           if (koreanMovies.value.isNotEmpty)
-            ReusableCarousel(data: koreanMovies.value, title: "Korean Movies"),
+            ReusableCarousel(data: koreanMovies.value, title: "Korean Movies".tr),
           if (usMovies.value.isNotEmpty)
-            ReusableCarousel(data: usMovies.value, title: "US Movies"),
+            ReusableCarousel(data: usMovies.value, title: "US Movies".tr),
           if (ukMovies.value.isNotEmpty)
-            ReusableCarousel(data: ukMovies.value, title: "UK Movies"),
+            ReusableCarousel(data: ukMovies.value, title: "UK Movies".tr),
           if (canadaMovies.value.isNotEmpty)
             ReusableCarousel(
-                data: canadaMovies.value, title: "Canadian Movies"),
+                data: canadaMovies.value, title: "Canadian Movies".tr),
           Obx(() {
             final list = communityService.getFilteredCommunityMovies();
             return buildUnderratedSection('Community Recommendations', list,
@@ -502,17 +502,17 @@ class SimklService extends GetxController
           if (trendingSeries.value.isNotEmpty)
             ReusableCarousel(
                 data: trendingSeries.value.sublist(0, 10),
-                title: "Trending Series"),
+                title: "Trending Series".tr),
           if (koreanSeries.value.isNotEmpty)
-            ReusableCarousel(data: koreanSeries.value, title: "K-Dramas"),
+            ReusableCarousel(data: koreanSeries.value, title: "K-Dramas".tr),
           if (japaneseSeries.value.isNotEmpty)
-            ReusableCarousel(data: japaneseSeries.value, title: "J-Dramas"),
+            ReusableCarousel(data: japaneseSeries.value, title: "J-Dramas".tr),
           if (usSeries.value.isNotEmpty)
-            ReusableCarousel(data: usSeries.value, title: "US Shows"),
+            ReusableCarousel(data: usSeries.value, title: "US Shows".tr),
           if (ukSeries.value.isNotEmpty)
-            ReusableCarousel(data: ukSeries.value, title: "UK Shows"),
+            ReusableCarousel(data: ukSeries.value, title: "UK Shows".tr),
           if (canadaSeries.value.isNotEmpty)
-            ReusableCarousel(data: canadaSeries.value, title: "Canadian Shows"),
+            ReusableCarousel(data: canadaSeries.value, title: "Canadian Shows".tr),
           Obx(() {
             final list = communityService.getFilteredCommunityShows();
             return buildUnderratedSection('Community Recommendations', list,
@@ -935,7 +935,7 @@ class SimklService extends GetxController
       final selectedMethod = await AnymeXSheet.custom<String>(
         loginSheetHelper(
           context: context,
-          title: 'Login to Simkl',
+          title: 'Login to Simkl'.tr,
           serviceName: 'Simkl',
           showTokenOption: false,
         ),

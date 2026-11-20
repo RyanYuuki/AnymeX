@@ -478,7 +478,7 @@ class _CommentSectionState extends State<CommentSection>
                             formatName,
                             size: 10,
                             variant: TextVariant.bold,
-                            color: colorScheme.primary,
+                            color: colorScheme.primary, translate: false,
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -508,7 +508,7 @@ class _CommentSectionState extends State<CommentSection>
                       color: colorScheme.primary,
                       size: 18,
                     ),
-                    tooltip: 'Leaderboard',
+                    tooltip: 'Leaderboard'.tr,
                   ),
                 ),
                 SizedBox(
@@ -523,7 +523,7 @@ class _CommentSectionState extends State<CommentSection>
                       color: colorScheme.primary,
                       size: 18,
                     ),
-                    tooltip: 'Comment Rules',
+                    tooltip: 'Comment Rules'.tr,
                   ),
                 ),
                 Obx(() => SizedBox(
@@ -550,7 +550,7 @@ class _CommentSectionState extends State<CommentSection>
                                 size: 18,
                                 color: colorScheme.onSurfaceVariant,
                               ),
-                        tooltip: 'Refresh comments',
+                        tooltip: 'Refresh comments'.tr,
                       ),
                     )),
               ],
@@ -592,7 +592,7 @@ class _CommentSectionState extends State<CommentSection>
                   color: colorScheme.onSurfaceVariant,
                   size: 12,
                   variant: TextVariant.semiBold,
-                  maxLines: null,
+                  maxLines: null, translate: false,
                 ),
                 Icon(Icons.arrow_drop_down_rounded,
                     size: 16, color: colorScheme.onSurfaceVariant),
@@ -610,7 +610,7 @@ class _CommentSectionState extends State<CommentSection>
                     else
                       const SizedBox(width: 18),
                     const SizedBox(width: 8),
-                    AnymeXText(s.$2, maxLines: null),
+                    AnymeXText(s.$2, maxLines: null, translate: false),
                   ],
                 ),
               ))
@@ -714,7 +714,7 @@ class _CommentSectionState extends State<CommentSection>
                       fontWeight:
                           isSelected ? FontWeight.w700 : FontWeight.w500,
                     ),
-                    maxLines: null,
+                    maxLines: null, translate: false,
                   ),
                 ),
               );
@@ -729,7 +729,7 @@ class _CommentSectionState extends State<CommentSection>
               fontWeight: FontWeight.w500,
             ),
             decoration: InputDecoration(
-              hintText: 'Or type custom tag...',
+              hintText: 'Or type custom tag...'.tr,
               hintStyle: TextStyle(
                 color: colorScheme.onSurfaceVariant.opaque(0.6),
                 fontSize: 14,
@@ -1187,7 +1187,7 @@ class _CommentSectionState extends State<CommentSection>
                   size: 12,
                   variant: TextVariant.bold,
                   color: colorScheme.primary,
-                  maxLines: null,
+                  maxLines: null, translate: false,
                 ),
               ],
             ),
@@ -1436,7 +1436,7 @@ class _CommentSectionState extends State<CommentSection>
                               size: 13,
                               variant: TextVariant.bold,
                               overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
+                              maxLines: 1, translate: false,
                             ),
                           ),
                         ),
@@ -1463,7 +1463,7 @@ class _CommentSectionState extends State<CommentSection>
                             size: 13,
                             variant: TextVariant.bold,
                             overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                            maxLines: 1, translate: false,
                           ),
                         ),
                         if (reply.edited == true) ...[
@@ -1481,7 +1481,7 @@ class _CommentSectionState extends State<CommentSection>
                           _formatTimestampShort(reply.createdAt),
                           size: 11,
                           color: colorScheme.onSurfaceVariant.opaque(0.6),
-                          maxLines: 1,
+                          maxLines: 1, translate: false,
                         ),
                         if (isLocked) ...[
                           const SizedBox(width: 4),
@@ -1662,7 +1662,7 @@ class _CommentSectionState extends State<CommentSection>
                       ),
                       onChanged: (_) => setReplyState(() {}),
                       decoration: InputDecoration(
-                        hintText: 'Write a reply...',
+                        hintText: 'Write a reply...'.tr,
                         hintStyle: TextStyle(
                           color: colorScheme.onSurfaceVariant.opaque(0.5),
                           fontSize: 14,
@@ -1785,7 +1785,7 @@ class _CommentSectionState extends State<CommentSection>
                               size: depth == 0 ? 14 : 13,
                               variant: TextVariant.bold,
                               overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
+                              maxLines: 1, translate: false,
                             ),
                           ),
                         ),
@@ -1815,7 +1815,7 @@ class _CommentSectionState extends State<CommentSection>
                           _formatTimestampShort(comment.createdAt),
                           size: 11,
                           color: colorScheme.onSurfaceVariant.opaque(0.6),
-                          maxLines: 1,
+                          maxLines: 1, translate: false,
                         ),
                         if (isLocked) ...[
                           const SizedBox(width: 4),
@@ -2128,7 +2128,7 @@ class _CommentSectionState extends State<CommentSection>
                     ),
                     _buildTextMenuOption(
                       context: context,
-                      label: 'Copy',
+                      label: 'Copy'.tr,
                       onTap: () {
                         Navigator.pop(ctx);
                         Clipboard.setData(
@@ -2139,7 +2139,7 @@ class _CommentSectionState extends State<CommentSection>
                     if (isOwnComment) ...[
                       _buildTextMenuOption(
                         context: context,
-                        label: 'Delete',
+                        label: 'Delete'.tr,
                         isDestructive: true,
                         onTap: () {
                           Navigator.pop(ctx);
@@ -2150,7 +2150,7 @@ class _CommentSectionState extends State<CommentSection>
                     if (!isOwnComment) ...[
                       _buildTextMenuOption(
                         context: context,
-                        label: 'Report',
+                        label: 'Report'.tr,
                         isDestructive: true,
                         onTap: () {
                           Navigator.pop(ctx);
@@ -2162,13 +2162,13 @@ class _CommentSectionState extends State<CommentSection>
                       if (!isOwnComment) ...[
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Delete',
+                          label: 'Delete'.tr,
                           isDestructive: true,
                           onTap: () {
                             Navigator.pop(ctx);
                             _showReasonDialog(
                               context: context,
-                              title: 'Delete Comment',
+                              title: 'Delete Comment'.tr,
                               isDestructive: true,
                               onConfirm: (reason) {
                                 controller.deleteComment(comment);
@@ -2245,7 +2245,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Warn User',
+                          label: 'Warn User'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2254,7 +2254,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Mute User',
+                          label: 'Mute User'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2263,7 +2263,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Ban User',
+                          label: 'Ban User'.tr,
                           isDestructive: true,
                           onTap: () {
                             Navigator.pop(ctx);
@@ -2273,7 +2273,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Shadow Ban User',
+                          label: 'Shadow Ban User'.tr,
                           isDestructive: true,
                           onTap: () {
                             Navigator.pop(ctx);
@@ -2283,7 +2283,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Unmute User',
+                          label: 'Unmute User'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2292,7 +2292,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'Unban User',
+                          label: 'Unban User'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _openUserModeration(
@@ -2301,7 +2301,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'User Info',
+                          label: 'User Info'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _showUserInfoDialog(
@@ -2310,7 +2310,7 @@ class _CommentSectionState extends State<CommentSection>
                         ),
                         _buildTextMenuOption(
                           context: context,
-                          label: 'User History',
+                          label: 'User History'.tr,
                           onTap: () {
                             Navigator.pop(ctx);
                             _showUserHistoryDialog(
@@ -2354,7 +2354,7 @@ class _CommentSectionState extends State<CommentSection>
                   color: itemColor,
                   size: 14,
                   variant: TextVariant.semiBold,
-                  maxLines: null,
+                  maxLines: null, translate: false,
                 ),
               ),
             ],
@@ -2415,7 +2415,7 @@ class _CommentSectionState extends State<CommentSection>
                 maxLines: 5,
                 minLines: 2,
                 decoration: InputDecoration(
-                  hintText: 'Edit your comment...',
+                  hintText: 'Edit your comment...'.tr,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -2595,7 +2595,7 @@ class _CommentSectionState extends State<CommentSection>
                     ? null
                     : reasonController.text,
                 decoration: InputDecoration(
-                  labelText: 'Reason',
+                  labelText: 'Reason'.tr,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -2630,7 +2630,7 @@ class _CommentSectionState extends State<CommentSection>
                 controller: notesController,
                 maxLines: 3,
                 decoration: InputDecoration(
-                  labelText: 'Additional notes (optional)',
+                  labelText: 'Additional notes (optional)'.tr,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -2714,7 +2714,7 @@ class _CommentSectionState extends State<CommentSection>
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
-                      ),
+                      ), translate: false,
                 ),
               ),
               const SizedBox(height: 16),
@@ -2776,13 +2776,13 @@ class _CommentSectionState extends State<CommentSection>
                 _buildModAction(
                   context: context,
                   icon: Icons.delete_forever_rounded,
-                  label: 'Delete Comment (Mod)',
+                  label: 'Delete Comment (Mod)'.tr,
                   color: colorScheme.error,
                   onTap: () {
                     Navigator.pop(context);
                     _showReasonDialog(
                       context: context,
-                      title: 'Delete Comment',
+                      title: 'Delete Comment'.tr,
                       isDestructive: true,
                       onConfirm: (reason) {
                         controller.deleteComment(comment);
@@ -2835,7 +2835,7 @@ class _CommentSectionState extends State<CommentSection>
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
-              maxLines: null,
+              maxLines: null, translate: false,
             ),
           ],
         ),
@@ -2853,14 +2853,14 @@ class _CommentSectionState extends State<CommentSection>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: AnymeXText(title, maxLines: null),
+        title: AnymeXText(title, maxLines: null, translate: false),
         content: TextField(
           controller: reasonController,
           maxLines: 3,
           minLines: 1,
-          decoration: const InputDecoration(
-            labelText: 'Reason',
-            hintText: 'Provide a reason for this action...',
+          decoration: InputDecoration(
+            labelText: 'Reason'.tr,
+            hintText: 'Provide a reason for this action...'.tr,
             border: OutlineInputBorder(),
           ),
         ),
@@ -2953,7 +2953,7 @@ class _CommentSectionState extends State<CommentSection>
                                     .titleMedium
                                     ?.copyWith(fontWeight: FontWeight.w700),
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                overflow: TextOverflow.ellipsis, translate: false,
                               ),
                             ),
                             if (comment.linkedAccounts?.isNotEmpty == true) ...[
@@ -2991,7 +2991,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.warning_rounded,
-                label: 'Warn User',
+                label: 'Warn User'.tr,
                 color: Colors.orange,
                 onTap: () {
                   Navigator.pop(context);
@@ -3001,7 +3001,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.volume_off_rounded,
-                label: 'Mute User',
+                label: 'Mute User'.tr,
                 color: Colors.amber,
                 onTap: () {
                   Navigator.pop(context);
@@ -3011,7 +3011,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.block_rounded,
-                label: 'Ban User',
+                label: 'Ban User'.tr,
                 color: colorScheme.error,
                 onTap: () {
                   Navigator.pop(context);
@@ -3021,7 +3021,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.visibility_off_rounded,
-                label: 'Shadow Ban User',
+                label: 'Shadow Ban User'.tr,
                 color: Colors.purple,
                 onTap: () {
                   Navigator.pop(context);
@@ -3044,7 +3044,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.check_circle_rounded,
-                label: 'Unban User',
+                label: 'Unban User'.tr,
                 color: Colors.teal,
                 onTap: () {
                   Navigator.pop(context);
@@ -3054,7 +3054,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.notifications_active_rounded,
-                label: 'Unmute User',
+                label: 'Unmute User'.tr,
                 color: Colors.teal,
                 onTap: () {
                   Navigator.pop(context);
@@ -3077,7 +3077,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.info_rounded,
-                label: 'View User Info',
+                label: 'View User Info'.tr,
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(context);
@@ -3087,7 +3087,7 @@ class _CommentSectionState extends State<CommentSection>
               _buildModAction(
                 context: context,
                 icon: Icons.history_rounded,
-                label: 'View User History',
+                label: 'View User History'.tr,
                 color: colorScheme.primary,
                 onTap: () {
                   Navigator.pop(context);
@@ -3209,7 +3209,7 @@ class _CommentSectionState extends State<CommentSection>
                               .textTheme
                               .titleMedium
                               ?.copyWith(fontWeight: FontWeight.w700),
-                          maxLines: null,
+                          maxLines: null, translate: false,
                         ),
                         const SizedBox(height: 4),
                         AnymeXContainer(
@@ -3225,7 +3225,7 @@ class _CommentSectionState extends State<CommentSection>
                             color: _getRoleColor(role),
                             size: 11,
                             variant: TextVariant.bold,
-                            maxLines: null,
+                            maxLines: null, translate: false,
                           ),
                         ),
                       ],
@@ -3444,7 +3444,7 @@ class _CommentSectionState extends State<CommentSection>
                                           _formatTimestamp(timestamp),
                                           color: colorScheme.onSurfaceVariant,
                                           size: 10,
-                                          maxLines: null,
+                                          maxLines: null, translate: false,
                                         ),
                                     ],
                                   ),
@@ -3458,7 +3458,7 @@ class _CommentSectionState extends State<CommentSection>
                                               .withOpacity(0.5)
                                           : colorScheme.onSurface,
                                       maxLines: 4,
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: TextOverflow.ellipsis, translate: false,
                                     ),
                                   ],
                                   if (mediaTitle.isNotEmpty) ...[
@@ -3520,14 +3520,14 @@ class _CommentSectionState extends State<CommentSection>
               label,
               size: 13,
               variant: TextVariant.semiBold,
-              maxLines: null,
+              maxLines: null, translate: false,
             ),
           ),
           Expanded(
             child: AnymeXText(
               value,
               size: 13,
-              maxLines: null,
+              maxLines: null, translate: false,
             ),
           ),
         ],
@@ -3649,7 +3649,7 @@ class _CommentSectionState extends State<CommentSection>
                                       color: actionColor,
                                       size: 12,
                                       variant: TextVariant.bold,
-                                      maxLines: null,
+                                      maxLines: null, translate: false,
                                     ),
                                     const Spacer(),
                                     if (timestamp.isNotEmpty)
@@ -3659,7 +3659,7 @@ class _CommentSectionState extends State<CommentSection>
                                             .colorScheme
                                             .onSurfaceVariant,
                                         size: 10,
-                                        maxLines: null,
+                                        maxLines: null, translate: false,
                                       ),
                                   ],
                                 ),
@@ -3672,7 +3672,7 @@ class _CommentSectionState extends State<CommentSection>
                                         .colorScheme
                                         .onSurfaceVariant,
                                     maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: TextOverflow.ellipsis, translate: false,
                                   ),
                                 if (reason.isNotEmpty && reason != 'No reason')
                                   AnymeXText(
@@ -3774,7 +3774,7 @@ class _CommentSectionState extends State<CommentSection>
         color: tagColor,
         size: 11,
         variant: TextVariant.bold,
-        maxLines: null,
+        maxLines: null, translate: false,
       ),
     );
   }
@@ -3870,7 +3870,7 @@ class _UserProfileSheet extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                         overflow: TextOverflow.ellipsis,
-                        maxLines: null,
+                        maxLines: null, translate: false,
                       ),
                     ),
                     if (isMod)
@@ -3888,7 +3888,7 @@ class _UserProfileSheet extends StatelessWidget {
                           size: 12,
                           variant: TextVariant.bold,
                           color: _getRoleColor(context, userRole!),
-                          maxLines: null,
+                          maxLines: null, translate: false,
                         ),
                       ),
                   ],

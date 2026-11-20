@@ -352,7 +352,7 @@ class _ExtensionListState extends State<ExtensionList>
                       if (!widget.installed && notInstalled.isNotEmpty)
                         _buildGroupedSection(notInstalled),
                       if (isEmpty)
-                        const SliverToBoxAdapter(
+                        SliverToBoxAdapter(
                           child: Center(
                             child: Padding(
                               padding: EdgeInsets.all(20.0),
@@ -384,7 +384,7 @@ class _ExtensionListState extends State<ExtensionList>
     final hasInstalled = installed.isNotEmpty;
 
     if (!hasUpdates && !hasInstalled) {
-      return const Center(
+      return Center(
         child: Padding(
           padding: EdgeInsets.all(20.0),
           child: AnymeXText(
@@ -576,7 +576,7 @@ class _ExtensionListState extends State<ExtensionList>
         children: [
           AnymeXText(
             title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13), translate: false,
           ),
           if (trailing != null) trailing,
         ],

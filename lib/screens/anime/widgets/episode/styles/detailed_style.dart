@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:anymex/database/isar_models/episode.dart';
 import 'package:anymex/models/Media/media.dart';
 import 'package:anymex/utils/function.dart';
@@ -155,7 +156,7 @@ class DetailedEpisodeWidget extends StatelessWidget {
       maxLines: 3,
       fontStyle: FontStyle.italic,
       color: context.colors.inverseSurface.opaque(0.90),
-      overflow: TextOverflow.ellipsis,
+      overflow: TextOverflow.ellipsis, translate: false,
     );
   }
 
@@ -204,7 +205,7 @@ class DetailedEpisodeWidget extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: Colors.orange.withOpacity(0.5)),
                               ),
-                              child: const AnymeXText(
+                              child: AnymeXText(
                                 "FILLER",
                                 size: 10,
                                 color: Colors.orange,
@@ -217,7 +218,7 @@ class DetailedEpisodeWidget extends StatelessWidget {
                           variant: TextVariant.bold,
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
-                          isMarquee: true,
+                          isMarquee: true, translate: false,
                         ),
                       ],
                     ),

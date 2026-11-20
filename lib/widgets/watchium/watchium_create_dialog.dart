@@ -103,7 +103,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                 AnymeXText(animeTitle,
                   size: 12,
                   color: cs.onSurface.opaque(0.5),
-                  maxLines: 1,
+                  maxLines: 1, translate: false,
                 ),
               ],
             ),
@@ -138,8 +138,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
         _buildField(
           cs,
           controller: null,
-          label: 'Room Code',
-          hint: 'e.g. ABC123',
+          label: 'Room Code'.tr,
+          hint: 'e.g. ABC123'.tr,
           prefixIcon: Icons.vpn_key_rounded,
           letterSpacing: 2,
           onChanged: (v) => _joinCode = v.toUpperCase(),
@@ -154,7 +154,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
         _buildField(
           cs,
           controller: null,
-          label: 'Password (if required)',
+          label: 'Password (if required)'.tr,
           prefixIcon: Icons.lock_outline_rounded,
           obscureText: _obscurePassword,
           suffixIcon: _buildVisibilityToggle(cs),
@@ -278,7 +278,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
               child: AnymeXText('${_maxMembers.toInt()}',
                 variant: TextVariant.bold,
                 size: 12,
-                color: cs.primary,
+                color: cs.primary, translate: false,
               ),
             ),
           ],
@@ -353,8 +353,8 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
             child: _buildField(
               cs,
               controller: null,
-              label: 'Room Password',
-              hint: 'Set a password for your room',
+              label: 'Room Password'.tr,
+              hint: 'Set a password for your room'.tr,
               prefixIcon: Icons.password_rounded,
               obscureText: _obscurePassword,
               suffixIcon: _buildVisibilityToggle(cs),
@@ -518,7 +518,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
             child: AnymeXText(message,
               size: 12,
               color: cs.error,
-              maxLines: 3,
+              maxLines: 3, translate: false,
             ),
           ),
         ],
@@ -530,7 +530,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
     if (_hasLocalProxyStreams()) {
       warningSnackBar(
         'This extension is not supported for rooms yet. Please switch to a different extension.',
-        title: 'Unsupported Extension',
+        title: 'Unsupported Extension'.tr,
       );
       return;
     }
@@ -754,7 +754,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: code));
-                      successSnackBar('Room code copied to clipboard', title: 'Copied');
+                      successSnackBar('Room code copied to clipboard'.tr, title: 'Copied'.tr);
                     },
                     style: OutlinedButton.styleFrom(
                       foregroundColor: cs.primary,
@@ -776,7 +776,7 @@ class _WatchiumCreateSheetState extends State<WatchiumCreateSheet> {
                   child: FilledButton.icon(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: shareUrl));
-                      successSnackBar('Invite link copied!', title: 'Copied');
+                      successSnackBar('Invite link copied!'.tr, title: 'Copied'.tr);
                     },
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),

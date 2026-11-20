@@ -46,7 +46,7 @@ class _NovelContentWidgetState extends State<NovelContentWidget> {
           buttonItems: [
             ...selectableRegionState.contextMenuButtonItems,
             ContextMenuButtonItem(
-              label: 'Dictionary',
+              label: 'Dictionary'.tr,
               onPressed: () async {
                 selectableRegionState
                     .copySelection(SelectionChangedCause.toolbar);
@@ -355,12 +355,12 @@ class _DictionarySheetState extends State<_DictionarySheet> {
               style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: colors.primary)),
+                  color: colors.primary), translate: false),
           const SizedBox(height: 12),
           if (_loading)
             const Center(child: CircularProgressIndicator())
           else if (_error != null)
-            AnymeXText(_error!, style: TextStyle(color: colors.error))
+            AnymeXText(_error!, style: TextStyle(color: colors.error), translate: false)
           else
             ConstrainedBox(
               constraints: BoxConstraints(
@@ -378,16 +378,16 @@ class _DictionarySheetState extends State<_DictionarySheet> {
                           style: TextStyle(
                               fontSize: 12,
                               fontStyle: FontStyle.italic,
-                              color: colors.onSurface.withOpacity(0.6))),
+                              color: colors.onSurface.withOpacity(0.6)), translate: false),
                       const SizedBox(height: 4),
-                      AnymeXText(e.definition, style: const TextStyle(fontSize: 15)),
+                      AnymeXText(e.definition, style: const TextStyle(fontSize: 15), translate: false),
                       if (e.example != null) ...[
                         const SizedBox(height: 4),
                         AnymeXText('"${e.example}"',
                             style: TextStyle(
                                 fontSize: 13,
                                 fontStyle: FontStyle.italic,
-                                color: colors.onSurface.withOpacity(0.55)))
+                                color: colors.onSurface.withOpacity(0.55)), translate: false)
                       ],
                     ],
                   );

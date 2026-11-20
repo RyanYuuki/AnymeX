@@ -61,7 +61,7 @@ class CenterControls extends StatelessWidget {
         ControlButton(
           icon: Icons.skip_previous_rounded,
           onPressed: () => controller.navigator(false),
-          tooltip: 'Previous Episode',
+          tooltip: 'Previous Episode'.tr,
         ),
         const SizedBox(width: 32),
         Obx(() {
@@ -101,7 +101,7 @@ class CenterControls extends StatelessWidget {
         ControlButton(
           icon: Icons.skip_next_rounded,
           onPressed: () => controller.navigator(true),
-          tooltip: 'Next Episode',
+          tooltip: 'Next Episode'.tr,
         ),
       ],
     );
@@ -119,7 +119,7 @@ class CenterControls extends StatelessWidget {
           child: ControlButton(
             icon: Icons.skip_previous_rounded,
             onPressed: () => controller.navigator(false),
-            tooltip: 'Previous Episode',
+            tooltip: 'Previous Episode'.tr,
           ),
         ),
         const SizedBox(width: 28),
@@ -132,7 +132,7 @@ class CenterControls extends StatelessWidget {
                   final newPos = currentPos - const Duration(seconds: 30);
                   controller.seekTo(newPos.isNegative ? Duration.zero : newPos);
                 },
-          tooltip: 'Replay 30s',
+          tooltip: 'Replay 30s'.tr,
         ),
         const SizedBox(width: 32),
         Obx(() {
@@ -186,7 +186,7 @@ class CenterControls extends StatelessWidget {
                   final newPos = currentPos + const Duration(seconds: 30);
                   controller.seekTo(newPos > duration ? duration : newPos);
                 },
-          tooltip: 'Forward 30s',
+          tooltip: 'Forward 30s'.tr,
         ),
         const SizedBox(width: 28),
         Opacity(
@@ -194,7 +194,7 @@ class CenterControls extends StatelessWidget {
           child: ControlButton(
             icon: Icons.skip_next_rounded,
             onPressed: () => controller.navigator(true),
-            tooltip: 'Next Episode',
+            tooltip: 'Next Episode'.tr,
           ),
         ),
       ],

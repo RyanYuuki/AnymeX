@@ -59,7 +59,7 @@ class WatchiumOverlay extends StatelessWidget {
                     AnymeXText(
                       '${state.members.where((m) => m.online).length}',
                       style:
-                          const TextStyle(color: Colors.white70, fontSize: 12),
+                          const TextStyle(color: Colors.white70, fontSize: 12), translate: false,
                     ),
                     const SizedBox(width: 8),
                     // Sync to host button (joiners only, when out of sync)

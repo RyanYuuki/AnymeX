@@ -55,7 +55,7 @@ void snackBar(
           title == null || title.isEmpty ? message : '$title: $message';
       messenger.showSnackBar(
         SnackBar(
-          content: AnymeXText(fallbackMessage),
+          content: AnymeXText(fallbackMessage, translate: false),
           duration: Duration(milliseconds: duration),
         ),
       );
@@ -387,7 +387,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
                       fontWeight: FontWeight.w700,
                       color: cs.onSurface,
                       height: 1.2,
-                    ),
+                    ), translate: false,
                   ),
                   const SizedBox(height: 3),
                 ],
@@ -399,7 +399,7 @@ class _SnackBarWidgetState extends State<_SnackBarWidget>
                     color: cs.onSurface
                         .withOpacity(widget.title != null ? 0.65 : 0.85),
                     height: 1.4,
-                  ),
+                  ), translate: false,
                 ),
               ],
             ),

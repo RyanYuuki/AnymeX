@@ -146,7 +146,7 @@ class MediaBadge extends StatelessWidget {
               AnymeXText(badgeText,
                 color: theme.colorScheme.onPrimary,
                 size: 12,
-                variant: TextVariant.bold,
+                variant: TextVariant.bold, translate: false,
               ),
             ],
           ),
@@ -176,7 +176,7 @@ class MediaBadge extends StatelessWidget {
               AnymeXText(badgeText,
                 color: isBlurred ? theme.colorScheme.primary : theme.colorScheme.onPrimary,
                 size: 11,
-                variant: TextVariant.bold,
+                variant: TextVariant.bold, translate: false,
               ),
             ],
           ),
@@ -228,7 +228,7 @@ class MediaTitle extends StatelessWidget {
           variant: TextVariant.semiBold,
           overflow: TextOverflow.ellipsis,
           color: Colors.white,
-          isMarquee: false,
+          isMarquee: false, translate: false,
         ),
       );
     }
@@ -240,7 +240,7 @@ class MediaTitle extends StatelessWidget {
         size: isDesktop ? 14 : 12,
         variant: TextVariant.semiBold,
         overflow: TextOverflow.ellipsis,
-        isMarquee: false,
+        isMarquee: false, translate: false,
       ),
     );
   }
@@ -282,7 +282,7 @@ class MediaProgress extends StatelessWidget {
             AnymeXText(progressText,
               color: theme.colorScheme.onPrimary,
               size: 12,
-              variant: TextVariant.bold,
+              variant: TextVariant.bold, translate: false,
             ),
           ],
         ),

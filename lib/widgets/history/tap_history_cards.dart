@@ -171,7 +171,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                                 variant: TextVariant.bold,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                isMarquee: true,
+                                isMarquee: true, translate: false,
                               ),
                             ),
                             if (_getReleaseDateText() != null) ...[
@@ -186,7 +186,7 @@ class NewEpisodeReleaseCard extends StatelessWidget {
                                   _getReleaseDateText()!,
                                   size: 9.5,
                                   variant: TextVariant.semiBold,
-                                  color: colorScheme.onSurfaceVariant,
+                                  color: colorScheme.onSurfaceVariant, translate: false,
                                 ),
                               ),
                             ],

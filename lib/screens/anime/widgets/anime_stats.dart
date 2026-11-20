@@ -80,7 +80,7 @@ class AnimeStats extends StatelessWidget {
           _buildCollapsibleSectionContainer(
             context,
             icon: Icons.analytics_outlined,
-            title: "Statistics",
+            title: "Statistics".tr,
             child: _buildStatsGrid(context),
             isInitiallyExpanded: true,
           ),
@@ -92,12 +92,12 @@ class AnimeStats extends StatelessWidget {
                 child: _buildInfoCard(
                   context,
                   icon: Icons.language_rounded,
-                  title: "Romaji Title",
+                  title: "Romaji Title".tr,
                   content: AnymeXText(data.romajiTitle,
                     variant: TextVariant.semiBold,
                     size: 15,
                     maxLines: 3,
-                    autoResize: true,
+                    autoResize: true, translate: false,
                   ),
                 ),
               ),
@@ -107,12 +107,12 @@ class AnimeStats extends StatelessWidget {
           _buildCollapsibleInfoCard(
             context,
             icon: Icons.description_outlined,
-            title: "Synopsis",
+            title: "Synopsis".tr,
             content: AnymeXText(data.description,
               size: 15,
               color: colorScheme.onSurface.opaque(0.9),
               maxLines: 100,
-              stripHtml: true,
+              stripHtml: true, translate: false,
             ),
             isInitiallyExpanded: true,
           ),
@@ -120,7 +120,7 @@ class AnimeStats extends StatelessWidget {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'Synonyms',
+              title: 'Synonyms'.tr,
               icon: Icons.translate_rounded,
               chips: data.synonyms.map((s) => _ChipData(label: s)).toList(),
             ),
@@ -129,7 +129,7 @@ class AnimeStats extends StatelessWidget {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'Tags',
+              title: 'Tags'.tr,
               icon: Icons.label_rounded,
               chips: data.tags
                   .map((t) => _ChipData(
@@ -149,7 +149,7 @@ class AnimeStats extends StatelessWidget {
             const SizedBox(height: 16),
             _buildChipSection(
               context,
-              title: 'External & Streaming Links',
+              title: 'External & Streaming Links'.tr,
               icon: Icons.open_in_new_rounded,
               chips: data.externalLinks!
                   .map((link) => _ChipData(
@@ -163,7 +163,7 @@ class AnimeStats extends StatelessWidget {
           _buildSectionContainer(
             context,
             icon: Icons.category_rounded,
-            title: "Genres",
+            title: "Genres".tr,
             child: GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.only(top: 15),
@@ -259,7 +259,7 @@ class AnimeStats extends StatelessWidget {
                 child: AnymeXText(chip.label,
                   size: 12,
                   variant: TextVariant.semiBold,
-                  color: color,
+                  color: color, translate: false,
                 ),
               ),
             );
@@ -273,7 +273,7 @@ class AnimeStats extends StatelessWidget {
     return _buildCollapsibleSectionContainer(
         context,
         icon: Icons.more,
-        title: "Others",
+        title: "Others".tr,
         child: Column(
           children: [
             GestureDetector(
@@ -476,7 +476,7 @@ class AnimeStats extends StatelessWidget {
         ? const SizedBox.shrink()
         : _buildSectionContainer(context,
             icon: Icons.tv_rounded,
-            title: "Seasons",
+            title: "Seasons".tr,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -574,7 +574,7 @@ class AnimeStats extends StatelessWidget {
             size: getResponsiveSize(context, mobileSize: 18, desktopSize: 22),
             variant: TextVariant.bold,
             color: colorScheme.primary,
-            textAlign: TextAlign.center,
+            textAlign: TextAlign.center, translate: false,
           ),
         ],
       ),
@@ -619,7 +619,7 @@ class AnimeStats extends StatelessWidget {
               const SizedBox(width: 12),
               AnymeXText(title,
                 variant: TextVariant.bold,
-                size: 20,
+                size: 20, translate: false,
               ),
             ],
           ),
@@ -668,7 +668,7 @@ class AnimeStats extends StatelessWidget {
               const SizedBox(width: 10),
               AnymeXText(title,
                 variant: TextVariant.bold,
-                size: 16,
+                size: 16, translate: false,
               ),
             ],
           ),
@@ -707,7 +707,7 @@ class AnimeStats extends StatelessWidget {
           const SizedBox(width: 10),
           AnymeXText(title,
             variant: TextVariant.bold,
-            size: 16,
+            size: 16, translate: false,
           ),
         ],
       ),
@@ -744,7 +744,7 @@ class AnimeStats extends StatelessWidget {
           const SizedBox(width: 12),
           AnymeXText(title,
             variant: TextVariant.bold,
-            size: 20,
+            size: 20, translate: false,
           ),
         ],
       ),

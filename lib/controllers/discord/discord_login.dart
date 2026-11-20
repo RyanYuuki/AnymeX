@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
 import 'package:webview_all/webview_all.dart';
@@ -355,7 +356,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                   IconButton(
                     icon: const Icon(Icons.close, color: Color(0xFFB5BAC1)),
                     onPressed: () => Navigator.of(context).pop(),
-                    tooltip: 'Close',
+                    tooltip: 'Close'.tr,
                   ),
                   const SizedBox(width: 8),
                   Container(
@@ -413,7 +414,7 @@ class _DiscordLoginPageState extends State<DiscordLoginPage> {
                         color: Color(0xFFB5BAC1),
                       ),
                       onPressed: _resetSession,
-                      tooltip: 'Reset & re-login',
+                      tooltip: 'Reset & re-login'.tr,
                     ),
                 ],
               ),

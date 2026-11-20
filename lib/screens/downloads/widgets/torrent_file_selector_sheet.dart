@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -124,7 +125,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AnymeXText(
+                    AnymeXText(
                       'Select Video File',
                       size: 18,
                       variant: TextVariant.bold,
@@ -135,7 +136,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                       size: 12,
                       color: colors.onSurfaceVariant,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis, translate: false,
                     ),
                   ],
                 ),
@@ -174,7 +175,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
               Icon(Icons.error_outline_rounded,
                   size: 48, color: colors.error),
               const SizedBox(height: 12),
-              const AnymeXText(
+              AnymeXText(
                 'Failed to load torrent metadata',
                 size: 15,
                 variant: TextVariant.semiBold,
@@ -184,7 +185,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                 _error!,
                 size: 12,
                 color: colors.onSurfaceVariant,
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.center, translate: false,
               ),
               const SizedBox(height: 16),
               AnymeXButton(
@@ -192,7 +193,7 @@ class _TorrentFileSelectorSheetState extends State<TorrentFileSelectorSheet> {
                 width: 120,
                 height: 38,
                 borderRadius: BorderRadius.circular(12),
-                child: const AnymeXText('Retry', variant: TextVariant.semiBold),
+                child: AnymeXText('Retry', variant: TextVariant.semiBold),
               ),
             ],
           ),

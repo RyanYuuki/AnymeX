@@ -66,7 +66,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         options: options,
       );
       if (path != null && mounted) {
-        snackBar("Backup saved successfully!");
+        snackBar("Backup saved successfully!".tr);
       }
     } catch (e) {
       if (mounted) {
@@ -113,7 +113,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
 
       final info = await controller.getBackupInfo(path, password: password);
       if (info == null) {
-        snackBar("Invalid backup file or incorrect password");
+        snackBar("Invalid backup file or incorrect password".tr);
         setState(() {
           _isLoadingFile = false;
         });
@@ -161,12 +161,12 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
 
   Future<void> _executeRestore() async {
     if (_selectedFilePath == null || _loadedBackupInfo == null) {
-      snackBar("Please select a backup file first");
+      snackBar("Please select a backup file first".tr);
       return;
     }
 
     if (!_restoreOptions.hasAnySelected) {
-      snackBar("Please select at least one item to restore.");
+      snackBar("Please select at least one item to restore.".tr);
       return;
     }
 
@@ -182,7 +182,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
         options: _restoreOptions,
       );
       if (mounted) {
-        snackBar("Backup restored successfully!");
+        snackBar("Backup restored successfully!".tr);
         if (needsHostPrompt) {
           _showMissingRuntimeDialog();
         }
@@ -219,7 +219,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AnymeXText(
+              AnymeXText(
                 "Conflict Handling",
                 variant: TextVariant.bold,
                 size: 18,
@@ -228,9 +228,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ListTile(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
-                title: const AnymeXText("Merge",
+                title: AnymeXText("Merge",
                     variant: TextVariant.bold, size: 15),
-                subtitle: const AnymeXText(
+                subtitle: AnymeXText(
                     "Combine backup data with existing data on this device",
                     size: 12),
                 trailing: _conflictMode == 'Merge'
@@ -245,9 +245,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ListTile(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
-                title: const AnymeXText("Overwrite",
+                title: AnymeXText("Overwrite",
                     variant: TextVariant.bold, size: 15),
-                subtitle: const AnymeXText(
+                subtitle: AnymeXText(
                     "Replace existing data on this device with backup",
                     size: 12),
                 trailing: _conflictMode == 'Overwrite'
@@ -272,9 +272,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
     showDialog(
       context: context,
       builder: (ctx) => AnymeXDialog(
-        title: "Runtime Host Required",
-        confirmText: "Go to Runtime Manager",
-        cancelText: "Later",
+        title: "Runtime Host Required".tr,
+        confirmText: "Go to Runtime Manager".tr,
+        cancelText: "Later".tr,
         onConfirm: () {
           Get.to(() => const SettingsExtensionManager());
         },
@@ -344,9 +344,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(18.0)),
                 icon: Icons.archive_outlined,
-                title: "Export Device Backup",
+                title: "Export Device Backup".tr,
                 subtitle:
-                    "Create a full .anymex archive of your media library, settings, extensions, and host runtime",
+                    "Create a full .anymex archive of your media library, settings, extensions, and host runtime".tr,
                 showChevron: false,
                 onTap: controller.isBackingUp.value ? null : _openExportSheet,
               ),
@@ -467,7 +467,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(18.0)),
                   icon: Icons.folder_open_rounded,
-                  title: "Backup Archive",
+                  title: "Backup Archive".tr,
                   subtitle:
                       "Select an .anymex, .tachibk, .proto.gz, or .zip backup file",
                   showChevron: false,
@@ -549,7 +549,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               else ...[
               AnymeXTile(
                 icon: Icons.tune_rounded,
-                title: "Conflict Handling",
+                title: "Conflict Handling".tr,
                 subtitle: _conflictMode == 'Merge'
                     ? "Merge with existing device data"
                     : "Overwrite existing device data",
@@ -582,7 +582,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                 onTap: () => _showConflictHandlingMenu(context),
               ),
               AnymeXExpansionTile(
-                title: "Media Library",
+                title: "Media Library".tr,
                 subtitle:
                     "$totalTitles titles • $animeCount anime · $mangaCount manga · $novelCount novel",
                 icon: Icons.video_library_rounded,
@@ -593,7 +593,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                     if (info['hasAnime'] ?? false)
                       AnymeXTile.checkbox(
                         icon: Icons.movie_filter_rounded,
-                        title: "Anime Library",
+                        title: "Anime Library".tr,
                         subtitle: "$animeCount titles and history",
                         value: _restoreOptions.anime,
                         onChanged: (v) =>
@@ -602,7 +602,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                     if (info['hasManga'] ?? false)
                       AnymeXTile.checkbox(
                         icon: Icons.menu_book_rounded,
-                        title: "Manga Library",
+                        title: "Manga Library".tr,
                         subtitle: "$mangaCount titles and chapters",
                         value: _restoreOptions.manga,
                         onChanged: (v) =>
@@ -611,7 +611,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                     if (info['hasNovel'] ?? false)
                       AnymeXTile.checkbox(
                         icon: Icons.auto_stories_rounded,
-                        title: "Novel Library",
+                        title: "Novel Library".tr,
                         subtitle: "$novelCount titles and reading state",
                         value: _restoreOptions.novel,
                         onChanged: (v) =>
@@ -622,7 +622,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ),
               AnymeXTile.checkbox(
                 icon: Icons.insights_rounded,
-                title: "Progress & History",
+                title: "Progress & History".tr,
                 subtitle: (info['hasStats'] ?? false)
                     ? "Episode progress, reading logs, and activity stats"
                     : "No progress or activity data in backup",
@@ -632,7 +632,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ),
               AnymeXTile.checkbox(
                 icon: Icons.playlist_play_rounded,
-                title: "Custom Lists",
+                title: "Custom Lists".tr,
                 subtitle: "$totalLists custom lists across media",
                 enabled: totalLists > 0,
                 value: _restoreOptions.customLists,
@@ -640,7 +640,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                     setState(() => _restoreOptions.customLists = v),
               ),
               AnymeXExpansionTile(
-                title: "Extensions & Sources",
+                title: "Extensions & Sources".tr,
                 subtitle:
                     "$extDataCount configurations • $extFilesCount packages",
                 icon: Icons.extension_rounded,
@@ -651,7 +651,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                     if (info['hasExtensionsData'] ?? false)
                       AnymeXTile.checkbox(
                         icon: Icons.source_rounded,
-                        title: "Configurations & Repos",
+                        title: "Configurations & Repos".tr,
                         subtitle: "$extDataCount registered extension entries",
                         value: _restoreOptions.extensionsData,
                         onChanged: (v) =>
@@ -660,7 +660,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                     if (info['hasExtensionFiles'] ?? false)
                       AnymeXTile.checkbox(
                         icon: Icons.folder_zip_rounded,
-                        title: "Installed Packages",
+                        title: "Installed Packages".tr,
                         subtitle: "$extFilesCount extension zip bundles",
                         value: _restoreOptions.extensionFiles,
                         onChanged: (v) =>
@@ -671,7 +671,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               ),
               if (hasAnySettings)
                 AnymeXExpansionTile(
-                  title: "App Settings & Sessions",
+                  title: "App Settings & Sessions".tr,
                   subtitle:
                       "Themes, playback, reader${hasAuthTokens ? ' • Auth tokens' : ''}",
                   icon: Icons.settings_rounded,
@@ -682,8 +682,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       if (hasAppearance)
                         AnymeXTile.checkbox(
                           icon: Icons.palette_outlined,
-                          title: "Appearance & Theme",
-                          subtitle: "UI layout, colors, and visual styles",
+                          title: "Appearance & Theme".tr,
+                          subtitle: "UI layout, colors, and visual styles".tr,
                           value: _restoreOptions.settings.appearance,
                           onChanged: (v) => setState(
                               () => _restoreOptions.settings.appearance = v),
@@ -691,9 +691,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       if (hasPlayer)
                         AnymeXTile.checkbox(
                           icon: Icons.play_circle_outline_rounded,
-                          title: "Video Player",
+                          title: "Video Player".tr,
                           subtitle:
-                              "Player controls, subtitles, and playback preferences",
+                              "Player controls, subtitles, and playback preferences".tr,
                           value: _restoreOptions.settings.player,
                           onChanged: (v) => setState(
                               () => _restoreOptions.settings.player = v),
@@ -701,9 +701,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       if (hasReader)
                         AnymeXTile.checkbox(
                           icon: Icons.chrome_reader_mode_outlined,
-                          title: "Reader Preferences",
+                          title: "Reader Preferences".tr,
                           subtitle:
-                              "Manga & novel viewer settings, tap zones",
+                              "Manga & novel viewer settings, tap zones".tr,
                           value: _restoreOptions.settings.reader,
                           onChanged: (v) => setState(
                               () => _restoreOptions.settings.reader = v),
@@ -711,9 +711,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       if (hasExtSettings)
                         AnymeXTile.checkbox(
                           icon: Icons.extension_outlined,
-                          title: "Extension Preferences",
+                          title: "Extension Preferences".tr,
                           subtitle:
-                              "Extension settings and source configurations",
+                              "Extension settings and source configurations".tr,
                           value: _restoreOptions.settings.extensions,
                           onChanged: (v) => setState(
                               () => _restoreOptions.settings.extensions = v),
@@ -721,8 +721,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       if (hasDownloadSettings)
                         AnymeXTile.checkbox(
                           icon: Icons.download_done_rounded,
-                          title: "Downloads & Storage",
-                          subtitle: "Download quality, storage paths",
+                          title: "Downloads & Storage".tr,
+                          subtitle: "Download quality, storage paths".tr,
                           value: _restoreOptions.settings.downloads,
                           onChanged: (v) => setState(
                               () => _restoreOptions.settings.downloads = v),
@@ -730,9 +730,9 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       if (hasGeneralSettings)
                         AnymeXTile.checkbox(
                           icon: Icons.tune_rounded,
-                          title: "General Preferences",
+                          title: "General Preferences".tr,
                           subtitle:
-                              "General app settings and sync services",
+                              "General app settings and sync services".tr,
                           value: _restoreOptions.settings.general,
                           onChanged: (v) => setState(
                               () => _restoreOptions.settings.general = v),
@@ -740,8 +740,8 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
                       if (hasAuthTokens)
                         AnymeXTile.checkbox(
                           icon: Icons.vpn_key_outlined,
-                          title: "Login Sessions",
-                          subtitle: "Account tokens (AniList, MAL, Simkl)",
+                          title: "Login Sessions".tr,
+                          subtitle: "Account tokens (AniList, MAL, Simkl)".tr,
                           value: _restoreOptions.settings.authTokens,
                           onChanged: (v) => setState(
                               () => _restoreOptions.settings.authTokens = v),
@@ -752,7 +752,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
               if (hasRuntime)
                 AnymeXTile.checkbox(
                   icon: Icons.memory_rounded,
-                  title: "Runtime Host",
+                  title: "Runtime Host".tr,
                   subtitle:
                       "$runtimePlatform runtime${runtimeSizeStr.isNotEmpty ? ' • $runtimeSizeStr' : ''}",
                   value: _restoreOptions.runtimeHost,
@@ -823,7 +823,7 @@ class _BackupRestorePageState extends State<BackupRestorePage> {
   Widget build(BuildContext context) {
     return AnymeXScaffold(
       showHeader: true,
-      headerTitle: 'Backup',
+      headerTitle: 'Backup'.tr,
       body: Builder(
         builder: (ctx) => SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(
